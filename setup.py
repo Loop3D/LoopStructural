@@ -1,9 +1,9 @@
 #setup cython code
 from setuptools import setup
+from Cython.Build import cythonize
 
 setup(
-	name = "FME",
-        version 
-	ext_modules = cythonize("pycompass/SNE/pdf.pyx"),
-	include_dirs = [np.get_include(),sp.get_include()]
+	name="FME",
+        packages=['FME'],
+	ext_modules=cythonize("FME/dsi_helper.pyx"),
 	)
