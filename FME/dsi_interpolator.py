@@ -38,7 +38,6 @@ class DSI(GeologicalInterpolator):
         self.col = []
         self.row = [] #sparse matrix storage
         self.mesh.dinfo = {}#[:] = False #intitialise dinfo to be 0
-        self.fold = False
     def _setup_interpolator(self,**kwargs):
 
         cgw=0.1
@@ -59,8 +58,6 @@ class DSI(GeologicalInterpolator):
             cg = kwargs['cg']
         if cg:
             self.add_constant_gradient(cgw)
-        if self.fold == True:
-            self.add_fold_constraint()
         print("Setting up interpolator with %i value control points \n\
         %i gradient control points and %i tangent control points and \n\
         constant gradient regularization with a weight of %f"%(self.n_i,self.n_g,self.n_t,cgw))    
@@ -85,22 +82,6 @@ class DSI(GeologicalInterpolator):
         self.col.extend(col)
         self.c_+=c_
         return
-    def link_fold_constraint(self,foldconstraints):
-        self.foldconstraints = foldconstraints
-        self.fold = True
-    def add_fold_constraint(self):
-        #self.fold = True
-        A,B, row, col, c_ = self.foldconstraints.get_constraints()
-        #fold constraint weights are already managed by the fold constraint obj
-        self.A.extend(A)
-        if self.shape =='rectangular':
-            self.B.extend(B)
-        if self.shape == 'square':
-            self.B+=B
-        self.row.extend(row)
-        self.col.extend(col)
-        self.c_+=c_
-        return 
     def add_ctr_pts(self,w=1.0): #for now weight all value points the same
         for p in self.p_i:
             element = self.mesh.get_element(p.pos)
@@ -256,6 +237,11 @@ class DSI(GeologicalInterpolator):
                         self.row.append(a[k,i])
                         self.col.append(a[k,j])
                         #don't need to do anything with b as its 0
+    def add_fold_constraints(self,A,B,col,row):
+        self.A.extend(A)
+        self.row.extend(row)
+        self.col.extend(col)
+        self.B+=B
     def add_elements_gradient_constraint(self,elements,normal,w):      
         #normals=normals/np.einsum('ij,ij->i',normals,normals)[:,None]
         for element in elements:
@@ -351,7 +337,7 @@ class DSI(GeologicalInterpolator):
             return
         if solver == 'chol' and self.shape == 'square':
             from sksparse.cholmod import cholesky 
-            factor = cholesky(self.AA.tocsc(),use_long=True)
+            factor = cholesky(self.AA.tocsc())
             self.c = factor(self.B)
             if clear:
                 self.AA = None

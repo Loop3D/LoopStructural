@@ -4,7 +4,7 @@ from meshpy import *
 #from sympy.utilities.autowrap import autowrap
 import numpy as np
 from numpy import linalg as la
-from .dsi_helper import get_element, compute_cg_regularisation_constraint, pointintetra, cg, cg_cstr_to_coo_sq
+from dsi_helper import get_element, compute_cg_regularisation_constraint, pointintetra, cg, cg_cstr_to_coo_sq
 from scipy.spatial import cKDTree
 import os
 class TetMesh:
@@ -192,7 +192,7 @@ class TetMesh:
                   [[-1.,1.,0.,0.],
                    [-1.,0.,1.,0.],
                    [-1.,0.,0.,1.]]) 
-        return la.inv(m) @ I
+        return np.dot(m,I)#la.inv(m) @ I
         tu = tuple(t)
         if tu in self.element_gradients:
             return self.element_gradients[tu]
