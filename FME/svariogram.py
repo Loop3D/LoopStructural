@@ -26,7 +26,7 @@ class s_variogram():
         #x2 = np.tile(xdata,len(xdata))
         y2 = y1.transpose()
         x2 = x1.transpose()
-        self.distance_m = np.lingalg.norm(x1-x2,axis=1)
+        self.distance_m = np.linalg.norm(x1-x2,axis=1)
         self.covariance_m = (y1-y2)**2#covar(y1,y2)#x1 = np.array(np.)    
     def calc_semivariogram(self, step, nlags, tol):
         self.lags = np.arange(step/2.,nlags*step,step)

@@ -218,3 +218,8 @@ def array_to_vtk_points(points,filename):
              np.array(points[:,4], copy=True, order='C'),
              np.array(points[:,5], copy=True, order='C'))
     pointsToVTK(filename,x,y,z,data={"v":v})
+def normal_vector_to_strike_and_dip(normal_vector):
+    normal_vector/=np.linalg.norm(normal_vector,axis=1)[:,None]
+    dip = np.rad2deg(np.arccos(normal_vector[:,2]));
+    strike = np.rad2deg(np.arctan2(normal_vector[:,1],normal_vector[:,0]))#atan2(v2[1],v2[0])*rad2deg;
+    return np.array([strike, dip]).T

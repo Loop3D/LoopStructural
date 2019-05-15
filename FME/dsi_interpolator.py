@@ -45,7 +45,6 @@ class DSI(GeologicalInterpolator):
         gpw =1.0
         tpw =1.0
         cg = True
-        cg = ~self.fold
         if 'cgw' in kwargs:
             cgw = kwargs['cgw']
         if 'cpw' in kwargs:

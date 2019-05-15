@@ -113,7 +113,7 @@ class FoldFrame(StructuralFrame):
         #check bounds
         far[stp<0] = 360.-far[stp<0]
         far[far>90] = far[far>90]+-180
-        far[far<-90] = far[far>90]+180
+        far[far<-90] = far[far<-90]+180
         return far
     def calculate_fold_limb_rotation(self,points,axis):
         s0g = points[:,3:]

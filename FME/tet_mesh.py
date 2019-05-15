@@ -4,7 +4,7 @@ from meshpy import *
 #from sympy.utilities.autowrap import autowrap
 import numpy as np
 from numpy import linalg as la
-from dsi_helper import get_element, compute_cg_regularisation_constraint, pointintetra, cg, cg_cstr_to_coo_sq
+from .dsi_helper import get_element, compute_cg_regularisation_constraint, pointintetra, cg, cg_cstr_to_coo_sq
 from scipy.spatial import cKDTree
 import os
 class TetMesh:
@@ -471,3 +471,16 @@ class TetMesh:
                          )
     def save(self):
         self.export_to_vtk(self.path+self.name+'.vtk')
+    def plot_mesh(self,propertyname,cmap=None):
+        import vista
+        vmesh = vista.read(self.path+self.name+'.vtk')
+        p = vista.Plotter(notebook=True)
+        p.set_background('white')
+        p.add_mesh(
+            vmesh,
+            cmap=cmap,
+            show_scalar_bar=False,
+            scalars=self.properties[propertyname],
+            interpolate_before_map=True
+        )
+        p.show()

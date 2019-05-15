@@ -9,3 +9,4 @@ from .region_manager import RegionManager
 from .helper import *
 from .svariogram import s_variogram
 from .fault_segment import FaultSegment
+from .dsi_helper import *
