@@ -8,11 +8,11 @@ class FoldEvent():
         
     def get_fold_axis_orientation(self,points):
         #get the gz direction
-        dgz = self.foldframe.get_gz(points,grad=True)
+        dgx = self.foldframe.get_gx(points,grad=True)
         dgy = self.foldframe.get_gy(points,grad=True)
         #get gy
         gy = self.foldframe.get_gy(points,grad=False)
-        R1 = self.rot_mat(dgz,self.fold_axis_rotation(gy))
+        R1 = self.rot_mat(dgx,self.fold_axis_rotation(gy))
         fold_axis = np.einsum('ijk,ki->kj',R1,dgy)
         fold_axis/=np.sum(fold_axis,axis=1)[:,None]
         return fold_axis

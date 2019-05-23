@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import scipy.sparse.linalg as sla
 import numpy.linalg as la
-from scipy.sparse import coo_matrix
+from scipy.sparse import coo_matrix, spdiags
 import math as m
 import matplotlib.pyplot as plt
 from .geological_interpolator import GeologicalInterpolator
@@ -302,6 +302,9 @@ class DSI(GeologicalInterpolator):
             rows = np.array(self.row)
             self.AA = coo_matrix((np.array(self.A),(np.array(rows).astype(np.int64),\
              np.array(cols).astype(np.int64))),dtype=float)
+            d = np.zeros(self.nx)
+            d+=np.finfo('float').eps
+            self.AA+=spdiags(d,0,self.nx,self.nx)
         B = np.array(self.B)
         self.cc_ = [0,0,0,0]
         self.c = np.zeros(self.mesh.n_nodes)

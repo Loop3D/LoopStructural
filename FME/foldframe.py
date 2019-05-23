@@ -1,4 +1,5 @@
 from .structuralframes import StructuralFrame
+from .dsi_helper import fold_cg, cg_cstr_to_coo_sq
 import numpy as np
 class FoldFrame(StructuralFrame):
     """
@@ -79,13 +80,27 @@ class FoldFrame(StructuralFrame):
                 self.interpolators['gy'].add_data(d['data'])
             if d['type'] == 'gz':
                 self.interpolators['gz'].add_data(d['data'])
-        self.interpolators['gx'].setup_interpolator(cg=gxcg,cpw=gxcp,gpw=gxgcp)           
+        self.interpolators['gx'].setup_interpolator(cgw=gxcg,cpw=gxcp,gpw=gxgcp)           
         self.interpolators['gx'].solve_system(solver=solver)
         self.mesh.update_property(self.name+'_'+'gx', self.interpolators['gx'].c)
         self.interpolators['gy'].add_elements_gradient_orthogonal_constraint(np.arange(0,self.mesh.n_elements),self.mesh.property_gradients[self.name+'_'+'gx'],w=gxxgy)
-        
-        self.interpolators['gy'].setup_interpolator(cg=gycg,cpw=gycp,gpw=gygcp)#cgw=0.1)#
+        ##project constant gradient constraint of gy onto gx ----------------------------------------
 
+        self.interpolators['gy'].setup_interpolator(cgw=0.0,cpw=gycp,gpw=gygcp)#cgw=0.1)#
+        eg = self.mesh.get_elements_gradients(np.arange(self.mesh.n_elements))
+        dgx = self.mesh.property_gradients[self.interpolators['gx'].propertyname]
+        idc,c,ncons = fold_cg(eg,dgx,self.mesh.neighbours,self.mesh.elements,self.mesh.nodes)
+        a,r,c = cg_cstr_to_coo_sq(c,idc,ncons)
+        a = np.array(a)
+        a*=gycg
+        A = []
+        row = []
+        col = []
+        A.extend(a.tolist())
+        row.extend(np.array(r).tolist())
+        col.extend(np.array(c).tolist())
+        self.interpolators['gy'].add_fold_constraints(A,np.zeros(self.mesh.n_nodes),col,row)
+        ####-----------------------------------------------------------------------------------------
         self.interpolators['gy'].solve_system(solver=solver)
         self.mesh.update_property(self.name+'_'+'gy', self.interpolators['gy'].c)
 
@@ -93,7 +108,7 @@ class FoldFrame(StructuralFrame):
             self.interpolators['gz'].add_elements_gradient_orthogonal_constraint(np.arange(0,self.mesh.n_elements),self.mesh.property_gradients[self.name+'_'+'gx'],w=gxxgz)
             self.interpolators['gz'].add_elements_gradient_orthogonal_constraint(np.arange(0,self.mesh.n_elements),self.mesh.property_gradients[self.name+'_'+'gy'],w=gyxgz)
 
-            self.interpolators['gz'].setup_interpolator(cg=gzcg,cpw=gzcp,gpw=gzgcp)#cgw=0.1)
+            self.interpolators['gz'].setup_interpolator(cgw=gzcg,cpw=gzcp,gpw=gzgcp)#cgw=0.1)
             self.interpolators['gz'].solve_system(solver=solver)
             self.mesh.update_property(self.name+'_'+'gz', self.interpolators['gz'].c)  
     def calculate_fold_axis_rotation(self,points):

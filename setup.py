@@ -9,5 +9,6 @@ setup(
 	],
         packages=['FME'],
 	ext_modules=cythonize("FME/dsi_helper.pyx"),
+        ext_modules=cythonize("FME/marching_tetra.pyx"),
 	include_dirs=[numpy.get_include()],
 	)
