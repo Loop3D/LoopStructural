@@ -44,7 +44,9 @@ cdef vertex_interp(double isolevel,double [:] v1, double [:] v2,double [:] point
     mu = (isolevel - vp1) / (vp2 - vp1)  
     for i in range(3):
         point[i]= p1[i] + mu * (p2[i] - p1[i])
-                
+##below are the different functions for the tetrahedron cases, they all add the new triangle
+##to the array triangles at the next available location which is counted by ntri
+##ntri has to be a numpy array because passing an int in python is immutable.
 cdef t0E01(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
     vertex_interp(iso,v0,v1,triangles[ntri[0],0,:])        
     vertex_interp(iso,v0,v2,triangles[ntri[0],1,:])
@@ -107,6 +109,14 @@ cdef t0708(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, dou
     ntri[0]+=1
     return 
 def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):
+    """
+    Main entry point for marching tetrahedron function. 
+    double isovalue is the scalar field value to create the surface at
+    long [:,:] is a 2d array containing the index of tetra nodes
+    double [:,:] a 2d array containing vertex/node coordinates.
+    Returns: an 3d [Ntriangles,triangle_nodes,vertex coordinates] where array of triangles 
+    explicitly containing the coordinate of the vertices
+    """
     nodes = np.hstack([nodes,propertyvalue[:,None]]) 
     #find which nodes are > isovalue
     property_bool = propertyvalue > isovalue
@@ -132,6 +142,7 @@ def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, prope
         v1 = nodes[elements[tetras_index[i]][1]]
         v2 = nodes[elements[tetras_index[i]][2]]
         v3 = nodes[elements[tetras_index[i]][3]]     
+        ##choose which case we are interested in
         if tetra_type_index[i]== 7:
             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
         if tetra_type_index[i]== 8:
@@ -161,16 +172,4 @@ def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, prope
         if tetra_type_index[i]==1:
             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
     return triangles, ntri
-    #cdef double [:,:] triangle_nodes = np.zeros(((ntri[0]),3))
-    #cdef long [:,:] triangle_indexes = np.zeros(((ntri[0]),3)).astype(int)
-    #nn = 0 
-    #for i in range(ntri[0]):
-    #    for j in range(3):
-    #        idx = node_exists(triangle_nodes,triangles[i,j,:],nn)
-    #        if idx == -1:
-    #            triangle_nodes[nn,:]=triangles[i,j,:]
-    #            triangle_indexes[i,j] = nn
-    #            nn+=1
-    #        else:
-    #            triangle_indexes[i,j] = idx
-    #return triangle_nodes, triangle_indexes, nn
+

@@ -5,6 +5,7 @@ from meshpy import *
 import numpy as np
 from numpy import linalg as la
 from .dsi_helper import get_element, compute_cg_regularisation_constraint, pointintetra, cg, cg_cstr_to_coo_sq
+from .marching_tetra import marching_tetra
 from scipy.spatial import cKDTree
 import os
 class TetMesh:
@@ -484,3 +485,46 @@ class TetMesh:
             interpolate_before_map=True
         )
         p.show()
+    def lv_plot_isosurface(self,propertyname,isovalue,
+            colour='green',
+            name='IsoSurface',
+            interactive=False,
+            lv=None,
+            draw=True
+            ):
+        import lavavu  #visualisation library   
+        ##run the marching tetra algorithm        
+        tri, ntri = marching_tetra(isovalue,self.elements,self.nodes,self.properties[propertyname])
+        ##convert from memoryview to np array
+        tri = np.array(tri)
+        ntri = np.array(ntri)[0]
+        ##create a triangle indices array and initialise to -1
+        tris = np.zeros((ntri,3)).astype(int)
+        tris[:,:] = -1
+        ##create a dict for storing nodes index where the key is the node as as a tuple. 
+        #A dict is preferable because it is very quick to check if a key exists
+        #assemble arrays for unique vertex and triangles defined by vertex indices
+        nodes = {}
+        n = 0 #counter
+        for i in range(ntri):
+            for j in range(3):
+                if tuple(tri[i,j,:]) in nodes:
+                    tris[i,j] = nodes[tuple(tri[i,j,:])]
+                else:
+                    nodes[tuple(tri[i,j,:])] = n
+                    tris[i,j] = n
+                    n+=1
+        nodes_np = np.zeros((n,3))
+        for v in nodes.keys():
+            nodes_np[nodes[v],:] = np.array(v)
+        #if lv==None:
+        #    lv = lavavu.Viewer(border=True,quality=2)
+        surf = lv.triangles(name)
+        surf.vertices(nodes_np)
+        surf.indices(tris)
+        surf.colours(colour)
+        if interactive:
+            lv.interactive()
+        if draw:
+            lv.display()
+        return lv
