@@ -108,7 +108,7 @@ cdef t0708(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, dou
     vertex_interp(iso,v3,v1,triangles[ntri[0],2,:])#g.p[v3],g.p[v1],g.val[v3],g.val[v1])
     ntri[0]+=1
     return 
-def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):
+def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):
     """
     Main entry point for marching tetrahedron function. 
     double isovalue is the scalar field value to create the surface at
@@ -120,12 +120,17 @@ def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, prope
     nodes = np.hstack([nodes,propertyvalue[:,None]]) 
     #find which nodes are > isovalue
     property_bool = propertyvalue > isovalue
+    #property_bool = np.logical_and(property_bool,region)
     #find what case each tetra is by slicing property bool by elements and multiplying by the case array
     #the sum of these rows = the case
     tetra_type_index1 = np.sum(property_bool[elements]*np.array([1,2,4,8]),axis=1)
     #0 and 15 are tcases where isovalue doesn't intersect surface so just skip these 
     tetra_type_index = tetra_type_index1[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]
-    tetras_index = np.array(range(0,len(elements)))[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]
+    el_region = region[elements]
+    el_region = np.all(el_region==True,axis=1)#p.all(el_region.
+    logic = np.logical_and(el_region,np.logical_and(tetra_type_index1>0,tetra_type_index1<15))
+    print(logic.shape)
+    tetras_index = np.array(range(0,len(elements)))[logic]
     ##create container for the triangle nodes and indexes and a counter
     cdef int ne, nn, i
     #use np array to make use of buffer

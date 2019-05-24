@@ -38,7 +38,8 @@ class s_variogram():
         self.min_ = np.zeros(len(lags))
         self.max_ = np.zeros(len(lags))
         for i in range(len(lags)):
-            ma = np.ma.array(data = covariance, mask =inside(distance,lags[i]-tol/2.,lags[i]+tol/2.))
+            ma = np.ma.array(data = covariance, mask =inside(distance,
+                lags[i]-tol/2.,lags[i]+tol/2.))
             if len(ma[~ma.mask])>0:
                 variance[i] = np.mean(ma[~ma.mask])     
                 self.min_[i] = np.percentile(ma[~ma.mask],25)

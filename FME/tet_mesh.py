@@ -490,11 +490,18 @@ class TetMesh:
             name='IsoSurface',
             interactive=False,
             lv=None,
-            draw=True
+            draw=True,
+            region=None
+
             ):
         import lavavu  #visualisation library   
         ##run the marching tetra algorithm        
-        tri, ntri = marching_tetra(isovalue,self.elements,self.nodes,self.properties[propertyname])
+        reg = np.zeros(self.properties[propertyname].shape).astype(bool)
+        reg[:] = True
+        if region is not None:
+            reg = self.regions[region]
+        tri, ntri = marching_tetra(isovalue,self.elements,self.nodes,reg,self.properties[propertyname])
+
         ##convert from memoryview to np array
         tri = np.array(tri)
         ntri = np.array(ntri)[0]

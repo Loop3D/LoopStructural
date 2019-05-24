@@ -1847,6 +1847,13 @@ static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *o
 static CYTHON_INLINE PyObject *__pyx_memview_get_long(const char *itemp);
 static CYTHON_INLINE int __pyx_memview_set_long(const char *itemp, PyObject *obj);
 
+/* Print.proto */
+static int __Pyx_Print(PyObject*, PyObject *, int);
+#if CYTHON_COMPILING_IN_PYPY || PY_MAJOR_VERSION >= 3
+static PyObject* __pyx_print = 0;
+static PyObject* __pyx_print_kwargs = 0;
+#endif
+
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
@@ -1862,6 +1869,9 @@ static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
+
+/* PrintOne.proto */
+static int __Pyx_PrintOne(PyObject* stream, PyObject *o);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *);
@@ -1968,12 +1978,15 @@ static const char __pyx_k_v0[] = "v0";
 static const char __pyx_k_v1[] = "v1";
 static const char __pyx_k_v2[] = "v2";
 static const char __pyx_k_v3[] = "v3";
+static const char __pyx_k_all[] = "all";
+static const char __pyx_k_end[] = "end";
 static const char __pyx_k_new[] = "__new__";
 static const char __pyx_k_obj[] = "obj";
 static const char __pyx_k_sum[] = "sum";
 static const char __pyx_k_axis[] = "axis";
 static const char __pyx_k_base[] = "base";
 static const char __pyx_k_dict[] = "__dict__";
+static const char __pyx_k_file[] = "file";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_mode[] = "mode";
 static const char __pyx_k_name[] = "name";
@@ -1989,8 +2002,10 @@ static const char __pyx_k_array[] = "array";
 static const char __pyx_k_class[] = "__class__";
 static const char __pyx_k_error[] = "error";
 static const char __pyx_k_flags[] = "flags";
+static const char __pyx_k_logic[] = "logic";
 static const char __pyx_k_nodes[] = "nodes";
 static const char __pyx_k_numpy[] = "numpy";
+static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_start[] = "start";
@@ -2003,6 +2018,7 @@ static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_name_2[] = "__name__";
 static const char __pyx_k_pickle[] = "pickle";
 static const char __pyx_k_reduce[] = "__reduce__";
+static const char __pyx_k_region[] = "region";
 static const char __pyx_k_struct[] = "struct";
 static const char __pyx_k_unpack[] = "unpack";
 static const char __pyx_k_update[] = "update";
@@ -2016,6 +2032,7 @@ static const char __pyx_k_itemsize[] = "itemsize";
 static const char __pyx_k_pyx_type[] = "__pyx_type";
 static const char __pyx_k_setstate[] = "__setstate__";
 static const char __pyx_k_TypeError[] = "TypeError";
+static const char __pyx_k_el_region[] = "el_region";
 static const char __pyx_k_enumerate[] = "enumerate";
 static const char __pyx_k_pyx_state[] = "__pyx_state";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
@@ -2095,6 +2112,7 @@ static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_View_MemoryView;
+static PyObject *__pyx_n_s_all;
 static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_array;
 static PyObject *__pyx_n_s_astype;
@@ -2108,10 +2126,13 @@ static PyObject *__pyx_kp_s_contiguous_and_direct;
 static PyObject *__pyx_kp_s_contiguous_and_indirect;
 static PyObject *__pyx_n_s_dict;
 static PyObject *__pyx_n_s_dtype_is_object;
+static PyObject *__pyx_n_s_el_region;
 static PyObject *__pyx_n_s_elements;
 static PyObject *__pyx_n_s_encode;
+static PyObject *__pyx_n_s_end;
 static PyObject *__pyx_n_s_enumerate;
 static PyObject *__pyx_n_s_error;
+static PyObject *__pyx_n_s_file;
 static PyObject *__pyx_n_s_flags;
 static PyObject *__pyx_n_s_format;
 static PyObject *__pyx_n_s_fortran;
@@ -2125,6 +2146,7 @@ static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_isovalue;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
+static PyObject *__pyx_n_s_logic;
 static PyObject *__pyx_n_s_logical_and;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_marching_tetra;
@@ -2144,6 +2166,7 @@ static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_n_s_obj;
 static PyObject *__pyx_n_s_pack;
 static PyObject *__pyx_n_s_pickle;
+static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_property_bool;
 static PyObject *__pyx_n_s_propertyvalue;
 static PyObject *__pyx_n_s_pyx_PickleError;
@@ -2158,6 +2181,7 @@ static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_reduce;
 static PyObject *__pyx_n_s_reduce_cython;
 static PyObject *__pyx_n_s_reduce_ex;
+static PyObject *__pyx_n_s_region;
 static PyObject *__pyx_n_s_setstate;
 static PyObject *__pyx_n_s_setstate_cython;
 static PyObject *__pyx_n_s_shape;
@@ -2185,7 +2209,7 @@ static PyObject *__pyx_n_s_v1;
 static PyObject *__pyx_n_s_v2;
 static PyObject *__pyx_n_s_v3;
 static PyObject *__pyx_n_s_zeros;
-static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_isovalue, __Pyx_memviewslice __pyx_v_elements, __Pyx_memviewslice __pyx_v_nodes, PyObject *__pyx_v_propertyvalue); /* proto */
+static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_isovalue, __Pyx_memviewslice __pyx_v_elements, __Pyx_memviewslice __pyx_v_nodes, PyObject *__pyx_v_region, PyObject *__pyx_v_propertyvalue); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -4443,7 +4467,7 @@ __pyx_t_3 = __pyx_f_3FME_14marching_tetra_vertex_interp(__pyx_v_iso, __pyx_v_v3,
  *     vertex_interp(iso,v3,v1,triangles[ntri[0],2,:])#g.p[v3],g.p[v1],g.val[v3],g.val[v1])
  *     ntri[0]+=1             # <<<<<<<<<<<<<<
  *     return
- * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):
+ * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):
  */
   __Pyx_TraceLine(109,0,__PYX_ERR(0, 109, __pyx_L1_error))
   __pyx_t_6 = 0;
@@ -4453,7 +4477,7 @@ __pyx_t_3 = __pyx_f_3FME_14marching_tetra_vertex_interp(__pyx_v_iso, __pyx_v_v3,
  *     vertex_interp(iso,v3,v1,triangles[ntri[0],2,:])#g.p[v3],g.p[v1],g.val[v3],g.val[v1])
  *     ntri[0]+=1
  *     return             # <<<<<<<<<<<<<<
- * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):
+ * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):
  *     """
  */
   __Pyx_TraceLine(110,0,__PYX_ERR(0, 110, __pyx_L1_error))
@@ -4485,7 +4509,7 @@ __pyx_t_3 = __pyx_f_3FME_14marching_tetra_vertex_interp(__pyx_v_iso, __pyx_v_v3,
 /* "FME/marching_tetra.pyx":111
  *     ntri[0]+=1
  *     return
- * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):             # <<<<<<<<<<<<<<
+ * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):             # <<<<<<<<<<<<<<
  *     """
  *     Main entry point for marching tetrahedron function.
  */
@@ -4498,17 +4522,20 @@ static PyObject *__pyx_pw_3FME_14marching_tetra_1marching_tetra(PyObject *__pyx_
   double __pyx_v_isovalue;
   __Pyx_memviewslice __pyx_v_elements = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_nodes = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyObject *__pyx_v_region = 0;
   PyObject *__pyx_v_propertyvalue = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("marching_tetra (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_isovalue,&__pyx_n_s_elements,&__pyx_n_s_nodes,&__pyx_n_s_propertyvalue,0};
-    PyObject* values[4] = {0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_isovalue,&__pyx_n_s_elements,&__pyx_n_s_nodes,&__pyx_n_s_region,&__pyx_n_s_propertyvalue,0};
+    PyObject* values[5] = {0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+        CYTHON_FALLTHROUGH;
         case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
         CYTHON_FALLTHROUGH;
         case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
@@ -4529,56 +4556,66 @@ static PyObject *__pyx_pw_3FME_14marching_tetra_1marching_tetra(PyObject *__pyx_
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_elements)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 4, 4, 1); __PYX_ERR(0, 111, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 5, 5, 1); __PYX_ERR(0, 111, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nodes)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 4, 4, 2); __PYX_ERR(0, 111, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 5, 5, 2); __PYX_ERR(0, 111, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
-        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_propertyvalue)) != 0)) kw_args--;
+        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_region)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 4, 4, 3); __PYX_ERR(0, 111, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 5, 5, 3); __PYX_ERR(0, 111, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  4:
+        if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_propertyvalue)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 5, 5, 4); __PYX_ERR(0, 111, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "marching_tetra") < 0)) __PYX_ERR(0, 111, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 5) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
       values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
     }
     __pyx_v_isovalue = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_isovalue == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 111, __pyx_L3_error)
     __pyx_v_elements = __Pyx_PyObject_to_MemoryviewSlice_dsds_long(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_elements.memview)) __PYX_ERR(0, 111, __pyx_L3_error)
     __pyx_v_nodes = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_nodes.memview)) __PYX_ERR(0, 111, __pyx_L3_error)
-    __pyx_v_propertyvalue = values[3];
+    __pyx_v_region = values[3];
+    __pyx_v_propertyvalue = values[4];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 111, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("marching_tetra", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 111, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("FME.marching_tetra.marching_tetra", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_3FME_14marching_tetra_marching_tetra(__pyx_self, __pyx_v_isovalue, __pyx_v_elements, __pyx_v_nodes, __pyx_v_propertyvalue);
+  __pyx_r = __pyx_pf_3FME_14marching_tetra_marching_tetra(__pyx_self, __pyx_v_isovalue, __pyx_v_elements, __pyx_v_nodes, __pyx_v_region, __pyx_v_propertyvalue);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_isovalue, __Pyx_memviewslice __pyx_v_elements, __Pyx_memviewslice __pyx_v_nodes, PyObject *__pyx_v_propertyvalue) {
+static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_isovalue, __Pyx_memviewslice __pyx_v_elements, __Pyx_memviewslice __pyx_v_nodes, PyObject *__pyx_v_region, PyObject *__pyx_v_propertyvalue) {
   PyObject *__pyx_v_property_bool = NULL;
   PyObject *__pyx_v_tetra_type_index1 = NULL;
   PyObject *__pyx_v_tetra_type_index = NULL;
+  PyObject *__pyx_v_el_region = NULL;
+  PyObject *__pyx_v_logic = NULL;
   PyObject *__pyx_v_tetras_index = NULL;
   CYTHON_UNUSED int __pyx_v_ne;
   CYTHON_UNUSED int __pyx_v_nn;
@@ -4600,24 +4637,25 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
   __Pyx_memviewslice __pyx_t_6 = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_t_7 = NULL;
   int __pyx_t_8;
-  size_t __pyx_t_9;
+  PyObject *__pyx_t_9 = NULL;
   PyObject *__pyx_t_10 = NULL;
-  __Pyx_memviewslice __pyx_t_11 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_12;
-  __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_14;
+  size_t __pyx_t_11;
+  __Pyx_memviewslice __pyx_t_12 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_13;
+  __Pyx_memviewslice __pyx_t_14 = { 0, 0, { 0 }, { 0 }, { 0 } };
   Py_ssize_t __pyx_t_15;
   Py_ssize_t __pyx_t_16;
   Py_ssize_t __pyx_t_17;
   Py_ssize_t __pyx_t_18;
-  __Pyx_memviewslice __pyx_t_19 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_20;
+  Py_ssize_t __pyx_t_19;
+  __Pyx_memviewslice __pyx_t_20 = { 0, 0, { 0 }, { 0 }, { 0 } };
   Py_ssize_t __pyx_t_21;
   Py_ssize_t __pyx_t_22;
   Py_ssize_t __pyx_t_23;
   Py_ssize_t __pyx_t_24;
   Py_ssize_t __pyx_t_25;
-  int __pyx_t_26;
+  Py_ssize_t __pyx_t_26;
+  int __pyx_t_27;
   __Pyx_TraceFrameInit(__pyx_codeobj_)
   __Pyx_RefNannySetupContext("marching_tetra", 0);
   __Pyx_TraceCall("marching_tetra", __pyx_f[0], 111, 0, __PYX_ERR(0, 111, __pyx_L1_error));
@@ -4674,8 +4712,8 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
  *     nodes = np.hstack([nodes,propertyvalue[:,None]])
  *     #find which nodes are > isovalue
  *     property_bool = propertyvalue > isovalue             # <<<<<<<<<<<<<<
+ *     #property_bool = np.logical_and(property_bool,region)
  *     #find what case each tetra is by slicing property bool by elements and multiplying by the case array
- *     #the sum of these rows = the case
  */
   __Pyx_TraceLine(122,0,__PYX_ERR(0, 122, __pyx_L1_error))
   __pyx_t_1 = PyFloat_FromDouble(__pyx_v_isovalue); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 122, __pyx_L1_error)
@@ -4685,30 +4723,30 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
   __pyx_v_property_bool = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "FME/marching_tetra.pyx":125
+  /* "FME/marching_tetra.pyx":126
  *     #find what case each tetra is by slicing property bool by elements and multiplying by the case array
  *     #the sum of these rows = the case
  *     tetra_type_index1 = np.sum(property_bool[elements]*np.array([1,2,4,8]),axis=1)             # <<<<<<<<<<<<<<
  *     #0 and 15 are tcases where isovalue doesn't intersect surface so just skip these
  *     tetra_type_index = tetra_type_index1[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]
  */
-  __Pyx_TraceLine(125,0,__PYX_ERR(0, 125, __pyx_L1_error))
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_TraceLine(126,0,__PYX_ERR(0, 126, __pyx_L1_error))
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_sum); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_sum); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_elements, 2, (PyObject *(*)(char *)) __pyx_memview_get_long, (int (*)(char *, PyObject *)) __pyx_memview_set_long, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_elements, 2, (PyObject *(*)(char *)) __pyx_memview_get_long, (int (*)(char *, PyObject *)) __pyx_memview_set_long, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_property_bool, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_property_bool, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyList_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(__pyx_int_1);
   __Pyx_GIVEREF(__pyx_int_1);
@@ -4735,22 +4773,22 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
   __pyx_t_3 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_7, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 125, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyNumber_Multiply(__pyx_t_5, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Multiply(__pyx_t_5, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_axis, __pyx_int_1) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 125, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_axis, __pyx_int_1) < 0) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -4758,21 +4796,21 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
   __pyx_v_tetra_type_index1 = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "FME/marching_tetra.pyx":127
+  /* "FME/marching_tetra.pyx":128
  *     tetra_type_index1 = np.sum(property_bool[elements]*np.array([1,2,4,8]),axis=1)
  *     #0 and 15 are tcases where isovalue doesn't intersect surface so just skip these
  *     tetra_type_index = tetra_type_index1[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]             # <<<<<<<<<<<<<<
- *     tetras_index = np.array(range(0,len(elements)))[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]
- *     ##create container for the triangle nodes and indexes and a counter
+ *     el_region = region[elements]
+ *     el_region = np.all(el_region==True,axis=1)#p.all(el_region.
  */
-  __Pyx_TraceLine(127,0,__PYX_ERR(0, 127, __pyx_L1_error))
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_TraceLine(128,0,__PYX_ERR(0, 128, __pyx_L1_error))
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_logical_and); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_logical_and); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 127, __pyx_L1_error)
-  __pyx_t_1 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_15, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_15, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
   __pyx_t_4 = NULL;
   __pyx_t_8 = 0;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -4788,7 +4826,7 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_t_2, __pyx_t_1};
-    __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4798,7 +4836,7 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_t_2, __pyx_t_1};
-    __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4806,7 +4844,7 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
   } else
   #endif
   {
-    __pyx_t_7 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 127, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     if (__pyx_t_4) {
       __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -4817,430 +4855,551 @@ static PyObject *__pyx_pf_3FME_14marching_tetra_marching_tetra(CYTHON_UNUSED PyO
     PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_8, __pyx_t_1);
     __pyx_t_2 = 0;
     __pyx_t_1 = 0;
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetItem(__pyx_v_tetra_type_index1, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetItem(__pyx_v_tetra_type_index1, __pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_v_tetra_type_index = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "FME/marching_tetra.pyx":128
+  /* "FME/marching_tetra.pyx":129
  *     #0 and 15 are tcases where isovalue doesn't intersect surface so just skip these
  *     tetra_type_index = tetra_type_index1[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]
- *     tetras_index = np.array(range(0,len(elements)))[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]             # <<<<<<<<<<<<<<
- *     ##create container for the triangle nodes and indexes and a counter
- *     cdef int ne, nn, i
+ *     el_region = region[elements]             # <<<<<<<<<<<<<<
+ *     el_region = np.all(el_region==True,axis=1)#p.all(el_region.
+ *     logic = np.logical_and(el_region,np.logical_and(tetra_type_index1>0,tetra_type_index1<15))
  */
-  __Pyx_TraceLine(128,0,__PYX_ERR(0, 128, __pyx_L1_error))
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_TraceLine(129,0,__PYX_ERR(0, 129, __pyx_L1_error))
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_elements, 2, (PyObject *(*)(char *)) __pyx_memview_get_long, (int (*)(char *, PyObject *)) __pyx_memview_set_long, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_region, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 129, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_v_el_region = __pyx_t_5;
+  __pyx_t_5 = 0;
+
+  /* "FME/marching_tetra.pyx":130
+ *     tetra_type_index = tetra_type_index1[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]
+ *     el_region = region[elements]
+ *     el_region = np.all(el_region==True,axis=1)#p.all(el_region.             # <<<<<<<<<<<<<<
+ *     logic = np.logical_and(el_region,np.logical_and(tetra_type_index1>0,tetra_type_index1<15))
+ *     print(logic.shape)
+ */
+  __Pyx_TraceLine(130,0,__PYX_ERR(0, 130, __pyx_L1_error))
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_all); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = PyObject_RichCompare(__pyx_v_el_region, Py_True, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5);
+  __pyx_t_5 = 0;
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_axis, __pyx_int_1) < 0) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF_SET(__pyx_v_el_region, __pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "FME/marching_tetra.pyx":131
+ *     el_region = region[elements]
+ *     el_region = np.all(el_region==True,axis=1)#p.all(el_region.
+ *     logic = np.logical_and(el_region,np.logical_and(tetra_type_index1>0,tetra_type_index1<15))             # <<<<<<<<<<<<<<
+ *     print(logic.shape)
+ *     tetras_index = np.array(range(0,len(elements)))[logic]
+ */
+  __Pyx_TraceLine(131,0,__PYX_ERR(0, 131, __pyx_L1_error))
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_logical_and); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_9 = __Pyx_MemoryView_Len(__pyx_v_elements); 
-  __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_t_9); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_int_0);
-  __Pyx_GIVEREF(__pyx_int_0);
-  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_int_0);
-  __Pyx_GIVEREF(__pyx_t_5);
-  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_5);
-  __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_1, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
-    __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_7);
-    if (likely(__pyx_t_1)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-      __Pyx_INCREF(__pyx_t_1);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_7, function);
-    }
-  }
-  __pyx_t_3 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_1, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_logical_and); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __pyx_t_2 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_15, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __pyx_t_4 = NULL;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_logical_and); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __pyx_t_4 = PyObject_RichCompare(__pyx_v_tetra_type_index1, __pyx_int_15, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __pyx_t_9 = NULL;
   __pyx_t_8 = 0;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_1);
-    if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
-      __Pyx_INCREF(__pyx_t_4);
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_9)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_9);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_1, function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
       __pyx_t_8 = 1;
     }
   }
   #if CYTHON_FAST_PYCALL
-  if (PyFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_t_5, __pyx_t_2};
-    __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_9, __pyx_t_3, __pyx_t_4};
+    __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
-  if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_t_5, __pyx_t_2};
-    __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_9, __pyx_t_3, __pyx_t_4};
+    __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   {
-    __pyx_t_10 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_10 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 131, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    if (__pyx_t_4) {
-      __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_4); __pyx_t_4 = NULL;
+    if (__pyx_t_9) {
+      __Pyx_GIVEREF(__pyx_t_9); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_9); __pyx_t_9 = NULL;
     }
-    __Pyx_GIVEREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_10, 0+__pyx_t_8, __pyx_t_5);
-    __Pyx_GIVEREF(__pyx_t_2);
-    PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_8, __pyx_t_2);
-    __pyx_t_5 = 0;
-    __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_10, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_GIVEREF(__pyx_t_3);
+    PyTuple_SET_ITEM(__pyx_t_10, 0+__pyx_t_8, __pyx_t_3);
+    __Pyx_GIVEREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_8, __pyx_t_4);
+    __pyx_t_3 = 0;
+    __pyx_t_4 = 0;
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_10, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_t_3, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = NULL;
+  __pyx_t_8 = 0;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_7);
+    if (likely(__pyx_t_2)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_7, function);
+      __pyx_t_8 = 1;
+    }
+  }
+  #if CYTHON_FAST_PYCALL
+  if (PyFunction_Check(__pyx_t_7)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_v_el_region, __pyx_t_5};
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  } else
+  #endif
+  #if CYTHON_FAST_PYCCALL
+  if (__Pyx_PyFastCFunction_Check(__pyx_t_7)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_v_el_region, __pyx_t_5};
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  } else
+  #endif
+  {
+    __pyx_t_10 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    if (__pyx_t_2) {
+      __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_2); __pyx_t_2 = NULL;
+    }
+    __Pyx_INCREF(__pyx_v_el_region);
+    __Pyx_GIVEREF(__pyx_v_el_region);
+    PyTuple_SET_ITEM(__pyx_t_10, 0+__pyx_t_8, __pyx_v_el_region);
+    __Pyx_GIVEREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_8, __pyx_t_5);
+    __pyx_t_5 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  }
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_v_tetras_index = __pyx_t_1;
+  __pyx_v_logic = __pyx_t_1;
   __pyx_t_1 = 0;
 
   /* "FME/marching_tetra.pyx":132
+ *     el_region = np.all(el_region==True,axis=1)#p.all(el_region.
+ *     logic = np.logical_and(el_region,np.logical_and(tetra_type_index1>0,tetra_type_index1<15))
+ *     print(logic.shape)             # <<<<<<<<<<<<<<
+ *     tetras_index = np.array(range(0,len(elements)))[logic]
+ *     ##create container for the triangle nodes and indexes and a counter
+ */
+  __Pyx_TraceLine(132,0,__PYX_ERR(0, 132, __pyx_L1_error))
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_logic, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (__Pyx_PrintOne(0, __pyx_t_1) < 0) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "FME/marching_tetra.pyx":133
+ *     logic = np.logical_and(el_region,np.logical_and(tetra_type_index1>0,tetra_type_index1<15))
+ *     print(logic.shape)
+ *     tetras_index = np.array(range(0,len(elements)))[logic]             # <<<<<<<<<<<<<<
+ *     ##create container for the triangle nodes and indexes and a counter
+ *     cdef int ne, nn, i
+ */
+  __Pyx_TraceLine(133,0,__PYX_ERR(0, 133, __pyx_L1_error))
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_array); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_11 = __Pyx_MemoryView_Len(__pyx_v_elements); 
+  __pyx_t_7 = __Pyx_PyInt_FromSize_t(__pyx_t_11); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_INCREF(__pyx_int_0);
+  __Pyx_GIVEREF(__pyx_int_0);
+  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_int_0);
+  __Pyx_GIVEREF(__pyx_t_7);
+  PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_7);
+  __pyx_t_7 = 0;
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_5, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_10))) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_10);
+    if (likely(__pyx_t_5)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_10);
+      __Pyx_INCREF(__pyx_t_5);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_10, function);
+    }
+  }
+  __pyx_t_1 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_10, __pyx_t_5, __pyx_t_7) : __Pyx_PyObject_CallOneArg(__pyx_t_10, __pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __pyx_t_10 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_logic); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_tetras_index = __pyx_t_10;
+  __pyx_t_10 = 0;
+
+  /* "FME/marching_tetra.pyx":137
  *     cdef int ne, nn, i
  *     #use np array to make use of buffer
  *     cdef long[:] ntri = np.zeros(1).astype(int)             # <<<<<<<<<<<<<<
  *     cdef double[:] v0,v1,v2,v3
  *     ne =0
  */
-  __Pyx_TraceLine(132,0,__PYX_ERR(0, 132, __pyx_L1_error))
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 132, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 132, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_10);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_10))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_10);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_10);
-      __Pyx_INCREF(__pyx_t_3);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_10, function);
-    }
-  }
-  __pyx_t_7 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_10, __pyx_t_3, __pyx_int_1) : __Pyx_PyObject_CallOneArg(__pyx_t_10, __pyx_int_1);
-  __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_TraceLine(137,0,__PYX_ERR(0, 137, __pyx_L1_error))
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 137, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_astype); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 132, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_10);
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_zeros); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_t_7 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_10))) {
-    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_10);
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
+    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_5);
     if (likely(__pyx_t_7)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_10);
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
       __Pyx_INCREF(__pyx_t_7);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_10, function);
+      __Pyx_DECREF_SET(__pyx_t_5, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_10, __pyx_t_7, ((PyObject *)(&PyInt_Type))) : __Pyx_PyObject_CallOneArg(__pyx_t_10, ((PyObject *)(&PyInt_Type)));
+  __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_7, __pyx_int_1) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_int_1);
   __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 137, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_long(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_astype); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_ntri = __pyx_t_11;
-  __pyx_t_11.memview = NULL;
-  __pyx_t_11.data = NULL;
+  __pyx_t_1 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_5))) {
+    __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_5);
+    if (likely(__pyx_t_1)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_1);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_5, function);
+    }
+  }
+  __pyx_t_10 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_1, ((PyObject *)(&PyInt_Type))) : __Pyx_PyObject_CallOneArg(__pyx_t_5, ((PyObject *)(&PyInt_Type)));
+  __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_ds_long(__pyx_t_10, PyBUF_WRITABLE); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __pyx_v_ntri = __pyx_t_12;
+  __pyx_t_12.memview = NULL;
+  __pyx_t_12.data = NULL;
 
-  /* "FME/marching_tetra.pyx":134
+  /* "FME/marching_tetra.pyx":139
  *     cdef long[:] ntri = np.zeros(1).astype(int)
  *     cdef double[:] v0,v1,v2,v3
  *     ne =0             # <<<<<<<<<<<<<<
  *     nn =0
  *     ntri[0]=0
  */
-  __Pyx_TraceLine(134,0,__PYX_ERR(0, 134, __pyx_L1_error))
+  __Pyx_TraceLine(139,0,__PYX_ERR(0, 139, __pyx_L1_error))
   __pyx_v_ne = 0;
 
-  /* "FME/marching_tetra.pyx":135
+  /* "FME/marching_tetra.pyx":140
  *     cdef double[:] v0,v1,v2,v3
  *     ne =0
  *     nn =0             # <<<<<<<<<<<<<<
  *     ntri[0]=0
  *     cdef double [:,:,:] triangles = np.zeros((len(nodes),3,3))
  */
-  __Pyx_TraceLine(135,0,__PYX_ERR(0, 135, __pyx_L1_error))
+  __Pyx_TraceLine(140,0,__PYX_ERR(0, 140, __pyx_L1_error))
   __pyx_v_nn = 0;
 
-  /* "FME/marching_tetra.pyx":136
+  /* "FME/marching_tetra.pyx":141
  *     ne =0
  *     nn =0
  *     ntri[0]=0             # <<<<<<<<<<<<<<
  *     cdef double [:,:,:] triangles = np.zeros((len(nodes),3,3))
  *     for i in range(len(tetra_type_index)):
  */
-  __Pyx_TraceLine(136,0,__PYX_ERR(0, 136, __pyx_L1_error))
-  __pyx_t_12 = 0;
-  *((long *) ( /* dim=0 */ (__pyx_v_ntri.data + __pyx_t_12 * __pyx_v_ntri.strides[0]) )) = 0;
+  __Pyx_TraceLine(141,0,__PYX_ERR(0, 141, __pyx_L1_error))
+  __pyx_t_13 = 0;
+  *((long *) ( /* dim=0 */ (__pyx_v_ntri.data + __pyx_t_13 * __pyx_v_ntri.strides[0]) )) = 0;
 
-  /* "FME/marching_tetra.pyx":137
+  /* "FME/marching_tetra.pyx":142
  *     nn =0
  *     ntri[0]=0
  *     cdef double [:,:,:] triangles = np.zeros((len(nodes),3,3))             # <<<<<<<<<<<<<<
  *     for i in range(len(tetra_type_index)):
  *         #get only the nodes of the tetras that containt the surface
  */
-  __Pyx_TraceLine(137,0,__PYX_ERR(0, 137, __pyx_L1_error))
-  __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_np); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 137, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_10);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_zeros); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_TraceLine(142,0,__PYX_ERR(0, 142, __pyx_L1_error))
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_zeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_11 = __Pyx_MemoryView_Len(__pyx_v_nodes); 
+  __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_t_11); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_7 = PyTuple_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 142, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __pyx_t_9 = __Pyx_MemoryView_Len(__pyx_v_nodes); 
-  __pyx_t_10 = __Pyx_PyInt_FromSize_t(__pyx_t_9); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 137, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_10);
-  __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 137, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GIVEREF(__pyx_t_10);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_10);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5);
   __Pyx_INCREF(__pyx_int_3);
   __Pyx_GIVEREF(__pyx_int_3);
-  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_int_3);
+  PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_int_3);
   __Pyx_INCREF(__pyx_int_3);
   __Pyx_GIVEREF(__pyx_int_3);
-  PyTuple_SET_ITEM(__pyx_t_3, 2, __pyx_int_3);
-  __pyx_t_10 = 0;
-  __pyx_t_10 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
-    __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_7);
-    if (likely(__pyx_t_10)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-      __Pyx_INCREF(__pyx_t_10);
+  PyTuple_SET_ITEM(__pyx_t_7, 2, __pyx_int_3);
+  __pyx_t_5 = 0;
+  __pyx_t_5 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_1);
+    if (likely(__pyx_t_5)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+      __Pyx_INCREF(__pyx_t_5);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_7, function);
+      __Pyx_DECREF_SET(__pyx_t_1, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_10) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_10, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 137, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_10 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_5, __pyx_t_7) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_13 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_double(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 137, __pyx_L1_error)
+  if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_triangles = __pyx_t_13;
-  __pyx_t_13.memview = NULL;
-  __pyx_t_13.data = NULL;
+  __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_double(__pyx_t_10, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __pyx_v_triangles = __pyx_t_14;
+  __pyx_t_14.memview = NULL;
+  __pyx_t_14.data = NULL;
 
-  /* "FME/marching_tetra.pyx":138
+  /* "FME/marching_tetra.pyx":143
  *     ntri[0]=0
  *     cdef double [:,:,:] triangles = np.zeros((len(nodes),3,3))
  *     for i in range(len(tetra_type_index)):             # <<<<<<<<<<<<<<
  *         #get only the nodes of the tetras that containt the surface
  *         #vertex is x,y,z,propertyval
  */
-  __Pyx_TraceLine(138,0,__PYX_ERR(0, 138, __pyx_L1_error))
-  __pyx_t_14 = PyObject_Length(__pyx_v_tetra_type_index); if (unlikely(__pyx_t_14 == ((Py_ssize_t)-1))) __PYX_ERR(0, 138, __pyx_L1_error)
-  __pyx_t_15 = __pyx_t_14;
-  for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_15; __pyx_t_8+=1) {
+  __Pyx_TraceLine(143,0,__PYX_ERR(0, 143, __pyx_L1_error))
+  __pyx_t_15 = PyObject_Length(__pyx_v_tetra_type_index); if (unlikely(__pyx_t_15 == ((Py_ssize_t)-1))) __PYX_ERR(0, 143, __pyx_L1_error)
+  __pyx_t_16 = __pyx_t_15;
+  for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_16; __pyx_t_8+=1) {
     __pyx_v_i = __pyx_t_8;
 
-    /* "FME/marching_tetra.pyx":141
+    /* "FME/marching_tetra.pyx":146
  *         #get only the nodes of the tetras that containt the surface
  *         #vertex is x,y,z,propertyval
  *         v0 = nodes[elements[tetras_index[i]][0]]             # <<<<<<<<<<<<<<
  *         v1 = nodes[elements[tetras_index[i]][1]]
  *         v2 = nodes[elements[tetras_index[i]][2]]
  */
-    __Pyx_TraceLine(141,0,__PYX_ERR(0, 141, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 141, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_16 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_16 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 141, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_17 = __pyx_t_16;
-    __pyx_t_18 = 0;
-    __pyx_t_19.data = __pyx_v_nodes.data;
-    __pyx_t_19.memview = __pyx_v_nodes.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_19, 0);
+    __Pyx_TraceLine(146,0,__PYX_ERR(0, 146, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_17 = __Pyx_PyIndex_AsSsize_t(__pyx_t_10); if (unlikely((__pyx_t_17 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_18 = __pyx_t_17;
+    __pyx_t_19 = 0;
+    __pyx_t_20.data = __pyx_v_nodes.data;
+    __pyx_t_20.memview = __pyx_v_nodes.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
     {
-    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_17 * __pyx_v_elements.strides[0]) ) + __pyx_t_18 * __pyx_v_elements.strides[1]) )));
+    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_18 * __pyx_v_elements.strides[0]) ) + __pyx_t_19 * __pyx_v_elements.strides[1]) )));
     Py_ssize_t __pyx_tmp_stride = __pyx_v_nodes.strides[0];
-        if ((0)) __PYX_ERR(0, 141, __pyx_L1_error)
-        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        if ((0)) __PYX_ERR(0, 146, __pyx_L1_error)
+        __pyx_t_20.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_19.shape[0] = __pyx_v_nodes.shape[1];
-__pyx_t_19.strides[0] = __pyx_v_nodes.strides[1];
-    __pyx_t_19.suboffsets[0] = -1;
+__pyx_t_20.shape[0] = __pyx_v_nodes.shape[1];
+__pyx_t_20.strides[0] = __pyx_v_nodes.strides[1];
+    __pyx_t_20.suboffsets[0] = -1;
 
 __PYX_XDEC_MEMVIEW(&__pyx_v_v0, 1);
-    __pyx_v_v0 = __pyx_t_19;
-    __pyx_t_19.memview = NULL;
-    __pyx_t_19.data = NULL;
+    __pyx_v_v0 = __pyx_t_20;
+    __pyx_t_20.memview = NULL;
+    __pyx_t_20.data = NULL;
 
-    /* "FME/marching_tetra.pyx":142
+    /* "FME/marching_tetra.pyx":147
  *         #vertex is x,y,z,propertyval
  *         v0 = nodes[elements[tetras_index[i]][0]]
  *         v1 = nodes[elements[tetras_index[i]][1]]             # <<<<<<<<<<<<<<
  *         v2 = nodes[elements[tetras_index[i]][2]]
  *         v3 = nodes[elements[tetras_index[i]][3]]
  */
-    __Pyx_TraceLine(142,0,__PYX_ERR(0, 142, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_16 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_16 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 142, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_20 = __pyx_t_16;
-    __pyx_t_21 = 1;
-    __pyx_t_19.data = __pyx_v_nodes.data;
-    __pyx_t_19.memview = __pyx_v_nodes.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_19, 0);
+    __Pyx_TraceLine(147,0,__PYX_ERR(0, 147, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 147, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_17 = __Pyx_PyIndex_AsSsize_t(__pyx_t_10); if (unlikely((__pyx_t_17 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_21 = __pyx_t_17;
+    __pyx_t_22 = 1;
+    __pyx_t_20.data = __pyx_v_nodes.data;
+    __pyx_t_20.memview = __pyx_v_nodes.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
     {
-    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_20 * __pyx_v_elements.strides[0]) ) + __pyx_t_21 * __pyx_v_elements.strides[1]) )));
+    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_21 * __pyx_v_elements.strides[0]) ) + __pyx_t_22 * __pyx_v_elements.strides[1]) )));
     Py_ssize_t __pyx_tmp_stride = __pyx_v_nodes.strides[0];
-        if ((0)) __PYX_ERR(0, 142, __pyx_L1_error)
-        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        if ((0)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_20.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_19.shape[0] = __pyx_v_nodes.shape[1];
-__pyx_t_19.strides[0] = __pyx_v_nodes.strides[1];
-    __pyx_t_19.suboffsets[0] = -1;
+__pyx_t_20.shape[0] = __pyx_v_nodes.shape[1];
+__pyx_t_20.strides[0] = __pyx_v_nodes.strides[1];
+    __pyx_t_20.suboffsets[0] = -1;
 
 __PYX_XDEC_MEMVIEW(&__pyx_v_v1, 1);
-    __pyx_v_v1 = __pyx_t_19;
-    __pyx_t_19.memview = NULL;
-    __pyx_t_19.data = NULL;
+    __pyx_v_v1 = __pyx_t_20;
+    __pyx_t_20.memview = NULL;
+    __pyx_t_20.data = NULL;
 
-    /* "FME/marching_tetra.pyx":143
+    /* "FME/marching_tetra.pyx":148
  *         v0 = nodes[elements[tetras_index[i]][0]]
  *         v1 = nodes[elements[tetras_index[i]][1]]
  *         v2 = nodes[elements[tetras_index[i]][2]]             # <<<<<<<<<<<<<<
  *         v3 = nodes[elements[tetras_index[i]][3]]
  *         ##choose which case we are interested in
  */
-    __Pyx_TraceLine(143,0,__PYX_ERR(0, 143, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_16 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_16 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 143, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_22 = __pyx_t_16;
-    __pyx_t_23 = 2;
-    __pyx_t_19.data = __pyx_v_nodes.data;
-    __pyx_t_19.memview = __pyx_v_nodes.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_19, 0);
+    __Pyx_TraceLine(148,0,__PYX_ERR(0, 148, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 148, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_17 = __Pyx_PyIndex_AsSsize_t(__pyx_t_10); if (unlikely((__pyx_t_17 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 148, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_23 = __pyx_t_17;
+    __pyx_t_24 = 2;
+    __pyx_t_20.data = __pyx_v_nodes.data;
+    __pyx_t_20.memview = __pyx_v_nodes.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
     {
-    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_22 * __pyx_v_elements.strides[0]) ) + __pyx_t_23 * __pyx_v_elements.strides[1]) )));
+    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_23 * __pyx_v_elements.strides[0]) ) + __pyx_t_24 * __pyx_v_elements.strides[1]) )));
     Py_ssize_t __pyx_tmp_stride = __pyx_v_nodes.strides[0];
-        if ((0)) __PYX_ERR(0, 143, __pyx_L1_error)
-        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        if ((0)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __pyx_t_20.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_19.shape[0] = __pyx_v_nodes.shape[1];
-__pyx_t_19.strides[0] = __pyx_v_nodes.strides[1];
-    __pyx_t_19.suboffsets[0] = -1;
+__pyx_t_20.shape[0] = __pyx_v_nodes.shape[1];
+__pyx_t_20.strides[0] = __pyx_v_nodes.strides[1];
+    __pyx_t_20.suboffsets[0] = -1;
 
 __PYX_XDEC_MEMVIEW(&__pyx_v_v2, 1);
-    __pyx_v_v2 = __pyx_t_19;
-    __pyx_t_19.memview = NULL;
-    __pyx_t_19.data = NULL;
+    __pyx_v_v2 = __pyx_t_20;
+    __pyx_t_20.memview = NULL;
+    __pyx_t_20.data = NULL;
 
-    /* "FME/marching_tetra.pyx":144
+    /* "FME/marching_tetra.pyx":149
  *         v1 = nodes[elements[tetras_index[i]][1]]
  *         v2 = nodes[elements[tetras_index[i]][2]]
  *         v3 = nodes[elements[tetras_index[i]][3]]             # <<<<<<<<<<<<<<
  *         ##choose which case we are interested in
  *         if tetra_type_index[i]== 7:
  */
-    __Pyx_TraceLine(144,0,__PYX_ERR(0, 144, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 144, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_16 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_16 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 144, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_24 = __pyx_t_16;
-    __pyx_t_25 = 3;
-    __pyx_t_19.data = __pyx_v_nodes.data;
-    __pyx_t_19.memview = __pyx_v_nodes.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_19, 0);
+    __Pyx_TraceLine(149,0,__PYX_ERR(0, 149, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetras_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 149, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_17 = __Pyx_PyIndex_AsSsize_t(__pyx_t_10); if (unlikely((__pyx_t_17 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 149, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_25 = __pyx_t_17;
+    __pyx_t_26 = 3;
+    __pyx_t_20.data = __pyx_v_nodes.data;
+    __pyx_t_20.memview = __pyx_v_nodes.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_20, 0);
     {
-    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_24 * __pyx_v_elements.strides[0]) ) + __pyx_t_25 * __pyx_v_elements.strides[1]) )));
+    Py_ssize_t __pyx_tmp_idx = (*((long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_elements.data + __pyx_t_25 * __pyx_v_elements.strides[0]) ) + __pyx_t_26 * __pyx_v_elements.strides[1]) )));
     Py_ssize_t __pyx_tmp_stride = __pyx_v_nodes.strides[0];
-        if ((0)) __PYX_ERR(0, 144, __pyx_L1_error)
-        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+        if ((0)) __PYX_ERR(0, 149, __pyx_L1_error)
+        __pyx_t_20.data += __pyx_tmp_idx * __pyx_tmp_stride;
 }
 
-__pyx_t_19.shape[0] = __pyx_v_nodes.shape[1];
-__pyx_t_19.strides[0] = __pyx_v_nodes.strides[1];
-    __pyx_t_19.suboffsets[0] = -1;
+__pyx_t_20.shape[0] = __pyx_v_nodes.shape[1];
+__pyx_t_20.strides[0] = __pyx_v_nodes.strides[1];
+    __pyx_t_20.suboffsets[0] = -1;
 
 __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
-    __pyx_v_v3 = __pyx_t_19;
-    __pyx_t_19.memview = NULL;
-    __pyx_t_19.data = NULL;
+    __pyx_v_v3 = __pyx_t_20;
+    __pyx_t_20.memview = NULL;
+    __pyx_t_20.data = NULL;
 
-    /* "FME/marching_tetra.pyx":146
+    /* "FME/marching_tetra.pyx":151
  *         v3 = nodes[elements[tetras_index[i]][3]]
  *         ##choose which case we are interested in
  *         if tetra_type_index[i]== 7:             # <<<<<<<<<<<<<<
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 8:
  */
-    __Pyx_TraceLine(146,0,__PYX_ERR(0, 146, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_TraceLine(151,0,__PYX_ERR(0, 151, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_10, __pyx_int_7, 7, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 151, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_7, 7, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 146, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 151, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 146, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_26) {
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":147
+      /* "FME/marching_tetra.pyx":152
  *         ##choose which case we are interested in
  *         if tetra_type_index[i]== 7:
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]== 8:
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(147,0,__PYX_ERR(0, 147, __pyx_L1_error))
-      __pyx_t_7 = __pyx_f_3FME_14marching_tetra_t0708(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 147, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_TraceLine(152,0,__PYX_ERR(0, 152, __pyx_L1_error))
+      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0708(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 152, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "FME/marching_tetra.pyx":146
+      /* "FME/marching_tetra.pyx":151
  *         v3 = nodes[elements[tetras_index[i]][3]]
  *         ##choose which case we are interested in
  *         if tetra_type_index[i]== 7:             # <<<<<<<<<<<<<<
@@ -5249,36 +5408,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":148
+    /* "FME/marching_tetra.pyx":153
  *         if tetra_type_index[i]== 7:
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 8:             # <<<<<<<<<<<<<<
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==9:
  */
-    __Pyx_TraceLine(148,0,__PYX_ERR(0, 148, __pyx_L1_error))
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 148, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_8, 8, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
+    __Pyx_TraceLine(153,0,__PYX_ERR(0, 153, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 148, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_8, 8, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_26) {
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_10); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":149
+      /* "FME/marching_tetra.pyx":154
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 8:
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==9:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(149,0,__PYX_ERR(0, 149, __pyx_L1_error))
-      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0708(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_TraceLine(154,0,__PYX_ERR(0, 154, __pyx_L1_error))
+      __pyx_t_10 = __pyx_f_3FME_14marching_tetra_t0708(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 154, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "FME/marching_tetra.pyx":148
+      /* "FME/marching_tetra.pyx":153
  *         if tetra_type_index[i]== 7:
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 8:             # <<<<<<<<<<<<<<
@@ -5287,36 +5446,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":150
+    /* "FME/marching_tetra.pyx":155
  *         if tetra_type_index[i]== 8:
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==9:             # <<<<<<<<<<<<<<
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==6:
  */
-    __Pyx_TraceLine(150,0,__PYX_ERR(0, 150, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 150, __pyx_L1_error)
+    __Pyx_TraceLine(155,0,__PYX_ERR(0, 155, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_10, __pyx_int_9, 9, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_9, 9, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 150, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 155, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 150, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_26) {
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":151
+      /* "FME/marching_tetra.pyx":156
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==9:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==6:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(151,0,__PYX_ERR(0, 151, __pyx_L1_error))
-      __pyx_t_7 = __pyx_f_3FME_14marching_tetra_t0906(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 151, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_TraceLine(156,0,__PYX_ERR(0, 156, __pyx_L1_error))
+      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0906(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "FME/marching_tetra.pyx":150
+      /* "FME/marching_tetra.pyx":155
  *         if tetra_type_index[i]== 8:
  *             t0708(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==9:             # <<<<<<<<<<<<<<
@@ -5325,36 +5484,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":152
+    /* "FME/marching_tetra.pyx":157
  *         if tetra_type_index[i]==9:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==6:             # <<<<<<<<<<<<<<
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 10:
  */
-    __Pyx_TraceLine(152,0,__PYX_ERR(0, 152, __pyx_L1_error))
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 152, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_6, 6, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 152, __pyx_L1_error)
+    __Pyx_TraceLine(157,0,__PYX_ERR(0, 157, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 152, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_6, 6, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_26) {
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_10); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":153
+      /* "FME/marching_tetra.pyx":158
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==6:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]== 10:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(153,0,__PYX_ERR(0, 153, __pyx_L1_error))
-      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0906(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_TraceLine(158,0,__PYX_ERR(0, 158, __pyx_L1_error))
+      __pyx_t_10 = __pyx_f_3FME_14marching_tetra_t0906(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 158, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "FME/marching_tetra.pyx":152
+      /* "FME/marching_tetra.pyx":157
  *         if tetra_type_index[i]==9:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==6:             # <<<<<<<<<<<<<<
@@ -5363,36 +5522,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":154
+    /* "FME/marching_tetra.pyx":159
  *         if tetra_type_index[i]==6:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 10:             # <<<<<<<<<<<<<<
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==5:
  */
-    __Pyx_TraceLine(154,0,__PYX_ERR(0, 154, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
+    __Pyx_TraceLine(159,0,__PYX_ERR(0, 159, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 159, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_10, __pyx_int_10, 10, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_10, 10, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 154, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 159, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 154, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_26) {
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":155
+      /* "FME/marching_tetra.pyx":160
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 10:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==5:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(155,0,__PYX_ERR(0, 155, __pyx_L1_error))
-      __pyx_t_7 = __pyx_f_3FME_14marching_tetra_t0A05(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 155, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_TraceLine(160,0,__PYX_ERR(0, 160, __pyx_L1_error))
+      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0A05(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "FME/marching_tetra.pyx":154
+      /* "FME/marching_tetra.pyx":159
  *         if tetra_type_index[i]==6:
  *             t0906(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 10:             # <<<<<<<<<<<<<<
@@ -5401,36 +5560,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":156
+    /* "FME/marching_tetra.pyx":161
  *         if tetra_type_index[i]== 10:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==5:             # <<<<<<<<<<<<<<
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==11:
  */
-    __Pyx_TraceLine(156,0,__PYX_ERR(0, 156, __pyx_L1_error))
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 156, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_5, 5, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __Pyx_TraceLine(161,0,__PYX_ERR(0, 161, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_5, 5, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_26) {
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_10); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":157
+      /* "FME/marching_tetra.pyx":162
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==5:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==11:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(157,0,__PYX_ERR(0, 157, __pyx_L1_error))
-      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0A05(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_TraceLine(162,0,__PYX_ERR(0, 162, __pyx_L1_error))
+      __pyx_t_10 = __pyx_f_3FME_14marching_tetra_t0A05(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 162, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "FME/marching_tetra.pyx":156
+      /* "FME/marching_tetra.pyx":161
  *         if tetra_type_index[i]== 10:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==5:             # <<<<<<<<<<<<<<
@@ -5439,36 +5598,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":158
+    /* "FME/marching_tetra.pyx":163
  *         if tetra_type_index[i]==5:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==11:             # <<<<<<<<<<<<<<
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 4:
  */
-    __Pyx_TraceLine(158,0,__PYX_ERR(0, 158, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 158, __pyx_L1_error)
+    __Pyx_TraceLine(163,0,__PYX_ERR(0, 163, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_10, __pyx_int_11, 11, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_11, 11, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 158, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 158, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_26) {
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":159
+      /* "FME/marching_tetra.pyx":164
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==11:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]== 4:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(159,0,__PYX_ERR(0, 159, __pyx_L1_error))
-      __pyx_t_7 = __pyx_f_3FME_14marching_tetra_t0B04(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 159, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_TraceLine(164,0,__PYX_ERR(0, 164, __pyx_L1_error))
+      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0B04(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "FME/marching_tetra.pyx":158
+      /* "FME/marching_tetra.pyx":163
  *         if tetra_type_index[i]==5:
  *             t0A05(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==11:             # <<<<<<<<<<<<<<
@@ -5477,36 +5636,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":160
+    /* "FME/marching_tetra.pyx":165
  *         if tetra_type_index[i]==11:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 4:             # <<<<<<<<<<<<<<
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==12:
  */
-    __Pyx_TraceLine(160,0,__PYX_ERR(0, 160, __pyx_L1_error))
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 160, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_4, 4, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_TraceLine(165,0,__PYX_ERR(0, 165, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_4, 4, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 165, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_26) {
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_10); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 165, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":161
+      /* "FME/marching_tetra.pyx":166
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 4:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==12:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(161,0,__PYX_ERR(0, 161, __pyx_L1_error))
-      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0B04(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_TraceLine(166,0,__PYX_ERR(0, 166, __pyx_L1_error))
+      __pyx_t_10 = __pyx_f_3FME_14marching_tetra_t0B04(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 166, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "FME/marching_tetra.pyx":160
+      /* "FME/marching_tetra.pyx":165
  *         if tetra_type_index[i]==11:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 4:             # <<<<<<<<<<<<<<
@@ -5515,36 +5674,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":162
+    /* "FME/marching_tetra.pyx":167
  *         if tetra_type_index[i]== 4:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==12:             # <<<<<<<<<<<<<<
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==3:
  */
-    __Pyx_TraceLine(162,0,__PYX_ERR(0, 162, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 162, __pyx_L1_error)
+    __Pyx_TraceLine(167,0,__PYX_ERR(0, 167, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 167, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_10, __pyx_int_12, 12, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_12, 12, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 162, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 162, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_26) {
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":163
+      /* "FME/marching_tetra.pyx":168
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==12:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==3:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(163,0,__PYX_ERR(0, 163, __pyx_L1_error))
-      __pyx_t_7 = __pyx_f_3FME_14marching_tetra_t0C03(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 163, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_TraceLine(168,0,__PYX_ERR(0, 168, __pyx_L1_error))
+      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0C03(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 168, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "FME/marching_tetra.pyx":162
+      /* "FME/marching_tetra.pyx":167
  *         if tetra_type_index[i]== 4:
  *             t0B04(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==12:             # <<<<<<<<<<<<<<
@@ -5553,36 +5712,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":164
+    /* "FME/marching_tetra.pyx":169
  *         if tetra_type_index[i]==12:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==3:             # <<<<<<<<<<<<<<
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==13:
  */
-    __Pyx_TraceLine(164,0,__PYX_ERR(0, 164, __pyx_L1_error))
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 164, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __Pyx_TraceLine(169,0,__PYX_ERR(0, 169, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 169, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 169, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_26) {
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_10); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 169, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":165
+      /* "FME/marching_tetra.pyx":170
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==3:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==13:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(165,0,__PYX_ERR(0, 165, __pyx_L1_error))
-      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0C03(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_TraceLine(170,0,__PYX_ERR(0, 170, __pyx_L1_error))
+      __pyx_t_10 = __pyx_f_3FME_14marching_tetra_t0C03(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 170, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "FME/marching_tetra.pyx":164
+      /* "FME/marching_tetra.pyx":169
  *         if tetra_type_index[i]==12:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==3:             # <<<<<<<<<<<<<<
@@ -5591,36 +5750,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":166
+    /* "FME/marching_tetra.pyx":171
  *         if tetra_type_index[i]==3:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==13:             # <<<<<<<<<<<<<<
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 2:
  */
-    __Pyx_TraceLine(166,0,__PYX_ERR(0, 166, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __Pyx_TraceLine(171,0,__PYX_ERR(0, 171, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 171, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_10, __pyx_int_13, 13, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 171, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_13, 13, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 166, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 171, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 166, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_26) {
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":167
+      /* "FME/marching_tetra.pyx":172
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==13:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]== 2:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(167,0,__PYX_ERR(0, 167, __pyx_L1_error))
-      __pyx_t_7 = __pyx_f_3FME_14marching_tetra_t0D02(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 167, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_TraceLine(172,0,__PYX_ERR(0, 172, __pyx_L1_error))
+      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0D02(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "FME/marching_tetra.pyx":166
+      /* "FME/marching_tetra.pyx":171
  *         if tetra_type_index[i]==3:
  *             t0C03(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==13:             # <<<<<<<<<<<<<<
@@ -5629,36 +5788,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":168
+    /* "FME/marching_tetra.pyx":173
  *         if tetra_type_index[i]==13:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 2:             # <<<<<<<<<<<<<<
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==14:
  */
-    __Pyx_TraceLine(168,0,__PYX_ERR(0, 168, __pyx_L1_error))
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 168, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 168, __pyx_L1_error)
+    __Pyx_TraceLine(173,0,__PYX_ERR(0, 173, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 168, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_26) {
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_10); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":169
+      /* "FME/marching_tetra.pyx":174
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 2:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==14:
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(169,0,__PYX_ERR(0, 169, __pyx_L1_error))
-      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0D02(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 169, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_TraceLine(174,0,__PYX_ERR(0, 174, __pyx_L1_error))
+      __pyx_t_10 = __pyx_f_3FME_14marching_tetra_t0D02(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 174, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "FME/marching_tetra.pyx":168
+      /* "FME/marching_tetra.pyx":173
  *         if tetra_type_index[i]==13:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]== 2:             # <<<<<<<<<<<<<<
@@ -5667,36 +5826,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":170
+    /* "FME/marching_tetra.pyx":175
  *         if tetra_type_index[i]== 2:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==14:             # <<<<<<<<<<<<<<
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==1:
  */
-    __Pyx_TraceLine(170,0,__PYX_ERR(0, 170, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
+    __Pyx_TraceLine(175,0,__PYX_ERR(0, 175, __pyx_L1_error))
+    __pyx_t_10 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_10, __pyx_int_14, 14, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_14, 14, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 170, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 175, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 170, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_26) {
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":171
+      /* "FME/marching_tetra.pyx":176
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==14:
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *         if tetra_type_index[i]==1:
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  */
-      __Pyx_TraceLine(171,0,__PYX_ERR(0, 171, __pyx_L1_error))
-      __pyx_t_7 = __pyx_f_3FME_14marching_tetra_t0E01(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 171, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_TraceLine(176,0,__PYX_ERR(0, 176, __pyx_L1_error))
+      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0E01(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "FME/marching_tetra.pyx":170
+      /* "FME/marching_tetra.pyx":175
  *         if tetra_type_index[i]== 2:
  *             t0D02(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==14:             # <<<<<<<<<<<<<<
@@ -5705,36 +5864,36 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
  */
     }
 
-    /* "FME/marching_tetra.pyx":172
+    /* "FME/marching_tetra.pyx":177
  *         if tetra_type_index[i]==14:
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==1:             # <<<<<<<<<<<<<<
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  *     return triangles, ntri
  */
-    __Pyx_TraceLine(172,0,__PYX_ERR(0, 172, __pyx_L1_error))
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 172, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __Pyx_TraceLine(177,0,__PYX_ERR(0, 177, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tetra_type_index, __pyx_v_i, int, 1, __Pyx_PyInt_From_int, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_26 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 177, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_26) {
+    __pyx_t_27 = __Pyx_PyObject_IsTrue(__pyx_t_10); if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 177, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__pyx_t_27) {
 
-      /* "FME/marching_tetra.pyx":173
+      /* "FME/marching_tetra.pyx":178
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==1:
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)             # <<<<<<<<<<<<<<
  *     return triangles, ntri
  * 
  */
-      __Pyx_TraceLine(173,0,__PYX_ERR(0, 173, __pyx_L1_error))
-      __pyx_t_1 = __pyx_f_3FME_14marching_tetra_t0E01(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_TraceLine(178,0,__PYX_ERR(0, 178, __pyx_L1_error))
+      __pyx_t_10 = __pyx_f_3FME_14marching_tetra_t0E01(__pyx_v_triangles, __pyx_v_ntri, __pyx_v_isovalue, __pyx_v_v0, __pyx_v_v1, __pyx_v_v2, __pyx_v_v3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "FME/marching_tetra.pyx":172
+      /* "FME/marching_tetra.pyx":177
  *         if tetra_type_index[i]==14:
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  *         if tetra_type_index[i]==1:             # <<<<<<<<<<<<<<
@@ -5744,34 +5903,34 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
     }
   }
 
-  /* "FME/marching_tetra.pyx":174
+  /* "FME/marching_tetra.pyx":179
  *         if tetra_type_index[i]==1:
  *             t0E01(triangles,ntri,isovalue,v0,v1,v2,v3)
  *     return triangles, ntri             # <<<<<<<<<<<<<<
  * 
  */
-  __Pyx_TraceLine(174,0,__PYX_ERR(0, 174, __pyx_L1_error))
+  __Pyx_TraceLine(179,0,__PYX_ERR(0, 179, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_triangles, 3, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_10 = __pyx_memoryview_fromslice(__pyx_v_triangles, 3, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 179, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_ntri, 1, (PyObject *(*)(char *)) __pyx_memview_get_long, (int (*)(char *, PyObject *)) __pyx_memview_set_long, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 179, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_ntri, 1, (PyObject *(*)(char *)) __pyx_memview_get_long, (int (*)(char *, PyObject *)) __pyx_memview_set_long, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 179, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 174, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_10);
+  PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_10);
   __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_7);
-  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_7);
+  PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_1);
+  __pyx_t_10 = 0;
   __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_7;
   __pyx_t_7 = 0;
-  __pyx_r = __pyx_t_3;
-  __pyx_t_3 = 0;
   goto __pyx_L0;
 
   /* "FME/marching_tetra.pyx":111
  *     ntri[0]+=1
  *     return
- * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):             # <<<<<<<<<<<<<<
+ * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):             # <<<<<<<<<<<<<<
  *     """
  *     Main entry point for marching tetrahedron function.
  */
@@ -5785,16 +5944,19 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_v3, 1);
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
   __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_19, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_20, 1);
   __Pyx_AddTraceback("FME.marching_tetra.marching_tetra", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_property_bool);
   __Pyx_XDECREF(__pyx_v_tetra_type_index1);
   __Pyx_XDECREF(__pyx_v_tetra_type_index);
+  __Pyx_XDECREF(__pyx_v_el_region);
+  __Pyx_XDECREF(__pyx_v_logic);
   __Pyx_XDECREF(__pyx_v_tetras_index);
   __PYX_XDEC_MEMVIEW(&__pyx_v_ntri, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_v0, 1);
@@ -20258,6 +20420,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_View_MemoryView, __pyx_k_View_MemoryView, sizeof(__pyx_k_View_MemoryView), 0, 0, 1, 1},
+  {&__pyx_n_s_all, __pyx_k_all, sizeof(__pyx_k_all), 0, 0, 1, 1},
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_array, __pyx_k_array, sizeof(__pyx_k_array), 0, 0, 1, 1},
   {&__pyx_n_s_astype, __pyx_k_astype, sizeof(__pyx_k_astype), 0, 0, 1, 1},
@@ -20271,10 +20434,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_contiguous_and_indirect, __pyx_k_contiguous_and_indirect, sizeof(__pyx_k_contiguous_and_indirect), 0, 0, 1, 0},
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
+  {&__pyx_n_s_el_region, __pyx_k_el_region, sizeof(__pyx_k_el_region), 0, 0, 1, 1},
   {&__pyx_n_s_elements, __pyx_k_elements, sizeof(__pyx_k_elements), 0, 0, 1, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
+  {&__pyx_n_s_end, __pyx_k_end, sizeof(__pyx_k_end), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
   {&__pyx_n_s_error, __pyx_k_error, sizeof(__pyx_k_error), 0, 0, 1, 1},
+  {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
   {&__pyx_n_s_flags, __pyx_k_flags, sizeof(__pyx_k_flags), 0, 0, 1, 1},
   {&__pyx_n_s_format, __pyx_k_format, sizeof(__pyx_k_format), 0, 0, 1, 1},
   {&__pyx_n_s_fortran, __pyx_k_fortran, sizeof(__pyx_k_fortran), 0, 0, 1, 1},
@@ -20288,6 +20454,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_isovalue, __pyx_k_isovalue, sizeof(__pyx_k_isovalue), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
+  {&__pyx_n_s_logic, __pyx_k_logic, sizeof(__pyx_k_logic), 0, 0, 1, 1},
   {&__pyx_n_s_logical_and, __pyx_k_logical_and, sizeof(__pyx_k_logical_and), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_marching_tetra, __pyx_k_marching_tetra, sizeof(__pyx_k_marching_tetra), 0, 0, 1, 1},
@@ -20307,6 +20474,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_obj, __pyx_k_obj, sizeof(__pyx_k_obj), 0, 0, 1, 1},
   {&__pyx_n_s_pack, __pyx_k_pack, sizeof(__pyx_k_pack), 0, 0, 1, 1},
   {&__pyx_n_s_pickle, __pyx_k_pickle, sizeof(__pyx_k_pickle), 0, 0, 1, 1},
+  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_property_bool, __pyx_k_property_bool, sizeof(__pyx_k_property_bool), 0, 0, 1, 1},
   {&__pyx_n_s_propertyvalue, __pyx_k_propertyvalue, sizeof(__pyx_k_propertyvalue), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_PickleError, __pyx_k_pyx_PickleError, sizeof(__pyx_k_pyx_PickleError), 0, 0, 1, 1},
@@ -20321,6 +20489,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_reduce, __pyx_k_reduce, sizeof(__pyx_k_reduce), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_cython, __pyx_k_reduce_cython, sizeof(__pyx_k_reduce_cython), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_ex, __pyx_k_reduce_ex, sizeof(__pyx_k_reduce_ex), 0, 0, 1, 1},
+  {&__pyx_n_s_region, __pyx_k_region, sizeof(__pyx_k_region), 0, 0, 1, 1},
   {&__pyx_n_s_setstate, __pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 0, 1, 1},
   {&__pyx_n_s_setstate_cython, __pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 0, 1, 1},
   {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
@@ -20599,14 +20768,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "FME/marching_tetra.pyx":111
  *     ntri[0]+=1
  *     return
- * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):             # <<<<<<<<<<<<<<
+ * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):             # <<<<<<<<<<<<<<
  *     """
  *     Main entry point for marching tetrahedron function.
  */
-  __pyx_tuple__22 = PyTuple_Pack(17, __pyx_n_s_isovalue, __pyx_n_s_elements, __pyx_n_s_nodes, __pyx_n_s_propertyvalue, __pyx_n_s_property_bool, __pyx_n_s_tetra_type_index1, __pyx_n_s_tetra_type_index, __pyx_n_s_tetras_index, __pyx_n_s_ne, __pyx_n_s_nn, __pyx_n_s_i, __pyx_n_s_ntri, __pyx_n_s_v0, __pyx_n_s_v1, __pyx_n_s_v2, __pyx_n_s_v3, __pyx_n_s_triangles); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 111, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(20, __pyx_n_s_isovalue, __pyx_n_s_elements, __pyx_n_s_nodes, __pyx_n_s_region, __pyx_n_s_propertyvalue, __pyx_n_s_property_bool, __pyx_n_s_tetra_type_index1, __pyx_n_s_tetra_type_index, __pyx_n_s_el_region, __pyx_n_s_logic, __pyx_n_s_tetras_index, __pyx_n_s_ne, __pyx_n_s_nn, __pyx_n_s_i, __pyx_n_s_ntri, __pyx_n_s_v0, __pyx_n_s_v1, __pyx_n_s_v2, __pyx_n_s_v3, __pyx_n_s_triangles); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 111, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__22);
   __Pyx_GIVEREF(__pyx_tuple__22);
-  __pyx_codeobj_ = (PyObject*)__Pyx_PyCode_New(4, 0, 17, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_FME_marching_tetra_pyx, __pyx_n_s_marching_tetra, 111, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj_)) __PYX_ERR(0, 111, __pyx_L1_error)
+  __pyx_codeobj_ = (PyObject*)__Pyx_PyCode_New(5, 0, 20, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_FME_marching_tetra_pyx, __pyx_n_s_marching_tetra, 111, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj_)) __PYX_ERR(0, 111, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -21035,7 +21204,7 @@ if (!__Pyx_RefNanny) {
   /* "FME/marching_tetra.pyx":111
  *     ntri[0]+=1
  *     return
- * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, propertyvalue):             # <<<<<<<<<<<<<<
+ * def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):             # <<<<<<<<<<<<<<
  *     """
  *     Main entry point for marching tetrahedron function.
  */
@@ -24453,6 +24622,112 @@ static CYTHON_INLINE int __pyx_memview_set_long(const char *itemp, PyObject *obj
     return 1;
 }
 
+/* Print */
+  #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+static PyObject *__Pyx_GetStdout(void) {
+    PyObject *f = PySys_GetObject((char *)"stdout");
+    if (!f) {
+        PyErr_SetString(PyExc_RuntimeError, "lost sys.stdout");
+    }
+    return f;
+}
+static int __Pyx_Print(PyObject* f, PyObject *arg_tuple, int newline) {
+    int i;
+    if (!f) {
+        if (!(f = __Pyx_GetStdout()))
+            return -1;
+    }
+    Py_INCREF(f);
+    for (i=0; i < PyTuple_GET_SIZE(arg_tuple); i++) {
+        PyObject* v;
+        if (PyFile_SoftSpace(f, 1)) {
+            if (PyFile_WriteString(" ", f) < 0)
+                goto error;
+        }
+        v = PyTuple_GET_ITEM(arg_tuple, i);
+        if (PyFile_WriteObject(v, f, Py_PRINT_RAW) < 0)
+            goto error;
+        if (PyString_Check(v)) {
+            char *s = PyString_AsString(v);
+            Py_ssize_t len = PyString_Size(v);
+            if (len > 0) {
+                switch (s[len-1]) {
+                    case ' ': break;
+                    case '\f': case '\r': case '\n': case '\t': case '\v':
+                        PyFile_SoftSpace(f, 0);
+                        break;
+                    default:  break;
+                }
+            }
+        }
+    }
+    if (newline) {
+        if (PyFile_WriteString("\n", f) < 0)
+            goto error;
+        PyFile_SoftSpace(f, 0);
+    }
+    Py_DECREF(f);
+    return 0;
+error:
+    Py_DECREF(f);
+    return -1;
+}
+#else
+static int __Pyx_Print(PyObject* stream, PyObject *arg_tuple, int newline) {
+    PyObject* kwargs = 0;
+    PyObject* result = 0;
+    PyObject* end_string;
+    if (unlikely(!__pyx_print)) {
+        __pyx_print = PyObject_GetAttr(__pyx_b, __pyx_n_s_print);
+        if (!__pyx_print)
+            return -1;
+    }
+    if (stream) {
+        kwargs = PyDict_New();
+        if (unlikely(!kwargs))
+            return -1;
+        if (unlikely(PyDict_SetItem(kwargs, __pyx_n_s_file, stream) < 0))
+            goto bad;
+        if (!newline) {
+            end_string = PyUnicode_FromStringAndSize(" ", 1);
+            if (unlikely(!end_string))
+                goto bad;
+            if (PyDict_SetItem(kwargs, __pyx_n_s_end, end_string) < 0) {
+                Py_DECREF(end_string);
+                goto bad;
+            }
+            Py_DECREF(end_string);
+        }
+    } else if (!newline) {
+        if (unlikely(!__pyx_print_kwargs)) {
+            __pyx_print_kwargs = PyDict_New();
+            if (unlikely(!__pyx_print_kwargs))
+                return -1;
+            end_string = PyUnicode_FromStringAndSize(" ", 1);
+            if (unlikely(!end_string))
+                return -1;
+            if (PyDict_SetItem(__pyx_print_kwargs, __pyx_n_s_end, end_string) < 0) {
+                Py_DECREF(end_string);
+                return -1;
+            }
+            Py_DECREF(end_string);
+        }
+        kwargs = __pyx_print_kwargs;
+    }
+    result = PyObject_Call(__pyx_print, arg_tuple, kwargs);
+    if (unlikely(kwargs) && (kwargs != __pyx_print_kwargs))
+        Py_DECREF(kwargs);
+    if (!result)
+        return -1;
+    Py_DECREF(result);
+    return 0;
+bad:
+    if (kwargs != __pyx_print_kwargs)
+        Py_XDECREF(kwargs);
+    return -1;
+}
+#endif
+
 /* CIntToPy */
   static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
     const int neg_one = (int) ((int) 0 - (int) 1), const_zero = (int) 0;
@@ -24928,6 +25203,43 @@ raise_neg_overflow:
         "can't convert negative value to int");
     return (int) -1;
 }
+
+/* PrintOne */
+  #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+static int __Pyx_PrintOne(PyObject* f, PyObject *o) {
+    if (!f) {
+        if (!(f = __Pyx_GetStdout()))
+            return -1;
+    }
+    Py_INCREF(f);
+    if (PyFile_SoftSpace(f, 0)) {
+        if (PyFile_WriteString(" ", f) < 0)
+            goto error;
+    }
+    if (PyFile_WriteObject(o, f, Py_PRINT_RAW) < 0)
+        goto error;
+    if (PyFile_WriteString("\n", f) < 0)
+        goto error;
+    Py_DECREF(f);
+    return 0;
+error:
+    Py_DECREF(f);
+    return -1;
+    /* the line below is just to avoid C compiler
+     * warnings about unused functions */
+    return __Pyx_Print(f, NULL, 0);
+}
+#else
+static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
+    int res;
+    PyObject* arg_tuple = PyTuple_Pack(1, o);
+    if (unlikely(!arg_tuple))
+        return -1;
+    res = __Pyx_Print(stream, arg_tuple, 1);
+    Py_DECREF(arg_tuple);
+    return res;
+}
+#endif
 
 /* CIntFromPy */
   static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *x) {
