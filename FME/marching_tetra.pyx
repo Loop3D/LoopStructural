@@ -125,11 +125,11 @@ def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, regio
     #the sum of these rows = the case
     tetra_type_index1 = np.sum(property_bool[elements]*np.array([1,2,4,8]),axis=1)
     #0 and 15 are tcases where isovalue doesn't intersect surface so just skip these 
-    tetra_type_index = tetra_type_index1[np.logical_and(tetra_type_index1>0,tetra_type_index1<15)]
     el_region = region[elements]
     el_region = np.all(el_region==True,axis=1)#p.all(el_region.
     logic = np.logical_and(el_region,np.logical_and(tetra_type_index1>0,tetra_type_index1<15))
-    print(logic.shape)
+
+    tetra_type_index = tetra_type_index1[logic]
     tetras_index = np.array(range(0,len(elements)))[logic]
     ##create container for the triangle nodes and indexes and a counter
     cdef int ne, nn, i

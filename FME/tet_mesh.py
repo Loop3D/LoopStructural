@@ -7,6 +7,7 @@ from numpy import linalg as la
 from .dsi_helper import get_element, compute_cg_regularisation_constraint, pointintetra, cg, cg_cstr_to_coo_sq
 from .marching_tetra import marching_tetra
 from scipy.spatial import cKDTree
+from sklearn.decomposition import PCA
 import os
 class TetMesh:
     """
@@ -43,7 +44,7 @@ class TetMesh:
         n_tetra: number of tetrahedron
         maxvol: maximum volume for a single tetra - if both are specified this one is used.
         """
-       
+        self.pca = PCA(n_components=3)
         minx = boundary_points[0,0]
         miny = boundary_points[0,1]
         minz = boundary_points[0,2]
@@ -60,6 +61,9 @@ class TetMesh:
         ( maxx,  maxy,  maxz),
         (minx,  maxy,  maxz)
         ]
+        self.pca.fit(points)
+        
+        newp = self.pca.transform(points)
         n_tetra = 4000#maxvol=0.001
         if 'n_tetra' in kwargs:
             n_tetra = kwargs['n_tetra']
@@ -89,19 +93,20 @@ class TetMesh:
         info.set_points(points)
         info.set_facets(facets)
         meshpy_mesh = meshpy.tet.build(info, max_volume=maxvol,options=meshpy.tet.Options('pqn'))
-        self.nodes = np.array(meshpy_mesh.points)
+        self.nodes = self.pca.inverse_transform(np.array(meshpy_mesh.points))
         self.elements = np.array(meshpy_mesh.elements)
         self.neighbours = np.array(meshpy_mesh.neighbors)
         self.n_nodes = len(self.nodes)
         self.n_elements = len(self.elements)
         self.barycentre = np.sum(self.nodes[self.elements][:,:,:],axis=1) / 4.
         self.tree = cKDTree(self.barycentre)
-        self.minx = minx
-        self.miny = miny
-        self.minz = minz
-        self.maxx = maxx
-        self.maxy = maxy
-        self.maxz = maxz
+
+        self.minx = np.min(newp[:,0])#minx
+        self.miny = np.min(newp[:,1])#miny
+        self.minz = np.min(newp[:,2])#minz
+        self.maxx = np.max(newp[:,0])#maxx
+        self.maxy = np.max(newp[:,1])#maxy
+        self.maxz = np.max(newp[:,2])#maxz
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
     def add_region(self,region,name):
         self.regions[name] = region
@@ -177,23 +182,21 @@ class TetMesh:
         self.calculate_constant_gradient(region,**kwargs)
         return self.cg[0],self.cg[1],self.cg[2],self.cg[3],self.cg[4]
     def get_element(self,p):
-        d,e = self.tree.query(p)
-        return self.elements[e]
+        print('here')
+        ip = self.pca.inverse_transform(p)
+        inside = True
+        print(ip)
+        print(self.maxx,self.minx)
+        inside = ip[0] < self.maxx 
+        inside*= ip[0] > self.minx
+        inside*= ip[1] > self.miny
+        inside*= ip[1] < self.maxy
+        inside*= ip[2] < self.maxz
+        inside*= ip[2] > self.minz
+        print(inside)
+        d,e = self.tree.query(ip)
+        return self.elements[e], inside
     def get_element_gradient(self,t):
-        tu = tuple(t)
-        #if tu in self.element_gradients:
-        #    return self.element_gradients[tu]
-        ps = self.nodes[t]
-        ps -= ps[0,:]
-        m= np.array(
-                    [[(ps[1,0]-ps[0,0]),(ps[1,1]-ps[0,1]),(ps[1,2]-ps[0,2])],
-                    [(ps[2,0]-ps[0,0]),(ps[2,1]-ps[0,1]),(ps[2,2]-ps[0,2])],
-                    [(ps[3,0]-ps[0,0]),(ps[3,1]-ps[0,1]),(ps[3,2]-ps[0,2])]])
-        I = np.array(
-                  [[-1.,1.,0.,0.],
-                   [-1.,0.,1.,0.],
-                   [-1.,0.,0.,1.]]) 
-        return np.dot(m,I)#la.inv(m) @ I
         tu = tuple(t)
         if tu in self.element_gradients:
             return self.element_gradients[tu]
@@ -326,14 +329,15 @@ class TetMesh:
         #d,e = mesh.tree.query(mesh2.nodes,k=k)
         #make a container to find out if the nearest element barycenter actually contains
         #the point
+        iarray = self.pca.inverse_transform(array)
         inside = np.zeros(array.shape[0]).astype(bool)
         inside[:] = True
-        inside = array[:,0] < self.maxx[None] 
-        inside+= array[:,0] > self.minx[None]
-        inside+= array[:,1] > self.miny[None]
-        inside+= array[:,1] < self.maxy[None]
-        inside+= array[:,2] < self.maxz[None]
-        inside+= array[:,2] > self.minz[None]
+        inside = iarray[:,0] < self.maxx[None] 
+        inside*= iarray[:,0] > self.minx[None]
+        inside*= iarray[:,1] > self.miny[None]
+        inside*= iarray[:,1] < self.maxy[None]
+        inside*= iarray[:,2] < self.maxz[None]
+        inside*= iarray[:,2] > self.minz[None]
         #pind = np.array([(array[:,0]-self.origin[0]) // self.step,\
         #                 (array[:,1]-self.origin[1]) // self.step,\
         #                 (array[:,2]-self.origin[2]) // self.step \

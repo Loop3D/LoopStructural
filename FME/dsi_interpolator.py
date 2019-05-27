@@ -83,8 +83,8 @@ class DSI(GeologicalInterpolator):
         return
     def add_ctr_pts(self,w=1.0): #for now weight all value points the same
         for p in self.p_i:
-            element = self.mesh.get_element(p.pos)
-            if element is None:
+            element, flag = self.mesh.get_element(p.pos)
+            if flag == False:
                 print('Could not find triangle for x:%f y:%f z:%f'%(p.pos[0],p.pos[1],p.pos[2]))
                 continue
             if ~np.all(self.region[element]):
@@ -145,8 +145,8 @@ class DSI(GeologicalInterpolator):
     def add_gradient_ctr_pts(self,w=1.0): #for now weight all gradient points the same
         for p in self.p_g:
             
-            element = self.mesh.get_element(p.pos)
-            if element is None:
+            element, flag = self.mesh.get_element(p.pos)
+            if flag == False:
                 print('Could not find triangle for %f %f %f'%(p.pos[0],p.pos[1],p.pos[2]))
                 continue
             if ~np.all(self.region[element]):
