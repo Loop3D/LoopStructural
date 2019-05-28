@@ -459,12 +459,10 @@ class TetMesh:
         grads = grads.swapaxes(1,2)
         grads = grads @ I
         vals = self.properties[prop][self.elements[e[inside]]]
-        #grads = np.swapaxes(grads,1,2)
         a = np.zeros(array.shape)
         a[inside] = (grads*vals[:,None,:]).sum(2)/4.# @ vals.T/
         a[~inside,:]=np.nan
         a /= np.sum(a,axis=1)[:,None]
-
         return a
         
     def export_to_vtk(self,name='mesh.vtk'):
