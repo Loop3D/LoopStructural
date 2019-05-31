@@ -290,7 +290,7 @@ class DSI(GeologicalInterpolator):
 
             self.dinfo[i] = True
         return True
-    def _solve(self,damp=0,solver='spqr',clear=True):
+    def _solve(self,damp=0,solver='spqr',clear=True,slver=None):
         #map node indicies from global to region 
         if self.shape == 'rectangular':
             cols = self.region_map[np.array(self.col)]
@@ -314,16 +314,20 @@ class DSI(GeologicalInterpolator):
                 self.cc_ = sla.lsqr(self.AA,B,damp=damp,x0=guess)
             else:
                 self.cc_ = sla.lsqr(self.AA,B,damp=damp)
-        elif solver == 'lsmr':
+        elif solver == 'lsmr' and self.shape == 'rectangular':
             self.cc_ = sla.lsmr(self.AA,B,damp=damp)
-        elif solver == 'eigenlsqr':
-            sys.path.insert(0,'/home/lgrose/dev/cpp/PyEigen/build')
-            import eigensparse
+        elif solver == 'eigenlsqr' and self.shape == 'rectangular':
+            try:
+                import eigensparse
+            except ImportError:
+                print("eigen sparse not installed")
             self.c[self.region] = eigensparse.lsqrcg(self.AA.tocsr(),self.B)
             return
-        elif solver == 'spqr':
-            sys.path.insert(0,'/home/lgrose/dev/cpp/PyEigen/build')
-            import eigensparse
+        elif solver == 'spqr' and self.shape == 'rectangular':
+            try:
+                import eigensparse
+            except ImportError:
+                print("eigen sparse not installed")
             self.c[self.region] = eigensparse.lsqspqr(self.AA.tocsr(),self.B)
             return
         if solver == 'lu' and self.shape == 'square':
@@ -338,7 +342,11 @@ class DSI(GeologicalInterpolator):
                 lu = None                
             return
         if solver == 'chol' and self.shape == 'square':
-            from sksparse.cholmod import cholesky 
+            try:
+                from sksparse.cholmod import cholesky 
+            except ImportError:
+                print("Scikit Sparse not installed try another solver e.g. lu")
+                return
             factor = cholesky(self.AA.tocsc())
             self.c = factor(self.B)
             if clear:
