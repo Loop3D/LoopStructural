@@ -201,7 +201,7 @@ def savePoints(filename,points,data):
 def strike_dip_vector(strike,dip):
     vec = np.zeros((len(strike),3))
     s_r = np.deg2rad(strike)
-    d_r = np.deg2rad(np.abs(dip))
+    d_r = np.deg2rad((dip))
     vec[:,0] = np.sin(d_r)*np.cos(s_r)
     vec[:,1] = -np.sin(d_r)*np.sin(s_r)
     vec[:,2] = np.cos(d_r)

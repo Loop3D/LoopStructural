@@ -324,10 +324,7 @@ class DSI(GeologicalInterpolator):
             self.c[self.region] = eigensparse.lsqrcg(self.AA.tocsr(),self.B)
             return
         elif solver == 'spqr' and self.shape == 'rectangular':
-            try:
-                import eigensparse
-            except ImportError:
-                print("eigen sparse not installed")
+            import eigensparse
             self.c[self.region] = eigensparse.lsqspqr(self.AA.tocsr(),self.B)
             return
         if solver == 'lu' and self.shape == 'square':
