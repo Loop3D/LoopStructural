@@ -310,12 +310,9 @@ class DSI(GeologicalInterpolator):
         self.c = np.zeros(self.mesh.n_nodes)
         self.c[:] = np.nan
         if solver == 'lsqr':
-            if guess is not None:
-                self.cc_ = sla.lsqr(self.AA,B,damp=damp,x0=guess)
-            else:
-                self.cc_ = sla.lsqr(self.AA,B,damp=damp)
+            self.cc_ = sla.lsqr(self.AA,B)
         elif solver == 'lsmr' and self.shape == 'rectangular':
-            self.cc_ = sla.lsmr(self.AA,B,damp=damp)
+            self.cc_ = sla.lsmr(self.AA,B)
         elif solver == 'eigenlsqr' and self.shape == 'rectangular':
             try:
                 import eigensparse
@@ -324,6 +321,7 @@ class DSI(GeologicalInterpolator):
             self.c[self.region] = eigensparse.lsqrcg(self.AA.tocsr(),self.B)
             return
         elif solver == 'spqr' and self.shape == 'rectangular':
+            sys.path.insert(0,'/home/lgrose/dev/cpp/PyEigen/build')           
             import eigensparse
             self.c[self.region] = eigensparse.lsqspqr(self.AA.tocsr(),self.B)
             return

@@ -190,6 +190,8 @@ class TetMesh:
         self.calculate_constant_gradient(region,**kwargs)
         return self.cg[0],self.cg[1],self.cg[2],self.cg[3],self.cg[4]
     def get_element(self,p):
+        #TODO probably should replace this function and just use the elements
+        #for array function
         ip = self.pca.transform(np.array([p]))
         inside = True
         inside = ip[:,0] > self.minpc0 #< self.maxx[None] 
@@ -198,8 +200,8 @@ class TetMesh:
         inside*= ip[:,1] < self.maxpc1
         inside*= ip[:,2] > self.minpc2
         inside*= ip[:,2] < self.maxpc2
-        d,e = self.tree.query(ip)
-        e = e[0]
+        d,e = self.tree.query(p)
+        e = e
         return self.elements[e], inside
     def get_element_gradient(self,t):
         tu = tuple(t)
@@ -331,63 +333,17 @@ class TetMesh:
         #reducing k could speed up calculation but migh add errors
         
         d,ee = self.tree.query(array) 
-        #d,e = mesh.tree.query(mesh2.nodes,k=k)
-        #make a container to find out if the nearest element barycenter actually contains
-        #the point
-        #iarray = self.pca.transform(array)
+
         inside = np.zeros(array.shape[0]).astype(bool)
         inside[:] = True
-        #inside = iarray[:,0] > self.minpc0[None] 
-        #inside*= iarray[:,0] < self.maxpc0[None]
-        #inside*= iarray[:,1] > self.minpc1[None]
-        #inside*= iarray[:,1] < self.maxpc1[None]
-        #inside*= iarray[:,2] > self.minpc2[None]
-        #inside*= iarray[:,2] < self.maxpc2[None]
-        #pind = np.array([(array[:,0]-self.origin[0]) // self.step,\
-        #                 (array[:,1]-self.origin[1]) // self.step,\
-        #                 (array[:,2]-self.origin[2]) // self.step \
-        #                ]).astype(int).T
-        #    #ix,iy = np.where(np.any(indx[:,None]==pind,axis=2)==True)
-        #elements = self.element_map[pind[inside,0],pind[inside,1],pind[inside,2],:]
-        #nodes = self.nodes[self.elements[np.array(range(0,self.n_elements))]]
-        #elements = np.array(calculate_tetra(elements,array,nodes))
+        inside = iarray[:,0] > self.minpc0[None] 
+        inside*= iarray[:,0] < self.maxpc0[None]
+        inside*= iarray[:,1] > self.minpc1[None]
+        inside*= iarray[:,1] < self.maxpc1[None]
+        inside*= iarray[:,2] > self.minpc2[None]
+        inside*= iarray[:,2] < self.maxpc2[None]
+
         return ee, inside
-        #for i in range(k):
-        #    #now loop over the possibilities, if all bc coords > 0 then inside
-        #    inside[ee[:,i]<self.n_elements,i] = np.all(self.calc_bary_c(ee[ee[:,i]\
-        #          <self.n_elements,i],array[ee[:,i]<len(self.elements),:])>0,axis=0)
-        ##find indices for e that are true
-        #inside[ee==len(self.elements)] == False
-        #ix,iy = np.where(inside==True)
-        #e = np.zeros(ee.shape[0]).astype(int)
-        #e[ix] = ee[ix,iy]
-        ##
-        ###just update to check if none of the 5 nearest tetra contian point
-        #inside=np.any(inside,axis=1)#inside[np.any
-        #return ee,inside
-    def elements_for_array_old(self,array,k):
-        #\TODO could add check to see which points are inside mesh bounding box
-        #find the nearest k elements for the arrays
-        #reducing k could speed up calculation but migh add errors
-       
-        d,ee = self.tree.query(array,k) 
-        #d,e = mesh.tree.query(mesh2.nodes,k=k)
-        #make a container to find out if the nearest element barycenter actually contains
-        #the point
-        inside = np.zeros(ee.shape).astype(bool)
-        for i in range(k):
-            #now loop over the possibilities, if all bc coords > 0 then inside
-            inside[ee[:,i]<self.n_elements,i] = np.all(self.calc_bary_c(ee[ee[:,i]\
-                  <self.n_elements,i],array[ee[:,i]<len(self.elements),:])>0,axis=0)
-        #find indices for e that are true
-        inside[ee==len(self.elements)] == False
-        ix,iy = np.where(inside==True)
-        e = np.zeros(ee.shape[0]).astype(int)
-        e[ix] = ee[ix,iy]
-        ##
-        ###just update to check if none of the 5 nearest tetra contian point
-        inside=np.any(inside,axis=1)#inside[np.any
-        return e,inside   
     def eval_interpolant(self,array,prop,k=5,e=None,region='everywhere'):
         """Evaluate an interpolant from property on an array of points.
         Uses numpy to speed up calculations but could be expensive for large mesh/points
@@ -480,7 +436,12 @@ class TetMesh:
     def save(self):
         self.export_to_vtk(self.path+self.name+'.vtk')
     def plot_mesh(self,propertyname,cmap=None):
-        import vista
+        try:
+            import vista
+        except ImportError:
+            print("Cannot import PyVista/vista")
+            return
+
         vmesh = vista.read(self.path+self.name+'.vtk')
         p = vista.Plotter(notebook=True)
         p.set_background('white')
@@ -499,9 +460,13 @@ class TetMesh:
             lv=None,
             draw=True,
             region=None
-
             ):
-        import lavavu  #visualisation library   
+        #import lavavu in case its not imported
+        try:
+            import lavavu  #visualisation library   
+        except ImportError:
+            print("Cannot import Lavavu")
+            return 
         ##run the marching tetra algorithm        
         reg = np.zeros(self.properties[propertyname].shape).astype(bool)
         reg[:] = True
