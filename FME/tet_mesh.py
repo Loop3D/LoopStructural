@@ -333,7 +333,8 @@ class TetMesh:
         #reducing k could speed up calculation but migh add errors
         
         d,ee = self.tree.query(array) 
-
+        
+        iarray = self.pca.transform(array)
         inside = np.zeros(array.shape[0]).astype(bool)
         inside[:] = True
         inside = iarray[:,0] > self.minpc0[None] 
@@ -507,3 +508,10 @@ class TetMesh:
         if draw:
             lv.display()
         return lv
+    def lv_plot_vector_field(self,propertyname,**kwargs):
+        try:
+            import lavavu
+        except ImportError:
+            print("Cannot import Lavavu")
+            return
+        
