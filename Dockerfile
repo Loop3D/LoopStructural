@@ -75,6 +75,9 @@ RUN pip install \
 RUN jupyter-nbextension install rise --py --sys-prefix
 RUN jupyter nbextension enable rise --py --sys-prefix
 
+RUN pip install jupyter_contrib_nbextensions
+
+
 
 
 ENV NB_USER jovyan
@@ -103,27 +106,28 @@ USER root
 RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
 
-#Build LavaVu
+
+RUN jupyter contrib nbextension install --user 
+RUN jupyter nbextension enable scratchpad/main 
+RUN jupyter nbextension enable comment-uncomment/main  
+RUN jupyter nbextension enable collapsible_headings/main  
+
+#Install FME including cython
 # setup environment
 ENV PYTHONPATH $PYTHONPATH:${HOME}
 USER root
 RUN python setup.py install build_ext --inplace
 USER ${NB_USER}
-# Compile, delete some unnecessary files
-
-#Trust included notebooks
-RUN cd ~ && \
-    find notebooks -name \*.ipynb  -print0 | xargs -0 jupyter trust
 
 # Add a notebook profile.
 RUN cd ~ && \
-    mkdir .jupyter && \
     echo "c.NotebookApp.ip = '0.0.0.0'" >> .jupyter/jupyter_notebook_config.py && \
     echo "c.NotebookApp.token = ''" >> .jupyter/jupyter_notebook_config.py
 
 # note we use xvfb which to mimic the X display for lavavu
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/xvfbrun.sh"]
-
+USER root
+RUN mkdir /notebooks
+USER ${NB_USER}
 # launch notebook
-# CMD scripts/run-jupyter.sh
-CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token='' ", "--no-browser"]
+CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token='' ", "--no-browser","/notebooks"]
