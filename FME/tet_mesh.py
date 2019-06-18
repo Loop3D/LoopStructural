@@ -503,6 +503,25 @@ class TetMesh:
                         nodes[tuple(tri[i,j,:])] = n
                         tris[i,j] = n
                         n+=1
+			#find the normal vector to the faces using the vertex order
+			a = tri[:ntri, 0, :] - tri[:ntri, 1, :]
+			b = tri[:ntri, 0, :] - tri[:ntri, 2, :]
+
+			crosses = np.cross(a, b)
+			crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
+
+			#get barycentre of faces and findproperty gradient from scalar field
+			tribc = np.mean(tri[:ntri,:,:],axis=1)
+
+			propertygrad=mesh.eval_gradient(tribc,prop='strati')
+			propertygrad/=np.linalg.norm(propertygrad,axis=1)[:,None]
+
+			#dot product between gradient and normal indicates if faces are incorrectly ordered
+			dotproducts = (propertygrad * crosses).sum(axis=1)
+
+			#if dot product >0 then adjust triangle indexing
+			indices = (dotproducts>0).nonzero()[0]
+			tris[indices] = tris[indices,::-1]
             nodes_np = np.zeros((n,3))
             for v in nodes.keys():
                 nodes_np[nodes[v],:] = np.array(v)
