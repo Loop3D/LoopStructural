@@ -480,7 +480,7 @@ class TetMesh:
             reg = np.zeros(self.properties[propertyname].shape).astype(bool)
             reg[:] = True
             if 'region' in kwargs:
-                reg = kwargs['region']
+                reg = self.regions[kwargs['region']]
             name = propertyname+'_%f'%isovalue
             if 'name' in kwargs:
                 name = kwargs['name']
@@ -515,12 +515,12 @@ class TetMesh:
 
             #get barycentre of faces and findproperty gradient from scalar field
             tribc = np.mean(tri[:ntri,:,:],axis=1)
-
+            tribc = tribc[np.any(np.isnan(tribc),axis=1)]
             propertygrad=self.eval_gradient(tribc,prop='strati')
             propertygrad/=np.linalg.norm(propertygrad,axis=1)[:,None]
 
             #dot product between gradient and normal indicates if faces are incorrectly ordered
-            dotproducts = (propertygrad * crosses).sum(axis=1)
+            dotproducts = (propertygrad * crosses[np.any(np.isnan(tribc),axis=1)]).sum(axis=1)
 
             #if dot product >0 then adjust triangle indexing
             indices = (dotproducts>0).nonzero()[0]
