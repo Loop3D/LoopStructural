@@ -1,6 +1,6 @@
 import numpy as np
 
-from .dsi_interpolator import DSI
+from .pli_interpolator import DSI
 from .geological_points import IPoint,GPoint,TPoint,IePoint
 class StructuralFrame:
     """

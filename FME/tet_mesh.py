@@ -189,43 +189,6 @@ class TetMesh:
             shape = 'square'
         self.calculate_constant_gradient(region,**kwargs)
         return self.cg[0],self.cg[1],self.cg[2],self.cg[3],self.cg[4]
-    def get_element(self,p):
-        #TODO probably should replace this function and just use the elements
-        #for array function
-        ip = self.pca.transform(np.array([p]))
-        inside = True
-        inside = ip[:,0] > self.minpc0 #< self.maxx[None] 
-        inside*= ip[:,0] < self.maxpc0
-        inside*= ip[:,1] > self.minpc1
-        inside*= ip[:,1] < self.maxpc1
-        inside*= ip[:,2] > self.minpc2
-        inside*= ip[:,2] < self.maxpc2
-        d,e = self.tree.query(p)
-        e = e
-        return self.elements[e], inside
-    def get_element_gradient(self,t):
-        tu = tuple(t)
-        if tu in self.element_gradients:
-            return self.element_gradients[tu]
-        ps = self.nodes[t]
-        ps -= ps[0,:]
-        #equation 14 mallet2003 gocad
-        J = np.ones((3,1))
-        O = np.zeros((1,3))
-        m = np.zeros((3,3))
-        for j in range(3):
-            for i in range(3):
-                m[i,j] = ps[i+1,j]
-        Minv = np.zeros((4,4))
-        Minv[0,0] = 1
-        Minv[0,1:] = 0
-        minv = la.inv(m)
-        Minv[1:,0] = (-minv@J)[:,0]
-        Minv[1:,1:] = minv
-        I = np.zeros((3,4))
-        for i in range(3):
-            I[i,i+1] = 1
-        return I@Minv
     def get_elements_gradients(self,e):
         """
         Returns the gradient of the elements using their global index.
@@ -245,49 +208,7 @@ class TetMesh:
         I = np.zeros((3,4))
         I[np.arange(3),np.arange(3)+1] = 1
         return I@Minv
-    def get_property_value(self,pos=None,element=None,prop=None):
-        if element is None:
-            if pos is None: 
-                print('element and pos None')
-                return False
-            element = self.get_element(pos)
-            if element is None:
-                print('Could not find triangle for x:%f y:%f z:%f'%(p.pos[0],p.pos[1],p.pos[2]))
-                return False
-        points = self.nodes[element]
-        c = np.zeros(4)
-        #if no position is specified just use the value at the centroid of the element
-        if pos is None:
-            c[:] = 0.25
-            return np.sum(c*self.properties[prop][element])
-            #pos = np.mean(points,axis=0)
-        M = np.ones((points.shape[0],points.shape[0]))
 
-        for i in range(4):              
-            M[i,1] = points[i,0]
-            M[i,2] = points[i,1]
-            M[i,3] = points[i,2]
-        cp = np.ones(points.shape[0])
-        cp[1:] = pos[:]
-        c = np.dot(cp,la.inv(M))
-        #print(c)
-        c[:] = 0.25
-        return np.sum(c*self.properties[prop][element])
-    def get_element_property_gradient(self,element=None,pos=None,prop=None):
-        if element is None:
-            if pos is None: 
-                return False
-            element = self.get_element(pos)
-            if element is None:
-                print('Could not find triangle for x:%f y:%f z:%f'%(p.pos[0],p.pos[1],p.pos[2]))
-                return False
-        if tuple(element) in self.element_nodes_to_id:
-            if prop in self.property_gradients:
-                return self.property_gradients[prop][self.element_nodes_to_id[tuple(element)]]
-        d_n = self.get_element_gradient(element)#calculate_d(n_points)
-        grad = np.sum(d_n*self.properties[prop][element],axis=1)
-        grad/=4.
-        return grad
     def calc_bary_c(self,e,p):
         """
         Calculate the barycentre coordinates for an array of n elements 
@@ -328,7 +249,6 @@ class TetMesh:
         c[3,:] = vd / v
         return c
     def elements_for_array(self,array,k=10):
-        #\TODO could add check to see which points are inside mesh bounding box
         #find the nearest k elements for the arrays
         #reducing k could speed up calculation but migh add errors
         
@@ -519,12 +439,12 @@ class TetMesh:
             propertygrad=self.eval_gradient(tribc,prop='strati')
             propertygrad/=np.linalg.norm(propertygrad,axis=1)[:,None]
 
-            #dot product between gradient and normal indicates if faces are incorrectly ordered
+             #dot product between gradient and normal indicates if faces are incorrectly ordered
             dotproducts = (propertygrad * crosses[np.any(np.isnan(tribc),axis=1)]).sum(axis=1)
-
-            #if dot product >0 then adjust triangle indexing
-            indices = (dotproducts>0).nonzero()[0]
-            tris[indices] = tris[indices,::-1]
+            #
+            if dot product >0 then adjust triangle indexing
+                indices = (dotproducts>0).nonzero()[0]
+                tris[indices] = tris[indices,::-1]
             nodes_np = np.zeros((n,3))
             for v in nodes.keys():
                 nodes_np[nodes[v],:] = np.array(v)

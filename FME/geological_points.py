@@ -4,6 +4,9 @@ from numpy import linalg as nla
 
 
 class Point():
+    """
+    Base object for a point contains the geospatial location
+    """
     def __init__(self,pos):
         self.pos = np.array(pos)
         self.orig = np.array(pos)

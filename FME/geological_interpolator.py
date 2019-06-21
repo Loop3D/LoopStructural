@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 from .geological_points import IPoint,GPoint,TPoint,IePoint
 class GeologicalInterpolator():
@@ -8,7 +7,7 @@ class GeologicalInterpolator():
     by using any of these functions. This will enable interpolators to be interchanged.
     """
     def __init__(self,**kwargs):
-        self.p_i = [] #interface points
+        self.p_i = [] #interface points #TODO create data container
         self.p_g = [] #gradeint points
         self.p_t = [] #tangent points
         self.n_i = 0
@@ -47,9 +46,7 @@ class GeologicalInterpolator():
         if type(data) == TPoint:
             self.p_t.append(data)
             self.n_t+=1
-                
-    def fold_event(self,fold):
-        self.fold = fold
+
     def get_control_points(self):
         points = np.zeros((self.n_i,4))#array
         for i in range(self.n_i):
