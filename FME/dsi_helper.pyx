@@ -208,12 +208,10 @@ def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:
     cdef double [:,:] e2
     cdef long [:] idl  = np.zeros(4,dtype=np.int64) 
     cdef long [:] idr = np.zeros(4,dtype=np.int64) 
-    #loop over elements
     for e in range(ne):
         idl = elements[e,:]
         e1 = EG[e,:,:]
         flag[e] = 1
-        #loop over neighbours
         for n in range(4):
             
             neigh = neighbours[e,n]
