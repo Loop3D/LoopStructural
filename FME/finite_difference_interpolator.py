@@ -1,5 +1,12 @@
 from scipy.sparse import linalg
 from scipy.sparse import coo_matrix, spdiags
+class FDIConstraint:
+    def __init__(self,i,j,a,b,weight=1.):
+        self.x = i
+        self.j = j
+        self.a = a
+        self.b = b
+        self.weight = weight
 
 class FDI(GeologicalInterpolator):
     """
@@ -12,6 +19,9 @@ class FDI(GeologicalInterpolator):
         self.params['nx'] = 10
         self.params['ny'] = 10
         self.params['nz'] = 10
+        self.AA = []
+        self.B = []
+        self.constraints = []
     def _setup_interpolator(self, **kwargs):
 
 
@@ -29,6 +39,9 @@ class FDI(GeologicalInterpolator):
                 print('Could not find element for x:%f y:%f z:%f inside region' % (p.pos[0], p.pos[1], p.pos[2]))
 
                 continue
+            #if rectangular
+            FDIConstraint()
+    def add_constraint_to_least_squares(self,i,j,a,b,weight):
 
 
     def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same

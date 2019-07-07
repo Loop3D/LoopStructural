@@ -9,12 +9,22 @@ from .geological_interpolator import GeologicalInterpolator
 from .geological_points import *
 
 
-class PLI(GeologicalInterpolator):
+class PiecewiseLinearInterpolator(GeologicalInterpolator):
     """
     Piecewise Linear Interpolator
+    Approximates scalar field by finding coefficients to a piecewise linear
+    equation on a tetrahedral mesh
+
     """
 
     def __init__(self, mesh, **kwargs):
+        """
+
+        :param mesh: the mesh to apply PLI on
+        :param kwargs: possible kwargs are 'region' being the subset of the mesh to approximate
+        the linear equations on
+        'propertyname' the name of the property that is interpolated on the mesh
+        """
         if 'region' in kwargs:
             region = kwargs['region']
         if 'region' not in kwargs:
@@ -44,7 +54,15 @@ class PLI(GeologicalInterpolator):
         self.mesh.dinfo = {}  # [:] = False #intitialise dinfo to be 0
 
     def _setup_interpolator(self, **kwargs):
-
+        """
+        adds all of the constraints to the interpolation matrix
+        :param kwargs: 'cgw' is the constant gradient weight
+        'cpw' control point weight
+        'gpw' gradient control point weight
+        'tpw' tangent control point weight
+        'cg' boolean is cg being used
+        :return:
+        """
         cgw = 0.1
         cpw = 1.0
         gpw = 1.0

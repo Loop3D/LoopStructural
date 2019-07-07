@@ -32,10 +32,10 @@ RUN apt-get update -qq && \
 		libgl-dev \
 		libsuitesparse-dev \
 		libsm6
-
+COPY tini/tini /tini
 # Add Tini
-ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+# NV TINI_VERSION v0.18.0
+# ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
 # install the notebook package
