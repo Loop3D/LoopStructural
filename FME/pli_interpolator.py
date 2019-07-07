@@ -9,7 +9,7 @@ from .geological_interpolator import GeologicalInterpolator
 from .geological_points import *
 
 
-class PiecewiseLinearInterpolator(GeologicalInterpolator):
+class PiecewiseLinearInterpolator(DiscreteInterpolator):
     """
     Piecewise Linear Interpolator
     Approximates scalar field by finding coefficients to a piecewise linear
@@ -35,8 +35,8 @@ class PiecewiseLinearInterpolator(GeologicalInterpolator):
         self.shape = 'rectangular'
         if 'shape' in kwargs:
             self.shape = kwargs['shape']
-        GeologicalInterpolator.__init__(self)
-        self.interpolator_type = 'DSI'
+        DiscreteInterpolator.__init__(self)
+        self.interpolator_type = 'PLI'
         self.mesh = mesh
         self.region = self.mesh.regions[region]
         self.region_map = np.zeros(mesh.n_nodes).astype(int)
@@ -290,21 +290,6 @@ class PiecewiseLinearInterpolator(GeologicalInterpolator):
                         self.row.append(a[k, i])
                         self.col.append(a[k, j])
                         # don't need to do anything with b as its 0
-
-    def add_fold_constraints(self, A, B, col, row):
-        """
-
-        :param A:
-        :param B:
-        :param col:
-        :param row:
-        :return:
-        """
-        self.A.extend(A)
-        self.row.extend(row)
-        self.col.extend(col)
-        self.B += B
-
     def add_elements_gradient_constraint(self, elements, normal, w):
         # normals=normals/np.einsum('ij,ij->i',normals,normals)[:,None]
         for element in elements:
@@ -326,108 +311,3 @@ class PiecewiseLinearInterpolator(GeologicalInterpolator):
                         self.row.append(alpha2)
                         self.col.append(alpha)
 
-    def calculate_constant_gradient_with_element_weighting(self, weighting):
-        """
-        Add constant gradient with weighting per element
-        :param weighting: vector for the per element weighting
-        :return:
-        """
-        self.dinfo = np.zeros(self.mesh.n_elements).astype(bool)
-
-        c_ = 0
-        # add cg constraint for all of the
-        for i, t in enumerate(self.mesh.elements):
-            # if not all the nodes are in the region then this element is outside
-            t_points = self.mesh.nodes[t]
-            d_t = self.mesh.get_element_gradient(t)
-            for n in self.mesh.get_neighbors(i):
-                if n < 0:
-                    # -1 means no neighbor in that direction
-                    # so skip
-                    continue
-                if self.dinfo[n]:
-                    continue
-                d_n = self.mesh.get_element_gradient(self.mesh.elements[n])  # calculate_d(n_points)
-                idc, cstr = compute_cg_regularisation_constraint(d_t, d_n, self.mesh.elements[i], self.mesh.elements[n],
-                                                                 self.mesh.nodes)
-                idc = np.array(idc)
-                cstr = np.array(cstr)
-                for a, c in zip(idc, cstr):
-                    for aa, cc in zip(idc, cstr):
-                        self.A.append(c * weighting[i] * weighting[n] * cc)
-                        self.col.append(aa)
-                        self.row.append(a)
-
-            self.dinfo[i] = True
-        return True
-
-    def _solve(self, solver='spqr', clear=True):
-        """
-        Solve the least squares problem definied by PLI
-        :param solver: string for solver
-        :param clear:
-        :return:
-        """
-        # map node indicies from global to region
-        if self.shape == 'rectangular':
-            cols = self.region_map[np.array(self.col)]
-
-            self.AA = coo_matrix((np.array(self.A), (np.array(self.row), \
-                                                     cols)), shape=(self.c_, self.nx), dtype=float)  # .tocsr()
-        if self.shape == 'square':
-            cols = np.array(self.col)
-            rows = np.array(self.row)
-            self.AA = coo_matrix((np.array(self.A), (np.array(rows).astype(np.int64), \
-                                                     np.array(cols).astype(np.int64))), dtype=float)
-            d = np.zeros(self.nx)
-            d += np.finfo('float').eps
-            self.AA += spdiags(d, 0, self.nx, self.nx)
-        B = np.array(self.B)
-        self.cc_ = [0, 0, 0, 0]
-        self.c = np.zeros(self.mesh.n_nodes)
-        self.c[:] = np.nan
-        if solver == 'lsqr':
-            self.cc_ = sla.lsqr(self.AA, B)
-        elif solver == 'lsmr' and self.shape == 'rectangular':
-            self.cc_ = sla.lsmr(self.AA, B)
-        elif solver == 'eigenlsqr' and self.shape == 'rectangular':
-            try:
-                import eigensparse
-            except ImportError:
-                print("eigen sparse not installed")
-            self.c[self.region] = eigensparse.lsqrcg(self.AA.tocsr(), self.B)
-            return
-        elif solver == 'spqr' and self.shape == 'rectangular':
-            sys.path.insert(0, '/home/lgrose/dev/cpp/PyEigen/build')
-            import eigensparse
-            self.c[self.region] = eigensparse.lsqspqr(self.AA.tocsr(), self.B)
-            return
-        if solver == 'lu' and self.shape == 'square':
-            lu = sla.splu(self.AA.tocsr())
-            b = self.B  # np.array([1, 2, 3, 4])
-            self.c[self.region] = lu.solve(b)
-            if clear:
-                self.AA = None
-                self.A = []
-                self.col = []
-                self.row = []
-                lu = None
-            return
-        if solver == 'chol' and self.shape == 'square':
-            try:
-                from sksparse.cholmod import cholesky
-            except ImportError:
-                print("Scikit Sparse not installed try another solver e.g. lu")
-                return
-            factor = cholesky(self.AA.tocsc())
-            self.c = factor(self.B)
-            if clear:
-                self.AA = None
-                self.A = []
-                self.col = []
-                self.row = []
-                factor = None
-            return
-        # M = self.AA.diagonal()
-        # z = sla.lsqr(self.AA*sla.inv(M),B)
-        self.c[self.region] = self.cc_[0]
