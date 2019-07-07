@@ -3,8 +3,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
     Base class for a discrete interpolator e.g. piecewise linear or finite difference
     """
     def __init__(self):
-
-
+        GeologicalInterpolator.__init__(self)
+        self.B = []
+        if self.shape == 'square':
+            self.B = np.zeros(self.nx)
+        self.c_ = 0
+        self.A = []  # sparse matrix storage coo format
+        self.col = []
+        self.row = []  # sparse matrix storage
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system
@@ -27,7 +33,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def _solve(self, solver='spqr', clear=True):
         """
-        Solve the least squares problem definied by PLI
+        Solve the least squares problem with specified solver
         :param solver: string for solver
         :param clear:
         :return:

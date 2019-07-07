@@ -44,14 +44,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         self.nx = len(self.mesh.nodes[self.region])
 
-        self.B = []  # np.zeros((self.nx,1))
-        if self.shape == 'square':
-            self.B = np.zeros(self.nx)
-        self.c_ = 0
-        self.A = []  # sparse matrix storage coo format
-        self.col = []
-        self.row = []  # sparse matrix storage
-        self.mesh.dinfo = {}  # [:] = False #intitialise dinfo to be 0
+
 
     def _setup_interpolator(self, **kwargs):
         """
@@ -95,87 +88,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         # iterate over all elements
         A, B, row, col, c_ = self.mesh.get_constant_gradient(region=self.region, shape=self.shape)
-        A = np.array(A)
-        # col = self.region_map[col]
-        if self.shape == 'rectangular':
-            A *= w
-        if self.shape == 'square':
-            A *= w * w
-            # row = self.region_map[row]
-        A = A.tolist()
-        self.A.extend(A)
-        if self.shape == 'rectangular':
-            self.B.extend(B)
-        self.row.extend(row)
-        self.col.extend(col)
-        self.c_ += c_
+        self.add_constraints_to_least_squares(A,B,col)
         return
-
-    def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
-        """
-        add value data to the interpolator
-        :param w: weight per constraint
-        :return:
-        """
-        for p in self.p_i:
-            element, flag = self.mesh.get_element(p.pos)
-            if flag == False:
-                print('Could not find triangle for x:%f y:%f z:%f' % (p.pos[0], p.pos[1], p.pos[2]))
-                continue
-            if ~np.all(self.region[element]):
-                print('Could not find element for x:%f y:%f z:%f inside region' % (p.pos[0], p.pos[1], p.pos[2]))
-
-                continue
-            points = self.mesh.nodes[element]
-            # points -=points[0,:]
-
-            vap = np.zeros(3)
-            vbp = np.zeros(3)
-
-            vcp = np.zeros(3)
-            vdp = np.zeros(3)
-            vab = np.zeros(3)
-            vac = np.zeros(3)
-            vad = np.zeros(3)
-            vbc = np.zeros(3)
-            vbd = np.zeros(3)
-            temp = np.zeros(3)
-            ##bp = 
-            for i in range(3):
-                vap[i] = p.pos[i] - points[0, i]
-                vbp[i] = p.pos[i] - points[1, i]
-                vcp[i] = p.pos[i] - points[2, i]
-                vdp[i] = p.pos[i] - points[3, i]
-                vab[i] = points[1, i] - points[0, i]
-                vac[i] = points[2, i] - points[0, i]
-                vad[i] = points[3, i] - points[0, i]
-                vbc[i] = points[2, i] - points[1, i]
-                vbd[i] = points[3, i] - points[1, i]
-
-            va = np.dot(vbp, np.cross(vbd, vbc)) / 6.
-            vb = np.dot(vap, np.cross(vac, vad)) / 6.
-            vc = np.dot(vap, np.cross(vad, vab)) / 6.
-            vd = np.dot(vap, np.cross(vab, vac)) / 6.
-            v = np.dot(vab, np.cross(vac, vad)) / 6.
-            c = np.zeros(4)
-            c[0] = va / v
-            c[1] = vb / v
-            c[2] = vc / v
-            c[3] = vd / v
-            if self.shape == 'rectangular':
-                for i in range(len(c)):
-                    self.A.append(c[i] * w)
-                    self.row.append(self.c_)
-                    self.col.append(element[i])
-                self.B.append(p.val * w)
-                self.c_ += 1
-            if self.shape == 'square':
-                for i in range(4):
-                    self.B[element[i]] += (p.val * c[i] * w)
-                    for j in range(4):
-                        self.A.append(c[i] * w * c[j] * w)
-                        self.col.append(element[i])
-                        self.row.append(element[j])
 
     def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
         """
@@ -183,46 +97,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :param w: weight per constraint
         :return:
         """
-        for p in self.p_g:
-
-            element, flag = self.mesh.get_element(p.pos)
-            if flag == False:
-                print('Could not find triangle for %f %f %f' % (p.pos[0], p.pos[1], p.pos[2]))
-                continue
-            if ~np.all(self.region[element]):
-                print('Could not find element for x:%f y:%f z:%f inside region' % (p.pos[0], p.pos[1], p.pos[2]))
-
-                continue
-            d_t = self.mesh.get_element_gradient(element)  # calculate_d(t_points)
-            norm = p.dir_() / la.norm(p.dir_())
-            scalar_product = np.zeros(len(element))
-            if self.shape == 'rectangular':
-                for j in range(len(p.pos)):  # loop through gradient compon
-                    leng = 0.
-                    for i, alpha in enumerate(element):
-                        leng += d_t[j, i] * d_t[j, i]  # np.dot(d_t[:,i],d_t[:,i])
-                    leng = np.sqrt(leng)
-                    for i, alpha in enumerate(element):
-                        self.A.append((d_t[j, i] / leng) * w)
-                        self.row.append(self.c_)
-                        self.col.append(alpha)
-                    self.B.append(norm[j] / leng)
-                    self.c_ = self.c_ + 1
-            if self.shape == 'square':
-                for j in range(len(p.pos)):  # loop through gradient compon
-                    leng = 0.
-                    for i, alpha in enumerate(element):
-                        leng += d_t[j, i] * d_t[j, i]  # np.dot(d_t[:,i],d_t[:,i])
-                    leng = np.sqrt(leng)
-                    for i, alpha in enumerate(element):
-
-                        self.B[element[i]] += (norm[j] / leng) * (d_t[j, i] / leng)
-                        for k, alpha2 in enumerate(element):
-                            self.A.append((d_t[j, i] / leng) * w * (d_t[j, k] / leng) * w)
-                            self.row.append(alpha2)
-                            self.col.append(alpha)
-                    # self.B.append(norm[j]/leng)
-                    # self.c_ = self.c_+1
+        e,inside = self.mesh.elements_for_array(pos)
+        d_t = self.mesh.get_element_gradients(e)
+        norm/ = np.linalg.norm(norm,axis=1)
+        #add in the element gradient matrix into the inte
+        self.add_constraint_to_least_squares(d_t,norm,e)
 
     def add_tangent_ctr_pts(self, w=1.0):
         """
@@ -230,27 +109,22 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :param w: weight per constraint
         :return:
         """
-        for p in self.p_t:
-            element = self.mesh.get_closest_triangle(p.pos)
-            if element is None:
-                print('Could not find triangle for %f %f %f' % (p.pos[0], p.pos[1], p.pos[2]))
-                return False
-            t_points = self.mesh.nodes[element]
-            d_t = self.calculate_d(t_points)
-            norm = p.dir_() / la.norm(g)
-            scalar_product = np.zeros(3)
-            n = 0.
-            for i in range(len(t)):
-                scalar_product[i] = np.dot(d_t[:, i], norm)
-                n += scalar_product[i] * scalar_product[i]
-            n = np.sqrt(n)
-            scalar_product /= n
-            for i, alpha in enumerate(t):
-                self.A.append(scalar_product[i] * w)
-                self.row.append(self.c_)
-                self.col.append(alpha)
-            self.B.append(0.0)
-            self.c_ = self.c_ + 1
+
+
+    def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
+        """
+        add value data to the interpolator
+        :param w: weight per constraint
+        :return:
+        """
+        #get elements for points
+        e = self.mesh.elements_for_array(pos)
+        #get barycentric coordinates for points
+
+        A = self.mesh.calc_bary_c(e,pos)
+        A*=w
+        idc = self.mesh.elements[e]
+        self.add_constraint_to_least_squares(A,B,idc)
 
     def add_elements_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """

@@ -44,6 +44,7 @@ class TetMesh:
         self.element_nodes_to_id = {}
         self.regions = {}
 
+
     def setup_mesh(self, boundary_points, **kwargs):
         """
         Build a mesh given the boundary points
