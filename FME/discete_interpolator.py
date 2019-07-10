@@ -1,3 +1,7 @@
+from .geological_interpolator import GeologicalInterpolator
+import numpy as np
+from scipy.sparse import coo_matrix
+from scipy.sparse import linalg as sla
 class DiscreteInterpolator(GeologicalInterpolator):
     """
     Base class for a discrete interpolator e.g. piecewise linear or finite difference
@@ -11,6 +15,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.A = []  # sparse matrix storage coo format
         self.col = []
         self.row = []  # sparse matrix storage
+        self.support = None
+
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system
@@ -19,10 +25,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
         :param idc: N x C node indices
         :return:
         """
+        rows = np.arange(0,A.shape[1])
+        rows = np.tile(rows, (A.shape[0],1)).T
+        rows+= self.c_
+        self.c_+=A.shape[1]
         if self.shape == 'rectangular':
-            self.A.append(c[i] * w)
-            self.row.append(self.c_)
-            self.col.append(element[i])
+            self.A.extend(A.flatten().tolist())
+            self.row.extend(rows.flatten().tolist())
+            self.col.extend(idc.flatten().tolist())
+
         if self.shape == 'square':
             for i in range(4):
                 self.B[element[i]] += (p.val * c[i] * w)
@@ -41,7 +52,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # map node indicies from global to region
         if self.shape == 'rectangular':
             cols = self.region_map[np.array(self.col)]
-
             self.AA = coo_matrix((np.array(self.A), (np.array(self.row), \
                                                      cols)), shape=(self.c_, self.nx), dtype=float)  # .tocsr()
         if self.shape == 'square':

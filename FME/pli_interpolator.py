@@ -1,13 +1,5 @@
-import sys
-
-import numpy.linalg as la
-import scipy.sparse.linalg as sla
-from scipy.sparse import coo_matrix, spdiags
-
-from .dsi_helper import compute_cg_regularisation_constraint
-from .geological_interpolator import GeologicalInterpolator
-from .geological_points import *
-
+from .discete_interpolator import DiscreteInterpolator
+import numpy as np
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
     """
@@ -87,8 +79,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :return:
         """
         # iterate over all elements
-        A, B, row, col, c_ = self.mesh.get_constant_gradient(region=self.region, shape=self.shape)
-        self.add_constraints_to_least_squares(A,B,col)
+        A, B, row, col, c_ = self.mesh.get_constant_gradient(region=self.region, shape='rectangular')
+        A = np.array([A])
+        B= np.array(B)
+        col = np.array(col)
+        self.add_constraints_to_least_squares(A*w,B*w,col)
         return
 
     def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
@@ -97,11 +92,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :param w: weight per constraint
         :return:
         """
-        e,inside = self.mesh.elements_for_array(pos)
-        d_t = self.mesh.get_element_gradients(e)
-        norm/ = np.linalg.norm(norm,axis=1)
-        #add in the element gradient matrix into the inte
-        self.add_constraint_to_least_squares(d_t,norm,e)
+        points = self.get_gradient_control()
+        if points.shape[0] > 1:
+            e,inside = self.mesh.elements_for_array(points[:,3:])
+            d_t = self.mesh.get_element_gradients(e)
+            points[3:] /= np.linalg.norm(points[:,3:],axis=1)
+            #add in the element gradient matrix into the inte
+            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w,e)
 
     def add_tangent_ctr_pts(self, w=1.0):
         """
@@ -109,7 +106,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :param w: weight per constraint
         :return:
         """
-
+        return
 
     def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
         """
@@ -118,13 +115,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :return:
         """
         #get elements for points
-        e = self.mesh.elements_for_array(pos)
-        #get barycentric coordinates for points
-
-        A = self.mesh.calc_bary_c(e,pos)
-        A*=w
-        idc = self.mesh.elements[e]
-        self.add_constraint_to_least_squares(A,B,idc)
+        points = self.get_control_points()
+        if points.shape[0] > 1:
+            e, inside = self.mesh.elements_for_array(points[:,:3])
+            #get barycentric coordinates for points
+            A = self.mesh.calc_bary_c(e,points[:,:3])
+            idc = self.mesh.elements[e]
+            self.add_constraints_to_least_squares(A*w,points[:,3]*w,idc)
 
     def add_elements_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
@@ -137,51 +134,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         d_t = self.mesh.get_elements_gradients(elements)
         normals = normals / np.einsum('ij,ij->i', normals, normals)[:, None]
-        c = np.einsum('ij,ijk->ik', normals, d_t)
-        a = self.mesh.elements[elements]
-
-        c *= w
-        if self.shape == 'rectangular':
-            rows = np.arange(self.c_, self.c_ + len(elements))
-            rows = np.tile(rows, (4, 1)).T
-            b = np.zeros(len(elements))
-            ##add the existing number of rows to the row count
-            # rows+=self.c_
-            # update dsi row counter
-            self.c_ += len(elements)
-            self.A.extend(c.flatten().tolist())
-            self.col.extend(a.flatten().tolist())
-            self.row.extend(rows.flatten().tolist())
-            self.B.extend(b.tolist())
-        if self.shape == 'square':
-            cc = np.einsum('ij,ik->ijk', c, c)  # np.dot(c,c.T)
-            for k in range(len(elements)):
-                for i in range(4):
-                    if B != 0:
-                        self.B[k] += B * c[k, i]
-                    for j in range(4):
-                        self.A.append(cc[k, i, j])
-                        self.row.append(a[k, i])
-                        self.col.append(a[k, j])
-                        # don't need to do anything with b as its 0
-    def add_elements_gradient_constraint(self, elements, normal, w):
-        # normals=normals/np.einsum('ij,ij->i',normals,normals)[:,None]
-        for element in elements:
-            d_t = self.mesh.get_element_gradient(self.mesh.elements[element])  # calculate_d(t_points)
-            norm = normal
-            scalar_product = np.zeros(4)
-            for j in range(3):  # loop through gradient compon
-                leng = 0.
-                for i, alpha in enumerate(self.mesh.elements[element]):
-                    scalar_product[i] = np.dot(d_t[:, i], norm)  # 2d/3d compat
-                    # leng+= scalar_product[i]*scalar_product[i]
-                    leng += d_t[j, i] * d_t[j, i]  # np.dot(d_t[:,i],d_t[:,i])
-                leng = np.sqrt(leng)
-                for i, alpha in enumerate(self.mesh.elements[element]):
-
-                    self.B[alpha] += (norm[j] / leng) * (d_t[j, i] / leng)
-                    for k, alpha2 in enumerate(self.mesh.elements[element]):
-                        self.A.append((d_t[j, i] / leng) * w[element] * (d_t[j, k] / leng) * w[element])
-                        self.row.append(alpha2)
-                        self.col.append(alpha)
-
+        A = np.einsum('ij,ijk->ik', normals, d_t)
+        idc = self.mesh.elements[elements]
+        B = np.zeros(len(elements))
+        self.add_constraints_to_least_squares(A,B,idc)
