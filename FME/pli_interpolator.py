@@ -74,16 +74,20 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def add_constant_gradient(self, w=0.1):
         """
-        adds constant gradient regularisation to the PLI interpolator
+        adds constant gradient regula
+
+
+
+        risation to the PLI interpolator
         :param w: weighting (per constraint) to give the constant gradient interpolation
         :return:
         """
         # iterate over all elements
-        A, B, row, col, c_ = self.mesh.get_constant_gradient(region=self.region, shape='rectangular')
-        A = np.array([A])
+        A, idc, B = self.mesh.get_constant_gradient(region=self.region, shape='rectangular')
+        A = np.array(A)
         B= np.array(B)
-        col = np.array(col)
-        self.add_constraints_to_least_squares(A*w,B*w,col)
+        idc = np.array(idc)
+        self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
     def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
@@ -93,12 +97,14 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :return:
         """
         points = self.get_gradient_control()
-        if points.shape[0] > 1:
+        if points.shape[0] > 0:
             e,inside = self.mesh.elements_for_array(points[:,3:])
-            d_t = self.mesh.get_element_gradients(e)
+            d_t = self.mesh.get_elements_gradients(e)
             points[3:] /= np.linalg.norm(points[:,3:],axis=1)
             #add in the element gradient matrix into the inte
-            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w,e)
+            e=np.tile(e,(3,1)).T
+            idc = self.mesh.elements[e]
+            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w,idc)
 
     def add_tangent_ctr_pts(self, w=1.0):
         """
@@ -119,9 +125,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if points.shape[0] > 1:
             e, inside = self.mesh.elements_for_array(points[:,:3])
             #get barycentric coordinates for points
+
             A = self.mesh.calc_bary_c(e,points[:,:3])
             idc = self.mesh.elements[e]
-            self.add_constraints_to_least_squares(A*w,points[:,3]*w,idc)
+            self.add_constraints_to_least_squares(A.T*w,points[:,3]*w,idc)
 
     def add_elements_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """

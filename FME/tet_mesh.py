@@ -146,14 +146,12 @@ class TetMesh:
         :return:
         """
         self.properties[name] = value
-        # grad = np.zeros((self.elements.shape[0],3))
         grads = self.get_elements_gradients(np.arange(self.n_elements))
         props = self.properties[name][self.elements[np.arange(self.n_elements)]]
         grad = np.einsum('ikj,ij->ik', grads, props)
         self.property_gradients[name] = grad
         if save:
             self.save()
-        # //self.property_v = p
 
     def transfer_gradient_to_nodes(self, propertyname):
         """
@@ -179,40 +177,17 @@ class TetMesh:
 
     def calculate_constant_gradient(self, region, shape='rectangular'):
         self.dinfo = np.zeros(self.n_elements).astype(bool)
-        A = []
-        B = []
-        row = []
-        col = []
-        c_ = 0
-
         # add cg constraint for all of the
         EG = self.get_elements_gradients(np.arange(self.n_elements))
         idc, c, ncons = cg(EG, self.neighbours, self.elements, self.nodes)
         idc = np.array(idc)
         c = np.array(c)
-        if shape == 'rectangular':
-            for i in range(ncons):
-                for j in range(5):
-                    A.append(c[i, j])
-                    row.append(i)
-                    col.append(idc[i, j])
-                B.append(0.)
-        c_ = ncons
-        if shape == 'square':
-            A, row, col = cg_cstr_to_coo_sq(c, idc, ncons)
-            A = np.array(A).tolist()
-            row = np.array(row).tolist()
-            col = np.array(col).tolist()
-        self.cg_calculated[shape] = True
-        self.cg = [A, B, row, col, c_]
-        return True
+        B = np.zeros(c.shape[0])
+        return c,idc,B
+
 
     def get_constant_gradient(self, w=0.1, region='everywhere', **kwargs):
-        shape = 'rectangular'
-        if 'shape' in kwargs:
-            shape = 'square'
-        self.calculate_constant_gradient(region, **kwargs)
-        return self.cg[0], self.cg[1], self.cg[2], self.cg[3], self.cg[4]
+        return self.calculate_constant_gradient(region, **kwargs)
 
     def get_elements_gradients(self, e):
         """
@@ -222,7 +197,6 @@ class TetMesh:
         ps = self.nodes[self.elements[e]]
         ps -= ps[:, 0, :][:, None]
         J = np.ones((len(e), 3, 1))
-        O = np.ones((len(e), 1, 3))
         m = ps[:, 1:, :]
         Minv = np.zeros((len(e), 4, 4))
         Minv[:, 0, 0] = 1
@@ -241,21 +215,10 @@ class TetMesh:
         """
         points = self.nodes[self.elements[e]]
         npts = len(e)
-        vap = np.zeros((3, npts))
-        vbp = np.zeros((3, npts))
-
-        vcp = np.zeros((3, npts))
-        vdp = np.zeros((3, npts))
-        vab = np.zeros((3, npts))
-        vac = np.zeros((3, npts))
-        vad = np.zeros((3, npts))
-        vbc = np.zeros((3, npts))
-        vbd = np.zeros((3, npts))
-        ##bp = 
         vap = p - points[:, 0, :]
         vbp = p - points[:, 1, :]
-        vcp = p - points[:, 2, :]
-        vdp = p - points[:, 3, :]
+        # vcp = p - points[:, 2, :]
+        # vdp = p - points[:, 3, :]
         vab = points[:, 1, :] - points[:, 0, :]
         vac = points[:, 2, :] - points[:, 0, :]
         vad = points[:, 3, :] - points[:, 0, :]

@@ -1,12 +1,10 @@
 import numpy as np
-
-from .pli_interpolator import DSI
 from .geological_points import IPoint,GPoint,TPoint,IePoint
 class StructuralFrame:
     """
     Class for representing a slip event of a fault
     """
-    def __init__(self,**kwargs):#mesh,fault_event,data,name,region):
+    def __init__(self,interpolator,**kwargs):#mesh,fault_event,data,name,region):
         """
         mesh:  support for interpolation
         structural_feature: the geological feature that this frame describes
@@ -35,9 +33,9 @@ class StructuralFrame:
         #of overlap
         self.overlap = {}
         #Create the interpolation objects you
-        self.interpolators['gx'] = DSI(self.mesh,itype='gx',propertyname=self.name+'_'+'gx',**kwargs)
-        self.interpolators['gy'] = DSI(self.mesh,itype='gy',propertyname=self.name+'_'+'gy',**kwargs)
-        self.interpolators['gz'] = DSI(self.mesh,itype='gz',propertyname=self.name+'_'+'gz',**kwargs)
+        self.interpolators['gx'] = interpolator(itype='gx',**kwargs)
+        self.interpolators['gy'] = interpolator(itype='gy',**kwargs)
+        self.interpolators['gz'] = interpolator(itype='gz',**kwargs)
     def add_strike_dip_and_value(self,pos,strike,dip,val,itype):
         self.data.append({'type':itype,'data':GPoint(pos,strike,dip)})
         self.data.append({'type':itype,'data':IPoint(pos,val)})
