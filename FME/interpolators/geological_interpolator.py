@@ -1,5 +1,7 @@
 import numpy as np
-from .geological_points import IPoint,GPoint,TPoint,IePoint
+from FME.modelling.geological_points import IPoint,GPoint,TPoint
+
+
 class GeologicalInterpolator():
     """
     This class is the base class for a geological interpolator and contains all of the

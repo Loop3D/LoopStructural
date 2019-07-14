@@ -5,8 +5,7 @@ from numpy import linalg as la
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
-from .dsi_helper import cg, cg_cstr_to_coo_sq
-from .marching_tetra import marching_tetra
+from FME.interpolators.dsi_helper import cg
 
 
 class TetMesh:

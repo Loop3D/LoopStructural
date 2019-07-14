@@ -1,5 +1,7 @@
 import numpy as np
-from .geological_points import IPoint,GPoint,TPoint,IePoint
+from FME.modelling.geological_points import IPoint,GPoint,TPoint
+
+
 class StructuralFrame:
     """
     Class for representing a slip event of a fault

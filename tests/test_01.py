@@ -1,5 +1,5 @@
-from FME.pli_interpolator import PiecewiseLinearInterpolator as PLI
-from FME.tet_mesh import TetMesh
+from FME.supports.pli_interpolator import PiecewiseLinearInterpolator as PLI
+from FME.supports.tet_mesh import TetMesh
 import numpy as np
 boundary_points = np.zeros((2,3))
 boundary_points[0,0] = -1

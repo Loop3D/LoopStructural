@@ -1,6 +1,6 @@
 import numpy as np
 
-from .structuralframes import StructuralFrame
+from FME.modelling.structuralframes import StructuralFrame
 
 
 class FaultSegment(StructuralFrame):

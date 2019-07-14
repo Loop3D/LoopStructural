@@ -1,4 +1,4 @@
-from .discete_interpolator import DiscreteInterpolator
+from FME.interpolators.discete_interpolator import DiscreteInterpolator
 import numpy as np
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
