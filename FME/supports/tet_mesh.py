@@ -369,3 +369,11 @@ class TetMesh:
 
     def save(self):
         self.export_to_vtk(self.path + self.name + '.vtk')
+    def get_connected_nodes_for_mask(self,mask):
+        """
+        adjusts mask to return all nodes where any node in the element is true as true
+        :param mask: original mask
+        :return: adjusted mask
+        """"
+        return mask[self.elements] = np.any(mask[self.elements] == True, axis=1)[:, None]
+        

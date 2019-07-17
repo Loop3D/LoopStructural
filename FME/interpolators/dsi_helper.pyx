@@ -1,8 +1,6 @@
 import cython
 import numpy as np
 import numpy.linalg as la
-from libc.math cimport sin, cos, M_PI, sqrt
-
 cimport numpy as np
 
 @cython.boundscheck(False)
