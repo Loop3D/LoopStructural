@@ -1,5 +1,5 @@
 from FME.modelling.structural_frame import StructuralFrame
-from FME.interpolators.dsi_helper import fold_cg, cg_cstr_to_coo_sq
+from FME.cython.dsi_helper import fold_cg, cg_cstr_to_coo_sq
 import numpy as np
 class FoldFrame(StructuralFrame):
     """
