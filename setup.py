@@ -8,6 +8,6 @@ setup(
 	'Cython'
 	],
         packages=['FME'],
-	ext_modules=cythonize("FME/*.pyx"),
+	ext_modules=cythonize("FME/cython/*.pyx"),
 	include_dirs=[numpy.get_include()],
 	)
