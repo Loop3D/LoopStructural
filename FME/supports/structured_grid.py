@@ -1,5 +1,5 @@
 import numpy as np
-from .base_support import BaseGrid
+from .base_grid import BaseGrid
 class StructuredGrid(BaseGrid):
     def __init__(self,shape,step_vector=np.ones(3),origin=np.zeros(3),**kwargs):
         self.origin = origin

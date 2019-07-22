@@ -2,7 +2,7 @@ import cython
 import numpy as np
 import numpy.linalg as la
 cimport numpy as np
-from libc.math import *#sin, cos, sqrt
+from math import *
 @cython.boundscheck(False)
 @cython.wraparound(False)
 #cimport numpy.linalg as la

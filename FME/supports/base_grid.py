@@ -21,7 +21,7 @@ class BaseGrid:
         self.minpc2 = np.min(self.transformed_corners[:, 2])
         self.maxpc2 = np.max(self.transformed_corners[:, 2])
 
-    def is_inside(self,evaluation_points):
+    def is_inside(self, evaluation_points):
         transformed_evaluation_points = self.pca.transform(evaluation_points)
         inside = np.zeros(evaluation_points.shape[0]).astype(bool)
         inside[:] = True
@@ -32,7 +32,8 @@ class BaseGrid:
         inside *= transformed_evaluation_points[:, 2] > self.minpc2[None]
         inside *= transformed_evaluation_points[:, 2] < self.maxpc2[None]
         return inside
-    def evaluate_value(self,evaluation_points):
+
+    def evaluate_value(self, evaluation_points, property_name):
         """
         virtual function for base class
         :param evaluation_points:
@@ -40,7 +41,7 @@ class BaseGrid:
         """
         pass
 
-    def evaluate_gradient(self,evaluation_points):
+    def evaluate_gradient(self, evaluation_points, property_name):
         """
         virtual function for base class
         :param evaluation_points:

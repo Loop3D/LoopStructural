@@ -1,4 +1,5 @@
 from FME.interpolators.discete_interpolator import DiscreteInterpolator
+from FME.modelling.scalar_field import TetrahedralMeshScalarField
 import numpy as np
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
@@ -9,7 +10,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     """
 
-    def __init__(self, mesh, **kwargs):
+    def __init__(self, mesh, propertyname = 'InterpolatedProperty', **kwargs):
         """
 
         :param mesh: the mesh to apply PLI on
@@ -21,8 +22,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             region = kwargs['region']
         if 'region' not in kwargs:
             region = 'everywhere'
-        if 'propertyname' in kwargs:
-            self.propertyname = kwargs['propertyname']
+        self.propertyname = propertyname
         # whether to assemble a rectangular matrix or a square matrix
         self.shape = 'rectangular'
         if 'shape' in kwargs:
@@ -85,7 +85,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # iterate over all elements
         A, idc, B = self.mesh.get_constant_gradient(region=self.region, shape='rectangular')
         A = np.array(A)
-        B= np.array(B)
+        B = np.array(B)
         idc = np.array(idc)
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
@@ -145,3 +145,15 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         idc = self.mesh.elements[elements]
         B = np.zeros(len(elements))
         self.add_constraints_to_least_squares(A,B,idc)
+
+    def get_support(self):
+
+        # TODO add check to see if interpolant is up to date
+        # this requires adding solving parameters to interpolator object
+        # if self.up_to_date == False:
+        #     self.so
+
+        return TetrahedralMeshScalarField.from_node_values(
+            self.mesh,
+            self.propertyname,
+            self.node_values)

@@ -3,44 +3,30 @@ from .scalar_field import TetrahedralMeshScalarField
 
 class GeologicalFeature:
     """
-    Geological feature is a
+    Geological feature is class that is used to represent a geometrical element of a geological
+    feature. For example foliations, fault planes, fold rotation angles etc.
     """
-    def __init__(self,**kwargs):
-        self.data = []
-        self.interpolator = None
-        self.scalar_field = None
-        self.associations = {}
-
-    def add_data(self,data):
+    def __init__(self, age, name, support):
         """
 
-        :param data:
-        :return:
+        :param age:
+        :param name:
+        :param support:
         """
-        self.data.append(data)
-
-    def link_feature(self, feature, association):
-        self.assocations[association] = feature
-        feature.link_feature(self, association)
-
-    def attach_interpolator(self, interpolator):
-        self.interpolator = interpolator
-
-    def link_scalar_field(self, scalar_field):
-        self.scalar_field = scalar_field
+        self.age = age
+        self.name = name
+        self.support = support
+        self.ndim = 1
+    # @classmethod
+    # def from_interpolation_parameters(cls, age, name, support, params):
+    #
+    #     pass
 
     def evaluate_value(self, evaluation_points):
-        self.scalar_field.evaluate_value(evaluation_points)
+        self.support.evaluate_value(evaluation_points)
 
     def evaluate_gradient(self, locations):
-        self.scalar_field.evaluate_gradient(locations)
-
-    def update(self):
-        if self.interpolator is None:
-            return
-        self.interpolator.run()
-        self.scalar_field
-        pass
+        self.support.evaluate_gradient(locations)
 
 
 class FaultedGeologicalFeature(GeologicalFeature):
@@ -49,6 +35,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
     and another feature representing the surface pre faulting.
     """
     def __init__(self, feature, fault):
+        super().__init__(self, feature.age, feature.name+"_faulted", feature.support)
         self.parent_feature = feature
         hw_p, fw_p  = fault.apply_fault_to_support(self.support)
         fault.appy_fault_to_data(data)
@@ -56,31 +43,30 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.parent_feature.update()
         hw_v = self.parent_feature.evaluate(hw_p)
         fw_v = self.parent_feature.evaluate(fw_v)
+        hw_sf = TetrahedralMeshScalarField.from_node_values(self.support,self.name+'_hw',hw_v)
+        fw_sf = TetrahedralMeshScalarField.from_node_values(self.support,self.name+'_fw',fw_v)
 
-        self.hw_feature = GeologicalFeature()
-        self.fw_feature = GeologicalFeature()
-        hw_sf = TetrahedralMeshScalarField(self.parent_feature.scalar_field.support, nodevalues=hw_v)
-        fw_sf = TetrahedralMeshScalarField(self.parent_feature.scalar_field.support, nodevalues=fw_v)
-
-        self.hw_feature.link_scalar_field(hw_sf)
-        self.fw_feature.link_scalar_field(fw_sf)
+        self.hw_feature = GeologicalFeature(self.age,self.name+'_hw',hw_sf)
+        self.fw_feature = GeologicalFeature(self.age,self.name+'_fw',fw_sf)
         # create a new geological feature from
 
         self.fault = fault
 
     def evaluate_value(self, locations):
+
         hangingwall = self.fault.evaluate(locations) > 0
         footwall = self.fault.evaluate(locations) < 0
         evaluated = np.zeros(locations.shape[0])
-        evaluated[hangingwall] = self.hangingwall.evaluate(locations[hangingwall])
-        evaluated[footwall] = self.footwall.evaluate(locations[footwall])
+        evaluated[hangingwall] = self.hw_feature.evaluate(locations[hangingwall])
+        evaluated[footwall] = self.fw_feature.evaluate(locations[footwall])
         return evaluated
 
     def evaluate_gradient(self, locations):
+
         hangingwall = self.fault.evaluate(locations) > 0
         footwall = self.fault.evaluate(locations) < 0
         evaluated = np.zeros((locations.shape[0],3))
-        evaluated[hangingwall] = self.hangingwall.evaluate(locations[hangingwall])
-        evaluated[footwall] = self.footwall.evaluate(locations[footwall])
+        evaluated[hangingwall] = self.hw_feature.evaluate(locations[hangingwall])
+        evaluated[footwall] = self.fw_feature.evaluate(locations[footwall])
         return evaluated
 

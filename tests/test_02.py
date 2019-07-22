@@ -1,6 +1,7 @@
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
 from FME.modelling.geological_feature import GeologicalFeature
+from FME.visualisation.model_visualisation import LavaVuModelViewer
 import numpy as np
 import lavavu
 
@@ -23,7 +24,7 @@ interpolator = PLI(mesh)
 interpolator.add_point([0,0,0],0)
 a = np.zeros((3,3,3))
 interpolator.add_point([0.5,0,0],0.5)
-interpolator.add_strike_and_dip([0,0,0],90,10)
+# interpolator.add_strike_and_dip([0,0,0],90,10)
 interpolator.setup_interpolator()
 interpolator.solve_system(solver='lsmr')
 

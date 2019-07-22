@@ -2,6 +2,8 @@ from .geological_interpolator import GeologicalInterpolator
 import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.sparse import linalg as sla
+
+
 class DiscreteInterpolator(GeologicalInterpolator):
     """
     Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
@@ -117,3 +119,4 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 factor = None
             return
         self.c[self.region] = self.cc_[0]
+        self.node_values = self.c

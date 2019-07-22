@@ -260,6 +260,12 @@ class TetMesh:
 
         return ee, inside
 
+    def evaluate_value(self, array, prop):
+        return self.eval_interpolant(array, prop)
+
+    def evaluate_gradient(self, array, prop):
+        return self.eval_gradient(array, prop)
+
     def eval_interpolant(self, array, prop, k=5, e=None, region='everywhere'):
         """
         Evaluate an interpolant from property on an array of points.
@@ -374,6 +380,7 @@ class TetMesh:
         adjusts mask to return all nodes where any node in the element is true as true
         :param mask: original mask
         :return: adjusted mask
-        """"
-        return mask[self.elements] = np.any(mask[self.elements] == True, axis=1)[:, None]
+        """
+        mask[self.elements] = np.any(mask[self.elements] == True, axis=1)[:, None]
+        return mask
         
