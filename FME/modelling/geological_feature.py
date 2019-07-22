@@ -1,6 +1,6 @@
 from .scalar_field import TetrahedralMeshScalarField
 import numpy as np
-
+from ..visualisation.model_visualisation import LavaVuModelViewer
 
 class GeologicalFeature:
     """
@@ -38,7 +38,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
     def __init__(self, feature, fault):
         super().__init__(feature.age, feature.name+"_faulted", feature.support)
         self.parent_feature = feature
-        hw_p, fw_p, hw_m, fw_m  = fault.apply_fault_to_support(self.support)
+        hw_p, fw_p, hw_m, fw_m = fault.apply_fault_to_support(self.support)
         # fault.appy_fault_to_data(data)
         # run interpolator
         # self.parent_feature.update()

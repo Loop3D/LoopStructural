@@ -117,9 +117,12 @@ def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, regio
     Returns: an 3d [Ntriangles,triangle_nodes,vertex coordinates] where array of triangles 
     explicitly containing the coordinate of the vertices
     """
-    nodes = np.hstack([nodes,propertyvalue[:,None]]) 
+    mask = np.isnan(propertyvalue)
+    nodes = np.hstack([nodes,propertyvalue[:,None]])
     #find which nodes are > isovalue
-    property_bool = propertyvalue > isovalue
+    property_bool = np.zeros(propertyvalue.shape)
+    property_bool[:] = False
+    property_bool[~mask] = propertyvalue[~mask] > isovalue
     #property_bool = np.logical_and(property_bool,region)
     #find what case each tetra is by slicing property bool by elements and multiplying by the case array
     #the sum of these rows = the case

@@ -64,7 +64,38 @@ class LavaVuModelViewer:
             surf.vertices(nodes)
             surf.indices(tris)
             surf.colours(colour)
+    def plot_structural_frame_isosurface(self,structural_frame,i, **kwargs):
+        mean_property_val = structural_frame.supports[i].mean_property_value()
+        min_property_val = structural_frame.supports[i].min_property_value()
+        max_property_val = structural_frame.supports[i].max_property_value()
+        slices = [mean_property_val]
+        colour = 'red'
 
+        if 'isovalue' in kwargs:
+            slices = [kwargs['isovalue']]
+        if 'slices' in kwargs:
+            slices = kwargs['slices']
+        if 'nslices' in kwargs:
+            slices = np.linspace(min_property_val, max_property_val, kwargs['nslices'])
+        if 'colour' in kwargs:
+            colour = kwargs['colour']
+        for isovalue in slices:
+            if isovalue < min_property_val or isovalue > max_property_val:
+                print("No surface to create for isovalue")
+                isovalue = kwargs['isovalue']
+
+            tris, nodes = structural_frame.supports[i].slice(isovalue)
+            # reg = np.zeros(self.properties[propertyname].shape).astype(bool)
+            # reg[:] = True
+            # if 'region' in kwargs:
+            #     reg = self.regions[kwargs['region']]
+            name = structural_frame.name + '_iso_%f' % isovalue
+            if 'name' in kwargs:
+                name = kwargs['name']
+            surf = self.lv.triangles(name)
+            surf.vertices(nodes)
+            surf.indices(tris)
+            surf.colours(colour)
     def lv_plot_vector_field(self, propertyname, lv, **kwargs):
         try:
             import lavavu
@@ -82,4 +113,8 @@ class LavaVuModelViewer:
         vectorfield.vertices(self.barycentre[::vector_slicing, :])
         vectorfield.vectors(vectors)
         return
+    def plot_points(self,points,name,col='red'):
+        p = self.lv.points(name,pointsize=4,pointtype="sphere",colour=col)
+        p.vertices(points)
+
 

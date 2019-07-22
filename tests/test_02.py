@@ -1,7 +1,7 @@
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
 from FME.modelling.geological_feature import GeologicalFeature, FaultedGeologicalFeature
-# from FME.visualisation.model_visualisation import LavaVuModelViewer
+from FME.visualisation.model_visualisation import LavaVuModelViewer
 from FME.modelling.structural_frame import StructuralFrameBuilder
 from FME.modelling.fault.fault_segment import FaultSegment
 import numpy as np
@@ -80,5 +80,17 @@ fault_frame = fault.build(
 fault = FaultSegment(fault_frame)
 
 faulted_feature = FaultedGeologicalFeature(feature,fault)
-print(mesh.properties.keys())
-mesh.save()
+viewer = LavaVuModelViewer()
+viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
+# viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
+mask = fault_frame.supports[0].get_node_values() > 0
+print(mask[mesh.elements].shape)
+print(mesh.n_nodes)
+mask[mesh.elements] = np.any(mask[mesh.elements] == True, axis=1)[:, None]
+print(mask)
+viewer.plot_points(mesh.nodes[mask],"nodes",col="red")
+#print(mask)
+viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
+# viewer.plot_structural_frame_isosurface(fault_frame,0,isovalue=2)
+#
+viewer.lv.interactive()

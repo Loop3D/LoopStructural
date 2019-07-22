@@ -40,13 +40,13 @@ class TetrahedralMeshScalarField:
         return self.mesh.evaluate_gradient(evaluation_points, self.property_name)
 
     def mean_property_value(self):
-        return np.mean(self.mesh.properties[self.property_name])
+        return np.nanmean(self.mesh.properties[self.property_name])
 
     def min_property_value(self):
-        return np.min(self.mesh.properties[self.property_name])
+        return np.nanmin(self.mesh.properties[self.property_name])
 
     def max_property_value(self):
-        return np.max(self.mesh.properties[self.property_name])
+        return np.nanmax(self.mesh.properties[self.property_name])
 
     def get_connected_nodes_for_mask(self, mask):
         return self.mesh.get_connected_nodes_for_mask(mask)
@@ -67,6 +67,7 @@ class TetrahedralMeshScalarField:
         ##convert from memoryview to np array
         tri = np.array(tri)
         ntri = np.array(ntri)[0]
+        print(ntri)
         ##create a triangle indices array and initialise to -1
         tris = np.zeros((ntri, 3)).astype(int)
         tris[:, :] = -1
@@ -103,6 +104,6 @@ class TetrahedralMeshScalarField:
         #
         #
         nodes_np = np.zeros((n, 3))
-        # for v in nodes.keys():
-        #     nodes_np[nodes[v], :] = np.array(v)
+        for v in nodes.keys():
+            nodes_np[nodes[v], :] = np.array(v)
         return tris, nodes_np
