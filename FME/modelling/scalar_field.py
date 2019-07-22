@@ -34,10 +34,9 @@ class TetrahedralMeshScalarField:
         return cls(mesh, property_name)
 
     def evaluate_value(self, evaluation_points):
-        self.mesh.evaluate_property(evaluation_points, self.property_name)
+        return self.mesh.evaluate_value(evaluation_points, self.property_name)
 
     def evaluate_gradient(self, evaluation_points):
-        print(evaluation_points)
         return self.mesh.evaluate_gradient(evaluation_points, self.property_name)
 
     def mean_property_value(self):
@@ -48,6 +47,15 @@ class TetrahedralMeshScalarField:
 
     def max_property_value(self):
         return np.max(self.mesh.properties[self.property_name])
+
+    def get_connected_nodes_for_mask(self, mask):
+        return self.mesh.get_connected_nodes_for_mask(mask)
+
+    def get_node_values(self):
+        return self.mesh.properties[self.property_name]
+
+    def number_of_nodes(self):
+        return self.mesh.n_nodes
 
     def slice(self, isovalue):
         tri, ntri = marching_tetra(isovalue,

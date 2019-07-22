@@ -1,8 +1,5 @@
 import numpy as np
 
-from FME.modelling.structural_frame import StructuralFrame
-
-
 class FaultSegment:
     """
     Class for representing a slip event of a fault
@@ -15,13 +12,14 @@ class FaultSegment:
         :param kwargs:
         """
         self.faultframe = faultframe
+        self.displacement = 1.
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'faultfunction' in kwargs:
             self.faultfunction = kwargs['faultfunction']
         if 'displacement' in kwargs:
             self.displacement = kwargs['displacement']
-     def apply_fault_to_support(self, support):  # ,region,steps=10):
+    def apply_fault_to_support(self, support):  # ,region,steps=10):
         steps = 10
 
 
@@ -41,32 +39,35 @@ class FaultSegment:
         region = 'everywhere'
         #get all of the points for the support that are on the hanging wall or part
         #of a support element (tetra/cube) that is on the hanging wall
-        hw = support.get_connected_nodes_for_mask(self.faultframe.gx() >= 0)
+        hw_p, hw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) >= 0)
         # get all of the points for the support that are on the foot wall or part
         # of a support element (tetra/cube) that is on the foot wall
-        fw = support.get_connected_nodes_for_mask(self.faultframe.gx() <= 0)
-        self.d_fw = np.zeros(fw.shape)
-        self.d_hw = np.zeros(hw.shape)
-        self.d_hw[hw] = 1.
+        fw_p, fw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) <= 0)
+        self.d_fw = np.zeros(fw_m.shape)
+        self.d_hw = np.zeros(hw_m.shape)
+        self.d_hw[hw_m] = 1.
         self.d_hw *= self.displacement
 
-        self.d_fw[fw] = 0.
+        self.d_fw[fw_m] = 0.
         self.d_fw *= self.displacement
         for i in range(steps):
-            fw_g = self.faultframe.gy(fw,True)
+            fw_g = self.faultframe.evaluate_gradient(fw_p,1)
             fw_g /= np.linalg.norm(fw_g, axis=1)[:, None]
-            fw_g *= (1. / steps) * self.d_fw[:, None]
+            fw_g *= (1. / steps) * self.d_fw[fw_m, None]
             fw_g[np.any(np.isnan(fw_g), axis=1)] = np.zeros(3)
 
-            hw_g = self.faultframe.gy(hw, True)
+            hw_g = self.faultframe.evaluate_gradient(hw_p, 1)
             hw_g /= np.linalg.norm(hw_g, axis=1)[:, None]
-            hw_g *= (1. / steps) * self.d_hw[:, None]
+            hw_g *= (1. / steps) * self.d_hw[hw_m, None]
             hw_g[np.any(np.isnan(hw_g), axis=1)] = np.zeros(3)
 
 
-            hw_n = hw + g
-            fw_n = fw + g
-        return hw_n, fw_n
+            hw_n = hw_p + hw_g
+            fw_n = fw_p + fw_g
+        # hw_n = hw_p
+        # fw_n = fw_p
+        return hw_n, fw_n, hw_m, fw_m
+
     def apply_fault_to_data(self,data):
         for d in data:
             for i in range(steps):

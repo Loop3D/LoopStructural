@@ -27,14 +27,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.shape = 'rectangular'
         if 'shape' in kwargs:
             self.shape = kwargs['shape']
-        DiscreteInterpolator.__init__(self)
-        self.interpolator_type = 'PLI'
         self.mesh = mesh
+
+        self.interpolator_type = 'PLI'
         self.region = self.mesh.regions[region]
         self.region_map = np.zeros(mesh.n_nodes).astype(int)
         self.region_map[self.region] = np.array(range(0, len(self.region_map[self.region])))
-
         self.nx = len(self.mesh.nodes[self.region])
+
+        DiscreteInterpolator.__init__(self)
+
+
 
 
 
@@ -74,11 +77,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def add_constant_gradient(self, w=0.1):
         """
-        adds constant gradient regula
-
-
-
-        risation to the PLI interpolator
+        adds constant gradient regularisation to the PLI interpolator
         :param w: weighting (per constraint) to give the constant gradient interpolation
         :return:
         """
@@ -98,9 +97,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         points = self.get_gradient_control()
         if points.shape[0] > 0:
-            e,inside = self.mesh.elements_for_array(points[:,3:])
+            e, inside = self.mesh.elements_for_array(points[:,3:])
             d_t = self.mesh.get_elements_gradients(e)
-            points[3:] /= np.linalg.norm(points[:,3:],axis=1)
+            points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
             #add in the element gradient matrix into the inte
             e=np.tile(e,(3,1)).T
             idc = self.mesh.elements[e]
@@ -140,6 +139,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :return:
         """
         d_t = self.mesh.get_elements_gradients(elements)
+        dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
+        mask = np.abs(dot_p) > 0
+        normals[mask[:,0] ,:] =  normals[mask[:,0],:] / dot_p[mask][:,None]
         normals = normals / np.einsum('ij,ij->i', normals, normals)[:, None]
         A = np.einsum('ij,ijk->ik', normals, d_t)
         idc = self.mesh.elements[elements]

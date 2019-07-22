@@ -1,6 +1,6 @@
 import numpy as np
 from FME.modelling.geological_points import IPoint, GPoint, TPoint
-
+from FME.modelling.geological_feature import GeologicalFeature
 
 class StructuralFrame(GeologicalFeature):
     def __init__(self, age, name, supports):
@@ -9,12 +9,16 @@ class StructuralFrame(GeologicalFeature):
         self.supports = supports
         self.ndim = 3
 
-    def evaluate_value(self, evaluation_points):
-        return (self.support[0].evaluate_value(evaluation_points),
-                self.support[1].evaluate_value(evaluation_points),
-                self.support[2].evaluate_value(evaluation_points))
+    def evaluate_value(self, evaluation_points, i=None):
+        if i is not None:
+            self.supports[i].evaluate_value(evaluation_points)
+        return (self.supports[0].evaluate_value(evaluation_points),
+                self.supports[1].evaluate_value(evaluation_points),
+                self.supports[2].evaluate_value(evaluation_points))
 
-    def evaluate_gradient(self, evaluation_points):
+    def evaluate_gradient(self, evaluation_points, i=None):
+        if i is not None:
+            return self.supports[i].evaluate_gradient(evaluation_points)
         return (self.support[0].evaluate_gradient(evaluation_points),
                 self.support[1].evaluate_gradient(evaluation_points),
                 self.support[2].evaluate_gradient(evaluation_points))
@@ -30,6 +34,9 @@ class StructuralFrame(GeologicalFeature):
                 if type(d['data']) == ptype:
                     data.append(d)
         return data
+
+    def get_values(self, i):
+        return self.supports[i].get_node_values()
 
 
 class StructuralFrameBuilder:
@@ -65,9 +72,21 @@ class StructuralFrameBuilder:
         #of overlap
         self.overlap = {}
         #Create the interpolation objects you
-        self.interpolators['gx'] = interpolator(itype='gx',**kwargs)
-        self.interpolators['gy'] = interpolator(itype='gy',**kwargs)
-        self.interpolators['gz'] = interpolator(itype='gz',**kwargs)
+        self.interpolators['gx'] = interpolator(
+            mesh=self.mesh,
+            itype='gx',
+            propertyname=self.name + '_' + 'gx',
+            **kwargs)
+        self.interpolators['gy'] = interpolator(
+            mesh=self.mesh,
+            itype='gy',
+            propertyname=self.name + '_' + 'gy',
+            **kwargs)
+        self.interpolators['gz'] = interpolator(
+            mesh=self.mesh,
+            itype='gz',
+            propertyname=self.name + '_' + 'gz',
+            **kwargs)
     def add_strike_dip_and_value(self,pos,strike,dip,val,itype):
         self.data.append({'type':itype,'data':GPoint(pos,strike,dip)})
         self.data.append({'type':itype,'data':IPoint(pos,val)})
@@ -151,6 +170,8 @@ class StructuralFrameBuilder:
                 self.interpolators['gz'].add_data(d['data'])
         self.interpolators['gx'].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
         self.interpolators['gx'].solve_system(solver=solver)
+        self.mesh.update_property(self.name + '_' + 'gx', self.interpolators['gx'].c)
+
         self.interpolators['gy'].add_elements_gradient_orthogonal_constraint(np.arange(0, \
                                                                                        self.mesh.n_elements), \
                                                                              self.mesh.property_gradients[
