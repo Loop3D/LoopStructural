@@ -12,7 +12,7 @@ class FaultSegment:
         :param kwargs:
         """
         self.faultframe = faultframe
-        self.displacement = 1
+        self.displacement = .2
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'faultfunction' in kwargs:
@@ -39,10 +39,10 @@ class FaultSegment:
         region = 'everywhere'
         #get all of the points for the support that are on the hanging wall or part
         #of a support element (tetra/cube) that is on the hanging wall
-        hw_p, hw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) < 0)
+        hw_p, hw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) > 0)
         # get all of the points for the support that are on the foot wall or part
         # of a support element (tetra/cube) that is on the foot wall
-        fw_p, fw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) > 0)
+        fw_p, fw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) < 0)
         self.d_fw = np.zeros(fw_m.shape)
         self.d_hw = np.zeros(hw_m.shape)
         self.d_hw[hw_m] = 1.

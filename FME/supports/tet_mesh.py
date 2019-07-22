@@ -381,6 +381,6 @@ class TetMesh:
         :param mask: original mask
         :return: nodes and adjusted mask
         """
-        mask[self.elements] = np.all(mask[self.elements] == True, axis=1)[:, None]
+        mask[self.elements] = np.any(mask[self.elements] == True, axis=1)[:, None]
         return self.nodes[mask], mask
         
