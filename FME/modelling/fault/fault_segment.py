@@ -12,7 +12,7 @@ class FaultSegment:
         :param kwargs:
         """
         self.faultframe = faultframe
-        self.displacement = .2
+        self.displacement = 2
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'faultfunction' in kwargs:
@@ -39,10 +39,10 @@ class FaultSegment:
         region = 'everywhere'
         #get all of the points for the support that are on the hanging wall or part
         #of a support element (tetra/cube) that is on the hanging wall
-        hw_p, hw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) > 0)
+        hw_p, hw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) >= 0)
         # get all of the points for the support that are on the foot wall or part
         # of a support element (tetra/cube) that is on the foot wall
-        fw_p, fw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) < 0)
+        fw_p, fw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) <= 0)
         self.d_fw = np.zeros(fw_m.shape)
         self.d_hw = np.zeros(hw_m.shape)
         self.d_hw[hw_m] = 1.
@@ -53,7 +53,7 @@ class FaultSegment:
         hw_n = hw_p
         fw_n = fw_p
         for i in range(steps):
-            fw_g = self.faultframe.evaluate_gradient(fw_p,1)
+            fw_g = self.faultframe.evaluate_gradient(fw_p, 1)
             fw_g /= np.linalg.norm(fw_g, axis=1)[:, None]
             fw_g *= (1. / steps) * self.d_fw[fw_m, None]
             fw_g[np.any(np.isnan(fw_g), axis=1)] = np.zeros(3)
@@ -62,10 +62,8 @@ class FaultSegment:
             hw_g /= np.linalg.norm(hw_g, axis=1)[:, None]
             hw_g *= (1. / steps) * self.d_hw[hw_m, None]
             hw_g[np.any(np.isnan(hw_g), axis=1)] = np.zeros(3)
-
-
-            hw_n += + hw_g
-            fw_n += + fw_g
+            hw_n += hw_g
+            fw_n += fw_g
 
         return hw_n, fw_n, hw_m, fw_m
 

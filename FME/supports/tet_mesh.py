@@ -251,12 +251,12 @@ class TetMesh:
         iarray = self.pca.transform(array)
         inside = np.zeros(array.shape[0]).astype(bool)
         inside[:] = True
-        inside = iarray[:, 0] > self.minpc0[None]
-        inside *= iarray[:, 0] < self.maxpc0[None]
-        inside *= iarray[:, 1] > self.minpc1[None]
-        inside *= iarray[:, 1] < self.maxpc1[None]
-        inside *= iarray[:, 2] > self.minpc2[None]
-        inside *= iarray[:, 2] < self.maxpc2[None]
+        # inside = iarray[:, 0] > self.minpc0[None]
+        # inside *= iarray[:, 0] < self.maxpc0[None]
+        # inside *= iarray[:, 1] > self.minpc1[None]
+        # inside *= iarray[:, 1] < self.maxpc1[None]
+        # inside *= iarray[:, 2] > self.minpc2[None]
+        # inside *= iarray[:, 2] < self.maxpc2[None]
 
         return ee, inside
 
@@ -381,6 +381,11 @@ class TetMesh:
         :param mask: original mask
         :return: nodes and adjusted mask
         """
-        mask[self.elements] = np.any(mask[self.elements] == True, axis=1)[:, None]
+        mask1 = np.copy(mask)
+        element_mask = mask[self.elements]
+        element_mask2 = np.any(element_mask == True, axis=1)
+        element_mask2 = np.tile(element_mask2,(4,1)).T
+        mask[self.elements] = element_mask2
+        print(np.sum(mask1.astype(int)-mask.astype(int)))
         return self.nodes[mask], mask
         

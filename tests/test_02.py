@@ -79,7 +79,7 @@ fault_frame = fault.build(
 #
 fault = FaultSegment(fault_frame)
 
-faulted_feature = FaultedGeologicalFeature(feature,fault)
+faulted_feature = FaultedGeologicalFeature(feature, fault)
 # viewer = LavaVuModelViewer()
 # viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
 # # viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)

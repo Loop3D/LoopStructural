@@ -96,6 +96,7 @@ class LavaVuModelViewer:
             surf.vertices(nodes)
             surf.indices(tris)
             surf.colours(colour)
+
     def lv_plot_vector_field(self, propertyname, lv, **kwargs):
         try:
             import lavavu
@@ -113,6 +114,7 @@ class LavaVuModelViewer:
         vectorfield.vertices(self.barycentre[::vector_slicing, :])
         vectorfield.vectors(vectors)
         return
+
     def plot_points(self,points,name,col='red'):
         p = self.lv.points(name,pointsize=4,pointtype="sphere",colour=col)
         p.vertices(points)

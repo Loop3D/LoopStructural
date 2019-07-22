@@ -42,6 +42,10 @@ class FaultedGeologicalFeature(GeologicalFeature):
         # fault.appy_fault_to_data(data)
         # run interpolator
         # self.parent_feature.update()
+        viewer  = LavaVuModelViewer()
+        viewer.plot_points(hw_p,"hw",col='green')
+        viewer.plot_points(fw_p,"fw",col='blue')
+        viewer.lv.interactive()
         hw_v = np.zeros(self.support.number_of_nodes())
         fw_v = np.zeros(self.support.number_of_nodes())
         hw_v[:] = np.nan
