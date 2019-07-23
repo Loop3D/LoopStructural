@@ -39,10 +39,17 @@ class FaultSegment:
         region = 'everywhere'
         #get all of the points for the support that are on the hanging wall or part
         #of a support element (tetra/cube) that is on the hanging wall
-        hw_p, hw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) >= 0)
+        # hw_p, hw_m = support.get_connected_nodes_for_mask()
+        buffer = (self.faultframe.supports[0].max_property_value() -
+                self.faultframe.supports[0].min_property_value())*.1
+        hw_m = self.faultframe.get_values(0) >= -buffer
+        hw_p = support.mesh.nodes[hw_m]
+
         # get all of the points for the support that are on the foot wall or part
         # of a support element (tetra/cube) that is on the foot wall
-        fw_p, fw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) <= 0)
+        # fw_p, fw_m = support.get_connected_nodes_for_mask(self.faultframe.get_values(0) <= 5)
+        fw_m = self.faultframe.get_values(0) <= buffer
+        fw_p = support.mesh.nodes[fw_m]
         self.d_fw = np.zeros(fw_m.shape)
         self.d_hw = np.zeros(hw_m.shape)
         self.d_hw[hw_m] = 1.
