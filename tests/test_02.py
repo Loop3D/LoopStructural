@@ -20,7 +20,7 @@ boundary_points[1,0] = 20
 boundary_points[1,1] = 20
 boundary_points[1,2] = 20
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10    000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
 
 interpolator = PLI(mesh,propertyname='Stratigraphy')
 interpolator.add_point([0,0,0],0)
@@ -84,10 +84,7 @@ viewer = LavaVuModelViewer()
 viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
 viewer.plot_isosurface(faulted_feature.fw_feature,isovalue=0)
 mask = fault_frame.supports[0].get_node_values() > 0
-print(mask[mesh.elements].shape)
-print(mesh.n_nodes)
 mask[mesh.elements] = np.any(mask[mesh.elements] == True, axis=1)[:, None]
-print(mask)
 viewer.plot_points(mesh.nodes[mask],"nodes",col="red")
 #print(mask)
 viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')

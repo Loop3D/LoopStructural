@@ -29,6 +29,15 @@ class GeologicalFeature:
     def evaluate_gradient(self, locations):
         return self.support.evaluate_gradient(locations)
 
+    def mean_property_value(self):
+        return np.nanmean(self.support.get_node_values())
+
+    def min_property_value(self):
+        return np.nanmin(self.support.get_node_values())
+
+    def max_property_value(self):
+        return np.nanmax(self.support.get_node_values())
+
 
 class FaultedGeologicalFeature(GeologicalFeature):
     """
@@ -80,4 +89,18 @@ class FaultedGeologicalFeature(GeologicalFeature):
         evaluated[hangingwall] = self.hw_feature.evaluate(locations[hangingwall])
         evaluated[footwall] = self.fw_feature.evaluate(locations[footwall])
         return evaluated
+
+    def mean_property_value(self):
+        return np.nanmean(self.support.get_node_values())
+
+    def min_property_value(self):
+        return np.nanmin(self.support.get_node_values())
+
+    def max_property_value(self):
+        return np.nanmax(self.support.get_node_values())
+
+
+class CompositeGeologicalFeature(GeologicalFeature):
+    def __init__(self, geological_feature_a, geological_feature_b):
+        pass
 

@@ -1,4 +1,5 @@
 import lavavu
+import meshpy
 # class ModelViewer():
 #     def __init__(self,modelsupport,**kwargs):
 #         """
@@ -33,9 +34,9 @@ class LavaVuModelViewer:
         self.objects = {}
 
     def plot_isosurface(self, geological_feature, **kwargs):
-        mean_property_val = geological_feature.support.mean_property_value()
-        min_property_val = geological_feature.support.min_property_value()
-        max_property_val = geological_feature.support.max_property_value()
+        mean_property_val = geological_feature.mean_property_value()
+        min_property_val = geological_feature.min_property_value()
+        max_property_val = geological_feature.max_property_value()
         slices = [mean_property_val]
         colour = 'red'
 
@@ -115,8 +116,8 @@ class LavaVuModelViewer:
         vectorfield.vectors(vectors)
         return
 
-    def plot_points(self,points,name,col='red'):
-        p = self.lv.points(name,pointsize=4,pointtype="sphere",colour=col)
+    def plot_points(self, points, name, col='red'):
+        p = self.lv.points(name, pointsize=4, pointtype="sphere", colour=col)
         p.vertices(points)
 
 
