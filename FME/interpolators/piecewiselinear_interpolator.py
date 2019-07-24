@@ -89,7 +89,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
-    def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
+    def add_gradient_ctr_pts(self, w=10.0):  # for now weight all gradient points the same
         """
         add gradient norm constraints to the interpolator
         :param w: weight per constraint
@@ -97,7 +97,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         points = self.get_gradient_control()
         if points.shape[0] > 0:
-            e, inside = self.mesh.elements_for_array(points[:,3:])
+            e, inside = self.mesh.elements_for_array(points[:,:3])
             d_t = self.mesh.get_elements_gradients(e)
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
             #add in the element gradient matrix into the inte
@@ -158,4 +158,4 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         return TetrahedralMeshScalarField.from_node_values(
             self.mesh,
             self.propertyname,
-            self.node_values)
+            self.c)

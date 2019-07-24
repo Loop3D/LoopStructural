@@ -37,8 +37,9 @@ class TetrahedralMeshScalarField:
         return self.mesh.evaluate_value(evaluation_points, self.property_name)
 
     def evaluate_gradient(self, evaluation_points):
-        return self.mesh.evaluate_gradient(evaluation_points, self.property_name)
-
+        if evaluation_points.shape[0]>0:
+            return self.mesh.evaluate_gradient(evaluation_points, self.property_name)
+        return np.zeros((0,3))
     def mean_property_value(self):
         return np.nanmean(self.mesh.properties[self.property_name])
 
@@ -67,7 +68,6 @@ class TetrahedralMeshScalarField:
         ##convert from memoryview to np array
         tri = np.array(tri)
         ntri = np.array(ntri)[0]
-        print(ntri)
         ##create a triangle indices array and initialise to -1
         tris = np.zeros((ntri, 3)).astype(int)
         tris[:, :] = -1
@@ -92,15 +92,17 @@ class TetrahedralMeshScalarField:
         crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
         # get barycentre of faces and findproperty gradient from scalar field
         tribc = np.mean(tri[:ntri, :, :], axis=1)
-        # tribc = tribc[np.any(np.isnan(tribc), axis=1)]
-        # propertygrad = self.evaluate_gradient(tribc)
-        # propertygrad /= np.linalg.norm(propertygrad, axis=1)[:, None]
-        #
-        # # dot product between gradient and normal indicates if faces are incorrectly ordered
-        # dotproducts = (propertygrad * crosses[np.any(np.isnan(tribc), axis=1)]).sum(axis=1)
-        # # if dot product > 0 then adjust triangle indexing
-        # indices = (dotproducts > 0).nonzero()[0]
-        # tris[indices] = tris[indices, ::-1]
+        #tribc = tribc[np.any(np.isnan(tribc), axis=0)]
+        print(tribc)
+
+        propertygrad = self.evaluate_gradient(tribc)
+        propertygrad /= np.linalg.norm(propertygrad, axis=1)[:, None]
+
+        # dot product between gradient and normal indicates if faces are incorrectly ordered
+        dotproducts = (propertygrad * crosses).sum(axis=1)
+        # if dot product > 0 then adjust triangle indexing
+        indices = (dotproducts > 0).nonzero()[0]
+        tris[indices] = tris[indices, ::-1]
         #
         #
         nodes_np = np.zeros((n, 3))

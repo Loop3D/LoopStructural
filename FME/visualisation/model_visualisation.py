@@ -1,4 +1,5 @@
 import lavavu
+import numpy as np
 import meshpy
 # class ModelViewer():
 #     def __init__(self,modelsupport,**kwargs):
@@ -21,6 +22,11 @@ import meshpy
 #     def save_state(self,**kwargs):
 #
 #     def load_state(self,**kwargs):
+def surface_cutter(feature,isovalue,nodes,tris):
+    values = feature.evaluate_value(nodes)
+    property_bool = values > isovalue
+    tri_type_index = np.sum(property_bool[tris]*np.array([1,2,4]),axis=1)
+
 
 
 class LavaVuModelViewer:
@@ -54,6 +60,7 @@ class LavaVuModelViewer:
                 isovalue = kwargs['isovalue']
 
             tris, nodes = geological_feature.support.slice(isovalue)
+
             # reg = np.zeros(self.properties[propertyname].shape).astype(bool)
             # reg[:] = True
             # if 'region' in kwargs:
@@ -65,6 +72,7 @@ class LavaVuModelViewer:
             surf.vertices(nodes)
             surf.indices(tris)
             surf.colours(colour)
+
     def plot_structural_frame_isosurface(self,structural_frame,i, **kwargs):
         mean_property_val = structural_frame.supports[i].mean_property_value()
         min_property_val = structural_frame.supports[i].min_property_value()
@@ -90,7 +98,7 @@ class LavaVuModelViewer:
             # reg[:] = True
             # if 'region' in kwargs:
             #     reg = self.regions[kwargs['region']]
-            name = structural_frame.name + '_iso_%f' % isovalue
+            name = structural_frame.name + '_%i_iso_%f' % (i,isovalue)
             if 'name' in kwargs:
                 name = kwargs['name']
             surf = self.lv.triangles(name)
@@ -99,10 +107,6 @@ class LavaVuModelViewer:
             surf.colours(colour)
 
     def lv_plot_vector_field(self, propertyname, lv, **kwargs):
-        try:
-            import lavavu
-        except ImportError:
-            print("Cannot import Lavavu")
         if 'colour' not in kwargs:
             kwargs['colour'] = 'black'
         vectorslicing = 100
@@ -119,5 +123,15 @@ class LavaVuModelViewer:
     def plot_points(self, points, name, col='red'):
         p = self.lv.points(name, pointsize=4, pointtype="sphere", colour=col)
         p.vertices(points)
+
+    def plot_vector_data(self, position, vector, name, **kwargs):
+        if 'colour' not in kwargs:
+            kwargs['colour'] = 'black'
+        # normalise
+        vector /= np.linalg.norm(vector, axis=1)[:, None]
+        vectorfield = self.lv.vectors(name, **kwargs)
+        vectorfield.vertices(position)
+        vectorfield.vectors(vector)
+        return
 
 

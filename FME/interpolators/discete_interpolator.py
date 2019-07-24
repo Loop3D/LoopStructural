@@ -43,6 +43,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.col.extend(idc.flatten().tolist())
             self.B.extend(B.flatten().tolist())
         if self.shape == 'square':
+            print('square')
             for i in range(4):
                 self.B[element[i]] += (p.val * c[i] * w)
                 for j in range(4):
@@ -92,9 +93,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
             import eigensparse
             self.c[self.region] = eigensparse.lsqspqr(self.AA.tocsr(), self.B)
             return
-        if solver == 'lu' and self.shape == 'square':
-            lu = sla.splu(self.AA.tocsr())
-            b = self.B  # np.array([1, 2, 3, 4])
+        if solver == 'lu':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            lu = sla.splu(A)
+            b = B  # np.array([1, 2, 3, 4])
             self.c[self.region] = lu.solve(b)
             if clear:
                 self.AA = None
@@ -103,14 +110,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 self.row = []
                 lu = None
             return
-        if solver == 'chol' and self.shape == 'square':
+        if solver == 'chol':
             try:
                 from sksparse.cholmod import cholesky
             except ImportError:
                 print("Scikit Sparse not installed try another solver e.g. lu")
                 return
-            factor = cholesky(self.AA.tocsc())
-            self.c = factor(self.B)
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            factor = cholesky(A)
+            self.c = factor(B)
             if clear:
                 self.AA = None
                 self.A = []
@@ -118,5 +131,61 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 self.row = []
                 factor = None
             return
+        if solver == 'cg':
+            if self.shape == 'rectangular':
+                A = self.AA.T @ self.AA
+                B = self.AA.T @ self.B
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.cc_ = sla.cg(A,B)
+        if solver == 'cgs':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.cc_ = sla.cgs(A,B)
+        if solver == 'bicg':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.cc_ = sla.bicg(A,B)
+        if solver == 'qmr':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.cc_ = sla.qmr(A,B)
+        if solver == 'gmres':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.cc_ = sla.gmres(A,B)
+        if solver == 'lgmres':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.cc_ = sla.lgmres(A,B)
+        if solver == 'minres':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.cc_ = sla.minres(A,B)
         self.c[self.region] = self.cc_[0]
         self.node_values = self.c

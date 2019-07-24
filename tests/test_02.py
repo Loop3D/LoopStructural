@@ -85,9 +85,6 @@ viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
 viewer.plot_isosurface(faulted_feature.fw_feature,isovalue=0)
 mask = fault_frame.supports[0].get_node_values() > 0
 mask[mesh.elements] = np.any(mask[mesh.elements] == True, axis=1)[:, None]
-viewer.plot_points(mesh.nodes[mask],"nodes",col="red")
-#print(mask)
+viewer.plot_points(mesh.nodes[mask], "nodes", col="red")
 viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
-# viewer.plot_structural_frame_isosurface(fault_frame,0,isovalue=2)
-#
 viewer.lv.interactive()

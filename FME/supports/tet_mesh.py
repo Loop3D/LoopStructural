@@ -386,6 +386,5 @@ class TetMesh:
         element_mask2 = np.any(element_mask == True, axis=1)
         element_mask2 = np.tile(element_mask2,(4,1)).T
         mask[self.elements] = element_mask2
-        print(np.sum(mask1.astype(int)-mask.astype(int)))
         return self.nodes[mask], mask
         
