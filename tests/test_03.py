@@ -24,24 +24,24 @@ stratigraphy = PLI(mesh, region='everywhere', propertyname='Stratigraphy')
 #         stratigraphy.add_point([i,j,3*np.sin(j/5)+1],1.)
 
 stratigraphy.add_point([6.1,0.1,1.1],0.)
-stratigraphy.add_point([-6.1,0.1,3.1],0.)
-stratigraphy.add_point([0.1,0.1,6.1],0.)
-
-stratigraphy.add_point([2.2,1.,2.],0)
-stratigraphy.add_point([2.1,3.1,4.2],1)
+# stratigraphy.add_point([-6.1,0.1,3.1],0.)
+# stratigraphy.add_point([0.1,0.1,6.1],0.)
+#
+# stratigraphy.add_point([2.2,1.,2.],0)
+# stratigraphy.add_point([2.1,3.1,4.2],1)
 
 stratigraphy.add_strike_and_dip([1,1,1],90.,0.)
 
 stratigraphy.setup_interpolator(cgw=.1)
-stratigraphy.solve_system(solver='lsmr')
+stratigraphy.solve_system(solver='lu')
 
 support = stratigraphy.get_support()
 
 feature = GeologicalFeature(0, 'Stratigraphy', support)
 
 
-floor = -10
-roof = 10
+floor = -6
+roof = 6
 
 fault = StructuralFrameBuilder(interpolator=PLI,mesh=mesh,name='FaultSegment1')
 for y in range(-20,20,1):
@@ -62,14 +62,15 @@ for y in range(-20,20,1):
     fault.add_point([11.56,y,roof],1.,itype='gy')
 
 
-fault_frame = fault.build(solver='lsmr',gxxgy=0.1,gxxgz=1,gyxgz=0.05,gycg=5,gzcg=0.1)
+fault_frame = fault.build(solver='lu',gxxgy=0.1,gxxgz=1,gyxgz=0.05,gycg=5,gzcg=0.1)
 
 fault_operator = FaultSegment(fault_frame)
 
 
-viewer = LavaVuModelViewer()
-# viewer.plot_isosurface(feature, isovalue=0)
-viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
-# viewer.plot_structural_frame_isosurface(fault_frame, 1, isovalue=0, colour='blue')
+faulted_feature = FaultedGeologicalFeature(feature, fault_operator)
 
+viewer = LavaVuModelViewer()
+viewer.plot_isosurface(faulted_feature.hw_feature, slices=[-20,-15,-13,-10])
+viewer.plot_isosurface(faulted_feature.fw_feature, slices=[-20,-15,-13,-10])
+viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
 viewer.lv.interactive()

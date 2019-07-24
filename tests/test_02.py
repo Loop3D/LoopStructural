@@ -28,7 +28,7 @@ a = np.zeros((3,3,3))
 interpolator.add_point([0,0,1],-0.5)
 interpolator.add_strike_and_dip([0,0,0],90,0)
 interpolator.setup_interpolator()
-interpolator.solve_system(solver='lsmr')
+interpolator.solve_system(solver='chol')
 
 support = interpolator.get_support()
 
@@ -63,7 +63,7 @@ ogw /= mesh.n_elements
 cgw = 500
 cgw = cgw / mesh.n_elements
 fault_frame = fault.build(
-    solver='lsmr',
+    solver='chol',
     guess=None,
    gxxgy=2*ogw,
    gxxgz=2*ogw,

@@ -57,7 +57,7 @@ class LavaVuModelViewer:
         for isovalue in slices:
             if isovalue < min_property_val or isovalue > max_property_val:
                 print("No surface to create for isovalue")
-                isovalue = kwargs['isovalue']
+                continue #isovalue = kwargs['isovalue']
 
             tris, nodes = geological_feature.support.slice(isovalue)
 

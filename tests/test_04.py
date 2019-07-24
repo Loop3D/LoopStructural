@@ -32,12 +32,11 @@ cgw = 100 / mesh.n_elements
 stratigraphy.setup_interpolator(cgw=cgw)
 # stratigraphy.calculate_constant_gradient_with_element_weighting(w)
 stratigraphy.solve_system(solver='chol',clear=True)
-print(stratigraphy.c)
 support = stratigraphy.get_support()
 
 feature = GeologicalFeature(0, 'Stratigraphy', support)
 
-viewer = LavaVuModelViewer()
+viewer = LavaVuModelViewer(background='white')
 viewer.plot_isosurface(feature, isovalue=0)
 viewer.plot_points(stratigraphy.get_control_points()[:,0:3],"value")
 viewer.plot_vector_data(stratigraphy.get_gradient_control()[:,0:3],stratigraphy.get_gradient_control()[:,3:],"vector")

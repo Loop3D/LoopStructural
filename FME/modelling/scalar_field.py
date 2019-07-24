@@ -1,8 +1,7 @@
-from .support import Support
 import numpy as np
 from ..cython.marching_tetra import marching_tetra
 
-class ScalarField(Support):
+class ScalarField:
     """
     Generic support to represent a scalar field
     """
@@ -92,14 +91,14 @@ class TetrahedralMeshScalarField:
         crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
         # get barycentre of faces and findproperty gradient from scalar field
         tribc = np.mean(tri[:ntri, :, :], axis=1)
-        #tribc = tribc[np.any(np.isnan(tribc), axis=0)]
-        print(tribc)
+        mask = np.any(~np.isnan(tribc), axis=1)
+        tribc = tribc[mask,:]
 
         propertygrad = self.evaluate_gradient(tribc)
         propertygrad /= np.linalg.norm(propertygrad, axis=1)[:, None]
 
         # dot product between gradient and normal indicates if faces are incorrectly ordered
-        dotproducts = (propertygrad * crosses).sum(axis=1)
+        dotproducts = (propertygrad * crosses[mask]).sum(axis=1)
         # if dot product > 0 then adjust triangle indexing
         indices = (dotproducts > 0).nonzero()[0]
         tris[indices] = tris[indices, ::-1]

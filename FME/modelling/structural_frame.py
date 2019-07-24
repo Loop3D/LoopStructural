@@ -2,6 +2,7 @@ import numpy as np
 from FME.modelling.geological_points import IPoint, GPoint, TPoint
 from FME.modelling.geological_feature import GeologicalFeature
 
+
 class StructuralFrame(GeologicalFeature):
     def __init__(self, age, name, supports):
         self.age = age
