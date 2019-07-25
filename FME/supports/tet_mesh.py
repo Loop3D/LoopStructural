@@ -345,8 +345,13 @@ class TetMesh:
         a = np.zeros(array.shape)
         a[inside] = (grads * vals[:, None, :]).sum(2) / 4.  # @ vals.T/
         a[~inside, :] = np.nan
-        asum = np.sum(a, axis=1)
-        a[np.logical_and(asum > 0,~np.isinf(asum))] /= asum[np.logical_and(asum > 0,~np.isinf(asum)), None]
+        asum = np.zeros(a.shape[0])
+        asum[inside] = np.sum(a[inside,:], axis=1)
+        inside = ~np.isnan(asum)
+        logic = np.zeros(asum.shape).astype(bool)
+        logic[:] = False
+        logic[inside] = asum[inside] > 0
+        a[logic] /= asum[logic, None]
         return a
 
     def export_to_vtk(self, name='mesh.vtk'):

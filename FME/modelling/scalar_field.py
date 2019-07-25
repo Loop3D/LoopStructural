@@ -93,29 +93,31 @@ class TetrahedralMeshScalarField:
                     nodes[tuple(tri[i, j, :])] = n
                     tris[i, j] = n
                     n += 1
+        nodes_np = np.zeros((n, 3))
+        for v in nodes.keys():
+            nodes_np[nodes[v], :] = np.array(v)
+
         # find the normal vector to the faces using the vertex order
-        a = tri[:ntri, 0, :] - tri[:ntri, 1, :]
-        b = tri[:ntri, 0, :] - tri[:ntri, 2, :]
+        a = nodes_np[tris[:, 0], :] - nodes_np[tris[:, 1], :]
+        b = nodes_np[tris[:, 0], :] - nodes_np[tris[:, 2], :]
 
         crosses = np.cross(a, b)
         crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
-        # get barycentre of faces and findproperty gradient from scalar field
-        tribc = np.mean(tri[:ntri, :, :], axis=1)
+        tribc = np.mean(nodes_np[tris, :], axis=1)
         mask = np.any(~np.isnan(tribc), axis=1)
-        tribc = tribc[mask,:]
+        tribc = tribc[mask, :]
 
         propertygrad = self.evaluate_gradient(tribc)
         propertygrad /= np.linalg.norm(propertygrad, axis=1)[:, None]
 
         # dot product between gradient and normal indicates if faces are incorrectly ordered
-        dotproducts = (propertygrad * crosses[mask]).sum(axis=1)
+        dotproducts = np.zeros(tris.shape[0])
+        dotproducts[mask] = (propertygrad * crosses[mask]).sum(axis=1)
         # if dot product > 0 then adjust triangle indexing
-        #todo need to check if nan
-        indices = (dotproducts > 0).nonzero()[0]
+        dotproducts[np.isnan(dotproducts)] = -1
+        # todo need to check if nan
+        indices = (dotproducts > 0)
         tris[indices] = tris[indices, ::-1]
         #
         #
-        nodes_np = np.zeros((n, 3))
-        for v in nodes.keys():
-            nodes_np[nodes[v], :] = np.array(v)
         return tris, nodes_np

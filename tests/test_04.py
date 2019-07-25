@@ -33,9 +33,9 @@ fault = StructuralFrameBuilder(interpolator=fault_interpolator,mesh=mesh,name='F
 for y in range(-20,20,1):
     fault.add_strike_dip_and_value([-15.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([-6.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
-    fault.add_strike_dip_and_value([-4.,y,floor],strike=0.,dip=45.,val=0,itype='gx')
-    fault.add_strike_dip_and_value([6.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
-    fault.add_strike_dip_and_value([4.,y,roof],strike=0.,dip=0.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([-4.,y,floor],strike=0.,dip=45.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([6.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([4.,y,roof],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([8.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([15.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
 
@@ -64,7 +64,7 @@ for y in range(-15,15):
     fault2.add_point([18.,y,18],0,itype='gy')
     fault2.add_point([10,y,-5],1.,itype='gy')
 #
-    fault2.add_strike_dip_and_value([18.,y,18],strike=0,dip=-55,val=0,itype='gx')
+    fault2.add_strike_dip_and_value([18.,y,18],strike=180,dip=-55,val=0,itype='gx')
 #
 ogw = 300
 ogw /= mesh.n_elements
@@ -94,13 +94,13 @@ for f in fault_frame.features:
 structural_frame2 = StructuralFrame("faulted_frame", faulted_frame)
 
 faulted1_op = FaultSegment(fault_frame)
-faulted_strati = FaultedGeologicalFeature(stratigraphy, faulted1_op)
-viewer = LavaVuModelViewer()
-viewer.plot_isosurface(faulted_frame[0].hw_feature, isovalue=0, colour='green')
-viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='grey')
+faulted_strati = FaultedGeologicalFeature(stratigraphy, fault_operator)# faulted1_op)
+viewer = LavaVuModelViewer(background="white")
+# viewer.plot_isosurface(faulted_frame[0].hw_feature, isovalue=0, colour='green')
+# viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='grey')
 
-# viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='red')
-viewer.plot_isosurface(fault_frame2.features[0], isovalue=0, colour='red')
+viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='red')
+# viewer.plot_isosurface(fault_frame2.features[0], isovalue=0, colour='red')
 
 viewer.plot_isosurface(faulted_strati.fw_feature, slices=[-10, -15, -20], colour='blue')
 viewer.plot_isosurface(faulted_strati.hw_feature, slices=[-10, -15, -20], colour='red')
