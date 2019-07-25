@@ -4,8 +4,7 @@ from FME.modelling.geological_feature import GeologicalFeature
 
 
 class StructuralFrame(GeologicalFeature):
-    def __init__(self, age, name, supports):
-        self.age = age
+    def __init__(self, name, supports):
         self.name = name
         self.supports = supports
         self.ndim = 3
@@ -68,39 +67,36 @@ class StructuralFrameBuilder:
             self.region = kwargs['region']
         self.data = []
         #dictionary to contain all of the interpolation objects for this frame
-        self.interpolators = {}
-        #If this frame overlaps with another frame, store that frame here and the condition
-        #of overlap
-        self.overlap = {}
+        self.interpolators = []
         #Create the interpolation objects you
-        self.interpolators['gx'] = interpolator(
-            mesh=self.mesh,
-            itype='gx',
-            propertyname=self.name + '_' + 'gx',
-            **kwargs)
-        self.interpolators['gy'] = interpolator(
-            mesh=self.mesh,
-            itype='gy',
-            propertyname=self.name + '_' + 'gy',
-            **kwargs)
-        self.interpolators['gz'] = interpolator(
-            mesh=self.mesh,
-            itype='gz',
-            propertyname=self.name + '_' + 'gz',
-            **kwargs)
-    def add_strike_dip_and_value(self,pos,strike,dip,val,itype):
+        self.interpolators.append(interpolator)
+        self.interpolators.append(interpolator.copy())
+        self.interpolators.append(interpolator.copy())
+
+        self.interpolators[0].set_property_name(self.name+'_gx')
+        self.interpolators[1].set_property_name(self.name+'_gy')
+        self.interpolators[2].set_property_name(self.name+'_gz')
+        for i in range(3):
+            self.interpolators[i].set_region(regionname=self.region)
+
+    def add_strike_dip_and_value(self, pos, strike, dip, val, itype):
         self.data.append({'type':itype,'data':GPoint(pos,strike,dip)})
         self.data.append({'type':itype,'data':IPoint(pos,val)})
-    def add_point(self,pos,val,itype):
+
+    def add_point(self, pos, val, itype):
         self.data.append({'type':itype,'data':IPoint(pos,val)})
-    def add_planar_constraint(self,pos,val,itype):
+
+    def add_planar_constraint(self, pos, val, itype):
         self.data.append({'type':itype,'data':GPoint(pos,val)})
-    def add_strike_and_dip(self,pos,s,d,itype):
+
+    def add_strike_and_dip(self, pos, s, d, itype):
         self.data.append({'type':itype,'data':GPoint(pos,s,d)})
-    def add_tangent_constraint(self,pos,val,itype):
+
+    def add_tangent_constraint(self, pos, val,itype):
         self.data.append({'type':itype,'data':TPoint(pos,val)})
+
     def add_tangent_constraint_angle(self,pos,s,d,itype):
-        self.data.append({'type':itype,'data':TPoint(pos,s,d)})
+        self.data.append({'type': itype,'data':TPoint(pos,s,d)})
 
     def build(self, solver='lsqr', **kwargs):
         """
@@ -121,9 +117,6 @@ class StructuralFrameBuilder:
         gxgcp = 1
         gygcp = 1
         gzgcp = 1
-        gx = True
-        gy = True
-        gz = True
         if 'gx' in kwargs:
             gx = kwargs['gx']
         if 'gy' in kwargs:
@@ -154,49 +147,45 @@ class StructuralFrameBuilder:
             gygcp = kwargs['gygcp']
         if 'gzgcp' in kwargs:
             gzgcp = kwargs['gzgcp']
-        if 'segment' in self.overlap:
-            overlapsegment = self.overlap['segment']
-            overlapregion = self.overlap['region']
-            overlap = True
         shape = 'rectangular'
         if 'shape' in kwargs:
             shape = kwargs['shape']
 
         for d in self.data:
             if d['type'] == 'gx':
-                self.interpolators['gx'].add_data(d['data'])
+                self.interpolators[0].add_data(d['data'])
             if d['type'] == 'gy':
-                self.interpolators['gy'].add_data(d['data'])
+                self.interpolators[0].add_data(d['data'])
             if d['type'] == 'gz':
-                self.interpolators['gz'].add_data(d['data'])
-        self.interpolators['gx'].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
-        self.interpolators['gx'].solve_system(solver=solver)
-        self.mesh.update_property(self.name + '_' + 'gx', self.interpolators['gx'].c)
+                self.interpolators[0].add_data(d['data'])
+        self.interpolators[0].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
+        self.interpolators[0].solve_system(solver=solver)
+        self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
 
-        self.interpolators['gy'].add_elements_gradient_orthogonal_constraint(np.arange(0, \
+        self.interpolators[1].add_elements_gradient_orthogonal_constraint(np.arange(0, \
                                                                                        self.mesh.n_elements), \
                                                                              self.mesh.property_gradients[
                                                                                  self.name + '_' + 'gx'], w=gxxgy)
-        self.interpolators['gy'].setup_interpolator(cgw=gycg, cpw=gycp, gpw=gygcp)  # cgw=0.1)#
+        self.interpolators[1].setup_interpolator(cgw=gycg, cpw=gycp, gpw=gygcp)  # cgw=0.1)#
 
-        self.mesh.update_property(self.name + '_' + 'gx', self.interpolators['gx'].c)
-        self.interpolators['gy'].solve_system(solver=solver)
-        self.mesh.update_property(self.name + '_' + 'gy', self.interpolators['gy'].c)
-        self.interpolators['gz'].add_elements_gradient_orthogonal_constraint(np.arange(0, self.mesh.n_elements) \
+        self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
+        self.interpolators[1].solve_system(solver=solver)
+        self.mesh.update_property(self.name + '_' + 'gy', self.interpolators[1].c)
+        self.interpolators[1].add_elements_gradient_orthogonal_constraint(np.arange(0, self.mesh.n_elements) \
                                                                              , \
                                                                              self.mesh.property_gradients[
                                                                                  self.name + '_' + 'gx']
                                                                              , w=gxxgz)
-        self.interpolators['gz'].add_elements_gradient_orthogonal_constraint(np.arange(0, self.mesh.n_elements) \
+        self.interpolators[2].add_elements_gradient_orthogonal_constraint(np.arange(0, self.mesh.n_elements) \
                                                                              , self.mesh.property_gradients[
                                                                                  self.name + '_' + 'gy'], w=gyxgz)
 
-        self.interpolators['gz'].setup_interpolator(cgw=gzcg, cpw=gzcp, gpw=gzgcp)  # cgw=0.1)
-        self.interpolators['gz'].solve_system(solver=solver)
-        self.mesh.update_property(self.name + '_' + 'gz', self.interpolators['gz'].c)
+        self.interpolators[2].setup_interpolator(cgw=gzcg, cpw=gzcp, gpw=gzgcp)  # cgw=0.1)
+        self.interpolators[2].solve_system(solver=solver)
+        self.mesh.update_property(self.name + '_' + 'gz', self.interpolators[2].c)
 
-        return StructuralFrame(0, 'name',
-                               [self.interpolators['gx'].get_support(),
-                                self.interpolators['gy'].get_support(),
-                                self.interpolators['gz'].get_support()])
+        return StructuralFrame('name',
+                               [self.interpolators[0].get_support(),
+                                self.interpolators[1].get_support(),
+                                self.interpolators[2].get_support()])
         

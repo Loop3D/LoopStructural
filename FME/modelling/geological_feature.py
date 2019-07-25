@@ -1,5 +1,43 @@
 from .scalar_field import TetrahedralMeshScalarField
+from ..modelling.geological_points import GPoint, IPoint, TPoint
 import numpy as np
+
+
+class GeologicalFeatureBuilder:
+    def __init__(self, interpolator, **kwargs):
+        self.interpolator = interpolator
+        if 'name' in kwargs:
+            self.name = kwargs['name']
+        if 'region' in kwargs:
+            self.region = kwargs['region']
+        self.data = []
+
+    def add_strike_dip_and_value(self, pos, strike, dip, val):
+        self.data.append(GPoint(pos, strike, dip))
+        self.data.append(IPoint(pos, val))
+
+    def add_point(self, pos, val):
+        self.data.append(IPoint(pos, val))
+
+    def add_planar_constraint(self, pos, val):
+        self.data.append(GPoint(pos, val))
+
+    def add_strike_and_dip(self, pos, s, d):
+        self.data.append(GPoint(pos, s, d))
+
+    def add_tangent_constraint(self, pos, val):
+        self.data.append(TPoint(pos, val))
+
+    def add_tangent_constraint_angle(self, pos, s, d):
+        self.data.append(TPoint(pos, s, d))
+
+    def build(self, solver='cg', **kwargs):
+        for d in self.data:
+            self.interpolator.add_data(d)
+        self.interpolator.setup_interpolator(**kwargs)
+        self.interpolator.solve_system(solver=solver)
+        return GeologicalFeature(self.name,
+                                 TetrahedralMeshScalarField.from_interpolator(self.interpolator))
 
 
 class GeologicalFeature:
@@ -7,21 +45,17 @@ class GeologicalFeature:
     Geological feature is class that is used to represent a geometrical element of a geological
     feature. For example foliations, fault planes, fold rotation angles etc.
     """
-    def __init__(self, age, name, support):
+    def __init__(self, name, support):
         """
 
         :param age:
         :param name:
         :param support:
         """
-        self.age = age
         self.name = name
         self.support = support
         self.ndim = 1
-    # @classmethod
-    # def from_interpolation_parameters(cls, age, name, support, params):
-    #
-    #     pass
+        self.data = []
 
     def evaluate_value(self, evaluation_points):
         return self.support.evaluate_value(evaluation_points)
@@ -45,7 +79,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
     and another feature representing the surface pre faulting.
     """
     def __init__(self, feature, fault):
-        super().__init__(feature.age, feature.name+"_faulted", feature.support)
+        super().__init__(feature.name+"_faulted", feature.support)
         self.parent_feature = feature
         hw_p, fw_p, hw_m, fw_m = fault.apply_fault_to_support(self.support)
         # fault.appy_fault_to_data(data)
@@ -61,8 +95,8 @@ class FaultedGeologicalFeature(GeologicalFeature):
         # hw_v = self.parent_feature.support.get_node_values()
         hw_sf = TetrahedralMeshScalarField.from_node_values(self.support.mesh, self.name+'_hw', hw_v)
         fw_sf = TetrahedralMeshScalarField.from_node_values(self.support.mesh, self.name+'_fw', fw_v)
-        self.hw_feature = GeologicalFeature(self.age, self.name+'_hw', hw_sf)
-        self.fw_feature = GeologicalFeature(self.age, self.name+'_fw', fw_sf)
+        self.hw_feature = GeologicalFeature(self.name+'_hw', hw_sf)
+        self.fw_feature = GeologicalFeature(self.name+'_fw', fw_sf)
         # create a new geological feature from
 
         self.fault = fault

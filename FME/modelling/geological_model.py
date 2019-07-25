@@ -1,5 +1,5 @@
 from FME.modelling.geological_points import GPoint, IPoint
-
+import networkx as nx
 
 class GeologicalModel:
     """
@@ -7,6 +7,7 @@ class GeologicalModel:
     """
     def __init__(self):
         #TODO use a graph to represent the topological relationship between features
+        self.model = nx.Graph()
         self.features = {}
         self.data = {}
         self.data['gradient'] = []

@@ -1,8 +1,8 @@
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
-from FME.modelling.geological_feature import GeologicalFeature
+from FME.modelling.geological_feature import GeologicalFeature, GeologicalFeatureBuilder
+from FME.visualisation.model_visualisation import LavaVuModelViewer
 import numpy as np
-import lavavu
 
 """
 This is a basic example showing how to use the Piecewise Linear Interpolator for orientation and
@@ -20,14 +20,16 @@ mesh = TetMesh()
 mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
 
 interpolator = PLI(mesh)
-interpolator.add_point([0,0,0],0)
-a = np.zeros((3,3,3))
-interpolator.add_point([0.5,0,0],0.5)
-interpolator.add_strike_and_dip([0,0,0],90,10)
-interpolator.setup_interpolator()
-interpolator.solve_system(solver='lsmr')
+feature_builder = GeologicalFeatureBuilder(interpolator,name='stratigraphy')
 
-support = interpolator.get_support()
+feature_builder.add_point([0,0,0],0)
+# feature_builder.add_point([0.5,0,0],0.5)
+feature_builder.add_strike_and_dip([0,0,0],90,10)
+feature = feature_builder.build(solver='cg')
 
-feature = GeologicalFeature(0, 'Name', support)
 
+
+viewer = LavaVuModelViewer()
+viewer.plot_isosurface(feature,isovalue=0)
+
+viewer.lv.interactive()

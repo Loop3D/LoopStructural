@@ -61,12 +61,14 @@ class FaultSegment:
         fw_n = fw_p
         for i in range(steps):
             fw_g = self.faultframe.evaluate_gradient(fw_p, 1)
-            fw_g /= np.linalg.norm(fw_g, axis=1)[:, None]
+            fw_g_m = np.linalg.norm(fw_g, axis=1)
+            fw_g[fw_g_m > 0] /= fw_g_m[fw_g_m > 0, None]
             fw_g *= (1. / steps) * self.d_fw[fw_m, None]
             fw_g[np.any(np.isnan(fw_g), axis=1)] = np.zeros(3)
 
             hw_g = self.faultframe.evaluate_gradient(hw_p, 1)
-            hw_g /= np.linalg.norm(hw_g, axis=1)[:, None]
+            hw_g_m = np.linalg.norm(hw_g, axis=1)
+            hw_g[hw_g_m > 0] /= hw_g_m[hw_g_m > 0, None]
             hw_g *= (1. / steps) * self.d_hw[hw_m, None]
             hw_g[np.any(np.isnan(hw_g), axis=1)] = np.zeros(3)
             hw_n += hw_g

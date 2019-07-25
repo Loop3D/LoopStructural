@@ -26,11 +26,21 @@ class TetrahedralMeshScalarField:
         self.mesh = mesh
         self.property_name = property_name
         self.region = self.mesh.regions["everywhere"]
-
+        self.interpolator = None
     @classmethod
     def from_node_values(cls, mesh, property_name, node_values):
         mesh.update_property(property_name, node_values)
         return cls(mesh, property_name)
+
+    @classmethod
+    def from_interpolator(cls, interpolator):
+        interpolator.update()
+        interpolator.mesh.update_property(interpolator.propertyname, interpolator.c)
+        scalar_field = cls(
+            interpolator.mesh,
+            interpolator.propertyname)
+        scalar_field.interpolator = interpolator
+        return scalar_field
 
     def evaluate_value(self, evaluation_points):
         return self.mesh.evaluate_value(evaluation_points, self.property_name)

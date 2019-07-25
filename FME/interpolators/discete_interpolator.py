@@ -19,7 +19,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.col = []
         self.row = []  # sparse matrix storage
         self.support = None
-
+        self.solver = None
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system
@@ -58,7 +58,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         :param clear:
         :return:
         """
-
+        # save the solver so we can rerun the interpolation at a later stage
+        self.solver = solver
         # map node indicies from global to region
         if self.shape == 'rectangular':
             cols = self.region_map[np.array(self.col)]
@@ -100,7 +101,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             if self.shape == 'square':
                 A = self.AA
                 B = self.B
-            lu = sla.splu(A)
+            lu = sla.splu(A.tocsc())
             b = B  # np.array([1, 2, 3, 4])
             self.c[self.region] = lu.solve(b)
             if clear:
@@ -122,14 +123,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             if self.shape == 'square':
                 A = self.AA
                 B = self.B
-            factor = cholesky(A)
+            factor = cholesky(A.tocsc())
             self.c = factor(B)
-            if clear:
-                self.AA = None
-                self.A = []
-                self.col = []
-                self.row = []
-                factor = None
             return
         if solver == 'cg':
             if self.shape == 'rectangular':
@@ -189,3 +184,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.cc_ = sla.minres(A,B)
         self.c[self.region] = self.cc_[0]
         self.node_values = self.c
+
+    def update(self):
+        if self.solver is None:
+            print("Cannot rerun interpolator")
+            return
+        self._solve(self.solver)

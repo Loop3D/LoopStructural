@@ -1,6 +1,6 @@
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
-from FME.modelling.geological_feature import GeologicalFeature, FaultedGeologicalFeature
+from FME.modelling.geological_feature import GeologicalFeature, FaultedGeologicalFeature, GeologicalFeatureBuilder
 from FME.visualisation.model_visualisation import LavaVuModelViewer
 from FME.modelling.structural_frame import StructuralFrameBuilder
 from FME.modelling.fault.fault_segment import FaultSegment
@@ -22,20 +22,17 @@ boundary_points[1,2] = 20
 mesh = TetMesh()
 mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
 
-interpolator = PLI(mesh,propertyname='Stratigraphy')
-interpolator.add_point([0,0,0],0)
-a = np.zeros((3,3,3))
-interpolator.add_point([0,0,1],-0.5)
-interpolator.add_strike_and_dip([0,0,0],90,0)
-interpolator.setup_interpolator()
-interpolator.solve_system(solver='chol')
+interpolator = PLI(mesh)
+feature_builder = GeologicalFeatureBuilder(interpolator,name='stratigraphy')
 
-support = interpolator.get_support()
-
-feature = GeologicalFeature(0, 'Stratigraphy', support)
+feature_builder.add_point([0,0,0],0)
+feature_builder.add_point([0,0,1],-0.5)
+feature_builder.add_strike_and_dip([0,0,0],90,0)
+feature = feature_builder.build(solver='chol')
 
 
-fault = StructuralFrameBuilder(interpolator=PLI,mesh=mesh,name='FaultSegment1')
+fault_frame_interpolator = PLI(mesh)
+fault = StructuralFrameBuilder(interpolator=fault_frame_interpolator,mesh=mesh,name='FaultSegment1')
 
 fault.add_point([2.5,.5,1.5],0.,itype='gz')
 fault.add_point([2.5,-.5,1.5],1.,itype='gz')
@@ -63,7 +60,7 @@ ogw /= mesh.n_elements
 cgw = 500
 cgw = cgw / mesh.n_elements
 fault_frame = fault.build(
-    solver='chol',
+    solver='lu',
     guess=None,
    gxxgy=2*ogw,
    gxxgz=2*ogw,
@@ -78,7 +75,7 @@ fault_frame = fault.build(
 )
 #
 fault = FaultSegment(fault_frame)
-
+print(fault_frame.supports[0].get_node_values())
 faulted_feature = FaultedGeologicalFeature(feature, fault)
 viewer = LavaVuModelViewer()
 viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)

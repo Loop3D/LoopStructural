@@ -11,7 +11,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     """
 
-    def __init__(self, mesh, propertyname = 'InterpolatedProperty', **kwargs):
+    def __init__(self, mesh):
         """
 
         :param mesh: the mesh to apply PLI on
@@ -19,28 +19,31 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         the linear equations on
         'propertyname' the name of the property that is interpolated on the mesh
         """
-        if 'region' in kwargs:
-            region = kwargs['region']
-        if 'region' not in kwargs:
-            region = 'everywhere'
-        self.propertyname = propertyname
+        self.region = "everywhere"
         # whether to assemble a rectangular matrix or a square matrix
         self.shape = 'rectangular'
-        if 'shape' in kwargs:
-            self.shape = kwargs['shape']
         self.mesh = mesh
-
         self.interpolator_type = 'PLI'
-        self.region = self.mesh.regions[region]
+        self.propertyname = 'defaultproperty'
+
+        self.region = self.mesh.regions['everywhere']
         self.region_map = np.zeros(mesh.n_nodes).astype(int)
-        self.region_map[self.region] = np.array(range(0, len(self.region_map[self.region])))
+        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.mesh.nodes[self.region])
 
         DiscreteInterpolator.__init__(self)
 
+    def copy(self):
+        return PiecewiseLinearInterpolator(self.mesh)
 
+    def set_property_name(self, propertyname):
+        self.propertyname = propertyname
 
-
+    def set_region(self, regionname=None, region=None):
+        if region is not None:
+            self.region = region
+        if regionname is not None:
+            self.region = self.mesh.regions[regionname]
 
     def _setup_interpolator(self, **kwargs):
         """
@@ -124,8 +127,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         points = self.get_control_points()
         if points.shape[0] > 1:
             e, inside = self.mesh.elements_for_array(points[:,:3])
-            #get barycentric coordinates for points
-
+            # get barycentric coordinates for points
             A = self.mesh.calc_bary_c(e,points[:,:3])
             idc = self.mesh.elements[e]
             self.add_constraints_to_least_squares(A.T*w,points[:,3]*w,idc)
@@ -143,11 +145,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
         mask = np.abs(dot_p) > 0
         normals[mask[:,0] ,:] =  normals[mask[:,0],:] / dot_p[mask][:,None]
-        normals = normals / np.einsum('ij,ij->i', normals, normals)[:, None]
+        magnitude = np.einsum('ij,ij->i', normals, normals)
+        normals[magnitude>0] = normals[magnitude>0] / magnitude[magnitude>0,None]
         A = np.einsum('ij,ijk->ik', normals, d_t)
         idc = self.mesh.elements[elements]
         B = np.zeros(len(elements))
-        self.add_constraints_to_least_squares(A,B,idc)
+        self.add_constraints_to_least_squares(A*w, B, idc)
 
     def get_support(self):
 
