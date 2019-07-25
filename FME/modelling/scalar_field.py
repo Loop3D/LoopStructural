@@ -110,6 +110,7 @@ class TetrahedralMeshScalarField:
         # dot product between gradient and normal indicates if faces are incorrectly ordered
         dotproducts = (propertygrad * crosses[mask]).sum(axis=1)
         # if dot product > 0 then adjust triangle indexing
+        #todo need to check if nan
         indices = (dotproducts > 0).nonzero()[0]
         tris[indices] = tris[indices, ::-1]
         #

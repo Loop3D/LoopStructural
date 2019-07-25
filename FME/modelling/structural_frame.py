@@ -1,27 +1,30 @@
 import numpy as np
 from FME.modelling.geological_points import IPoint, GPoint, TPoint
 from FME.modelling.geological_feature import GeologicalFeature
+from FME.modelling.scalar_field import TetrahedralMeshScalarField
 
-
-class StructuralFrame(GeologicalFeature):
-    def __init__(self, name, supports):
+class StructuralFrame: # (GeologicalFeature):
+    def __init__(self, name, features):
         self.name = name
-        self.supports = supports
-        self.ndim = 3
-
+        self.features = features
+        self.data = None
+    def get_feature(self,i):
+        return self.features[i]
+    def set_data(self, data):
+        self.data = data
     def evaluate_value(self, evaluation_points, i=None):
         if i is not None:
-            self.supports[i].evaluate_value(evaluation_points)
-        return (self.supports[0].evaluate_value(evaluation_points),
-                self.supports[1].evaluate_value(evaluation_points),
-                self.supports[2].evaluate_value(evaluation_points))
+            self.features[i].support.evaluate_value(evaluation_points)
+        return (self.features[0].support.evaluate_value(evaluation_points),
+                self.features[1].support.evaluate_value(evaluation_points),
+                self.features[2].support.evaluate_value(evaluation_points))
 
     def evaluate_gradient(self, evaluation_points, i=None):
         if i is not None:
-            return self.supports[i].evaluate_gradient(evaluation_points)
-        return (self.support[0].evaluate_gradient(evaluation_points),
-                self.support[1].evaluate_gradient(evaluation_points),
-                self.support[2].evaluate_gradient(evaluation_points))
+            return self.features[i].support.evaluate_gradient(evaluation_points)
+        return (self.features[0].support.evaluate_gradient(evaluation_points),
+                self.features[1].support.evaluate_gradient(evaluation_points),
+                self.features[2].support.evaluate_gradient(evaluation_points))
 
     def get_data(self,itype=None,ptype=None):
         if itype == None and ptype== None:
@@ -36,7 +39,7 @@ class StructuralFrame(GeologicalFeature):
         return data
 
     def get_values(self, i):
-        return self.supports[i].get_node_values()
+        return self.features[i].support.get_node_values()
 
 
 class StructuralFrameBuilder:
@@ -155,9 +158,9 @@ class StructuralFrameBuilder:
             if d['type'] == 'gx':
                 self.interpolators[0].add_data(d['data'])
             if d['type'] == 'gy':
-                self.interpolators[0].add_data(d['data'])
+                self.interpolators[1].add_data(d['data'])
             if d['type'] == 'gz':
-                self.interpolators[0].add_data(d['data'])
+                self.interpolators[2].add_data(d['data'])
         self.interpolators[0].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
         self.interpolators[0].solve_system(solver=solver)
         self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
@@ -166,7 +169,7 @@ class StructuralFrameBuilder:
                                                                                        self.mesh.n_elements), \
                                                                              self.mesh.property_gradients[
                                                                                  self.name + '_' + 'gx'], w=gxxgy)
-        self.interpolators[1].setup_interpolator(cgw=gycg, cpw=gycp, gpw=gygcp)  # cgw=0.1)#
+        self.interpolators[1].setup_interpolator(cgw=gycg, cpw=gycp, gpw=gygcp)
 
         self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
         self.interpolators[1].solve_system(solver=solver)
@@ -183,9 +186,12 @@ class StructuralFrameBuilder:
         self.interpolators[2].setup_interpolator(cgw=gzcg, cpw=gzcp, gpw=gzgcp)  # cgw=0.1)
         self.interpolators[2].solve_system(solver=solver)
         self.mesh.update_property(self.name + '_' + 'gz', self.interpolators[2].c)
-
-        return StructuralFrame('name',
-                               [self.interpolators[0].get_support(),
-                                self.interpolators[1].get_support(),
-                                self.interpolators[2].get_support()])
+        features = []
+        features.append(GeologicalFeature(self.name+'_gx',
+                          TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])))
+        features.append(GeologicalFeature(self.name + '_gy',
+                                          TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])))
+        features.append(GeologicalFeature(self.name + '_gz',
+                                          TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])))
+        return StructuralFrame(self.name, features)
         

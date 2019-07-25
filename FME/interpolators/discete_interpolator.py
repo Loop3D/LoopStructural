@@ -104,12 +104,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             lu = sla.splu(A.tocsc())
             b = B  # np.array([1, 2, 3, 4])
             self.c[self.region] = lu.solve(b)
-            if clear:
-                self.AA = None
-                self.A = []
-                self.col = []
-                self.row = []
-                lu = None
             return
         if solver == 'chol':
             try:

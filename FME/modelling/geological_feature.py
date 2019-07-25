@@ -98,7 +98,6 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.hw_feature = GeologicalFeature(self.name+'_hw', hw_sf)
         self.fw_feature = GeologicalFeature(self.name+'_fw', fw_sf)
         # create a new geological feature from
-
         self.fault = fault
 
     def evaluate_value(self, locations):
@@ -114,7 +113,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
 
         hangingwall = self.fault.evaluate(locations) > 0
         footwall = self.fault.evaluate(locations) < 0
-        evaluated = np.zeros((locations.shape[0],3))
+        evaluated = np.zeros((locations.shape[0], 3))
         evaluated[hangingwall] = self.hw_feature.evaluate(locations[hangingwall])
         evaluated[footwall] = self.fw_feature.evaluate(locations[footwall])
         return evaluated

@@ -166,14 +166,6 @@ class TetMesh:
         grad /= 4
         self.property_gradients_nodes[propertyname] = grad
 
-    def get_neighbours(self, t):
-        ###TODO remove
-        return self.neighbours[t]
-
-    def get_neighbors(self, t):
-        ###TODO remove
-        return self.get_neighbours(t)  # spelling >.<
-
     def calculate_constant_gradient(self, region, shape='rectangular'):
         self.dinfo = np.zeros(self.n_elements).astype(bool)
         # add cg constraint for all of the
@@ -354,7 +346,7 @@ class TetMesh:
         a[inside] = (grads * vals[:, None, :]).sum(2) / 4.  # @ vals.T/
         a[~inside, :] = np.nan
         asum = np.sum(a, axis=1)
-        a[asum > 0] /= asum[asum > 0, None]
+        a[np.logical_and(asum > 0,~np.isinf(asum))] /= asum[np.logical_and(asum > 0,~np.isinf(asum)), None]
         return a
 
     def export_to_vtk(self, name='mesh.vtk'):
