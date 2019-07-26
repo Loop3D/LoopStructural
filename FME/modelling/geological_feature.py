@@ -130,5 +130,6 @@ class FaultedGeologicalFeature(GeologicalFeature):
 
 class CompositeGeologicalFeature(GeologicalFeature):
     def __init__(self, geological_feature_a, geological_feature_b):
+
         pass
 

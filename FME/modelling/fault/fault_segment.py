@@ -12,7 +12,7 @@ class FaultSegment:
         :param kwargs:
         """
         self.faultframe = faultframe
-        self.displacement = 2
+        self.displacement = 1
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'faultfunction' in kwargs:

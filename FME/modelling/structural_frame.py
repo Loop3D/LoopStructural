@@ -3,7 +3,7 @@ from FME.modelling.geological_points import IPoint, GPoint, TPoint
 from FME.modelling.geological_feature import GeologicalFeature
 from FME.modelling.scalar_field import TetrahedralMeshScalarField
 
-class StructuralFrame: # (GeologicalFeature):
+class StructuralFrame:
     def __init__(self, name, features):
         self.name = name
         self.features = features
@@ -106,8 +106,6 @@ class StructuralFrameBuilder:
         Build the fault frame for this segment using the solver specified, default is scipy lsqr
 
         """
-        # determine region
-        overlap = False
         gxxgy = 1.
         gxxgz = 1.
         gyxgz = 1.
@@ -120,12 +118,6 @@ class StructuralFrameBuilder:
         gxgcp = 1
         gygcp = 1
         gzgcp = 1
-        if 'gx' in kwargs:
-            gx = kwargs['gx']
-        if 'gy' in kwargs:
-            gy = kwargs['gy']
-        if 'gz' in kwargs:
-            gz = kwargs['gz']
         if 'gxxgy' in kwargs:
             gxxgy = kwargs['gxxgy']
         if 'gxxgz' in kwargs:
@@ -165,33 +157,32 @@ class StructuralFrameBuilder:
         self.interpolators[0].solve_system(solver=solver)
         self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
 
-        self.interpolators[1].add_elements_gradient_orthogonal_constraint(np.arange(0, \
-                                                                                       self.mesh.n_elements), \
-                                                                             self.mesh.property_gradients[
-                                                                                 self.name + '_' + 'gx'], w=gxxgy)
+        self.interpolators[1].add_elements_gradient_orthogonal_constraint(
+            np.arange(0,self.mesh.n_elements),
+            self.mesh.property_gradients[self.name + '_' + 'gx'],
+            w=gxxgy)
         self.interpolators[1].setup_interpolator(cgw=gycg, cpw=gycp, gpw=gygcp)
 
         self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
         self.interpolators[1].solve_system(solver=solver)
         self.mesh.update_property(self.name + '_' + 'gy', self.interpolators[1].c)
-        self.interpolators[1].add_elements_gradient_orthogonal_constraint(np.arange(0, self.mesh.n_elements) \
-                                                                             , \
-                                                                             self.mesh.property_gradients[
-                                                                                 self.name + '_' + 'gx']
-                                                                             , w=gxxgz)
-        self.interpolators[2].add_elements_gradient_orthogonal_constraint(np.arange(0, self.mesh.n_elements) \
-                                                                             , self.mesh.property_gradients[
-                                                                                 self.name + '_' + 'gy'], w=gyxgz)
+        self.interpolators[1].add_elements_gradient_orthogonal_constraint(
+            np.arange(0, self.mesh.n_elements),
+            self.mesh.property_gradients[self.name + '_' + 'gx'],
+            w=gxxgz)
+        self.interpolators[2].add_elements_gradient_orthogonal_constraint(
+            np.arange(0, self.mesh.n_elements),
+            self.mesh.property_gradients[self.name + '_' + 'gy'],
+            w=gyxgz)
 
         self.interpolators[2].setup_interpolator(cgw=gzcg, cpw=gzcp, gpw=gzgcp)  # cgw=0.1)
         self.interpolators[2].solve_system(solver=solver)
         self.mesh.update_property(self.name + '_' + 'gz', self.interpolators[2].c)
-        features = []
-        features.append(GeologicalFeature(self.name+'_gx',
-                          TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])))
-        features.append(GeologicalFeature(self.name + '_gy',
-                                          TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])))
-        features.append(GeologicalFeature(self.name + '_gz',
-                                          TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])))
+        features = [GeologicalFeature(self.name + '_gx',
+                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])),
+                    GeologicalFeature(self.name + '_gy',
+                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])),
+                    GeologicalFeature(self.name + '_gz',
+                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[0]))]
         return StructuralFrame(self.name, features)
         

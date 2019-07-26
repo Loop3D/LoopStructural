@@ -60,14 +60,8 @@ class LavaVuModelViewer:
                 continue #isovalue = kwargs['isovalue']
 
             tris, nodes = geological_feature.support.slice(isovalue)
-            a = nodes[tris[:,0],:] - nodes[tris[:,1],:]
-            b = nodes[tris[:,0],:] - nodes[tris[:,2],:]
 
-            crosses = np.cross(a, b)
-            crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
-            tribc = np.mean(nodes[tris, :], axis=1)
 
-            grad = geological_feature.evaluate_gradient(tribc[np.any(~np.isnan(tribc),axis=1),:])
             # reg = np.zeros(self.properties[propertyname].shape).astype(bool)
             # reg[:] = True
             # if 'region' in kwargs:
@@ -80,15 +74,16 @@ class LavaVuModelViewer:
             surf.vertices(nodes)
             surf.indices(tris)
             surf.colours(colour)
+            if "normals" in kwargs:
+                a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]
+                b = nodes[tris[:, 0], :] - nodes[tris[:, 2], :]
 
-            vec = self.lv.vectors(name+"grad", colour="purple")
-            vec.vertices(tribc)
-            vec.vectors(crosses)
-
-            vec2 = self.lv.vectors(name + "grad2", colour="black")
-            vec2.vertices(tribc[np.any(~np.isnan(tribc), axis=1), :])
-            vec2.vectors(grad)
-
+                crosses = np.cross(a, b)
+                crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
+                tribc = np.mean(nodes[tris, :], axis=1)
+                vec = self.lv.vectors(name+"grad", colour="black")
+                vec.vertices(tribc)
+                vec.vectors(crosses)
     def plot_structural_frame_isosurface(self, structural_frame, i, **kwargs):
         mean_property_val = structural_frame.supports[i].mean_property_value()
         min_property_val = structural_frame.supports[i].min_property_value()

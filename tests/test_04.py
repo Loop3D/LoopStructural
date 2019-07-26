@@ -17,7 +17,9 @@ boundary_points[1,2] = 20
 mesh = TetMesh()
 mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
 interpolator = PLI(mesh)
-stratigraphy_builder = GeologicalFeatureBuilder(interpolator=interpolator,name='stratigraphy')
+stratigraphy_builder = GeologicalFeatureBuilder(
+    interpolator=interpolator,
+    name='stratigraphy')
 
 
 stratigraphy_builder.add_point([6.1,0.1,1.1],0.)
@@ -52,7 +54,10 @@ fault_frame = fault.build(solver='lu', gxxgy=0.1, gxxgz=1, gyxgz=0.05, gycg=5, g
 fault_operator = FaultSegment(fault_frame)
 
 fault_frame2_interpolator = PLI(mesh)
-fault2 = StructuralFrameBuilder(interpolator=fault_frame2_interpolator,mesh=mesh,name='FaultSegment2')
+fault2 = StructuralFrameBuilder(
+    interpolator=fault_frame2_interpolator,
+    mesh=mesh,
+    name='FaultSegment2')
 #
 fault2.add_point([2.5, .5, 1.5], 0., itype='gz')
 fault2.add_point([2.5, -.5, 1.5], 1., itype='gz')
@@ -93,8 +98,8 @@ for f in fault_frame.features:
 #
 structural_frame2 = StructuralFrame("faulted_frame", faulted_frame)
 
-faulted1_op = FaultSegment(fault_frame)
-faulted_strati = FaultedGeologicalFeature(stratigraphy, fault_operator)# faulted1_op)
+faulted1_op = FaultSegment(fault_frame, displacement=2)
+faulted_strati = FaultedGeologicalFeature(stratigraphy,  faulted1_op) #fault_operator)#
 viewer = LavaVuModelViewer(background="white")
 # viewer.plot_isosurface(faulted_frame[0].hw_feature, isovalue=0, colour='green')
 # viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='grey')
