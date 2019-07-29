@@ -72,13 +72,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             cg = kwargs['cg']
         if cg:
             self.add_constant_gradient(cgw)
-        print("Setting up interpolator with %i value control points \n\
-        %i gradient control points and %i tangent control points and \n\
-        constant gradient regularization with a weight of %f" % (self.n_i, self.n_g, self.n_t, cgw))
         self.add_gradient_ctr_pts(gpw)
         self.add_ctr_pts(cpw)
         self.add_tangent_ctr_pts(tpw)
-
     def add_constant_gradient(self, w=0.1):
         """
         adds constant gradient regularisation to the PLI interpolator
@@ -86,10 +82,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :return:
         """
         # iterate over all elements
+
         A, idc, B = self.mesh.get_constant_gradient(region=self.region, shape='rectangular')
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
+        # print("Adding %i constant gradient regularisation terms individually weighted at %f"%(len(B),w))
+
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
@@ -101,6 +100,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         points = self.get_gradient_control()
         if points.shape[0] > 0:
+            # print("Adding %i gradient constraints individually weighted at %f"%(points.shape[0],w))
             e, inside = self.mesh.elements_for_array(points[:,:3])
             d_t = self.mesh.get_elements_gradients(e)
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
@@ -126,6 +126,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         #get elements for points
         points = self.get_control_points()
         if points.shape[0] > 1:
+            # print("Adding %i value constraints individually weighted at %f"%(points.shape[0],w))
             e, inside = self.mesh.elements_for_array(points[:,:3])
             # get barycentric coordinates for points
             A = self.mesh.calc_bary_c(e,points[:,:3])
@@ -141,6 +142,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :param B: norm value
         :return:
         """
+        # print("Adding %i gradient orthogonality individually weighted at %f" % (normals.shape[0], w))
         d_t = self.mesh.get_elements_gradients(elements)
         dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
         mask = np.abs(dot_p) > 0

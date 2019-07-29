@@ -75,7 +75,7 @@ class StructuralFrameBuilder:
         self.interpolators.append(interpolator)
         self.interpolators.append(interpolator.copy())
         self.interpolators.append(interpolator.copy())
-
+        print(self.name)
         self.interpolators[0].set_property_name(self.name+'_gx')
         self.interpolators[1].set_property_name(self.name+'_gy')
         self.interpolators[2].set_property_name(self.name+'_gz')
@@ -181,8 +181,8 @@ class StructuralFrameBuilder:
         features = [GeologicalFeature(self.name + '_gx',
                                       TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])),
                     GeologicalFeature(self.name + '_gy',
-                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[0])),
+                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[1])),
                     GeologicalFeature(self.name + '_gz',
-                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[0]))]
+                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[2]))]
         return StructuralFrame(self.name, features)
         

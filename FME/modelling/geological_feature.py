@@ -97,16 +97,24 @@ class FaultedGeologicalFeature(GeologicalFeature):
         fw_sf = TetrahedralMeshScalarField.from_node_values(self.support.mesh, self.name+'_fw', fw_v)
         self.hw_feature = GeologicalFeature(self.name+'_hw', hw_sf)
         self.fw_feature = GeologicalFeature(self.name+'_fw', fw_sf)
-        # create a new geological feature from
         self.fault = fault
-
+        #create a continuous geological feature
+        faulted_v = np.zeros(self.support.number_of_nodes())
+        fault_mask = fault.faultframe.features[0].support.get_node_values()>0
+        faulted_v[fault_mask] = hw_v[fault_mask]
+        faulted_v[~fault_mask] = fw_v[~fault_mask]
+        self.feature = GeologicalFeature(self.name+"_faulted",
+                                         TetrahedralMeshScalarField.
+                                         from_node_values(self.support.mesh,
+                                                          self.name + '_faulted',
+                                                          faulted_v))
     def evaluate_value(self, locations):
 
-        hangingwall = self.fault.evaluate(locations) > 0
-        footwall = self.fault.evaluate(locations) < 0
+        hangingwall = self.fault.evaluate(locations)
+        footwall = ~self.fault.evaluate(locations)
         evaluated = np.zeros(locations.shape[0])
-        evaluated[hangingwall] = self.hw_feature.evaluate(locations[hangingwall])
-        evaluated[footwall] = self.fw_feature.evaluate(locations[footwall])
+        evaluated[hangingwall] = self.hw_feature.evaluate_value(locations[hangingwall])
+        evaluated[footwall] = self.fw_feature.evaluate_value(locations[footwall])
         return evaluated
 
     def evaluate_gradient(self, locations):
@@ -114,8 +122,8 @@ class FaultedGeologicalFeature(GeologicalFeature):
         hangingwall = self.fault.evaluate(locations) > 0
         footwall = self.fault.evaluate(locations) < 0
         evaluated = np.zeros((locations.shape[0], 3))
-        evaluated[hangingwall] = self.hw_feature.evaluate(locations[hangingwall])
-        evaluated[footwall] = self.fw_feature.evaluate(locations[footwall])
+        evaluated[hangingwall] = self.hw_feature.evaluate_value(locations[hangingwall])
+        evaluated[footwall] = self.fw_feature.evaluate_value(locations[footwall])
         return evaluated
 
     def mean_property_value(self):
@@ -129,7 +137,26 @@ class FaultedGeologicalFeature(GeologicalFeature):
 
 
 class CompositeGeologicalFeature(GeologicalFeature):
-    def __init__(self, geological_feature_a, geological_feature_b):
+    def __init__(self, geological_feature_a, region_a, geological_feature_b, region_b):
+        self.geological_feature_a = geological_feature_a
+        self.region_a = region_a
+
+        self.geological_feature_b = geological_feature_b
+        self.region_b = region_b
+
+    def evaluate_gradient(self, locations):
+        
+        pass
+
+    def evaluate_value(self, evaluation_points):
 
         pass
 
+    def mean_property_value(self):
+        return np.nanmean(self.support.get_node_values())
+
+    def min_property_value(self):
+        return np.nanmin(self.support.get_node_values())
+
+    def max_property_value(self):
+        return np.nanmax(self.support.get_node_values())

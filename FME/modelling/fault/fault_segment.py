@@ -19,6 +19,9 @@ class FaultSegment:
             self.faultfunction = kwargs['faultfunction']
         if 'displacement' in kwargs:
             self.displacement = kwargs['displacement']
+    def evaluate(self, locations):
+        return self.faultframe.features[0].evaluate_value(locations) > 0
+
     def apply_fault_to_support(self, support):  # ,region,steps=10):
         steps = 10
 

@@ -1,6 +1,6 @@
 import numpy as np
 from FME.modelling.geological_points import IPoint,GPoint,TPoint
-
+import columnar
 
 class GeologicalInterpolator:
     """
@@ -23,7 +23,8 @@ class GeologicalInterpolator:
         if 'itype' in kwargs:
             self.type = kwargs['itype']
         self.up_to_date = False
-
+        self.constraints = []
+        self.headings = ["Constraint Type","Number of constraints", "Per Constraint Weighting"]
     def add_strike_dip_and_value(self,pos,strike,dip,val):
         """
         Add a gradient and value constraint at a location gradient is in the form of strike and dip with the rh thumb
@@ -144,6 +145,7 @@ class GeologicalInterpolator:
         """
         Runs all of the required setting up stuff
         """
+        #print(columnar.columnar(self.constraints,self.headings))
         self._setup_interpolator(**kwargs)
 
     def interpolate_value(self,points):
