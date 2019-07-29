@@ -17,14 +17,16 @@ boundary_points[1,0] = 1
 boundary_points[1,1] = 1
 boundary_points[1,2] = 1
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=1000000,)
 
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureBuilder(interpolator,name='stratigraphy')
 
-feature_builder.add_point([0,0,0],0)
-# feature_builder.add_point([0.5,0,0],0.5)
-feature_builder.add_strike_and_dip([0,0,0],90,10)
+feature_builder.add_point([1,1,1],0)
+feature_builder.add_point([-0.5,0,0],1)
+feature_builder.add_point([-1,0,0],.8)
+
+feature_builder.add_strike_and_dip([0,0,0],90,40)
 feature = feature_builder.build(solver='cg')
 
 

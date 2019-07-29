@@ -145,7 +145,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
             if self.shape == 'square':
                 A = self.AA
                 B = self.B
-            self.cc_ = sla.cg(A,B)
+            # precon = sla.spilu(A)
+            # M2 = sla.LinearOperator(A.shape, precon.solve)
+            #print(precon)
+            self.cc_ = sla.cg(A,B)#,M=M2)
+            print(self.cc_[1])
         if solver == 'cgs':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
