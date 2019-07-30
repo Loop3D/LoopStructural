@@ -106,3 +106,13 @@ venv.bak/
 #vtk data
 *.vtk
 *.vtu
+*.xml
+
+# pycharm
+.idea/FME_lg.iml
+
+#cython c files
+FME/cython/*.c
+
+# python environment
+fme_lg/*
