@@ -13,12 +13,18 @@ class FaultSegment:
         """
         self.faultframe = faultframe
         self.displacement = 1
+        self.gy_max = 9999
+        self.gy_min = -9999
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'faultfunction' in kwargs:
             self.faultfunction = kwargs['faultfunction']
         if 'displacement' in kwargs:
             self.displacement = kwargs['displacement']
+        if 'gy_min' in kwargs:
+            self.gy_min = kwargs['gy_min']
+        if 'gy_max' in kwargs:
+            self.gy_max = kwargs['gy_max']
     def evaluate(self, locations):
         return self.faultframe.features[0].evaluate_value(locations) > 0
 
@@ -46,6 +52,8 @@ class FaultSegment:
         buffer = (self.faultframe.features[0].support.max_property_value() -
                 self.faultframe.features[0].support.min_property_value())*.1
         hw_m = self.faultframe.get_values(0) >= -buffer
+        gy_mask = np.logical_and(self.faultframe.get_values(1)>self.gy_min,
+                                 self.faultframe.get_values(1) < self.gy_max)
         hw_p = support.mesh.nodes[hw_m]
 
         # get all of the points for the support that are on the foot wall or part
@@ -55,10 +63,26 @@ class FaultSegment:
         fw_p = support.mesh.nodes[fw_m]
         self.d_fw = np.zeros(fw_m.shape)
         self.d_hw = np.zeros(hw_m.shape)
-        self.d_hw[hw_m] = 1.
-        self.d_hw *= self.displacement
 
-        self.d_fw[fw_m] = 0.
+        gx = self.faultframe.get_values(0)
+        gy = self.faultframe.get_values(1)
+        gz = self.faultframe.get_values(2)
+        if self.faultfunction is None:
+            self.d_hw[hw_m] = 1.
+            self.d_fw[fw_m] = 0.
+        if self.faultfunction is not None:
+            self.d_hw[hw_m] = self.faultfunction.hw(gx[hw_m],gy[hw_m],gz[hw_m])
+            self.d_fw[fw_m] = self.faultfunction.fw(gx[fw_m],gy[fw_m],gz[fw_m])
+            # self.d_hw[np.logical_and(gx>1,gx<-1)] = 0
+            self.d_hw[np.logical_and(gy>1,gy<-1)] = 0
+            self.d_hw[np.logical_and(gz>1,gz<-1)] = 0
+            # self.d_fw[np.logical_and(gx>1,gx<-1)] = 0
+            self.d_fw[np.logical_and(gy>1,gy<-1)] = 0
+            self.d_fw[np.logical_and(gz>1,gz<-1)] = 0
+        self.d_hw *= self.displacement
+        support.mesh.update_property('fw_d',self.d_fw)
+        support.mesh.update_property('hw_d',self.d_hw)
+
         self.d_fw *= self.displacement
         hw_n = hw_p
         fw_n = fw_p
