@@ -1,6 +1,6 @@
 import numpy as np
 from FME.modelling.geological_points import IPoint,GPoint,TPoint
-import columnar
+
 
 class GeologicalInterpolator:
     """

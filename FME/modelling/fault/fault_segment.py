@@ -15,6 +15,7 @@ class FaultSegment:
         self.displacement = 1
         self.gy_max = 9999
         self.gy_min = -9999
+        self.faultfunction = None
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'faultfunction' in kwargs:
