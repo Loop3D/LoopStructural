@@ -28,7 +28,7 @@ feature_builder = GeologicalFeatureBuilder(interpolator,name='stratigraphy')
 feature_builder.add_point([0,0,0],0)
 feature_builder.add_point([0,0,1],-0.5)
 feature_builder.add_strike_and_dip([0,0,0],90,0)
-feature = feature_builder.build(solver='chol')
+feature = feature_builder.build(solver='lu')
 
 
 fault_frame_interpolator = PLI(mesh)
@@ -46,15 +46,6 @@ for y in range(-15,15):
 
     fault.add_strike_dip_and_value([18.,y,18],strike=180,dip=35,val=0,itype='gx')
 
-flag = mesh.nodes[:,2] < -5# dist>6000
-flag = np.logical_and(flag,mesh.nodes[:,0]<10)
-mesh.properties['flag'] = flag.astype(float)
-flag = flag[mesh.elements]
-flag = np.all(flag,axis=1)
-ogw = 500
-ogw = ogw / mesh.n_elements#np.sum(flag)#
-# fault.interpolators['gx'].add_elements_gradient_orthogonal_constraint(np.arange(0,mesh.n_elements)[flag],np.array([0.,1.,0.])[None,:],w=ogw)
-# fault.interpolators['gx'].add_elements_gradient_orthogonal_constraint(np.arange(0,mesh.n_elements)[flag],np.array([1.,0.,0.])[None,:],w=ogw)
 ogw = 300
 ogw /= mesh.n_elements
 cgw = 500
@@ -75,13 +66,12 @@ fault_frame = fault.build(
 )
 #
 fault = FaultSegment(fault_frame)
-print(fault_frame.supports[0].get_node_values())
 faulted_feature = FaultedGeologicalFeature(feature, fault)
 viewer = LavaVuModelViewer()
 viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
 viewer.plot_isosurface(faulted_feature.fw_feature,isovalue=0)
-mask = fault_frame.supports[0].get_node_values() > 0
+mask = fault_frame.features[0].support.get_node_values() > 0
 mask[mesh.elements] = np.any(mask[mesh.elements] == True, axis=1)[:, None]
 viewer.plot_points(mesh.nodes[mask], "nodes", col="red")
-viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
+viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
 viewer.lv.interactive()

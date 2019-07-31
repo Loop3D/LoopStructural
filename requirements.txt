@@ -1,3 +1,8 @@
+networkx
+scikit-learn
+meshpy
+scipy
+lavavu
 cython
 numpy
 jupyter

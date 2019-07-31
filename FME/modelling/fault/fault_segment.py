@@ -26,6 +26,7 @@ class FaultSegment:
             self.gy_min = kwargs['gy_min']
         if 'gy_max' in kwargs:
             self.gy_max = kwargs['gy_max']
+
     def evaluate(self, locations):
         return self.faultframe.features[0].evaluate_value(locations) > 0
 

@@ -1,6 +1,5 @@
 import lavavu
 import numpy as np
-import meshpy
 # class ModelViewer():
 #     def __init__(self,modelsupport,**kwargs):
 #         """
