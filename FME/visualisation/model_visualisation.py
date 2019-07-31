@@ -108,10 +108,28 @@ class LavaVuModelViewer:
         if 'colour' not in kwargs:
             kwargs['colour'] = 'black'
         # normalise
-        vector /= np.linalg.norm(vector, axis=1)[:, None]
-        vectorfield = self.lv.vectors(name, **kwargs)
-        vectorfield.vertices(position)
-        vectorfield.vectors(vector)
-        return
+        if position.shape[0] > 0:
+            vector /= np.linalg.norm(vector, axis=1)[:, None]
+            vectorfield = self.lv.vectors(name, **kwargs)
+            vectorfield.vertices(position)
+            vectorfield.vectors(vector)
+            return
 
+    def plot_value_data(self, position, value, name, **kwargs):
+        if "pointtype" not in kwargs:
+            kwargs["pointtype"] = "sphere"
+        if "pointsize" not in kwargs:
+            kwargs["pointsize"] = 4
+        # if "colour" not in kwargs:
+        #     kwargs["colour"] = "red"
+        cmap = "diverge"
+        if "colourmap" in kwargs:
+            cmap = kwargs["colourmap"]
+        p = self.lv.points(name, **kwargs)
+        p.vertices(position)
+        print(position)
+        print(value)
+        p.values(value,"v")
+        p["colourby"] = "v"
+        p.colourmap(cmap)
 

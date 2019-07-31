@@ -68,6 +68,7 @@ class TetMesh:
             (maxx, maxy, maxz),
             (minx, maxy, maxz)
         ])
+        self.points = points
         # calculate the 3 principal components to find the local coordinate system
         self.pca.fit(points)
         # project the points into this coordinate system

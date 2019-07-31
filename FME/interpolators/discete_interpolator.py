@@ -85,11 +85,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # print("Solving using scipy lsqr")
             start = timeit.default_timer()
             self.cc_ = sla.lsqr(self.AA, B)
+            self.up_to_date = True
             # print("Solving took %f seconds"%(timeit.default_timer()-start))
         elif solver == 'lsmr' and self.shape == 'rectangular':
             # print("Solving using scipy lsmr")
             start = timeit.default_timer()
             self.cc_ = sla.lsmr(self.AA, B)
+            self.up_to_date = True
+
             # print("Solving took %f seconds" %(timeit.default_timer()-start))
         elif solver == 'eigenlsqr' and self.shape == 'rectangular':
             try:
@@ -97,11 +100,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
             except ImportError:
                 print("eigen sparse not installed")
             self.c[self.region] = eigensparse.lsqrcg(self.AA.tocsr(), self.B)
+            self.up_to_date = True
+
             return
         elif solver == 'spqr' and self.shape == 'rectangular':
             sys.path.insert(0, '/home/lgrose/dev/cpp/PyEigen/build')
             import eigensparse
             self.c[self.region] = eigensparse.lsqspqr(self.AA.tocsr(), self.B)
+            self.up_to_date = True
+
             return
         if solver == 'lu':
             # print("Solving using scipy LU decomposition")
@@ -116,6 +123,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             lu = sla.splu(A.tocsc())
             b = B  # np.array([1, 2, 3, 4])
             self.c[self.region] = lu.solve(b)
+            self.up_to_date = True
+
             # print("Solving took %f seconds"%(timeit.default_timer()-start))
 
             return
@@ -136,6 +145,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 B = self.B
             factor = cholesky(A.tocsc())
             self.c = factor(B)
+            self.up_to_date = True
+
             # print("Solving took %f seconds"%(timeit.default_timer()-start))
             return
         if solver == 'cg':
@@ -149,7 +160,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # M2 = sla.LinearOperator(A.shape, precon.solve)
             #print(precon)
             self.cc_ = sla.cg(A,B)#,M=M2)
-            print(self.cc_[1])
+            self.up_to_date = True
+
         if solver == 'cgs':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
@@ -158,6 +170,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 A = self.AA
                 B = self.B
             self.cc_ = sla.cgs(A,B)
+            self.up_to_date = True
+
         if solver == 'bicg':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
@@ -166,6 +180,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 A = self.AA
                 B = self.B
             self.cc_ = sla.bicg(A,B)
+            self.up_to_date = True
+
         if solver == 'qmr':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
@@ -174,6 +190,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 A = self.AA
                 B = self.B
             self.cc_ = sla.qmr(A,B)
+            self.up_to_date = True
+
         if solver == 'gmres':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
@@ -182,6 +200,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 A = self.AA
                 B = self.B
             self.cc_ = sla.gmres(A,B)
+            self.up_to_date = True
+
         if solver == 'lgmres':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
@@ -190,6 +210,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 A = self.AA
                 B = self.B
             self.cc_ = sla.lgmres(A,B)
+            self.up_to_date = True
+
         if solver == 'minres':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
@@ -198,6 +220,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 A = self.AA
                 B = self.B
             self.cc_ = sla.minres(A,B)
+            self.up_to_date = True
+
         self.c[self.region] = self.cc_[0]
         self.node_values = self.c
 
@@ -205,4 +229,5 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if self.solver is None:
             print("Cannot rerun interpolator")
             return
-        self._solve(self.solver)
+        if not self.up_to_date:
+            self._solve(self.solver)
