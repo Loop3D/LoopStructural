@@ -1,7 +1,7 @@
 FROM python:3.7-slim
 
 LABEL maintainer="lachlan.grose@monash.edu"
-
+#This docker image has been adapted from the lavavu dockerfile
 # install things
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
@@ -32,10 +32,9 @@ RUN apt-get update -qq && \
 		libgl-dev \
 		libsuitesparse-dev \
 		libsm6
-COPY tini/tini /tini
 # Add Tini
-# NV TINI_VERSION v0.18.0
-# ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
 # install the notebook package
