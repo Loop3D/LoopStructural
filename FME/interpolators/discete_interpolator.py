@@ -1,6 +1,6 @@
 from .geological_interpolator import GeologicalInterpolator
 import numpy as np
-from scipy.sparse import coo_matrix
+from scipy.sparse import coo_matrix, diags
 from scipy.sparse import linalg as sla
 import timeit
 
@@ -149,10 +149,23 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
             # print("Solving took %f seconds"%(timeit.default_timer()-start))
             return
+        if solver == 'cgp':
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+
+            # precon = sla.spilu(A)
+            # M2 = sla.LinearOperator(A.shape, precon.solve)
+            # #print(precon)
+            self.cc_ = sla.cg(A, B, M=diags(A.diagonal()))
+            self.up_to_date = True
         if solver == 'cg':
             if self.shape == 'rectangular':
-                A = self.AA.T @ self.AA
-                B = self.AA.T @ self.B
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
             if self.shape == 'square':
                 A = self.AA
                 B = self.B
@@ -160,8 +173,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # M2 = sla.LinearOperator(A.shape, precon.solve)
             #print(precon)
             self.cc_ = sla.cg(A,B)#,M=M2)
+            if self.cc_[1] == 0:
+                print("Conjugate gradient converged")
+            if self.cc_[1] > 0:
+                print("CG used %i iterations and didn't converge"%i)
             self.up_to_date = True
-
         if solver == 'cgs':
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)

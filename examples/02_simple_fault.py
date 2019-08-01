@@ -5,12 +5,14 @@ from FME.visualisation.model_visualisation import LavaVuModelViewer
 from FME.modelling.structural_frame import StructuralFrameBuilder
 from FME.modelling.fault.fault_segment import FaultSegment
 import numpy as np
+import timeit
 import lavavu
 
 """
 This is a basic example showing how to use the Piecewise Linear Interpolator for orientation and
 value data points. 
 """
+start = timeit.default_timer()
 boundary_points = np.zeros((2,3))
 
 boundary_points[0,0] = -20
@@ -20,7 +22,7 @@ boundary_points[1,0] = 20
 boundary_points[1,1] = 20
 boundary_points[1,2] = 20
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=100000,)
 
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureBuilder(interpolator,name='stratigraphy')
@@ -28,7 +30,7 @@ feature_builder = GeologicalFeatureBuilder(interpolator,name='stratigraphy')
 feature_builder.add_point([0,0,0],0)
 feature_builder.add_point([0,0,1],-0.5)
 feature_builder.add_strike_and_dip([0,0,0],90,0)
-feature = feature_builder.build(solver='lu')
+feature = feature_builder.build(solver='cg')
 
 
 fault_frame_interpolator = PLI(mesh)
@@ -51,7 +53,7 @@ ogw /= mesh.n_elements
 cgw = 500
 cgw = cgw / mesh.n_elements
 fault_frame = fault.build(
-    solver='lu',
+    solver='cg',
     guess=None,
    gxxgy=2*ogw,
    gxxgz=2*ogw,
@@ -67,6 +69,7 @@ fault_frame = fault.build(
 #
 fault = FaultSegment(fault_frame)
 faulted_feature = FaultedGeologicalFeature(feature, fault)
+print(start-timeit.default_timer())
 viewer = LavaVuModelViewer()
 viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
 viewer.plot_isosurface(faulted_feature.fw_feature,isovalue=0)

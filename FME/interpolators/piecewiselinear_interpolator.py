@@ -75,7 +75,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_gradient_ctr_pts(gpw)
         self.add_ctr_pts(cpw)
         self.add_tangent_ctr_pts(tpw)
-    def add_constant_gradient(self, w=0.1):
+    def add_constant_gradient(self, w=300):
         """
         adds constant gradient regularisation to the PLI interpolator
         :param w: weighting (per constraint) to give the constant gradient interpolation
@@ -87,6 +87,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
+        print(A.shape[0])
+        w/=A.shape[0]
+        print(w)
         # print("Adding %i constant gradient regularisation terms individually weighted at %f"%(len(B),w))
 
         self.add_constraints_to_least_squares(A*w,B*w,idc)

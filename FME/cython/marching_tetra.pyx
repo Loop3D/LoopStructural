@@ -114,6 +114,7 @@ def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, regio
     double isovalue is the scalar field value to create the surface at
     long [:,:] is a 2d array containing the index of tetra nodes
     double [:,:] a 2d array containing vertex/node coordinates.
+    property value is the property value on the tetra corners
     Returns: an 3d [Ntriangles,triangle_nodes,vertex coordinates] where array of triangles 
     explicitly containing the coordinate of the vertices
     """
