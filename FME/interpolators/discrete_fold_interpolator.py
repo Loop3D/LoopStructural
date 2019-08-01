@@ -2,14 +2,10 @@ from ..interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpol
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
-    def __init__(self,**kwargs):
-         PiecewiseLinearInterpolator.__init__(self,**kwargs)
+    def __init__(self,fold, mesh):
+         PiecewiseLinearInterpolator.__init__(self,mesh)
          self.type = ['foldinterpolator']
-
-         self.mesh = mesh
          self.fold = fold
-         self.shape = shape
-
 
     def add_fold_constraints(self,**kwargs):
         """
@@ -18,12 +14,15 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         :param kwargs:
         :return:
         """
-
+        
         A = []
         B = []
         col = []
+        #get the gradient of all of the elements of the mesh
         eg = self.mesh.get_elements_gradients(np.arange(self.mesh.n_elements))
-        deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(self.mesh.barycentre)
+        #calculate the fold geometry for the elements barycentre
+        deformed_orientation, fold_axis, dgz = \
+            self.fold.get_deformed_orientation(self.mesh.barycentre)
         if "fold_orientation" in kwargs:
             c = np.einsum('ij,ijk->ik', deformed_orientation, eg)
             A.extend(c*kwargs['fold_orienation'])

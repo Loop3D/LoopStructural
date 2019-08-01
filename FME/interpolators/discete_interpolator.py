@@ -150,6 +150,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # print("Solving took %f seconds"%(timeit.default_timer()-start))
             return
         if solver == 'cgp':
+            num_iter=0
+            def call(xk):
+                nonlocal num_iter
+                num_iter+=1
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
                 B = self.AA.T.dot(self.B)
@@ -160,9 +164,29 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # precon = sla.spilu(A)
             # M2 = sla.LinearOperator(A.shape, precon.solve)
             # #print(precon)
-            self.cc_ = sla.cg(A, B, M=diags(A.diagonal()))
+            self.cc_ = sla.cg(A, B, M=diags(1/A.diagonal()),callback=call)
+            print("num",num_iter)
             self.up_to_date = True
+        if solver == 'eigencg':
+            import sys
+            sys.path.insert(0, '/home/lgrose/dev/cpp/PyEigen/build')
+            import eigensparse
+            if self.shape == 'rectangular':
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+            if self.shape == 'square':
+                A = self.AA
+                B = self.B
+            self.c = eigensparse.cg(A, B)
+            self.up_to_date = True
+            return
         if solver == 'cg':
+
+            num_iter = 0
+
+            def call(xk):
+                nonlocal num_iter
+                num_iter += 1
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
                 B = self.AA.T.dot(self.B)
@@ -172,7 +196,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # precon = sla.spilu(A)
             # M2 = sla.LinearOperator(A.shape, precon.solve)
             #print(precon)
-            self.cc_ = sla.cg(A,B)#,M=M2)
+            self.cc_ = sla.cg(A,B,callback=call)#,M=M2)
+            print("num",num_iter)
             if self.cc_[1] == 0:
                 print("Conjugate gradient converged")
             if self.cc_[1] > 0:

@@ -42,8 +42,9 @@ class GeologicalFeatureBuilder:
 
 class GeologicalFeature:
     """
-    Geological feature is class that is used to represent a geometrical element of a geological
-    feature. For example foliations, fault planes, fold rotation angles etc.
+    Geological feature is class that is used to represent a geometrical element in a geological
+    modle. For example foliations, fault planes, fold rotation angles etc. The feature has a support
+    which 
     """
     def __init__(self, name, support):
         """
@@ -75,8 +76,8 @@ class GeologicalFeature:
 
 class FaultedGeologicalFeature(GeologicalFeature):
     """
-    Creates a geological feature that has been faulted using the geological feature representing the fault surface
-    and another feature representing the surface pre faulting.
+    Creates a geological feature that has been faulted using the geological feature representing the fault 
+    surface and another feature representing the surface pre faulting.
     """
     def __init__(self, feature, fault):
         super().__init__(feature.name+"_faulted", feature.support)
@@ -109,7 +110,9 @@ class FaultedGeologicalFeature(GeologicalFeature):
                                                           self.name + '_faulted',
                                                           faulted_v))
     def evaluate_value(self, locations):
-
+        """
+        calculate the value of the geological feature at the xyz
+        """
         hangingwall = self.fault.evaluate(locations)
         footwall = ~self.fault.evaluate(locations)
         evaluated = np.zeros(locations.shape[0])
