@@ -1,6 +1,7 @@
 import numpy as np
 from ..cython.marching_tetra import marching_tetra
 
+
 class ScalarField:
     """
     Generic support to represent a scalar field

@@ -33,20 +33,6 @@ class FaultSegment:
     def apply_fault_to_support(self, support):  # ,region,steps=10):
         steps = 10
 
-
-        # gx = self.faultframe.gx()
-        # displacement = 1.
-        # self.d = np.zeros(support.n_nodes)
-        # if 'faultfunction' in kwargs:
-        #     gy = self.faultframe.gy()
-        #     gz = self.faultframe.gz()
-        #     fault_function = kwargs['faultfunction']
-        #     gxn, gyn, gzn, self.d = fault_function(gx, gy, gz)
-        # if 'displacement' in kwargs:
-        #     displacement = kwargs['displacement']
-        # if 'faultfunction' not in kwargs:
-
-
         region = 'everywhere'
         #get all of the points for the support that are on the hanging wall or part
         #of a support element (tetra/cube) that is on the hanging wall
@@ -54,8 +40,7 @@ class FaultSegment:
         buffer = (self.faultframe.features[0].support.max_property_value() -
                 self.faultframe.features[0].support.min_property_value())*.1
         hw_m = self.faultframe.get_values(0) >= -buffer
-        gy_mask = np.logical_and(self.faultframe.get_values(1)>self.gy_min,
-                                 self.faultframe.get_values(1) < self.gy_max)
+
         hw_p = support.mesh.nodes[hw_m]
 
         # get all of the points for the support that are on the foot wall or part

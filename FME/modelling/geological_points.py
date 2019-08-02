@@ -89,7 +89,7 @@ class GPoint(Point):
             self.dir[0] = m.sin(d_r)*m.cos(s_r)
             self.dir[1] = -m.sin(d_r)*m.sin(s_r)
             self.dir[2] = m.cos(d_r)
-            self.dir  /= nla.norm(self.dir)
+            self.dir/= nla.norm(self.dir)
     def dir_(self):
         return self.dir
     def val(self,i):

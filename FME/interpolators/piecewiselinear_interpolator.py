@@ -87,9 +87,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-        print(A.shape[0])
         w/=A.shape[0]
-        print(w)
         # print("Adding %i constant gradient regularisation terms individually weighted at %f"%(len(B),w))
 
         self.add_constraints_to_least_squares(A*w,B*w,idc)

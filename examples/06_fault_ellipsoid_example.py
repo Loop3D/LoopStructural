@@ -19,19 +19,19 @@ boundary_points[1,0] = 20
 boundary_points[1,1] = 20
 boundary_points[1,2] = 1
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=100000,)
 interpolator = PLI(mesh)
 stratigraphy_builder = GeologicalFeatureBuilder(
     interpolator=interpolator,
     name='stratigraphy')
 
-solver = 'lu'
+solver = 'cgp'
 stratigraphy_builder.add_point([6.1,0.1,1.1],0.)
 stratigraphy_builder.add_point([6.1,0.1,2.1],1.)
 
 
 stratigraphy_builder.add_strike_and_dip([1,1,1],90.,0.)
-stratigraphy = stratigraphy_builder.build(solver=solver,cgw=.1)
+stratigraphy = stratigraphy_builder.build(solver=solver,cgw=6000)
 
 floor = -4
 roof = 4
@@ -80,9 +80,9 @@ fault.add_point([-5,-10,-10],1.,itype='gy')
 
 ogw = 3000
 ogw /= mesh.n_elements
-cgw = 600
-cgw = cgw / mesh.n_elements
-solver='lu'
+cgw = 6000
+# cgw = cgw / mesh.n_elements
+solver='cgp'
 fault_frame = fault.build(
     solver=solver,
     guess=None,
@@ -131,8 +131,7 @@ fault = FaultSegment(fault_frame,
 faulted_strat = FaultedGeologicalFeature(stratigraphy,fault)
 plt.plot(np.linspace(0,20,100),hw(np.linspace(0,20,100)))
 plt.plot(np.linspace(-20,0,100),fw(np.linspace(-20,0,100)))
-# plt.plot(np.linspace(-1,1,100),gyf(np.linspace(-1,1,100)))
-# plt.plot(np.linspace(-1,1,100),gzf(np.linspace(-1,1,100)))
+
 plt.savefig("fault_functions.png")
 viewer = LavaVuModelViewer(background="white")
 # viewer.plot_isosurface(faulted_frame[0].hw_feature, isovalue=0, colour='green')
@@ -147,14 +146,14 @@ viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='green')
 
 locations = mesh.barycentre[::20,:]
 # viewer.plot_vector_field(fault_frame.features[0], locations=locations, colour='red')
-# viewer.plot_vector_field(fault_frame.features[1], locations=locations, colour='red')
-viewer.plot_isosurface(
-    faulted_strat.hw_feature,
-    isovalue=-9)
-viewer.plot_isosurface(
-    faulted_strat.fw_feature,
-    isovalue=-9)
+viewer.plot_vector_field(fault_frame.features[1], locations=locations, colour='red')
 # viewer.plot_isosurface(
-#     faulted_strat.feature,
-#     isosurface=0)
+#     faulted_strat.hw_feature,
+#     isovalue=-9)
+# viewer.plot_isosurface(
+#     faulted_strat.fw_feature,
+#     isovalue=-9)
+viewer.plot_isosurface(
+    faulted_strat.feature,
+    isosurface=0)
 viewer.lv.interactive()
