@@ -25,3 +25,47 @@ boundary_points[1,2] = -minz*0.1
 mesh = TetMesh()
 mesh.setup_mesh(boundary_points,n_tetra=20000,)
 
+fold_frame_interpolator = PLI(mesh)
+fold_frame_builder = StructuralFrameBuilder(
+    interpolator=fold_frame_interpolator,
+    mesh=mesh,
+    name='F1_fold_frame')
+
+for i, r in orientations.iterrows():
+    if r['type'] == 's1':
+        xy = r['geometry'].xy
+        z = 0
+        if 'z' in r:
+            z = r['z']
+        fold_frame_builder.add_strike_and_dip([xy[0][0],xy[1][0],z],r['strike'],r['dip'],itype=r['itype'])
+for i, r in points.iterrows():
+    if r['type'] == 's1':
+        xy = r['geometry'].xy
+        z = 0
+        if 'z' in r:
+            z = r['z']
+        fold_frame_builder.add_point([xy[0][0],xy[1][0],z],r['value'],itype=r['itype'])
+ogw = 3000
+ogw /= mesh.n_elements
+cgw = 6000
+# cgw = cgw / mesh.n_elements
+solver='cgp'
+
+f1_frame = fold_frame_builder.build(
+    solver=solver,
+    gxxgy=2 * ogw,
+    gxxgz=2 * ogw,
+    gyxgz=ogw,
+    gxcg=cgw,
+    gycg=cgw,
+    gzcg=cgw,
+    shape='rectangular'
+                         )
+
+viewer = LavaVuModelViewer(background="white")
+viewer.plot_isosurface(f1_frame.features[0],  colour='green')
+viewer.plot_isosurface(f1_frame.features[1],  colour='blue')
+locations = mesh.barycentre[::20,:]
+viewer.plot_vector_field(f1_frame.features[2], locations=locations, colour='red')
+
+viewer.lv.interactive()

@@ -85,7 +85,6 @@ cgw = 6000
 solver='cgp'
 fault_frame = fault.build(
     solver=solver,
-    guess=None,
     gxxgy=2 * ogw,
     gxxgz=2 * ogw,
     gyxgz=ogw,

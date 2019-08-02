@@ -163,3 +163,26 @@ class CompositeGeologicalFeature(GeologicalFeature):
 
     def max_property_value(self):
         return np.nanmax(self.support.get_node_values())
+
+
+class CrossProductGeologicalFeature(GeologicalFeature):
+    def __init__(self, name, geological_feature_a, geological_feature_b):
+        super().__init__(name+"_faulted", geological_feature_a.support)
+        self.geological_feature_a = geological_feature_a
+        self.geological_feature_b = geological_feature_b
+    def evaluate_gradient(self, locations):
+        return np.cross(self.geological_feature_a.evaluate_gradient(locations),
+                        self.geological_feature_b.evaluate_gradient(locations),
+                        axisa=1,
+                        axisb=1)
+    def evaluate_value(self, evaluation_points):
+        return 0.
+
+    def mean_property_value(self):
+        return 0.
+
+    def min_property_value(self):
+        return 0.
+
+    def max_property_value(self):
+        return 0.
