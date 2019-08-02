@@ -1,6 +1,7 @@
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
-from FME.modelling.geological_feature import GeologicalFeature, FaultedGeologicalFeature, GeologicalFeatureBuilder
+from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
+from FME.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
 from FME.visualisation.model_visualisation import LavaVuModelViewer
 from FME.modelling.structural_frame import StructuralFrameBuilder, StructuralFrame
 from FME.modelling.fault.fault_segment import FaultSegment
@@ -19,7 +20,7 @@ boundary_points[1,2] = 10
 mesh = TetMesh()
 mesh.setup_mesh(boundary_points, nstep=1, n_tetra=30000,)
 interpolator = PLI(mesh)
-stratigraphy_builder = GeologicalFeatureBuilder(
+stratigraphy_builder = GeologicalFeatureInterpolator(
     interpolator=interpolator,
     name='stratigraphy')
 

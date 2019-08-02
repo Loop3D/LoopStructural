@@ -37,8 +37,8 @@ class FaultSegment:
         #get all of the points for the support that are on the hanging wall or part
         #of a support element (tetra/cube) that is on the hanging wall
         # hw_p, hw_m = support.get_connected_nodes_for_mask()
-        buffer = (self.faultframe.features[0].support.max_property_value() -
-                self.faultframe.features[0].support.min_property_value())*.1
+        buffer = (self.faultframe.features[0].support.max() -
+                  self.faultframe.features[0].support.min()) * .1
         hw_m = self.faultframe.get_values(0) >= -buffer
 
         hw_p = support.mesh.nodes[hw_m]

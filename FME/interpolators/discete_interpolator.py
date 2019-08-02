@@ -28,11 +28,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         :param idc: N x C node indices
         :return:
         """
-
+        A = np.array(A)
+        B = np.array(B)
+        idc = np.array(idc)
+        print(A.shape)
         nr = A.shape[0]
         if len(A.shape) >2:
             nr = A.shape[0]*A.shape[1]
-        rows = np.arange(0,nr)
+        rows = np.arange(0,nr).astype(int)
         rows = np.tile(rows, (A.shape[-1],1)).T
         rows+= self.c_
         self.c_+=nr

@@ -25,10 +25,10 @@ class FoldEvent:
         """
 
         # get the gz direction
-        dgx = self.foldframe.get_gx(points,grad=True)
-        dgy = self.foldframe.get_gy(points,grad=True)
+        dgx = self.foldframe.features[0].evaluate_gradient(points)
+        dgy = self.foldframe.features[1].evaluate_gradient(points)
         # get gy
-        gy = self.foldframe.get_gy(points,grad=False)
+        gy = self.foldframe.features[0].evaluate_value(points)
         R1 = self.rot_mat(dgx,self.fold_axis_rotation(gy))
         fold_axis = np.einsum('ijk,ki->kj',R1,dgy)
         fold_axis/=np.sum(fold_axis,axis=1)[:,None]
@@ -41,16 +41,16 @@ class FoldEvent:
         :return:
         """
         fold_axis=self.get_fold_axis_orientation(points)
-        gx = self.foldframe.get_gx(points,grad=False)
-        dgx = self.foldframe.get_gx(points,grad=True)
-        dgz = self.foldframe.get_gz(points,grad=True)
+        gx = self.foldframe.features[0].evaluate_value(points)
+        dgx = self.foldframe.features[0].evaluate_gradient(points)
+        dgz = self.foldframe.features[2].evaluate_gradient(points)
         R2 = self.rot_mat(fold_axis,self.fold_limb_rotation(gx))
         R2R = np.einsum('ijk,ki->kj',R2,dgx)
         R2R/=np.sum(R2R,axis=1)[:,None]
         return R2R,fold_axis, dgz
 
     def get_regulariation_direction(self, points):
-        self.foldframe.get_gz(points,grad=True)
+        self.foldframe.features[2].evaluate_gradient(points)
 
     def rot_mat(self, axis, angle):
         """

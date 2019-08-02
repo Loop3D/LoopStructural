@@ -1,6 +1,7 @@
 import numpy as np
 from FME.modelling.geological_points import IPoint, GPoint, TPoint
-from FME.modelling.geological_feature import GeologicalFeature, CrossProductGeologicalFeature
+from FME.modelling.features.geological_feature import GeologicalFeature
+from FME.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
 from FME.modelling.scalar_field import TetrahedralMeshScalarField
 
 class StructuralFrame:
@@ -100,7 +101,7 @@ class StructuralFrameBuilder:
     def add_tangent_constraint_angle(self,pos,s,d,itype):
         self.data.append({'type': itype,'data':TPoint(pos,s,d)})
 
-    def build(self, solver='lsqr', **kwargs):
+    def build(self, solver='lsqr', frame = StructuralFrame, **kwargs):
         """
         Build the fault frame for this segment using the solver specified, default is scipy lsqr
 
@@ -196,5 +197,5 @@ class StructuralFrameBuilder:
             print("Creating analytical gz")
             gz_feature = CrossProductGeologicalFeature(self.name + '_gz',gx_feature, gy_feature)
 
-        return StructuralFrame(self.name, [gx_feature, gy_feature, gz_feature])
+        return frame(self.name, [gx_feature, gy_feature, gz_feature])
         

@@ -39,9 +39,9 @@ class LavaVuModelViewer:
         self.objects = {}
 
     def plot_isosurface(self, geological_feature, **kwargs):
-        mean_property_val = geological_feature.mean_property_value()
-        min_property_val = geological_feature.min_property_value()
-        max_property_val = geological_feature.max_property_value()
+        mean_property_val = geological_feature.mean()
+        min_property_val = geological_feature.min()
+        max_property_val = geological_feature.max()
         slices = [mean_property_val]
         colour = 'red'
 

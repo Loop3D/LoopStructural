@@ -1,13 +1,12 @@
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
-from FME.modelling.geological_feature import GeologicalFeature, GeologicalFeatureBuilder
+from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from FME.visualisation.model_visualisation import LavaVuModelViewer
 import numpy as np
 import lavavu
 import timeit
 import sys
 sys.path.insert(0,'/home/lgrose/dev/cpp/PyEigen/build')
-import eigensparse
 
 """
 This is a basic example showing how to use the Piecewise Linear Interpolator for orientation and
@@ -28,7 +27,7 @@ mesh.setup_mesh(boundary_points, nstep=1, n_tetra=300000,)
 print(mesh.n_nodes)
 np.savetxt("01_box_coords.txt",mesh.points)
 interpolator = PLI(mesh)
-feature_builder = GeologicalFeatureBuilder(interpolator,name='stratigraphy')
+feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
 
 feature_builder.add_point([90,90,90],0)
 feature_builder.add_point([-50,0,0],1)
