@@ -1,4 +1,5 @@
 import lavavu
+from lavavu.vutils import is_notebook
 import numpy as np
 # class ModelViewer():
 #     def __init__(self,modelsupport,**kwargs):
@@ -62,7 +63,8 @@ class LavaVuModelViewer:
                 continue #isovalue = kwargs['isovalue']
 
             tris, nodes = geological_feature.support.slice(isovalue)
-
+            if nodes.shape[0] == 0:
+                continue
 
             # reg = np.zeros(self.properties[propertyname].shape).astype(bool)
             # reg[:] = True
@@ -81,7 +83,7 @@ class LavaVuModelViewer:
                 # add a property to the surface nodes for visualisation
                 surf.values(painter.evaluate_value(nodes),painter.name)
                 surf["colourby"] = painter.name
-                surf.colourmap("diverge")
+                surf.colourmap(lavavu.cubehelix(100))#nodes.shape[0]))
             if "normals" in kwargs:
                 a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]
                 b = nodes[tris[:, 0], :] - nodes[tris[:, 2], :]
@@ -138,4 +140,12 @@ class LavaVuModelViewer:
         p.values(value,"v")
         p["colourby"] = "v"
         p.colourmap(cmap)
+    def interactive(self):
+        if is_notebook():
+            self.lv.control.Panel()
+            self.lv.control.ObjectList()
+            self.lv.control.show()
+        if not is_notebook():
+            self.lv.interactive()
+
 

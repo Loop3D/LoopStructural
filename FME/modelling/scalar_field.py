@@ -44,19 +44,24 @@ class TetrahedralMeshScalarField:
         return scalar_field
 
     def evaluate_value(self, evaluation_points):
-        return self.mesh.evaluate_value(evaluation_points, self.property_name)
+        evaluated = np.zeros(evaluation_points.shape[0])
+        mask = np.any(np.isnan(evaluation_points),axis=1)
 
+        if evaluation_points[~mask,:].shape[0]>0:
+            evaluated[~mask] = self.mesh.evaluate_value(
+                evaluation_points[~mask], self.property_name)
+        return evaluated
     def evaluate_gradient(self, evaluation_points):
         if evaluation_points.shape[0]>0:
             return self.mesh.evaluate_gradient(evaluation_points, self.property_name)
         return np.zeros((0,3))
-    def mean_property_value(self):
+    def mean(self):
         return np.nanmean(self.mesh.properties[self.property_name])
 
-    def min_property_value(self):
+    def min(self):
         return np.nanmin(self.mesh.properties[self.property_name])
 
-    def max_property_value(self):
+    def max(self):
         return np.nanmax(self.mesh.properties[self.property_name])
 
     def get_connected_nodes_for_mask(self, mask):

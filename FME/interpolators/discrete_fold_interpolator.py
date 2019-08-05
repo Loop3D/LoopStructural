@@ -32,7 +32,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
             B = np.zeros(self.mesh.n_elements)
             idc = self.mesh.elements
-            print("adding fold ori")
             self.add_constraints_to_least_squares(A*kwargs['fold_orientation'], B, idc)
         if "fold_axis" in kwargs:
             """
@@ -40,7 +39,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             A = np.einsum('ij,ijk->ik', fold_axis, eg)
             B = np.zeros(self.mesh.n_elements).tolist()
-            print("adding fold_axis")
             self.add_constraints_to_least_squares(A*kwargs['fold_axis'], B, self.mesh.elements)
 
         if "fold_normalisation" in kwargs:
@@ -64,10 +62,5 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A*=kwargs['fold_regularisation']
             B = np.zeros(len(c))
             idc = np.array(idc)
-            print("adding fold regularisation")
-            print(ncons)
-            print(A.shape)
-            print(idc.shape)
             self.add_constraints_to_least_squares(A, B, idc)
-            print("after")
 

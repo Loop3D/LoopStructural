@@ -16,7 +16,7 @@ boundary_points[1,0] = 20
 boundary_points[1,1] = 20
 boundary_points[1,2] = 20
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=8000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
 interpolator = PLI(mesh)
 stratigraphy_builder = GeologicalFeatureInterpolator(interpolator=interpolator, name='stratigraphy')
 
@@ -37,7 +37,7 @@ fault = StructuralFrameBuilder(interpolator=fault_interpolator,mesh=mesh,name='F
 for y in range(-20,20,1):
     fault.add_strike_dip_and_value([-15.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([-6.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
-    fault.add_strike_dip_and_value([-4.,y,floor],strike=0.,dip=45.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([-4.,y,floor],strike=0.,dip=45.,val=0,itype='gx')
     fault.add_strike_dip_and_value([6.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([4.,y,roof],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([8.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
@@ -57,10 +57,18 @@ fault_operator = FaultSegment(fault_frame)
 
 
 faulted_feature = FaultedGeologicalFeature(stratigraphy, fault_operator)
-
+print(faulted_feature.feature.support.get_node_values())
 viewer = LavaVuModelViewer()
-viewer.plot_isosurface(faulted_feature.hw_feature,colour='green')
-viewer.plot_isosurface(faulted_feature.fw_feature,colour='grey')
+# viewer.plot_isosurface(
+#     faulted_feature.hw_feature,
+#     nslices=10,
+#     paint_with=faulted_feature.feature
+# )
+viewer.plot_isosurface(
+    faulted_feature.feature,
+    nslices=10,
+    paint_with=faulted_feature.feature
+)
 viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
 
 viewer.lv.interactive()

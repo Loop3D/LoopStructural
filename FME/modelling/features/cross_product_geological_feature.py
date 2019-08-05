@@ -5,7 +5,7 @@ from FME.modelling.features.geological_feature import GeologicalFeature
 
 class CrossProductGeologicalFeature(GeologicalFeature):
     def __init__(self, name, geological_feature_a, geological_feature_b):
-        super().__init__(name+"_faulted", geological_feature_a.support)
+        super().__init__(name, geological_feature_a.support)
         self.geological_feature_a = geological_feature_a
         self.geological_feature_b = geological_feature_b
     def evaluate_gradient(self, locations):

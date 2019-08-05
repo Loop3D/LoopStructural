@@ -101,7 +101,7 @@ class StructuralFrameBuilder:
     def add_tangent_constraint_angle(self,pos,s,d,itype):
         self.data.append({'type': itype,'data':TPoint(pos,s,d)})
 
-    def build(self, solver='lsqr', frame = StructuralFrame, **kwargs):
+    def build(self, solver='lsqr', frame=StructuralFrame, **kwargs):
         """
         Build the fault frame for this segment using the solver specified, default is scipy lsqr
 

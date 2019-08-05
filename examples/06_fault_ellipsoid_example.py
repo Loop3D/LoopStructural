@@ -1,3 +1,7 @@
+# # Example 06 ellipsoid fault displacement
+# This example shows how to create a fault with an ellipsoidal displacement field with
+# displacements magnitude controlled by three cubic splines
+# ### Imports
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
 from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
@@ -8,9 +12,8 @@ from FME.modelling.fault.fault_segment import FaultSegment
 from FME.modelling.fault.fault_function import CubicFunction, FaultDisplacement, Ones
 import numpy as np
 import matplotlib.pyplot as plt
-"""
-This is a simple case study of a duplex fault system. The model is really just 2.5 
-"""
+
+# ### Define model area and build mesh
 boundary_points = np.zeros((2,3))
 
 boundary_points[0,0] = 0
@@ -21,69 +24,36 @@ boundary_points[1,1] = 20
 boundary_points[1,2] = 1
 mesh = TetMesh()
 mesh.setup_mesh(boundary_points, nstep=1, n_tetra=100000,)
+
+# ### Build a geological feature for the faulted surface
+# In this example we are going to cheat and just assume the feature was
+# flat lying before faulting. In a real example the data points would
+# need to be unfaulted before interpolation occured.
+
 interpolator = PLI(mesh)
 stratigraphy_builder = GeologicalFeatureInterpolator(
     interpolator=interpolator,
     name='stratigraphy')
-
-solver = 'cgp'
+solver = 'lu'
 stratigraphy_builder.add_point([6.1,0.1,1.1],0.)
 stratigraphy_builder.add_point([6.1,0.1,2.1],1.)
-
-
 stratigraphy_builder.add_strike_and_dip([1,1,1],90.,0.)
 stratigraphy = stratigraphy_builder.build(solver=solver,cgw=6000)
 
-floor = -4
-roof = 4
-
+# ### Build fault frame
+# Create a base interpolator for the fault frame and add the data to the builder
 fault_interpolator = PLI(mesh)
 fault = StructuralFrameBuilder(interpolator=fault_interpolator,mesh=mesh,name='FaultSegment1')
-# fault.add_strike_dip_and_value([-5,-15, 0], strike=0., dip=90., val=0, itype='gx')
-# fault.add_strike_dip_and_value([-5,-10, 0], strike=0., dip=90., val=0, itype='gx')
-# fault.add_strike_dip_and_value([-5,-18, 0], strike=0., dip=90., val=0, itype='gx')
-
 fault.add_strike_dip_and_value([5,0, -2], strike=90., dip=50., val=0, itype='gx')
 fault.add_strike_dip_and_value([15,0, -2], strike=90., dip=50., val=0, itype='gx')
 fault.add_strike_dip_and_value([10,0, -2], strike=90., dip=50., val=0, itype='gx')
-
-# fault.add_strike_dip_and_value([5,15, 0], strike=90., dip=5., val=0, itype='gx')
-# fault.add_strike_dip_and_value([15,15, 0], strike=90., dip=5., val=0, itype='gx')
-# fault.add_strike_dip_and_value([10,15, 0], strike=90., dip=5., val=0, itype='gx')
-#
-# fault.add_strike_dip_and_value([5,-10,-10], strike=45,dip=10,val=0,itype='gx')
-# fault.add_strike_dip_and_value([15,-10,-10], strike=45,dip=10,val=0,itype='gx')
-# fault.add_strike_dip_and_value([10,-10,-10], strike=45,dip=10,val=0,itype='gx')
-
-# for y in range(-5,5,1):
-#     fault.add_strike_dip_and_value([-35.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
-#     fault.add_strike_dip_and_value([-25.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
-#     # fault.add_strike_dip_and_value([-15.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
-#     # fault.add_strike_dip_and_value([-4.,y,floor],strike=0.,dip=45.,val=0,itype='gx')
-#     # fault.add_strike_dip_and_value([6.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
-#     # fault.add_strike_dip_and_value([4.,y,roof],strike=0.,dip=0.,val=0,itype='gx')
-#     fault.add_strike_dip_and_value([-5.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
-#     fault.add_strike_dip_and_value([15.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
-#     fault.add_strike_dip_and_value([18.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
-
-
 fault.add_point([-5,-18,0],0.,itype='gz')
 fault.add_point([15,10,0],1.,itype='gz')
 fault.add_point([-5,-10,0],0.,itype='gy')
 fault.add_point([-5,-10,-10],1.,itype='gy')
-
-# fault.add_point([-19,-19,-18],1.,itype='gy')
-
-#
-# for y in range(-20,20,1):
-#     fault.add_point([-10.5,y,floor],0.,itype='gy')
-#     fault.add_point([11.56,y,roof],1.,itype='gy')
-
 ogw = 3000
 ogw /= mesh.n_elements
 cgw = 6000
-# cgw = cgw / mesh.n_elements
-solver='cgp'
 fault_frame = fault.build(
     solver=solver,
     gxxgy=2 * ogw,
@@ -93,6 +63,11 @@ fault_frame = fault.build(
     gycg=cgw,
     gzcg=cgw,
     shape='rectangular')
+
+# ### Define fault displacements
+# Hanging wall defines the displacement of the fault for the hanging wall
+#
+
 hw = CubicFunction()
 hw.add_cstr(0,1)
 hw.add_grad(0,0)
@@ -122,31 +97,33 @@ gzf.add_grad(0,0)
 gzf.add_min(-.5)
 gzf.add_max(.5)
 
+# ### Fault displacement field
+# Fault displacement can be defined by a volumetric function that will return the
+# displacemnt of the fault anywhere in the model, using either the hanging wall
+# or the footwall functions
 fault_displacement = FaultDisplacement(fw=fw,hw=hw,gy=gyf,gz=gzf)
 fault = FaultSegment(fault_frame,
-                     displacement=2,
-                     # gy_min=0.15,
-                     # gy_max=0.6,
-                     faultfunction=fault_displacement)
+                     displacement=2, #scaling parameter
+                     faultfunction=fault_displacement
+                     )
+
+# ### Faulted geological feature
+# Create a faulted geological feature from the stratigraphy feature and the fault
 faulted_strat = FaultedGeologicalFeature(stratigraphy,fault)
-plt.plot(np.linspace(0,20,100),hw(np.linspace(0,20,100)))
-plt.plot(np.linspace(-20,0,100),fw(np.linspace(-20,0,100)))
+# plt.plot(np.linspace(0,20,100),hw(np.linspace(0,20,100)))
+# plt.plot(np.linspace(-20,0,100),fw(np.linspace(-20,0,100)))
 
-plt.savefig("fault_functions.png")
+# ### Visualisation
+# To visualise faults we can either visualise the whole faulted feature by accessing
+# **faulted_feature.feature**  or we can look at the hanging wall feature by accessing
+# ** hw_feature** or the **fw_feature**.
 viewer = LavaVuModelViewer(background="white")
-# viewer.plot_isosurface(faulted_frame[0].hw_feature, isovalue=0, colour='green')
-# viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='grey')
-
-# viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='black')
-# viewer.plot_isosurface(fault_frame.features[1], isovalue=0, colour='black')
 slices = [-4,-2,0]
-viewer.plot_vector_data(fault_interpolator.get_gradient_control()[:,:3],fault_interpolator.get_gradient_control()[:,3:],"grd")
-viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='green')
+# viewer.plot_vector_data(fault_interpolator.get_gradient_control()[:,:3],fault_interpolator.get_gradient_control()[:,3:],"grd")
+# viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='green')
 # viewer.plot_isosurface(fault_frame.features[1], isovalue=0.15, colour='blue')
-
 locations = mesh.barycentre[::20,:]
-# viewer.plot_vector_field(fault_frame.features[0], locations=locations, colour='red')
-viewer.plot_vector_field(fault_frame.features[1], locations=locations, colour='red')
+# viewer.plot_vector_field(fault_frame.features[1], locations=locations, colour='red')
 # viewer.plot_isosurface(
 #     faulted_strat.hw_feature,
 #     isovalue=-9)
@@ -154,6 +131,8 @@ viewer.plot_vector_field(fault_frame.features[1], locations=locations, colour='r
 #     faulted_strat.fw_feature,
 #     isovalue=-9)
 viewer.plot_isosurface(
-    faulted_strat.feature,
-    isosurface=0)
-viewer.lv.interactive()
+    faulted_strat,
+    nslices=10,
+    paint_with=faulted_strat
+)
+viewer.interactive()

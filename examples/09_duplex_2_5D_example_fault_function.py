@@ -6,6 +6,8 @@ from FME.modelling.features.faulted_geological_feature import FaultedGeologicalF
 from FME.visualisation.model_visualisation import LavaVuModelViewer
 from FME.modelling.structural_frame import StructuralFrameBuilder, StructuralFrame
 from FME.modelling.fault.fault_segment import FaultSegment
+from FME.modelling.fault.fault_function import CubicFunction, FaultDisplacement, Ones
+
 import numpy as np
 
 boundary_points = np.zeros((2,3))
@@ -112,16 +114,32 @@ fault_frame2 = fault2.build(
 )
 # #
 # # #
-fault = FaultSegment(fault_frame, displacement=-4.5)
+hw = CubicFunction()
+hw.add_cstr(0,-1)
+hw.add_grad(0,0)
+hw.add_cstr(20,0)
+hw.add_grad(20,0)
+hw.add_max(20)
+fw = CubicFunction()
+fw.add_cstr(0,1)
+fw.add_grad(0,0)
+fw.add_cstr(-20,0)
+fw.add_grad(-20,0)
+fw.add_min(-20)
+gyf = Ones()
+gzf = Ones()
+fault_displacement = FaultDisplacement(fw=fw,hw=hw,gy=gyf,gz=gzf)
 
-fault2 = FaultSegment(fault_frame2, displacement=-4.5)
+fault = FaultSegment(fault_frame, faultfunction=fault_displacement)
+
+fault2 = FaultSegment(fault_frame2, faultfunction=fault_displacement)
 faulted_frame = []
 for f in fault_frame.features:
     faulted_frame.append(FaultedGeologicalFeature(f, fault2))
 #
 structural_frame2 = StructuralFrame("faulted_frame", faulted_frame)
 
-faulted1_op = FaultSegment(structural_frame2, displacement=-4.5)
+faulted1_op = FaultSegment(structural_frame2, faultfunction=fault_displacement)
 
 faulted_strati = FaultedGeologicalFeature(
     FaultedGeologicalFeature(stratigraphy, fault2),
@@ -164,6 +182,7 @@ locations = mesh.barycentre[::10, :]
 print(faulted_strati.support.property_name)
 viewer.plot_isosurface(
     faulted_strati,
+    nslices=10,
     paint_with=faulted_strati
     # colour='green'
 )

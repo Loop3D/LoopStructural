@@ -41,7 +41,7 @@ class TetMesh:
         self.element_gradients = {}
         self.element_nodes_to_id = {}
         self.regions = {}
-
+        self.points = None
 
     def setup_mesh(self, boundary_points, **kwargs):
         """
