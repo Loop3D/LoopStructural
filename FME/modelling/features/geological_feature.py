@@ -6,6 +6,7 @@ import numpy as np
 class GeologicalFeatureInterpolator:
     def __init__(self, interpolator, **kwargs):
         self.interpolator = interpolator
+        self.name = "UnnamedFeature"
         if 'name' in kwargs:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)

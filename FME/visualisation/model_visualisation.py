@@ -44,7 +44,7 @@ class LavaVuModelViewer:
         max_property_val = geological_feature.max()
         slices = [mean_property_val]
         colour = 'red'
-
+        painter = None
         if 'isovalue' in kwargs:
             slices = [kwargs['isovalue']]
         if 'slices' in kwargs:
@@ -53,6 +53,8 @@ class LavaVuModelViewer:
             slices = np.linspace(min_property_val, max_property_val, kwargs['nslices'])
         if 'colour' in kwargs:
             colour = kwargs['colour']
+        if 'paint_with' in kwargs:
+            painter = kwargs['paint_with']
         for isovalue in slices:
             print("Creating isosurface for %f"%isovalue)
             if isovalue < min_property_val or isovalue > max_property_val:
@@ -73,7 +75,13 @@ class LavaVuModelViewer:
             surf = self.lv.triangles(name)
             surf.vertices(nodes)
             surf.indices(tris)
-            surf.colours(colour)
+            if painter is None:
+                surf.colours(colour)
+            if painter is not None:
+                # add a property to the surface nodes for visualisation
+                surf.values(painter.evaluate_value(nodes),painter.name)
+                surf["colourby"] = painter.name
+                surf.colourmap("diverge")
             if "normals" in kwargs:
                 a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]
                 b = nodes[tris[:, 0], :] - nodes[tris[:, 2], :]
@@ -127,8 +135,6 @@ class LavaVuModelViewer:
             cmap = kwargs["colourmap"]
         p = self.lv.points(name, **kwargs)
         p.vertices(position)
-        print(position)
-        print(value)
         p.values(value,"v")
         p["colourby"] = "v"
         p.colourmap(cmap)
