@@ -19,9 +19,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         :return:
         """
         
-        A = []
-        B = []
-        col = []
+
         #get the gradient of all of the elements of the mesh
         eg = self.mesh.get_elements_gradients(np.arange(self.mesh.n_elements))
         #calculate the fold geometry for the elements barycentre
@@ -31,41 +29,45 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between vector in deformed ori plane = 0
             """
-            c = np.einsum('ij,ijk->ik', deformed_orientation, eg)
-            A.extend(c*kwargs['fold_orientation'])
-            B.extend(np.zeros(self.mesh.n_elements).tolist())
-            col.extend(self.mesh.elements.tolist())
+            A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
+            B = np.zeros(self.mesh.n_elements)
+            idc = self.mesh.elements
+            print("adding fold ori")
+            self.add_constraints_to_least_squares(A*kwargs['fold_orientation'], B, idc)
         if "fold_axis" in kwargs:
             """
             dot product between axis and gradient should be 0
             """
-            c  = np.einsum('ij,ijk->ik', fold_axis, eg)
-            A.extend(c*kwargs['fold_axis'])
-            B.extend(np.zeros(self.mesh.n_elements).tolist())
-            col.extend(self.mesh.elements.tolist())
+            A = np.einsum('ij,ijk->ik', fold_axis, eg)
+            B = np.zeros(self.mesh.n_elements).tolist()
+            print("adding fold_axis")
+            self.add_constraints_to_least_squares(A*kwargs['fold_axis'], B, self.mesh.elements)
+
         if "fold_normalisation" in kwargs:
             """
             specify scalar norm in X direction
             """
 
-            c  = np.einsum('ij,ijk->ik', dgz, eg)
-            A.extend(c*kwargs['fold_normalisation'])
-            b = np.ones(self.mesh.n_elements)
+            A  = np.einsum('ij,ijk->ik', dgz, eg)
+            A*= kwargs['fold_normalisation']
+            B = np.ones(self.mesh.n_elements)
             if "fold_norm" in kwargs:
-                b[:] = kwargs['fold_norm']
+                B[:] = kwargs['fold_norm']
+            self.add_constraints_to_least_squares(A, B, self.mesh.elements)
 
-            B.extend(b)
-            col.extend(self.mesh.elements.tolist())
         if "fold_regularisation" in kwargs:
             """
             fold constant gradient  
             """
             idc, c, ncons = fold_cg(eg, dgz, self.mesh.neighbours, self.mesh.elements, self.mesh.nodes)
-            c = np.array(c)
-            c*=kwargs['fold_regularisation']
-            A.extend(c.tolist())
-            B.extend(np.zeros(ncons))
-            col.extend(np.array(idc).tolist())
-        self.add_constraints_to_least_squares(A, B, col)
-
+            A = np.array(c)
+            A*=kwargs['fold_regularisation']
+            B = np.zeros(len(c))
+            idc = np.array(idc)
+            print("adding fold regularisation")
+            print(ncons)
+            print(A.shape)
+            print(idc.shape)
+            self.add_constraints_to_least_squares(A, B, idc)
+            print("after")
 

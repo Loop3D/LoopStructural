@@ -26,7 +26,7 @@ boundary_points[1,0] = np.max(coords[:,0])
 boundary_points[1,1] = np.max(coords[:,1])
 boundary_points[1,2] = -minz*0.1
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points,n_tetra=1000,)
+mesh.setup_mesh(boundary_points,n_tetra=50000,)
 
 fold_frame_interpolator = PLI(mesh)
 fold_frame_builder = StructuralFrameBuilder(
@@ -64,6 +64,7 @@ f1_frame = fold_frame_builder.build(
     gycg=cgw,
     gzcg=cgw,
     shape='rectangular',)
+
 ##processing geopandas data so it works
 nans = np.zeros(len(orientations))
 nans[:] = np.nan
@@ -109,7 +110,7 @@ plt.plot(s1gy,far,'bo')
 plt.ylim(-90,90)
 def fold_axis_rotation(x):
     return np.rad2deg(np.arctan(rbf_fold_axis(x,np.zeros(x.shape),np.zeros(x.shape))))
-plt.show()
+# plt.show()
 
 
 fold = FoldEvent(f1_frame,fold_axis_rotation,None)
@@ -117,10 +118,10 @@ axis = fold.get_fold_axis_orientation(xyz)
 axis/=np.linalg.norm(axis,axis=1)[:,None]
 flr = f1_frame.calculate_fold_limb_rotation(np.hstack([xyz,s0g]),axis=axis)
 ##quick figure
-fig, ax = plt.subplots(1,2,figsize=(15,5))
-ax[0].plot(s1,flr,'bo')
-ax[0].set_ylim(-90,90)
-plt.show()
+fig, ax = plt.subplots(2,2,figsize=(15,10))
+ax[0][0].plot(s1,flr,'bo')
+ax[0][0].set_ylim(-90,90)
+# plt.show()
 #ax[0].ylim(-90,90)
 # svario = s_variogram(s1,flr)
 # svario.setup()
@@ -138,36 +139,37 @@ plt.plot(s1,flr,'bo')
 plt.ylim(-90,90)
 def fold_limb_rotation(x):
     return np.rad2deg(np.arctan(rbf_fold_limb(x,np.zeros(x.shape),np.zeros(x.shape))))
-plt.show()
+# plt.show()
 fold.fold_limb_rotation = fold_limb_rotation
 fold_interpolator = DFI(mesh,fold)
-stratigraphy_builder = GeologicalFeatureInterpolator(fold_interpolator,name="folded_stratigraphy")
-for i, r in orientations.iterrows():
-    if r['type'] == 's0':
-        xy = r['geometry'].xy
-        z = 0
-        if 'z' in r:
-            z = r['z']
-        stratigraphy_builder.add_strike_and_dip([xy[0][0],xy[1][0],z],r['strike'],r['dip'])
-for i, r in points.iterrows():
-    if r['type'] == 's0':
-        xy = r['geometry'].xy
-        z = 0
-        if 'z' in r:
-            z = r['z']
-        stratigraphy_builder.add_point([xy[0][0],xy[1][0],z],r['value'])
+stratigraphy_builder = GeologicalFeatureInterpolator(fold_interpolator, name="folded_stratigraphy")
+# for i, r in orientations.iterrows():
+#     if r['type'] == 's0':
+#         xy = r['geometry'].xy
+#         z = 0
+#         if 'z' in r:
+#             z = r['z']
+#         stratigraphy_builder.add_strike_and_dip([xy[0][0],xy[1][0],z],r['strike'],r['dip'])
+# for i, r in points.iterrows():
+#     if r['type'] == 's0':
+#         xy = r['geometry'].xy
+#         z = 0
+#         if 'z' in r:
+#             z = r['z']
+#         stratigraphy_builder.add_point([xy[0][0],xy[1][0],z],r['value'])
+stratigraphy_builder.add_point(mesh.pca.inverse_transform([0,0,0]),0.)
 fold_weights = {}
 fold_weights['fold_orientation'] = 50.
 fold_weights['fold_axis'] = 3.
 fold_weights['fold_normalisation'] = 1.
 fold_weights['fold_regularisation'] = 10.
-folded_stratigraphy = stratigraphy_builder.build('cg',fold_weights=fold_weights,fold=fold)
+folded_stratigraphy = stratigraphy_builder.build(solver=solver,fold_weights=fold_weights,fold=fold)
 
 viewer = LavaVuModelViewer(background="white")
-viewer.plot_isosurface(f1_frame.features[0],  colour='green')
-viewer.plot_isosurface(f1_frame.features[1],  colour='blue')
-viewer.plot_isosurface(folded_stratigraphy, colour='blue')
+# viewer.plot_isosurface(f1_frame.features[0],  colour='green')
+# viewer.plot_isosurface(f1_frame.features[1],  colour='blue')
+viewer.plot_isosurface(folded_stratigraphy, colour='purple')
 locations = mesh.barycentre[::20,:]
-viewer.plot_vector_field(f1_frame.features[2], locations=locations, colour='red')
+# viewer.plot_vector_field(f1_frame.features[2], locations=locations, colour='red')
 
 viewer.lv.interactive()

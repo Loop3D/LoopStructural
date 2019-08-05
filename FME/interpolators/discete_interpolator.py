@@ -31,7 +31,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-        print(A.shape)
+        print(A.shape, B.shape, idc.shape)
         nr = A.shape[0]
         if len(A.shape) >2:
             nr = A.shape[0]*A.shape[1]
@@ -192,6 +192,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 num_iter += 1
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
+                print(len(self.B),self.AA.shape)
                 B = self.AA.T.dot(self.B)
             if self.shape == 'square':
                 A = self.AA
@@ -200,11 +201,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # M2 = sla.LinearOperator(A.shape, precon.solve)
             #print(precon)
             self.cc_ = sla.cg(A,B,callback=call)#,M=M2)
-            print("num",num_iter)
+            print("CG iterations ",num_iter)
             if self.cc_[1] == 0:
                 print("Conjugate gradient converged")
             if self.cc_[1] > 0:
-                print("CG used %i iterations and didn't converge"%i)
+                print("CG used %i iterations and didn't converge"%self.cc_[1])
             self.up_to_date = True
         if solver == 'cgs':
             if self.shape == 'rectangular':

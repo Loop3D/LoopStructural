@@ -8,6 +8,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator = interpolator
         if 'name' in kwargs:
             self.name = kwargs['name']
+            self.interpolator.set_property_name(self.name)
         if 'region' in kwargs:
             self.region = kwargs['region']
         self.data = []
@@ -44,7 +45,7 @@ class GeologicalFeatureInterpolator:
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
             self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
-
+            kwargs['cg'] = False
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver)
         return GeologicalFeature(self.name,

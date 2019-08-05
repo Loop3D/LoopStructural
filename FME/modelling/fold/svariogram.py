@@ -3,40 +3,29 @@ TODO This file needs to be re-written and use numpy properly
 ########
 """
 import numpy as np
-@np.vectorize
-def distance(p1,p2):
-    return abs(p1-p2)
-@np.vectorize
-def covar(p1,p2):
-    return ((p1-p2)**2)
-@np.vectorize
-def inside(a,l,u):
-    if a > l and a<u:
-        b= 0
-    else:
-        b = 1
-    return b
 class s_variogram():
     def __init__(self,xdata,ydata):
         self.xdata = xdata
         self.ydata = ydata
-    def setup(self):
-        x1 = np.array([self.xdata,]*len(self.xdata))
-        y1 = np.array([self.ydata,]*len(self.ydata))
-        #x2 = np.tile(xdata,len(xdata))
-        y2 = y1.transpose()
-        x2 = x1.transpose()
-        self.distance_m = np.linalg.norm(x1-x2,axis=1)
-        self.covariance_m = (y1-y2)**2#covar(y1,y2)#x1 = np.array(np.)    
-    def calc_semivariogram(self, step, nlags, tol):
-        self.lags = np.arange(step/2.,nlags*step,step)
-        self.variance,self.npairs = self.semivariogram(self.lags*1.1,step,self.distance_m,self.covariance_m)
+        self.dist = np.abs(self.xdata[:,None] - self.xdata[None,:])
+        self.variance_matrix = (self.ydata[:,None] - self.ydata[None,:]) ** 2
+        self.lags = None
+    def calc_semivariogram(self, **kwargs):
+        if 'step' in kwargs['step'] and 'nstep' in kwargs:
+            step = kwargs['step']
+            nstep = kwargs['nstep']
+            self.lags = np.arange(step/2.,nstep*step,step)
+        if 'lags' in kwargs:
+            self.lags = kwargs['lags']
+        self.variance, self.npairs = self.semivariogram(self.lags*1.1,step,self.distance_m,self.covariance_m)
         return self.lags, self.variance, self.npairs
+
     def semivariogram(self,lags,tol,distance,covariance):
-        variance = np.zeros(len(lags))
-        npairs = np.zeros(len(lags))
+        variance = np.zeros(lags.shape)
+        npairs = np.zeros(lags.shape)
         self.min_ = np.zeros(len(lags))
         self.max_ = np.zeros(len(lags))
+
         for i in range(len(lags)):
             ma = np.ma.array(data = covariance, mask =inside(distance,
                 lags[i]-tol/2.,lags[i]+tol/2.))
@@ -50,6 +39,7 @@ class s_variogram():
                 self.max_[i] = np.nan
             npairs[i] = ma.count()
         return variance,npairs
+
     def find_wavelengths(self,step=0,nlags=0):
 
         if step==0:
