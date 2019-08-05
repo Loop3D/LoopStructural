@@ -31,7 +31,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-        print(A.shape, B.shape, idc.shape)
         nr = A.shape[0]
         if len(A.shape) >2:
             nr = A.shape[0]*A.shape[1]
