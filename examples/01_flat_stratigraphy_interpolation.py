@@ -25,7 +25,7 @@ boundary_points[1,2] = 1
 # Create a TetMesh object and build the mesh using tetgen. The number of tetrahedron can be specified
 # by adding the n_tetra flag.
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, n_tetra=100000,)
+mesh.setup_mesh(boundary_points, n_tetra=10000,)
 
 # ### GeologicalFeatureInterpolator
 # FME uses an object oriented design so
@@ -38,8 +38,8 @@ feature_builder.add_point([-0.5,0,0],1)
 feature_builder.add_point([-.9,0,0],.8)
 
 # feature_builder.add_strike_and_dip([0,0,0],90,40)
-cgw = 300
-cgw /= mesh.n_elements
+cgw = 6000
+# cgw /= mesh.n_elements
 feature = feature_builder.build(
     solver='cg',
     cgw=cgw)
@@ -57,7 +57,7 @@ np.savetxt("01_box_coords.txt", mesh.points)
 viewer = LavaVuModelViewer(background="white")
 viewer.plot_isosurface(
     feature,
-    slices=[0, 1., .8], #specify multiple isosurfaces
+    slices=[0], #specify multiple isosurfaces
     # isovalue=0, # a single isosurface
     # nslices=10 #the number of evenly space isosurfaces
 )
@@ -73,4 +73,3 @@ viewer.plot_value_data(
     pointsize=10,
     colourmap=lavavu.matplotlib_colourmap("Greys"))
 viewer.lv.interactive()
-

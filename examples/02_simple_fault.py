@@ -12,6 +12,7 @@ import timeit
 This is a basic example showing how to use the Piecewise Linear Interpolator for orientation and
 value data points. 
 """
+solver = 'chol'
 start = timeit.default_timer()
 boundary_points = np.zeros((2,3))
 
@@ -30,7 +31,9 @@ feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy
 feature_builder.add_point([0,0,0],0)
 feature_builder.add_point([0,0,1],-0.5)
 feature_builder.add_strike_and_dip([0,0,0],90,0)
-feature = feature_builder.build(solver='cg')
+feature = feature_builder.build(
+    solver=solver,
+    cgw=5000)
 
 
 fault_frame_interpolator = PLI(mesh)
@@ -50,10 +53,9 @@ for y in range(-15,15):
 
 ogw = 300
 ogw /= mesh.n_elements
-cgw = 500
-cgw = cgw / mesh.n_elements
+cgw = 5000
 fault_frame = fault.build(
-    solver='cg',
+    solver=solver,
     guess=None,
    gxxgy=2*ogw,
    gxxgz=2*ogw,

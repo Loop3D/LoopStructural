@@ -3,7 +3,7 @@ import numpy as np
 
 class TetMeshBuilder:
 
-    def __init__(self,support,**kwargs):
+    def __init__(self, support, **kwargs):
         self.support = support
         self.n_tetra = 4000  # maxvol=0.001
         if 'n_tetra' in kwargs:
@@ -42,5 +42,5 @@ class TetMeshBuilder:
 
         #set faces?
         self.support.set_barycentre(np.sum(self.nodes[self.elements][:, :, :], axis=1) / 4.)
-
+a
         return

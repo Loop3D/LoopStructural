@@ -46,6 +46,9 @@ class LavaVuModelViewer:
         slices = [mean_property_val]
         colour = 'red'
         painter = None
+        voxet = None
+        tris = None
+        nodes = None
         if 'isovalue' in kwargs:
             slices = [kwargs['isovalue']]
         if 'slices' in kwargs:
@@ -56,13 +59,17 @@ class LavaVuModelViewer:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
+        if 'voxet' in kwargs:
+            voxet = kwargs['voxet']
         for isovalue in slices:
             print("Creating isosurface for %f"%isovalue)
             if isovalue < min_property_val or isovalue > max_property_val:
                 print("No surface to create for isovalue")
                 continue #isovalue = kwargs['isovalue']
-
-            tris, nodes = geological_feature.support.slice(isovalue)
+            if voxet is None:
+                tris, nodes = geological_feature.support.slice(isovalue)
+            # if voxet:
+            #
             if nodes.shape[0] == 0:
                 continue
 

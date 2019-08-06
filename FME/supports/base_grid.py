@@ -1,4 +1,4 @@
-from sklean.decomposition import PCA
+from sklearn.decomposition import PCA
 
 3
 class BaseGrid:
