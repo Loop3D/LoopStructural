@@ -29,6 +29,7 @@ value data points.
 val = pd.read_csv("perth_basin_points.csv")
 print(val)
 ori = pd.read_csv("perth_basin_orientation.csv")
+print(ori)
 # interpolator = PLI(mesh)
 # feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
 #
