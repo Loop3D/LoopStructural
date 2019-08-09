@@ -55,7 +55,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator.solve_system(solver=solver)
         return GeologicalFeature(self.name,
                                  TetrahedralMeshScalarField.from_interpolator(self.interpolator),
-                                 builder=self)
+                                 builder=self, data=self.data)
 
 
 class GeologicalFeature:
@@ -64,7 +64,7 @@ class GeologicalFeature:
     modle. For example foliations, fault planes, fold rotation angles etc. The feature has a support
     which 
     """
-    def __init__(self, name, support, builder = None):
+    def __init__(self, name, support, builder = None, data = None):
         """
 
         :param age:
@@ -74,9 +74,8 @@ class GeologicalFeature:
         self.name = name
         self.support = support
         self.ndim = 1
-        self.data = []
-        self.builder = None
-
+        self.data = data
+        self.builder = builder
     def set_builder(self, builder):
         self.builder = builder
 

@@ -90,7 +90,7 @@ class GPoint(Point):
             self.dir/= nla.norm(self.dir)
     @classmethod
     def from_plunge_plunge_dir(cls, pos, plunge,plunge_dir):
-        plunge = np.deg2rad(90-plunge)
+        plunge = np.deg2rad(plunge)
         plunge_dir = np.deg2rad(plunge_dir+90)
         dir = np.zeros(3)
         dir[0] = m.sin(plunge) * m.cos(plunge_dir)
@@ -108,7 +108,16 @@ class GPoint(Point):
         dir[2] = m.cos(dip)
         dir /= nla.norm(dir)
         return cls(pos, dir)
-
+    @classmethod
+    def from_dip_dip_dir(cls, pos, dip_dir, dip):
+        dir = np.zeros(3)
+        strike = np.deg2rad(dip_dir+90)
+        dip = np.deg2rad(dip)
+        dir[0] = m.sin(dip) * m.cos(strike)
+        dir[1] = -m.sin(dip) * m.sin(strike)
+        dir[2] = m.cos(dip)
+        dir /= nla.norm(dir)
+        return cls(pos, dir)
     def dir_(self):
         return self.dir
     def val(self,i):

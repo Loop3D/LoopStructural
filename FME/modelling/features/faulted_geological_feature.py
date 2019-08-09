@@ -12,12 +12,14 @@ class FaultedGeologicalFeature(GeologicalFeature):
     def __init__(self, feature, fault):
         # start with the feature to be faulted this is the parent feature
         self.parent_feature = feature
+        self.fault =  fault
         # determine the hw and fw movements
-        hw_p, fw_p, hw_m, fw_m = fault.apply_fault_to_support(feature.support)
-        fault.appy_fault_to_data(feature.data)
+        hw_p, fw_p, hw_m, fw_m = self.fault.apply_to_support(feature.support)
+        self.fault.apply_to_data(feature.data)
         # TODO this should all be managed by an observer class which links the data
         # to the feature/interpolator and tell the interpolator that it needs to rerun
-        feature.interpolator.update()
+        feature.support.interpolator.up_to_date = False
+        feature.support.interpolator.update()
         # evaluate the values of the faulted points
         hw_v = np.zeros(feature.support.number_of_nodes())
         fw_v = np.zeros(feature.support.number_of_nodes())
@@ -35,7 +37,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
             feature.support.mesh, feature.name+'_fw', fw_v)
         self.hw_feature = GeologicalFeature(feature.name+'_hw', hw_sf)
         self.fw_feature = GeologicalFeature(feature.name+'_fw', fw_sf)
-        self.fault = fault
+        # self.fault = fault
         # now initialise the actual feature so it can be called
         #create a continuous geological feature
         faulted_v = np.zeros(feature.support.number_of_nodes())
@@ -62,8 +64,8 @@ class FaultedGeologicalFeature(GeologicalFeature):
         hangingwall = self.fault.evaluate(locations) > 0
         footwall = self.fault.evaluate(locations) < 0
         evaluated = np.zeros((locations.shape[0], 3))
-        evaluated[hangingwall] = self.hw_feature.evaluate_value(locations[hangingwall])
-        evaluated[footwall] = self.fw_feature.evaluate_value(locations[footwall])
+        evaluated[hangingwall] = self.hw_feature.evaluate_gradient(locations[hangingwall])
+        evaluated[footwall] = self.fw_feature.evaluate_gradient(locations[footwall])
         return evaluated
 
     def mean(self):
