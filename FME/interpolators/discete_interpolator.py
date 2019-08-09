@@ -274,4 +274,5 @@ class DiscreteInterpolator(GeologicalInterpolator):
             print("Cannot rerun interpolator")
             return
         if not self.up_to_date:
+            self.setup_interpolator()
             self._solve(self.solver)
