@@ -27,7 +27,11 @@ class GeologicalFeatureInterpolator:
         self.interpolator.add_data(self.data[-1])
 
     def add_strike_and_dip(self, pos, s, d):
-        self.data.append(GPoint(pos, s, d))
+        self.data.append(GPoint.from_strike_and_dip(pos, s, d))
+        self.interpolator.add_data(self.data[-1])
+
+    def add_plunge_and_plunge_dir(self,pos,plunge,plunge_dir):
+        self.data.append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
         self.interpolator.add_data(self.data[-1])
 
     def add_tangent_constraint(self, pos, val):
@@ -50,7 +54,8 @@ class GeologicalFeatureInterpolator:
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver)
         return GeologicalFeature(self.name,
-                                 TetrahedralMeshScalarField.from_interpolator(self.interpolator))
+                                 TetrahedralMeshScalarField.from_interpolator(self.interpolator),
+                                 builder=self)
 
 
 class GeologicalFeature:
@@ -59,7 +64,7 @@ class GeologicalFeature:
     modle. For example foliations, fault planes, fold rotation angles etc. The feature has a support
     which 
     """
-    def __init__(self, name, support):
+    def __init__(self, name, support, builder = None):
         """
 
         :param age:
@@ -70,6 +75,10 @@ class GeologicalFeature:
         self.support = support
         self.ndim = 1
         self.data = []
+        self.builder = None
+
+    def set_builder(self, builder):
+        self.builder = builder
 
     def evaluate_value(self, evaluation_points):
         return self.support.evaluate_value(evaluation_points)

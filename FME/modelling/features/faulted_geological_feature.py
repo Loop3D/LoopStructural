@@ -14,7 +14,10 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.parent_feature = feature
         # determine the hw and fw movements
         hw_p, fw_p, hw_m, fw_m = fault.apply_fault_to_support(feature.support)
-        # fault.appy_fault_to_data(data)
+        fault.appy_fault_to_data(feature.data)
+        # TODO this should all be managed by an observer class which links the data
+        # to the feature/interpolator and tell the interpolator that it needs to rerun
+        feature.interpolator.update()
         # evaluate the values of the faulted points
         hw_v = np.zeros(feature.support.number_of_nodes())
         fw_v = np.zeros(feature.support.number_of_nodes())

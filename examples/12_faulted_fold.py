@@ -24,59 +24,47 @@ from scipy.interpolate import Rbf
 # * bounding box - simple defines the map view of the model area
 # The bounding box
 
-# points = geopandas.read_file('faulted_fold/data.gpkg',layer='points')
+points = geopandas.read_file('faulted_fold/data.gpkg',layer='points')
 orientations = geopandas.read_file('faulted_fold/data.gpkg',layer='orientations')
-print(orientations)
-# #model_area = geopandas.read_file('data.gpkg',layer='bounding_box')
-#
-# # If we have a look at the orientation and points data we can see that the points have a geometry
-# # column as well as type and itype.
-#
-#
-# geom = model_area['geometry']#.shapes()
-# coords = np.array(geom[0].exterior.coords)#[0]
-# minz = -(np.max(coords[:,0])-np.min(coords[:,0]))/2.
-#
-# # ### Build mesh
-# boundary_points = np.zeros((2,3))
-# boundary_points[0,0] = np.min(coords[:,0])-10
-# boundary_points[0,1] = np.min(coords[:,1])
-# boundary_points[0,2] = minz
-# boundary_points[1,0] = np.max(coords[:,0])
-# boundary_points[1,1] = np.max(coords[:,1])
-# boundary_points[1,2] = -minz*0.1
-# mesh = TetMesh()
-# mesh.setup_mesh(boundary_points, n_tetra=20000,)
-#
-#
-# # ### Build a fold frame
-# # Fold frame is built from the observations of foliations and fold axis and consists of 2 interpolated
-# # scalar fields that are orthoognal to each other and one computed vector field that is orthogonal
-# # to both interpolated fields. The StructuralFrameBuilder needs to be given an interpolator object to use as
-# # a template to interpolate the curvilinear coordinate systems. The StructuralFrameBuilder creates copies
-# # of the interpolator for the different fields that need to be interpolated and assigns property names to
-# # the different fields being interpolated.
-# fold_frame_interpolator = PLI(mesh)
-# fold_frame_builder = StructuralFrameBuilder(
-#     interpolator=fold_frame_interpolator,
-#     mesh=mesh,
-#     name='F1_fold_frame')
-# # Interfacing with dataframes should be done using a convenience wrapper function
-# for i, r in orientations.iterrows():
-#     if r['type'] == 's1':
-#         xy = r['geometry'].xy
-#         z = 0
-#         if 'z' in r:
-#             z = r['z']
-#         fold_frame_builder.add_strike_and_dip([xy[0][0],xy[1][0],z],r['strike'],r['dip'],itype=r['itype'])
-# for i, r in points.iterrows():
-#     if r['type'] == 's1':
-#         xy = r['geometry'].xy
-#         z = 0
-#         if 'z' in r:
-#             z = r['z']
-#         fold_frame_builder.add_point([xy[0][0],xy[1][0],z],r['value'],itype=r['itype'])
-#
+
+boundary_points = np.zeros((2,3))
+boundary_points[0,0] = 0 #np.min(coords[:,0])-10
+boundary_points[0,1] = 0 #np.min(coords[:,1])
+boundary_points[0,2] = -40#minz
+boundary_points[1,0] = 100 #np.max(coords[:,0])
+boundary_points[1,1] = 100 #np.max(coords[:,1])
+boundary_points[1,2] = 10#-minz*0.1
+mesh = TetMesh()
+mesh.setup_mesh(boundary_points, n_tetra=20000,)
+fault_frame_interpolator = PLI(mesh)
+fault_frame_builder = StructuralFrameBuilder(
+    interpolator=fault_frame_interpolator,
+    mesh=mesh,
+    name='fault_frame')
+# Interfacing with dataframes should be done using a convenience wrapper function
+for i, r in orientations.iterrows():
+    if r['label'] == 'fault':
+        xy = r['geometry'].xy
+        z = 0
+        if 'z' in r:
+            z = r['z']
+        fault_frame_builder.add_strike_and_dip([xy[0][0],xy[1][0],z],r['strike'],r['dip'],itype='gx')
+    if r['label'] == 'fault_slip':
+        xy = r['geometry'].xy
+        z = 0
+        if 'z' in r:
+            z = r['z']
+        fault_frame_builder.add_plunge_and_plunge_dir([xy[0][0],xy[1][0],z],r['strike'],r['dip'],itype='gy')
+
+for i, r in points.iterrows():
+    if r['label'] == 'fault':
+        xy = r['geometry'].xy
+        z = 0
+        if 'z' in r:
+            z = r['z']
+        fault_frame_builder.add_point([xy[0][0],xy[1][0],z],r['value'],itype='gx')
+        fault_frame_builder.add_point([xy[0][0],xy[1][0],z],r['value'],itype='gy')
+
 # # We define weights for the orthogonal constraint and the regularisation constraints. The solver to
 # # use to solve the least squares system. Possible solvers include
 # # * **chol** cholesky decompsition
@@ -84,38 +72,76 @@ print(orientations)
 # # * **cg** - conjugate gradient
 # # * **bicg** - biconjugate gradient
 #
-# ogw = 3000
-# ogw /= mesh.n_elements
-# cgw = 6000
-# solver='lu'
-# f1_frame = fold_frame_builder.build(
-#     frame=FoldFrame,
-#     solver=solver,
-#     gxxgy=2 * ogw,
-#     gxxgz=2 * ogw,
-#     gyxgz=ogw,
-#     gxcg=cgw,
-#     gycg=cgw,
-#     gzcg=cgw,
-#     shape='rectangular',)
+ogw = 3000
+ogw /= mesh.n_elements
+cgw = 6000
+solver='lu'
+fault_frame = fault_frame_builder.build(
+    # frame=FoldFrame,
+    solver=solver,
+    gxxgy=2 * ogw,
+    gxxgz=2 * ogw,
+    gyxgz=ogw,
+    gxcg=cgw,
+    gycg=cgw,
+    gzcg=cgw,
+    shape='rectangular',)
+
+fold_frame_interpolator  = PLI(mesh)
+fold_frame_builder = StructuralFrameBuilder(
+    interpolator=fold_frame_interpolator,
+    mesh=mesh,
+    name='fold_frame'
+)
+for i, r in orientations.iterrows():
+    if r['label'] == 's1':
+        xy = r['geometry'].xy
+        z = 0
+        if 'z' in r:
+            z = r['z']
+        fold_frame_builder.add_strike_and_dip([xy[0][0],xy[1][0],z],r['strike'],r['dip'],itype='gx')
+        fold_frame_builder.add_strike_and_dip([xy[0][0],xy[1][0],z],r['strike']+90,r['dip'],itype='gy')
+for i, r in points.iterrows():
+    if r['label'] == 's1':
+        xy = r['geometry'].xy
+        z = 0
+        if 'z' in r:
+            z = r['z']
+        fault_frame_builder.add_point([xy[0][0],xy[1][0],z],r['value'],itype='gx')
+
+
+ogw = 3000
+ogw /= mesh.n_elements
+cgw = 6000
+solver='lu'
+fold_frame = fold_frame_builder.build(
+    frame=FoldFrame,
+    solver=solver,
+    gxxgy=2 * ogw,
+    gxxgz=2 * ogw,
+    gyxgz=ogw,
+    gxcg=cgw,
+    gycg=cgw,
+    gzcg=cgw,
+    shape='rectangular',)
 #
 # # ### Create a fold event linked to the fold frame
 # # We need to create an empty fold event that links our fold frame to the fold event so that it can
 # #  given to the fold interpolator.
-# fold = FoldEvent(f1_frame,None,None)
+fold = FoldEvent(fold_frame,None,None)
 #
 # # ### Create a DiscreteFoldInterpolator object
 # # The DiscreteFoldInterpolator is a daughter class of the PiecewiseLinearInterpolator that
 # # uses a fold event and a mesh to define additional constraints in the least squares system.
-# fold_interpolator = DFI(mesh,fold)
+stratigraphy_interpolator = DFI(mesh,fold)
 #
 # # ### Build the stratigraphy geological feature
 # # We can build the stratigraphy geological feature using the fold interpolator object and
 # # then linking the observations from the shapefile to the interpolator. .
 #
-# stratigraphy_builder = GeologicalFeatureInterpolator(fold_interpolator, name="folded_stratigraphy")
+# stratigraphy_builder = GeologicalFeatureInterpolator(stratrigaphy_interpolator, name="folded_stratigraphy")
 # for i, r in orientations.iterrows():
-#     if r['type'] == 's0':
+#     if r['label'] == 's0':
 #         xy = r['geometry'].xy
 #         z = 0
 #         if 'z' in r:
@@ -226,9 +252,31 @@ print(orientations)
 # # points are chosen it can be difficult to see the locations. We suggest slicing numpy
 # # arrays to create regularly sampled locations.
 #
-# viewer = LavaVuModelViewer(background="white")
-# viewer.plot_isosurface(f1_frame.features[0],  colour='green')
-# viewer.plot_isosurface(f1_frame.features[1],  colour='blue')
+viewer = LavaVuModelViewer(background="white")
+viewer.plot_isosurface(fault_frame.features[0],  colour='green')
+viewer.plot_isosurface(fault_frame.features[1],  colour='blue')
+viewer.plot_vector_data(fault_frame.features[0].support.interpolator.get_gradient_control()[:,:3],
+                        fault_frame.features[0].support.interpolator.get_gradient_control()[:,3:],
+                        "gx_grad")
+viewer.plot_vector_data(fault_frame.features[1].support.interpolator.get_gradient_control()[:,:3],
+                        fault_frame.features[1].support.interpolator.get_gradient_control()[:,3:],
+                        "gy_grad",
+                        colour='green')
+
+viewer.plot_isosurface(fold_frame.features[0],  colour='black')
+# viewer.plot_isosurface(fold_frame.features[1],  colour='red')
+# viewer.plot_vector_data(fold_frame.features[0].support.interpolator.get_gradient_control()[:,:3],
+#                         fold_frame.features[0].support.interpolator.get_gradient_control()[:,3:],
+#                         "gx_grad")
+# viewer.plot_vector_data(fold_frame.features[1].support.interpolator.get_gradient_control()[:,:3],
+#                         fold_frame.features[1].support.interpolator.get_gradient_control()[:,3:],
+#                         "gy_grad",
+#                         colour='red')
+# viewer.plot_vector_data(stratigraphy_builder.interpolator.get_gradient_control()[:,:3],
+#                         stratigraphy_builder.interpolator.get_gradient_control()[:,3:],
+#                         "s0",
+#                         colour='pink',
+#                         size=4)
 # viewer.plot_isosurface(folded_stratigraphy,
 #                        colour='purple',
 #                        nslices=10,
@@ -238,5 +286,5 @@ print(orientations)
 # viewer.plot_vector_field(f1_frame.features[2], locations=locations, colour='red')
 # viewer.plot_vector_field(f1_frame.features[1], locations=locations, colour='green')
 # viewer.plot_vector_field(f1_frame.features[0], locations=locations, colour='blue')
-# viewer.interactive()
+viewer.interactive()
 #

@@ -92,6 +92,9 @@ class StructuralFrameBuilder:
     def add_planar_constraint(self, pos, val, itype):
         self.data.append({'type':itype,'data':GPoint(pos,val)})
 
+    def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, itype):
+        self.data.append({'type':itype,'data':GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir)})
+
     def add_strike_and_dip(self, pos, s, d, itype):
         self.data.append({'type':itype,'data':GPoint(pos,s,d)})
 

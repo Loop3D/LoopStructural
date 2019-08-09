@@ -1,5 +1,5 @@
 import numpy as np
-from FME.modelling.geological_points import IPoint,GPoint,TPoint
+from FME.modelling.geological_points import IPoint, GPoint, TPoint
 
 
 class GeologicalInterpolator:

@@ -90,6 +90,7 @@ class FaultSegment:
         return hw_n, fw_n, hw_m, fw_m
 
     def apply_fault_to_data(self,data):
+        steps = 10
         for d in data:
             for i in range(steps):
                 g = self.faultframe.gy(d.pos, True)

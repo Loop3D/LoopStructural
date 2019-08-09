@@ -147,6 +147,8 @@ class LavaVuModelViewer:
         p.values(value,"v")
         p["colourby"] = "v"
         p.colourmap(cmap)
+    # def plot_feature_data(self,feature,**kwargs):
+    #     grad = feature.support.interpolator.
     def interactive(self):
         if is_notebook():
             self.lv.control.Panel()
