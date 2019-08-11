@@ -1,8 +1,8 @@
 # FME
 Loop3D Geological Forward Modeling Engine.
 
-* Python/cython implementation of DSI 
-* Fold interpolation using constraints outlined in Laurent 2016
+* Python/cython implementation of a piecewise linear interpolation (Discrete Smooth Interpolator in Gocad) 
+* Fold interpolation using constraints outlined in Laurent 2016 with fold geostatistical tools shown in Grose et al., 2017
 * Fault interpolation 
 
 If you want to use FME the best way to use it is within a jupyter notebook environment. 
