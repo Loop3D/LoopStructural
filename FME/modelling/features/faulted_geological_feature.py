@@ -12,17 +12,21 @@ class FaultedGeologicalFeature(GeologicalFeature):
     def __init__(self, feature, fault):
         # start with the feature to be faulted this is the parent feature
         self.parent_feature = feature
-        self.fault =  fault
+        self.fault = fault
+        self.hw_feature = None
+        self.fw_feature = None
+        self.fault.apply_to_data(self.parent_feature.data)
+        self.update_feature()
+    def update_feature(self):
         # determine the hw and fw movements
-        hw_p, fw_p, hw_m, fw_m = self.fault.apply_to_support(feature.support)
-        self.fault.apply_to_data(feature.data)
+        hw_p, fw_p, hw_m, fw_m = self.fault.apply_to_support(self.parent_feature.support)
         # TODO this should all be managed by an observer class which links the data
         # to the feature/interpolator and tell the interpolator that it needs to rerun
-        feature.support.interpolator.up_to_date = False
-        feature.support.interpolator.update()
+        self.parent_feature.support.interpolator.up_to_date = False
+        self.parent_feature.support.interpolator.update()
         # evaluate the values of the faulted points
-        hw_v = np.zeros(feature.support.number_of_nodes())
-        fw_v = np.zeros(feature.support.number_of_nodes())
+        hw_v = np.zeros(self.parent_feature.support.number_of_nodes())
+        fw_v = np.zeros(self.parent_feature.support.number_of_nodes())
         hw_v[:] = np.nan
         fw_v[:] = np.nan
         #
@@ -32,21 +36,21 @@ class FaultedGeologicalFeature(GeologicalFeature):
         # hw_v = self.parent_feature.support.get_node_values()
         # create new supports for the hw and fw features
         hw_sf = TetrahedralMeshScalarField.from_node_values(
-            feature.support.mesh, feature.name+'_hw', hw_v)
+            self.parent_feature.support.mesh, self.parent_feature.name+'_hw', hw_v)
         fw_sf = TetrahedralMeshScalarField.from_node_values(
-            feature.support.mesh, feature.name+'_fw', fw_v)
-        self.hw_feature = GeologicalFeature(feature.name+'_hw', hw_sf)
-        self.fw_feature = GeologicalFeature(feature.name+'_fw', fw_sf)
+            self.parent_feature.support.mesh, self.parent_feature.name+'_fw', fw_v)
+        self.hw_feature = GeologicalFeature(self.parent_feature.name+'_hw', hw_sf)
+        self.fw_feature = GeologicalFeature(self.parent_feature.name+'_fw', fw_sf)
         # self.fault = fault
         # now initialise the actual feature so it can be called
         #create a continuous geological feature
-        faulted_v = np.zeros(feature.support.number_of_nodes())
-        fault_mask = fault.faultframe.features[0].support.get_node_values()>0
+        faulted_v = np.zeros(self.parent_feature.support.number_of_nodes())
+        fault_mask = self.fault.faultframe.features[0].support.get_node_values()>0
         faulted_v[fault_mask] = hw_v[fault_mask]
         faulted_v[~fault_mask] = fw_v[~fault_mask]
-        super().__init__(feature.name + "_faulted", TetrahedralMeshScalarField.
-                          from_node_values(feature.support.mesh,
-                                           feature.name + '_faulted',
+        super().__init__(self.parent_feature.name + "_faulted", TetrahedralMeshScalarField.
+                          from_node_values(self.parent_feature.support.mesh,
+                                           self.parent_feature.name + '_faulted',
                                            faulted_v))
     def evaluate_value(self, locations):
         """
