@@ -60,9 +60,8 @@ class FaultedGeologicalFeature(GeologicalFeature):
         return evaluated
 
     def evaluate_gradient(self, locations):
-
-        hangingwall = self.fault.evaluate(locations) > 0
-        footwall = self.fault.evaluate(locations) < 0
+        hangingwall = self.fault.evaluate(locations)
+        footwall = ~self.fault.evaluate(locations)
         evaluated = np.zeros((locations.shape[0], 3))
         evaluated[hangingwall] = self.hw_feature.evaluate_gradient(locations[hangingwall])
         evaluated[footwall] = self.fw_feature.evaluate_gradient(locations[footwall])
