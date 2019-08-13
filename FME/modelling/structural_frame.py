@@ -201,6 +201,10 @@ class StructuralFrameBuilder:
                                             data=self.data[0])
             # self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
         if len(self.data[1]) > 0:
+            if gx_feature is None:
+                print("Not enough constraints for fold frame coordinate 0, \n"
+                      "Add some more and try again.")
+                return
             print("Building gy")
             self.interpolators[1].add_elements_gradient_orthogonal_constraint(
                 np.arange(0,self.mesh.n_elements),
@@ -213,6 +217,10 @@ class StructuralFrameBuilder:
                                       TetrahedralMeshScalarField.from_interpolator(self.interpolators[1]),
                                             data=self.data[1])
         if len(self.data[2]) > 0:
+            if gy_feature is None:
+                print("Not enough constraints for fold frame coordinate 1, \n"
+                      "Add some more and try again.")
+                return
             print("Building gz")
             self.interpolators[2].add_elements_gradient_orthogonal_constraint(
                 np.arange(0, self.mesh.n_elements),
@@ -228,6 +236,10 @@ class StructuralFrameBuilder:
                                       TetrahedralMeshScalarField.from_interpolator(self.interpolators[2]),
                                             data=self.data[2])
         if len(self.data[2]) == 0:
+            if gy_feature is None:
+                print("Not enough constraints for fold frame coordinate 1, \n"
+                      "Add some more and try again.")
+                return
             print("Creating analytical gz")
             gz_feature = CrossProductGeologicalFeature(self.name + '_gz',gx_feature, gy_feature)
 
