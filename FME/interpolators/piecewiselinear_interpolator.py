@@ -47,6 +47,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def set_interpolation_weights(self, weights):
         for key in weights:
+            self.up_to_date = False
             self.interpolation_weights[key] = weights[key]
 
     def _setup_interpolator(self, **kwargs):
@@ -60,8 +61,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :return:
         """
         for key in kwargs:
+            self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]
         if self.interpolation_weights['cgw'] > 0.:
+            self.up_to_date = False
             self.add_constant_gradient(self.interpolation_weights['cgw'])
         self.add_gradient_ctr_pts(self.interpolation_weights['gpw'])
         self.add_ctr_pts(self.interpolation_weights['cpw'])

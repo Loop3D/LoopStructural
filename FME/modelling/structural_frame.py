@@ -241,7 +241,7 @@ class StructuralFrameBuilder:
                       "Add some more and try again.")
                 return
             print("Creating analytical gz")
-            gz_feature = CrossProductGeologicalFeature(self.name + '_gz',gx_feature, gy_feature)
+            gz_feature = CrossProductGeologicalFeature(self.name + '_gz', gx_feature, gy_feature)
 
         return frame(self.name, [gx_feature, gy_feature, gz_feature])
         

@@ -14,7 +14,7 @@ from FME.visualisation.rotation_angle_plotter import RotationAnglePlotter
 import geopandas
 import numpy as np
 from scipy.interpolate import Rbf
-
+import matplotlib.pyplot as plt
 
 # ### Load data from shapefile
 # We use geopandas to load the objects from a shapefile. In this case we use a geopackage with three
@@ -200,7 +200,7 @@ rotation_plots.add_fold_axis_curve(np.rad2deg(np.arctan(rbf_fold_axis(xi,np.zero
 rotation_plots.add_fold_limb_data(flr,s1)
 rotation_plots.add_limb_svariogram(limb_svariogram)
 rotation_plots.add_fold_limb_curve(np.rad2deg(np.arctan(rbf_fold_limb(xi,np.zeros(1000),np.zeros(1000)))), xi)
-
+plt.show()
 # ### Define interpolation weights
 # The DiscreteFoldInterpolator has the ability to weigh the different geometrical properties of the
 # fold differently in the least squares system. Much the same as data points and regularisation are
