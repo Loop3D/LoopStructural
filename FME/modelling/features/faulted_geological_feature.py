@@ -17,8 +17,10 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.fw_feature = None
         self.fault.apply_to_data(self.parent_feature.data)
         self.update_feature()
+
     def update(self):
         self.parent_feature.update()
+
     def update_feature(self):
         # determine the hw and fw movements
         hw_p, fw_p, hw_m, fw_m = self.fault.apply_to_support(self.parent_feature.support)

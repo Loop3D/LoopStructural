@@ -1,32 +1,6 @@
 import lavavu
 from lavavu.vutils import is_notebook
 import numpy as np
-# class ModelViewer():
-#     def __init__(self,modelsupport,**kwargs):
-#         """
-#         Visualisation object for visualising FME models.
-#         :param modelsupport: the support the interpolator is stored on e.g. structured grid or unstructured mesh
-#         :param kwargs: possible kwargs 'backend' lavavu, vista, matplotlib
-#         """
-#
-#     def add_isosurface(self,**kwargs):
-#
-#     def add_vector_field(self,**kwargs):
-#
-#     def add_volume(self,**kwargs):
-#
-#     def plot_gradient_constraints(self,**kwargs):
-#
-#     def plot_value_constraints(self,**kwargs):
-#
-#     def save_state(self,**kwargs):
-#
-#     def load_state(self,**kwargs):
-def surface_cutter(feature,isovalue,nodes,tris):
-    values = feature.evaluate_value(nodes)
-    property_bool = values > isovalue
-    tri_type_index = np.sum(property_bool[tris]*np.array([1,2,4]),axis=1)
-
 
 
 class LavaVuModelViewer:
@@ -111,7 +85,10 @@ class LavaVuModelViewer:
                 # add a property to the surface nodes for visualisation
                 surf.values(painter.evaluate_value(nodes),painter.name)
                 surf["colourby"] = painter.name
-                surf.colourmap(lavavu.cubehelix(100))#nodes.shape[0]))
+                cmap = lavavu.cubehelix(100)
+                if 'cmap' in kwargs:
+                    cmap = kwargs['cmap']
+                surf.colourmap(cmap)#nodes.shape[0]))
             if "normals" in kwargs:
                 a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]
                 b = nodes[tris[:, 0], :] - nodes[tris[:, 2], :]
