@@ -93,5 +93,7 @@ class GeologicalFeature:
 
     def max(self):
         return np.nanmax(self.support.get_node_values())
-
+    def update(self):
+        self.support.interpolator.up_to_date = False
+        self.support.interpolator.update()
 

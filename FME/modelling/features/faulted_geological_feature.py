@@ -17,13 +17,17 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.fw_feature = None
         self.fault.apply_to_data(self.parent_feature.data)
         self.update_feature()
+    def update(self):
+        self.parent_feature.update()
     def update_feature(self):
         # determine the hw and fw movements
         hw_p, fw_p, hw_m, fw_m = self.fault.apply_to_support(self.parent_feature.support)
         # TODO this should all be managed by an observer class which links the data
         # to the feature/interpolator and tell the interpolator that it needs to rerun
-        self.parent_feature.support.interpolator.up_to_date = False
-        self.parent_feature.support.interpolator.update()
+        # if type(self.parent_feature) == GeologicalFeature:
+        self.update()
+        # else:
+        #     self.parent_feature.update_feature()
         # evaluate the values of the faulted points
         hw_v = np.zeros(self.parent_feature.support.number_of_nodes())
         fw_v = np.zeros(self.parent_feature.support.number_of_nodes())
