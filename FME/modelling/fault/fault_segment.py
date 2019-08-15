@@ -89,6 +89,27 @@ class FaultSegment:
             fw_n += fw_g
         return hw_n, fw_n, hw_m, fw_m
 
+    def apply_to_points(self,points):
+        steps = 10
+        # calculate the fault frame for the evaluation points
+        gx = self.faultframe.features[0].evaluate_value(points)
+        # gy = self.faultframe.features[1].evaluate_value(points)
+        # gz = self.faultframe.features[2].evaluate_value(points)
+
+        d = np.zeros(gx.shape)
+        d[gx>0] = 1.
+        d *= self.displacement
+        newp = np.copy(points)
+        for i in range(steps):
+            g = self.faultframe.features[1].evaluate_gradient(points)
+            # calc length of displacement vector
+            g_mag = np.linalg.norm(g,axis=1)
+            # normalise when length is >0
+            g[g_mag>0.] /= g_mag[g_mag >0,None]
+            g *= (1./steps)*d[:,None]
+            newp += g
+        return newp
+
     def apply_to_data(self, data):
         steps = 10
         # TODO make this numpy arrays

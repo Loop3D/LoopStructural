@@ -42,7 +42,7 @@ class TetMesh:
         self.element_nodes_to_id = {}
         self.regions = {}
         self.points = None
-
+        self.surfaces = {}
     def setup_mesh(self, boundary_points, **kwargs):
         """
         Build a mesh given the boundary points
@@ -68,6 +68,10 @@ class TetMesh:
             (maxx, maxy, maxz),
             (minx, maxy, maxz)
         ])
+        self.surfaces['top'] = ((minx, miny, maxz),(maxx, miny, maxz),(maxx, maxy, maxz),(minx, maxy, maxz))
+        self.surfaces['bottom'] = ((minx, miny, minz),(maxx, miny, minz),(maxx, maxy, minz),(minx, maxy, minz))
+
+
         self.points = points
         # calculate the 3 principal components to find the local coordinate system
         self.pca.fit(points)
