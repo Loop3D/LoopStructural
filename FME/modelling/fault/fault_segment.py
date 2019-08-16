@@ -91,6 +91,7 @@ class FaultSegment:
 
     def apply_to_points(self,points):
         steps = 10
+
         # calculate the fault frame for the evaluation points
         gx = self.faultframe.features[0].evaluate_value(points)
         # gy = self.faultframe.features[1].evaluate_value(points)
@@ -99,7 +100,8 @@ class FaultSegment:
         d = np.zeros(gx.shape)
         d[gx>0] = 1.
         d *= self.displacement
-        newp = np.copy(points)
+        # cast newpoints as a float because python types suck
+        newp = np.copy(points).astype(float)
         for i in range(steps):
             g = self.faultframe.features[1].evaluate_gradient(points)
             # calc length of displacement vector

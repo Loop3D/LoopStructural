@@ -130,6 +130,23 @@ class TetMesh:
 
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
 
+        # precalculate the gradient matrices for all elements to save time later
+        e = np.arange(self.n_elements)
+        ps = self.nodes[self.elements[e]]
+        m = np.array(
+            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]), (ps[:, 1, 2] - ps[:, 0, 2])],
+             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]), (ps[:, 2, 2] - ps[:, 0, 2])],
+             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]), (ps[:, 3, 2] - ps[:, 0, 2])]])
+        I = np.array(
+            [[-1., 1., 0., 0.],
+             [-1., 0., 1., 0.],
+             [-1., 0., 0., 1.]])
+        m = np.swapaxes(m, 0, 2)
+        self.element_gradients = la.inv(m)
+
+        self.element_gradients = self.element_gradients.swapaxes(1, 2)
+        self.element_gradients = self.element_gradients @ I
+
     def add_region(self, region, name):
         """
         Add a region mask to the mesh, will also add as a property to the mesh
@@ -180,7 +197,6 @@ class TetMesh:
         B = np.zeros(c.shape[0])
         return c,idc,B
 
-
     def get_constant_gradient(self, w=0.1, region='everywhere', **kwargs):
         return self.calculate_constant_gradient(region, **kwargs)
 
@@ -189,19 +205,20 @@ class TetMesh:
         Returns the gradient of the elements using their global index.
         Sped up using numpy
         """
-        ps = self.nodes[self.elements[e]]
-        ps -= ps[:, 0, :][:, None]
-        J = np.ones((len(e), 3, 1))
-        m = ps[:, 1:, :]
-        Minv = np.zeros((len(e), 4, 4))
-        Minv[:, 0, 0] = 1
-        Minv[:, 0, 1:] = 0
-        minv = np.linalg.inv(m)
-        Minv[:, 1:, 0] = (-minv @ J)[:, :, 0]
-        Minv[:, 1:, 1:] = minv
-        I = np.zeros((3, 4))
-        I[np.arange(3), np.arange(3) + 1] = 1
-        return I @ Minv
+        return self.element_gradients[e]
+        # ps = self.nodes[self.elements[e]]
+        # ps -= ps[:, 0, :][:, None]
+        # J = np.ones((len(e), 3, 1))
+        # m = ps[:, 1:, :]
+        # Minv = np.zeros((len(e), 4, 4))
+        # Minv[:, 0, 0] = 1
+        # Minv[:, 0, 1:] = 0
+        # minv = np.linalg.inv(m)
+        # Minv[:, 1:, 0] = (-minv @ J)[:, :, 0]
+        # Minv[:, 1:, 1:] = minv
+        # I = np.zeros((3, 4))
+        # I[np.arange(3), np.arange(3) + 1] = 1
+        # return I @ Minv
 
     def calc_bary_c(self, e, p):
         """
@@ -304,20 +321,8 @@ class TetMesh:
         """
         e = np.arange(self.n_elements)
 
-        ps = self.nodes[self.elements[e]]
-        m = np.array(
-            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]), (ps[:, 1, 2] - ps[:, 0, 2])],
-             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]), (ps[:, 2, 2] - ps[:, 0, 2])],
-             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]), (ps[:, 3, 2] - ps[:, 0, 2])]])
-        I = np.array(
-            [[-1., 1., 0., 0.],
-             [-1., 0., 1., 0.],
-             [-1., 0., 0., 1.]])
-        m = np.swapaxes(m, 0, 2)
-        grads = la.inv(m)
 
-        grads = grads.swapaxes(1, 2)
-        grads = grads @ I
+        grads = self.element_gradients[e]
         vals = self.properties[prop][self.elements[e]]
         # grads = np.swapaxes(grads,1,2)
         a = np.zeros((self.n_elements, 3))  # array.shape)
@@ -331,20 +336,21 @@ class TetMesh:
         Uses numpy to speed up calculations but could be expensive for large mesh/points
         """
         e, inside = self.elements_for_array(array, k)
-        ps = self.nodes[self.elements[e[inside]]]
-        m = np.array(
-            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]), (ps[:, 1, 2] - ps[:, 0, 2])],
-             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]), (ps[:, 2, 2] - ps[:, 0, 2])],
-             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]), (ps[:, 3, 2] - ps[:, 0, 2])]])
-        I = np.array(
-            [[-1., 1., 0., 0.],
-             [-1., 0., 1., 0.],
-             [-1., 0., 0., 1.]])
-        m = np.swapaxes(m, 0, 2)
-        grads = la.inv(m)
-
-        grads = grads.swapaxes(1, 2)
-        grads = grads @ I
+        # ps = self.nodes[self.elements[e[inside]]]
+        # m = np.array(
+        #     [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]), (ps[:, 1, 2] - ps[:, 0, 2])],
+        #      [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]), (ps[:, 2, 2] - ps[:, 0, 2])],
+        #      [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]), (ps[:, 3, 2] - ps[:, 0, 2])]])
+        # I = np.array(
+        #     [[-1., 1., 0., 0.],
+        #      [-1., 0., 1., 0.],
+        #      [-1., 0., 0., 1.]])
+        # m = np.swapaxes(m, 0, 2)
+        # grads = la.inv(m)
+        #
+        # grads = grads.swapaxes(1, 2)
+        # grads = grads @ I
+        grads = self.element_gradients[e]
         vals = self.properties[prop][self.elements[e[inside]]]
         a = np.zeros(array.shape)
         a[inside] = (grads * vals[:, None, :]).sum(2) / 4.  # @ vals.T/

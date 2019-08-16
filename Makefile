@@ -13,3 +13,5 @@ notebook:
 
 notebookbuild:
 	. ~/fme/bin/activate &&	python3 setup.py install build_ext --inplace &&	jupyter-notebook --no-browser; 
+compileexamples:
+	. ~/fme/bin/activate && sh build_notebook.sh;

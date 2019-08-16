@@ -4,6 +4,7 @@ from FME.modelling.features.geological_feature import GeologicalFeature
 from FME.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
 from FME.modelling.scalar_field import TetrahedralMeshScalarField
 
+
 class StructuralFrame:
     def __init__(self, name, features):
         self.name = name
