@@ -30,7 +30,7 @@ class FaultSegment:
     def evaluate(self, locations):
         return self.faultframe.features[0].evaluate_value(locations) > 0
 
-    def apply_fault_to_support(self, support):  # ,region,steps=10):
+    def apply_to_support(self, support):  # ,region,steps=10):
         steps = 10
 
         region = 'everywhere'
@@ -89,12 +89,41 @@ class FaultSegment:
             fw_n += fw_g
         return hw_n, fw_n, hw_m, fw_m
 
-    def apply_fault_to_data(self,data):
+    def apply_to_points(self,points):
+        steps = 10
+
+        # calculate the fault frame for the evaluation points
+        gx = self.faultframe.features[0].evaluate_value(points)
+        # gy = self.faultframe.features[1].evaluate_value(points)
+        # gz = self.faultframe.features[2].evaluate_value(points)
+
+        d = np.zeros(gx.shape)
+        d[gx>0] = 1.
+        d *= self.displacement
+        # cast newpoints as a float because python types suck
+        newp = np.copy(points).astype(float)
+        for i in range(steps):
+            g = self.faultframe.features[1].evaluate_gradient(points)
+            # calc length of displacement vector
+            g_mag = np.linalg.norm(g,axis=1)
+            # normalise when length is >0
+            g[g_mag>0.] /= g_mag[g_mag >0,None]
+            g *= (1./steps)*d[:,None]
+            newp += g
+        return newp
+
+    def apply_to_data(self, data):
+        steps = 10
+        # TODO make this numpy arrays
+        if data is None:
+            return
         for d in data:
+            hw = self.faultframe.features[0].evaluate_value(np.array([d.pos])) > 0
             for i in range(steps):
-                g = self.faultframe.gy(d.pos, True)
+                g = self.faultframe.features[1].evaluate_gradient(np.array([d.pos]))
                 g /= np.linalg.norm(g, axis=1)[:, None]
-                g *= (1. / steps) * self.d[:, None]
-                g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
-                d.pos = d.pos + g
+                if self.faultfunction is None and hw:
+                    g *= (1. / steps) * 1.*self.displacement
+                    g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
+                    d.pos = d.pos + g[0]
         return

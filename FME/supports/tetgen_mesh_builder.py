@@ -42,5 +42,4 @@ class TetMeshBuilder:
 
         #set faces?
         self.support.set_barycentre(np.sum(self.nodes[self.elements][:, :, :], axis=1) / 4.)
-a
         return

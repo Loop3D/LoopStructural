@@ -33,11 +33,12 @@ mesh.setup_mesh(boundary_points, n_tetra=10000,)
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
 
-feature_builder.add_point([.9,.9,.9],0)
-feature_builder.add_point([-0.5,0,0],1)
-feature_builder.add_point([-.9,0,0],.8)
+feature_builder.add_point([0,0,0],0)
+# feature_builder.add_point([-0.5,0,0],1)
+# feature_builder.add_point([-.9,0,0],.8)
+feature_builder.add_strike_and_dip([0.4,0,0],70,50)
 
-# feature_builder.add_strike_and_dip([0,0,0],90,40)
+feature_builder.add_strike_and_dip([0,0,0],90,50)
 cgw = 6000
 # cgw /= mesh.n_elements
 feature = feature_builder.build(

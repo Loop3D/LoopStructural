@@ -6,20 +6,18 @@ from FME.modelling.features.faulted_geological_feature import FaultedGeologicalF
 from FME.visualisation.model_visualisation import LavaVuModelViewer
 from FME.modelling.structural_frame import StructuralFrameBuilder, StructuralFrame
 from FME.modelling.fault.fault_segment import FaultSegment
-from FME.modelling.fault.fault_function import CubicFunction, FaultDisplacement, Ones
-
 import numpy as np
 
 boundary_points = np.zeros((2,3))
 
 boundary_points[0,0] = -40
-boundary_points[0,1] = -15
+boundary_points[0,1] = -40
 boundary_points[0,2] = -10
 boundary_points[1,0] = 40
-boundary_points[1,1] = 15
+boundary_points[1,1] = 40
 boundary_points[1,2] = 10
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=60000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=30000,)
 interpolator = PLI(mesh)
 stratigraphy_builder = GeologicalFeatureInterpolator(
     interpolator=interpolator,
@@ -41,6 +39,10 @@ fault = StructuralFrameBuilder(interpolator=fault_interpolator,mesh=mesh,name='F
 for y in range(-5,5,1):
     fault.add_strike_dip_and_value([-35.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([-25.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([-15.17,y,floor],strike=0.,dip=0.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([-4.,y,floor],strike=0.,dip=45.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([6.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
+    # fault.add_strike_dip_and_value([4.,y,roof],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([-5.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([15.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
     fault.add_strike_dip_and_value([18.17,y,roof],strike=0.,dip=0.,val=0,itype='gx')
@@ -110,47 +112,16 @@ fault_frame2 = fault2.build(
 )
 # #
 # # #
-hw = CubicFunction()
-hw.add_cstr(0,-1)
-hw.add_grad(0,0)
-hw.add_cstr(20,0)
-hw.add_grad(20,0)
-hw.add_max(20)
-fw = CubicFunction()
-fw.add_cstr(0,1)
-fw.add_grad(0,0)
-fw.add_cstr(-20,0)
-fw.add_grad(-20,0)
-fw.add_min(-20)
-gyf = Ones()
-# gzf = Ones()
-gzf = CubicFunction()
-gzf.add_cstr(-1,0)
-gzf.add_cstr(1,0)
-gzf.add_cstr(-0.2,1)
-gzf.add_cstr(0.2,1)
-gzf.add_grad(0,0)
-gzf.add_min(-1)
-gzf.add_max(1)
-fault_displacement = FaultDisplacement(fw=fw,hw=hw,gy=gyf,gz=gzf)
+fault = FaultSegment(fault_frame, displacement=-4.5)
 
-fault = FaultSegment(
-                    fault_frame,
-                    displacement=2.5,
-                     faultfunction=fault_displacement)
-
-fault2 = FaultSegment(fault_frame2,
-                      displacement=2.5,
-                      faultfunction=fault_displacement)
+fault2 = FaultSegment(fault_frame2, displacement=-4.5)
 faulted_frame = []
 for f in fault_frame.features:
     faulted_frame.append(FaultedGeologicalFeature(f, fault2))
 #
 structural_frame2 = StructuralFrame("faulted_frame", faulted_frame)
 
-faulted1_op = FaultSegment(structural_frame2,
-                           displacement=5,
-                           faultfunction=fault_displacement)
+faulted1_op = FaultSegment(structural_frame2, displacement=-4.5)
 
 faulted_strati = FaultedGeologicalFeature(
     FaultedGeologicalFeature(stratigraphy, fault2),
@@ -190,22 +161,25 @@ locations = mesh.barycentre[::10, :]
 # viewer.plot_vector_field(fault_frame2.features[1],locations,colour='red')
 
 # viewer.plot_isosurface(faulted_strati.fw_feature, slices=[-10, -15, -20], colour='blue')
-# print(faulted_strati.support.property_name)
-# viewer.plot_isosurface(
-#     faulted_strati,
-#     nslices=10,
-#     paint_with=faulted_strati
-#     # colour='green'
-# )
+print(faulted_strati.support.property_name)
 viewer.plot_isosurface(
     faulted_strati,
-    slices=slices,
     paint_with=faulted_strati
-    # colour='blue'
+    # colour='green'
 )
-
+# viewer.plot_isosurface(
+#     faulted_strati.parent_feature.fw_feature,
+#     slices=slices,
+#     paint_with=faulted_strati.feature
+#     # colour='blue'
+# )
+# viewer.plot_isosurface(
+#     faulted_strati.parent_feature.hw_feature,
+#     slices=slices,
+#     paint_with=faulted_strati.feature
+#     # colour='red'
+# )
 
 # viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='green')
 # viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
 viewer.lv.interactive()
-#

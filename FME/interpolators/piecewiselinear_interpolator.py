@@ -32,7 +32,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.nx = len(self.mesh.nodes[self.region])
 
         DiscreteInterpolator.__init__(self)
-
+        self.interpolation_weights = {'cgw': 6000, 'cpw' : 1., 'gpw':1., 'tpw':1.}
     def copy(self):
         return PiecewiseLinearInterpolator(self.mesh)
 
@@ -45,6 +45,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if regionname is not None:
             self.region = self.mesh.regions[regionname]
 
+    def set_interpolation_weights(self, weights):
+        for key in weights:
+            self.up_to_date = False
+            self.interpolation_weights[key] = weights[key]
+
     def _setup_interpolator(self, **kwargs):
         """
         adds all of the constraints to the interpolation matrix
@@ -55,27 +60,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         'cg' boolean is cg being used
         :return:
         """
-        cgw = 0.1
-        cpw = 1.0
-        gpw = 1.0
-        tpw = 1.0
-        cg = True
-        if 'cgw' in kwargs:
-            cgw = kwargs['cgw']
-        if 'cpw' in kwargs:
-            cpw = kwargs['cpw']
-        if 'gpw' in kwargs:
-            gpw = kwargs['gpw']
-        if 'tpw' in kwargs:
-            tpw = kwargs['tpw']
-        if 'cg' in kwargs:
-            cg = kwargs['cg']
-        if cg:
-            self.add_constant_gradient(cgw)
-        self.add_gradient_ctr_pts(gpw)
-        self.add_ctr_pts(cpw)
-        self.add_tangent_ctr_pts(tpw)
-    def add_constant_gradient(self, w=300):
+        for key in kwargs:
+            self.up_to_date = False
+            self.interpolation_weights[key] = kwargs[key]
+        if self.interpolation_weights['cgw'] > 0.:
+            self.up_to_date = False
+            self.add_constant_gradient(self.interpolation_weights['cgw'])
+        self.add_gradient_ctr_pts(self.interpolation_weights['gpw'])
+        self.add_ctr_pts(self.interpolation_weights['cpw'])
+        self.add_tangent_ctr_pts(self.interpolation_weights['tpw'])
+
+    def add_constant_gradient(self, w):
         """
         adds constant gradient regularisation to the PLI interpolator
         :param w: weighting (per constraint) to give the constant gradient interpolation

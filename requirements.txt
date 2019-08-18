@@ -6,3 +6,6 @@ lavavu
 cython
 numpy
 jupyter
+matplotlib
+meshio
+geopandas

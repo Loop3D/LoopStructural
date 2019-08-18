@@ -7,19 +7,17 @@ class Point():
     """
     Base object for a point contains the geospatial location
     """
-    def __init__(self,pos):
+    def __init__(self, pos):
         self.pos = np.array(pos)
         self.orig = np.array(pos)
     def transform(self,t):
-        #self.orig = self.pos
         t /= nla.norm(t)
         t[0] = - t[1]
         t[1] = t[0]
         t[2] = t[2]
-        #print('t',t)
         self.pos = self.pos+t
     def restore(self):
-        self.pos = self.orig    
+        self.pos = self.orig
     def dist(self,point):
         eps = np.finfo('float').eps
         #check points are the same dimensions
@@ -27,7 +25,7 @@ class Point():
             return False
         if self.pos.ndim == 2:# > point.pos.shape[1]:
             pos = np.tile(point.pos,(self.pos.shape[1],1)).T
-            return nla.norm(pos - self.pos,axis=1)+eps, pos - self.pos        
+            return nla.norm(pos - self.pos,axis=1)+eps, pos - self.pos
         if point.pos.ndim == 2:# > point.pos.shape[1]:
             ##d = np.zeros((point.pos.shape[1]))
             ##delta = np.zeros((point.pos.shape[1],3))
@@ -37,7 +35,7 @@ class Point():
             raise BaseException
         d = 0.0
         d = dist.dist_1d(point.pos,self.pos,d)+eps
-        return d,point.pos-self.pos#nla.norm(point.pos - self.pos,axis=0)+eps, point.pos-self.pos        
+        return d,point.pos-self.pos#nla.norm(point.pos - self.pos,axis=0)+eps, point.pos-self.pos
     def dim(self):
         return len(self.pos)
 class GridPoint(Point):
@@ -90,6 +88,36 @@ class GPoint(Point):
             self.dir[1] = -m.sin(d_r)*m.sin(s_r)
             self.dir[2] = m.cos(d_r)
             self.dir/= nla.norm(self.dir)
+    @classmethod
+    def from_plunge_plunge_dir(cls, pos, plunge,plunge_dir):
+        plunge = np.deg2rad(plunge)
+        plunge_dir = np.deg2rad(plunge_dir+90)
+        dir = np.zeros(3)
+        dir[0] = m.sin(plunge) * m.cos(plunge_dir)
+        dir[1] = -m.sin(plunge) * m.sin(plunge_dir)
+        dir[2] = m.cos(plunge)
+        dir /= nla.norm(dir)
+        return cls(pos,dir)
+    @classmethod
+    def from_strike_and_dip(cls, pos, strike, dip):
+        dir = np.zeros(3)
+        strike = np.deg2rad(strike)
+        dip = np.deg2rad(np.abs(dip))
+        dir[0] = m.sin(dip) * m.cos(strike)
+        dir[1] = -m.sin(dip) * m.sin(strike)
+        dir[2] = m.cos(dip)
+        dir /= nla.norm(dir)
+        return cls(pos, dir)
+    @classmethod
+    def from_dip_dip_dir(cls, pos, dip_dir, dip):
+        dir = np.zeros(3)
+        strike = np.deg2rad(dip_dir+90)
+        dip = np.deg2rad(dip)
+        dir[0] = m.sin(dip) * m.cos(strike)
+        dir[1] = -m.sin(dip) * m.sin(strike)
+        dir[2] = m.cos(dip)
+        dir /= nla.norm(dir)
+        return cls(pos, dir)
     def dir_(self):
         return self.dir
     def val(self,i):

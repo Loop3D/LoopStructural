@@ -14,6 +14,9 @@ class GeologicalFeatureInterpolator:
             self.region = kwargs['region']
         self.data = []
 
+    def update(self):
+        pass
+
     def add_strike_dip_and_value(self, pos, strike, dip, val):
         self.data.append(GPoint(pos, strike, dip))
         self.data.append(IPoint(pos, val))
@@ -27,7 +30,11 @@ class GeologicalFeatureInterpolator:
         self.interpolator.add_data(self.data[-1])
 
     def add_strike_and_dip(self, pos, s, d):
-        self.data.append(GPoint(pos, s, d))
+        self.data.append(GPoint.from_strike_and_dip(pos, s, d))
+        self.interpolator.add_data(self.data[-1])
+
+    def add_plunge_and_plunge_dir(self,pos,plunge,plunge_dir):
+        self.data.append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
         self.interpolator.add_data(self.data[-1])
 
     def add_tangent_constraint(self, pos, val):
@@ -50,7 +57,8 @@ class GeologicalFeatureInterpolator:
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver)
         return GeologicalFeature(self.name,
-                                 TetrahedralMeshScalarField.from_interpolator(self.interpolator))
+                                 TetrahedralMeshScalarField.from_interpolator(self.interpolator),
+                                 builder=self, data=self.data)
 
 
 class GeologicalFeature:
@@ -59,7 +67,7 @@ class GeologicalFeature:
     modle. For example foliations, fault planes, fold rotation angles etc. The feature has a support
     which 
     """
-    def __init__(self, name, support):
+    def __init__(self, name, support, builder = None, data = None):
         """
 
         :param age:
@@ -69,7 +77,10 @@ class GeologicalFeature:
         self.name = name
         self.support = support
         self.ndim = 1
-        self.data = []
+        self.data = data
+        self.builder = builder
+    def set_builder(self, builder):
+        self.builder = builder
 
     def evaluate_value(self, evaluation_points):
         return self.support.evaluate_value(evaluation_points)
@@ -85,5 +96,7 @@ class GeologicalFeature:
 
     def max(self):
         return np.nanmax(self.support.get_node_values())
-
+    def update(self):
+        self.support.interpolator.up_to_date = False
+        self.support.interpolator.update()
 
