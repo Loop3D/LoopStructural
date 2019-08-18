@@ -73,6 +73,9 @@ class TetrahedralMeshScalarField:
     def number_of_nodes(self):
         return self.mesh.n_nodes
 
+    def update_property(self,values):
+        self.mesh.properties[self.property_name] = values
+
     def slice(self, isovalue):
         tri, ntri = marching_tetra(isovalue,
                                    self.mesh.elements,

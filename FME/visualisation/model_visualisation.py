@@ -37,15 +37,22 @@ class LavaVuModelViewer:
         -------
 
         """
+        # update the feature to make sure its current
+        geological_feature.update()
+        # get the stats to check what we are plotting
         mean_property_val = geological_feature.mean()
         min_property_val = geological_feature.min()
         max_property_val = geological_feature.max()
+
+        # set default parameters
         slices = [mean_property_val]
         colour = 'red'
         painter = None
         voxet = None
         tris = None
         nodes = None
+
+        # parse kwargs for parameters
         if 'isovalue' in kwargs:
             slices = [kwargs['isovalue']]
         if 'slices' in kwargs:
@@ -56,6 +63,8 @@ class LavaVuModelViewer:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
+
+        # do isosurfacing of tetrahedral mesh using marching tetras
         for isovalue in slices:
             print("Creating isosurface for %f"%isovalue)
             if isovalue < min_property_val or isovalue > max_property_val:

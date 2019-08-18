@@ -16,10 +16,12 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.hw_feature = None
         self.fw_feature = None
         self.fault.apply_to_data(self.parent_feature.data)
-
-        super().__init__(self.parent_feature.name + "_faulted", self.parent_feature.support)
+        print(self.evaluate_value(self.parent_feature.support.mesh.nodes))
+        super().__init__(self.parent_feature.name + "_faulted", TetrahedralMeshScalarField.from_node_values(
+             self.parent_feature.support.mesh, self.parent_feature.name+'_faulted', self.evaluate_value(self.parent_feature.support.mesh.nodes)))#self.parent_feature.support)
     def update(self):
         self.parent_feature.update()
+        self.support.update_property(self.evaluate_value(self.parent_feature.support.mesh.nodes))
 
     # def update_feature(self):
     #     # determine the hw and fw movements
