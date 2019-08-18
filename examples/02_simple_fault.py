@@ -23,7 +23,7 @@ boundary_points[1,0] = 20
 boundary_points[1,1] = 20
 boundary_points[1,2] = 20
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=100000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=50000,)
 
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
@@ -69,11 +69,10 @@ fault_frame = fault.build(
     gz=True
 )
 #
-fault = FaultSegment(fault_frame)
+fault = FaultSegment(fault_frame,displacement=4)
 faulted_feature = FaultedGeologicalFeature(feature, fault)
 viewer = LavaVuModelViewer()
-viewer.plot_isosurface(faulted_feature.hw_feature,isovalue=0)
-viewer.plot_isosurface(faulted_feature.fw_feature,isovalue=0)
+viewer.plot_isosurface(faulted_feature,isovalue=0)
 mask = fault_frame.features[0].support.get_node_values() > 0
 mask[mesh.elements] = np.any(mask[mesh.elements] == True, axis=1)[:, None]
 viewer.plot_points(mesh.nodes[mask], "nodes", col="red")

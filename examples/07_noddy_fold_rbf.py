@@ -215,9 +215,12 @@ fold_weights['fold_orientation'] = 50.
 fold_weights['fold_axis'] = 3.
 fold_weights['fold_normalisation'] = 1.
 fold_weights['fold_regularisation'] = 10.
+
+# create the geological feature make sure that the constant gradient is 0
 folded_stratigraphy = stratigraphy_builder.build(solver=solver,
                                                  fold_weights=fold_weights,
-                                                 fold=fold)
+                                                 fold=fold,
+                                                 cgw=0)
 
 # ### Visualising Results
 # We can visualise the surfaces for isovalues of the fold frame or interpolated surface.

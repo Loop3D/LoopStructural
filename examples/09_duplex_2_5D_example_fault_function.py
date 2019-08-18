@@ -198,17 +198,12 @@ locations = mesh.barycentre[::10, :]
 #     # colour='green'
 # )
 viewer.plot_isosurface(
-    faulted_strati.parent_feature.fw_feature,
+    faulted_strati,
     slices=slices,
-    paint_with=faulted_strati.fw_feature
+    paint_with=faulted_strati
     # colour='blue'
 )
-viewer.plot_isosurface(
-    faulted_strati.parent_feature.hw_feature,
-    slices=slices,
-    paint_with=faulted_strati.hw_feature
-    # colour='red'
-)
+
 
 # viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='green')
 # viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')

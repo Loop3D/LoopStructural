@@ -1,3 +1,5 @@
+# # Fault
+
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
 from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
@@ -16,7 +18,8 @@ boundary_points[1,0] = 20
 boundary_points[1,1] = 20
 boundary_points[1,2] = 20
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=40000,)
+
 interpolator = PLI(mesh)
 stratigraphy_builder = GeologicalFeatureInterpolator(interpolator=interpolator, name='stratigraphy')
 
@@ -53,11 +56,13 @@ for y in range(-20,20,1):
 
 fault_frame = fault.build(solver='lu',gxxgy=0.1,gxxgz=1,gyxgz=0.05,gycg=5,gzcg=0.1)
 
-fault_operator = FaultSegment(fault_frame)
+fault_operator = FaultSegment(
+                    fault_frame,
+                    displacement=-4
+                              )
 
 
 faulted_feature = FaultedGeologicalFeature(stratigraphy, fault_operator)
-print(faulted_feature.feature.support.get_node_values())
 viewer = LavaVuModelViewer()
 # viewer.plot_isosurface(
 #     faulted_feature.hw_feature,
@@ -65,9 +70,9 @@ viewer = LavaVuModelViewer()
 #     paint_with=faulted_feature.feature
 # )
 viewer.plot_isosurface(
-    faulted_feature.feature,
+    faulted_feature,
     nslices=10,
-    paint_with=faulted_feature.feature
+    paint_with=faulted_feature
 )
 viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
 

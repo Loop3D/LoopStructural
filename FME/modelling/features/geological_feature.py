@@ -14,6 +14,9 @@ class GeologicalFeatureInterpolator:
             self.region = kwargs['region']
         self.data = []
 
+    def update(self):
+        pass
+
     def add_strike_dip_and_value(self, pos, strike, dip, val):
         self.data.append(GPoint(pos, strike, dip))
         self.data.append(IPoint(pos, val))
