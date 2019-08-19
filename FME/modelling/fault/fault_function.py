@@ -6,7 +6,7 @@ class CubicFunction:
         self.B = []#np.zeros((4))
         self.max_v = 999999
         self.min_v = -99999
-
+        self.w = None
     def add_cstr(self,x,y):
         self.A.append([x**3, x**2, x, 1.])
         self.B.append(y)
@@ -25,15 +25,30 @@ class CubicFunction:
         if len(self.B)<3:
             print("underdetermined")
             return
-        A = np.array(self.A)
-        B = np.array(self.B)
-        ATA = A.T @ A
-        ATB = A.T @ B
-        w = np.linalg.lstsq(ATA,ATB)[0]
-        eva = w[0]*v**3+w[1]*v**2+w[2]*v+w[3]
-        eva[v>self.max_v] = w[0]*self.max_v**3+w[1]*self.max_v**2+w[2]*self.max_v+w[3]
-        eva[v<self.min_v] =  w[0]*self.min_v**3+w[1]*self.min_v**2+w[2]*self.min_v+w[3]
+        if self.w is None:
+            A = np.array(self.A)
+            B = np.array(self.B)
+            ATA = A.T @ A
+            ATB = A.T @ B
+            self.w = np.linalg.lstsq(ATA,ATB,rcond=None)[0]
+        eva = self.w[0]*v**3+self.w[1]*v**2+self.w[2]*v+self.w[3]
+        eva[v>self.max_v] = self.w[0]*self.max_v**3+\
+                            self.w[1]*self.max_v**2+self.w[2]*self.max_v+self.w[3]
+        eva[v<self.min_v] =  self.w[0]*self.min_v**3+\
+                             self.w[1]*self.min_v**2+self.w[2]*self.min_v+self.w[3]
         return eva
+
+class Composite():
+    def __init__(self, positive, negative):
+        self.positive = positive
+        self.negative = negative
+
+    def __call__(self,v):
+        v = np.array(v)
+        r = np.zeros(v.shape)
+        r[v>0] = self.positive(v[v>0])
+        r[v<0] = self.negative(v[v<0])
+        return r
 
 class Ones:
     def __init__(self):
@@ -43,16 +58,29 @@ class Ones:
         v = np.array(v)
         return np.ones(v.shape)
 
+class Zeros:
+    def __init__(self):
+        pass
+
+    def __call__(self, v):
+        v = np.array(v)
+        return np.zeros(v.shape)
 
 class FaultDisplacement:
-    def __init__(self,fw=None,hw=None,gy=None,gz=None):
-        self.__fw = fw
-        self.__hw = hw
-        self.__gy = gy
-        self.__gz = gz
-
-    def fw(self,gx,gy,gz):
-        return self.__fw(gx)*self.__gy(gy)*self.__gz(gz)
-
-    def hw(self,gx,gy,gz):
-        return self.__hw(gx)*self.__gy(gy)*self.__gz(gz)
+    def __init__(self,hw=None,fw=None, gx=None,gy=None,gz=None):
+        self.gx = gx
+        if hw is not None and fw is not None:
+            self.__gx = Composite(hw,fw)
+        self.gy = gy
+        self.gz = gz
+        if self.gx == None:
+            print('Gx function none setting to ones')
+            self.gx = Ones()
+        if self.gy == None:
+            print('Gy function none setting to ones')
+            self.gy = Ones()
+        if self.gz == None:
+            print('Gz function none setting to ones')
+            self.gz = Ones()
+    def __call__(self,gx,gy,gz):
+        return self.gx(gx)*self.gy(gy)*self.gz(gz)
