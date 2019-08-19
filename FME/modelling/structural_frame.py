@@ -6,15 +6,61 @@ from FME.modelling.scalar_field import TetrahedralMeshScalarField
 
 
 class StructuralFrame:
+    """
+    Structural frame is a curvilinear coordinate system defined by structural
+    observations associated with a fault or fold.
+    """
     def __init__(self, name, features):
+        """
+
+        Parameters
+        ----------
+        name - name of the structural frame
+        features - list of features to build the frame with
+        """
         self.name = name
         self.features = features
         self.data = None
+
     def get_feature(self,i):
+        """
+        Return the ith feature
+        Parameters
+        ----------
+        i
+
+        Returns
+        -------
+
+        """
         return self.features[i]
+
     def set_data(self, data):
+        """
+        Associate data with structural frame
+        Parameters
+        ----------
+        data
+
+        Returns
+        -------
+
+        """
         self.data = data
+
     def evaluate_value(self, evaluation_points, i=None):
+        """
+        Evaluate the value of the structural frame for the points.
+        Can optionally only evaluate one coordinate
+        Parameters
+        ----------
+        evaluation_points
+        i
+
+        Returns
+        -------
+
+        """
         if i is not None:
             self.features[i].support.evaluate_value(evaluation_points)
         return (self.features[0].support.evaluate_value(evaluation_points),
@@ -22,6 +68,18 @@ class StructuralFrame:
                 self.features[2].support.evaluate_value(evaluation_points))
 
     def evaluate_gradient(self, evaluation_points, i=None):
+        """
+        Evaluate the gradient of the structural frame.
+        Can optionally only evaluate the ith coordinate
+        Parameters
+        ----------
+        evaluation_points
+        i
+
+        Returns
+        -------
+
+        """
         if i is not None:
             return self.features[i].support.evaluate_gradient(evaluation_points)
         return (self.features[0].support.evaluate_gradient(evaluation_points),
@@ -41,6 +99,17 @@ class StructuralFrame:
         return data
 
     def get_values(self, i):
+        """
+        Returns the node values of the mesh support
+        TODO remove this
+        Parameters
+        ----------
+        i
+
+        Returns
+        -------
+
+        """
         return self.features[i].support.get_node_values()
 
 
@@ -49,6 +118,13 @@ class StructuralFrameBuilder:
     Class for representing a slip event of a fault
     """
     def __init__(self, interpolator, **kwargs):
+        """
+
+        Parameters
+        ----------
+        interpolator - a template interpolator for the frame
+        kwargs
+        """
         """
         mesh:  support for interpolation
         structural_feature: the geological feature that this frame describes
@@ -64,16 +140,14 @@ class StructuralFrameBuilder:
         if 'mesh' in kwargs:
             self.mesh = kwargs['mesh']
             del kwargs['mesh']
-        if 'fault_event' in kwargs:
-            self.fault_event = kwargs['fault_event']
+
         if 'name' in kwargs:
             self.name = kwargs['name']
-        if 'region' in kwargs:
-            self.region = kwargs['region']
+
         self.data = [ [] , [] ,[]]
-        #dictionary to contain all of the interpolation objects for this frame
+        # list of interpolators
         self.interpolators = []
-        #Create the interpolation objects you
+        # Create the interpolation objects by copying the template
         self.interpolators.append(interpolator)
         self.interpolators.append(interpolator.copy())
         self.interpolators.append(interpolator.copy())
@@ -144,9 +218,18 @@ class StructuralFrameBuilder:
         pass
     def build(self, solver='lsqr', frame=StructuralFrame, **kwargs):
         """
-        Build the fault frame for this segment using the solver specified, default is scipy lsqr
+        Build the structural frame
+        Parameters
+        ----------
+        solver solver to use
+        frame - type of frame to build StructuralFrame or FoldFrame
+        kwargs
+
+        Returns
+        -------
 
         """
+
         gxxgy = 1.
         gxxgz = 1.
         gyxgz = 1.
