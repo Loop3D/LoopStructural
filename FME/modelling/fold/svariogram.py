@@ -3,7 +3,7 @@ import numpy as np
 
 class SVariogram():
     """
-
+    The SVariogram is an experimental semi-variogram.
     """
 
     def __init__(self, xdata, ydata):

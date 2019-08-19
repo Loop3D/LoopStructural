@@ -79,6 +79,7 @@ class GeologicalFeature:
         self.ndim = 1
         self.data = data
         self.builder = builder
+
     def set_builder(self, builder):
         self.builder = builder
 

@@ -1,4 +1,8 @@
 # # Example 04 2.5 duplex
+# In this example we will create a similar model to example 04 except
+# the fault displacement magnitude will be defined by a function of
+# the fault frame coordinates.
+#
 from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from FME.supports.tet_mesh import TetMesh
 from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
@@ -74,7 +78,6 @@ fault2 = StructuralFrameBuilder(
     interpolator=fault_frame2_interpolator,
     mesh=mesh,
     name='FaultSegment2'
-
 )
 #
 for y in range(-5,5,1):
@@ -207,5 +210,5 @@ viewer.plot_isosurface(
 
 # viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='green')
 # viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
-viewer.lv.interactive()
+viewer.interactive()
 #

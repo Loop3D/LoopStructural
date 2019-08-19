@@ -5,9 +5,9 @@ dependencies:
 	
 venv:
 ifeq ("","$(wildcard ${FME_ENV})")
-	python3 -m venv ./fme
+	python3 -m venv ${FME_ENV}
 endif
-
+	. ${FME_ENV}
 build:
 	. ${FME_ENV} &&	python3 setup.py install build_ext --inplace;
 
@@ -20,5 +20,7 @@ notebook:
 notebookbuild:
 	. ${FME_ENV} &&	python3 setup.py install build_ext --inplace &&	jupyter-notebook --no-browser; 
 compileexamples:
-	. ${FME_ENV} && sh build_notebook.sh;
+	. ${FME_ENV} && ./build_notebook.sh;
+
+
 
