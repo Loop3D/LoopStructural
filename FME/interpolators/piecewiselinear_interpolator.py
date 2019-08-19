@@ -24,7 +24,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.shape = 'rectangular'
         self.mesh = mesh
         self.interpolator_type = 'PLI'
-        self.propertyname = 'defaultproperty'
 
         self.region = self.mesh.regions['everywhere']
         self.region_map = np.zeros(mesh.n_nodes).astype(int)

@@ -20,6 +20,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.row = []  # sparse matrix storage
         self.support = None
         self.solver = None
+
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system
@@ -28,15 +29,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
         :param idc: N x C node indices
         :return:
         """
+
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
+        print(A.shape)
+        print(B.shape)
+        print(idc.shape)
         nr = A.shape[0]
         if len(A.shape) >2:
             nr = A.shape[0]*A.shape[1]
         rows = np.arange(0,nr).astype(int)
         rows = np.tile(rows, (A.shape[-1],1)).T
         rows+= self.c_
+        # print(rows,idc,A,B)
         self.c_+=nr
 
         if self.shape == 'rectangular':
@@ -44,14 +50,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.row.extend(rows.flatten().tolist())
             self.col.extend(idc.flatten().tolist())
             self.B.extend(B.flatten().tolist())
-        if self.shape == 'square':
-            print('square')
-            for i in range(4):
-                self.B[element[i]] += (p.val * c[i] * w)
-                for j in range(4):
-                    self.A.append(c[i] * w * c[j] * w)
-                    self.col.append(element[i])
-                    self.row.append(element[j])
 
     def _solve(self, solver='spqr', clear=True):
         """
@@ -66,8 +64,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if self.shape == 'rectangular':
             # print("Building rectangular sparse matrix")
             start = timeit.default_timer()
-            cols = self.region_map[np.array(self.col)]
-
+            #cols = self.region_map[np.array(self.col)]
+            cols = np.array(self.col)
+            print(len(self.A))
+            print(len(self.row))
+            print(len(cols))
+            print(self.c_)
+            print(self.nx)
             self.AA = coo_matrix((np.array(self.A), (np.array(self.row), \
                                                      cols)), shape=(self.c_, self.nx), dtype=float)  # .tocsr()
             # print("Sparse matrix built in %f seconds"%(timeit.default_timer()-start))
@@ -81,7 +84,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.AA += spdiags(d, 0, self.nx, self.nx)
         B = np.array(self.B)
         self.cc_ = [0, 0, 0, 0]
-        self.c = np.zeros(self.mesh.n_nodes)
+        self.c = np.zeros(self.nx)
         self.c[:] = np.nan
         if solver == 'lsqr':
             # print("Solving using scipy lsqr")
@@ -193,8 +196,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # precon = sla.spilu(A)
             # M2 = sla.LinearOperator(A.shape, precon.solve)
             #print(precon)
-            self.cc_ = sla.cg(A,B,callback=call)#,M=M2)
-            print("CG iterations ",num_iter)
+            self.cc_ = sla.cg(A,B)#,M=M2)
             if self.cc_[1] == 0:
                 print("Conjugate gradient converged")
             if self.cc_[1] > 0:

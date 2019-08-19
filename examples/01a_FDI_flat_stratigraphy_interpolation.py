@@ -1,6 +1,6 @@
 # ### Import FME objects for interpolation
-from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
-from FME.supports.tet_mesh import TetMesh
+from FME.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
+from FME.supports.structured_grid import StructuredGrid
 from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from FME.visualisation.model_visualisation import LavaVuModelViewer
 # other necessary libraries
@@ -13,31 +13,23 @@ import lavavu
 
 # ### Defining Model Region
 # Define the area to model represented by the domain of the tetrahedral mesh
-boundary_points = np.zeros((2,3))
-boundary_points[0,0] = -1
-boundary_points[0,1] = -1
-boundary_points[0,2] = -1
-boundary_points[1,0] = 1
-boundary_points[1,1] = 1
-boundary_points[1,2] = 1
-
+grid = StructuredGrid(nsteps=(20,20,20),step_vector=np.ones(3)*.05)
 # ### Meshing
 # Create a TetMesh object and build the mesh using tetgen. The number of tetrahedron can be specified
 # by adding the n_tetra flag.
-mesh = TetMesh()
-mesh.setup_mesh(boundary_points, n_tetra=10000,)
+
 
 # ### GeologicalFeatureInterpolator
 # FME uses an object oriented design so
 
-interpolator = PLI(mesh)
+interpolator = FDI(grid)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
 
 feature_builder.add_point([0,0,0],0)
-feature_builder.add_point([0.5,0,0],1)
+feature_builder.add_point([-0.5,0,0],1)
 # feature_builder.add_point([-.9,0,0],.8)
-# feature_builder.add_strike_and_dip([0.4,0,0],70,50)
-#
+feature_builder.add_strike_and_dip([0.4,0,0],70,50)
+
 # feature_builder.add_strike_and_dip([0,0,0],90,50)
 cgw = 6000
 # cgw /= mesh.n_elements

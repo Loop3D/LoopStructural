@@ -25,6 +25,11 @@ class GeologicalInterpolator:
         self.up_to_date = False
         self.constraints = []
         self.headings = ["Constraint Type","Number of constraints", "Per Constraint Weighting"]
+        self.propertyname = 'defaultproperty'
+
+    def set_property_name(self,name):
+        self.propertyname = name
+
     def add_strike_dip_and_value(self,pos,strike,dip,val):
         """
         Add a gradient and value constraint at a location gradient is in the form of strike and dip with the rh thumb

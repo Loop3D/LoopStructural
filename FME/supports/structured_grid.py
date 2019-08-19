@@ -2,16 +2,19 @@ import numpy as np
 from .base_grid import BaseGrid
 
 class StructuredGrid(BaseGrid):
-    def __init__(self, nsteps=np.array([10, 10, 10]), step_vector=np.ones(3), origin=np.zeros(3)):
+    def __init__(self,
+                 nsteps=np.array([10, 10, 10]),
+                 step_vector=np.ones(3),
+                 origin=np.zeros(3)):
         """
 
         :param nsteps:
         :param step_vector:
         :param origin:
         """
-        self.nsteps = nsteps
-        self.step_vector = step_vector
-        self.origin = origin
+        self.nsteps = np.array(nsteps)
+        self.step_vector = np.array(step_vector)
+        self.origin = np.array(origin)
         self.n = self.nsteps[0] * self.nsteps[1] * self.nsteps[2]
         self.dim = 3
         self.n_cell_x = self.nsteps[0] - 1
@@ -98,10 +101,10 @@ class StructuredGrid(BaseGrid):
         :param indexes:
         :return:
         """
-        indexes = np.array(indexes)
+        indexes = np.array(indexes).swapaxes(0,2)
 
-        return indexes[:, 0] + self.nsteps[None, 0] * indexes[:, 1] + \
-               self.nsteps[None, 0] * self.nsteps[None, 1] * indexes[:, 2]
+        return indexes[:,:, 0] + self.nsteps[None,None, 0] * indexes[:,:, 1] + \
+               self.nsteps[None,None, 0] * self.nsteps[None,None, 1] * indexes[:, :, 2]
 
     def neighbour_global_indexes(self, **kwargs):
         """
@@ -202,8 +205,7 @@ class StructuredGrid(BaseGrid):
         """
         ix, iy, iz = self.position_to_cell_index(pos)
         cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
-
-        globalidx = self.global_indicies(np.vstack([cornersx, cornersy, cornersz]).T)
+        globalidx = self.global_indicies(np.dstack([cornersx, cornersy, cornersz]).T)
         return globalidx
 
     def calcul_T(self, pos):
