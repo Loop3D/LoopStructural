@@ -12,10 +12,8 @@ The implicit geological modeling engine developed for the Loop consortium with a
 
     Installation <installation>
     Tutorials <tutorials>
-    API Reference: modelling <FME.modelling>
-    API Reference: supports <FME.supports>
-    API Reference: visualisation <FME.visualisation>
-
+    API Reference: FME <FME>
+    API Reference: Visualisation <FME.visualisation>
 Introduction
 ~~~~~~~~~~~~
 
