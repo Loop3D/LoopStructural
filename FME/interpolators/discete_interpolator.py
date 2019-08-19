@@ -153,9 +153,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return
         if solver == 'cgp':
             num_iter=0
-            def call(xk):
-                nonlocal num_iter
-                num_iter+=1
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
                 B = self.AA.T.dot(self.B)
@@ -186,9 +183,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
             num_iter = 0
 
-            def call(xk):
-                nonlocal num_iter
-                num_iter += 1
             if self.shape == 'rectangular':
                 A = self.AA.T.dot(self.AA)
                 print(len(self.B),self.AA.shape)
