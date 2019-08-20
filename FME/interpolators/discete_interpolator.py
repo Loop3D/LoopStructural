@@ -1,6 +1,6 @@
 from .geological_interpolator import GeologicalInterpolator
 import numpy as np
-from scipy.sparse import coo_matrix, diags
+from scipy.sparse import coo_matrix, diags, bmat
 from scipy.sparse import linalg as sla
 import timeit
 
@@ -20,7 +20,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.row = []  # sparse matrix storage
         self.support = None
         self.solver = None
-
+        self.eq_const_C = []
+        self.eq_const_row = []
+        self.eq_const_col = []
+        self.eq_const_d = []
+        self.eq_const_c_ = 0
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system
@@ -33,9 +37,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-        print(A.shape)
-        print(B.shape)
-        print(idc.shape)
         nr = A.shape[0]
         if len(A.shape) >2:
             nr = A.shape[0]*A.shape[1]
@@ -51,6 +52,18 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.col.extend(idc.flatten().tolist())
             self.B.extend(B.flatten().tolist())
 
+    def add_equality_constraints(self,node_idx,values):
+        self.eq_const_C.extend(np.ones(node_idx.shape[0]).tolist())
+        self.eq_const_col.extend(node_idx.tolist())
+        self.eq_const_row.extend((np.arange(0,node_idx.shape[0])))
+        self.eq_const_d.extend(values.tolist())
+        print(node_idx.shape)
+        self.eq_const_c_ += node_idx.shape[0]
+        print(self.eq_const_c_)
+        print(self.eq_const_C)
+        print(self.eq_const_d)
+        print(self.eq_const_col)
+        print(self.eq_const_row)
     def _solve(self, solver='spqr', clear=True):
         """
         Solve the least squares problem with specified solver
@@ -66,13 +79,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
             start = timeit.default_timer()
             #cols = self.region_map[np.array(self.col)]
             cols = np.array(self.col)
-            print(len(self.A))
-            print(len(self.row))
-            print(len(cols))
-            print(self.c_)
-            print(self.nx)
             self.AA = coo_matrix((np.array(self.A), (np.array(self.row), \
                                                      cols)), shape=(self.c_, self.nx), dtype=float)  # .tocsr()
+            if self.eq_const_c_ > 0:
+                self.C = coo_matrix((np.array(self.eq_const_C), (np.array(self.eq_const_row),
+                                                                 np.array(self.eq_const_col))),
+                                                                shape=(self.eq_const_c_,self.nx))
             # print("Sparse matrix built in %f seconds"%(timeit.default_timer()-start))
         if self.shape == 'square':
             cols = np.array(self.col)
@@ -115,6 +127,38 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = True
 
             return
+        if solver == 'lueq':
+            # solving constrained least squares using
+            # | ATA CT | |c| = b
+            # | C   0  | |y|   d
+            # where A is the interpoaltion matrix
+            # C is the equality constraint matrix
+            # b is the interpolation constraints to be honoured
+            # in a least squares sense
+            # and d are the equality constraints
+            # c are the node values and y are the
+            # lagrange multipliers#
+
+            # check whether there are any equality constraints
+            if self.eq_const_c_ == 0:
+                solver = 'lu'
+            else:
+                # assemble the KKT matrix
+                A = self.AA.T.dot(self.AA)
+                B = self.AA.T.dot(self.B)
+                C = self.C
+                d = np.array(self.eq_const_d)
+                M = bmat([[A, C.T], [C, None]])
+
+                # solve using lu decompositon masking the lagrange multipliers
+                lu = sla.splu(M.tocsc())
+                b = np.hstack([B,d]) # np.array([1, 2, 3, 4])
+                sol = lu.solve(b)
+                print(sol)
+                print(sol[:self.nx])
+                self.c = sol[:self.nx]
+                self.up_to_date = True
+                return
         if solver == 'lu':
             # print("Solving using scipy LU decomposition")
             start = timeit.default_timer()

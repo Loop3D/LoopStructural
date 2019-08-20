@@ -95,9 +95,12 @@ for y in range(-5,5,1):
     fault2.add_point([-10.5,y,floor],0.,itype='gy')
     fault2.add_point([11.56,y,roof],1.,itype='gy')
 #
-
+mask = mesh.nodes[:,0] < -20
+idc = np.arange(0,mesh.n_nodes)[mask]
+v = fault_frame.get_values(0)[mask] #interpolators[0].
+fault2.interpolators[0].add_equality_constraints(idc,v)
 fault_frame2 = fault2.build(
-    solver=solver,
+    solver='lueq',
     guess=None,
    gxxgy=2*ogw,
    gxxgz=2*ogw,
