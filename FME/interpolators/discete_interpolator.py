@@ -4,6 +4,7 @@ from scipy.sparse import coo_matrix, diags, bmat
 from scipy.sparse import linalg as sla
 import timeit
 
+
 class DiscreteInterpolator(GeologicalInterpolator):
     """
     Base class for a discrete interpolator e.g. piecewise linear or finite difference which is

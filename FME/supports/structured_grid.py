@@ -170,9 +170,9 @@ class StructuredGrid:
         :param z_cell_index:
         :return:
         """
-        xcorner = np.array([0, 1, 1, 0, 0, 1, 1, 0])
-        ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
-        zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+        xcorner = np.array([0, 1, 0, 0, 1, 0, 1, 1])
+        ycorner = np.array([0, 0, 1, 0, 0, 1, 1, 1])
+        zcorner = np.array([0, 0, 0, 1, 1, 1, 0, 1])
         xcorners = x_cell_index[:, None] + xcorner[None, :]
         ycorners = y_cell_index[:, None] + ycorner[None, :]
         zcorners = z_cell_index[:, None] + zcorner[None, :]
@@ -226,6 +226,14 @@ class StructuredGrid:
         :param pos: numpy array of location Nx3
         :return: Nx3x4 matrix
         """
+        #   6_ _ _ _ 8
+        #   /|    /|
+        #4 /_|  5/ |
+        # | 2|_ _|_| 7
+        # | /    | /
+        # |/_ _ _|/
+        # 0      1
+        #
         # xindex, yindex, zindex = self.position_to_cell_index(pos)
         # cellx, celly, cellz = self.cell_corner_indexes(xindex, yindex,zindex)
         # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
@@ -233,7 +241,7 @@ class StructuredGrid:
         x, y, z = self.position_to_local_coordinates(pos)
         # div = self.step_vector[0] * self.step_vector[1] * self.step_vector[2]
 
-        T[:, 0, 0] = -(1 - y) * (1 - z)  # (y[:, 2] - pos[:, 1]) / div
+        T[:, 0, 0] = -(1 - y) * (1 - z)  #v000
         T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
         T[:, 0, 2] = -y * (1 - z)  # (pos[:, 1] - y[:, 0]) / div
         T[:, 0, 3] = -(1 - y) * z  # (pos[:, 1] - y[:, 1]) / div
@@ -259,6 +267,10 @@ class StructuredGrid:
         T[:, 2, 5] = (1 - x) * y
         T[:, 2, 6] = - x * y
         T[:, 2, 7] = x * y
+
+        xcorner = np.array([0, 1, 1, 0, 0, 1, 1, 0])
+        ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
+        zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
         return T
 
     def slice(self,propertyname, isovalue):

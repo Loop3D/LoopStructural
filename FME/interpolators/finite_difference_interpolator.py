@@ -17,6 +17,12 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             np.array(range(0, self.support.n)).astype(int)
         DiscreteInterpolator.__init__(self)
         self.support = grid
+        self.interpolation_weights = {'dxy': 1.,
+                                      'dyz': 1.,
+                                      'dxz': 1.,
+                                      'dxx': 1.,
+                                      'dyy': 1.,
+                                      'dzz': 1.}
 
     def _setup_interpolator(self, **kwargs):
         """
@@ -28,18 +34,21 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         'cg' boolean is cg being used
         :return:
         """
+        for key in kwargs:
+            self.up_to_date = False
+            self.interpolation_weights[key] = kwargs[key]
         operator = Operator.Dxy_mask
-        self.assemble_inner(operator)
+        self.assemble_inner(operator, self.interpolation_weights['dxy'])
         operator = Operator.Dyz_mask
-        self.assemble_inner(operator)
+        self.assemble_inner(operator, self.interpolation_weights['dyz'])
         operator = Operator.Dxz_mask
-        self.assemble_inner(operator)
+        self.assemble_inner(operator, self.interpolation_weights['dxz'])
         operator = Operator.Dxx_mask
-        self.assemble_inner(operator)
+        self.assemble_inner(operator, self.interpolation_weights['dxx'])
         operator = Operator.Dyy_mask
-        self.assemble_inner(operator)
+        self.assemble_inner(operator, self.interpolation_weights['dyy'])
         operator = Operator.Dzz_mask
-        self.assemble_inner(operator)
+        self.assemble_inner(operator, self.interpolation_weights['dzz'])
 
         self.add_gradient_constraint()
         self.add_vaue_constraint()
@@ -60,6 +69,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             #a*=w
             node_idx = self.support.position_to_cell_corners(points[:, :3])
             self.add_constraints_to_least_squares(a.T, points[:,3], node_idx)
+
     def add_gradient_constraint(self,w=1.):
         """
         Add a gradient constraint to the interpolator
@@ -96,7 +106,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.assemble_inner(operator)
         # self.assemble_borders()
 
-    def assemble_inner(self, operator):
+    def assemble_inner(self, operator, w):
         """
 
         :param operator:
@@ -107,9 +117,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         global_indexes = self.support.neighbour_global_indexes()  # np.array([ii,jj]))
 
-        a = np.tile(operator.flatten(), (global_indexes.shape[1],1))
+        a = np.tile(operator.flatten(), (global_indexes.shape[1], 1))
 
-        self.add_constraints_to_least_squares(a,np.zeros(global_indexes.shape[1]),
+        self.add_constraints_to_least_squares(a*w, np.zeros(global_indexes.shape[1]),
                                               global_indexes.T)
         return
 
