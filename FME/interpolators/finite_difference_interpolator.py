@@ -58,7 +58,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             a = self.grid.position_to_dof_coefs(points[:,:3])
             #a*=w
             node_idx = self.grid.position_to_cell_corners(points[:,:3])
-            print(a,node_idx)
             self.add_constraints_to_least_squares(a.T, points[:,3], node_idx)
     def add_gradient_constraint(self,w=1.):
         """

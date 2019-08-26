@@ -154,8 +154,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 lu = sla.splu(M.tocsc())
                 b = np.hstack([B,d]) # np.array([1, 2, 3, 4])
                 sol = lu.solve(b)
-                print(sol)
-                print(sol[:self.nx])
                 self.c = sol[:self.nx]
                 self.up_to_date = True
                 return

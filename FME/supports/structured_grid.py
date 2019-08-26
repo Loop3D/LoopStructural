@@ -20,7 +20,7 @@ class StructuredGrid(BaseGrid):
         self.n_cell_x = self.nsteps[0] - 1
         self.n_cell_y = self.nsteps[1] - 1
         self.n_cell_z = self.nsteps[2] - 1
-
+        self.properties = {}
         self.n_cell = self.n_cell_x * self.n_cell_y * self.n_cell_z
 
     def position_to_cell_index(self, pos):
