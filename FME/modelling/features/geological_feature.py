@@ -1,4 +1,4 @@
-from FME.modelling.scalar_field import TetrahedralMeshScalarField
+from FME.modelling.scalar_field import SupportScalarField
 from FME.modelling.geological_points import GPoint, IPoint, TPoint
 import numpy as np
 
@@ -7,6 +7,7 @@ class GeologicalFeatureInterpolator:
     def __init__(self, interpolator, **kwargs):
         self.interpolator = interpolator
         self.name = "UnnamedFeature"
+        print(self.interpolator.support)
         if 'name' in kwargs:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
@@ -57,7 +58,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver)
         return GeologicalFeature(self.name,
-                                 TetrahedralMeshScalarField.from_interpolator(self.interpolator),
+                                 SupportScalarField.from_interpolator(self.interpolator),
                                  builder=self, data=self.data)
 
 

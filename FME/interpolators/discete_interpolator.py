@@ -47,23 +47,24 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.c_+=nr
 
         if self.shape == 'rectangular':
-            self.A.extend(A.flatten().tolist())
-            self.row.extend(rows.flatten().tolist())
-            self.col.extend(idc.flatten().tolist())
-            self.B.extend(B.flatten().tolist())
+            # don't add operator where it is = 0 to the sparse matrix!
+            A = A.flatten()
+            rows = rows.flatten()
+            idc = idc.flatten()
+            B = B.flatten()
+            mask = A == 0
+            self.A.extend(A[~mask].tolist())
+            self.row.extend(rows[~mask].tolist())
+            self.col.extend(idc[~mask].tolist())
+            self.B.extend(B.tolist())
 
     def add_equality_constraints(self,node_idx,values):
         self.eq_const_C.extend(np.ones(node_idx.shape[0]).tolist())
         self.eq_const_col.extend(node_idx.tolist())
         self.eq_const_row.extend((np.arange(0,node_idx.shape[0])))
         self.eq_const_d.extend(values.tolist())
-        print(node_idx.shape)
         self.eq_const_c_ += node_idx.shape[0]
-        print(self.eq_const_c_)
-        print(self.eq_const_C)
-        print(self.eq_const_d)
-        print(self.eq_const_col)
-        print(self.eq_const_row)
+
     def _solve(self, solver='spqr', clear=True):
         """
         Solve the least squares problem with specified solver

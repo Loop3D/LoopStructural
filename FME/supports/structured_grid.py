@@ -1,7 +1,7 @@
 import numpy as np
 from .base_grid import BaseGrid
-
-class StructuredGrid(BaseGrid):
+from skimage.measure import marching_cubes_lewiner as marching_cubes
+class StructuredGrid:
     def __init__(self,
                  nsteps=np.array([10, 10, 10]),
                  step_vector=np.ones(3),
@@ -22,6 +22,14 @@ class StructuredGrid(BaseGrid):
         self.n_cell_z = self.nsteps[2] - 1
         self.properties = {}
         self.n_cell = self.n_cell_x * self.n_cell_y * self.n_cell_z
+        # BaseGrid.__init__(np.zeros((4,2)))
+
+
+    def update_property(self, propertyname, values):
+        if values.shape[0] == self.n:
+            self.properties[propertyname] = values
+        if values.shape[0] == self.n_cell:
+            self.cell_properties[propertyname] = values
 
     def position_to_cell_index(self, pos):
         """
@@ -208,6 +216,10 @@ class StructuredGrid(BaseGrid):
         globalidx = self.global_indicies(np.dstack([cornersx, cornersy, cornersz]).T)
         return globalidx
 
+    def evaluate_value(self, evaluation_points, property_name):
+        corners = self.position_to_cell_corners(evaluation_points)
+        dof = self.position_to_dof_coefs(evaluation_points)
+
     def calcul_T(self, pos):
         """
         Calculates the gradient matrix at location pos
@@ -248,3 +260,10 @@ class StructuredGrid(BaseGrid):
         T[:, 2, 6] = - x * y
         T[:, 2, 7] = x * y
         return T
+
+    def slice(self,propertyname, isovalue):
+        verts, faces, normals, values = marching_cubes(
+            self.properties[propertyname].reshape(self.nsteps,order='F'),
+            isovalue,
+            spacing=self.step_vector)
+        return faces, verts

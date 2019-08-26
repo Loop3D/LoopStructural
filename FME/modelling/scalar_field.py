@@ -1,20 +1,27 @@
 import numpy as np
-from ..cython.marching_tetra import marching_tetra
 
 
-class StructuredGridScalarField:
-    def __init__(self,grid,property_name):
-        self.grid = grid
+class SupportScalarField:
+    def __init__(self, support, property_name):
+        self.support = support
         self.property_name = property_name
         self.interpolator = None
 
     @classmethod
-    def from_node_values(cls, grid, property_name, node_values):
-        pass
+    def from_node_values(cls, support, property_name, node_values):
+        support.update_property(property_name, node_values)
+        return cls(support, property_name)
 
     @classmethod
     def from_interpolator(cls, interpolator):
-        pass
+        interpolator.update()
+        interpolator.support.update_property(interpolator.propertyname, interpolator.c)
+        scalar_field = cls(
+            interpolator.support,
+            interpolator.propertyname)
+        scalar_field.interpolator = interpolator
+        return scalar_field
+
 
     def evaluate_value(self, evaluation_points):
         """
@@ -27,11 +34,12 @@ class StructuredGridScalarField:
         -------
 
         """
+        evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
         mask = np.any(np.isnan(evaluation_points),axis=1)
 
         if evaluation_points[~mask,:].shape[0]>0:
-            evaluated[~mask] = self.grid.evaluate_value(
+            evaluated[~mask] = self.support.evaluate_value(
                 evaluation_points[~mask], self.property_name)
         return evaluated
 
@@ -47,7 +55,7 @@ class StructuredGridScalarField:
 
         """
         if evaluation_points.shape[0]>0:
-            return self.grid.evaluate_gradient(evaluation_points, self.property_name)
+            return self.support.evaluate_gradient(evaluation_points, self.property_name)
         return np.zeros((0,3))
 
     def mean(self):
@@ -57,7 +65,7 @@ class StructuredGridScalarField:
         -------
 
         """
-        return np.nanmean(self.grid.properties[self.property_name])
+        return np.nanmean(self.support.properties[self.property_name])
 
     def min(self):
         """
@@ -66,10 +74,10 @@ class StructuredGridScalarField:
         -------
 
         """
-        return np.nanmin(self.grid.properties[self.property_name])
+        return np.nanmin(self.support.properties[self.property_name])
 
     def max(self):
-        return np.nanmax(self.grid.properties[self.property_name])
+        return np.nanmax(self.support.properties[self.property_name])
 
     def get_node_values(self):
         """
@@ -78,7 +86,7 @@ class StructuredGridScalarField:
         -------
 
         """
-        return self.grid.properties[self.property_name]
+        return self.support.properties[self.property_name]
 
     def number_of_nodes(self):
         """
@@ -87,7 +95,7 @@ class StructuredGridScalarField:
         -------
 
         """
-        return self.grid.n
+        return self.support.n
 
     def update_property(self, values):
         """
@@ -100,10 +108,12 @@ class StructuredGridScalarField:
         -------
 
         """
-        self.grid.properties[self.property_name] = values
+        self.support.properties[self.property_name] = values
 
     def slice(self, isovalue):
-        pass
+        return self.support.slice(self.property_name, isovalue)
+
+
 class TetrahedralMeshScalarField:
     """
     Support to represent a scalar field using a tetrahedral mesh

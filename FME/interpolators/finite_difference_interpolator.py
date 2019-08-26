@@ -8,14 +8,15 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     Finite Difference Interpolator
     """
     def __init__(self, grid):
-        self.grid = grid
-        self.nx = self.grid.n
+        self.support = grid
+        self.nx = self.support.n
         self.shape = 'rectangular'
-        self.region = np.arange(0,self.grid.n).astype(int)#'everywhere'
-        self.region_map = np.zeros(self.grid.n).astype(int)
-        self.region_map[np.array(range(0, self.grid.n)).astype(int)] = \
-            np.array(range(0, self.grid.n)).astype(int)
+        self.region = np.arange(0, self.support.n).astype(int)#'everywhere'
+        self.region_map = np.zeros(self.support.n).astype(int)
+        self.region_map[np.array(range(0, self.support.n)).astype(int)] = \
+            np.array(range(0, self.support.n)).astype(int)
         DiscreteInterpolator.__init__(self)
+        self.support = grid
 
     def _setup_interpolator(self, **kwargs):
         """
@@ -55,9 +56,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points = self.get_control_points()
         # check that we have added some points
         if points.shape[0]>0:
-            a = self.grid.position_to_dof_coefs(points[:,:3])
+            a = self.support.position_to_dof_coefs(points[:, :3])
             #a*=w
-            node_idx = self.grid.position_to_cell_corners(points[:,:3])
+            node_idx = self.support.position_to_cell_corners(points[:, :3])
             self.add_constraints_to_least_squares(a.T, points[:,3], node_idx)
     def add_gradient_constraint(self,w=1.):
         """
@@ -70,8 +71,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         points = self.get_gradient_control()
         if points.shape[0] > 0:
-            node_idx = self.grid.position_to_cell_corners(points[:,:3])
-            T = self.grid.calcul_T(points[:,:3])
+            node_idx = self.support.position_to_cell_corners(points[:, :3])
+            T = self.support.calcul_T(points[:, :3])
             self.add_constraints_to_least_squares( T[:, 0, :], points[:,3], node_idx)
             self.add_constraints_to_least_squares( T[:, 1, :], points[:,4], node_idx)
             self.add_constraints_to_least_squares( T[:, 2, :], points[:,5], node_idx)
@@ -104,10 +105,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # First get the global indicies of the pairs of neighbours this should be an
         # Nx27 array for 3d and an Nx9 array for 2d
 
-        global_indexes = self.grid.neighbour_global_indexes()  # np.array([ii,jj]))
+        global_indexes = self.support.neighbour_global_indexes()  # np.array([ii,jj]))
 
         a = np.tile(operator.flatten(), (global_indexes.shape[1],1))
+
         self.add_constraints_to_least_squares(a,np.zeros(global_indexes.shape[1]),
-                                              global_indexes)
+                                              global_indexes.T)
         return
 

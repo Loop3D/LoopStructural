@@ -58,7 +58,9 @@ class LavaVuModelViewer:
         if 'slices' in kwargs:
             slices = kwargs['slices']
         if 'nslices' in kwargs:
-            slices = np.linspace(min_property_val, max_property_val, kwargs['nslices'])
+            var = max_property_val - min_property_val
+            # buffer slices by 5%
+            slices = np.linspace(min_property_val+var*0.05, max_property_val-var*0.05, kwargs['nslices'])
         if 'colour' in kwargs:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
