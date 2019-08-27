@@ -9,12 +9,12 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     """
     def __init__(self, grid):
         self.support = grid
-        self.nx = self.support.n
+        self.nx = self.support.n_nodes
         self.shape = 'rectangular'
-        self.region = np.arange(0, self.support.n).astype(int)#'everywhere'
-        self.region_map = np.zeros(self.support.n).astype(int)
-        self.region_map[np.array(range(0, self.support.n)).astype(int)] = \
-            np.array(range(0, self.support.n)).astype(int)
+        self.region = np.arange(0, self.nx).astype(int)#'everywhere'
+        self.region_map = np.zeros(self.nx).astype(int)
+        self.region_map[np.array(range(0, self.nx)).astype(int)] = \
+            np.array(range(0, self.nx)).astype(int)
         DiscreteInterpolator.__init__(self)
         self.support = grid
         self.interpolation_weights = {'dxy': 1.,
@@ -53,6 +53,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.add_gradient_constraint()
         self.add_vaue_constraint()
 
+    def copy(self):
+        return FiniteDifferenceInterpolator(self.support)
 
     def add_vaue_constraint(self, w=1.):
         """
@@ -123,7 +125,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         posx, posy, posz = self.support.node_indexes_to_position(cornerx, cornery, cornerz)
         pos = np.array([np.mean(posx,axis=1),np.mean(posz,axis=1),np.mean(posz,axis=1)]).T
         T = self.support.calcul_T(pos)
-
+        print(normals.shape)
         # find the dot product between the normals and the gradient and add this as a
         # constraint
         A = np.einsum('ij,ijk->ik',normals,T)

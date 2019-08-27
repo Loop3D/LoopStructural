@@ -15,20 +15,33 @@ class StructuredGrid:
         self.nsteps = np.array(nsteps)
         self.step_vector = np.array(step_vector)
         self.origin = np.array(origin)
-        self.n = self.nsteps[0] * self.nsteps[1] * self.nsteps[2]
+        self.n_nodes = self.nsteps[0] * self.nsteps[1] * self.nsteps[2]
         self.dim = 3
         self.n_cell_x = self.nsteps[0] - 1
         self.n_cell_y = self.nsteps[1] - 1
         self.n_cell_z = self.nsteps[2] - 1
         self.properties = {}
-        self.n_cell = self.n_cell_x * self.n_cell_y * self.n_cell_z
+        self.n_elements = self.n_cell_x * self.n_cell_y * self.n_cell_z
         # BaseGrid.__init__(np.zeros((4,2)))
 
+        xi, yi, zi = self.global_index_to_cell_index(np.arange(self.n_elements))
+        cornerx, cornery, cornerz = self.cell_corner_indexes(xi, yi, zi)
+        posx, posy, posz = self.node_indexes_to_position(cornerx, cornery, cornerz)
+        x = np.linspace(origin[0],nsteps[0]*step_vector[0],nsteps[0])
+        y = np.linspace(origin[1],nsteps[1]*step_vector[1],nsteps[1])
+        z = np.linspace(origin[2],nsteps[2]*step_vector[2],nsteps[2])
+        xx,yy,zz = np.meshgrid(x,y,z)
+        self.nodes = np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T
+        # self.nodes = np.array([posx,posy,posz])
+        self.barycentre = np.array([np.mean(posx, axis=1), np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
+
+        self.regions = {}
+        self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
 
     def update_property(self, propertyname, values):
-        if values.shape[0] == self.n:
+        if values.shape[0] == self.n_nodes:
             self.properties[propertyname] = values
-        if values.shape[0] == self.n_cell:
+        if values.shape[0] == self.n_elements:
             self.cell_properties[propertyname] = values
 
     def position_to_cell_index(self, pos):
@@ -86,6 +99,7 @@ class StructuredGrid:
         :return:
         """
         # TODO check if inside mesh
+
         # calculate local coordinates for positions
         local_x = ((pos[:, 0] - self.origin[None, 0]) % self.step_vector[None, 0]) / self.step_vector[None, 0]
         local_y = ((pos[:, 1] - self.origin[None, 1]) % self.step_vector[None, 1]) / self.step_vector[None, 1]
@@ -216,8 +230,34 @@ class StructuredGrid:
         return globalidx
 
     def evaluate_value(self, evaluation_points, property_name):
-        corners = self.position_to_cell_corners(evaluation_points)
-        dof = self.position_to_dof_coefs(evaluation_points)
+        """
+        Evaluate the value of of the property at the locations.
+        Trilinear interpolation dot corner values
+        Parameters
+        ----------
+        evaluation_points np array of locations
+        property_name string of property name
+
+        Returns
+        -------
+
+        """
+        # indices = np.array([self.position_to_cell_index(evaluation_points)])
+        idc = self.position_to_cell_corners(evaluation_points)
+#        idc = self.global_indicies(indices.swapaxes(0,1))
+        v = self.position_to_dof_coefs(evaluation_points).T
+        v *= self.properties[property_name][idc]
+        return np.sum(v, axis=1)
+    def evaluate_gradient(self, evaluation_points, property_name):
+        T = self.calcul_T(evaluation_points)
+        #indices = np.array([self.position_to_cell_index(evaluation_points)])
+        #idc = self.global_indicies(indices.swapaxes(0,1))
+        idc = self.position_to_cell_corners(evaluation_points)
+        # print(idc)
+        T[:,0,:]*=self.properties[property_name][idc]
+        T[:,1,:]*=self.properties[property_name][idc]
+        T[:,2,:]*=self.properties[property_name][idc]
+        return np.array([np.sum(T[:,0,:],axis=1)/8,np.sum(T[:,1,:],axis=1)/8,np.sum(T[:,2,:],axis=1)/8]).T
 
     def calcul_T(self, pos):
         """

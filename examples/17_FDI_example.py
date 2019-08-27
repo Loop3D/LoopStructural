@@ -43,7 +43,7 @@ for x in range(10):
 
 # feature_builder.add_point([-.9,0,0],.8)
 # feature_builder.add_strike_and_dip([0.4,0,0],70,50)
-feature_builder.interpolator.add_gradient_orthogonal_constraint(np.arange(grid.n_cell),np.zeros((grid.n_cell,3)))
+feature_builder.interpolator.add_gradient_orthogonal_constraint(np.arange(grid.n_elements), np.zeros((grid.n_elements, 3)))
 # feature_builder.add_strike_and_dip([0,0,0],90,50)
 cgw = 6000
 # cgw /= mesh.n_elements

@@ -26,6 +26,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
+
+    def set_property_name(self, propertyname):
+        self.propertyname = propertyname
+
+    def set_region(self, regionname=None, region=None):
+        if region is not None:
+            self.region = region
+        if regionname is not None:
+            self.region = self.support.regions[regionname]
+
+    def set_interpolation_weights(self, weights):
+        for key in weights:
+            self.up_to_date = False
+            self.interpolation_weights[key] = weights[key]
+
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system

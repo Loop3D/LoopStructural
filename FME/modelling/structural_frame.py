@@ -133,13 +133,13 @@ class StructuralFrameBuilder:
         region: region where the interpolation occurs for this frame
         you can pass kwargs for the DSI interpolator
         """
-        self.mesh = None
+        self.support = None
         self.fault_event = None
         self.name = 'Undefined'
         self.region = 'everywhere'
-        if 'mesh' in kwargs:
-            self.mesh = kwargs['mesh']
-            del kwargs['mesh']
+        if 'support' in kwargs:
+            self.support = kwargs['support']
+            del kwargs['support']
 
         if 'name' in kwargs:
             self.name = kwargs['name']
@@ -283,16 +283,15 @@ class StructuralFrameBuilder:
             gx_feature =  GeologicalFeature(self.name + '_gx',
                                       ScalarField.from_interpolator(self.interpolators[0]),
                                             data=self.data[0])
-            # self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
         if len(self.data[1]) > 0:
             if gx_feature is None:
                 print("Not enough constraints for fold frame coordinate 0, \n"
                       "Add some more and try again.")
                 return
             print("Building gy")
-            self.interpolators[1].add_elements_gradient_orthogonal_constraint(
-                np.arange(0,self.mesh.n_elements),
-                gx_feature.evaluate_gradient(self.mesh.barycentre),
+            self.interpolators[1].add_gradient_orthogonal_constraint(
+                np.arange(0,self.support.n_elements),
+                gx_feature.evaluate_gradient(self.support.barycentre),
                 w=gxxgy)
             self.interpolators[1].setup_interpolator(cgw=gycg, cpw=gycp, gpw=gygcp)
 
@@ -306,13 +305,13 @@ class StructuralFrameBuilder:
                       "Add some more and try again.")
                 return
             print("Building gz")
-            self.interpolators[2].add_elements_gradient_orthogonal_constraint(
-                np.arange(0, self.mesh.n_elements),
-                gx_feature.evaluate_gradient(self.mesh.barycentre),
+            self.interpolators[2].add_gradient_orthogonal_constraint(
+                np.arange(0, self.support.n_elements),
+                gx_feature.evaluate_gradient(self.support.barycentre),
                 w=gyxgz)
-            self.interpolators[2].add_elements_gradient_orthogonal_constraint(
-                np.arange(0, self.mesh.n_elements),
-                gy_feature.evaluate_gradient(self.mesh.barycentre),
+            self.interpolators[2].add_gradient_orthogonal_constraint(
+                np.arange(0, self.support.n_elements),
+                gy_feature.evaluate_gradient(self.support.barycentre),
                 w=gyxgz)
             self.interpolators[2].setup_interpolator(cgw=gzcg, cpw=gzcp, gpw=gzgcp)  # cgw=0.1)
             self.interpolators[2].solve_system(solver=solver)

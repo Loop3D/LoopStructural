@@ -34,22 +34,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.support = mesh
 
         self.interpolation_weights = {'cgw': 6000, 'cpw' : 1., 'gpw':1., 'tpw':1.}
+
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
 
-    def set_property_name(self, propertyname):
-        self.propertyname = propertyname
 
-    def set_region(self, regionname=None, region=None):
-        if region is not None:
-            self.region = region
-        if regionname is not None:
-            self.region = self.support.regions[regionname]
-
-    def set_interpolation_weights(self, weights):
-        for key in weights:
-            self.up_to_date = False
-            self.interpolation_weights[key] = weights[key]
 
     def _setup_interpolator(self, **kwargs):
         """
