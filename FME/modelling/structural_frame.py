@@ -2,7 +2,7 @@ import numpy as np
 from FME.modelling.geological_points import IPoint, GPoint, TPoint
 from FME.modelling.features.geological_feature import GeologicalFeature
 from FME.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
-from FME.modelling.scalar_field import TetrahedralMeshScalarField
+from FME.modelling.scalar_field import ScalarField
 
 
 class StructuralFrame:
@@ -281,7 +281,7 @@ class StructuralFrameBuilder:
             self.interpolators[0].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
             self.interpolators[0].solve_system(solver=solver)
             gx_feature =  GeologicalFeature(self.name + '_gx',
-                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[0]),
+                                      ScalarField.from_interpolator(self.interpolators[0]),
                                             data=self.data[0])
             # self.mesh.update_property(self.name + '_' + 'gx', self.interpolators[0].c)
         if len(self.data[1]) > 0:
@@ -298,7 +298,7 @@ class StructuralFrameBuilder:
 
             self.interpolators[1].solve_system(solver=solver)
             gy_feature = GeologicalFeature(self.name + '_gy',
-                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[1]),
+                                      ScalarField.from_interpolator(self.interpolators[1]),
                                             data=self.data[1])
         if len(self.data[2]) > 0:
             if gy_feature is None:
@@ -317,7 +317,7 @@ class StructuralFrameBuilder:
             self.interpolators[2].setup_interpolator(cgw=gzcg, cpw=gzcp, gpw=gzgcp)  # cgw=0.1)
             self.interpolators[2].solve_system(solver=solver)
             gz_feature = GeologicalFeature(self.name + '_gz',
-                                      TetrahedralMeshScalarField.from_interpolator(self.interpolators[2]),
+                                      ScalarField.from_interpolator(self.interpolators[2]),
                                             data=self.data[2])
         if len(self.data[2]) == 0:
             if gy_feature is None:

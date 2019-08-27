@@ -20,7 +20,7 @@ notebook:
 notebookbuild:
 	. ${FME_ENV} &&	python3 setup.py install build_ext --inplace &&	jupyter-notebook --no-browser; 
 compileexamples:
-	. ${FME_ENV} && ./build_notebook.sh;
+	. ${FME_ENV} && . build_notebook.sh;
 
 
 

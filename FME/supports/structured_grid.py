@@ -110,7 +110,6 @@ class StructuredGrid:
         :return:
         """
         indexes = np.array(indexes).swapaxes(0,2)
-
         return indexes[:,:, 0] + self.nsteps[None,None, 0] * indexes[:,:, 1] + \
                self.nsteps[None,None, 0] * self.nsteps[None,None, 1] * indexes[:, :, 2]
 

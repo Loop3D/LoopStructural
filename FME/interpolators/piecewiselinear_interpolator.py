@@ -1,5 +1,4 @@
 from FME.interpolators.discete_interpolator import DiscreteInterpolator
-from FME.modelling.scalar_field import TetrahedralMeshScalarField
 import numpy as np
 
 
@@ -130,9 +129,21 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = self.support.elements[e]
             self.add_constraints_to_least_squares(A.T*w,points[:,3]*w,idc)
 
-    def add_elements_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
+    def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
         constraints scalar field to be orthogonal to a given vector
+        Parameters
+        ----------
+        elements
+        normals
+        w
+        B
+
+        Returns
+        -------
+
+        """
+        """
         :param elements: index of elements to apply constraint to
         :param normals: list of normals for elements
         :param w: global weighting per constraint
@@ -150,15 +161,3 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         idc = self.support.elements[elements]
         B = np.zeros(len(elements))
         self.add_constraints_to_least_squares(A*w, B, idc)
-
-    def get_support(self):
-
-        # TODO add check to see if interpolant is up to date
-        # this requires adding solving parameters to interpolator object
-        # if self.up_to_date == False:
-        #     self.so
-
-        return TetrahedralMeshScalarField.from_node_values(
-            self.support,
-            self.propertyname,
-            self.c)

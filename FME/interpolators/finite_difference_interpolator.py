@@ -95,7 +95,42 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # def add_gradient_orthogonality(self,pos,g,w=1.):
 
             #do stuff
+    def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
+        """
+        constraints scalar field to be orthogonal to a given vector
+        Parameters
+        ----------
+        elements
+        normals
+        w
+        B
 
+        Returns
+        -------
+
+        """
+        """
+        :param elements: index of elements to apply constraint to
+        :param normals: list of normals for elements
+        :param w: global weighting per constraint
+        :param B: norm value
+        :return:
+        """
+        # get the cell gradient for the global indices
+        xi, yi, zi = self.support.global_index_to_cell_index(elements)
+        cornerx, cornery, cornerz = self.support.cell_corner_indexes(xi,yi,zi
+            )
+        posx, posy, posz = self.support.node_indexes_to_position(cornerx, cornery, cornerz)
+        pos = np.array([np.mean(posx,axis=1),np.mean(posz,axis=1),np.mean(posz,axis=1)]).T
+        T = self.support.calcul_T(pos)
+
+        # find the dot product between the normals and the gradient and add this as a
+        # constraint
+        A = np.einsum('ij,ijk->ik',normals,T)
+        a = np.array([cornerx.T,cornery.T,cornerz.T])
+        idc = self.support.global_indicies(a)#elements[elements]
+        B = np.zeros(len(elements))
+        self.add_constraints_to_least_squares(A*w, B, idc)
     def add_regularisation(self,operator,w=0.1):
         """
 

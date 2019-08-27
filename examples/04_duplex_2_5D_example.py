@@ -76,7 +76,6 @@ fault2 = StructuralFrameBuilder(
     interpolator=fault_frame2_interpolator,
     mesh=mesh,
     name='FaultSegment2'
-
 )
 #
 for y in range(-5,5,1):

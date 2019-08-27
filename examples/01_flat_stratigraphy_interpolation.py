@@ -28,7 +28,25 @@ mesh = TetMesh()
 mesh.setup_mesh(boundary_points, n_tetra=10000,)
 
 # ### GeologicalFeatureInterpolator
-# FME uses an object oriented design so
+# FME uses an abstract class representation of geological objects. A **GeologicalFeature** is
+# an abstract class that represents a geological object within the model. A **GeologicalFeature**
+# can be evaluated for the gradient or scalar value at any location within the model.
+# It can be simply a wrapper for a scalar field, or could be a piecewise combination of scalar
+# fields.
+# The **GeologicalFeature** needs to be built using a builder class, this class manages the data,
+# interpolator and any geological structures. The **GeologicalFeatureInterpolator** provides a way
+# of linking any FME interpolator to a **GeologicalFeature**. The GeologicalFeatureInterpolator
+# needs to be given an interpolator object which should be a daughter class of a
+# GeologicalInterpolator and a name to give the feature that is being built. The name is simply used
+# as an identifier for the interpolated properties when exported into file formats or for visualisation.
+# There are currently has two interpolator options available , a piecewise linear interpolator using
+# a tetrahedral mesh where the roughness of the interpolated surfaces is minimised.
+# A finite difference interpolator where the gaussian curvature is minimised.
+# The GeologicalFeatureInterpolator can be given value constraints **add_point(position,value)** or
+# gradient constraints **add_strike_and_dip**(pos,strike,dip)
+# The resulting feature can be interpolated by calling **build**(kwargs) where the kwargs are
+# passed to the interpolator you have chosen e.g. which solver to use, what weights etc..
+
 
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
@@ -61,7 +79,7 @@ viewer.plot_isosurface(
     slices=[0], #specify multiple isosurfaces
     # isovalue=0, # a single isosurface
     # nslices=10 #the number of evenly space isosurfaces
-)
+    )
 viewer.plot_vector_data(
     feature_builder.interpolator.get_gradient_control()[:,:3],
     feature_builder.interpolator.get_gradient_control()[:,3:],

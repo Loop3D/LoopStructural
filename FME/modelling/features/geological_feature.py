@@ -1,4 +1,4 @@
-from FME.modelling.scalar_field import SupportScalarField
+from FME.modelling.scalar_field import ScalarField
 from FME.modelling.geological_points import GPoint, IPoint, TPoint
 import numpy as np
 
@@ -58,7 +58,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver)
         return GeologicalFeature(self.name,
-                                 SupportScalarField.from_interpolator(self.interpolator),
+                                 ScalarField.from_interpolator(self.interpolator),
                                  builder=self, data=self.data)
 
 
