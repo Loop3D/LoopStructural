@@ -20,6 +20,17 @@ class BaseGrid:
         self.maxpc1 = np.max(self.transformed_corners[:, 1])
         self.minpc2 = np.min(self.transformed_corners[:, 2])
         self.maxpc2 = np.max(self.transformed_corners[:, 2])
+        self.properties = {}
+        self.regions = {}
+        self.cell_properties = {}
+        self.n = None
+        self.n_cell = None
+
+    def update_properties(self,propertyname,values):
+        if values.shape[0] == self.n:
+            self.proeprties[propertyname] = values
+        if values.shape[0] == self.n_cell:
+            self.cell_properties[propertyname] = values
 
     def is_inside(self, evaluation_points):
         transformed_evaluation_points = self.pca.transform(evaluation_points)

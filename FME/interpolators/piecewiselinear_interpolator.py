@@ -1,5 +1,4 @@
 from FME.interpolators.discete_interpolator import DiscreteInterpolator
-from FME.modelling.scalar_field import TetrahedralMeshScalarField
 import numpy as np
 
 
@@ -22,33 +21,24 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.region = "everywhere"
         # whether to assemble a rectangular matrix or a square matrix
         self.shape = 'rectangular'
-        self.mesh = mesh
+        self.support = mesh
         self.interpolator_type = 'PLI'
-        self.propertyname = 'defaultproperty'
 
-        self.region = self.mesh.regions['everywhere']
+        self.region = self.support.regions['everywhere']
         self.region_map = np.zeros(mesh.n_nodes).astype(int)
         self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
-        self.nx = len(self.mesh.nodes[self.region])
+        self.nx = len(self.support.nodes[self.region])
 
         DiscreteInterpolator.__init__(self)
+        # TODO need to fix this, constructor of DI is breaking support
+        self.support = mesh
+
         self.interpolation_weights = {'cgw': 6000, 'cpw' : 1., 'gpw':1., 'tpw':1.}
+
     def copy(self):
-        return PiecewiseLinearInterpolator(self.mesh)
+        return PiecewiseLinearInterpolator(self.support)
 
-    def set_property_name(self, propertyname):
-        self.propertyname = propertyname
 
-    def set_region(self, regionname=None, region=None):
-        if region is not None:
-            self.region = region
-        if regionname is not None:
-            self.region = self.mesh.regions[regionname]
-
-    def set_interpolation_weights(self, weights):
-        for key in weights:
-            self.up_to_date = False
-            self.interpolation_weights[key] = weights[key]
 
     def _setup_interpolator(self, **kwargs):
         """
@@ -78,13 +68,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         # iterate over all elements
 
-        A, idc, B = self.mesh.get_constant_gradient(region=self.region, shape='rectangular')
+        A, idc, B = self.support.get_constant_gradient(region=self.region, shape='rectangular')
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
         w/=A.shape[0]
         # print("Adding %i constant gradient regularisation terms individually weighted at %f"%(len(B),w))
-
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
@@ -97,12 +86,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         points = self.get_gradient_control()
         if points.shape[0] > 0:
             # print("Adding %i gradient constraints individually weighted at %f"%(points.shape[0],w))
-            e, inside = self.mesh.elements_for_array(points[:,:3])
-            d_t = self.mesh.get_elements_gradients(e)
+            e, inside = self.support.elements_for_array(points[:, :3])
+            d_t = self.support.get_elements_gradients(e)
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
             #add in the element gradient matrix into the inte
             e=np.tile(e,(3,1)).T
-            idc = self.mesh.elements[e]
+            idc = self.support.elements[e]
             self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w,idc)
 
     def add_tangent_ctr_pts(self, w=1.0):
@@ -123,15 +112,27 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         points = self.get_control_points()
         if points.shape[0] > 1:
             # print("Adding %i value constraints individually weighted at %f"%(points.shape[0],w))
-            e, inside = self.mesh.elements_for_array(points[:,:3])
+            e, inside = self.support.elements_for_array(points[:, :3])
             # get barycentric coordinates for points
-            A = self.mesh.calc_bary_c(e,points[:,:3])
-            idc = self.mesh.elements[e]
+            A = self.support.calc_bary_c(e, points[:, :3])
+            idc = self.support.elements[e]
             self.add_constraints_to_least_squares(A.T*w,points[:,3]*w,idc)
 
-    def add_elements_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
+    def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
         constraints scalar field to be orthogonal to a given vector
+        Parameters
+        ----------
+        elements
+        normals
+        w
+        B
+
+        Returns
+        -------
+
+        """
+        """
         :param elements: index of elements to apply constraint to
         :param normals: list of normals for elements
         :param w: global weighting per constraint
@@ -139,25 +140,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :return:
         """
         # print("Adding %i gradient orthogonality individually weighted at %f" % (normals.shape[0], w))
-        d_t = self.mesh.get_elements_gradients(elements)
+        d_t = self.support.get_elements_gradients(elements)
         dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
         mask = np.abs(dot_p) > 0
         normals[mask[:,0] ,:] =  normals[mask[:,0],:] / dot_p[mask][:,None]
         magnitude = np.einsum('ij,ij->i', normals, normals)
         normals[magnitude>0] = normals[magnitude>0] / magnitude[magnitude>0,None]
         A = np.einsum('ij,ijk->ik', normals, d_t)
-        idc = self.mesh.elements[elements]
+        idc = self.support.elements[elements]
         B = np.zeros(len(elements))
         self.add_constraints_to_least_squares(A*w, B, idc)
-
-    def get_support(self):
-
-        # TODO add check to see if interpolant is up to date
-        # this requires adding solving parameters to interpolator object
-        # if self.up_to_date == False:
-        #     self.so
-
-        return TetrahedralMeshScalarField.from_node_values(
-            self.mesh,
-            self.propertyname,
-            self.c)

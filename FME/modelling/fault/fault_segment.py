@@ -5,7 +5,7 @@ class FaultSegment:
     Class for representing a slip event of a fault
     """
 
-    def __init__(self, faultframe,**kwargs):  # mesh,fault_event,data,name,region):
+    def __init__(self, faultframe ,**kwargs):  # mesh,fault_event,data,name,region):
         """
         constructor
         :param faultframe: StructuralFrame object with three coordinates
@@ -38,22 +38,27 @@ class FaultSegment:
         newp = np.copy(points).astype(float)
         # calculate the fault frame for the evaluation points
         for i in range(steps):
+            # get the fault frame val/grad for the points
             gx = self.faultframe.features[0].evaluate_value(points)
             g = self.faultframe.features[1].evaluate_gradient(points)
             gy = self.faultframe.features[1].evaluate_value(points)
             gz = self.faultframe.features[2].evaluate_value(points)
+
+            # determine displacement magnitude
             d = np.zeros(gx.shape)
             d[gx > 0] = 1.
             if self.faultfunction is not None:
                 d = self.faultfunction(gx, gy, gz)
             d *= self.displacement
-            # cast newpoints as a float because python types suck
 
-            # calc length of displacement vector
-            g_mag = np.linalg.norm(g, axis=1)
             # normalise when length is >0
+            g_mag = np.linalg.norm(g, axis=1)
             g[g_mag>0.] /= g_mag[g_mag >0,None]
+
+            # multiply displacement vector by the displacement magnitude for step
             g *= (1./steps)*d[:,None]
+            
+            # apply displacement
             newp += g
         return newp
 

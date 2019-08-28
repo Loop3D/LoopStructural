@@ -28,25 +28,7 @@ mesh = TetMesh()
 mesh.setup_mesh(boundary_points, n_tetra=10000,)
 
 # ### GeologicalFeatureInterpolator
-# FME uses an abstract class representation of geological objects. A **GeologicalFeature** is
-# an abstract class that represents a geological object within the model. A **GeologicalFeature**
-# can be evaluated for the gradient or scalar value at any location within the model.
-# It can be simply a wrapper for a scalar field, or could be a piecewise combination of scalar
-# fields.
-# The **GeologicalFeature** needs to be built using a builder class, this class manages the data,
-# interpolator and any geological structures. The **GeologicalFeatureInterpolator** provides a way
-# of linking any FME interpolator to a **GeologicalFeature**. The GeologicalFeatureInterpolator
-# needs to be given an interpolator object which should be a daughter class of a
-# GeologicalInterpolator and a name to give the feature that is being built. The name is simply used
-# as an identifier for the interpolated properties when exported into file formats or for visualisation.
-# There are currently has two interpolator options available , a piecewise linear interpolator using
-# a tetrahedral mesh where the roughness of the interpolated surfaces is minimised.
-# A finite difference interpolator where the gaussian curvature is minimised.
-# The GeologicalFeatureInterpolator can be given value constraints **add_point(position,value)** or
-# gradient constraints **add_strike_and_dip**(pos,strike,dip)
-# The resulting feature can be interpolated by calling **build**(kwargs) where the kwargs are
-# passed to the interpolator you have chosen e.g. which solver to use, what weights etc..
-
+# FME uses an object oriented design so
 
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
@@ -56,11 +38,29 @@ feature_builder.add_point([0.5,0,0],1)
 # feature_builder.add_point([-.9,0,0],.8)
 # feature_builder.add_strike_and_dip([0.4,0,0],70,50)
 #
-# feature_builder.add_strike_and_dip([0,0,0],90,50)
+feature_builder.add_strike_and_dip([0,0,0],90,50)
 cgw = 6000
 # cgw /= mesh.n_elements
 feature = feature_builder.build(
-    solver='cg',
+    solver='lu',
+    cgw=cgw)
+feature_builder2 = GeologicalFeatureInterpolator(interpolator, name='stratigraphy2')
+
+# feature_builder2.add_point([0,0,0],0)
+feature_builder2.add_point([0.9,0,0],1)
+# feature_builder.add_point([-.9,0,0],.8)
+# feature_builder.add_strike_and_dip([0.4,0,0],70,50)
+#
+# feature_builder.add_strike_and_dip([0,0,0],90,50)
+mask = mesh.nodes[:,0] < 0
+idc = np.arange(0,mesh.n_nodes)[mask]
+v = feature.support.get_node_values()[mask] #interpolators[0].
+
+feature_builder2.interpolator.add_equality_constraints(idc,v)
+cgw = 6000
+# cgw /= mesh.n_elements
+feature2 = feature_builder2.build(
+    solver='lueq',
     cgw=cgw)
 
 # Export the input data and the model domain to a text file so it can be imported into gocad
@@ -76,10 +76,18 @@ np.savetxt("01_box_coords.txt", mesh.points)
 viewer = LavaVuModelViewer(background="white")
 viewer.plot_isosurface(
     feature,
-    slices=[0], #specify multiple isosurfaces
-    # isovalue=0, # a single isosurface
+    colour='green',
+    # slices=[0], #specify multiple isosurfaces
+    isovalue=0, # a single isosurface
     # nslices=10 #the number of evenly space isosurfaces
-    )
+)
+viewer.plot_isosurface(
+    feature2,
+    colour='blue',
+    # slices=[0], #specify multiple isosurfaces
+    isovalue=0, # a single isosurface
+    # nslices=10 #the number of evenly space isosurfaces
+)
 viewer.plot_vector_data(
     feature_builder.interpolator.get_gradient_control()[:,:3],
     feature_builder.interpolator.get_gradient_control()[:,3:],
