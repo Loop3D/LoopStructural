@@ -317,4 +317,4 @@ class StructuredGrid:
             self.properties[propertyname].reshape(self.nsteps,order='F'),
             isovalue,
             spacing=self.step_vector)
-        return faces, verts
+        return faces, verts+self.origin[None,:]
