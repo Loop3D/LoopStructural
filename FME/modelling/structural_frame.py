@@ -140,7 +140,9 @@ class StructuralFrameBuilder:
         if 'support' in kwargs:
             self.support = kwargs['support']
             del kwargs['support']
-
+        if 'mesh' in kwargs:
+            self.support = kwargs['mesh']
+            del kwargs['mesh']
         if 'name' in kwargs:
             self.name = kwargs['name']
 
