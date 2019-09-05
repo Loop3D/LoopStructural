@@ -104,10 +104,16 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
         """
-        add value data to the interpolator
-        :param w: weight per constraint
-        :return:
+
+        Parameters
+        ----------
+        w
+
+        Returns
+        -------
+
         """
+
         #get elements for points
         points = self.get_control_points()
         if points.shape[0] > 1:
@@ -131,13 +137,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         Returns
         -------
 
-        """
-        """
-        :param elements: index of elements to apply constraint to
-        :param normals: list of normals for elements
-        :param w: global weighting per constraint
-        :param B: norm value
-        :return:
         """
         # print("Adding %i gradient orthogonality individually weighted at %f" % (normals.shape[0], w))
         d_t = self.support.get_elements_gradients(elements)

@@ -3,20 +3,14 @@ FME package
 
 Subpackages
 -----------
+FME is separated into a number of submodules:
 
 .. toctree::
+    :maxdepth: 1
 
-    FME.cython
-    FME.interpolators
-    FME.modelling
-    FME.supports
-    FME.utils
-    FME.visualisation
 
-Module contents
----------------
+    Modelling <FME.modelling>
+    Interpolators <FME.interpolators>
+    Supports <FME.supports>
+    Utils <FME.utils>
 
-.. automodule:: FME
-    :members:
-    :undoc-members:
-    :show-inheritance:

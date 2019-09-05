@@ -9,3 +9,4 @@ jupyter
 matplotlib
 meshio
 geopandas
+setuptools

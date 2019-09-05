@@ -1,5 +1,6 @@
 FME Installation
 ================
+FME depends on a number of external python libraries such as numpy, scipy
 
 Dependencies
 ------------
