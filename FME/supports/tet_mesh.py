@@ -377,11 +377,6 @@ class TetMesh:
                                   cell_data={'tetra': self.property_gradients}
                                   )
 
-        meshio.write_points_cells('test.vtk',
-                                  self.nodes, {"tetra": self.elements},
-                                  point_data=self.property_gradients_nodes
-                                  )
-
     def save(self):
         self.export_to_vtk(self.path + self.name + '.vtk')
     def get_connected_nodes_for_mask(self, mask):

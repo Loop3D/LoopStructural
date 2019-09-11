@@ -17,9 +17,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             np.array(range(0, self.nx)).astype(int)
         DiscreteInterpolator.__init__(self)
         self.support = grid
-        self.interpolation_weights = {'dxy': 1.,
-                                      'dyz': 1.,
-                                      'dxz': 1.,
+        # default weights for the interpolation matrix are 1 in x,y,z and
+        # 1/
+        self.interpolation_weights = {'dxy': .7,
+                                      'dyz': .7,
+                                      'dxz': .7,
                                       'dxx': 1.,
                                       'dyy': 1.,
                                       'dzz': 1.}
@@ -67,10 +69,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points = self.get_control_points()
         # check that we have added some points
         if points.shape[0]>0:
-            a = self.support.position_to_dof_coefs(points[:, :3])
+            node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
+            a = self.support.position_to_dof_coefs(points[inside, :3])
             #a*=w
-            node_idx = self.support.position_to_cell_corners(points[:, :3])
-            self.add_constraints_to_least_squares(a.T, points[:,3], node_idx)
+            self.add_constraints_to_least_squares(a.T, points[inside,3], node_idx)
 
     def add_gradient_constraint(self,w=1.):
         """
@@ -83,11 +85,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         points = self.get_gradient_control()
         if points.shape[0] > 0:
-            node_idx = self.support.position_to_cell_corners(points[:, :3])
-            T = self.support.calcul_T(points[:, :3])
-            self.add_constraints_to_least_squares( T[:, 0, :], points[:,3], node_idx)
-            self.add_constraints_to_least_squares( T[:, 1, :], points[:,4], node_idx)
-            self.add_constraints_to_least_squares( T[:, 2, :], points[:,5], node_idx)
+            node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
+            T = self.support.calcul_T(points[inside, :3])
+            self.add_constraints_to_least_squares( T[:, 0, :], points[inside,3], node_idx)
+            self.add_constraints_to_least_squares( T[:, 1, :], points[inside,4], node_idx)
+            self.add_constraints_to_least_squares( T[:, 2, :], points[inside,5], node_idx)
             # node_idx = self.grid.position_to_cell_corners(pos)
             # T = self.grid.calcul_T(pos)
             #
@@ -125,7 +127,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         posx, posy, posz = self.support.node_indexes_to_position(cornerx, cornery, cornerz)
         pos = np.array([np.mean(posx,axis=1),np.mean(posz,axis=1),np.mean(posz,axis=1)]).T
         T = self.support.calcul_T(pos)
-        print(normals.shape)
         # find the dot product between the normals and the gradient and add this as a
         # constraint
         A = np.einsum('ij,ijk->ik',normals,T)
