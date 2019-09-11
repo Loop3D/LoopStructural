@@ -1,13 +1,26 @@
 FME Installation
 ================
-FME depends on a number of external python libraries such as numpy, scipy
+FME is a python3 library with a few dependencies. A makefile exists to make the installation process easier on unix systems. 
+For a windows use it is recommended to use the `Windows Linux Subsystem <https://docs.microsoft.com/en-us/windows/wsl/install-win10>` for running WLS. 
+**Native installation on windows is not recommended** because it can be complicated due to windows missing a C++ compiler. Final releases of FME will provide compiled wheels that can be installed. 
 
 Dependencies
 ------------
- - 
-
+* `meshpy <https://documen.tician.de/meshpy/installation.html>` is used to build tetrahedral meshes
+* `lavavu <https://github.com/lavavu/LavaVu>` is used for 3D visualisation
+* numpy
+* scipy
+* scikit-learn
+* scikit-image
+* meshio
+* cython
+  
+Other useful packages that are used in our examples are:
+* matplotlib
+* geopandas 
 Docker
 ------
+A docker file is 
 
 Windows
 --------
