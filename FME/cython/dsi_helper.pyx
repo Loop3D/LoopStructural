@@ -23,6 +23,7 @@ def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:
     cdef double [:] v2 = np.zeros(3)
     cdef double [:,:] e1
     cdef double [:,:] e2
+    cdef double area = 0
     cdef long [:] idl  = np.zeros(4,dtype=np.int64) 
     cdef long [:] idr = np.zeros(4,dtype=np.int64) 
     for e in range(ne):
@@ -62,10 +63,15 @@ def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:
             #norm[0] = v1[1]*v2[2]-v1[2]*v2[1]
             #norm[1] = v1[2]*v2[0]-v1[0]*v2[2]
             #norm[2] = v1[0]*v2[1] - v1[1]*v2[0]
+            # we want to weight the cg by the area of the shared face
+            # area of triangle is half area of parallelogram
+            # https://math.stackexchange.com/questions/128991/how-to-calculate-the-area-of-a-3d-triangle
+
+            area = 0.5*np.linalg.norm(norm)
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
                 for i in range(3):
-                    c[ncons,itr_left] += norm[i]*e1[i][itr_left]
+                    c[ncons,itr_left] += norm[i]*e1[i][itr_left]*area
             next_available_position = Na
             for itr_right in range(Na):
                 common_index = -1
@@ -81,7 +87,7 @@ def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:
                     next_available_position+=1
                 idc[ncons,position_to_write] = idr[itr_right]
                 for i in range(3):
-                    c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]
+                    c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]*area
             ncons+=1
     return idc, c, ncons
 def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:] elements,double [:,:] nodes):
@@ -147,4 +153,4 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:]
                 for i in range(3):
                     c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]
             ncons+=1
-    return idc, c, ncons
+    return idc, c, ncons4

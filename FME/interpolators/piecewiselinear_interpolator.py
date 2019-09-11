@@ -60,24 +60,28 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_ctr_pts(self.interpolation_weights['cpw'])
         self.add_tangent_ctr_pts(self.interpolation_weights['tpw'])
 
-    def add_constant_gradient(self, w):
+    def add_constant_gradient(self, w=0.1):
         """
-        adds constant gradient regularisation to the PLI interpolator
-        :param w: weighting (per constraint) to give the constant gradient interpolation
-        :return:
+        Add the constant gradient regularisation to the system
+        Parameters
+        ----------
+        w (double) - weighting of the cg parameter
+
+        Returns
+        -------
+
         """
         # iterate over all elements
-
         A, idc, B = self.support.get_constant_gradient(region=self.region, shape='rectangular')
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-        w/=A.shape[0]
+        # w/=A.shape[0]
         # print("Adding %i constant gradient regularisation terms individually weighted at %f"%(len(B),w))
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
-    def add_gradient_ctr_pts(self, w=10.0):  # for now weight all gradient points the same
+    def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
         """
         add gradient norm constraints to the interpolator
         :param w: weight per constraint
@@ -87,12 +91,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
             # print("Adding %i gradient constraints individually weighted at %f"%(points.shape[0],w))
             e, inside = self.support.elements_for_array(points[:, :3])
+            nodes = self.support.nodes[self.support.elements[e]]
+            vecs = nodes[:,1:,:] - nodes[:,0,None,:]
+            vol = np.linalg.det(vecs)
             d_t = self.support.get_elements_gradients(e)
+            d_t *= vol[:,None,None]
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
             #add in the element gradient matrix into the inte
             e=np.tile(e,(3,1)).T
             idc = self.support.elements[e]
-            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w,idc)
+            w /= 3
+            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
 
     def add_tangent_ctr_pts(self, w=1.0):
         """
@@ -120,9 +129,14 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # print("Adding %i value constraints individually weighted at %f"%(points.shape[0],w))
             e, inside = self.support.elements_for_array(points[:, :3])
             # get barycentric coordinates for points
+            nodes = self.support.nodes[self.support.elements[e]]
+            vecs = nodes[:,1:,:] - nodes[:,0,None,:]
+            vol = np.linalg.det(vecs)
             A = self.support.calc_bary_c(e, points[:, :3])
+            A *= vol[None,:]
             idc = self.support.elements[e]
-            self.add_constraints_to_least_squares(A.T*w,points[:,3]*w,idc)
+            # w /= points.shape[0]
+            self.add_constraints_to_least_squares(A.T*w,points[:,3]*w*vol,idc)
 
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
