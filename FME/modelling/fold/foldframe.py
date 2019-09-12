@@ -10,6 +10,17 @@ class FoldFrame(StructuralFrame):
         super().__init__(name, features)
 
     def calculate_fold_axis_rotation(self, points):
+        """
+        Calculate the fold axis rotation angle by finding the angle between the
+        intersection lineation and the gradient to the 1st coordinate of the fold frame
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
         # s1 = self.features[0].evaluate_value(points[:,:3])
@@ -30,17 +41,35 @@ class FoldFrame(StructuralFrame):
         return far
 
     def calculate_fold_limb_rotation(self, points, axis):
+        """
+        Calculate the fold limb rotation angle using the axis specified and the normals to the folded foliation
+        Parameters
+        ----------
+        points
+        axis
+
+        Returns
+        -------
+
+        """
+
+        # get the normals from the points array
         s0g = points[:,3:]
+
+        # calculate the gradient and value of the first coordinate of the fold frame
+        # for the locations and normalise
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(s1g,axis=1)[:,None]
         s1 = self.features[0].evaluate_value(points[:,:3])
-        
+
+        # project the normal vectors and fold frame onto the fold axis
         projected_s0 = s0g - np.einsum('ij,ij->i',axis,s0g)[:,None]*s0g
         projected_s1 = s1g - np.einsum('ij,ij->i',axis,s1g)[:,None]*s1g
         projected_s0/=np.linalg.norm(projected_s0, axis=1)[:,None]
         projected_s1/=np.linalg.norm(projected_s1, axis=1)[:,None]
         r2 = np.einsum('ij,ij->i', projected_s1, projected_s0)#s1g,s0g)#
 
+        # adjust the fold rotation angle so that its always between -90 and 90
         vv = np.cross(s1g, s0g, axisa=1, axisb=1)
         ds = np.einsum('ik,ij->i', axis, vv)
         flr = np.where(ds > 0, np.rad2deg(np.arcsin(r2)), (- np.rad2deg(np.arcsin(r2))))
@@ -49,6 +78,17 @@ class FoldFrame(StructuralFrame):
         return flr
 
     def calculate_intersection_lineation(self, points):
+        """
+        Calculate the intersection lineation by finding the cross product between the first fold frame
+        coordinate and the vector representing the normal to the folded foliation
+        Parameters
+        ----------
+        points Nx6 array with x,y,z vx,vy,vz
+
+        Returns Nx3 array of doubles
+        -------
+
+        """
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(points[:,:3],axis=1)[:,None]
         s0g = points[:,3:]

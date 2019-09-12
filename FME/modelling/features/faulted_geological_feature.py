@@ -22,6 +22,12 @@ class FaultedGeologicalFeature(GeologicalFeature):
             self.parent_feature.name+'_faulted', 
             self.evaluate_value(self.parent_feature.support.support.nodes)))
     def update(self):
+        """
+        Rerun the interpolator for the parent feature and update this features scalar field
+        Returns
+        -------
+
+        """
         self.parent_feature.update()
         self.support.update_property(self.evaluate_value(self.parent_feature.support.support.nodes))
 
@@ -32,16 +38,43 @@ class FaultedGeologicalFeature(GeologicalFeature):
         locations = self.fault.apply_to_points(locations)
         return self.parent_feature.evaluate_value(locations)
 
-
     def evaluate_gradient(self, locations):
+        """
+        Evaluate the gradient of the scalar field at the specified locations
+        Parameters
+        ----------
+        locations - numpy array
+
+        Returns numpy array of vectors
+        -------
+
+        """
         locations = self.fault.apply_to_points(locations)
         return self.parent_feature.evaluate_gradient(locations)
 
     def mean(self):
+        """
+        Calculate the mean value of the scalar field excluding nan
+        Returns
+        -------
+        the mean value
+        """
         return np.nanmean(self.support.get_node_values())
 
     def min(self):
+        """
+        Calculate the minimum of the scalar field excluding nan
+        Returns
+        -------
+        min value
+        """
         return np.nanmin(self.support.get_node_values())
 
     def max(self):
+        """
+        Calculate the maximum value of the scalar field
+        Returns
+        -------
+        max value
+        """
         return np.nanmax(self.support.get_node_values())
