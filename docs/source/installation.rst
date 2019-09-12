@@ -17,6 +17,7 @@ Dependencies
 * cython
   
 Other useful packages that are used in our examples are:
+
 * matplotlib
 * geopandas
 * pyvista
@@ -58,7 +59,7 @@ Install a windows github client e.g.:
 Now clone the FME repository so that it is in a local folder on your computer e.g.
 .. code-block::
 
-    C:/Users/username/Documents/Repositories/FME
+    C:/Users/{username}/Documents/Repositories/FME
 
 Installing FME
 ~~~~~~~~~~~~~~
@@ -165,6 +166,7 @@ This will not install the requirements.txt and only call the setup.py file for F
 
 Running FME
 ~~~~~~~~~~~
+To use the model viewing capabilities of LavaVu you need to use mobaxterm or another ssh/terminal client with x forwarding capabilities.
 To run the included examples in FME you can simply run
 
 .. code-block::

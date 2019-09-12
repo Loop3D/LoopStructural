@@ -33,7 +33,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # TODO need to fix this, constructor of DI is breaking support
         self.support = mesh
 
-        self.interpolation_weights = {'cgw': 6000, 'cpw' : 1., 'gpw':1., 'tpw':1.}
+        self.interpolation_weights = {'cgw': 0.1, 'cpw' : 1., 'gpw':1., 'tpw':1.}
 
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
@@ -97,7 +97,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             d_t = self.support.get_elements_gradients(e)
             d_t *= vol[:,None,None]
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
-            #add in the element gradient matrix into the inte
+            # add in the element gradient matrix into the inte
             e=np.tile(e,(3,1)).T
             idc = self.support.elements[e]
             w /= 3

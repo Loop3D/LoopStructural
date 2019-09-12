@@ -132,11 +132,27 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:]
             for i in range(Nc):
                 idc[ncons,i] = -1
 
+            for itr_right in range(Na):
+                for itr_left in range(Na):
+                    if idl[itr_left] == idr[itr_right]:
+                        common[i] = idl[itr_left]
+                        i+=1
+            for j in range(3):
+                for k in range(3):
+                    shared_pts[j][k] = nodes[common[j]][k]#common
+            for i in range(3):
+                v1[i] = shared_pts[0,i] - shared_pts[1,i]
+                v2[i] = shared_pts[2,i]-shared_pts[1,i]
+            norm[0] = v2[2]*v1[1] - v1[2]*v2[1]
+            norm[1] = v1[2]*v2[0] - v1[0]*v2[2]
+            norm[2] = v1[0]*v2[1] - v1[1]*v2[0]
+            area = 0.5*np.linalg.norm(norm)
+
             i = 0
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
                 for i in range(3):
-                    c[ncons,itr_left] += Xl[i]*e1[i][itr_left]
+                    c[ncons,itr_left] += Xl[i]*e1[i][itr_left]*area
             next_available_position = Na
             for itr_right in range(Na):
                 common_index = -1
@@ -151,6 +167,6 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:]
                     next_available_position+=1
                 idc[ncons,position_to_write] = idr[itr_right]
                 for i in range(3):
-                    c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]
+                    c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]*area
             ncons+=1
-    return idc, c, ncons4
+    return idc, c, ncons
