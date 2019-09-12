@@ -241,6 +241,7 @@ class GeologicalFeature:
 
         """
         return np.nanmax(self.support.get_node_values())
+
     def update(self):
         """
 

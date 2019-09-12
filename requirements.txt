@@ -1,5 +1,6 @@
 networkx
 scikit-learn
+scikit-image
 meshpy
 scipy
 lavavu
@@ -9,3 +10,4 @@ jupyter
 matplotlib
 meshio
 geopandas
+setuptools

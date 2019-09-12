@@ -225,7 +225,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # precon = sla.spilu(A)
             # M2 = sla.LinearOperator(A.shape, precon.solve)
             # #print(precon)
-            self.cc_ = sla.cg(A, B, M=diags(1/A.diagonal()),callback=call)
+            self.cc_ = sla.cg(A, B, M=diags(1/A.diagonal()))
             print("num",num_iter)
             self.up_to_date = True
         if solver == 'eigencg':

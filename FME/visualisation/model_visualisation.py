@@ -38,7 +38,8 @@ class LavaVuModelViewer:
 
         """
         # update the feature to make sure its current
-        geological_feature.update()
+        if 'update' in kwargs:
+            geological_feature.update()
         # get the stats to check what we are plotting
         mean_property_val = geological_feature.mean()
         min_property_val = geological_feature.min()

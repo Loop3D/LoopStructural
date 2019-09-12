@@ -43,7 +43,6 @@ class FaultSegment:
             g = self.faultframe.features[1].evaluate_gradient(points)
             gy = self.faultframe.features[1].evaluate_value(points)
             gz = self.faultframe.features[2].evaluate_value(points)
-
             # determine displacement magnitude
             d = np.zeros(gx.shape)
             d[gx > 0] = 1.
@@ -54,7 +53,6 @@ class FaultSegment:
             # normalise when length is >0
             g_mag = np.linalg.norm(g, axis=1)
             g[g_mag>0.] /= g_mag[g_mag >0,None]
-
             # multiply displacement vector by the displacement magnitude for step
             g *= (1./steps)*d[:,None]
             
