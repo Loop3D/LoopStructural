@@ -70,9 +70,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # check that we have added some points
         if points.shape[0]>0:
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
+            #print(points[inside,:].shape)
+
             a = self.support.position_to_dof_coefs(points[inside, :3])
             #a*=w
-            self.add_constraints_to_least_squares(a.T, points[inside,3], node_idx)
+            self.add_constraints_to_least_squares(a.T*w, points[inside,3]*w, node_idx[inside,:])
 
     def add_gradient_constraint(self,w=1.):
         """
@@ -85,20 +87,19 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         points = self.get_gradient_control()
         if points.shape[0] > 0:
+            # calculate unit vector for orientation data
+            points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
+
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
+            # calculate unit vector for node gradients
+            # this means we are only constraining direction of grad not the magnitude
             T = self.support.calcul_T(points[inside, :3])
-            self.add_constraints_to_least_squares( T[:, 0, :], points[inside,3], node_idx)
-            self.add_constraints_to_least_squares( T[:, 1, :], points[inside,4], node_idx)
-            self.add_constraints_to_least_squares( T[:, 2, :], points[inside,5], node_idx)
-            # node_idx = self.grid.position_to_cell_corners(pos)
-            # T = self.grid.calcul_T(pos)
-            #
-            # self.add_constraint_to_least_squares(node_idx,T[:,0,:],g[:,0][0])
-            # self.add_constraint_to_least_squares(node_idx,T[:,1,:],g[:,1][0])
+            T /= np.linalg.norm(T,axis=1)[:,None,:]
+            w /= 3
+            self.add_constraints_to_least_squares(T[:, 0, :]*w, points[inside, 3]*w, node_idx[inside, :])
+            self.add_constraints_to_least_squares(T[:, 1, :]*w, points[inside, 4]*w, node_idx[inside, :])
+            self.add_constraints_to_least_squares(T[:, 2, :]*w, points[inside, 5]*w, node_idx[inside, :])
 
-        # def add_gradient_orthogonality(self,pos,g,w=1.):
-
-            #do stuff
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
         constraints scalar field to be orthogonal to a given vector
@@ -120,12 +121,14 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         :param B: norm value
         :return:
         """
+
         # get the cell gradient for the global indices
-        xi, yi, zi = self.support.global_index_to_cell_index(elements)
-        cornerx, cornery, cornerz = self.support.cell_corner_indexes(xi,yi,zi
+        ix,iy,iz = self.support.global_index_to_cell_index(elements)
+        cornerx, cornery, cornerz = self.support.cell_corner_indexes(
+            ix,iy,iz
             )
-        posx, posy, posz = self.support.node_indexes_to_position(cornerx, cornery, cornerz)
-        pos = np.array([np.mean(posx,axis=1),np.mean(posz,axis=1),np.mean(posz,axis=1)]).T
+        # posx, posy, posz = self.support.node_indexes_to_position(cornerx, cornery, cornerz)
+        pos = np.array(self.support.cell_centres(elements))#np.array([np.mean(posx, axis=1),np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
         T = self.support.calcul_T(pos)
         # find the dot product between the normals and the gradient and add this as a
         # constraint

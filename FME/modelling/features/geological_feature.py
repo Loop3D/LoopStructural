@@ -7,7 +7,6 @@ class GeologicalFeatureInterpolator:
     def __init__(self, interpolator, **kwargs):
         self.interpolator = interpolator
         self.name = "UnnamedFeature"
-        print(self.interpolator.support)
         if 'name' in kwargs:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
@@ -98,6 +97,7 @@ class GeologicalFeature:
 
     def max(self):
         return np.nanmax(self.support.get_node_values())
+
     def update(self):
         self.support.interpolator.up_to_date = False
         self.support.interpolator.update()

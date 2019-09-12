@@ -35,37 +35,44 @@ class StructuredGrid:
         x = np.linspace(origin[0], nsteps[0] * step_vector[0], nsteps[0])
         y = np.linspace(origin[1], nsteps[1] * step_vector[1], nsteps[1])
         z = np.linspace(origin[2], nsteps[2] * step_vector[2], nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z,indexing='ij')
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         self.nodes = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         # self.nodes = np.array([posx,posy,posz])
-        self.barycentre = self.nodes+self.step_vector[:]*.5#np.array([np.mean(posx, axis=1), np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
+        self.barycentre = self.cell_centres(np.arange(self.n_elements))#range())self.nodes+self.step_vector[:]*.5#np.array([np.mean(posx, axis=1), np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
 
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
-
+    def print_geometry(self):
+        print('Origin: %f %f %f'%(self.origin[0],self.origin[1],self.origin[2]))
+        print('Cell size: %f %f %f'%(self.step_vector[0],self.step_vector[1],self.step_vector[2]))
+        max = self.origin+self.nsteps_cells*self.step_vector
+        print('Max extent: %f %f %f'%(max[0],max[1],max[2]))
     def update_property(self, propertyname, values):
         if values.shape[0] == self.n_nodes:
             self.properties[propertyname] = values
         if values.shape[0] == self.n_elements:
             self.cell_properties[propertyname] = values
 
+    def cell_centres(self, global_index):
+        ix,iy,iz = self.global_index_to_cell_index(global_index)
+        x = self.origin[None,0] + self.step_vector[None,0] * .5 + self.step_vector[None,0]*ix
+        y = self.origin[None,1] + self.step_vector[None,1] * .5 + self.step_vector[None,1]*iy
+        z = self.origin[None,2] + self.step_vector[None,2] * .5 + self.step_vector[None,2]*iz
+        return np.array([x,y,z]).T
     def position_to_cell_index(self, pos):
         """
 
         :param pos:
         :return:
         """
-        inside = self.inside(pos)
         pos = self.check_position(pos)
-        # if type(pos) != np.array:
-        #     return pos
-        # inside = self.is_inside(pos)
+
         ix = pos[:, 0] - self.origin[None, 0]
         iy = pos[:, 1] - self.origin[None, 1]
         iz = pos[:, 2] - self.origin[None, 2]
-        ix = ix.astype(int) // self.step_vector[None, 0]
-        iy = iy.astype(int) // self.step_vector[None, 1]
-        iz = iz.astype(int) // self.step_vector[None, 2]
+        ix = ix // self.step_vector[None, 0]
+        iy = iy // self.step_vector[None, 1]
+        iz = iz // self.step_vector[None, 2]
         return ix.astype(int), iy.astype(int), iz.astype(int)
 
     def inside(self, pos):
@@ -180,14 +187,6 @@ class StructuredGrid:
              1, 1, 1, 1, 1, 1, 1, 1, 1]
         ])
         neighbours = indexes[:, None, :] + mask[:, :, None]
-        # neighbours = neighbours.swapaxes(0,1)
-        # #calculate a mask to tell which neighbours are out of bounds
-        # mask = neighbours[:,0,:]>-1
-        # mask = np.logical_and(mask, neighbours[:,1,:]>-1)
-        # mask = np.logical_and(mask, neighbours[:,2,:]>-1)
-        # mask = np.logical_and(mask, neighbours[:,0,:]<self.nsteps[0])
-        # mask = np.logical_and(mask, neighbours[:,1,:]<self.nsteps[1])
-        # mask = np.logical_and(mask, neighbours[:,2,:]<self.nsteps[2])
         return neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1, :, :] + \
                self.nsteps[0, None, None] * self.nsteps[1, None, None] * neighbours[2, :, :]
 
@@ -213,9 +212,9 @@ class StructuredGrid:
         :param global_index:
         :return: x,y,z indices for the grid
         """
-        x_index = global_index % self.nsteps[0, None]
-        y_index = global_index // self.nsteps[1, None] % self.nsteps[0, None]
-        z_index = global_index // self.nsteps[0, None] // self.nsteps[1, None]
+        x_index = global_index % self.nsteps_cells[0, None]
+        y_index = global_index // self.nsteps_cells[1, None] % self.nsteps_cells[0, None]
+        z_index = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         return x_index, y_index, z_index
 
     def node_indexes_to_position(self, xindex, yindex, zindex):
@@ -259,9 +258,7 @@ class StructuredGrid:
         -------
 
         """
-        # indices = np.array([self.position_to_cell_index(evaluation_points)])
         idc, inside = self.position_to_cell_corners(evaluation_points)
-        #        idc = self.global_indicies(indices.swapaxes(0,1))
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
 
@@ -271,14 +268,14 @@ class StructuredGrid:
 
     def evaluate_gradient(self, evaluation_points, property_name):
         idc, inside = self.position_to_cell_corners(evaluation_points)
-
-        T = self.calcul_T(evaluation_points[inside, :])
+        T = np.zeros((idc.shape[0],3,8))
+        T[inside,:,:] = self.calcul_T(evaluation_points[inside, :])
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
-        T[:, 0, :] *= self.properties[property_name][idc[inside, :]]
-        T[:, 1, :] *= self.properties[property_name][idc[inside, :]]
-        T[:, 2, :] *= self.properties[property_name][idc[inside, :]]
+        T[inside, 0, :] *= self.properties[property_name][idc[inside, :]]
+        T[inside, 1, :] *= self.properties[property_name][idc[inside, :]]
+        T[inside, 2, :] *= self.properties[property_name][idc[inside, :]]
         return np.array(
             [np.sum(T[:, 0, :], axis=1) / 8, np.sum(T[:, 1, :], axis=1) / 8, np.sum(T[:, 2, :], axis=1) / 8]).T
 
