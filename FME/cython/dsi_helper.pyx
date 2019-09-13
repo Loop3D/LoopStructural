@@ -131,7 +131,7 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:]
             
             for i in range(Nc):
                 idc[ncons,i] = -1
-
+            i=0
             for itr_right in range(Na):
                 for itr_left in range(Na):
                     if idl[itr_left] == idr[itr_right]:
@@ -139,6 +139,7 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:]
                         i+=1
             for j in range(3):
                 for k in range(3):
+
                     shared_pts[j][k] = nodes[common[j]][k]#common
             for i in range(3):
                 v1[i] = shared_pts[0,i] - shared_pts[1,i]
