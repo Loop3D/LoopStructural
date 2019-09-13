@@ -136,16 +136,16 @@ Using VIM or your favourite text editor
 
 .. code-block::
 
-    vim ~/.bashrc
+    nano ~/.bashrc
 
 Add a line to end end of the file:
 
 .. code-block::
 
-    export /mtn/c/Users/{username}/Documents/Repository/FME
+    export FME_ENV=/mtn/c/Users/{username}/Documents/Repository/FME/venv
     alias fme='. $FME_ENV/bin/activate'
 
-The second line creates a commandline command for switching to the FME virtual environment.
+The second line creates a command line command for switching to the FME virtual environment.
 
 .. image:: images/edit_bashrc.png
 
