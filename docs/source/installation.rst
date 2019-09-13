@@ -73,7 +73,12 @@ This will then ask you to input a directory for cloning the respository:
 
     C:/Users/{username}/Documents/Repositories/FME
 
-MobaXterm is a terminal client with an X11 server
+MobaXterm is a terminal client with an X11 server it is best to use this to connect to WLS.
+`MobaXterm`<https://mobaxterm.mobatek.net/download.html>
+
+.. image:: images/moba_xterm.png
+
+
 Installing FME
 ~~~~~~~~~~~~~~
 
@@ -153,6 +158,27 @@ This means that the FME folder will appear in the home directory of your linux u
 
     ln -s /mnt/c/Users/{username}/Documents/Repository/FME FME
 
+Now change directory to the home folder for linux using the terminal
+
+.. code-block::
+
+    cd ~
+
+Now change directory into FME
+
+.. code-block::
+
+    cd FME
+
+
+Now install meshpy using the meshpy.sh script which automates cloning the repository and running the setup.py file.
+Make sure the fme environment is activated to run this command.
+
+.. code-block::
+
+    fme
+    ./meshpy.sh
+
 You can now install FME using the makefile.
 
 .. code-block::
@@ -167,9 +193,11 @@ This should run the following commands:
     pip3 install -r requirements.txt &&
     python3 setup.py install build_ext --inplace;
 
+
 A jupyter notebook server can be run from within the FME folder by running
 
 .. code-block::
+
     make notebook
 
 .. image:: images/run_jupyter.png
@@ -178,6 +206,7 @@ You can then navigate to the jupyter notebook server using your browser.
 
 
 .. code-block::
+
     localhost:8888
 
 .. image:: images/jupyter_browser.png
@@ -202,7 +231,7 @@ This will not install the requirements.txt and only call the setup.py file for F
 
 Running FME
 ~~~~~~~~~~~
-To use the model viewing capabilities of LavaVu you need to use mobaxterm or another ssh/terminal client with x forwarding capabilities.
+To use the model viewing capabilities of LavaVu you need to use MobaXterm or another ssh/terminal client with x forwarding capabilities.
 To run the included examples in FME you can simply run
 
 .. code-block::

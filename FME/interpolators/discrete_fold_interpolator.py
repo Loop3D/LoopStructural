@@ -30,7 +30,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
         # calculate element volume for weighting
         vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
-        vol = np.linalg.det(vecs)
+        vol = np.abs(np.linalg.det(vecs))
         if "fold_orientation" in kwargs:
             """
             dot product between vector in deformed ori plane = 0

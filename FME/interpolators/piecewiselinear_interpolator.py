@@ -93,7 +93,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             e, inside = self.support.elements_for_array(points[:, :3])
             nodes = self.support.nodes[self.support.elements[e]]
             vecs = nodes[:,1:,:] - nodes[:,0,None,:]
-            vol = np.linalg.det(vecs)
+            vol = np.abs(np.linalg.det(vecs)) / 6
             d_t = self.support.get_elements_gradients(e)
             d_t *= vol[:,None,None]
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
@@ -131,7 +131,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # get barycentric coordinates for points
             nodes = self.support.nodes[self.support.elements[e]]
             vecs = nodes[:,1:,:] - nodes[:,0,None,:]
-            vol = np.linalg.det(vecs)
+            vol = np.abs(np.linalg.det(vecs)) / 6
             A = self.support.calc_bary_c(e, points[:, :3])
             A *= vol[None,:]
             idc = self.support.elements[e]
