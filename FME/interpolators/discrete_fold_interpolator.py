@@ -22,14 +22,21 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
         #get the gradient of all of the elements of the mesh
         eg = self.support.get_elements_gradients(np.arange(self.support.n_elements))
+        # get array of all nodes for all elements N,4,3
+        nodes = self.support.nodes[self.support.elements[np.arange(self.support.n_elements)]]
         #calculate the fold geometry for the elements barycentre
         deformed_orientation, fold_axis, dgz = \
             self.fold.get_deformed_orientation(self.support.barycentre)
+
+        # calculate element volume for weighting
+        vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
+        vol = np.linalg.det(vecs)
         if "fold_orientation" in kwargs:
             """
             dot product between vector in deformed ori plane = 0
             """
             A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
+            A*=vol[:,None]
             B = np.zeros(self.support.n_elements)
             idc = self.support.elements
             self.add_constraints_to_least_squares(A*kwargs['fold_orientation'], B, idc)
@@ -38,6 +45,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             dot product between axis and gradient should be 0
             """
             A = np.einsum('ij,ijk->ik', fold_axis, eg)
+            A*=vol[:,None]
             B = np.zeros(self.support.n_elements).tolist()
             self.add_constraints_to_least_squares(A * kwargs['fold_axis'], B, self.support.elements)
 
@@ -48,6 +56,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
             A  = np.einsum('ij,ijk->ik', dgz, eg)
             A*= kwargs['fold_normalisation']
+            A*=vol[:,None]
             B = np.ones(self.support.n_elements)
             if "fold_norm" in kwargs:
                 B[:] = kwargs['fold_norm']
