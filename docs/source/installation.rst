@@ -32,8 +32,7 @@ Installing WSL
 To setup the windows subsystem for linux you must have administrator rights on your computer.
 Open PowerShell as Administrator (right click and choose run as administrator) and run the following command:
 
-.. figure:: ./images/powershell_enable_wls.png
-   :alt # Powershell terminal
+.. image:: ./images/powershell_enable_wls.png
 
 .. code-block:: PowerShell
 
@@ -44,16 +43,14 @@ Once this command has been executed you may need to restart your computer.
 When the WSL has been enabled you can use the microsoft store to install a linux operating system.
 You can use any operating system you want however, this guide assumes you are using ubuntu 18.04 LTS.
 
-.. figure:: ./images/ubuntu_microsoft_store.png
-   :alt # Microsoft store
+.. image:: images/ubuntu_microsoft_store.png
 
 Once you have installed the operating system you will be asked to enter a unix username and password, these do not have
 to be the same as windows - but it is important that you remember them.
 
 You should then have access to the linux terminal. Which will look something like below:
 
-.. figure:: ./images/wls_terminal.png
-   :alt # WLS terminal
+.. image:: images/wls_terminal.png
 
 Installing github for desktop
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,13 +63,11 @@ Install a windows github client e.g.:
 
 Now clone the FME repository from the website by clicked clone and open in desktop.
 
-.. figure:: ./images/githubwebsite_clone.png
-   :alt # Github.com cloning repository
+.. image:: images/githubwebsite_clone.png
 
 This will then ask you to input a directory for cloning the respository:
 
-.. figure:: ./images/githubwindows_clone.png
-   :alt # Github windows desktop cloning
+.. image:: images/githubwindows_clone.png
 
 .. code-block::
 
@@ -87,8 +82,7 @@ Before you install FME the ubuntu package manager should be updated and the inst
 Using the linux terminal type in the following commands.
 You can paste into the WLS terminal using
 
-.. figure:: ./images/wls_terminal.png
-   :alt # WLS terminal
+.. image:: images/wls_terminal.png
 
 .. code-block::
 
@@ -149,6 +143,9 @@ Add a line to end end of the file:
 
 The second line creates a commandline command for switching to the FME virtual environment.
 
+.. image:: images/edit_bashrc.png
+
+
 For convenience you can symbolic link folders to the home directory for linux.
 This means that the FME folder will appear in the home directory of your linux user.
 
@@ -170,7 +167,22 @@ This should run the following commands:
     pip3 install -r requirements.txt &&
     python3 setup.py install build_ext --inplace;
 
-A jupyter notebook server can be run from within the FME folder by running make notebook
+A jupyter notebook server can be run from within the FME folder by running
+
+.. code-block::
+    make notebook
+
+.. image:: images/run_jupyter.png
+
+You can then navigate to the jupyter notebook server using your browser.
+
+
+.. code-block::
+    localhost:8888
+
+.. image:: images/jupyter_browser.png
+
+You can now start using, try working through one of the tutorials found in the notebooks directory
 
 Upgrading FME
 ~~~~~~~~~~~~~
