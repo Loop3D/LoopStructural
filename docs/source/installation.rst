@@ -87,7 +87,6 @@ Before you install FME the ubuntu package manager should be updated and the inst
 Using the linux terminal type in the following commands.
 You can paste into the WLS terminal using
 
-.. image:: images/wls_terminal.png
 
 .. code-block::
 
@@ -211,7 +210,8 @@ You can then navigate to the jupyter notebook server using your browser.
 
 .. image:: images/jupyter_browser.png
 
-You can now start using, try working through one of the tutorials found in the notebooks directory
+You can now start using FME.
+Try working through one of the examples/tutorials found in the notebooks directory.
 
 Upgrading FME
 ~~~~~~~~~~~~~
