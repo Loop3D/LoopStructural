@@ -32,7 +32,7 @@ Installing WSL
 To setup the windows subsystem for linux you must have administrator rights on your computer.
 Open PowerShell as Administrator (right click and choose run as administrator) and run the following command:
 
-.. image:: ./images/powershell_enable_wls.png
+.. image:: images/powershell_enable_wls.png
 
 .. code-block:: PowerShell
 
