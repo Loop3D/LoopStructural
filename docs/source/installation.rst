@@ -32,7 +32,7 @@ Installing WSL
 To setup the windows subsystem for linux you must have administrator rights on your computer.
 Open PowerShell as Administrator (right click and choose run as administrator) and run the following command:
 
-.. figure:: images/powershell_enable_wls.png
+.. figure:: ./images/powershell_enable_wls.png
    :alt # Powershell terminal
 
 .. code-block:: PowerShell
@@ -44,7 +44,7 @@ Once this command has been executed you may need to restart your computer.
 When the WSL has been enabled you can use the microsoft store to install a linux operating system.
 You can use any operating system you want however, this guide assumes you are using ubuntu 18.04 LTS.
 
-.. figure:: images/ubuntu_microsoft_store.png
+.. figure:: ./images/ubuntu_microsoft_store.png
    :alt # Microsoft store
 
 Once you have installed the operating system you will be asked to enter a unix username and password, these do not have
@@ -52,7 +52,7 @@ to be the same as windows - but it is important that you remember them.
 
 You should then have access to the linux terminal. Which will look something like below:
 
-.. figure:: images/wls_terminal.png
+.. figure:: ./images/wls_terminal.png
    :alt # WLS terminal
 
 Installing github for desktop
@@ -66,12 +66,12 @@ Install a windows github client e.g.:
 
 Now clone the FME repository from the website by clicked clone and open in desktop.
 
-.. figure:: images/githubwebsite_clone.png
+.. figure:: ./images/githubwebsite_clone.png
    :alt # Github.com cloning repository
 
 This will then ask you to input a directory for cloning the respository:
 
-.. figure:: images/githubwindows_clone.png
+.. figure:: ./images/githubwindows_clone.png
    :alt # Github windows desktop cloning
 
 .. code-block::
@@ -87,7 +87,7 @@ Before you install FME the ubuntu package manager should be updated and the inst
 Using the linux terminal type in the following commands.
 You can paste into the WLS terminal using
 
-.. figure:: images/wls_terminal.png
+.. figure:: ./images/wls_terminal.png
    :alt # WLS terminal
 
 .. code-block::

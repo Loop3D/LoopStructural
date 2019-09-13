@@ -1,5 +1,5 @@
 ..  fme documentation master file
-.. figure:: images/loop.png
+.. image:: loop.png
    :alt # Loop
 The implicit geological modeling engine developed for the Loop consortium with algorithms capable of incorporating structural geology information and data.
 
