@@ -24,7 +24,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'dxz': .7,
                                       'dxx': 1.,
                                       'dyy': 1.,
-                                      'dzz': 1.}
+                                      'dzz': 1.,
+                                      'cpw':1.,
+                                      'gpw':1.}
+        self.vol = grid.step_vector[0]*grid.step_vector[1]*grid.step_vector[2]
 
     def _setup_interpolator(self, **kwargs):
         """
@@ -39,21 +42,22 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         for key in kwargs:
             self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]
-        operator = Operator.Dxy_mask
-        self.assemble_inner(operator, self.interpolation_weights['dxy'])
-        operator = Operator.Dyz_mask
-        self.assemble_inner(operator, self.interpolation_weights['dyz'])
-        operator = Operator.Dxz_mask
-        self.assemble_inner(operator, self.interpolation_weights['dxz'])
-        operator = Operator.Dxx_mask
-        self.assemble_inner(operator, self.interpolation_weights['dxx'])
-        operator = Operator.Dyy_mask
-        self.assemble_inner(operator, self.interpolation_weights['dyy'])
-        operator = Operator.Dzz_mask
-        self.assemble_inner(operator, self.interpolation_weights['dzz'])
 
-        self.add_gradient_constraint()
-        self.add_vaue_constraint()
+        operator = Operator.Dxy_mask
+        self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dxy'])
+        operator = Operator.Dyz_mask
+        self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dyz'])
+        operator = Operator.Dxz_mask
+        self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dxz'])
+        operator = Operator.Dxx_mask
+        self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dxx'])
+        operator = Operator.Dyy_mask
+        self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dyy'])
+        operator = Operator.Dzz_mask
+        self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dzz'])
+
+        self.add_gradient_constraint(np.sqrt(self.vol)*self.interpolation_weights['gpw'])
+        self.add_vaue_constraint(np.sqrt(self.vol)*self.interpolation_weights['cpw'])
 
     def copy(self):
         return FiniteDifferenceInterpolator(self.support)
