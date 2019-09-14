@@ -36,7 +36,7 @@ Open PowerShell as Administrator (right click and choose run as administrator) a
 
 .. code-block:: PowerShell
 
-    Enable=WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 
 Once this command has been executed you may need to restart your computer.
 
