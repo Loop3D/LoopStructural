@@ -74,7 +74,7 @@ This will then ask you to input a directory for cloning the respository:
     C:/Users/{username}/Documents/Repositories/FME
 
 MobaXterm is a terminal client with an X11 server it is best to use this to connect to WLS.
-`MobaXterm`<https://mobaxterm.mobatek.net/download.html>
+Download `MobaXterm`<https://mobaxterm.mobatek.net/download.html>
 
 .. image:: images/moba_xterm.png
 
@@ -95,6 +95,7 @@ You can paste into the WLS terminal using
 The dependencies can then be installed:
 
 * python3
+* python3-dev
 * python3-venv
 * pybind11-dev
 * mesa-common-dev
@@ -102,10 +103,11 @@ The dependencies can then be installed:
 * libgl1mesa-dev
 * g++
 * gcc
+* make
 
 .. code-block::
 
-	sudo apt-get update  && sudo apt-get install python3 python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++
+	sudo apt-get update  && sudo apt-get install python3 python3-venv python3-dev make pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++
 
 It is then recommended to create a new python virtual environment for FME.
 
@@ -142,7 +144,7 @@ Add a line to end end of the file:
 
 .. code-block::
 
-    export FME_ENV=/mtn/c/Users/{username}/Documents/Repository/FME/venv
+    export FME_ENV=/mnt/c/Users/{username}/Documents/Repository/FME/venv
     alias fme='. $FME_ENV/bin/activate'
 
 The second line creates a command line command for switching to the FME virtual environment.
