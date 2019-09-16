@@ -131,6 +131,8 @@ class LavaVuModelViewer:
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
             cmap = kwargs['cmap']
+            if isinstance(cmap,str):
+                cmap = lavavu.matplotlib_colourmap(cmap)
         if 'colour' in kwargs:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
