@@ -67,7 +67,7 @@ class LavaVuModelViewer:
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
 
-        # do isosurfacing of tetrahedral mesh using marching tetras
+        # do isosurfacing of support using marching tetras/cubes
         for isovalue in slices:
             print("Creating isosurface for %f"%isovalue)
             if isovalue < min_property_val or isovalue > max_property_val:
@@ -112,6 +112,100 @@ class LavaVuModelViewer:
                 vec.vertices(tribc[::kwargs['normals'],:])
                 vec.vectors(crosses[::kwargs['normals'],::])
 
+    def plot_model_box(self,boundary_points,dims,name, **kwargs):
+        """
+
+        Parameters
+        ----------
+        boundary_points
+        dims
+        name
+        kwargs
+
+        Returns
+        -------
+
+        """
+        colour = 'red'
+        painter = None
+        cmap = lavavu.cubehelix(100)
+        if 'cmap' in kwargs:
+            cmap = kwargs['cmap']
+        if 'colour' in kwargs:
+            colour = kwargs['colour']
+        if 'paint_with' in kwargs:
+            painter = kwargs['paint_with']
+
+        def add_quad(points, dims, name):
+            """
+
+            Parameters
+            ----------
+            points
+            dims
+            name
+
+            Returns
+            -------
+
+            """
+            verts = lavavu.grid3d(corners=points,
+                                  dims=dims)
+            surf = self.lv.quads(name)
+            surf.vertices(verts)
+            if painter is not None:
+
+                v = painter.evaluate_value(verts.reshape((verts.shape[0] * verts.shape[1], 3)))
+                surf.values(v, "v")
+
+                surf["colourby"] = 'v'  # .reshape((100,70))
+                surf.colourmap(cmap)#lavavu.matplotlib_colourmap('tab20'))  # cubehelix(4))#nodes.s
+            if painter is None:
+                surf.colours(colour)
+        # add y min surf
+        add_quad(((boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
+                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2]),
+                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
+                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2])),
+                 dims,
+                 name)
+        # add y max surf
+        add_quad((
+            (boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
+            (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
+            (boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2]),
+            (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2])),
+            dims,
+            name)
+        # add x min surf
+        add_quad(((boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
+                  (boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
+                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
+                  (boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2])),
+                 dims,
+                 name)
+        # add x max surf
+        add_quad(((boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2]),
+                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
+                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2]),
+                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2])),
+                 dims,
+                 name)
+        # add bottom
+        add_quad(((boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2]),
+                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2]),
+                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
+                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2])),
+                 dims,
+                 name)
+        # add top
+        add_quad(((boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
+                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
+                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
+                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2])),
+                 dims,
+                 name)
+
     def plot_vector_field(self, geological_feature, locations, **kwargs):
         """
         Plot the gradient of a geological feature at given locations
@@ -132,6 +226,25 @@ class LavaVuModelViewer:
         vectorfield.vertices(locations)
         vectorfield.vectors(vector)
         return
+
+    def plot_data(self, feature, **kwargs):
+        """
+        Plot the data linked to the feature
+        Parameters
+        ----------
+        feature
+        kwargs
+
+        Returns
+        -------
+
+        """
+        grad = feature.support.interpolator.get_gradient_control()
+        value = feature.support.interpolator.get_control_points()
+        if grad.shape[0] > 0:
+            self.plot_vector_data(grad[:,:3],grad[:,3:],feature.name+"_grad_cp",**kwargs)
+        if value.shape[0] > 0:
+            self.plot_value_data(value[:,:3],value[:,3],feature.name+"_value_cp",**kwargs)
 
     def plot_points(self, points, name, **kwargs):
         """
