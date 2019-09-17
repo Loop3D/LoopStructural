@@ -36,11 +36,13 @@ class FoldEvent:
         # get the gz direction
         dgx = self.foldframe.features[0].evaluate_gradient(points)
         dgy = self.foldframe.features[1].evaluate_gradient(points)
+        dgx /= np.linalg.norm(dgx, axis=1)[:, None]
+        dgy /= np.linalg.norm(dgy, axis=1)[:, None]
         # get gy
         gy = self.foldframe.features[0].evaluate_value(points)
         R1 = self.rot_mat(dgx,self.fold_axis_rotation(gy))
         fold_axis = np.einsum('ijk,ki->kj',R1,dgy)
-        fold_axis/=np.sum(fold_axis,axis=1)[:,None]
+        fold_axis/=np.linalg.norm(fold_axis,axis=1)[:,None]
         return fold_axis
 
     def get_deformed_orientation(self, points):
@@ -62,9 +64,12 @@ class FoldEvent:
         fold_axis = self.get_fold_axis_orientation(points)
         gx = self.foldframe.features[0].evaluate_value(points)
         dgx = self.foldframe.features[0].evaluate_gradient(points)
+        dgx /= np.linalg.norm(dgx, axis=1)[:, None]
         dgz = self.foldframe.features[2].evaluate_gradient(points)
+        dgz /= np.linalg.norm(dgz, axis=1)[:, None]
+
         R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))
-        R2R = np.einsum('ijk,ki->kj',R2,dgx)
+        R2R = np.einsum('ijk,ki->kj', R2, dgx)
         R2R/=np.sum(R2R,axis=1)[:,None]
         return R2R, fold_axis, dgz
 

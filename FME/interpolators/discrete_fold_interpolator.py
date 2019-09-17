@@ -30,7 +30,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
         # calculate element volume for weighting
         vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
-        vol = np.abs(np.linalg.det(vecs))
+        vol = np.abs(np.linalg.det(vecs)) / 6
         if "fold_orientation" in kwargs:
             """
             dot product between vector in deformed ori plane = 0
@@ -60,7 +60,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.ones(self.support.n_elements)
             if "fold_norm" in kwargs:
                 B[:] = kwargs['fold_norm']
-            self.add_constraints_to_least_squares(A, B, self.support.elements)
+            self.add_constraints_to_least_squares(A, B*vol*kwargs['fold_normalisation'], self.support.elements)
 
         if "fold_regularisation" in kwargs:
             """
@@ -68,7 +68,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours, self.support.elements, self.support.nodes)
             A = np.array(c)
-            A*=kwargs['fold_regularisation']
+            A *= kwargs['fold_regularisation']
             B = np.zeros(len(c))
             idc = np.array(idc)
             self.add_constraints_to_least_squares(A, B, idc)

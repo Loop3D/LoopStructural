@@ -112,7 +112,7 @@ class LavaVuModelViewer:
                 vec.vertices(tribc[::kwargs['normals'],:])
                 vec.vectors(crosses[::kwargs['normals'],::])
 
-    def plot_model_box(self,boundary_points,dims,name, **kwargs):
+    def plot_model_box(self, boundary_points, dims, name, **kwargs):
         """
 
         Parameters
@@ -170,7 +170,7 @@ class LavaVuModelViewer:
                   (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
                   (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2])),
                  dims,
-                 name)
+                 name+'0')
         # add y max surf
         add_quad((
             (boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
@@ -178,35 +178,35 @@ class LavaVuModelViewer:
             (boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2]),
             (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2])),
             dims,
-            name)
+            name+'1')
         # add x min surf
         add_quad(((boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
                   (boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
                   (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
                   (boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2])),
                  dims,
-                 name)
+                 name+'2')
         # add x max surf
         add_quad(((boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2]),
                   (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
                   (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2]),
                   (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2])),
                  dims,
-                 name)
+                 name+'3')
         # add bottom
         add_quad(((boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2]),
                   (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2]),
                   (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
                   (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2])),
                  dims,
-                 name)
+                 name+'4')
         # add top
         add_quad(((boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
                   (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
                   (boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
                   (boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2])),
                  dims,
-                 name)
+                 name+'5')
 
     def plot_vector_field(self, geological_feature, locations, **kwargs):
         """

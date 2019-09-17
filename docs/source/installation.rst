@@ -100,7 +100,7 @@ The dependencies can then be installed:
 * pybind11-dev
 * mesa-common-dev
 * mesa-utils
-* libgl1mesa-dev
+* libgl1-mesa-dev
 * g++
 * gcc
 * make
