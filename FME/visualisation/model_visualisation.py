@@ -112,7 +112,7 @@ class LavaVuModelViewer:
                 vec.vertices(tribc[::kwargs['normals'],:])
                 vec.vectors(crosses[::kwargs['normals'],::])
 
-    def plot_model_box(self, boundary_points, dims, name, **kwargs):
+    def plot_model_box(self, boundary_points, nsteps, name, **kwargs):
         """
 
         Parameters
@@ -138,75 +138,85 @@ class LavaVuModelViewer:
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
 
-        def add_quad(points, dims, name):
-            """
+        def create_surface(bounding_box, nstep):
+            x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nstep[0])  #
+            y = np.linspace(bounding_box[0, 1], bounding_box[1, 1], nstep[1])
+            xx, yy = np.meshgrid(x, y, indexing='xy')
 
-            Parameters
-            ----------
-            points
-            dims
-            name
+            def gi(i, j):
+                return i + j * nstep[0]
 
-            Returns
-            -------
+            corners = np.array([[0, 1, 0, 1], [0, 0, 1, 1]])
+            i = np.arange(0, nstep[0] - 1)
 
-            """
-            verts = lavavu.grid3d(corners=points,
-                                  dims=dims)
-            surf = self.lv.quads(name)
-            surf.vertices(verts)
-            if painter is not None:
+            j = np.arange(0, nstep[1] - 1)
+            ii, jj = np.meshgrid(i, j, indexing='ij')
+            corner_gi = gi(ii[:, :, None] + corners[None, None, 0, :, ], jj[:, :, None] + corners[None, None, 1, :, ])
+            corner_gi = corner_gi.reshape((nstep[0] - 1) * (nstep[1] - 1), 4)
+            tri = np.vstack([corner_gi[:, :3], corner_gi[:, 1:]])
+            return tri, xx.flatten(), yy.flatten()
 
-                v = painter.evaluate_value(verts.reshape((verts.shape[0] * verts.shape[1], 3)))
-                surf.values(v, "v")
+        nsteps = np.array(nsteps)
+        tri, xx, yy = create_surface(boundary_points[0:2, :], nsteps[0:2])
 
-                surf["colourby"] = 'v'  # .reshape((100,70))
-                surf.colourmap(cmap)#lavavu.matplotlib_colourmap('tab20'))  # cubehelix(4))#nodes.s
-            if painter is None:
-                surf.colours(colour)
-        # add y min surf
-        add_quad(((boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
-                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2]),
-                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
-                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2])),
-                 dims,
-                 name+'0')
-        # add y max surf
-        add_quad((
-            (boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
-            (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
-            (boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2]),
-            (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2])),
-            dims,
-            name+'1')
-        # add x min surf
-        add_quad(((boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
-                  (boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
-                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
-                  (boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2])),
-                 dims,
-                 name+'2')
-        # add x max surf
-        add_quad(((boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2]),
-                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
-                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2]),
-                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2])),
-                 dims,
-                 name+'3')
-        # add bottom
-        add_quad(((boundary_points[0, 0], boundary_points[1, 1], boundary_points[0, 2]),
-                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[0, 2]),
-                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[0, 2]),
-                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[0, 2])),
-                 dims,
-                 name+'4')
-        # add top
-        add_quad(((boundary_points[0, 0], boundary_points[1, 1], boundary_points[1, 2]),
-                  (boundary_points[1, 0], boundary_points[1, 1], boundary_points[1, 2]),
-                  (boundary_points[0, 0], boundary_points[0, 1], boundary_points[1, 2]),
-                  (boundary_points[1, 0], boundary_points[0, 1], boundary_points[1, 2])),
-                 dims,
-                 name+'5')
+        zz = np.zeros(xx.shape)
+        zz[:] = boundary_points[1, 2]
+
+        tri = np.vstack([tri, tri + np.max(tri)])
+        xx = np.hstack([xx, xx])
+        yy = np.hstack([yy, yy])
+
+        z = np.zeros(zz.shape)
+        z[:] = boundary_points[0, 2]
+        zz = np.hstack([zz, z])
+        # y faces
+        t, x, z = create_surface(boundary_points[:, [0, 2]], nsteps[[0, 2]])
+        tri = np.vstack([tri, t + np.max(tri)])
+        y = np.zeros(x.shape)
+        y[:] = boundary_points[0, 1]
+        xx = np.hstack([xx, x])
+        zz = np.hstack([zz, z])
+        yy = np.hstack([yy, y])
+
+        tri = np.vstack([tri, t + np.max(tri)])
+        y[:] = boundary_points[1, 1]
+        xx = np.hstack([xx, x])
+        zz = np.hstack([zz, z])
+        yy = np.hstack([yy, y])
+
+        # x faces
+        t, y, z = create_surface(boundary_points[:, [1, 2]], nsteps[[1, 2]])
+        tri = np.vstack([tri, t + np.max(tri)])
+        x = np.zeros(y.shape)
+        x[:] = boundary_points[0, 0]
+        xx = np.hstack([xx, x])
+        zz = np.hstack([zz, z])
+        yy = np.hstack([yy, y])
+
+        tri = np.vstack([tri, t + np.max(tri)])
+        x[:] = boundary_points[1, 0]
+        xx = np.hstack([xx, x])
+        zz = np.hstack([zz, z])
+        yy = np.hstack([yy, y])
+
+        points = np.zeros((len(xx), 3))  #
+        points[:, 0] = xx
+        points[:, 1] = yy
+        points[:, 2] = zz
+
+        surf = self.lv.triangles(name)
+        surf.vertices(points)
+        surf.indices(tri)
+        if painter is None:
+            surf.colours(colour)
+        if painter is not None:
+            surf.values(painter.evaluate_value(points),painter.name)
+            surf["colourby"] = painter.name
+        cmap = lavavu.cubehelix(100)
+        if 'cmap' in kwargs:
+            cmap = kwargs['cmap']
+        surf.colourmap(cmap)  # nodes.shape[0]))
+        #return tri, xx, yy, zz
 
     def plot_vector_field(self, geological_feature, locations, **kwargs):
         """
