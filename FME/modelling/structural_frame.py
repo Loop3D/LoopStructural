@@ -280,6 +280,10 @@ class StructuralFrameBuilder:
         gz_feature = None
         if len(self.data[0]) > 0:
             print("Building gx")
+            if "fold" in kwargs and "fold_weights" in kwargs:
+                self.interpolators[0].update_fold(kwargs['fold'])
+                self.interpolators[0].add_fold_constraints(**kwargs['fold_weights'])
+                gxcg = 0.0 # kwargs['cg'] = False
             self.interpolators[0].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
             self.interpolators[0].solve_system(solver=solver)
             gx_feature =  GeologicalFeature(self.name + '_gx',
@@ -326,7 +330,7 @@ class StructuralFrameBuilder:
                       "Add some more and try again.")
                 return
             print("Creating analytical gz")
-            gz_feature = CrossProductGeologicalFeature(self.name + '_gz', gx_feature, gy_feature)
+            gz_feature = CrossProductGeologicalFeature(self.name + '_gz',  gy_feature, gx_feature)
 
         return frame(self.name, [gx_feature, gy_feature, gz_feature])
         

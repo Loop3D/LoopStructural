@@ -6,7 +6,7 @@ from math import *
 @cython.boundscheck(False)
 @cython.wraparound(False)
 #cimport numpy.linalg as la
-def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:] nodes):
+def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
     Nc = 5 #numer of constraints shared nodes + independent
     Na = 4 #number of nodes
@@ -15,8 +15,8 @@ def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:
     ncons = 0
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
-    cdef long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
-    cdef long [3] common 
+    cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
+    cdef long long [3] common 
     cdef double [:] norm = np.zeros((3))
     cdef double [:,:] shared_pts = np.zeros((3,3))
     cdef double [:] v1 = np.zeros(3)
@@ -24,8 +24,8 @@ def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:
     cdef double [:,:] e1
     cdef double [:,:] e2
     cdef double area = 0
-    cdef long [:] idl  = np.zeros(4,dtype=np.int64) 
-    cdef long [:] idr = np.zeros(4,dtype=np.int64) 
+    cdef long long [:] idl  = np.zeros(4,dtype=np.int64) 
+    cdef long long [:] idr = np.zeros(4,dtype=np.int64) 
     for e in range(ne):
         idl = elements[e,:]
         e1 = EG[e,:,:]
@@ -90,7 +90,7 @@ def cg(double [:,:,:] EG, long [:,:] neighbours, long [:,:] elements,double [:,:
                     c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]*area
             ncons+=1
     return idc, c, ncons
-def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:] elements,double [:,:] nodes):
+def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
     Nc = 5 #numer of constraints shared nodes + independent
     Na = 4 #number of nodes
@@ -99,8 +99,8 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:]
     ncons = 0
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
-    cdef long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
-    cdef long [3] common 
+    cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
+    cdef long long [3] common 
     cdef double [:] norm = np.zeros((3))
     cdef double [:,:] shared_pts = np.zeros((3,3))
     cdef double [:] v1 = np.zeros(3)
@@ -110,8 +110,8 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long [:,:] neighbours, long [:,:]
     cdef double [:] Xl
     cdef double [:] Xr
 
-    cdef long [:] idl  = np.zeros(4,dtype=np.int64) 
-    cdef long [:] idr = np.zeros(4,dtype=np.int64) 
+    cdef long long [:] idl  = np.zeros(4,dtype=np.int64) 
+    cdef long long [:] idr = np.zeros(4,dtype=np.int64) 
     for e in range(ne):
         idl = elements[e,:]
         e1 = EG[e,:,:]

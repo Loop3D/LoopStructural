@@ -12,7 +12,7 @@ import timeit
 This is a basic example showing how to use the Piecewise Linear Interpolator for orientation and
 value data points. 
 """
-solver = 'chol'
+solver = 'lu'
 start = timeit.default_timer()
 boundary_points = np.zeros((2,3))
 
@@ -32,8 +32,8 @@ feature_builder.add_point([0,0,0],0)
 feature_builder.add_point([0,0,1],-0.5)
 feature_builder.add_strike_and_dip([0,0,0],90,0)
 feature = feature_builder.build(
-    solver=solver,
-    cgw=5000)
+    solver=solver
+    )
 
 
 fault_frame_interpolator = PLI(mesh)
@@ -55,18 +55,18 @@ ogw = 300
 ogw /= mesh.n_elements
 cgw = 5000
 fault_frame = fault.build(
-    solver=solver,
-    guess=None,
-   gxxgy=2*ogw,
-   gxxgz=2*ogw,
-   gyxgz=ogw,
-   gxcg=cgw,
-   gycg=cgw,
-   gzcg=cgw,
-   shape='rectangular',
-    gx=True,
-    gy=True,
-    gz=True
+    solver=solver
+   #  guess=None,
+   # gxxgy=2*ogw,
+   # gxxgz=2*ogw,
+   # gyxgz=ogw,
+   # gxcg=cgw,
+   # gycg=cgw,
+   # gzcg=cgw,
+   # shape='rectangular',
+   #  gx=True,
+   #  gy=True,
+   #  gz=True
 )
 #
 fault = FaultSegment(fault_frame, displacement=4)

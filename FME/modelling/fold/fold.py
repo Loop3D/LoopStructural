@@ -6,7 +6,7 @@ class FoldEvent:
     A fold event describes the geometry of the fold using a fold frame
     and two geometrical descriptors
     """
-    def __init__(self, foldframe, fold_axis_rotation=None, fold_limb_rotation=None):
+    def __init__(self, foldframe, fold_axis_rotation=None, fold_limb_rotation=None, fold_axis = None):
         """
 
         Parameters
@@ -19,7 +19,7 @@ class FoldEvent:
         self.foldframe = foldframe
         self.fold_axis_rotation = fold_axis_rotation
         self.fold_limb_rotation = fold_limb_rotation
-        
+        self.fold_axis = fold_axis
     def get_fold_axis_orientation(self, points):
         """
         gets the fold axis orientation for evaluation points
@@ -32,16 +32,23 @@ class FoldEvent:
         -------
 
         """
+        # evaluate fold axis from rotation angle
+        if self.fold_axis_rotation is not None:
+            # get the gz direction
+            dgx = self.foldframe.features[0].evaluate_gradient(points)
+            dgy = self.foldframe.features[1].evaluate_gradient(points)
+            dgx /= np.linalg.norm(dgx, axis=1)[:, None]
+            dgy /= np.linalg.norm(dgy, axis=1)[:, None]
+            # get gy
+            gy = self.foldframe.features[0].evaluate_value(points)
+            R1 = self.rot_mat(-dgx,self.fold_axis_rotation(gy))
+            fold_axis = np.einsum('ijk,ki->kj',R1,dgy)
+            fold_axis/=np.linalg.norm(fold_axis,axis=1)[:,None]
+            return fold_axis
 
-        # get the gz direction
-        dgx = self.foldframe.features[0].evaluate_gradient(points)
-        dgy = self.foldframe.features[1].evaluate_gradient(points)
-        # get gy
-        gy = self.foldframe.features[0].evaluate_value(points)
-        R1 = self.rot_mat(dgx,self.fold_axis_rotation(gy))
-        fold_axis = np.einsum('ijk,ki->kj',R1,dgy)
-        fold_axis/=np.sum(fold_axis,axis=1)[:,None]
-        return fold_axis
+        # use constant fold axis
+        if self.fold_axis is not None:
+            return np.tile(self.fold_axis,(points.shape[0],1))
 
     def get_deformed_orientation(self, points):
         """
@@ -62,9 +69,12 @@ class FoldEvent:
         fold_axis = self.get_fold_axis_orientation(points)
         gx = self.foldframe.features[0].evaluate_value(points)
         dgx = self.foldframe.features[0].evaluate_gradient(points)
+        dgx /= np.linalg.norm(dgx, axis=1)[:, None]
         dgz = self.foldframe.features[2].evaluate_gradient(points)
+        dgz /= np.linalg.norm(dgz, axis=1)[:, None]
+
         R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))
-        R2R = np.einsum('ijk,ki->kj',R2,dgx)
+        R2R = np.einsum('ijk,ki->kj', R2, dgx)
         R2R/=np.sum(R2R,axis=1)[:,None]
         return R2R, fold_axis, dgz
 

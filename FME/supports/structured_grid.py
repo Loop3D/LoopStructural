@@ -1,5 +1,4 @@
 import numpy as np
-from .base_grid import BaseGrid
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 

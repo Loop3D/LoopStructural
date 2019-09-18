@@ -109,8 +109,8 @@ class TetMesh:
         info.set_facets(facets)
         meshpy_mesh = meshpy.tet.build(info, max_volume=maxvol, options=meshpy.tet.Options('pqn'))
         self.nodes = self.pca.inverse_transform(np.array(meshpy_mesh.points))
-        self.elements = np.array(meshpy_mesh.elements)
-        self.neighbours = np.array(meshpy_mesh.neighbors)
+        self.elements = np.array(meshpy_mesh.elements,dtype=np.int64)
+        self.neighbours = np.array(meshpy_mesh.neighbors,dtype=np.int64)
         self.n_nodes = len(self.nodes)
         self.n_elements = len(self.elements)
         self.barycentre = np.sum(self.nodes[self.elements][:, :, :], axis=1) / 4.
