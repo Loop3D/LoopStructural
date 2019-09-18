@@ -32,7 +32,7 @@ feature_builder.add_point([0,0,0],0)
 feature_builder.add_point([0,0,1],-0.5)
 feature_builder.add_strike_and_dip([0,0,0],90,0)
 feature = feature_builder.build(
-    solver=solver,
+    solver=solver
     )
 
 
@@ -55,7 +55,7 @@ ogw = 300
 ogw /= mesh.n_elements
 cgw = 5000
 fault_frame = fault.build(
-    solver=solver,
+    solver=solver
    #  guess=None,
    # gxxgy=2*ogw,
    # gxxgz=2*ogw,

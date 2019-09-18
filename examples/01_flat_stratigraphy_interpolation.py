@@ -60,8 +60,7 @@ feature_builder.add_point([0.5,0,0],1)
 cgw = 6000
 # cgw /= mesh.n_elements
 feature = feature_builder.build(
-    solver='cg',
-    cgw=cgw)
+    solver='lu')
 
 # Export the input data and the model domain to a text file so it can be imported into gocad
 np.savetxt("01_gradient.txt", feature_builder.interpolator.get_gradient_control())

@@ -47,21 +47,21 @@ cdef vertex_interp(double isolevel,double [:] v1, double [:] v2,double [:] point
 ##below are the different functions for the tetrahedron cases, they all add the new triangle
 ##to the array triangles at the next available location which is counted by ntri
 ##ntri has to be a numpy array because passing an int in python is immutable.
-cdef t0E01(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
+cdef t0E01(double [:,:,:] triangles, long long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
     vertex_interp(iso,v0,v1,triangles[ntri[0],0,:])        
     vertex_interp(iso,v0,v2,triangles[ntri[0],1,:])
     vertex_interp(iso,v0,v3,triangles[ntri[0],2,:])
     ntri[0]+=1
     return 
   
-cdef t0D02(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):  
+cdef t0D02(double [:,:,:] triangles, long long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):  
     vertex_interp(iso,v1,v0,triangles[ntri[0],0,:])#g.p[v1],g.p[v0],g.val[v1],g.val[v0])
     vertex_interp(iso,v1,v3,triangles[ntri[0],1,:])#g.p[v1],g.p[v3],g.val[v1],g.val[v3])
     vertex_interp(iso,v1,v2,triangles[ntri[0],2,:])#g.p[v1],g.p[v2],g.val[v1],g.val[v2])
     ntri[0]+=1
     return 
   
-cdef t0C03(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):  
+cdef t0C03(double [:,:,:] triangles, long long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):  
     vertex_interp(iso,v0,v3,triangles[ntri[0],0,:])#g.p[v0],g.p[v3],g.val[v0],g.val[v3])
     vertex_interp(iso,v0,v2,triangles[ntri[0],1,:])#g.p[v0],g.p[v2],g.val[v0],g.val[v2])
     vertex_interp(iso,v1,v3,triangles[ntri[0],2,:])#g.p[v1],g.p[v3],g.val[v1],g.val[v3])
@@ -73,13 +73,13 @@ cdef t0C03(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, dou
     ntri[0]+=1
     return
   
-cdef t0B04(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
+cdef t0B04(double [:,:,:] triangles, long long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
     vertex_interp(iso,v2,v0,triangles[ntri[0],0,:])#g.p[v2],g.p[v0],g.val[v2],g.val[v0])
     vertex_interp(iso,v2,v1,triangles[ntri[0],1,:])#g.p[v2],g.p[v1],g.val[v2],g.val[v1])
     vertex_interp(iso,v2,v3,triangles[ntri[0],2,:])#g.p[v2],g.p[v3],g.val[v2],g.val[v3])
     ntri[0]+=1
     return
-cdef t0A05(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3): 
+cdef t0A05(double [:,:,:] triangles, long long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3): 
     vertex_interp(iso,v0,v1,    triangles[ntri[0],0,:])#g.p[v0],g.p[v1],g.val[v0],g.val[v1])
     vertex_interp(iso,v2,v3,triangles[ntri[0],1,:])#g.p[v2],g.p[v3],g.val[v2],g.val[v3])
     vertex_interp(iso,v0,v3,triangles[ntri[0],2,:])#g.p[v0],g.p[v3],g.val[v0],g.val[v3])
@@ -91,7 +91,7 @@ cdef t0A05(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, dou
     ntri[0]+=1
     return
   
-cdef t0906(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
+cdef t0906(double [:,:,:] triangles, long long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
     vertex_interp(iso,v0,v1,triangles[ntri[0],0,:])#g.p[v0],g.p[v1],g.val[v0],g.val[v1])
     vertex_interp(iso,v1,v3,triangles[ntri[0],1,:])#g.p[v1],g.p[v3],g.val[v1],g.val[v3])
     vertex_interp(iso,v2,v3,triangles[ntri[0],2,:])#g.p[v2],g.p[v3],g.val[v2],g.val[v3])
@@ -102,17 +102,17 @@ cdef t0906(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, dou
     vertex_interp(iso,v0,v2,triangles[ntri[0],1,:])#g.p[v0],g.p[v2],g.val[v0],g.val[v2])
     ntri[0]+=1
     return
-cdef t0708(double [:,:,:] triangles, long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
+cdef t0708(double [:,:,:] triangles, long long[:] ntri,double iso, double [:] v0, double [:] v1, double [:] v2, double [:] v3):
     vertex_interp(iso,v3,v0,triangles[ntri[0],0,:])#g.p[v3],g.p[v0],g.val[v3],g.val[v0])
     vertex_interp(iso,v3,v2,triangles[ntri[0],1,:])#g.p[v3],g.p[v2],g.val[v3],g.val[v2])
     vertex_interp(iso,v3,v1,triangles[ntri[0],2,:])#g.p[v3],g.p[v1],g.val[v3],g.val[v1])
     ntri[0]+=1
     return 
-def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, region, propertyvalue):
+def marching_tetra(double isovalue,long long [:,:] elements,double [:,:] nodes, region, propertyvalue):
     """
     Main entry point for marching tetrahedron function. 
     double isovalue is the scalar field value to create the surface at
-    long [:,:] is a 2d array containing the index of tetra nodes
+    long long [:,:] is a 2d array containing the index of tetra nodes
     double [:,:] a 2d array containing vertex/node coordinates.
     property value is the property value on the tetra corners
     Returns: an 3d [Ntriangles,triangle_nodes,vertex coordinates] where array of triangles 
@@ -138,7 +138,7 @@ def marching_tetra(double isovalue,long [:,:] elements,double [:,:] nodes, regio
     ##create container for the triangle nodes and indexes and a counter
     cdef int ne, nn, i
     #use np array to make use of buffer
-    cdef long[:] ntri = np.zeros(1).astype(int)
+    cdef long long[:] ntri = np.zeros(1).astype(np.int64)
     cdef double[:] v0,v1,v2,v3
     ne =0
     nn =0
