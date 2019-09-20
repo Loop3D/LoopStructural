@@ -314,7 +314,7 @@ class StructuralFrameBuilder:
             self.interpolators[2].add_gradient_orthogonal_constraint(
                 np.arange(0, self.support.n_elements),
                 gx_feature.evaluate_gradient(self.support.barycentre),
-                w=gyxgz)
+                w=gxxgz)
             self.interpolators[2].add_gradient_orthogonal_constraint(
                 np.arange(0, self.support.n_elements),
                 gy_feature.evaluate_gradient(self.support.barycentre),

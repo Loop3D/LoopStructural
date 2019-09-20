@@ -160,7 +160,7 @@ class GeologicalFeatureInterpolator:
 class GeologicalFeature:
     """
     Geological feature is class that is used to represent a geometrical element in a geological
-    modle. For example foliations, fault planes, fold rotation angles etc. The feature has a support
+    model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
     which 
     """
     def __init__(self, name, support, builder = None, data = None):

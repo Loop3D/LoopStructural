@@ -4,9 +4,11 @@ from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 class StructuredGrid:
     def __init__(self,
+                 origin=np.zeros(3),
                  nsteps=np.array([10, 10, 10]),
                  step_vector=np.ones(3),
-                 origin=np.zeros(3)):
+                 maximum=None
+                 ):
         """
 
         :param nsteps:

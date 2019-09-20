@@ -67,12 +67,16 @@ class Zeros:
         return np.zeros(v.shape)
 
 class FaultDisplacement:
-    def __init__(self,hw=None,fw=None, gx=None,gy=None,gz=None):
+    def __init__(self,hw=None,fw=None, gx=None,gy=None,gz=None, **kwargs):
         self.gx = gx
         if hw is not None and fw is not None:
             self.__gx = Composite(hw,fw)
         self.gy = gy
         self.gz = gz
+        self.gx_bounds = None
+        self.gy_bounds = None
+        self.gz_bounds = None
+
         if self.gx == None:
             print('Gx function none setting to ones')
             self.gx = Ones()
@@ -82,5 +86,21 @@ class FaultDisplacement:
         if self.gz == None:
             print('Gz function none setting to ones')
             self.gz = Ones()
+        if 'gxmax' in kwargs and 'gxmin' in kwargs:
+            self.gx_bounds = (kwargs['gxmin'],kwargs['gxmax'])
+
+        if 'gymax' in  kwargs and 'gymin' in kwargs:
+            self.gy_bounds = (kwargs['gymin'],kwargs['gymax'])
+
+
+        if 'gzmax' in kwargs and 'gzmin' in kwargs:
+            self.gz_bounds = (kwargs['gzmin'], kwargs['gzmax'])
+
     def __call__(self,gx,gy,gz):
+        if self.gx_bounds is not None:
+            gx = (gx ) / (self.gx_bounds[1]-self.gx_bounds[0])
+        if self.gy_bounds is not None:
+            gy = (gy ) / (self.gy_bounds[1]-self.gy_bounds[0])
+        if self.gz_bounds is not None:
+            gz = (gz ) / (self.gz_bounds[1]-self.gz_bounds[0])
         return self.gx(gx)*self.gy(gy)*self.gz(gz)
