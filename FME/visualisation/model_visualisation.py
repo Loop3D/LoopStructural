@@ -165,7 +165,7 @@ class LavaVuModelViewer:
         zz = np.zeros(xx.shape)
         zz[:] = boundary_points[1, 2]
 
-        tri = np.vstack([tri, tri + np.max(tri)])
+        tri = np.vstack([tri, tri + np.max(tri)+1])
         xx = np.hstack([xx, xx])
         yy = np.hstack([yy, yy])
 
@@ -174,14 +174,14 @@ class LavaVuModelViewer:
         zz = np.hstack([zz, z])
         # y faces
         t, x, z = create_surface(boundary_points[:, [0, 2]], nsteps[[0, 2]])
-        tri = np.vstack([tri, t + np.max(tri)])
+        tri = np.vstack([tri, t + np.max(tri)+1])
         y = np.zeros(x.shape)
         y[:] = boundary_points[0, 1]
         xx = np.hstack([xx, x])
         zz = np.hstack([zz, z])
         yy = np.hstack([yy, y])
 
-        tri = np.vstack([tri, t + np.max(tri)])
+        tri = np.vstack([tri, t + np.max(tri)+1])
         y[:] = boundary_points[1, 1]
         xx = np.hstack([xx, x])
         zz = np.hstack([zz, z])
@@ -189,14 +189,14 @@ class LavaVuModelViewer:
 
         # x faces
         t, y, z = create_surface(boundary_points[:, [1, 2]], nsteps[[1, 2]])
-        tri = np.vstack([tri, t + np.max(tri)])
+        tri = np.vstack([tri, t + np.max(tri)+1])
         x = np.zeros(y.shape)
         x[:] = boundary_points[0, 0]
         xx = np.hstack([xx, x])
         zz = np.hstack([zz, z])
         yy = np.hstack([yy, y])
 
-        tri = np.vstack([tri, t + np.max(tri)])
+        tri = np.vstack([tri, t + np.max(tri)+1])
         x[:] = boundary_points[1, 0]
         xx = np.hstack([xx, x])
         zz = np.hstack([zz, z])
