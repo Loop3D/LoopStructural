@@ -52,7 +52,8 @@ class LavaVuModelViewer:
         voxet = None
         tris = None
         nodes = None
-
+        if 'voxet' in kwargs:
+            voxet = kwargs['voxet']
         # parse kwargs for parameters
         if 'isovalue' in kwargs:
             slices = [kwargs['isovalue']]
@@ -74,9 +75,11 @@ class LavaVuModelViewer:
                 print("No surface to create for isovalue")
                 continue #isovalue = kwargs['isovalue']
             if voxet is None:
-                tris, nodes = geological_feature.support.slice(isovalue)
-            # if voxet:
-            #
+                tris, nodes = geological_feature.slice(isovalue)
+            if voxet:
+                tris, nodes = geological_feature.slice(isovalue,
+                                                       bounding_box=voxet['bounding_box'],
+                                                       nsteps=voxet['nsteps'])
             if nodes.shape[0] == 0:
                 continue
 

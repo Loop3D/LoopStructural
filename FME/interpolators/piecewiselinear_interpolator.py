@@ -93,14 +93,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             e, inside = self.support.elements_for_array(points[:, :3])
             nodes = self.support.nodes[self.support.elements[e]]
             vecs = nodes[:,1:,:] - nodes[:,0,None,:]
-            vol = np.abs(np.linalg.det(vecs)) / 6
+            vol = np.abs(np.linalg.det(vecs)) #/ 6
             d_t = self.support.get_elements_gradients(e)
+            d_t /= np.linalg.norm(d_t,axis=1)[:,None, :]
+
+            # print()
             d_t *= vol[:,None,None]
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
             # add in the element gradient matrix into the inte
             e=np.tile(e,(3,1)).T
             idc = self.support.elements[e]
-            w /= 3
+            # w /= 3
             self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
 
     def add_tangent_ctr_pts(self, w=1.0):
@@ -130,7 +133,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             e, inside = self.support.elements_for_array(points[:, :3])
             # get barycentric coordinates for points
             nodes = self.support.nodes[self.support.elements[e]]
-            vecs = nodes[:,1:,:] - nodes[:,0,None,:]
+            vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs)) / 6
             A = self.support.calc_bary_c(e, points[:, :3])
             A *= vol[None,:]
@@ -153,6 +156,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         # print("Adding %i gradient orthogonality individually weighted at %f" % (normals.shape[0], w))
+        nodes = self.support.nodes[self.support.elements[elements]]
+        vecs = nodes[:,1:,:] - nodes[:,0,None,:]
+        vol = np.abs(np.linalg.det(vecs)) / 6
         d_t = self.support.get_elements_gradients(elements)
         dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
         mask = np.abs(dot_p) > 0
@@ -160,6 +166,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         magnitude = np.einsum('ij,ij->i', normals, normals)
         normals[magnitude>0] = normals[magnitude>0] / magnitude[magnitude>0,None]
         A = np.einsum('ij,ijk->ik', normals, d_t)
+        A *= vol[:,None]
         idc = self.support.elements[elements]
         B = np.zeros(len(elements))
         self.add_constraints_to_least_squares(A*w, B, idc)

@@ -1,5 +1,7 @@
 from FME.modelling.scalar_field import ScalarField
 from FME.modelling.geological_points import GPoint, IPoint, TPoint
+from skimage.measure import marching_cubes_lewiner as marching_cubes
+
 import numpy as np
 
 
@@ -160,7 +162,7 @@ class GeologicalFeatureInterpolator:
 class GeologicalFeature:
     """
     Geological feature is class that is used to represent a geometrical element in a geological
-    modle. For example foliations, fault planes, fold rotation angles etc. The feature has a support
+    model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
     which 
     """
     def __init__(self, name, support, builder = None, data = None):
@@ -251,4 +253,36 @@ class GeologicalFeature:
         """
         self.support.interpolator.up_to_date = False
         self.support.interpolator.update()
+
+    def slice(self, isovalue, bounding_box = None, nsteps = None):
+        """
+        Calculate an isosurface of a geological feature.
+        Option to specify a new support to calculate the isosurface on
+        Parameters
+        ----------
+        isovalue
+        bounding_box
+        nsteps
+
+        Returns
+        -------
+
+        """
+        if bounding_box is not None and nsteps is not None:
+            x = np.linspace(bounding_box[0,0],bounding_box[1,0],nsteps[0])
+            y = np.linspace(bounding_box[0,1],bounding_box[1,1],nsteps[1])
+            z = np.linspace(bounding_box[1,2],bounding_box[0,2],nsteps[2])
+
+            xx,yy,zz = np.meshgrid(x,y,z, indexing='ij')
+            val = self.evaluate_value(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
+            step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
+            verts, faces, normals, values = marching_cubes(
+            val.reshape(nsteps, order='C'),
+            isovalue,
+            spacing=step_vector)
+
+            return faces, verts - np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+        else:
+            return self.support.slice(isovalue)
+
 
