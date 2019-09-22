@@ -195,24 +195,23 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if solver == 'chol':
             try:
                 from sksparse.cholmod import cholesky
-            except ImportError:
-                print("Scikit Sparse not installed try another solver e.g. lu")
-                return
-            # print("Solving using cholmod's cholesky decomposition")
-            start = timeit.default_timer()
-            if self.shape == 'rectangular':
-                # print("Performing A.T @ A")
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            factor = cholesky(A.tocsc())
-            self.c = factor(B)
-            self.up_to_date = True
+                if self.shape == 'rectangular':
+                    # print("Performing A.T @ A")
+                    A = self.AA.T.dot(self.AA)
+                    B = self.AA.T.dot(self.B)
+                if self.shape == 'square':
+                    A = self.AA
+                    B = self.B
+                factor = cholesky(A.tocsc())
+                self.c = factor(B)
+                self.up_to_date = True
 
             # print("Solving took %f seconds"%(timeit.default_timer()-start))
-            return
+                return
+            except ImportError:
+                print("Scikit Sparse not installed trying cg")
+                solver = 'cg'
+
         if solver == 'cgp':
             num_iter=0
             if self.shape == 'rectangular':

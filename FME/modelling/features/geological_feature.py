@@ -281,7 +281,7 @@ class GeologicalFeature:
             isovalue,
             spacing=step_vector)
 
-            return faces, verts - np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+            return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
         else:
             return self.support.slice(isovalue)
 
