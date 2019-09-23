@@ -16,7 +16,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
     cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
-    cdef long long [3] common 
+    cdef long long [3] common
     cdef double [:] norm = np.zeros((3))
     cdef double [:,:] shared_pts = np.zeros((3,3))
     cdef double [:] v1 = np.zeros(3)
@@ -24,8 +24,8 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
     cdef double [:,:] e1
     cdef double [:,:] e2
     cdef double area = 0
-    cdef long long [:] idl  = np.zeros(4,dtype=np.int64) 
-    cdef long long [:] idr = np.zeros(4,dtype=np.int64) 
+    cdef long long [:] idl  = np.zeros(4,dtype=np.int64)
+    cdef long long [:] idr = np.zeros(4,dtype=np.int64)
     for e in range(ne):
         idl = elements[e,:]
         e1 = EG[e,:,:]
@@ -100,7 +100,7 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
     cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
-    cdef long long [3] common 
+    cdef long long [3] common
     cdef double [:] norm = np.zeros((3))
     cdef double [:,:] shared_pts = np.zeros((3,3))
     cdef double [:] v1 = np.zeros(3)
@@ -110,8 +110,8 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
     cdef double [:] Xl
     cdef double [:] Xr
 
-    cdef long long [:] idl  = np.zeros(4,dtype=np.int64) 
-    cdef long long [:] idr = np.zeros(4,dtype=np.int64) 
+    cdef long long [:] idl  = np.zeros(4,dtype=np.int64)
+    cdef long long [:] idr = np.zeros(4,dtype=np.int64)
     for e in range(ne):
         idl = elements[e,:]
         e1 = EG[e,:,:]

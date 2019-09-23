@@ -8,6 +8,24 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
          self.type = ['foldinterpolator']
          self.fold = fold
 
+    @classmethod
+    def from_piecewise_linear_and_fold(cls, pli,fold):
+
+        # create a blank fold interpolator
+        interpolator = cls(pli.support, fold)
+
+        # copy the data and stuff from the existing interpolator
+        interpolator.region = pli.region
+        interpolator.shape = pli.shape
+        interpolator.region_map = pli.region_map
+        interpolator.p_i = pli.p_i
+        interpolator.p_g = pli.p_g
+        interpolator.p_t = pli.p_t
+        interpolator.n_i = pli.n_i
+        interpolator.n_g = pli.n_g
+        interpolator.n_t = pli.n_t
+        interpolator.propertyname = pli.propertyname
+        return interpolator
     def update_fold(self, fold):
         self.fold = fold
 

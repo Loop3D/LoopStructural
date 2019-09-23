@@ -92,13 +92,13 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points = self.get_gradient_control()
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
-            points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
+            # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
 
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the magnitude
             T = self.support.calcul_T(points[inside, :3])
-            T /= np.linalg.norm(T,axis=1)[:,None,:]
+            # T /= np.linalg.norm(T,axis=1)[:,None,:]
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :]*w, points[inside, 3]*w, node_idx[inside, :])
             self.add_constraints_to_least_squares(T[:, 1, :]*w, points[inside, 4]*w, node_idx[inside, :])
