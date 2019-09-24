@@ -279,7 +279,7 @@ class StructuralFrameBuilder:
         gy_feature = None
         gz_feature = None
         if len(self.data[0]) > 0:
-            print("Building gx")
+            print("Building structural frame coordinate 0")
             if "fold" in kwargs and "fold_weights" in kwargs:
                 self.interpolators[0].update_fold(kwargs['fold'])
                 self.interpolators[0].add_fold_constraints(**kwargs['fold_weights'])
@@ -294,7 +294,7 @@ class StructuralFrameBuilder:
                 print("Not enough constraints for fold frame coordinate 0, \n"
                       "Add some more and try again.")
                 return
-            print("Building gy")
+            print("Building structural frame coordinate 1")
             self.interpolators[1].add_gradient_orthogonal_constraint(
                 np.arange(0,self.support.n_elements),
                 gx_feature.evaluate_gradient(self.support.barycentre),
@@ -310,7 +310,7 @@ class StructuralFrameBuilder:
                 print("Not enough constraints for fold frame coordinate 1, \n"
                       "Add some more and try again.")
                 return
-            print("Building gz")
+            print("Building structural frame coordinate 2")
             self.interpolators[2].add_gradient_orthogonal_constraint(
                 np.arange(0, self.support.n_elements),
                 gx_feature.evaluate_gradient(self.support.barycentre),
@@ -329,7 +329,7 @@ class StructuralFrameBuilder:
                 print("Not enough constraints for fold frame coordinate 1, \n"
                       "Add some more and try again.")
                 return
-            print("Creating analytical gz")
+            print("Creating analytical structural frame coordinate 2")
             gz_feature = CrossProductGeologicalFeature(self.name + '_gz',  gy_feature, gx_feature)
 
         return frame(self.name, [gx_feature, gy_feature, gz_feature])
