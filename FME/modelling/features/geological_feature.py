@@ -251,8 +251,15 @@ class GeologicalFeature:
         -------
 
         """
+        # re-run the interpolator and update the support.
+        # this is a bit clumsy and not abstract, i think
+        # if evaluating the property doesn't require the dictionary on
+        # the nodes and actually just uses the interpolator values this would be
+        # much better.
         self.support.interpolator.up_to_date = False
         self.support.interpolator.update()
+        self.support.update_property(self.support.interpolator.c)
+
 
     def slice(self, isovalue, bounding_box = None, nsteps = None):
         """

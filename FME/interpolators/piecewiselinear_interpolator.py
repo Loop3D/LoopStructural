@@ -49,6 +49,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         'cg' boolean is cg being used
         :return:
         """
+        self.reset()
         for key in kwargs:
             self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]

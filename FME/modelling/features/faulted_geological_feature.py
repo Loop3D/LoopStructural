@@ -21,6 +21,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
              self.parent_feature.support.support, 
             self.parent_feature.name+'_faulted', 
             self.evaluate_value(self.parent_feature.support.support.nodes)))
+
     def update(self):
         """
         Rerun the interpolator for the parent feature and update this features scalar field
@@ -28,6 +29,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
         -------
 
         """
+        self.parent_feature.support.interpolator.reset()
         self.parent_feature.update()
         self.support.update_property(self.evaluate_value(self.parent_feature.support.support.nodes))
 

@@ -41,6 +41,16 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = False
             self.interpolation_weights[key] = weights[key]
 
+    def reset(self):
+        self.A = []  # sparse matrix storage coo format
+        self.col = []
+        self.row = []  # sparse matrix storage
+        self.eq_const_C = []
+        self.eq_const_row = []
+        self.eq_const_col = []
+        self.eq_const_d = []
+        self.eq_const_c_ = 0
+
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system
@@ -74,7 +84,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
 
-    def add_equality_constraints(self,node_idx,values):
+    def add_equality_constraints(self, node_idx, values):
         self.eq_const_C.extend(np.ones(node_idx.shape[0]).tolist())
         self.eq_const_col.extend(node_idx.tolist())
         self.eq_const_row.extend((np.arange(0,node_idx.shape[0])))
