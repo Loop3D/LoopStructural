@@ -59,10 +59,9 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
                 v2[i] = shared_pts[2,i]-shared_pts[1,i]
             norm[0] = v2[2]*v1[1] - v1[2]*v2[1]
             norm[1] = v1[2]*v2[0] - v1[0]*v2[2]
-            norm[2] = v1[0]*v2[1] - v1[1]*v2[0]#= np.cross(v1,v2)
-            #norm[0] = v1[1]*v2[2]-v1[2]*v2[1]
-            #norm[1] = v1[2]*v2[0]-v1[0]*v2[2]
-            #norm[2] = v1[0]*v2[1] - v1[1]*v2[0]
+            norm[2] = v1[0]*v2[1] - v1[1]*v2[0]
+
+            norm/=np.linalg.norm(norm)
             # we want to weight the cg by the area of the shared face
             # area of triangle is half area of parallelogram
             # https://math.stackexchange.com/questions/128991/how-to-calculate-the-area-of-a-3d-triangle
