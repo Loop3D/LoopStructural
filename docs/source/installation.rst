@@ -129,6 +129,7 @@ You can then create a virtual environment using the following command.
 This creates a virtual environment called venv inside the LoopStructural repository.
 This folder is automatically ignored by git.
 
+
 .. code-block::
 
     python3 -m venv venv
@@ -144,8 +145,8 @@ Add a line to end end of the file:
 
 .. code-block::
 
-    export LoopStructural_ENV=/mnt/c/Users/{username}/Documents/Repository/LoopStructural/venv
-    alias LoopStructural='. $LoopStructural_ENV/bin/activate'
+    export LOOP_ENV=/mnt/c/Users/{username}/Documents/Repository/LoopStructural/venv
+    alias LoopStructural='. $LOOP_ENV/bin/activate'
 
 The second line creates a command line command for switching to the LoopStructural virtual environment.
 
@@ -178,7 +179,11 @@ Make sure the LoopStructural environment is activated to run this command.
 .. code-block::
 
     LoopStructural
-    ./meshpy.sh
+    cd ~
+    git clone --recursive http://git.tiker.net/trees/meshpy.git
+    cd meshpy
+    python setup.py install
+
 
 You can now install LoopStructural using the makefile.
 
