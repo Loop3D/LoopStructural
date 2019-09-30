@@ -1,21 +1,21 @@
-FME.utils package
+LoopStructural.utils package
 =================
 
 Submodules
 ----------
 
-FME.utils.helper module
+LoopStructural.utils.helper module
 -----------------------
 
-.. automodule:: FME.utils.helper
+.. automodule:: LoopStructural.utils.helper
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.utils.utils module
+LoopStructural.utils.utils module
 ----------------------
 
-.. automodule:: FME.utils.utils
+.. automodule:: LoopStructural.utils.utils
     :members:
     :undoc-members:
     :show-inheritance:
@@ -24,7 +24,7 @@ FME.utils.utils module
 Module contents
 ---------------
 
-.. automodule:: FME.utils
+.. automodule:: LoopStructural.utils
     :members:
     :undoc-members:
     :show-inheritance:

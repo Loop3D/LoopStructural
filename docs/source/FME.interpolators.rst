@@ -1,53 +1,53 @@
-FME.interpolators package
+LoopStructural.interpolators package
 =========================
 
 Submodules
 ----------
 
-FME.interpolators.discete\_interpolator module
+LoopStructural.interpolators.discete\_interpolator module
 ----------------------------------------------
 
-.. automodule:: FME.interpolators.discete_interpolator
+.. automodule:: LoopStructural.interpolators.discete_interpolator
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.interpolators.discrete\_fold\_interpolator module
+LoopStructural.interpolators.discrete\_fold\_interpolator module
 -----------------------------------------------------
 
-.. automodule:: FME.interpolators.discrete_fold_interpolator
+.. automodule:: LoopStructural.interpolators.discrete_fold_interpolator
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.interpolators.finite\_difference\_interpolator module
+LoopStructural.interpolators.finite\_difference\_interpolator module
 ---------------------------------------------------------
 
-.. automodule:: FME.interpolators.finite_difference_interpolator
+.. automodule:: LoopStructural.interpolators.finite_difference_interpolator
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.interpolators.geological\_interpolator module
+LoopStructural.interpolators.geological\_interpolator module
 -------------------------------------------------
 
-.. automodule:: FME.interpolators.geological_interpolator
+.. automodule:: LoopStructural.interpolators.geological_interpolator
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.interpolators.ichol module
+LoopStructural.interpolators.ichol module
 ------------------------------
 
-.. automodule:: FME.interpolators.ichol
+.. automodule:: LoopStructural.interpolators.ichol
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.interpolators.piecewiselinear\_interpolator module
+LoopStructural.interpolators.piecewiselinear\_interpolator module
 ------------------------------------------------------
 
-.. automodule:: FME.interpolators.piecewiselinear_interpolator
+.. automodule:: LoopStructural.interpolators.piecewiselinear_interpolator
     :members:
     :undoc-members:
     :show-inheritance:
@@ -56,7 +56,7 @@ FME.interpolators.piecewiselinear\_interpolator module
 Module contents
 ---------------
 
-.. automodule:: FME.interpolators
+.. automodule:: LoopStructural.interpolators
     :members:
     :undoc-members:
     :show-inheritance:

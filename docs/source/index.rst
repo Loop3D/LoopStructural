@@ -1,4 +1,4 @@
-..  fme documentation master file
+..  LoopStructural documentation master file
 .. image:: loop.png
 
 The implicit geological modeling engine developed for the Loop consortium with algorithms capable of incorporating structural geology information and data.
@@ -12,8 +12,8 @@ The implicit geological modeling engine developed for the Loop consortium with a
 
     Installation <installation>
     Tutorials <tutorials>
-    API Reference: FME <FME>
-    API Reference: Visualisation <FME.visualisation>
+    API Reference: LoopStructural <LoopStructural>
+    API Reference: Visualisation <LoopStructural.visualisation>
 Introduction
 ~~~~~~~~~~~~
 

@@ -9,7 +9,7 @@ class LavaVuModelViewer:
         LavaVuModelViewer
 
 
-        A wrapper to plot FME object with lavavu
+        A wrapper to plot LoopStructural object with lavavu
 
         Parameters
         ----------

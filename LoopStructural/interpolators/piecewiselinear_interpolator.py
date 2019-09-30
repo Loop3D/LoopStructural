@@ -1,4 +1,4 @@
-from FME.interpolators.discete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators.discete_interpolator import DiscreteInterpolator
 import numpy as np
 
 

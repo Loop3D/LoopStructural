@@ -4,7 +4,7 @@ from numpy import linalg as la
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
-from FME.cython.dsi_helper import cg
+from LoopStructural.cython.dsi_helper import cg
 from ..cython.marching_tetra import marching_tetra
 
 
@@ -32,6 +32,8 @@ class TetMesh:
             self.path = kwargs['path']
         if 'tetgen' in kwargs:
             self.usetetgen = kwargs['tetgen']
+        if 'save' in kwargs:
+            self.save = kwargs['save']
         self.mesh = None
         self.shared_idxs = np.zeros(3, dtype=np.int)
         self.dinfo = {}
@@ -378,7 +380,8 @@ class TetMesh:
                                   )
 
     def save(self):
-        self.export_to_vtk(self.path + self.name + '.vtk')
+        if self.save:
+            self.export_to_vtk(self.path + self.name + '.vtk')
     def get_connected_nodes_for_mask(self, mask):
         """
         adjusts mask to return all nodes where any node in the element is true as true

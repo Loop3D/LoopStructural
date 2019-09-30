@@ -110,7 +110,7 @@ RUN jupyter nbextension enable scratchpad/main
 RUN jupyter nbextension enable comment-uncomment/main  
 RUN jupyter nbextension enable collapsible_headings/main  
 
-#Install FME including cython
+#Install LoopStructural including cython
 # setup environment
 ENV PYTHONPATH $PYTHONPATH:${HOME}
 USER root

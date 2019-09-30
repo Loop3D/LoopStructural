@@ -1,4 +1,4 @@
-from FME.modelling.structural_frame import StructuralFrame
+from LoopStructural.modelling.structural_frame import StructuralFrame
 import numpy as np
 
 

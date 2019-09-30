@@ -2,14 +2,14 @@
 # This example shows how to create a fault with an ellipsoidal displacement field with
 # displacements magnitude controlled by three cubic splines
 # ### Imports
-from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
-from FME.supports.tet_mesh import TetMesh
-from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
-from FME.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
-from FME.visualisation.model_visualisation import LavaVuModelViewer
-from FME.modelling.structural_frame import StructuralFrameBuilder
-from FME.modelling.fault.fault_segment import FaultSegment
-from FME.modelling.fault.fault_function import CubicFunction, FaultDisplacement, Ones
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
+from LoopStructural.supports.tet_mesh import TetMesh
+from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
+from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
+from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.fault.fault_function import CubicFunction, FaultDisplacement, Ones
 import numpy as np
 import matplotlib.pyplot as plt
 

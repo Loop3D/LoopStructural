@@ -1,4 +1,4 @@
-from FME.supports.structured_grid import StructuredGrid
+from LoopStructural.supports.structured_grid import StructuredGrid
 
 
 grid = StructuredGrid()

@@ -1,13 +1,13 @@
 
 .. code:: ipython3
 
-    from FME.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
-    from FME.supports.structured_grid import StructuredGrid
-    from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
-    # from FME.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
-    from FME.visualisation.model_visualisation import LavaVuModelViewer
-    # from FME.modelling.structural_frame import StructuralFrameBuilder, StructuralFrame
-    # from FME.modelling.fault.fault_segment import FaultSegment
+    from LoopStructural.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
+    from LoopStructural.supports.structured_grid import StructuredGrid
+    from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
+    # from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
+    from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+    # from LoopStructural.modelling.structural_frame import StructuralFrameBuilder, StructuralFrame
+    # from LoopStructural.modelling.fault.fault_segment import FaultSegment
     import numpy as np
     import lavavu
     import matplotlib.pyplot as plt

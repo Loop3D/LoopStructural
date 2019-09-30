@@ -1,10 +1,10 @@
-# ### Import FME objects for interpolation
-from FME.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
-from FME.supports.structured_grid import StructuredGrid
-from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
-from FME.visualisation.model_visualisation import LavaVuModelViewer
-from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
-from FME.supports.tet_mesh import TetMesh
+# ### Import LoopStructural objects for interpolation
+from LoopStructural.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
+from LoopStructural.supports.structured_grid import StructuredGrid
+from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
+from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
+from LoopStructural.supports.tet_mesh import TetMesh
 # other necessary libraries
 import numpy as np
 import lavavu
@@ -12,8 +12,8 @@ import pyvista
 import matplotlib.pyplot as plt
 
 # ### Loop3D Forward Modelling Engine
-# This is an example using FME to interpolate stratigraphy within a cube. It shows a very basic
-# example of using FME.
+# This is an example using LoopStructural to interpolate stratigraphy within a cube. It shows a very basic
+# example of using LoopStructural.
 
 # ### Defining Model Region
 # Define the area to model represented by the domain of the tetrahedral mesh
@@ -24,7 +24,7 @@ grid = StructuredGrid(nsteps=(30,30,30),step_vector=np.array([.5,.5,.5]))
 
 
 # ### GeologicalFeatureInterpolator
-# FME uses an object oriented design so
+# LoopStructural uses an object oriented design so
 
 interpolator = FDI(grid)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
@@ -73,7 +73,7 @@ mesh = TetMesh()
 mesh.setup_mesh(boundary_points, n_tetra=30*30*30)
 
 # ### GeologicalFeatureInterpolator
-# FME uses an object oriented design so
+# LoopStructural uses an object oriented design so
 
 plit_interpolator = PLI(mesh)
 pli_feature_builder = GeologicalFeatureInterpolator(plit_interpolator, name='stratigraphy2')
@@ -100,7 +100,7 @@ feature2 = pli_feature_builder.build(
 # Export the input data and the model domain to a text file so it can be imported into gocad
 
 # ### Visualisation using LavaVu
-# FME uses Lavavu for visualising objects. The LavaVuModelViewer class interfaces between lavavu and FME
+# LoopStructural uses Lavavu for visualising objects. The LavaVuModelViewer class interfaces between lavavu and LoopStructural
 # kwargs can be passed from the wrapper functions to the lavavu objects.
 
 viewer = LavaVuModelViewer(background="white")

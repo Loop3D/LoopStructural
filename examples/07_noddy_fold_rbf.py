@@ -1,15 +1,15 @@
 # ### Imports
 
-from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
-from FME.interpolators.discrete_fold_interpolator import DiscreteFoldInterpolator as DFI
-from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
-from FME.modelling.structural_frame import StructuralFrameBuilder
-from FME.modelling.fold.foldframe import FoldFrame
-from FME.modelling.fold.fold import FoldEvent
-from FME.modelling.fold.svariogram import SVariogram
-from FME.supports.tet_mesh import TetMesh
-from FME.visualisation.model_visualisation import LavaVuModelViewer
-from FME.visualisation.rotation_angle_plotter import RotationAnglePlotter
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
+from LoopStructural.interpolators.discrete_fold_interpolator import DiscreteFoldInterpolator as DFI
+from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
+from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.fold.foldframe import FoldFrame
+from LoopStructural.modelling.fold.fold import FoldEvent
+from LoopStructural.modelling.fold.svariogram import SVariogram
+from LoopStructural.supports.tet_mesh import TetMesh
+from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+from LoopStructural.visualisation.rotation_angle_plotter import RotationAnglePlotter
 # import other libraries
 import geopandas
 import numpy as np

@@ -1,8 +1,8 @@
 import numpy as np
-from FME.modelling.geological_points import IPoint, GPoint, TPoint
-from FME.modelling.features.geological_feature import GeologicalFeature
-from FME.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
-from FME.modelling.scalar_field import ScalarField
+from LoopStructural.modelling.geological_points import IPoint, GPoint, TPoint
+from LoopStructural.modelling.features.geological_feature import GeologicalFeature
+from LoopStructural.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
+from LoopStructural.modelling.scalar_field import ScalarField
 
 
 class StructuralFrame:

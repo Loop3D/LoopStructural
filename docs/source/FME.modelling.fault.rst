@@ -1,29 +1,29 @@
-FME.modelling.fault package
+LoopStructural.modelling.fault package
 ===========================
 
 Submodules
 ----------
 
-FME.modelling.fault.fault module
+LoopStructural.modelling.fault.fault module
 --------------------------------
 
-.. automodule:: FME.modelling.fault.fault
+.. automodule:: LoopStructural.modelling.fault.fault
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.fault.fault\_function module
+LoopStructural.modelling.fault.fault\_function module
 ------------------------------------------
 
-.. automodule:: FME.modelling.fault.fault_function
+.. automodule:: LoopStructural.modelling.fault.fault_function
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.fault.fault\_segment module
+LoopStructural.modelling.fault.fault\_segment module
 -----------------------------------------
 
-.. automodule:: FME.modelling.fault.fault_segment
+.. automodule:: LoopStructural.modelling.fault.fault_segment
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ FME.modelling.fault.fault\_segment module
 Module contents
 ---------------
 
-.. automodule:: FME.modelling.fault
+.. automodule:: LoopStructural.modelling.fault
     :members:
     :undoc-members:
     :show-inheritance:

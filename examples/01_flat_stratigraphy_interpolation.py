@@ -1,15 +1,15 @@
-# ### Import FME objects for interpolation
-from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
-from FME.supports.tet_mesh import TetMesh
-from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
-from FME.visualisation.model_visualisation import LavaVuModelViewer
+# ### Import LoopStructural objects for interpolation
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
+from LoopStructural.supports.tet_mesh import TetMesh
+from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
+from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
 # other necessary libraries
 import numpy as np
 import lavavu
 
 # ### Loop3D Forward Modelling Engine
-# This is an example using FME to interpolate stratigraphy within a cube. It shows a very basic
-# example of using FME.
+# This is an example using LoopStructural to interpolate stratigraphy within a cube. It shows a very basic
+# example of using LoopStructural.
 
 # ### Defining Model Region
 # Define the area to model represented by the domain of the tetrahedral mesh
@@ -28,14 +28,14 @@ mesh = TetMesh()
 mesh.setup_mesh(boundary_points, n_tetra=10000,)
 
 # ### GeologicalFeatureInterpolator
-# FME uses an abstract class representation of geological objects. A **GeologicalFeature** is
+# LoopStructural uses an abstract class representation of geological objects. A **GeologicalFeature** is
 # an abstract class that represents a geological object within the model. A **GeologicalFeature**
 # can be evaluated for the gradient or scalar value at any location within the model.
 # It can be simply a wrapper for a scalar field, or could be a piecewise combination of scalar
 # fields.
 # The **GeologicalFeature** needs to be built using a builder class, this class manages the data,
 # interpolator and any geological structures. The **GeologicalFeatureInterpolator** provides a way
-# of linking any FME interpolator to a **GeologicalFeature**. The GeologicalFeatureInterpolator
+# of linking any LoopStructural interpolator to a **GeologicalFeature**. The GeologicalFeatureInterpolator
 # needs to be given an interpolator object which should be a daughter class of a
 # GeologicalInterpolator and a name to give the feature that is being built. The name is simply used
 # as an identifier for the interpolated properties when exported into file formats or for visualisation.
@@ -69,7 +69,7 @@ np.savetxt("01_box_coords.txt", mesh.points)
 
 
 # ### Visualisation using LavaVu
-# FME uses Lavavu for visualising objects. The LavaVuModelViewer class interfaces between lavavu and FME
+# LoopStructural uses Lavavu for visualising objects. The LavaVuModelViewer class interfaces between lavavu and LoopStructural
 # kwargs can be passed from the wrapper functions to the lavavu objects.
 
 viewer = LavaVuModelViewer(background="white")

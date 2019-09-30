@@ -4,16 +4,16 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import Rbf
 
 
-from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
-from FME.interpolators.discrete_fold_interpolator import DiscreteFoldInterpolator as DFI
-from FME.modelling.features.geological_feature import GeologicalFeatureInterpolator
-from FME.supports.tet_mesh import TetMesh
-from FME.visualisation.model_visualisation import LavaVuModelViewer
-from FME.modelling.structural_frame import StructuralFrameBuilder
-from FME.modelling.fold.foldframe import FoldFrame
-from FME.modelling.fold.fold import FoldEvent
-from FME.modelling.fold.svariogram import SVariogram
-from FME.utils.helper import strike_dip_vector
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
+from LoopStructural.interpolators.discrete_fold_interpolator import DiscreteFoldInterpolator as DFI
+from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
+from LoopStructural.supports.tet_mesh import TetMesh
+from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.fold.foldframe import FoldFrame
+from LoopStructural.modelling.fold.fold import FoldEvent
+from LoopStructural.modelling.fold.svariogram import SVariogram
+from LoopStructural.utils.helper import strike_dip_vector
 points = geopandas.read_file('data.gpkg',layer='points')
 orientations = geopandas.read_file('data.gpkg',layer='orientations')
 model_area = geopandas.read_file('data.gpkg',layer='bounding_box')

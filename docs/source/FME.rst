@@ -1,16 +1,16 @@
-FME package
+LoopStructural package
 ===========
 
 Subpackages
 -----------
-FME is separated into a number of submodules:
+LoopStructural is separated into a number of submodules:
 
 .. toctree::
     :maxdepth: 1
 
 
-    Modelling <FME.modelling>
-    Interpolators <FME.interpolators>
-    Supports <FME.supports>
-    Utils <FME.utils>
+    Modelling <LoopStructural.modelling>
+    Interpolators <LoopStructural.interpolators>
+    Supports <LoopStructural.supports>
+    Utils <LoopStructural.utils>
 

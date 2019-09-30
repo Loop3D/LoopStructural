@@ -57,6 +57,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A*=vol[:,None]
             B = np.zeros(self.support.n_elements)
             idc = self.support.elements
+            print('fold_ori',np.mean(A))
             self.add_constraints_to_least_squares(A*kwargs['fold_orientation'], B, idc)
         if "fold_axis" in kwargs:
             """
@@ -65,6 +66,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A = np.einsum('ij,ijk->ik', fold_axis, eg)
             A*=vol[:,None]
             B = np.zeros(self.support.n_elements).tolist()
+            print('fold_axis',np.mean(A))
             self.add_constraints_to_least_squares(A * kwargs['fold_axis'], B, self.support.elements)
 
         if "fold_normalisation" in kwargs:
@@ -73,8 +75,9 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
 
             A  = np.einsum('ij,ijk->ik', dgz, eg)
-            A*= kwargs['fold_normalisation']
             A*=vol[:,None]
+            print('fold norm', np.mean(A))
+            A*= kwargs['fold_normalisation']
             B = np.ones(self.support.n_elements)
             if "fold_norm" in kwargs:
                 B[:] = kwargs['fold_norm']
@@ -86,6 +89,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours, self.support.elements, self.support.nodes)
             A = np.array(c)
+            print('fold_reg', np.mean(A))
             A *= kwargs['fold_regularisation']
             B = np.zeros(len(c))
             idc = np.array(idc)

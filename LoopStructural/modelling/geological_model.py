@@ -1,4 +1,4 @@
-from FME.modelling.geological_points import GPoint, IPoint
+from LoopStructural.modelling.geological_points import GPoint, IPoint
 import numpy as np
 import networkx as nx
 

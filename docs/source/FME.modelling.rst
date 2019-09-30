@@ -1,4 +1,4 @@
-FME.modelling package
+LoopStructural.modelling package
 =====================
 
 Subpackages
@@ -6,41 +6,41 @@ Subpackages
 
 .. toctree::
 
-    FME.modelling.fault
-    FME.modelling.features
-    FME.modelling.fold
+    LoopStructural.modelling.fault
+    LoopStructural.modelling.features
+    LoopStructural.modelling.fold
 
 Submodules
 ----------
 
-FME.modelling.geological\_model module
+LoopStructural.modelling.geological\_model module
 --------------------------------------
 
-.. automodule:: FME.modelling.geological_model
+.. automodule:: LoopStructural.modelling.geological_model
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.geological\_points module
+LoopStructural.modelling.geological\_points module
 ---------------------------------------
 
-.. automodule:: FME.modelling.geological_points
+.. automodule:: LoopStructural.modelling.geological_points
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.scalar\_field module
+LoopStructural.modelling.scalar\_field module
 ----------------------------------
 
-.. automodule:: FME.modelling.scalar_field
+.. automodule:: LoopStructural.modelling.scalar_field
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.structural\_frame module
+LoopStructural.modelling.structural\_frame module
 --------------------------------------
 
-.. automodule:: FME.modelling.structural_frame
+.. automodule:: LoopStructural.modelling.structural_frame
     :members:
     :undoc-members:
     :show-inheritance:
@@ -49,7 +49,7 @@ FME.modelling.structural\_frame module
 Module contents
 ---------------
 
-.. automodule:: FME.modelling
+.. automodule:: LoopStructural.modelling
     :members:
     :undoc-members:
     :show-inheritance:

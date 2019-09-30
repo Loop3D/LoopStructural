@@ -1,37 +1,37 @@
-FME.modelling.features package
+LoopStructural.modelling.features package
 ==============================
 
 Submodules
 ----------
 
-FME.modelling.features.composite\_geological\_feature module
+LoopStructural.modelling.features.composite\_geological\_feature module
 ------------------------------------------------------------
 
-.. automodule:: FME.modelling.features.composite_geological_feature
+.. automodule:: LoopStructural.modelling.features.composite_geological_feature
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.features.cross\_product\_geological\_feature module
+LoopStructural.modelling.features.cross\_product\_geological\_feature module
 -----------------------------------------------------------------
 
-.. automodule:: FME.modelling.features.cross_product_geological_feature
+.. automodule:: LoopStructural.modelling.features.cross_product_geological_feature
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.features.faulted\_geological\_feature module
+LoopStructural.modelling.features.faulted\_geological\_feature module
 ----------------------------------------------------------
 
-.. automodule:: FME.modelling.features.faulted_geological_feature
+.. automodule:: LoopStructural.modelling.features.faulted_geological_feature
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.features.geological\_feature module
+LoopStructural.modelling.features.geological\_feature module
 -------------------------------------------------
 
-.. automodule:: FME.modelling.features.geological_feature
+.. automodule:: LoopStructural.modelling.features.geological_feature
     :members:
     :undoc-members:
     :show-inheritance:
@@ -40,7 +40,7 @@ FME.modelling.features.geological\_feature module
 Module contents
 ---------------
 
-.. automodule:: FME.modelling.features
+.. automodule:: LoopStructural.modelling.features
     :members:
     :undoc-members:
     :show-inheritance:

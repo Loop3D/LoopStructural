@@ -1,21 +1,21 @@
-FME.visualisation package
+LoopStructural.visualisation package
 =========================
 
 Submodules
 ----------
 
-FME.visualisation.model\_visualisation module
+LoopStructural.visualisation.model\_visualisation module
 ---------------------------------------------
 
-.. automodule:: FME.visualisation.model_visualisation
+.. automodule:: LoopStructural.visualisation.model_visualisation
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.visualisation.rotation\_angle\_plotter module
+LoopStructural.visualisation.rotation\_angle\_plotter module
 -------------------------------------------------
 
-.. automodule:: FME.visualisation.rotation_angle_plotter
+.. automodule:: LoopStructural.visualisation.rotation_angle_plotter
     :members:
     :undoc-members:
     :show-inheritance:
@@ -24,7 +24,7 @@ FME.visualisation.rotation\_angle\_plotter module
 Module contents
 ---------------
 
-.. automodule:: FME.visualisation
+.. automodule:: LoopStructural.visualisation
     :members:
     :undoc-members:
     :show-inheritance:

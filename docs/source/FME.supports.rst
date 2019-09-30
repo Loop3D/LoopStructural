@@ -1,61 +1,61 @@
-FME.supports package
+LoopStructural.supports package
 ====================
 
 Submodules
 ----------
 
-FME.supports.base\_grid module
+LoopStructural.supports.base\_grid module
 ------------------------------
 
-.. automodule:: FME.supports.base_grid
+.. automodule:: LoopStructural.supports.base_grid
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.supports.region\_manager module
+LoopStructural.supports.region\_manager module
 -----------------------------------
 
-.. automodule:: FME.supports.region_manager
+.. automodule:: LoopStructural.supports.region_manager
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.supports.structured\_2d\_grid module
+LoopStructural.supports.structured\_2d\_grid module
 ----------------------------------------
 
-.. automodule:: FME.supports.structured_2d_grid
+.. automodule:: LoopStructural.supports.structured_2d_grid
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.supports.structured\_grid module
+LoopStructural.supports.structured\_grid module
 ------------------------------------
 
-.. automodule:: FME.supports.structured_grid
+.. automodule:: LoopStructural.supports.structured_grid
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.supports.tet\_mesh module
+LoopStructural.supports.tet\_mesh module
 -----------------------------
 
-.. automodule:: FME.supports.tet_mesh
+.. automodule:: LoopStructural.supports.tet_mesh
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.supports.tetgen\_mesh\_builder module
+LoopStructural.supports.tetgen\_mesh\_builder module
 -----------------------------------------
 
-.. automodule:: FME.supports.tetgen_mesh_builder
+.. automodule:: LoopStructural.supports.tetgen_mesh_builder
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.supports.tetrahedral\_mesh module
+LoopStructural.supports.tetrahedral\_mesh module
 -------------------------------------
 
-.. automodule:: FME.supports.tetrahedral_mesh
+.. automodule:: LoopStructural.supports.tetrahedral_mesh
     :members:
     :undoc-members:
     :show-inheritance:
@@ -64,7 +64,7 @@ FME.supports.tetrahedral\_mesh module
 Module contents
 ---------------
 
-.. automodule:: FME.supports
+.. automodule:: LoopStructural.supports
     :members:
     :undoc-members:
     :show-inheritance:

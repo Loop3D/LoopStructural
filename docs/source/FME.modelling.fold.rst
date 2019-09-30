@@ -1,29 +1,29 @@
-FME.modelling.fold package
+LoopStructural.modelling.fold package
 ==========================
 
 Submodules
 ----------
 
-FME.modelling.fold.fold module
+LoopStructural.modelling.fold.fold module
 ------------------------------
 
-.. automodule:: FME.modelling.fold.fold
+.. automodule:: LoopStructural.modelling.fold.fold
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.fold.foldframe module
+LoopStructural.modelling.fold.foldframe module
 -----------------------------------
 
-.. automodule:: FME.modelling.fold.foldframe
+.. automodule:: LoopStructural.modelling.fold.foldframe
     :members:
     :undoc-members:
     :show-inheritance:
 
-FME.modelling.fold.svariogram module
+LoopStructural.modelling.fold.svariogram module
 ------------------------------------
 
-.. automodule:: FME.modelling.fold.svariogram
+.. automodule:: LoopStructural.modelling.fold.svariogram
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ FME.modelling.fold.svariogram module
 Module contents
 ---------------
 
-.. automodule:: FME.modelling.fold
+.. automodule:: LoopStructural.modelling.fold
     :members:
     :undoc-members:
     :show-inheritance:
