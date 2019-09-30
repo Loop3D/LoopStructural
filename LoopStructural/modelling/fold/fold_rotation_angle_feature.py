@@ -1,3 +1,5 @@
+import numpy as np
+
 class FoldRotationAngleFeature:
     def __init__(self, fold_frame, rotation):
         self.fold_frame = fold_frame

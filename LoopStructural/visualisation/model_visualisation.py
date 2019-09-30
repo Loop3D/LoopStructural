@@ -329,6 +329,12 @@ class LavaVuModelViewer:
         p["colourby"] = "v"
         p.colourmap(cmap)
 
+    def plot_fold(self, fold, locations):
+        r2r, fold_axis, dgz = fold.get_deformed_orientation(locations)
+        self.plot_vector_data(locations,r2r,'foldr2r',colour='red')
+        self.plot_vector_data(locations,fold_axis,'fold_axis',colour='black')
+        self.plot_vector_data(locations,dgz,'fold_norm',colour='green')
+
     def interactive(self):
         """
         Runs the lavavu viewer as either a jupyter notebook

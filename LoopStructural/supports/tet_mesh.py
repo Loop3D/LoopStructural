@@ -195,8 +195,8 @@ class TetMesh:
         # add cg constraint for all of the
         EG = self.get_elements_gradients(np.arange(self.n_elements))
         idc, c, ncons = cg(EG, self.neighbours, self.elements, self.nodes)
-        idc = np.array(idc)
-        c = np.array(c)
+        idc = np.array(idc[:ncons,:])
+        c = np.array(c[:ncons,:])
         B = np.zeros(c.shape[0])
         return c,idc,B
 
