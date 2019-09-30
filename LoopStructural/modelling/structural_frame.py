@@ -231,7 +231,9 @@ class StructuralFrameBuilder:
         -------
 
         """
-
+        # reset the interpolators
+        for i in range(3):
+            self.interpolators[i].reset()
         gxxgy = 1.
         gxxgz = 1.
         gyxgz = 1.
@@ -283,10 +285,14 @@ class StructuralFrameBuilder:
             if "fold" in kwargs and "fold_weights" in kwargs:
                 self.interpolators[0].update_fold(kwargs['fold'])
                 self.interpolators[0].add_fold_constraints(**kwargs['fold_weights'])
-                gxcg = 0.0 # kwargs['cg'] = False
+                gxcg = 0.
+                if 'cgw' in kwargs:
+                    gxcg = kwargs['cgw']# = False
+                    if kwargs['cgw'] == 0:
+                        kwargs['cg'] = False
             self.interpolators[0].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
-            self.interpolators[0].solve_system(solver=solver)
-            gx_feature =  GeologicalFeature(self.name + '_gx',
+            self.interpolators[0].solve_system(solver=solver,**kwargs)
+            gx_feature = GeologicalFeature(self.name + '_gx',
                                       ScalarField.from_interpolator(self.interpolators[0]),
                                             data=self.data[0])
         if len(self.data[1]) > 0:

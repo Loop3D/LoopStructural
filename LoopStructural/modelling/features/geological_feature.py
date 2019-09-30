@@ -148,9 +148,12 @@ class GeologicalFeatureInterpolator:
         #     self.interpolator.add_data(d)
         # we can add a fold to the interpolator if the interpolator is a fold interpolator
         # pass the dict with weights as kwargs to the fold interpolator
+        self.interpolator.reset()
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
             self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
+            if kwargs['cgw'] == 0:
+                kwargs['cg'] = False
             # kwargs['cg'] = False
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver)

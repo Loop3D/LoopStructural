@@ -49,7 +49,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         'cg' boolean is cg being used
         :return:
         """
-        self.reset()
+        # can't reset here, clears fold constraints
+        #self.reset()
         for key in kwargs:
             self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]
@@ -77,7 +78,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         B = np.array(B)
         idc = np.array(idc)
         # w/=A.shape[0]
-        # print("Adding %i constant gradient regularisation terms individually weighted at %f"%(len(B),w))
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
@@ -89,16 +89,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         points = self.get_gradient_control()
         if points.shape[0] > 0:
-            # print("Adding %i gradient constraints individually weighted at %f"%(points.shape[0],w))
             e, inside = self.support.elements_for_array(points[:, :3])
             nodes = self.support.nodes[self.support.elements[e]]
             vecs = nodes[:,1:,:] - nodes[:,0,None,:]
             vol = np.abs(np.linalg.det(vecs)) #/ 6
             d_t = self.support.get_elements_gradients(e)
-            # print(np.linalg.norm(d_t,axis=1)[:,None, :])
-            # d_t /= np.linalg.norm(d_t,axis=1)[:,None, :]
 
-            # print()
             d_t *= vol[:,None,None]
             # w*=10^11
 
@@ -133,7 +129,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         #get elements for points
         points = self.get_control_points()
         if points.shape[0] > 1:
-            # print("Adding %i value constraints individually weighted at %f"%(points.shape[0],w))
             e, inside = self.support.elements_for_array(points[:, :3])
             # get barycentric coordinates for points
             nodes = self.support.nodes[self.support.elements[e]]
@@ -160,7 +155,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
-        # print("Adding %i gradient orthogonality individually weighted at %f" % (normals.shape[0], w))
         nodes = self.support.nodes[self.support.elements[elements]]
         vecs = nodes[:,1:,:] - nodes[:,0,None,:]
         vol = np.abs(np.linalg.det(vecs)) / 6

@@ -1,6 +1,6 @@
 from .geological_interpolator import GeologicalInterpolator
 import numpy as np
-from scipy.sparse import coo_matrix, diags, bmat
+from scipy.sparse import coo_matrix, diags, bmat, eye
 from scipy.sparse import linalg as sla
 import timeit
 
@@ -42,6 +42,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.interpolation_weights[key] = weights[key]
 
     def reset(self):
+        """
+        Reset the interpolation constraints
+        """
+        print("Resetting interpolation constraints")
+        self.c_ = 0
         self.A = []  # sparse matrix storage coo format
         self.col = []
         self.row = []  # sparse matrix storage
@@ -50,7 +55,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
-
+        self.B = []
     def add_constraints_to_least_squares(self, A, B, idc):
         """
         Adds constraints to the least squares system
@@ -59,7 +64,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         :param idc: N x C node indices
         :return:
         """
-
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
@@ -69,7 +73,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows = np.arange(0,nr).astype(int)
         rows = np.tile(rows, (A.shape[-1],1)).T
         rows+= self.c_
-        # print(rows,idc,A,B)
         self.c_+=nr
 
         if self.shape == 'rectangular':
@@ -91,13 +94,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d.extend(values.tolist())
         self.eq_const_c_ += node_idx.shape[0]
 
-    def _solve(self, solver='spqr', clear=True):
+    def _solve(self, solver='spqr', **kwargs):
         """
         Solve the least squares problem with specified solver
         :param solver: string for solver
         :param clear:
         :return:
         """
+
         # save the solver so we can rerun the interpolation at a later stage
         self.solver = solver
         # map node indicies from global to region
@@ -190,6 +194,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             if self.shape == 'rectangular':
                 # print("Performing A.T @ A")
                 A = self.AA.T.dot(self.AA)
+                if 'damp' in kwargs:
+                    A += eye(A.shape[0])*kwargs['damp']
                 B = self.AA.T.dot(self.B)
             if self.shape == 'square':
                 A = self.AA

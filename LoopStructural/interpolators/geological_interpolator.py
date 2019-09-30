@@ -13,7 +13,7 @@ class GeologicalInterpolator:
         Default constructor requires no arguments
         :param kwargs: 'itype' what type of geological feature is being interpolated
         """
-        self.p_i = [] #interface points #TODO create data container
+        self.p_i = [] #interface points #   TODO create data container
         self.p_g = [] #gradeint points
         self.p_t = [] #tangent points
         self.n_i = 0

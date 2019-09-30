@@ -152,7 +152,7 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
                 for i in range(3):
-                    c[ncons,itr_left] += Xl[i]*e1[i][itr_left]#*area
+                    c[ncons,itr_left] += Xl[i]*e1[i][itr_left]*area
             next_available_position = Na
             for itr_right in range(Na):
                 common_index = -1
@@ -167,7 +167,6 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
                     next_available_position+=1
                 idc[ncons,position_to_write] = idr[itr_right]
                 for i in range(3):
-                    c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]#*area
+                    c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]*area
             ncons+=1
-    print(ncons,c)
     return idc, c, ncons
