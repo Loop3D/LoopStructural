@@ -38,7 +38,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         return PiecewiseLinearInterpolator(self.support)
 
 
-
     def _setup_interpolator(self, **kwargs):
         """
         adds all of the constraints to the interpolation matrix

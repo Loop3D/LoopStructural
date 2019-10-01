@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from LoopStructural.modelling.geological_points import IPoint, GPoint, TPoint
 from LoopStructural.modelling.features.geological_feature import GeologicalFeature
 from LoopStructural.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
@@ -21,7 +22,8 @@ class StructuralFrame:
         self.name = name
         self.features = features
         self.data = None
-
+    def __getitem__(self, item):
+        return self.features[item]
     def get_feature(self,i):
         """
         Return the ith feature
@@ -159,50 +161,52 @@ class StructuralFrameBuilder:
         for i in range(3):
             self.interpolators[i].set_region(regionname=self.region)
 
-    def add_strike_dip_and_value(self, pos, strike, dip, val, itype):
+    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1, coord = None, itype= None):
         if itype == 'gx':
-            self.data[0].append(GPoint(pos,strike,dip))
-            self.data[0].append(IPoint(pos,val))
+            coord = 0
         if itype == 'gy':
-            self.data[1].append(GPoint(pos, strike, dip))
-            self.data[1].append(IPoint(pos, val))
+            coord = 1
         if itype == 'gz':
-            self.data[2].append(GPoint(pos, strike, dip))
-            self.data[2].append(IPoint(pos, val))
-
-    def add_point(self, pos, val, itype):
+            coord = 2
+        self.data[coord].append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
+        self.data[coord].append(IPoint(pos, val))
+    def add_point(self, pos, val,  coord = None, itype= None):
         if itype == 'gx':
-            self.data[0].append(IPoint(pos, val))
+            coord = 0
         if itype == 'gy':
-            self.data[1].append(IPoint(pos, val))
+            coord = 1
         if itype == 'gz':
-            self.data[2].append(IPoint(pos, val))
+            coord = 2
+        self.data[coord].append(IPoint(pos, val))
 
-    def add_planar_constraint(self, pos, val, itype):
+
+    def add_planar_constraint(self, pos, val,  coord = None, itype= None):
         if itype == 'gx':
-            self.data[0].append(GPoint(pos, val))
+            coord = 0
         if itype == 'gy':
-            self.data[1].append(GPoint(pos, val))
+            coord = 1
         if itype == 'gz':
-            self.data[2].append(GPoint(pos, val))
+            coord = 2
+        self.data[coord].append(GPoint(pos, val))
 
-    def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, itype):
+    def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, polarity =1 , coord = None, itype= None):
         if itype == 'gx':
-            self.data[0].append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
+            coord = 0
         if itype == 'gy':
-            self.data[1].append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
+            coord = 1
         if itype == 'gz':
-            self.data[2].append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
+            coord = 2
+        self.data[coord].append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
 
-    def add_strike_and_dip(self, pos, s, d, itype):
+    def add_strike_and_dip(self, pos, strike, dip, polarity = 1, coord = None, itype= None):
         if itype == 'gx':
-            self.data[0].append(GPoint.from_strike_and_dip(pos,s,d))
+            coord = 0
         if itype == 'gy':
-            self.data[1].append(GPoint.from_strike_and_dip(pos,s,d))
+            coord = 1
         if itype == 'gz':
-            self.data[2].append(GPoint.from_strike_and_dip(pos,s,d))
-
-    def add_tangent_constraint(self, pos, val,itype):
+            coord = 2
+        self.data[coord].append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
+    def add_tangent_constraint(self, pos, val,coord = None, itype= None):
         # if itype == 'gx':
         #     self.data[0].append(TGPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir))
         # if itype == 'gy':
@@ -237,42 +241,12 @@ class StructuralFrameBuilder:
         gxxgy = 1.
         gxxgz = 1.
         gyxgz = 1.
-        gxcg = 0.1
-        gycg = 0.1
-        gzcg = 0.1
-        gxcp = 1
-        gycp = 1
-        gzcp = 1
-        gxgcp = 1
-        gygcp = 1
-        gzgcp = 1
         if 'gxxgy' in kwargs:
             gxxgy = kwargs['gxxgy']
         if 'gxxgz' in kwargs:
             gxxgz = kwargs['gxxgz']
         if 'gyxgz' in kwargs:
             gyxgz = kwargs['gyxgz']
-        if 'gxcg' in kwargs:
-            gxcg = kwargs['gxcg']
-        if 'gycg' in kwargs:
-            gycg = kwargs['gycg']
-        if 'gzcg' in kwargs:
-            gzcg = kwargs['gzcg']
-        if 'gxcp' in kwargs:
-            gxcp = kwargs['gxcp']
-        if 'gycp' in kwargs:
-            gycp = kwargs['gycp']
-        if 'gzcp' in kwargs:
-            gzcp = kwargs['gzcp']
-        if 'gxgcp' in kwargs:
-            gxgcp = kwargs['gxgcp']
-        if 'gygcp' in kwargs:
-            gygcp = kwargs['gygcp']
-        if 'gzgcp' in kwargs:
-            gzgcp = kwargs['gzgcp']
-        shape = 'rectangular'
-        if 'shape' in kwargs:
-            shape = kwargs['shape']
 
         for i in range(3):
             for d in self.data[i]:
@@ -290,53 +264,54 @@ class StructuralFrameBuilder:
                     gxcg = kwargs['cgw']# = False
                     if kwargs['cgw'] == 0:
                         kwargs['cg'] = False
-            self.interpolators[0].setup_interpolator(cgw=gxcg, cpw=gxcp, gpw=gxgcp)
+            self.interpolators[0].setup_interpolator()
             self.interpolators[0].solve_system(solver=solver,**kwargs)
             gx_feature = GeologicalFeature(self.name + '_gx',
                                       ScalarField.from_interpolator(self.interpolators[0]),
                                             data=self.data[0])
-        if len(self.data[1]) > 0:
             if gx_feature is None:
                 print("Not enough constraints for fold frame coordinate 0, \n"
                       "Add some more and try again.")
-                return
+        if len(self.data[1]) > 0:
             print("Building structural frame coordinate 1")
-            self.interpolators[1].add_gradient_orthogonal_constraint(
-                np.arange(0,self.support.n_elements),
-                gx_feature.evaluate_gradient(self.support.barycentre),
-                w=gxxgy)
-            self.interpolators[1].setup_interpolator(cgw=gycg, cpw=gycp, gpw=gygcp)
+            if gx_feature is not None:
+                self.interpolators[1].add_gradient_orthogonal_constraint(
+                    np.arange(0,self.support.n_elements),
+                    gx_feature.evaluate_gradient(self.support.barycentre),
+                    w=gxxgy)
+            self.interpolators[1].setup_interpolator()
 
             self.interpolators[1].solve_system(solver=solver)
             gy_feature = GeologicalFeature(self.name + '_gy',
                                       ScalarField.from_interpolator(self.interpolators[1]),
                                             data=self.data[1])
-        if len(self.data[2]) > 0:
             if gy_feature is None:
                 print("Not enough constraints for fold frame coordinate 1, \n"
                       "Add some more and try again.")
-                return
+        if len(self.data[2]) > 0:
             print("Building structural frame coordinate 2")
-            self.interpolators[2].add_gradient_orthogonal_constraint(
-                np.arange(0, self.support.n_elements),
-                gx_feature.evaluate_gradient(self.support.barycentre),
-                w=gxxgz)
-            self.interpolators[2].add_gradient_orthogonal_constraint(
-                np.arange(0, self.support.n_elements),
-                gy_feature.evaluate_gradient(self.support.barycentre),
-                w=gyxgz)
-            self.interpolators[2].setup_interpolator(cgw=gzcg, cpw=gzcp, gpw=gzgcp)  # cgw=0.1)
+            if gy_feature is not None:
+                self.interpolators[2].add_gradient_orthogonal_constraint(
+                    np.arange(0, self.support.n_elements),
+                    gy_feature.evaluate_gradient(self.support.barycentre),
+                    w=gyxgz)
+            if gx_feature is not None:
+                self.interpolators[2].add_gradient_orthogonal_constraint(
+                    np.arange(0, self.support.n_elements),
+                    gx_feature.evaluate_gradient(self.support.barycentre),
+                    w=gxxgz)
+
+            self.interpolators[2].setup_interpolator()  # cgw=0.1)
             self.interpolators[2].solve_system(solver=solver)
             gz_feature = GeologicalFeature(self.name + '_gz',
                                       ScalarField.from_interpolator(self.interpolators[2]),
                                             data=self.data[2])
         if len(self.data[2]) == 0:
-            if gy_feature is None:
+            if gy_feature is not None:
+                print("Creating analytical structural frame coordinate 2")
+                gz_feature = CrossProductGeologicalFeature(self.name + '_gz',  gy_feature, gx_feature)
+            if gy_feature is None or gx_feature is None:
                 print("Not enough constraints for fold frame coordinate 1, \n"
                       "Add some more and try again.")
-                return
-            print("Creating analytical structural frame coordinate 2")
-            gz_feature = CrossProductGeologicalFeature(self.name + '_gz',  gy_feature, gx_feature)
-
         return frame(self.name, [gx_feature, gy_feature, gz_feature])
         

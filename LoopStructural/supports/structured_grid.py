@@ -43,6 +43,7 @@ class StructuredGrid:
 
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
+
     def print_geometry(self):
         print('Origin: %f %f %f'%(self.origin[0],self.origin[1],self.origin[2]))
         print('Cell size: %f %f %f'%(self.step_vector[0],self.step_vector[1],self.step_vector[2]))
@@ -60,6 +61,7 @@ class StructuredGrid:
         y = self.origin[None,1] + self.step_vector[None,1] * .5 + self.step_vector[None,1]*iy
         z = self.origin[None,2] + self.step_vector[None,2] * .5 + self.step_vector[None,2]*iz
         return np.array([x,y,z]).T
+
     def position_to_cell_index(self, pos):
         """
 
