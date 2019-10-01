@@ -331,7 +331,7 @@ class StructuredGrid:
         T[:, 2, 7] = x * y
         return T
 
-    def slice(self, propertyname, isovalue):
+    def slice(self, propertyname, isovalue, region):
 
         verts, faces, normals, values = marching_cubes(
             self.properties[propertyname].reshape(self.nsteps, order='F'),

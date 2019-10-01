@@ -22,8 +22,10 @@ class StructuralFrame:
         self.name = name
         self.features = features
         self.data = None
+
     def __getitem__(self, item):
         return self.features[item]
+
     def get_feature(self,i):
         """
         Return the ith feature
@@ -170,6 +172,7 @@ class StructuralFrameBuilder:
             coord = 2
         self.data[coord].append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
         self.data[coord].append(IPoint(pos, val))
+
     def add_point(self, pos, val,  coord = None, itype= None):
         if itype == 'gx':
             coord = 0
@@ -236,8 +239,10 @@ class StructuralFrameBuilder:
 
         """
         # reset the interpolators
-        for i in range(3):
-            self.interpolators[i].reset()
+        # for i in range(3):
+        #     self.interpolators[i].reset()
+        # all of the inteprolator weights should be set by accessing the interpolator weights
+        # dictionary directly
         gxxgy = 1.
         gxxgz = 1.
         gyxgz = 1.
@@ -251,6 +256,7 @@ class StructuralFrameBuilder:
         for i in range(3):
             for d in self.data[i]:
                 self.interpolators[i].add_data(d)
+        # initialise features as none then where data exists build
         gx_feature = None
         gy_feature = None
         gz_feature = None
@@ -259,9 +265,8 @@ class StructuralFrameBuilder:
             if "fold" in kwargs and "fold_weights" in kwargs:
                 self.interpolators[0].update_fold(kwargs['fold'])
                 self.interpolators[0].add_fold_constraints(**kwargs['fold_weights'])
-                gxcg = 0.
+                # TODO check this still works
                 if 'cgw' in kwargs:
-                    gxcg = kwargs['cgw']# = False
                     if kwargs['cgw'] == 0:
                         kwargs['cg'] = False
             self.interpolators[0].setup_interpolator()
@@ -313,5 +318,6 @@ class StructuralFrameBuilder:
             if gy_feature is None or gx_feature is None:
                 print("Not enough constraints for fold frame coordinate 1, \n"
                       "Add some more and try again.")
+        # use the frame argument to build a structural frame
         return frame(self.name, [gx_feature, gy_feature, gz_feature])
         

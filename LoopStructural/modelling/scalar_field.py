@@ -110,5 +110,5 @@ class ScalarField:
         """
         self.support.properties[self.property_name] = values
 
-    def slice(self, isovalue):
-        return self.support.slice(self.property_name, isovalue)
+    def slice(self, isovalue, region):
+        return self.support.slice(self.property_name, isovalue, region)

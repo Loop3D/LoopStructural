@@ -210,19 +210,7 @@ class TetMesh:
         Sped up using numpy
         """
         return self.element_gradients[e]
-        # ps = self.nodes[self.elements[e]]
-        # ps -= ps[:, 0, :][:, None]
-        # J = np.ones((len(e), 3, 1))
-        # m = ps[:, 1:, :]
-        # Minv = np.zeros((len(e), 4, 4))
-        # Minv[:, 0, 0] = 1
-        # Minv[:, 0, 1:] = 0
-        # minv = np.linalg.inv(m)
-        # Minv[:, 1:, 0] = (-minv @ J)[:, :, 0]
-        # Minv[:, 1:, 1:] = minv
-        # I = np.zeros((3, 4))
-        # I[np.arange(3), np.arange(3) + 1] = 1
-        # return I @ Minv
+
 
     def calc_bary_c(self, e, p):
         """
@@ -277,11 +265,11 @@ class TetMesh:
 
         return ee, inside
 
-    def evaluate_value(self, array, prop):
-        return self.eval_interpolant(array, prop)
+    def evaluate_value(self, array, prop,region='everywhere'):
+        return self.eval_interpolant(array, prop, region)
 
-    def evaluate_gradient(self, array, prop):
-        return self.eval_gradient(array, prop)
+    def evaluate_gradient(self, array, prop, region='everywhere'):
+        return self.eval_gradient(array, prop, region)
 
     def eval_interpolant(self, array, prop, k=5, e=None, region='everywhere'):
         """
@@ -296,7 +284,9 @@ class TetMesh:
 
         bc = self.calc_bary_c(e[inside], array[inside])
         prop_int = np.zeros(e.shape)
-
+        nv = np.zeros(self.properties[prop].shape)
+        nv[~self.regions[region]] = np.nan
+        nv[self.regions[region]] = self.properties[prop][self.regions[region]]
         props = self.properties[prop][self.elements[e[inside]]]
         prop_int[inside] = np.sum((bc.T * props), axis=1)
         prop_int[~inside] = np.nan
@@ -355,6 +345,9 @@ class TetMesh:
         # grads = grads.swapaxes(1, 2)
         # grads = grads @ I
         grads = self.element_gradients[e]
+        nv = np.zeros(self.properties[prop].shape)
+        nv[~self.regions[region]] = np.nan
+        nv[self.regions[region]] = self.properties[prop][self.regions[region]]
         vals = self.properties[prop][self.elements[e[inside]]]
         a = np.zeros(array.shape)
         a[inside] = (grads * vals[:, None, :]).sum(2) / 4.  # @ vals.T/
@@ -395,7 +388,7 @@ class TetMesh:
         element_mask2 = np.tile(element_mask2,(4,1)).T
         mask[self.elements] = element_mask2
         return self.nodes[mask], mask
-    def slice(self, propertyname, isovalue):
+    def slice(self, propertyname, isovalue, region='everywhere'):
         """
         Create a triangular surface from an isovalue of the scalar field
         Parameters
@@ -409,7 +402,7 @@ class TetMesh:
         tri, ntri = marching_tetra(isovalue,
                                    self.elements,
                                    self.nodes,
-                                   self.regions["everywhere"],
+                                   self.regions[region],
                                    self.properties[propertyname])
 
         ##convert from memoryview to np array

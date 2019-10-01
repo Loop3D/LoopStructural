@@ -2,7 +2,6 @@ from .geological_interpolator import GeologicalInterpolator
 import numpy as np
 from scipy.sparse import coo_matrix, diags, bmat, eye
 from scipy.sparse import linalg as sla
-import timeit
 
 
 class DiscreteInterpolator(GeologicalInterpolator):
@@ -101,14 +100,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         :param clear:
         :return:
         """
-
         # save the solver so we can rerun the interpolation at a later stage
         self.solver = solver
         # map node indicies from global to region
         if self.shape == 'rectangular':
-            # print("Building rectangular sparse matrix")
-            start = timeit.default_timer()
-            #cols = self.region_map[np.array(self.col)]
+
             cols = np.array(self.col)
             self.AA = coo_matrix((np.array(self.A), (np.array(self.row), \
                                                      cols)), shape=(self.c_, self.nx), dtype=float)  # .tocsr()
@@ -116,7 +112,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 self.C = coo_matrix((np.array(self.eq_const_C), (np.array(self.eq_const_row),
                                                                  np.array(self.eq_const_col))),
                                                                 shape=(self.eq_const_c_,self.nx))
-            # print("Sparse matrix built in %f seconds"%(timeit.default_timer()-start))
         if self.shape == 'square':
             cols = np.array(self.col)
             rows = np.array(self.row)
@@ -130,18 +125,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.c = np.zeros(self.nx)
         self.c[:] = np.nan
         if solver == 'lsqr':
-            # print("Solving using scipy lsqr")
-            start = timeit.default_timer()
             self.cc_ = sla.lsqr(self.AA, B)
             self.up_to_date = True
-            # print("Solving took %f seconds"%(timeit.default_timer()-start))
         elif solver == 'lsmr' and self.shape == 'rectangular':
-            # print("Solving using scipy lsmr")
-            start = timeit.default_timer()
             self.cc_ = sla.lsmr(self.AA, B)
             self.up_to_date = True
 
-            # print("Solving took %f seconds" %(timeit.default_timer()-start))
         elif solver == 'eigenlsqr' and self.shape == 'rectangular':
             try:
                 import eigensparse
@@ -190,7 +179,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 return
         if solver == 'lu':
             # print("Solving using scipy LU decomposition")
-            start = timeit.default_timer()
             if self.shape == 'rectangular':
                 # print("Performing A.T @ A")
                 A = self.AA.T.dot(self.AA)
@@ -205,7 +193,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = lu.solve(b)
             self.up_to_date = True
 
-            # print("Solving took %f seconds"%(timeit.default_timer()-start))
 
             return
         if solver == 'chol':
@@ -222,7 +209,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 self.c = factor(B)
                 self.up_to_date = True
 
-            # print("Solving took %f seconds"%(timeit.default_timer()-start))
                 return
             except ImportError:
                 print("Scikit Sparse not installed trying cg")

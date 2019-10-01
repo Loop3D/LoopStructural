@@ -15,12 +15,14 @@ class GeologicalFeatureInterpolator:
         if 'name' in kwargs:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
+        self.region = 'everywhere'
         if 'region' in kwargs:
             self.region = kwargs['region']
         self.data = []
 
     def update(self):
         pass
+
     def add_data(self, pos, strike = None, dip_dir = None, dip = None, dir = None,
                  val = None, plunge = None, plunge_dir = None,polarity = None):
         """
@@ -44,7 +46,7 @@ class GeologicalFeatureInterpolator:
         """
         pass
 
-    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity=1):
+    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1):
         """
 
         Parameters
@@ -91,7 +93,7 @@ class GeologicalFeatureInterpolator:
         self.data.append(GPoint(pos, val))
         self.interpolator.add_data(self.data[-1])
 
-    def add_strike_and_dip(self, pos, s, d, polarity):
+    def add_strike_and_dip(self, pos, s, d, polarity=1):
         """
 
         Parameters
@@ -170,7 +172,7 @@ class GeologicalFeatureInterpolator:
         #     self.interpolator.add_data(d)
         # we can add a fold to the interpolator if the interpolator is a fold interpolator
         # pass the dict with weights as kwargs to the fold interpolator
-        self.interpolator.reset()
+        # self.interpolator.reset()
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
             self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
@@ -181,7 +183,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator.solve_system(solver=solver)
         return GeologicalFeature(self.name,
                                  ScalarField.from_interpolator(self.interpolator),
-                                 builder=self, data=self.data)
+                                 builder=self, data=self.data, region=self.region)
 
 
 class GeologicalFeature:
@@ -190,18 +192,25 @@ class GeologicalFeature:
     model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
     which 
     """
-    def __init__(self, name, support, builder = None, data = None):
+    def __init__(self, name, support, builder = None, data = None, region = None):
         """
 
-        :param age:
-        :param name:
-        :param support:
+        Parameters
+        ----------
+        name
+        support
+        builder
+        data
+        region
         """
         self.name = name
         self.support = support
         self.ndim = 1
         self.data = data
         self.builder = builder
+        self.region = region
+        if region is None:
+            self.region = 'everywhere'
 
     def set_builder(self, builder):
         """
@@ -227,6 +236,8 @@ class GeologicalFeature:
         -------
 
         """
+        v = np.zeros(evaluation_points.shape[0])
+        v[:] = np.nan
         return self.support.evaluate_value(evaluation_points)
 
     def evaluate_gradient(self, locations):
@@ -315,6 +326,6 @@ class GeologicalFeature:
 
             return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
         else:
-            return self.support.slice(isovalue)
+            return self.support.slice(isovalue,self.region)
 
 
