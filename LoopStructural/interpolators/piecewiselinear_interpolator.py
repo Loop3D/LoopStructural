@@ -138,7 +138,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             #w /= 2059581*10**11
             idc = self.support.elements[e]
             # w /= points.shape[0]
-            self.add_constraints_to_least_squares(A.T*w, points[:, 3]*w, idc)
+            self.add_constraints_to_least_squares(A.T*w, points[:, 3]*w*vol[None,:], idc)
 
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
