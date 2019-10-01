@@ -13,6 +13,7 @@ import lavavu
 
 # ### Defining Model Region
 # Define the area to model represented by the domain of the tetrahedral mesh
+scale = 10000
 boundary_points = np.zeros((2,3))
 boundary_points[0,0] = -1
 boundary_points[0,1] = -1
@@ -20,12 +21,12 @@ boundary_points[0,2] = -1
 boundary_points[1,0] = 1
 boundary_points[1,1] = 1
 boundary_points[1,2] = 1
-
+boundary_points*=scale
 # ### Meshing
 # Create a TetMesh object and build the mesh using tetgen. The number of tetrahedron can be specified
 # by adding the n_tetra flag.
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, n_tetra=10000,)
+mesh.setup_mesh(boundary_points, n_tetra=50000,)
 
 # ### GeologicalFeatureInterpolator
 # LoopStructural uses an abstract class representation of geological objects. A **GeologicalFeature** is
@@ -50,22 +51,26 @@ mesh.setup_mesh(boundary_points, n_tetra=10000,)
 
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
+for y in np.arange(-0.5,.5,.10):
+    feature_builder.add_point([-0.5*scale,y*scale,0],0)
+    feature_builder.add_point([0.5*scale,y*scale,0],1)
+# feature_builder.add_point([0.5,0,0],1)
+for x in np.arange(-0.5,.5,.10):
 
-feature_builder.add_point([0,0,0],0)
-feature_builder.add_point([0.5,0,0],1)
 # feature_builder.add_point([-.9,0,0],.8)
-# feature_builder.add_strike_and_dip([0.4,0,0],70,50)
-#
+    feature_builder.add_strike_and_dip([x*scale,-0.5*scale,0],90,90)
+    feature_builder.add_strike_and_dip([x*scale,0.5*scale,0],90,90)
+
 # feature_builder.add_strike_and_dip([0,0,0],90,50)
-cgw = 6000
 # cgw /= mesh.n_elements
 feature = feature_builder.build(
-    solver='lu')
+    solver='lu',
+    cgw=0.1)
 
 # Export the input data and the model domain to a text file so it can be imported into gocad
-np.savetxt("01_gradient.txt", feature_builder.interpolator.get_gradient_control())
-np.savetxt("01_value.txt", feature_builder.interpolator.get_control_points())
-np.savetxt("01_box_coords.txt", mesh.points)
+# np.savetxt("01_gradient.txt", feature_builder.interpolator.get_gradient_control())
+# np.savetxt("01_value.txt", feature_builder.interpolator.get_control_points())
+# np.savetxt("01_box_coords.txt", mesh.points)
 
 
 # ### Visualisation using LavaVu
@@ -90,4 +95,4 @@ viewer.plot_value_data(
     "value",
     pointsize=10,
     colourmap=lavavu.matplotlib_colourmap("Greys"))
-viewer.lv.interactive()
+viewer.interactive()

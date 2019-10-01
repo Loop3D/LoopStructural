@@ -21,8 +21,30 @@ class GeologicalFeatureInterpolator:
 
     def update(self):
         pass
+    def add_data(self, pos, strike = None, dip_dir = None, dip = None, dir = None,
+                 val = None, plunge = None, plunge_dir = None,polarity = None):
+        """
+        Generic function to add data to a geological feature.
+        Parameters
+        ----------
+        pos - required numpy array for position
+        strike - optional strike
+        dip_dir - optional dip_dir
+        dip - optional
+        dir - numpy array for vector
+        val - value of constraint
+        polarity - polarity of vector
+        plunge - plunge value
+        plunge_dir - plunge direction
 
-    def add_strike_dip_and_value(self, pos, strike, dip, val):
+
+        Returns
+        -------
+
+        """
+        pass
+
+    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity=1):
         """
 
         Parameters
@@ -36,7 +58,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        self.data.append(GPoint(pos, strike, dip))
+        self.data.append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
         self.data.append(IPoint(pos, val))
 
     def add_point(self, pos, val):
@@ -69,7 +91,7 @@ class GeologicalFeatureInterpolator:
         self.data.append(GPoint(pos, val))
         self.interpolator.add_data(self.data[-1])
 
-    def add_strike_and_dip(self, pos, s, d):
+    def add_strike_and_dip(self, pos, s, d, polarity):
         """
 
         Parameters
@@ -82,7 +104,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        self.data.append(GPoint.from_strike_and_dip(pos, s, d))
+        self.data.append(GPoint.from_strike_and_dip(pos, s, d, polarity))
         self.interpolator.add_data(self.data[-1])
 
     def add_plunge_and_plunge_dir(self,pos,plunge,plunge_dir):

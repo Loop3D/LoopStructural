@@ -38,17 +38,7 @@ class Point():
         return d,point.pos-self.pos#nla.norm(point.pos - self.pos,axis=0)+eps, point.pos-self.pos
     def dim(self):
         return len(self.pos)
-class GridPoint(Point):
-    """
-    Point in a grid
-    """
-    def __init__(self,pos):
-        Point.__init__(self,pos)
-        self.properties = {}
-    def add_property(self,name,value):
-        self.properties[name] = value
-    def element(self,i):
-        self.element=i
+
 class IPoint(Point):
     """
     Interface point
@@ -58,6 +48,7 @@ class IPoint(Point):
         self.val = val
     def val(self):
         return self.val
+
 class IePoint(Point):
     """
     Inequality point
@@ -70,6 +61,7 @@ class IePoint(Point):
         return self.val
     def inequality(self):
         return self.greater
+
 class GPoint(Point):
     """
     Planar point
@@ -89,7 +81,7 @@ class GPoint(Point):
             self.dir[2] = m.cos(d_r)
             self.dir/= nla.norm(self.dir)
     @classmethod
-    def from_plunge_plunge_dir(cls, pos, plunge,plunge_dir):
+    def from_plunge_plunge_dir(cls, pos, plunge,plunge_dir, polarity=1):
         plunge = np.deg2rad(plunge)
         plunge_dir = np.deg2rad(plunge_dir+90)
         dir = np.zeros(3)
@@ -97,9 +89,10 @@ class GPoint(Point):
         dir[1] = -m.sin(plunge) * m.sin(plunge_dir)
         dir[2] = m.cos(plunge)
         dir /= nla.norm(dir)
+        dir*=polarity
         return cls(pos,dir)
     @classmethod
-    def from_strike_and_dip(cls, pos, strike, dip):
+    def from_strike_and_dip(cls, pos, strike, dip, polarity=1):
         dir = np.zeros(3)
         strike = np.deg2rad(strike)
         dip = np.deg2rad(np.abs(dip))
@@ -107,9 +100,10 @@ class GPoint(Point):
         dir[1] = -m.sin(dip) * m.sin(strike)
         dir[2] = m.cos(dip)
         dir /= nla.norm(dir)
+        dir*=polarity
         return cls(pos, dir)
     @classmethod
-    def from_dip_dip_dir(cls, pos, dip_dir, dip):
+    def from_dip_dip_dir(cls, pos, dip_dir, dip, polarity=1):
         dir = np.zeros(3)
         strike = np.deg2rad(dip_dir+90)
         dip = np.deg2rad(dip)
@@ -117,6 +111,7 @@ class GPoint(Point):
         dir[1] = -m.sin(dip) * m.sin(strike)
         dir[2] = m.cos(dip)
         dir /= nla.norm(dir)
+        dir*=polarity
         return cls(pos, dir)
     def dir_(self):
         return self.dir

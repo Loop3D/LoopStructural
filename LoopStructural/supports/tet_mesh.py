@@ -26,6 +26,7 @@ class TetMesh:
         self.name = 'TetMesh'
         self.path = './'
         self.usetetgen = True
+        self.save_mesh = False
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'path' in kwargs:
@@ -33,7 +34,7 @@ class TetMesh:
         if 'tetgen' in kwargs:
             self.usetetgen = kwargs['tetgen']
         if 'save' in kwargs:
-            self.save = kwargs['save']
+            self.save_mesh = kwargs['save']
         self.mesh = None
         self.shared_idxs = np.zeros(3, dtype=np.int)
         self.dinfo = {}
@@ -173,7 +174,7 @@ class TetMesh:
         props = self.properties[name][self.elements[np.arange(self.n_elements)]]
         grad = np.einsum('ikj,ij->ik', grads, props)
         self.property_gradients[name] = grad
-        if save:
+        if self.save_mesh:
             self.save()
 
     def transfer_gradient_to_nodes(self, propertyname):
@@ -380,7 +381,7 @@ class TetMesh:
                                   )
 
     def save(self):
-        if self.save:
+        if self.save_mesh:
             self.export_to_vtk(self.path + self.name + '.vtk')
     def get_connected_nodes_for_mask(self, mask):
         """
