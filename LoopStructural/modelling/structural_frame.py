@@ -1,9 +1,9 @@
 import numpy as np
 import warnings
-from LoopStructural.modelling.geological_points import IPoint, GPoint, TPoint
-from LoopStructural.modelling.features.geological_feature import GeologicalFeature
-from LoopStructural.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
-from LoopStructural.modelling.scalar_field import ScalarField
+from ..modelling.geological_points import IPoint, GPoint, TPoint
+from ..modelling.features.geological_feature import GeologicalFeature
+from ..modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
+from ..modelling.scalar_field import ScalarField
 
 
 class StructuralFrame:

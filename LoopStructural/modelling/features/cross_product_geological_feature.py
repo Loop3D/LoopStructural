@@ -1,6 +1,6 @@
 import numpy as np
 
-from LoopStructural.modelling.features.geological_feature import GeologicalFeature
+from ...modelling.features.geological_feature import GeologicalFeature
 
 
 class CrossProductGeologicalFeature(GeologicalFeature):

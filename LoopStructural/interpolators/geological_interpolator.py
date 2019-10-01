@@ -1,5 +1,5 @@
 import numpy as np
-from LoopStructural.modelling.geological_points import IPoint, GPoint, TPoint
+from ..modelling.geological_points import IPoint, GPoint, TPoint
 
 
 class GeologicalInterpolator:

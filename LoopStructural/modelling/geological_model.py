@@ -1,4 +1,4 @@
-from LoopStructural.modelling.geological_points import GPoint, IPoint
+from ..modelling.geological_points import GPoint, IPoint
 import numpy as np
 import networkx as nx
 

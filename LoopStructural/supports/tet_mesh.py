@@ -4,7 +4,7 @@ from numpy import linalg as la
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
-from LoopStructural.cython.dsi_helper import cg
+from ..cython.dsi_helper import cg
 from ..cython.marching_tetra import marching_tetra
 
 
