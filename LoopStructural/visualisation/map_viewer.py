@@ -46,7 +46,7 @@ class MapView:
         self.ax.plot([x - rotated[0], x], [y - rotated[1], y], colour)
         self.ax.plot([x, x + r2[0]], [y, y + r2[1]], colour)
 
-    def add_data_to_plot(self, feature, **kwargs):
+    def add_data(self, feature, **kwargs):
         """
         Adds the data associated to the feature to the plot
         Parameters
@@ -66,7 +66,7 @@ class MapView:
         for i in range(len(strike)):
             self.draw_strike(gradient_data[i, 0], gradient_data[i, 1], -strike[i, 0],**kwargs)
 
-    def plot_feature(self,feature, z=0, **kwargs):
+    def add_scalar_field(self, feature, z=0, **kwargs):
         """
         Draw the
         Parameters
@@ -86,5 +86,5 @@ class MapView:
                    extent=[self.origin[0],self.maximum[0],self.origin[1],self.maximum[1]],
                        vmin=feature.min(),vmax=feature.max(),**kwargs)
 
-    def contour_feature(self, feature):
+    def add_contour(self, feature):
         pass
