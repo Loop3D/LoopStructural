@@ -167,7 +167,7 @@ viewer = LavaVuModelViewer(background="white")
 # viewer.plot_isosurface(fault_frame.features[1], isovalue=0, colour='black')
 slices = [-4,-2,0]
 
-viewer.plot_isosurface(
+viewer.add_isosurface(
     fault_frame2.features[0],
     isovalue=0,
     colour='black'
@@ -177,7 +177,7 @@ viewer.plot_isosurface(
 #     isovalue=0,
 #     colour='pink'
 # )
-viewer.plot_isosurface(
+viewer.add_isosurface(
     structural_frame2.features[0],
     isovalue=0,
     colour='black'
@@ -200,7 +200,7 @@ locations = mesh.barycentre[::10, :]
 #     paint_with=faulted_strati
 #     # colour='green'
 # )
-viewer.plot_isosurface(
+viewer.add_isosurface(
     faulted_strati,
     slices=slices,
     paint_with=faulted_strati

@@ -177,7 +177,7 @@ folded_stratigraphy = stratigraphy_builder.build(solver=solver, fold_weights=fol
 viewer = LavaVuModelViewer(background="white")
 # viewer.plot_isosurface(f1_frame.features[0],  colour='green')
 # viewer.plot_isosurface(f1_frame.features[1],  colour='blue')
-viewer.plot_isosurface(folded_stratigraphy, colour='purple')
+viewer.add_isosurface(folded_stratigraphy, colour='purple')
 locations = mesh.barycentre[::20,:]
 # viewer.plot_vector_field(f1_frame.features[2], locations=locations, colour='red')
 plt.show()

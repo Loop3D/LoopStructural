@@ -335,28 +335,28 @@ plt.show()
 # # # arrays to create regularly sampled locations.
 # #
 viewer = LavaVuModelViewer(background="white")
-viewer.plot_isosurface(fault_frame.features[0],  colour='green', isovalue=0)
-viewer.plot_isosurface(fault_frame.features[1],  colour='blue')
-viewer.plot_vector_data(fault_frame.features[0].support.interpolator.get_gradient_control()[:,:3],
+viewer.add_isosurface(fault_frame.features[0], colour='green', isovalue=0)
+viewer.add_isosurface(fault_frame.features[1], colour='blue')
+viewer.add_vector_data(fault_frame.features[0].support.interpolator.get_gradient_control()[:, :3],
                         fault_frame.features[0].support.interpolator.get_gradient_control()[:,3:],
-                        "gx_grad",colour='green')
+                        "gx_grad", colour='green')
 
-viewer.plot_vector_data(fault_frame.features[1].support.interpolator.get_gradient_control()[:,:3],
+viewer.add_vector_data(fault_frame.features[1].support.interpolator.get_gradient_control()[:, :3],
                         fault_frame.features[1].support.interpolator.get_gradient_control()[:,3:],
                         "gy_grad",
-                        colour='blue')
+                       colour='blue')
 
-viewer.plot_vector_data(strati.support.interpolator.get_gradient_control()[:,:3],
+viewer.add_vector_data(strati.support.interpolator.get_gradient_control()[:, :3],
                         strati.support.interpolator.get_gradient_control()[:,3:],
                         "strati_grad",
-                        colour='red')
+                       colour='red')
 # viewer.plot_vector_data(strati_g[:,:3],
 #                         strati_g[:,3:],
 #                         "strati_grad1",
 #                         colour='black')
-viewer.plot_isosurface(fold_frame.features[0],  colour='black',isovalue=0)
-viewer.plot_isosurface(faulted_fold_frame.features[0],  colour='purple',isovalue=0)
-viewer.plot_value_data(fault_frame.features[0].support.interpolator.get_control_points()[:,:3],
+viewer.add_isosurface(fold_frame.features[0], colour='black', isovalue=0)
+viewer.add_isosurface(faulted_fold_frame.features[0], colour='purple', isovalue=0)
+viewer.add_value_data(fault_frame.features[0].support.interpolator.get_control_points()[:, :3],
                        fault_frame.features[0].support.interpolator.get_control_points()[:,3],
                        'fault_data')
 # viewer.plot_value_data(strati.support.interpolator.get_control_points()[:,:3],

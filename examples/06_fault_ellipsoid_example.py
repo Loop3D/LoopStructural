@@ -130,7 +130,7 @@ locations = mesh.barycentre[::20,:]
 # viewer.plot_isosurface(
 #     faulted_strat.fw_feature,
 #     isovalue=-9)
-viewer.plot_isosurface(
+viewer.add_isosurface(
     faulted_strat,
     nslices=10,
     paint_with=faulted_strat

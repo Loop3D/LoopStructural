@@ -24,7 +24,7 @@ class LavaVuModelViewer:
         self.lv = lavavu.Viewer(**kwargs)
         self.objects = {}
 
-    def plot_isosurface(self, geological_feature, **kwargs):
+    def add_isosurface(self, geological_feature, **kwargs):
         """
         Plot the surface of a geological feature if no kwargs are given plots the
         average surface and colours it red.
@@ -115,7 +115,7 @@ class LavaVuModelViewer:
                 vec.vertices(tribc[::kwargs['normals'],:])
                 vec.vectors(crosses[::kwargs['normals'],::])
 
-    def plot_model_box(self, boundary_points, nsteps, name, **kwargs):
+    def add_scalar_field(self, boundary_points, nsteps, name, **kwargs):
         """
 
         Parameters
@@ -221,7 +221,7 @@ class LavaVuModelViewer:
         surf.colourmap(cmap)  # nodes.shape[0]))
         #return tri, xx, yy, zz
 
-    def plot_vector_field(self, geological_feature, locations, **kwargs):
+    def add_vector_field(self, geological_feature, locations, **kwargs):
         """
         Plot the gradient of a geological feature at given locations
         Parameters
@@ -242,7 +242,7 @@ class LavaVuModelViewer:
         vectorfield.vectors(vector)
         return
 
-    def plot_data(self, feature, **kwargs):
+    def add_data(self, feature, **kwargs):
         """
         Plot the data linked to the feature
         Parameters
@@ -257,11 +257,11 @@ class LavaVuModelViewer:
         grad = feature.support.interpolator.get_gradient_control()
         value = feature.support.interpolator.get_control_points()
         if grad.shape[0] > 0:
-            self.plot_vector_data(grad[:,:3],grad[:,3:],feature.name+"_grad_cp",**kwargs)
+            self.add_vector_data(grad[:, :3], grad[:, 3:], feature.name + "_grad_cp", **kwargs)
         if value.shape[0] > 0:
-            self.plot_value_data(value[:,:3],value[:,3],feature.name+"_value_cp",**kwargs)
+            self.add_value_data(value[:, :3], value[:, 3], feature.name + "_value_cp", **kwargs)
 
-    def plot_points(self, points, name, **kwargs):
+    def add_points(self, points, name, **kwargs):
         """
         Plot points location in the lavavu viewer
         Parameters
@@ -277,7 +277,7 @@ class LavaVuModelViewer:
         p = self.lv.points(name, **kwargs)
         p.vertices(points)
 
-    def plot_vector_data(self, position, vector, name, **kwargs):
+    def add_vector_data(self, position, vector, name, **kwargs):
         """
         Plot point data with a vector component into the lavavu viewer
         Parameters
@@ -301,7 +301,7 @@ class LavaVuModelViewer:
             vectorfield.vectors(vector)
             return
 
-    def plot_value_data(self, position, value, name, **kwargs):
+    def add_value_data(self, position, value, name, **kwargs):
         """
         Plot points data with a value component
         Parameters
@@ -329,11 +329,22 @@ class LavaVuModelViewer:
         p["colourby"] = "v"
         p.colourmap(cmap)
 
-    def plot_fold(self, fold, locations):
+    def add_fold(self, fold, locations):
+        """
+        Draw the vector components of the fold at the locations
+        Parameters
+        ----------
+        fold - fold object
+        locations - numpy array of xyz
+
+        Returns
+        -------
+
+        """
         r2r, fold_axis, dgz = fold.get_deformed_orientation(locations)
-        self.plot_vector_data(locations,r2r,'foldr2r',colour='red')
-        self.plot_vector_data(locations,fold_axis,'fold_axis',colour='black')
-        self.plot_vector_data(locations,dgz,'fold_norm',colour='green')
+        self.add_vector_data(locations, r2r, 'foldr2r', colour='red')
+        self.add_vector_data(locations, fold_axis, 'fold_axis', colour='black')
+        self.add_vector_data(locations, dgz, 'fold_norm', colour='green')
 
     def interactive(self):
         """
@@ -349,5 +360,8 @@ class LavaVuModelViewer:
             self.lv.control.show()
         if not is_notebook():
             self.lv.interactive()
+
+    def set_viewer_rotation(self,rotation):
+        self.lv
 
 

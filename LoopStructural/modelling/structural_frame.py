@@ -26,7 +26,7 @@ class StructuralFrame:
     def __getitem__(self, item):
         return self.features[item]
 
-    def get_feature(self,i):
+    def get_feature(self, i):
         """
         Return the ith feature
         Parameters

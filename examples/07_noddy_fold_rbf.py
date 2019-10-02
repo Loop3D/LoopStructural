@@ -229,16 +229,16 @@ folded_stratigraphy = stratigraphy_builder.build(solver=solver,
 # arrays to create regularly sampled locations.
 
 viewer = LavaVuModelViewer(background="white")
-viewer.plot_isosurface(f1_frame.features[0],  colour='green')
-viewer.plot_isosurface(f1_frame.features[1],  colour='blue')
-viewer.plot_isosurface(folded_stratigraphy,
-                       colour='purple',
-                       nslices=10,
-                       # paint_with=f1_frame.features[0]
-                       )
+viewer.add_isosurface(f1_frame.features[0], colour='green')
+viewer.add_isosurface(f1_frame.features[1], colour='blue')
+viewer.add_isosurface(folded_stratigraphy,
+                      colour='purple',
+                      nslices=10,
+                      # paint_with=f1_frame.features[0]
+                      )
 locations = mesh.barycentre[::20,:]
-viewer.plot_vector_field(f1_frame.features[2], locations=locations, colour='red')
-viewer.plot_vector_field(f1_frame.features[1], locations=locations, colour='green')
-viewer.plot_vector_field(f1_frame.features[0], locations=locations, colour='blue')
+viewer.add_vector_field(f1_frame.features[2], locations=locations, colour='red')
+viewer.add_vector_field(f1_frame.features[1], locations=locations, colour='green')
+viewer.add_vector_field(f1_frame.features[0], locations=locations, colour='blue')
 viewer.interactive()
 

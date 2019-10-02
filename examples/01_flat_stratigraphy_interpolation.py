@@ -78,18 +78,18 @@ feature = feature_builder.build(
 # kwargs can be passed from the wrapper functions to the lavavu objects.
 
 viewer = LavaVuModelViewer(background="white")
-viewer.plot_isosurface(
+viewer.add_isosurface(
     feature,
     slices=[0], #specify multiple isosurfaces
     # isovalue=0, # a single isosurface
     # nslices=10 #the number of evenly space isosurfaces
     )
-viewer.plot_vector_data(
+viewer.add_vector_data(
     feature_builder.interpolator.get_gradient_control()[:,:3],
     feature_builder.interpolator.get_gradient_control()[:,3:],
     "grad" # object name
 )
-viewer.plot_value_data(
+viewer.add_value_data(
     feature_builder.interpolator.get_control_points()[:,:3],
     feature_builder.interpolator.get_control_points()[:,3:],
     "value",

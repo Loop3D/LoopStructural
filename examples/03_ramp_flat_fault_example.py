@@ -69,11 +69,11 @@ viewer = LavaVuModelViewer()
 #     nslices=10,
 #     paint_with=faulted_feature.feature
 # )
-viewer.plot_isosurface(
+viewer.add_isosurface(
     faulted_feature,
     nslices=10,
     paint_with=faulted_feature
 )
-viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
+viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
 
 viewer.lv.interactive()

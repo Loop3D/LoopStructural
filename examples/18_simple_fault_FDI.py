@@ -77,9 +77,9 @@ fault = FaultSegment(fault_frame, displacement=4)
 faulted_feature = FaultedGeologicalFeature(feature, fault)
 
 viewer = LavaVuModelViewer()
-viewer.plot_isosurface(faulted_feature,isovalue=0)
+viewer.add_isosurface(faulted_feature, isovalue=0)
 # mask = fault_frame.features[0].support.get_node_values() > 0
 # mask[grid.elements] = np.any(mask[grid.elements] == True, axis=1)[:, None]
 # viewer.plot_points(grid.nodes[mask], "nodes", col="red")
-viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
+viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
 viewer.interactive()
