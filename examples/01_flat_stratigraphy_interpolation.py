@@ -13,7 +13,7 @@ import lavavu
 
 # ### Defining Model Region
 # Define the area to model represented by the domain of the tetrahedral mesh
-scale = 10000
+scale = 10#0000
 boundary_points = np.zeros((2,3))
 boundary_points[0,0] = -1
 boundary_points[0,1] = -1
@@ -80,9 +80,9 @@ feature = feature_builder.build(
 viewer = LavaVuModelViewer(background="white")
 viewer.add_isosurface(
     feature,
-    slices=[0], #specify multiple isosurfaces
+    # slices=[0], #specify multiple isosurfaces
     # isovalue=0, # a single isosurface
-    # nslices=10 #the number of evenly space isosurfaces
+    nslices=10 #the number of evenly space isosurfaces
     )
 viewer.add_vector_data(
     feature_builder.interpolator.get_gradient_control()[:,:3],

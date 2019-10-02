@@ -3,7 +3,7 @@ from scipy.spatial import cKDTree
 import numpy as np
 
 
-class TetMeshSupport(BaseGrid):
+class TetMesh(BaseGrid):
     """
     An unstructured grid
     """
@@ -134,8 +134,6 @@ class TetMeshSupport(BaseGrid):
         points = self.nodes[self.elements[e]]
         vap = p - points[:, 0, :]
         vbp = p - points[:, 1, :]
-        # vcp = p - points[:, 2, :]
-        # vdp = p - points[:, 3, :]
         vab = points[:, 1, :] - points[:, 0, :]
         vac = points[:, 2, :] - points[:, 0, :]
         vad = points[:, 3, :] - points[:, 0, :]
@@ -147,7 +145,7 @@ class TetMeshSupport(BaseGrid):
         vc = np.sum(vap * np.cross(vad, vab, axisa=1, axisb=1), axis=1) / 6.
         vd = np.sum(vap * np.cross(vab, vac, axisa=1, axisb=1), axis=1) / 6.
         v = np.sum(vab * np.cross(vac, vad, axisa=1, axisb=1), axis=1) / 6.
-        c = np.zeros((4, npts))
+        c = np.zeros((4, p.shape[0]))
         c[0, :] = va / v
         c[1, :] = vb / v
         c[2, :] = vc / v
