@@ -1,9 +1,6 @@
 LoopStructural.modelling.fault package
 ===========================
 
-Submodules
-----------
-
 LoopStructural.modelling.fault.fault module
 --------------------------------
 

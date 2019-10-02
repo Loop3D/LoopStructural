@@ -1,9 +1,6 @@
 LoopStructural.visualisation package
 =========================
 
-Submodules
-----------
-
 LoopStructural.visualisation.model\_visualisation module
 ---------------------------------------------
 

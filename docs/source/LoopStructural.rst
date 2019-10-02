@@ -13,4 +13,5 @@ LoopStructural is separated into a number of submodules:
     Interpolators <LoopStructural.interpolators>
     Supports <LoopStructural.supports>
     Utils <LoopStructural.utils>
+    Visualisation <LoopStructural.visualisation>
 

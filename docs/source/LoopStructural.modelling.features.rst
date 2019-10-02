@@ -1,9 +1,6 @@
 LoopStructural.modelling.features package
 ==============================
 
-Submodules
-----------
-
 LoopStructural.modelling.features.composite\_geological\_feature module
 ------------------------------------------------------------
 
