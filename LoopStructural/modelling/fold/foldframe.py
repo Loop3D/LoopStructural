@@ -1,4 +1,4 @@
-from LoopStructural.modelling.structural_frame import StructuralFrame
+from LoopStructural.modelling.features.structural_frame import StructuralFrame
 import numpy as np
 
 

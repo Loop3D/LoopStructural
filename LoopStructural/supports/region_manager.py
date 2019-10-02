@@ -34,7 +34,7 @@ class RegionManager:
         region[logic] = 1
         self.mesh.regions[name] = region
         
-    def create_region_from_object_aligned_box(self,points,name,wscale=1.,hscale=1.,lscale=1.):
+    def create_region_from_object_aligned_box(self, points, name, wscale=1.,hscale=1.,lscale=1.):
         """
         calculates PCA of the points, then calculates bounding box, applies w scale and h scale
         then reporjects back into cartesian space and creates a region
@@ -66,6 +66,7 @@ class RegionManager:
         #transform back
         cornerst = pca.inverse_transform(corners)
         self.create_region_from_cuboid(cornerst,name)
+
     def create_region_from_map_object_aligned_bounding_box(self,points,minz,maxz,name,pc1buffer=0.,pc2buffer=0.):
         pca = PCA(n_components=2)
         pca.fit(points)
@@ -94,6 +95,7 @@ class RegionManager:
         cornerst[:,2] = corners[:,2]
         
         self.create_region_from_cuboid(cornerst,name)
+
     def create_region_from_boundary_box(self,boundary_points,name):
         corners = np.zeros((4,3))
         corners[0,:] = np.array([boundary_points[0,0],boundary_points[0,1],boundary_points[0,2]])

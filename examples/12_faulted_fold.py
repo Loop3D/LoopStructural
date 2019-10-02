@@ -4,7 +4,7 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseL
 from LoopStructural.interpolators.discrete_fold_interpolator import DiscreteFoldInterpolator as DFI
 from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
-from LoopStructural.modelling.structural_frame import StructuralFrameBuilder, StructuralFrame
+from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
 from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.fold import FoldEvent
 from LoopStructural.modelling.fold.svariogram import SVariogram

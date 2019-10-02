@@ -9,7 +9,7 @@ from LoopStructural.interpolators.discrete_fold_interpolator import DiscreteFold
 from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
-from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
 from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.fold import FoldEvent
 from LoopStructural.modelling.fold.svariogram import SVariogram

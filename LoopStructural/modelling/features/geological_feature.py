@@ -1,5 +1,5 @@
-from LoopStructural.modelling.scalar_field import ScalarField
-from LoopStructural.modelling.geological_points import GPoint, IPoint, TPoint
+from LoopStructural.supports.scalar_field import ScalarField
+from LoopStructural.modelling.core.geological_points import GPoint, IPoint, TPoint
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 import numpy as np
