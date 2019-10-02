@@ -30,9 +30,11 @@ class GeologicalModel:
         self.bounding_box[0,:] = self.maxmimum-self.origin
         self.bounding_box/=self.scale_factor
 
-    def add_structural_frame(self,frame):
+    def add_structural_frame(self, frame):
         # self.features[frame.name] = frame
-        self.graph.add_node(frame,name=frame.name)
+        self.graph.add_node(frame, name=frame.name)
+
+
     def add_data(self, data):
         if type(data) == IPoint:
             self.data['value'].append(data)
