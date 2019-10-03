@@ -70,7 +70,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         :param w: weight
         :return:
         """
-        points = self.get_control_points()
+        points = self.get_value_constraints()
         # check that we have added some points
         if points.shape[0]>0:
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
@@ -89,7 +89,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         :return:
         """
 
-        points = self.get_gradient_control()
+        points = self.get_gradient_constraints()
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
             # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]

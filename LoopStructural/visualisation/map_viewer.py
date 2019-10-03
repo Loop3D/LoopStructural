@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from ..utils.helper import normal_vector_to_strike_and_dip
-from ..utils.utils import strike_symbol
+from LoopStructural.utils.helper import normal_vector_to_strike_and_dip
+from LoopStructural.utils.utils import strike_symbol
 
 class MapView:
     def __init__(self, origin, maximum, nsteps,**kwargs):
@@ -57,8 +57,8 @@ class MapView:
         -------
 
         """
-        gradient_data = feature.support.interpolator.get_gradient_control()
-        value_data = feature.support.interpolator.get_control_points()
+        gradient_data = feature.support.interpolator.get_gradient_constraints()
+        value_data = feature.support.interpolator.get_value_constraints()
         self.ax.scatter(value_data[:,0],value_data[:,1],c=value_data[:,3],
                         vmin=feature.min(),vmax=feature.max(),**kwargs)
         #points = strati.support.interpolator.get_gradient_control()

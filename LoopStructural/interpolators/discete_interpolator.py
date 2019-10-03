@@ -1,4 +1,4 @@
-from .geological_interpolator import GeologicalInterpolator
+from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 import numpy as np
 from scipy.sparse import coo_matrix, diags, bmat, eye
 from scipy.sparse import linalg as sla

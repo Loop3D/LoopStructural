@@ -118,13 +118,13 @@ viewer.add_isosurface(
     colour='blue'
 )
 viewer.add_vector_data(
-    feature_builder.interpolator.get_gradient_control()[:,:3],
-    feature_builder.interpolator.get_gradient_control()[:,3:],
+    feature_builder.interpolator.get_gradient_constraints()[:, :3],
+    feature_builder.interpolator.get_gradient_constraints()[:, 3:],
     "grad" # object name
 )
 viewer.add_value_data(
-    feature_builder.interpolator.get_control_points()[:,:3],
-    feature_builder.interpolator.get_control_points()[:,3:],
+    feature_builder.interpolator.get_value_constraints()[:, :3],
+    feature_builder.interpolator.get_value_constraints()[:, 3:],
     "value",
     pointsize=10,
     colourmap=lavavu.matplotlib_colourmap("Greys"))

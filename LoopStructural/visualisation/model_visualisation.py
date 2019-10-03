@@ -254,8 +254,8 @@ class LavaVuModelViewer:
         -------
 
         """
-        grad = feature.support.interpolator.get_gradient_control()
-        value = feature.support.interpolator.get_control_points()
+        grad = feature.support.interpolator.get_gradient_constraints()
+        value = feature.support.interpolator.get_value_constraints()
         if grad.shape[0] > 0:
             self.add_vector_data(grad[:, :3], grad[:, 3:], feature.name + "_grad_cp", **kwargs)
         if value.shape[0] > 0:

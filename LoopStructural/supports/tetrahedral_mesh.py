@@ -1,4 +1,4 @@
-from .base_grid import BaseGrid
+from LoopStructural.supports.base_grid import BaseGrid
 from scipy.spatial import cKDTree
 import numpy as np
 

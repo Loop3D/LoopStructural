@@ -23,6 +23,16 @@ class StructuralFrame:
         self.data = None
 
     def __getitem__(self, item):
+        """
+
+        Parameters
+        ----------
+        item index of feature to access
+
+        Returns
+        -------
+        the structural frame geological feature
+        """
         return self.features[item]
 
     def get_feature(self, i):
@@ -89,31 +99,6 @@ class StructuralFrame:
                 self.features[1].support.evaluate_gradient(evaluation_points),
                 self.features[2].support.evaluate_gradient(evaluation_points))
 
-    def get_data(self,itype=None,ptype=None):
-        if itype == None and ptype== None:
-            return self.data
-        data = []
-        for d in self.data:
-            if d['type'] == itype:
-                if ptype == None:
-                    data.append(d)
-                if type(d['data']) == ptype:
-                    data.append(d)
-        return data
-
-    def get_values(self, i):
-        """
-        Returns the node values of the mesh support
-        TODO remove this
-        Parameters
-        ----------
-        i
-
-        Returns
-        -------
-
-        """
-        return self.features[i].support.get_node_values()
 
 
 class StructuralFrameBuilder:

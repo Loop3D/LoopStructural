@@ -76,7 +76,7 @@ faulted_strat =FaultedGeologicalFeature(stratigraphy,fault)
 
 viewer = LavaVuModelViewer(background="white")
 slices = [-4,-2,0]
-viewer.add_vector_data(fault_interpolator.get_gradient_control()[:, :3], fault_interpolator.get_gradient_control()[:, 3:], "grd")
+viewer.add_vector_data(fault_interpolator.get_gradient_constraints()[:, :3], fault_interpolator.get_gradient_constraints()[:, 3:], "grd")
 viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='green')
 locations = mesh.barycentre[::20,:]
 viewer.add_vector_field(fault_frame.features[1], locations=locations, colour='red')

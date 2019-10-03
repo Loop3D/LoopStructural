@@ -136,8 +136,8 @@ for i, r in points.iterrows():
 # the angle between the fold axis direction field and the intersection lineation. A
 # SVariogram can then be used to automatically pick the wavelength of the fold
 
-xyz = stratigraphy_builder.interpolator.get_gradient_control()[:,:3]
-s0g = stratigraphy_builder.interpolator.get_gradient_control()[:,3:]
+xyz = stratigraphy_builder.interpolator.get_gradient_constraints()[:, :3]
+s0g = stratigraphy_builder.interpolator.get_gradient_constraints()[:, 3:]
 l1 = f1_frame.calculate_intersection_lineation(np.hstack([xyz,s0g]))
 far = f1_frame.calculate_fold_axis_rotation(np.hstack([xyz,l1]))
 s1 = f1_frame.features[0].evaluate_value(xyz)

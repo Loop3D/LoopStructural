@@ -184,10 +184,10 @@ strati = stratigraphy_builder.build()
 #                         strati.support.interpolator.get_gradient_control()[:,3:],
 #                         "strati_grad2",
 #                         colour='green')
-strati_g = strati.support.interpolator.get_gradient_control()
+strati_g = strati.support.interpolator.get_gradient_constraints()
 faulted_strati = FaultedGeologicalFeature(strati, fault)
-xyz = stratigraphy_builder.interpolator.get_gradient_control()[:,:3]
-s0g = stratigraphy_builder.interpolator.get_gradient_control()[:,3:]
+xyz = stratigraphy_builder.interpolator.get_gradient_constraints()[:, :3]
+s0g = stratigraphy_builder.interpolator.get_gradient_constraints()[:, 3:]
 l1 = faulted_fold_frame.calculate_intersection_lineation(np.hstack([xyz,s0g]))
 far = faulted_fold_frame.calculate_fold_axis_rotation(np.hstack([xyz,l1]))
 s1 = faulted_fold_frame.features[0].evaluate_value(xyz)
@@ -337,17 +337,17 @@ plt.show()
 viewer = LavaVuModelViewer(background="white")
 viewer.add_isosurface(fault_frame.features[0], colour='green', isovalue=0)
 viewer.add_isosurface(fault_frame.features[1], colour='blue')
-viewer.add_vector_data(fault_frame.features[0].support.interpolator.get_gradient_control()[:, :3],
-                        fault_frame.features[0].support.interpolator.get_gradient_control()[:,3:],
+viewer.add_vector_data(fault_frame.features[0].support.interpolator.get_gradient_constraints()[:, :3],
+                       fault_frame.features[0].support.interpolator.get_gradient_constraints()[:, 3:],
                         "gx_grad", colour='green')
 
-viewer.add_vector_data(fault_frame.features[1].support.interpolator.get_gradient_control()[:, :3],
-                        fault_frame.features[1].support.interpolator.get_gradient_control()[:,3:],
+viewer.add_vector_data(fault_frame.features[1].support.interpolator.get_gradient_constraints()[:, :3],
+                       fault_frame.features[1].support.interpolator.get_gradient_constraints()[:, 3:],
                         "gy_grad",
                        colour='blue')
 
-viewer.add_vector_data(strati.support.interpolator.get_gradient_control()[:, :3],
-                        strati.support.interpolator.get_gradient_control()[:,3:],
+viewer.add_vector_data(strati.support.interpolator.get_gradient_constraints()[:, :3],
+                       strati.support.interpolator.get_gradient_constraints()[:, 3:],
                         "strati_grad",
                        colour='red')
 # viewer.plot_vector_data(strati_g[:,:3],
@@ -356,8 +356,8 @@ viewer.add_vector_data(strati.support.interpolator.get_gradient_control()[:, :3]
 #                         colour='black')
 viewer.add_isosurface(fold_frame.features[0], colour='black', isovalue=0)
 viewer.add_isosurface(faulted_fold_frame.features[0], colour='purple', isovalue=0)
-viewer.add_value_data(fault_frame.features[0].support.interpolator.get_control_points()[:, :3],
-                       fault_frame.features[0].support.interpolator.get_control_points()[:,3],
+viewer.add_value_data(fault_frame.features[0].support.interpolator.get_value_constraints()[:, :3],
+                      fault_frame.features[0].support.interpolator.get_value_constraints()[:, 3],
                        'fault_data')
 # viewer.plot_value_data(strati.support.interpolator.get_control_points()[:,:3],
 #                        strati.support.interpolator.get_control_points()[:,3],

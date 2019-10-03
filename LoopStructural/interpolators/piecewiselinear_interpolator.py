@@ -86,7 +86,31 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         :param w: weight per constraint
         :return:
         """
-        points = self.get_gradient_control()
+        points = self.get_gradient_constraints()
+        if points.shape[0] > 0:
+            e, inside = self.support.elements_for_array(points[:, :3])
+            nodes = self.support.nodes[self.support.elements[e]]
+            vecs = nodes[:,1:,:] - nodes[:,0,None,:]
+            vol = np.abs(np.linalg.det(vecs)) #/ 6
+            d_t = self.support.get_elements_gradients(e)
+            d_t /= np.linalg.norm(d_t,axis=2)[:,:,None]
+            d_t *= vol[:,None,None]
+            # w*=10^11
+
+            points[:,3:] /= np.linalg.norm(d_t,axis=2)[:,:]#np.linalg.norm(points[:,3:],axis=1)[:,None]
+
+            # add in the element gradient matrix into the inte
+            e=np.tile(e,(3,1)).T
+            idc = self.support.elements[e]
+            w /= 3
+            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
+    def add_norm_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
+        """
+        add gradient norm constraints to the interpolator
+        :param w: weight per constraint
+        :return:
+        """
+        points = self.get_norm_constraints()
         if points.shape[0] > 0:
             e, inside = self.support.elements_for_array(points[:, :3])
             nodes = self.support.nodes[self.support.elements[e]]
@@ -104,7 +128,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = self.support.elements[e]
             w /= 3
             self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
-
     def add_tangent_ctr_pts(self, w=1.0):
         """
         Add tangent constraint to the scalar field
@@ -126,7 +149,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
 
         #get elements for points
-        points = self.get_control_points()
+        points = self.get_value_constraints()
         if points.shape[0] > 1:
             e, inside = self.support.elements_for_array(points[:, :3])
             # get barycentric coordinates for points

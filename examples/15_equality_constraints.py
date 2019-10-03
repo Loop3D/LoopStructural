@@ -64,8 +64,8 @@ feature2 = feature_builder2.build(
     cgw=cgw)
 
 # Export the input data and the model domain to a text file so it can be imported into gocad
-np.savetxt("01_gradient.txt", feature_builder.interpolator.get_gradient_control())
-np.savetxt("01_value.txt", feature_builder.interpolator.get_control_points())
+np.savetxt("01_gradient.txt", feature_builder.interpolator.get_gradient_constraints())
+np.savetxt("01_value.txt", feature_builder.interpolator.get_value_constraints())
 np.savetxt("01_box_coords.txt", mesh.points)
 
 
@@ -89,13 +89,13 @@ viewer.add_isosurface(
     # nslices=10 #the number of evenly space isosurfaces
 )
 viewer.add_vector_data(
-    feature_builder.interpolator.get_gradient_control()[:,:3],
-    feature_builder.interpolator.get_gradient_control()[:,3:],
+    feature_builder.interpolator.get_gradient_constraints()[:, :3],
+    feature_builder.interpolator.get_gradient_constraints()[:, 3:],
     "grad" # object name
 )
 viewer.add_value_data(
-    feature_builder.interpolator.get_control_points()[:,:3],
-    feature_builder.interpolator.get_control_points()[:,3:],
+    feature_builder.interpolator.get_value_constraints()[:, :3],
+    feature_builder.interpolator.get_value_constraints()[:, 3:],
     "value",
     pointsize=10,
     colourmap=lavavu.matplotlib_colourmap("Greys"))

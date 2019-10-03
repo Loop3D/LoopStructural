@@ -51,15 +51,19 @@ mesh.setup_mesh(boundary_points, n_tetra=50000,)
 
 interpolator = PLI(mesh)
 feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
-for y in np.arange(-0.5,.5,.10):
-    feature_builder.add_point([-0.5*scale,y*scale,0],0)
-    feature_builder.add_point([0.5*scale,y*scale,0],1)
-# feature_builder.add_point([0.5,0,0],1)
-for x in np.arange(-0.5,.5,.10):
+feature_builder.add_strike_and_dip([0,0,0],0,90)
+feature_builder.add_point([0.1,0,0],0)
+feature_builder.add_point([-0.1,0,0],1)
 
-# feature_builder.add_point([-.9,0,0],.8)
-    feature_builder.add_strike_and_dip([x*scale,-0.5*scale,0],90,90)
-    feature_builder.add_strike_and_dip([x*scale,0.5*scale,0],90,90)
+# for y in np.arange(-0.5,.5,.10):
+#     feature_builder.add_point([-0.5*scale,y*scale,0],0)
+#     feature_builder.add_point([0.5*scale,y*scale,0],1)
+# # feature_builder.add_point([0.5,0,0],1)
+# for x in np.arange(-0.5,.5,.10):
+#
+# # feature_builder.add_point([-.9,0,0],.8)
+#     feature_builder.add_strike_and_dip([x*scale,-0.5*scale,0],90,90)
+#     feature_builder.add_strike_and_dip([x*scale,0.5*scale,0],90,90)
 
 # feature_builder.add_strike_and_dip([0,0,0],90,50)
 # cgw /= mesh.n_elements
@@ -85,13 +89,13 @@ viewer.add_isosurface(
     nslices=10 #the number of evenly space isosurfaces
     )
 viewer.add_vector_data(
-    feature_builder.interpolator.get_gradient_control()[:,:3],
-    feature_builder.interpolator.get_gradient_control()[:,3:],
+    feature_builder.interpolator.get_gradient_constraints()[:, :3],
+    feature_builder.interpolator.get_gradient_constraints()[:, 3:],
     "grad" # object name
 )
 viewer.add_value_data(
-    feature_builder.interpolator.get_control_points()[:,:3],
-    feature_builder.interpolator.get_control_points()[:,3:],
+    feature_builder.interpolator.get_value_constraints()[:, :3],
+    feature_builder.interpolator.get_value_constraints()[:, 3:],
     "value",
     pointsize=10,
     colourmap=lavavu.matplotlib_colourmap("Greys"))
