@@ -228,6 +228,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # #print(precon)
             self.cc_ = sla.cg(A, B, M=diags(1/A.diagonal()))
             self.up_to_date = True
+            self.c[self.region] = self.cc_[0]
         if solver == 'eigencg':
             import sys
             sys.path.insert(0, '/home/lgrose/dev/cpp/PyEigen/build')

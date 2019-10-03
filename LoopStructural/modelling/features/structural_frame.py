@@ -1,8 +1,12 @@
-import numpy as np
-from LoopStructural.modelling.core.geological_points import IPoint, GPoint
+from LoopStructural.modelling.core.geological_points import GPoint, IPoint, TPoint
+
+
+
 from LoopStructural.modelling.features.geological_feature import GeologicalFeature
 from LoopStructural.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
 from LoopStructural.supports.scalar_field import ScalarField
+
+import numpy as np
 
 
 class StructuralFrame:
@@ -155,7 +159,9 @@ class StructuralFrameBuilder:
         if itype == 'gz':
             coord = 2
         self.data[coord].append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
+        self.interpolators[coord].add_data(self.data[coord][-1])
         self.data[coord].append(IPoint(pos, val))
+        self.interpolators[coord].add_data(self.data[coord][-1])
 
     def add_point(self, pos, val,  coord = None, itype= None):
         if itype == 'gx':
@@ -165,6 +171,7 @@ class StructuralFrameBuilder:
         if itype == 'gz':
             coord = 2
         self.data[coord].append(IPoint(pos, val))
+        self.interpolators[coord].add_data(self.data[coord][-1])
 
 
     def add_planar_constraint(self, pos, val,  coord = None, itype= None):
@@ -175,6 +182,7 @@ class StructuralFrameBuilder:
         if itype == 'gz':
             coord = 2
         self.data[coord].append(GPoint(pos, val))
+        self.interpolators[coord].add_data(self.data[coord][-1])
 
     def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, polarity =1 , coord = None, itype= None):
         if itype == 'gx':
@@ -184,6 +192,7 @@ class StructuralFrameBuilder:
         if itype == 'gz':
             coord = 2
         self.data[coord].append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
+        self.interpolators[coord].add_data(self.data[coord][-1])
 
     def add_strike_and_dip(self, pos, strike, dip, polarity = 1, coord = None, itype= None):
         if itype == 'gx':
@@ -193,6 +202,8 @@ class StructuralFrameBuilder:
         if itype == 'gz':
             coord = 2
         self.data[coord].append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
+        self.interpolators[coord].add_data(self.data[coord][-1])
+
     def add_tangent_constraint(self, pos, val,coord = None, itype= None):
         # if itype == 'gx':
         #     self.data[0].append(TGPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir))
@@ -201,6 +212,7 @@ class StructuralFrameBuilder:
         # if itype == 'gz':
         #     self.data[2].append(GPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir))
         pass
+
     def add_tangent_constraint_angle(self,pos,s,d,itype):
         # if itype == 'gx':
         #     self.data[0].append(GPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir))
@@ -237,9 +249,6 @@ class StructuralFrameBuilder:
         if 'gyxgz' in kwargs:
             gyxgz = kwargs['gyxgz']
 
-        for i in range(3):
-            for d in self.data[i]:
-                self.interpolators[i].add_data(d)
         # initialise features as none then where data exists build
         gx_feature = None
         gy_feature = None

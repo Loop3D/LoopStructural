@@ -1,5 +1,5 @@
-from FME.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator
-from FME.cython.dsi_helper import fold_cg
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator
+from LoopStructural.cython.dsi_helper import fold_cg
 import numpy as np
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):

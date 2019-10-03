@@ -68,7 +68,7 @@ feature_builder.add_point([-0.1,0,0],1)
 # feature_builder.add_strike_and_dip([0,0,0],90,50)
 # cgw /= mesh.n_elements
 feature = feature_builder.build(
-    solver='lu',
+    solver='cg',
     cgw=0.1)
 
 # Export the input data and the model domain to a text file so it can be imported into gocad

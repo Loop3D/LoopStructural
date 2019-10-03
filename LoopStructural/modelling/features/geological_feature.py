@@ -255,7 +255,7 @@ class GeologicalFeature:
 
     def mean(self):
         """
-
+        Calculate average of the support values
         Returns
         -------
 
@@ -273,7 +273,7 @@ class GeologicalFeature:
 
     def max(self):
         """
-
+        Calculate average of the support values
         Returns
         -------
 
@@ -282,7 +282,7 @@ class GeologicalFeature:
 
     def update(self):
         """
-
+        Calculate average of the support values
         Returns
         -------
 
@@ -296,6 +296,24 @@ class GeologicalFeature:
         self.support.interpolator.update()
         self.support.update_property(self.support.interpolator.c)
 
+    def get_interpolator(self):
+        """
+        Get the interpolator used to build this feature
+        Returns
+        -------
+        GeologicalInterpolator
+        """
+        return self.support.interpolator
+
+    def get_node_values(self):
+        """
+        Get the node values of the support used to build this interpolator if the
+        interpolator is a discrete interpolator
+        Returns
+        -------
+        numpy array of values
+        """
+        return self.support.get_node_values()
 
     def slice(self, isovalue, bounding_box = None, nsteps = None):
         """

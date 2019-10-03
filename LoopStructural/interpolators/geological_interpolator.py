@@ -108,20 +108,23 @@ class GeologicalInterpolator:
         :param data:
         :return:
         """
-        print(GPoint)
         if data.type == 'GPoint':
             self.p_g.append(data)
             self.n_g+=1
-
+            self.up_to_date = False
+            return
         if data.type == 'IPoint':
             self.p_i.append(data)
             self.n_i+=1
+            self.up_to_date = False
+            return
         if data.type == 'TPoint':
             self.p_t.append(data)
             self.n_t+=1
+            self.up_to_date = False
+            return
         else:
             print("Did not add data", data.type)
-        self.up_to_date = False
 
     def get_value_constraints(self):
         """
@@ -142,7 +145,7 @@ class GeologicalInterpolator:
         points = np.zeros((self.n_g,6))  # array
         for i in range(self.n_g):
             points[i,:3] = self.p_g[i].pos
-            points[i,3:] = self.p_g[i].dir
+            points[i,3:] = self.p_g[i].vec
         return points
 
     def get_tangent_constraints(self):
