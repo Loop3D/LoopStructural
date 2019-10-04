@@ -99,7 +99,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             d_t = self.support.get_elements_gradients(e)
             norm = np.linalg.norm(d_t,axis=2)
             d_t /= norm[:,:,None]
-            # d_t *= vol[:,None,None]
+            d_t *= vol[:,None,None]
             # w*=10^11
 
             points[:,3:] /= norm
@@ -108,7 +108,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             e = np.tile(e,(3,1)).T
             idc = self.support.elements[e]
             w /= 3
-            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w,idc)
+            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
     def add_norm_ctr_pts(self, w=1.0):
         """
 
