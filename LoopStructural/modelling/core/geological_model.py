@@ -2,6 +2,7 @@ from LoopStructural.modelling.core.geological_points import GPoint, IPoint
 import numpy as np
 import networkx as nx
 
+
 class GeologicalModel:
     """
     A geological model is the recipe for building a 3D model and includes the
@@ -26,25 +27,25 @@ class GeologicalModel:
         lengths = self.maximum - self.origin
         self.scale_factor = np.max(lengths)
 
-        self.bounding_box = np.zeros((2,3))
-        self.bounding_box[0,:] = self.maxmimum-self.origin
-        self.bounding_box/=self.scale_factor
+        self.bounding_box = np.zeros((2, 3))
+        self.bounding_box[0, :] = self.maxmimum-self.origin
+        self.bounding_box /= self.scale_factor
 
     def add_structural_frame(self, frame):
         # self.features[frame.name] = frame
         self.graph.add_node(frame, name=frame.name)
 
+    def add_fold(self, fold):
+        self.graph.add_node(fold, name=fold.name)
 
-    def add_data(self, data):
-        if type(data) == IPoint:
-            self.data['value'].append(data)
-        if type(data) == GPoint:
-            self.data['gradient'].append(data)
-    def create_structural_frame(self):
-        pass
     def add_feature(self, feature, name):
         self.features[name] = feature
 
 
+    def rescale(self, points):
+        points*=self.scale_factor
+        points+=self.origin
+        return points
 
-
+    def build_model(self):
+        pass

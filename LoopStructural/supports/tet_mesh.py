@@ -2,7 +2,6 @@ import meshpy.tet
 import numpy as np
 from numpy import linalg as la
 from scipy.spatial import cKDTree
-from sklearn.decomposition import PCA
 
 from LoopStructural.cython.dsi_helper import cg
 from LoopStructural.cython.marching_tetra import marching_tetra

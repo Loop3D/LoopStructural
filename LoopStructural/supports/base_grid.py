@@ -1,6 +1,5 @@
-from sklearn.decomposition import PCA
+import numpy as np
 
-3
 class BaseGrid:
     """
     A base class for a model support handles the coordinate transformations
@@ -11,20 +10,7 @@ class BaseGrid:
         :param corners:
         """
         self.corners = corners
-        self.pca = PCA(n_components=3)
-        self.pca.fit(corners)
-        self.transformed_corners = self.pca.transform(corners)
-        self.minpc0 = np.min(self.transformed_corners[:, 0])
-        self.maxpc0 = np.max(self.transformed_corners[:, 0])
-        self.minpc1 = np.min(self.transformed_corners[:, 1])
-        self.maxpc1 = np.max(self.transformed_corners[:, 1])
-        self.minpc2 = np.min(self.transformed_corners[:, 2])
-        self.maxpc2 = np.max(self.transformed_corners[:, 2])
-        self.properties = {}
-        self.regions = {}
-        self.cell_properties = {}
-        self.n = None
-        self.n_cell = None
+        
 
     def update_properties(self,propertyname,values):
         if values.shape[0] == self.n:

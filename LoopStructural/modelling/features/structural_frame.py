@@ -1,7 +1,4 @@
 from LoopStructural.modelling.core.geological_points import GPoint, IPoint, TPoint
-
-
-
 from LoopStructural.modelling.features.geological_feature import GeologicalFeature
 from LoopStructural.modelling.features.cross_product_geological_feature import CrossProductGeologicalFeature
 from LoopStructural.supports.scalar_field import ScalarField

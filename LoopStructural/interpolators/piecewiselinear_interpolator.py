@@ -37,7 +37,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
 
-
     def _setup_interpolator(self, **kwargs):
         """
         adds all of the constraints to the interpolation matrix
@@ -106,7 +105,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             points[:,3:] /= norm
 
             # add in the element gradient matrix into the inte
-            e=np.tile(e,(3,1)).T
+            e = np.tile(e,(3,1)).T
             idc = self.support.elements[e]
             w /= 3
             self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w,idc)
@@ -175,7 +174,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             vol = np.abs(np.linalg.det(vecs)) / 6
             A = self.support.calc_bary_c(e, points[:, :3])
             A *= vol[None,:]
-            #w /= 2059581*10**11
             idc = self.support.elements[e]
             # w /= points.shape[0]
             self.add_constraints_to_least_squares(A.T*w, points[:, 3]*w*vol[None,:], idc)

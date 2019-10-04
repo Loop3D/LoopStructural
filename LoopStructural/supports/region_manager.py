@@ -1,7 +1,9 @@
 import numpy as np
 from sklearn.decomposition import PCA
+
+
 class RegionManager:
-    def __init__(self,mesh):
+    def __init__(self, mesh):
         self.mesh = mesh
     def create_region_from_cuboid(self,corners,name):
         """
@@ -18,14 +20,14 @@ class RegionManager:
         ux = np.einsum('ij,j->i',self.mesh.nodes,u)
         vx = np.einsum('ij,j->i',self.mesh.nodes,v)
         wx = np.einsum('ij,j->i',self.mesh.nodes,w)
-        vp1 = np.dot(v,corners[0,:])
-        up1 = np.dot(u,corners[0,:])
+        vp1 = np.dot(v, corners[0,:])
+        up1 = np.dot(u, corners[0,:])
 
-        up2 = np.dot(u,corners[1,:])
-        vp4 = np.dot(v,corners[2,:])
-        wp1 = np.dot(w,corners[0,:])
-        wp5 = np.dot(w,corners[3,:])
-        logic = np.logical_and(ux<up1,ux>up2)#(condition = []
+        up2 = np.dot(u, corners[1,:])
+        vp4 = np.dot(v, corners[2,:])
+        wp1 = np.dot(w, corners[0,:])
+        wp5 = np.dot(w, corners[3,:])
+        logic = np.logical_and(ux < up1, ux>up2)#(condition = []
         logic = np.logical_and(logic,vx<vp1)
         logic = np.logical_and(logic,vx>vp4)
         logic = np.logical_and(logic,wx<wp1)
@@ -67,7 +69,7 @@ class RegionManager:
         cornerst = pca.inverse_transform(corners)
         self.create_region_from_cuboid(cornerst,name)
 
-    def create_region_from_map_object_aligned_bounding_box(self,points,minz,maxz,name,pc1buffer=0.,pc2buffer=0.):
+    def create_region_from_map_object_aligned_bounding_box(self, points, minz, maxz, name, pc1buffer=0., pc2buffer=0.):
         pca = PCA(n_components=2)
         pca.fit(points)
         
@@ -104,10 +106,11 @@ class RegionManager:
         corners[3,:] = np.array([boundary_points[0,0],boundary_points[0,1],boundary_points[1,2]])
         self.create_region_from_cuboid(corners,name)
     
-    def create_region_from_property_value(self,propertyname,propertyvalue,region_name,sign=1):
+    def create_region_from_property_value(self, propertyname, propertyvalue, region_name,sign=1):
         region = np.zeros(mesh.n_nodes).astype(bool)
         region[mesh.properties[propertyname]*sign>propertyvalue*sign] = 1
         self.mesh.regions[region_name] = region
+
     def create_properties_for_regions(self):
         for region in self.mesh.regions.keys():
             self.mesh.properties['REGION_%s'%region] = self.mesh.regions[region].astype(float)
