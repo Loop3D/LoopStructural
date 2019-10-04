@@ -27,15 +27,47 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_c_ = 0
 
     def set_property_name(self, propertyname):
+        """
+        Set the property name attribute, this is usually used to
+        save the property on the support
+        Parameters
+        ----------
+        propertyname
+
+        Returns
+        -------
+
+        """
         self.propertyname = propertyname
 
     def set_region(self, regionname=None, region=None):
+        """
+        Set the region of the support the interpolator is working on
+        Parameters
+        ----------
+        regionname - string with name of region
+        region - numpy mask for region
+
+        Returns
+        -------
+
+        """
         if region is not None:
             self.region = region
         if regionname is not None:
             self.region = self.support.regions[regionname]
 
     def set_interpolation_weights(self, weights):
+        """
+        Set the interpolation weights dictionary
+        Parameters
+        ----------
+        weights - dictionary with the interpolation weights
+
+        Returns
+        -------
+
+        """
         for key in weights:
             self.up_to_date = False
             self.interpolation_weights[key] = weights[key]
@@ -55,13 +87,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d = []
         self.eq_const_c_ = 0
         self.B = []
+
     def add_constraints_to_least_squares(self, A, B, idc):
         """
-        Adds constraints to the least squares system
-        :param A: A N x C block to add
-        :param B: B N vector
-        :param idc: N x C node indices
-        :return:
+        Adds constraints to the least squares system. Automatically works out the row
+        index given the shape of the input arrays
+        Parameters
+        ----------
+        A - RxC numpy array of constraints where C is number of columns,R rows
+        B - B values array length R
+        idc - RxC column index
+
+        Returns
+        -------
+
         """
         A = np.array(A)
         B = np.array(B)
@@ -87,6 +126,18 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.B.extend(B.tolist())
 
     def add_equality_constraints(self, node_idx, values):
+        """
+        Adds hard constraints to the least squares system. For now this just sets
+        the node values to be fixed using a lagrangian.
+        Parameters
+        ----------
+        node_idx - int array of node indexes
+        values - array of node values
+
+        Returns
+        -------
+
+        """
         self.eq_const_C.extend(np.ones(node_idx.shape[0]).tolist())
         self.eq_const_col.extend(node_idx.tolist())
         self.eq_const_row.extend((np.arange(0,node_idx.shape[0])))
@@ -95,10 +146,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def _solve(self, solver='spqr', **kwargs):
         """
-        Solve the least squares problem with specified solver
-        :param solver: string for solver
-        :param clear:
-        :return:
+        Solve the least squares problem
+        Parameters
+        ----------
+        solver - choice of solver
+        kwargs
+
+        Returns
+        -------
+
         """
         # save the solver so we can rerun the interpolation at a later stage
         self.solver = solver

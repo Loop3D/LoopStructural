@@ -117,14 +117,6 @@ class StructuralFrameBuilder:
         interpolator - a template interpolator for the frame
         kwargs
         """
-        """
-        mesh:  support for interpolation
-        structural_feature: the geological feature that this frame describes
-        data: the data that are builds this frame
-        name: a name for this frame
-        region: region where the interpolation occurs for this frame
-        you can pass kwargs for the DSI interpolator
-        """
         self.support = None
         self.fault_event = None
         self.name = 'Undefined'
