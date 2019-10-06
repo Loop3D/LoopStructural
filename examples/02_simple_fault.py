@@ -12,7 +12,7 @@ import timeit
 This is a basic example showing how to use the Piecewise Linear Interpolator for orientation and
 value data points. 
 """
-solver = 'lu'
+solver = 'cg'
 start = timeit.default_timer()
 boundary_points = np.zeros((2,3))
 

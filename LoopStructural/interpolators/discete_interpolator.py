@@ -9,22 +9,29 @@ class DiscreteInterpolator(GeologicalInterpolator):
     Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
     any interpolator that solves the system using least squares approximation
     """
-    def __init__(self):
+    def __init__(self, support):
         GeologicalInterpolator.__init__(self)
         self.B = []
+        self.support = support
+
+        region = 'everywhere'
+        self.region = self.support.regions[region]
+        self.region_map = np.zeros(support.n_nodes).astype(int)
+        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
+        self.nx = len(self.support.nodes[self.region])
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
         self.c_ = 0
         self.A = []  # sparse matrix storage coo format
         self.col = []
         self.row = []  # sparse matrix storage
-        self.support = None
         self.solver = None
         self.eq_const_C = []
         self.eq_const_row = []
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
+
 
     def set_property_name(self, propertyname):
         """
@@ -57,6 +64,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if regionname is not None:
             self.region = self.support.regions[regionname]
 
+        self.region_map = np.zeros(self.support.n_nodes).astype(int)
+        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
+        self.nx = len(self.support.nodes[self.region])
     def set_interpolation_weights(self, weights):
         """
         Set the interpolation weights dictionary
@@ -112,7 +122,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows = np.tile(rows, (A.shape[-1],1)).T
         rows+= self.c_
         self.c_+=nr
-
         if self.shape == 'rectangular':
             # don't add operator where it is = 0 to the sparse matrix!
             A = A.flatten()
@@ -178,7 +187,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.AA += spdiags(d, 0, self.nx, self.nx)
         B = np.array(self.B)
         self.cc_ = [0, 0, 0, 0]
-        self.c = np.zeros(self.nx)
+        self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         if solver == 'lsqr':
             self.cc_ = sla.lsqr(self.AA, B)
@@ -376,7 +385,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 B = self.B
             self.cc_ = sla.minres(A,B)
             self.up_to_date = True
-
         self.c[self.region] = self.cc_[0]
         self.node_values = self.c
 

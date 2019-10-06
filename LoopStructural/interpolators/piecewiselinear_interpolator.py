@@ -18,17 +18,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         mesh
         """
 
-        # whether to assemble a rectangular matrix or a square matrix
         self.shape = 'rectangular'
-        self.support = mesh
+        DiscreteInterpolator.__init__(self, mesh)
+        # whether to assemble a rectangular matrix or a square matrix
         self.interpolator_type = 'PLI'
-
-        self.region = self.support.regions['everywhere']
-        self.region_map = np.zeros(mesh.n_nodes).astype(int)
-        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
-
-        DiscreteInterpolator.__init__(self)
         # TODO need to fix this, constructor of DI is breaking support
         self.support = mesh
 
@@ -71,10 +65,16 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         # iterate over all elements
-        A, idc, B = self.support.get_constant_gradient(region=self.region, shape='rectangular')
+        A, idc, B = self.support.get_constant_gradient(region=self.region)
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
+
+        gi = np.zeros(self.support.n_nodes)
+        gi[:] = np.nan
+        gi[self.region] = np.arange(0,self.nx)
+        idc = gi[idc]
+        #outside = ~np.any(idc==np.nan,axis=2)[:,0]
         # w/=A.shape[0]
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
@@ -107,8 +107,15 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # add in the element gradient matrix into the inte
             e = np.tile(e,(3,1)).T
             idc = self.support.elements[e]
+            # now map the index from global to region create array size of mesh
+            # initialise as np.nan, then map points inside region to 0->nx
+            gi = np.zeros(self.support.n_nodes)
+            gi[:] = np.nan
+            gi[self.region] = np.arange(0,self.nx)
             w /= 3
-            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
+            idc = gi[idc]
+            outside = ~np.any(idc==np.nan,axis=2)[:,0]
+            self.add_constraints_to_least_squares(d_t[outside,:,:]*w,points[outside,3:]*w*vol[outside,None],idc[outside,:])
     def add_norm_ctr_pts(self, w=1.0):
         """
 
@@ -175,8 +182,14 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             A = self.support.calc_bary_c(e, points[:, :3])
             A *= vol[None,:]
             idc = self.support.elements[e]
-            # w /= points.shape[0]
-            self.add_constraints_to_least_squares(A.T*w, points[:, 3]*w*vol[None,:], idc)
+            # now map the index from global to region create array size of mesh
+            # initialise as np.nan, then map points inside region to 0->nx
+            gi = np.zeros(self.support.n_nodes)
+            gi[:] = np.nan
+            gi[self.region] = np.arange(0,self.nx)
+            idc = gi[idc]
+            outside = ~np.any(idc==np.nan,axis=1)
+            self.add_constraints_to_least_squares(A[:,outside].T*w, points[outside, 3]*w*vol[None,outside], idc[outside,:])
 
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
