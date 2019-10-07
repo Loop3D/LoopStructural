@@ -96,7 +96,7 @@ class GeologicalFeatureInterpolator:
 
         Parameters
         ----------
-        pos
+        pos -
         val
 
         Returns
@@ -194,7 +194,7 @@ class GeologicalFeatureInterpolator:
                 kwargs['cg'] = False
             # kwargs['cg'] = False
         self.interpolator.setup_interpolator(**kwargs)
-        self.interpolator.solve_system(solver=solver)
+        self.interpolator.solve_system(solver=solver,**kwargs)
         return GeologicalFeature(self.name,
                                  ScalarField.from_interpolator(self.interpolator),
                                  builder=self, data=self.data, region=self.region)
@@ -362,6 +362,10 @@ class GeologicalFeature:
                 logger.warning("No surface to mesh, skipping")
                 return np.zeros((3,1)).astype(int),np.zeros((3,1))
         else:
-            return self.support.slice(isovalue,self.region)
+            try:
+                return self.support.slice(isovalue,self.region)
+            except RuntimeError:
+                logger.warning("No surface to mesh, skipping")
+                return np.zeros((3,1)).astype(int),np.zeros((3,1))
 
 

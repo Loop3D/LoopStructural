@@ -72,8 +72,9 @@ viewer = LavaVuModelViewer()
 viewer.add_isosurface(
     faulted_feature,
     nslices=10,
+    voxet={'bounding_box':boundary_points,'nsteps':(50,50,25)},
     paint_with=faulted_feature
 )
 viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
 
-viewer.lv.interactive()
+viewer.save('03_ramp_flat_fault.png')

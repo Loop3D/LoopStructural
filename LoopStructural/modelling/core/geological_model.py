@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 
 class GeologicalModel:
     """
-    A geological model is the recipe for building a 3D model and includes the
+    A geological model is the recipe for building a 3D model and includes the rescaling
+    of the model between 0 and 1.
     """
     def __init__(self, origin, maximum):
         """

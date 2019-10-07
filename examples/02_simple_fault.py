@@ -78,4 +78,4 @@ mask = fault_frame.features[0].support.get_node_values() > 0
 mask[mesh.elements] = np.any(mask[mesh.elements] == True, axis=1)[:, None]
 viewer.add_points(mesh.nodes[mask], "nodes", col="red")
 viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
-viewer.lv.interactive()
+viewer.save('02_simple_fault.png')

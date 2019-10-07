@@ -96,7 +96,7 @@ for y in range(-5,5,1):
 #
 mask = mesh.nodes[:,0] < -20
 idc = np.arange(0,mesh.n_nodes)[mask]
-v = fault_frame.get_values(0)[mask] #interpolators[0].
+v = fault_frame[0].get_node_values()[mask] #interpolators[0].
 fault2.interpolators[0].add_equality_constraints(idc,v)
 fault_frame2 = fault2.build(
     solver='lueq',
@@ -184,4 +184,4 @@ viewer.add_isosurface(
 
 # viewer.plot_isosurface(faulted_frame[0].fw_feature, isovalue=0, colour='green')
 # viewer.plot_structural_frame_isosurface(fault_frame, 0, isovalue=0, colour='blue')
-viewer.lv.interactive()
+viewer.save('duplex.png')

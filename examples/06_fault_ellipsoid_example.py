@@ -134,4 +134,4 @@ viewer.add_isosurface(
     nslices=10,
     paint_with=faulted_strat
 )
-viewer.interactive()
+viewer.save('fault_ellipsoid.png')

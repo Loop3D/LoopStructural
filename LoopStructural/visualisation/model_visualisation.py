@@ -24,6 +24,7 @@ class LavaVuModelViewer:
         """
 
         self.lv = lavavu.Viewer(**kwargs)
+        self.lv['orthographic'] = True
         self.objects = {}
 
     def add_isosurface(self, geological_feature, **kwargs):
@@ -363,7 +364,31 @@ class LavaVuModelViewer:
         if not is_notebook():
             self.lv.interactive()
 
-    def set_viewer_rotation(self,rotation):
-        self.lv
+    def set_viewer_rotation(self, rotation):
+        """
+        Set the viewer rotation given a list of rotations x,y,z
+        Parameters
+        ----------
+        rotation numpy array of 3 rotation
+
+        Returns
+        -------
+
+        """
+        self.lv.rotate(rotation)
+
+    def save(self,fname,**kwargs):
+        """
+        Calls lavavu.Viewer.image to save the viewer current state as an image
+        Parameters
+        ----------
+        fname - file name string including relative path
+        kwargs - optional kwargs to give to lavavu e.g. transparent, resolution
+
+        Returns
+        -------
+
+        """
+        self.lv.image(fname, **kwargs)
 
 

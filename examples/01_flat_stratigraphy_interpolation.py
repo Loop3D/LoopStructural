@@ -69,6 +69,7 @@ feature_builder.add_point([0.2,0,0],1)
 # cgw /= mesh.n_elements
 feature = feature_builder.build(
     solver='cg',
+    tol=1e-10, #need to add tolerance constraint to cg if the scalar values are low
     cgw=0.1)
 
 # Export the input data and the model domain to a text file so it can be imported into gocad
@@ -104,7 +105,7 @@ viewer.add_data(feature)
 #                       'box',
 #                      paint_with=feature,
 #                      cmap='prism')
-viewer.interactive()
+viewer.save('01_flat_stratigraphy.png',transparent=True)
 
 
 #print(feature.support.get_node_values()[np.isnan(feature.support.get_node_values())==True])
