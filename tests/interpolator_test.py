@@ -1,8 +1,8 @@
 import unittest
 
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
+class MeshTest(unittest.TestCase):
+    def build_mesh(self):
         self.assertEqual(True, False)
 
 

@@ -176,6 +176,16 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         AAT += eye(AAT.shape[0])*np.finfo('float').eps#0.000000000000001#wargs['damp']
         if self.eq_const_c_ > 0:
+            # solving constrained least squares using
+            # | ATA CT | |c| = b
+            # | C   0  | |y|   d
+            # where A is the interpoaltion matrix
+            # C is the equality constraint matrix
+            # b is the interpolation constraints to be honoured
+            # in a least squares sense
+            # and d are the equality constraints
+            # c are the node values and y are the
+            # lagrange multipliers#
             C = coo_matrix((np.array(self.eq_const_C), (np.array(self.eq_const_row),
                                                              np.array(self.eq_const_col))),
                                 shape=(self.eq_const_c_, self.nx))
@@ -247,7 +257,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs['atol'] = kwargs['atol']
         if 'callback' in kwargs:
             cgargs['callback'] = kwargs['callback']
-        return sla.cg(A,B,M=precon,**cgargs)[0]
+        if precon is not None:
+            cgargs['M'] = precon(A)
+        return sla.cg(A,B,**cgargs)[0]
 
     def _solve(self, solver, **kwargs):
         """
@@ -255,7 +267,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         discreteinterpolator class
         Parameters
         ----------
-        solver - string of solver e.g. cg, lu, chol
+        solver - string of solver e.g. cg, lu, chol, custom
         kwargs - kwargs for solver e.g. maxiter, preconditioner etc
 
         Returns
@@ -267,15 +279,17 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.c[:] = np.nan
         A, B = self.build_matrix()
         if solver == 'cg':
-            self.c[self.region] = self._solve_cg(A,B,**kwargs)
+            self.c[self.region] = self._solve_cg(A, B, **kwargs)
             return True
         if solver == 'chol':
-            self.c[self.region] = self._solve_chol(A,B)
+            self.c[self.region] = self._solve_chol(A, B)
             return True
         if solver == 'lu':
-            self.c[self.region] = self._solve_lu(A,B)
+            self.c[self.region] = self._solve_lu(A, B)
             return True
-
+        if solver == 'external':
+            logger.warning("Using external solver")
+            self.c[self.region] = kwargs['external'](A, B)
     def update(self):
         """
         Check if the solver is up to date, if not rerun interpolation using

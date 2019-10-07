@@ -11,15 +11,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     Finite Difference Interpolator
     """
     def __init__(self, grid):
-        self.support = grid
-        self.nx = self.support.n_nodes
         self.shape = 'rectangular'
-        self.region = np.arange(0, self.nx).astype(int)#'everywhere'
-        self.region_map = np.zeros(self.nx).astype(int)
-        self.region_map[np.array(range(0, self.nx)).astype(int)] = \
-            np.array(range(0, self.nx)).astype(int)
-        DiscreteInterpolator.__init__(self)
-        self.support = grid
+        DiscreteInterpolator.__init__(self, grid)
         # default weights for the interpolation matrix are 1 in x,y,z and
         # 1/
         self.interpolation_weights = {'dxy': .7,
