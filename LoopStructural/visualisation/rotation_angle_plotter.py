@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class RotationAnglePlotter:
     def __init__(self):

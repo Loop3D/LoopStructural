@@ -1,3 +1,7 @@
+import logging
+logger = logging.getLogger(__name__)
+
+
 class FaultDisplacementFeature:
     def __init__(self, fault_frame, displacement):
         self.fault_frame = fault_frame

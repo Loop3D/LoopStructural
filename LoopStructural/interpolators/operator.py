@@ -1,5 +1,9 @@
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class Operator(object):
 
     z = np.zeros((3,3))

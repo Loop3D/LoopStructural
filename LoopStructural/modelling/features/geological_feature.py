@@ -4,12 +4,23 @@ from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class GeologicalFeatureInterpolator:
     """
-    A builder for a GeologicalFeature
+    A builder for a GeologicalFeature will link data to the interpolator
+    and run the interpolation
     """
     def __init__(self, interpolator, **kwargs):
+        """
+        The interpolator to use to build the geological feature
+        Parameters
+        ----------
+        interpolator - a GeologicalInterpolator
+        kwargs - name of the feature, region to interpolate the feature
+        """
         self.interpolator = interpolator
         self.name = "UnnamedFeature"
         if 'name' in kwargs:
@@ -61,7 +72,9 @@ class GeologicalFeatureInterpolator:
 
         """
         self.data.append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
+        self.interpolator.add_data(self.data[-1])
         self.data.append(IPoint(pos, val))
+        self.interpolator.add_data(self.data[-1])
 
     def add_point(self, pos, val):
         """
@@ -158,7 +171,7 @@ class GeologicalFeatureInterpolator:
 
     def build(self, solver='cg', **kwargs):
         """
-
+        Runs the interpolation
         Parameters
         ----------
         solver
@@ -338,12 +351,16 @@ class GeologicalFeature:
             xx,yy,zz = np.meshgrid(x,y,z, indexing='ij')
             val = self.evaluate_value(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
             step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
-            verts, faces, normals, values = marching_cubes(
-            val.reshape(nsteps, order='C'),
-            isovalue,
-            spacing=step_vector)
+            try:
+                verts, faces, normals, values = marching_cubes(
+                val.reshape(nsteps, order='C'),
+                isovalue,
+                spacing=step_vector)
 
-            return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+                return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+            except ValueError:
+                logger.warning("No surface to mesh, skipping")
+                return np.zeros((3,1)).astype(int),np.zeros((3,1))
         else:
             return self.support.slice(isovalue,self.region)
 

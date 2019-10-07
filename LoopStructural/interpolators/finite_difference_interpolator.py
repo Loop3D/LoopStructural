@@ -2,6 +2,9 @@ from .discete_interpolator import DiscreteInterpolator
 from .operator import Operator
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
     """

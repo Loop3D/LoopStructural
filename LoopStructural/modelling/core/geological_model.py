@@ -2,6 +2,9 @@ from LoopStructural.modelling.core.geological_points import GPoint, IPoint
 import numpy as np
 import networkx as nx
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class GeologicalModel:
     """

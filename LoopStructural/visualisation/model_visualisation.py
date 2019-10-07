@@ -2,6 +2,8 @@ import lavavu
 from lavavu.vutils import is_notebook
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
 
 class LavaVuModelViewer:
     def __init__(self, **kwargs):
@@ -13,7 +15,7 @@ class LavaVuModelViewer:
 
         Parameters
         ----------
-        **kwargs : lavavu viewere kwargs
+        **kwargs : lavavu viewer kwargs
 
         Attributes
         ----------
@@ -70,9 +72,9 @@ class LavaVuModelViewer:
 
         # do isosurfacing of support using marching tetras/cubes
         for isovalue in slices:
-            print("Creating isosurface for %f"%isovalue)
+            logger.debug("Creating isosurface for %f"%isovalue)
             if isovalue < min_property_val or isovalue > max_property_val:
-                print("No surface to create for isovalue")
+                logger.debug("No surface to create for isovalue")
                 continue #isovalue = kwargs['isovalue']
             if voxet is None:
                 tris, nodes = geological_feature.slice(isovalue)

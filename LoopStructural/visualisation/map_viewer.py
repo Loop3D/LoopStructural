@@ -3,6 +3,10 @@ import numpy as np
 from LoopStructural.utils.helper import normal_vector_to_strike_and_dip
 from LoopStructural.utils.utils import strike_symbol
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class MapView:
     def __init__(self, origin, maximum, nsteps,**kwargs):
         """

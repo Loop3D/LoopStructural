@@ -1,6 +1,8 @@
 import numpy as np
 
 from LoopStructural.modelling.features.geological_feature import GeologicalFeature
+import logging
+logger = logging.getLogger(__name__)
 
 
 class CompositeGeologicalFeature(GeologicalFeature):

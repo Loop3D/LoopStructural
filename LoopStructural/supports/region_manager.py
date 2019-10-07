@@ -1,6 +1,9 @@
 import numpy as np
 from sklearn.decomposition import PCA
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class RegionManager:
     def __init__(self, mesh):
@@ -95,7 +98,7 @@ class RegionManager:
         cornerst=np.zeros((4,3))
         cornerst[:,:2] = pca.inverse_transform(corners[:,:2])
         cornerst[:,2] = corners[:,2]
-        
+        print(cornerst)
         self.create_region_from_cuboid(cornerst,name)
 
     def create_region_from_boundary_box(self,boundary_points,name):

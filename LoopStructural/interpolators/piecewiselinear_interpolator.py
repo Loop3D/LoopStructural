@@ -1,6 +1,9 @@
 from LoopStructural.interpolators.discete_interpolator import DiscreteInterpolator
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
     """

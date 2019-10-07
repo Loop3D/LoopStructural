@@ -3,6 +3,10 @@ import math as m
 from numpy import linalg as nla
 
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class Point():
     """
     Base object for a point contains the geospatial location

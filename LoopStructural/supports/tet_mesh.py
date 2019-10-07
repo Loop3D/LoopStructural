@@ -7,6 +7,9 @@ from sklearn.decomposition import PCA
 from LoopStructural.cython.dsi_helper import cg
 from LoopStructural.cython.marching_tetra import marching_tetra
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class TetMesh:
     """
@@ -365,7 +368,7 @@ class TetMesh:
         try:
             import meshio
         except ImportError:
-            print("Couldn't import meshio not saving VTK")
+            logger.warning("Couldn't import meshio not saving VTK")
             return
         meshio.write_points_cells(name,
                                   self.nodes, {"tetra": self.elements},

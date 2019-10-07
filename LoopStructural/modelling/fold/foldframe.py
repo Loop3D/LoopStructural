@@ -1,12 +1,22 @@
 from LoopStructural.modelling.features.structural_frame import StructuralFrame
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class FoldFrame(StructuralFrame):
     """
     A structural frame that can calculate the fold axis/limb rotation angle
     """
     def __init__(self, name, features):
+        """
+        Same constructor arguments as parent StructuralFrame
+        Parameters
+        ----------
+        name
+        features
+        """
         super().__init__(name, features)
 
     def calculate_fold_axis_rotation(self, points):

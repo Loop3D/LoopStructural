@@ -1,5 +1,9 @@
 import numpy as np
 from LoopStructural.supports.base_grid import BaseGrid
+
+import logging
+logger = logging.getLogger(__name__)
+
 class StructuredGrid(BaseGrid):
     def __init__(self, nsteps=np.array([10, 10]), step_vector=np.ones(2), origin=np.zeros(2)):
         self.nsteps = nsteps

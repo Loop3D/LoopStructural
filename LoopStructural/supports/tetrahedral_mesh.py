@@ -2,6 +2,9 @@ from LoopStructural.supports.base_grid import BaseGrid
 from scipy.spatial import cKDTree
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class TetMesh(BaseGrid):
     """

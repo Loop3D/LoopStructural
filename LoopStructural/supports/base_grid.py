@@ -1,5 +1,9 @@
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class BaseGrid:
     """
     A base class for a model support handles the coordinate transformations

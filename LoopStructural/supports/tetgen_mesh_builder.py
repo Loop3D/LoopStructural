@@ -2,6 +2,11 @@ import meshpy.tet
 import numpy as np
 from sklearn.decomposition import PCA
 
+
+import logging
+logger = logging.getLogger(__name__)
+
+
 class TetMeshBuilder:
 
     def __init__(self, mesh, **kwargs):

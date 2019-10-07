@@ -1,6 +1,9 @@
 import numpy as np
 from LoopStructural.modelling.core.geological_points import IPoint, GPoint, TPoint
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class GeologicalInterpolator:
     """
