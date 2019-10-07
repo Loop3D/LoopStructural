@@ -105,6 +105,7 @@ viewer.add_data(feature)
 #                       'box',
 #                      paint_with=feature,
 #                      cmap='prism')
+viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.save('01_flat_stratigraphy.png',transparent=True)
 
 

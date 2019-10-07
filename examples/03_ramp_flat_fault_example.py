@@ -76,5 +76,5 @@ viewer.add_isosurface(
     paint_with=faulted_feature
 )
 viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
-
+viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.save('03_ramp_flat_fault.png')

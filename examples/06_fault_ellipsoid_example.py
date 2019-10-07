@@ -134,4 +134,5 @@ viewer.add_isosurface(
     nslices=10,
     paint_with=faulted_strat
 )
+viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.save('fault_ellipsoid.png')

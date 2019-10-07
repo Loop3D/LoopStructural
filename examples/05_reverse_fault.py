@@ -82,4 +82,5 @@ locations = mesh.barycentre[::20,:]
 viewer.add_vector_field(fault_frame.features[1], locations=locations, colour='red')
 viewer.add_isosurface(faulted_strat, nslices=10)
 viewer.add_isosurface(faulted_strat, nslices=10)
+viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.save('reverse_fault.png')
