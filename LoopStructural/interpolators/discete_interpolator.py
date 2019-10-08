@@ -69,6 +69,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.region_map = np.zeros(self.support.n_nodes).astype(int)
         self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
+
     def set_interpolation_weights(self, weights):
         """
         Set the interpolation weights dictionary
@@ -191,7 +192,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                                 shape=(self.eq_const_c_, self.nx))
             d = np.array(self.eq_const_d)
             AAT = bmat([[AAT, C.T], [C, None]])
-            BT = np.hstack([B,d])
+            BT = np.hstack([BT,d])
         return AAT, BT
 
     def _solve_lu(self, A, B):
@@ -282,14 +283,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_cg(A, B, **kwargs)
             return True
         if solver == 'chol':
+
             self.c[self.region] = self._solve_chol(A, B)
             return True
         if solver == 'lu':
+            logger.info("Solving using scipy LU")
             self.c[self.region] = self._solve_lu(A, B)
             return True
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)
+        if np.all(self.c == np.nan):
+            logger.warning("Solver not run, no scalar field")
+        if np.all(self.c[self.region] == 0):
+            logger.warning("No solution, scalar field 0")
     def update(self):
         """
         Check if the solver is up to date, if not rerun interpolation using

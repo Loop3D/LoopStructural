@@ -187,7 +187,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = self.support.elements[e]
             # now map the index from global to region create array size of mesh
             # initialise as np.nan, then map points inside region to 0->nx
-            gi = np.zeros(self.support.n_nodes)
+            gi = np.zeros(self.support.n_nodes).astype(int)
             gi[:] = np.nan
             gi[self.region] = np.arange(0,self.nx)
             idc = gi[idc]
