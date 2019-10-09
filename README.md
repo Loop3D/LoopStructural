@@ -12,7 +12,7 @@ LoopStructural can then be used by first building the docker image `docker build
 LoopStructural can be used by run  `docker run  -i -t -p 8888:8888 -v $WORKDIR:/notebooks LoopStructural ` where **`$WORKDIR`** is the path to your jupyter notebooks. You must change this to the absolute path! This will start a notebook server running on localhost:8888 without  password or certificate. Be aware any changes made to the notebooks within the notebooks directory will be saved on your local versions.
 
 ## On Linux
-LoopStructural can be easily installed using a Makefile once a few things are set up. Firstly, you need to add an environment variable to your system. LoopStructural_ENV, this can be done by adding `export LoopStructural_VENV=$YOUR_PATH_TO_VIRTUAL_ENVIRONMENT` to the `.bashrc` file. Make sure the path is updated to a directory in your system where you want to save the python virtual environment. It could be for example where you clone this repository and a subfolder called venv or LoopStructural. 
+LoopStructural can be easily installed using a Makefile once a few things are set up. Firstly, you need to add an environment variable to your system. LoopStructural_ENV, this can be done by adding `export LOOP_VENV=$YOUR_PATH_TO_VIRTUAL_ENVIRONMENT` to the `.bashrc` file. Make sure the path is updated to a directory in your system where you want to save the python virtual environment. It could be for example where you clone this repository and a subfolder called venv or LoopStructural. 
 
 Once you have the environment variable you can run the command `make dependencies` which will install the required dependencies for LoopStructural:
 
