@@ -211,7 +211,8 @@ class GeologicalFeature:
 
         Parameters
         ----------
-        name
+        name: string
+
         support
         builder
         data

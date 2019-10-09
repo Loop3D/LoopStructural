@@ -105,11 +105,11 @@ class StructuralFrame:
 
 
 class StructuralFrameBuilder:
-    """
-    Class for representing a slip event of a fault
-    """
     def __init__(self, interpolator, **kwargs):
         """
+        Class for building a structural frame - has functions to set up the interpolator with
+        data and also orthogonality constraints. Can build a generic structural frame or a
+        subclass of the structural frame if the kwarg `frame` is specified
 
         Parameters
         ----------
@@ -145,16 +145,23 @@ class StructuralFrameBuilder:
 
     def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1, coord = None, itype= None):
         """
-
+        Add a planar measurement and value to the interpolator for a coordinate of the fold frame
         Parameters
         ----------
-        pos
-        strike
-        dip
-        val
-        polarity
-        coord
-        itype
+        pos: numpy array
+            position of measurement
+        strike: double
+            strike of plane
+        dip: double
+            dip of plane
+        val:
+            scalar value of plane
+        polarity: int
+            -1 is inverse polarity default 1 is standard
+        coord: int
+            index of fold frame
+        itype:
+            depreciated
 
         Returns
         -------
@@ -176,20 +183,27 @@ class StructuralFrameBuilder:
 
         Parameters
         ----------
-        pos
-        val
-        coord
-        itype
+        pos: numpy array
+            position of measurement
+        val: double
+            scalar value
+        coord: int
+            structural frame coordinate
+        itype:
+            depreciated
 
         Returns
         -------
 
         """
         if itype == 'gx':
+            logger.warning("itype will be removed, use coord instead")
             coord = 0
         if itype == 'gy':
+            logger.warning("itype will be removed, use coord instead")
             coord = 1
         if itype == 'gz':
+            logger.warning("itype will be removed, use coord instead")
             coord = 2
         self.data[coord].append(IPoint(pos, val))
         self.interpolators[coord].add_data(self.data[coord][-1])
@@ -200,10 +214,14 @@ class StructuralFrameBuilder:
 
         Parameters
         ----------
-        pos
-        val
-        coord
-        itype
+        pos: numpy array
+            location of observations (x,y,z)
+        val: numpy array
+            normal vector to plane [nx,ny,nz]
+        coord: int
+            index of structural frame
+        itype:
+            depreciated
 
         Returns
         -------
@@ -223,12 +241,18 @@ class StructuralFrameBuilder:
 
         Parameters
         ----------
-        pos
-        plunge
-        plunge_dir
-        polarity
-        coord
-        itype
+        pos: numpy array
+            location of observation [x,y,z]
+        plunge: double
+            plunge
+        plunge_dir: double
+            plunge direction
+        polarity: int
+            polarity of vector
+        coord: int
+            coordinate of structural frame
+        itype:
+            depreciated
 
         Returns
         -------
@@ -248,12 +272,18 @@ class StructuralFrameBuilder:
 
         Parameters
         ----------
-        pos
-        strike
-        dip
-        polarity
-        coord
-        itype
+        pos: numpy array
+            position of observations [x,y,z]
+        strike: double
+            strike of plane
+        dip: double
+            dip of plane
+        polarity: int
+            polarity of measurement
+        coord: int
+            structural frame coordinate
+        itype:
+            depreciated
 
         Returns
         -------

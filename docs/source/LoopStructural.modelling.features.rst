@@ -37,6 +37,14 @@ LoopStructural.modelling.features.geological\_feature module
 Module contents
 ---------------
 
+.. automodule:: LoopStructural.modelling.features.structural_frame
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Module contents
+---------------
+
 .. automodule:: LoopStructural.modelling.features
     :members:
     :undoc-members:
