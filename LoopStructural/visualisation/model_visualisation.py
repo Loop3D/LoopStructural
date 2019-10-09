@@ -362,7 +362,7 @@ class LavaVuModelViewer:
         self.add_vector_data(locations, fold_axis, 'fold_axis', colour='black')
         self.add_vector_data(locations, dgz, 'fold_norm', colour='green')
 
-    def interactive(self):
+    def interactive(self, popout=False):
         """
         Runs the lavavu viewer as either a jupyter notebook
         inline interactive viewer or as a separate window
@@ -370,11 +370,13 @@ class LavaVuModelViewer:
         -------
 
         """
-        if is_notebook():
+        if is_notebook() and popout is False:
             self.lv.control.Panel()
             self.lv.control.ObjectList()
             self.lv.control.show()
-        if not is_notebook():
+        if not is_notebook() or popout:
+            self.lv.control.Panel()
+            self.lv.control.ObjectList()
             self.lv.interactive()
 
     def set_viewer_rotation(self, rotation):

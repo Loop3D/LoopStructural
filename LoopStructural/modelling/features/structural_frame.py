@@ -329,7 +329,7 @@ class StructuralFrameBuilder:
             self.interpolators[0].set_region(regionname=self.region)
             self.interpolators[0].setup_interpolator()
             self.interpolators[0].solve_system(solver=solver,**kwargs)
-            gx_feature = GeologicalFeature(self.name + '_gx',
+            gx_feature = GeologicalFeature(self.name + '_0',
                                       ScalarField.from_interpolator(self.interpolators[0]),
                                             data=self.data[0])
             if gx_feature is None:
@@ -347,7 +347,7 @@ class StructuralFrameBuilder:
             self.interpolators[1].setup_interpolator()
 
             self.interpolators[1].solve_system(solver=solver,**kwargs)
-            gy_feature = GeologicalFeature(self.name + '_gy',
+            gy_feature = GeologicalFeature(self.name + '_1',
                                       ScalarField.from_interpolator(self.interpolators[1]),
                                             data=self.data[1])
             if gy_feature is None:
@@ -369,7 +369,7 @@ class StructuralFrameBuilder:
             self.interpolators[2].set_region(regionname=self.region)
             self.interpolators[2].setup_interpolator()  # cgw=0.1)
             self.interpolators[2].solve_system(solver=solver,**kwargs)
-            gz_feature = GeologicalFeature(self.name + '_gz',
+            gz_feature = GeologicalFeature(self.name + '_2',
                                       ScalarField.from_interpolator(self.interpolators[2]),
                                             data=self.data[2])
         if len(self.data[2]) == 0:
