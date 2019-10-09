@@ -3,7 +3,7 @@ from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
-from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 import numpy as np
 import timeit
@@ -12,7 +12,7 @@ import timeit
 This is a basic example showing how to use the Piecewise Linear Interpolator for orientation and
 value data points. 
 """
-solver = 'lu'
+solver = 'cg'
 start = timeit.default_timer()
 boundary_points = np.zeros((2,3))
 
@@ -73,9 +73,10 @@ fault = FaultSegment(fault_frame, displacement=4)
 faulted_feature = FaultedGeologicalFeature(feature, fault)
 
 viewer = LavaVuModelViewer()
-viewer.plot_isosurface(faulted_feature,isovalue=0)
+viewer.add_isosurface(faulted_feature, isovalue=0)
 mask = fault_frame.features[0].support.get_node_values() > 0
 mask[mesh.elements] = np.any(mask[mesh.elements] == True, axis=1)[:, None]
-viewer.plot_points(mesh.nodes[mask], "nodes", col="red")
-viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
-viewer.lv.interactive()
+viewer.add_points(mesh.nodes[mask], "nodes", col="red")
+viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
+viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.save('02_simple_fault.png')

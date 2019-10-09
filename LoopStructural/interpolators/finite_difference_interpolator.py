@@ -2,21 +2,17 @@ from .discete_interpolator import DiscreteInterpolator
 from .operator import Operator
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
     """
     Finite Difference Interpolator
     """
     def __init__(self, grid):
-        self.support = grid
-        self.nx = self.support.n_nodes
         self.shape = 'rectangular'
-        self.region = np.arange(0, self.nx).astype(int)#'everywhere'
-        self.region_map = np.zeros(self.nx).astype(int)
-        self.region_map[np.array(range(0, self.nx)).astype(int)] = \
-            np.array(range(0, self.nx)).astype(int)
-        DiscreteInterpolator.__init__(self)
-        self.support = grid
+        DiscreteInterpolator.__init__(self, grid)
         # default weights for the interpolation matrix are 1 in x,y,z and
         # 1/
         self.interpolation_weights = {'dxy': .7,
@@ -25,6 +21,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'dxx': 1.,
                                       'dyy': 1.,
                                       'dzz': 1.,
+                                      'dx': 1.,
+                                      'dy': 1.,
+                                      'dz': 1.,
                                       'cpw':1.,
                                       'gpw':1.}
         self.vol = grid.step_vector[0]*grid.step_vector[1]*grid.step_vector[2]
@@ -42,19 +41,24 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         for key in kwargs:
             self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]
-
-        operator = Operator.Dxy_mask
-        self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dxy'])
-        operator = Operator.Dyz_mask
-        self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dyz'])
-        operator = Operator.Dxz_mask
-        self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dxz'])
-        operator = Operator.Dxx_mask
-        self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dxx'])
-        operator = Operator.Dyy_mask
-        self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dyy'])
-        operator = Operator.Dzz_mask
-        self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dzz'])
+        # if we want to define the operators manually
+        if 'operators' in kwargs:
+            for n,o in kwargs['operators'].items():
+                self.assemble_inner(o[0], o[1])
+        # otherwise just use defaults
+        if 'operators' not in kwargs:
+            operator = Operator.Dxy_mask
+            self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dxy'])
+            operator = Operator.Dyz_mask
+            self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dyz'])
+            operator = Operator.Dxz_mask
+            self.assemble_inner(operator, np.sqrt(2*self.vol)*self.interpolation_weights['dxz'])
+            operator = Operator.Dxx_mask
+            self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dxx'])
+            operator = Operator.Dyy_mask
+            self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dyy'])
+            operator = Operator.Dzz_mask
+            self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dzz'])
 
         self.add_gradient_constraint(np.sqrt(self.vol)*self.interpolation_weights['gpw'])
         self.add_vaue_constraint(np.sqrt(self.vol)*self.interpolation_weights['cpw'])
@@ -70,7 +74,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         :param w: weight
         :return:
         """
-        points = self.get_control_points()
+        points = self.get_value_constraints()
         # check that we have added some points
         if points.shape[0]>0:
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
@@ -89,7 +93,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         :return:
         """
 
-        points = self.get_gradient_control()
+        points = self.get_gradient_constraints()
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
             # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
@@ -98,6 +102,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the magnitude
             T = self.support.calcul_T(points[inside, :3])
+            norm = np.linalg.norm(T,axis=2)
+            T /= norm[:,:,None]
+            points[inside,3:]/= norm
             # T /= np.linalg.norm(T,axis=1)[:,None,:]
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :]*w, points[inside, 3]*w, node_idx[inside, :])

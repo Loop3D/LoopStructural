@@ -13,7 +13,7 @@ import lavavu
 
 # ### Defining Model Region
 # Define the area to model represented by the domain of the tetrahedral mesh
-scale = 10000
+scale = 1#0000
 boundary_points = np.zeros((2,3))
 boundary_points[0,0] = -1
 boundary_points[0,1] = -1
@@ -47,24 +47,29 @@ mesh.setup_mesh(boundary_points, n_tetra=50000,)
 # gradient constraints **add_strike_and_dip**(pos,strike,dip)
 # The resulting feature can be interpolated by calling **build**(kwargs) where the kwargs are
 # passed to the interpolator you have chosen e.g. which solver to use, what weights etc..
-
+mesh.regions['test'] = mesh.nodes[:,1]>-.5
 
 interpolator = PLI(mesh)
-feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
-for y in np.arange(-0.5,.5,.10):
-    feature_builder.add_point([-0.5*scale,y*scale,0],0)
-    feature_builder.add_point([0.5*scale,y*scale,0],1)
-# feature_builder.add_point([0.5,0,0],1)
-for x in np.arange(-0.5,.5,.10):
+feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy', region='test')
+feature_builder.add_strike_and_dip([0,0,0],0,90)
+feature_builder.add_point([0.1,0,0],0)
+feature_builder.add_point([0.2,0,0],1)
 
-# feature_builder.add_point([-.9,0,0],.8)
-    feature_builder.add_strike_and_dip([x*scale,-0.5*scale,0],90,90)
-    feature_builder.add_strike_and_dip([x*scale,0.5*scale,0],90,90)
+# for y in np.arange(-0.5,.5,.10):
+#     feature_builder.add_point([-0.5*scale,y*scale,0],0)
+#     feature_builder.add_point([0.5*scale,y*scale,0],1)
+# # feature_builder.add_point([0.5,0,0],1)
+# for x in np.arange(-0.5,.5,.10):
+#
+# # feature_builder.add_point([-.9,0,0],.8)
+#     feature_builder.add_strike_and_dip([x*scale,-0.5*scale,0],90,90)
+#     feature_builder.add_strike_and_dip([x*scale,0.5*scale,0],90,90)
 
 # feature_builder.add_strike_and_dip([0,0,0],90,50)
 # cgw /= mesh.n_elements
 feature = feature_builder.build(
-    solver='lu',
+    solver='cg',
+    tol=1e-10, #need to add tolerance constraint to cg if the scalar values are low
     cgw=0.1)
 
 # Export the input data and the model domain to a text file so it can be imported into gocad
@@ -78,21 +83,30 @@ feature = feature_builder.build(
 # kwargs can be passed from the wrapper functions to the lavavu objects.
 
 viewer = LavaVuModelViewer(background="white")
-viewer.plot_isosurface(
+viewer.add_isosurface(
     feature,
-    slices=[0], #specify multiple isosurfaces
+    # slices=[0], #specify multiple isosurfaces
     # isovalue=0, # a single isosurface
     # nslices=10 #the number of evenly space isosurfaces
     )
-viewer.plot_vector_data(
-    feature_builder.interpolator.get_gradient_control()[:,:3],
-    feature_builder.interpolator.get_gradient_control()[:,3:],
-    "grad" # object name
-)
-viewer.plot_value_data(
-    feature_builder.interpolator.get_control_points()[:,:3],
-    feature_builder.interpolator.get_control_points()[:,3:],
-    "value",
-    pointsize=10,
-    colourmap=lavavu.matplotlib_colourmap("Greys"))
-viewer.interactive()
+viewer.add_data(feature)
+# viewer.add_vector_data(
+#     feature_builder.interpolator.get_gradient_constraints()[:, :3],
+#     feature_builder.interpolator.get_gradient_constraints()[:, 3:],
+#     "grad" # object name
+# )
+# viewer.add_value_data(
+#     feature_builder.interpolator.get_value_constraints()[:, :3],
+#     feature_builder.interpolator.get_value_constraints()[:, 3:],
+#     "value",
+#     pointsize=10,
+#     colourmap=lavavu.matplotlib_colourmap("Greys"))
+# viewer.add_scalar_field(boundary_points,(38,55,30),
+#                       'box',
+#                      paint_with=feature,
+#                      cmap='prism')
+viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.save('01_flat_stratigraphy.png',transparent=True)
+
+
+#print(feature.support.get_node_values()[np.isnan(feature.support.get_node_values())==True])

@@ -5,7 +5,7 @@ from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
-from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 import numpy as np
 
@@ -69,11 +69,12 @@ viewer = LavaVuModelViewer()
 #     nslices=10,
 #     paint_with=faulted_feature.feature
 # )
-viewer.plot_isosurface(
+viewer.add_isosurface(
     faulted_feature,
     nslices=10,
+    voxet={'bounding_box':boundary_points,'nsteps':(50,50,25)},
     paint_with=faulted_feature
 )
-viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
-
-viewer.lv.interactive()
+viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
+viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.save('03_ramp_flat_fault.png')

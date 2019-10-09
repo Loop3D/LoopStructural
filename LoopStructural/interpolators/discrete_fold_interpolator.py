@@ -1,6 +1,10 @@
-from ..interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator
-from ..cython.dsi_helper import fold_cg
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator
+from LoopStructural.cython.dsi_helper import fold_cg
 import numpy as np
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
     def __init__(self, mesh, fold ):

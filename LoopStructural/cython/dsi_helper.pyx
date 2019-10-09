@@ -6,7 +6,7 @@ from math import *
 @cython.boundscheck(False)
 @cython.wraparound(False)
 #cimport numpy.linalg as la
-def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes):
+def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes, long long [:] region):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
     Nc = 5 #numer of constraints shared nodes + independent
     Na = 4 #number of nodes
@@ -30,13 +30,20 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
         idl = elements[e,:]
         e1 = EG[e,:,:]
         flag[e] = 1
+        # if not in region then skip this tetra
+        if region[idl[0]] == 0 or region[idl[1]] == 0 or region[idl[2]] == 0 or region[idl[3]] == 0:
+            continue
         for n in range(4):
-            
+
             neigh = neighbours[e,n]
             idr = elements[neigh,:]
+
             if flag[neigh]== 1:
                 continue
             if neigh == -1:
+                continue
+            # if not in region then skip this tetra
+            if region[idr[0]] == 0 or region[idr[1]] == 0 or region[idr[2]] == 0 or region[idr[3]] == 0:
                 continue
             e2 = EG[neigh,:,:]
 

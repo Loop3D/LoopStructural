@@ -7,7 +7,7 @@ from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
-from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 import numpy as np
 
@@ -76,10 +76,11 @@ faulted_strat =FaultedGeologicalFeature(stratigraphy,fault)
 
 viewer = LavaVuModelViewer(background="white")
 slices = [-4,-2,0]
-viewer.plot_vector_data(fault_interpolator.get_gradient_control()[:,:3],fault_interpolator.get_gradient_control()[:,3:],"grd")
-viewer.plot_isosurface(fault_frame.features[0], isovalue=0, colour='green')
+viewer.add_vector_data(fault_interpolator.get_gradient_constraints()[:, :3], fault_interpolator.get_gradient_constraints()[:, 3:], "grd")
+viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='green')
 locations = mesh.barycentre[::20,:]
-viewer.plot_vector_field(fault_frame.features[1], locations=locations, colour='red')
-viewer.plot_isosurface(faulted_strat,nslices=10)
-viewer.plot_isosurface(faulted_strat,nslices=10)
-viewer.lv.interactive()
+viewer.add_vector_field(fault_frame.features[1], locations=locations, colour='red')
+viewer.add_isosurface(faulted_strat, nslices=10)
+viewer.add_isosurface(faulted_strat, nslices=10)
+viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.save('reverse_fault.png')

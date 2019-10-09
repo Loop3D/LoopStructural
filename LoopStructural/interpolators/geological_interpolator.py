@@ -1,5 +1,8 @@
 import numpy as np
-from LoopStructural.modelling.geological_points import IPoint, GPoint, TPoint
+from LoopStructural.modelling.core.geological_points import IPoint, GPoint, TPoint
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class GeologicalInterpolator:
@@ -16,9 +19,11 @@ class GeologicalInterpolator:
         self.p_i = [] #interface points #   TODO create data container
         self.p_g = [] #gradeint points
         self.p_t = [] #tangent points
+        self.p_n = [] #norm constraints
         self.n_i = 0
         self.n_g = 0
         self.n_t = 0
+        self.n_n = 0
         self.type = 'undefined'
         if 'itype' in kwargs:
             self.type = kwargs['itype']
@@ -100,24 +105,31 @@ class GeologicalInterpolator:
         self.p_t.append(TPoint(pos,s,d))
         self.up_to_date = False
 
-    def add_data(self,data):
+    def add_data(self, data):
         """
         Adds a GeologicalData object to the interpolator
         :param data:
         :return:
         """
-        if type(data) == GPoint:
+        if data.type == 'GPoint':
             self.p_g.append(data)
             self.n_g+=1
-        if type(data) == IPoint:
+            self.up_to_date = False
+            return
+        if data.type == 'IPoint':
             self.p_i.append(data)
             self.n_i+=1
-        if type(data) == TPoint:
+            self.up_to_date = False
+            return
+        if data.type == 'TPoint':
             self.p_t.append(data)
             self.n_t+=1
-        self.up_to_date = False
+            self.up_to_date = False
+            return
+        else:
+            print("Did not add data", data.type)
 
-    def get_control_points(self):
+    def get_value_constraints(self):
         """
         Getter for all active control points
         :return: numpy array Nx4 where 0:3 are the position
@@ -128,7 +140,7 @@ class GeologicalInterpolator:
             points[i,3] = self.p_i[i].val
         return points
 
-    def get_gradient_control(self):
+    def get_gradient_constraints(self):
         """
         Getter for all gradient control points
         :return: numpy array Nx6 where 0:3 are pos and 3:5 are vector
@@ -136,14 +148,21 @@ class GeologicalInterpolator:
         points = np.zeros((self.n_g,6))  # array
         for i in range(self.n_g):
             points[i,:3] = self.p_g[i].pos
-            points[i,3:] = self.p_g[i].dir
+            points[i,3:] = self.p_g[i].vec
         return points
 
-    def get_tangent_control(self):
+    def get_tangent_constraints(self):
         points = np.zeros((self.n_t,6))  # array
         for i in range(self.n_t):
             points[i,:3] = self.p_t[i].pos
             points[i,3:] = self.p_t[i].dir
+        return points
+
+    def get_norm_constraints(self):
+        points = np.zeros((self.n_n,6))
+        for i in range(self.n_n):
+            points[i,:3] = self.p_n[i].pos
+            points[i,3:] = self.p_n[i].dir
         return points
 
     def setup_interpolator(self, **kwargs):

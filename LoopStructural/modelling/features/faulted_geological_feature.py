@@ -1,7 +1,10 @@
 import numpy as np
 
 from LoopStructural.modelling.features.geological_feature import GeologicalFeature
-from LoopStructural.modelling.scalar_field import ScalarField
+from LoopStructural.supports.scalar_field import ScalarField
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class FaultedGeologicalFeature(GeologicalFeature):

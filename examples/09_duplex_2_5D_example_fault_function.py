@@ -8,7 +8,7 @@ from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
-from LoopStructural.modelling.structural_frame import StructuralFrameBuilder, StructuralFrame
+from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder, StructuralFrame
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.fault.fault_function import CubicFunction, FaultDisplacement, Ones
 
@@ -167,7 +167,7 @@ viewer = LavaVuModelViewer(background="white")
 # viewer.plot_isosurface(fault_frame.features[1], isovalue=0, colour='black')
 slices = [-4,-2,0]
 
-viewer.plot_isosurface(
+viewer.add_isosurface(
     fault_frame2.features[0],
     isovalue=0,
     colour='black'
@@ -177,7 +177,7 @@ viewer.plot_isosurface(
 #     isovalue=0,
 #     colour='pink'
 # )
-viewer.plot_isosurface(
+viewer.add_isosurface(
     structural_frame2.features[0],
     isovalue=0,
     colour='black'
@@ -200,7 +200,7 @@ locations = mesh.barycentre[::10, :]
 #     paint_with=faulted_strati
 #     # colour='green'
 # )
-viewer.plot_isosurface(
+viewer.add_isosurface(
     faulted_strati,
     slices=slices,
     paint_with=faulted_strati

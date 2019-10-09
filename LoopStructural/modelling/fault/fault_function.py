@@ -1,5 +1,9 @@
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class CubicFunction:
     def __init__(self):
         self.A = []#np.zeros((4,4))

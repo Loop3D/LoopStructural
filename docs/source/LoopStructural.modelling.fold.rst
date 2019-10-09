@@ -1,9 +1,5 @@
 LoopStructural.modelling.fold package
 ==========================
-
-Submodules
-----------
-
 LoopStructural.modelling.fold.fold module
 ------------------------------
 

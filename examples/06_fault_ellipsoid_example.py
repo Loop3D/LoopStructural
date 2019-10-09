@@ -7,11 +7,10 @@ from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.faulted_geological_feature import FaultedGeologicalFeature
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
-from LoopStructural.modelling.structural_frame import StructuralFrameBuilder
+from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.fault.fault_function import CubicFunction, FaultDisplacement, Ones
 import numpy as np
-import matplotlib.pyplot as plt
 
 # ### Define model area and build mesh
 boundary_points = np.zeros((2,3))
@@ -130,9 +129,10 @@ locations = mesh.barycentre[::20,:]
 # viewer.plot_isosurface(
 #     faulted_strat.fw_feature,
 #     isovalue=-9)
-viewer.plot_isosurface(
+viewer.add_isosurface(
     faulted_strat,
     nslices=10,
     paint_with=faulted_strat
 )
-viewer.interactive()
+viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.save('fault_ellipsoid.png')

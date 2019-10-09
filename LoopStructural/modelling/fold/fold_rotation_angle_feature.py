@@ -1,5 +1,9 @@
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class FoldRotationAngleFeature:
     def __init__(self, fold_frame, rotation):
         self.fold_frame = fold_frame

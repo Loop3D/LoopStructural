@@ -3,7 +3,7 @@ LoopStructural Installation
 LoopStructural is a python3 library with a few dependencies. A makefile exists to make the installation process easier on unix systems.
 For a windows use it is recommended to use the `Windows Subsystem for Linux` <https://docs.microsoft.com/en-us/windows/wsl/install-win10> for running WLS or using a docker container.
 
-**Native installation on windows is not recommended** however if you insist on using python natively on windows you can use the anaconda environment linked with a C++ compiler. Final releases of LoopStructural will provide compiled wheels that can be installed on conda or pip using windows.
+**Native installation on windows can be done using anaconda if a working c compiler exists on your computer**
 
 Dependencies
 ------------
@@ -25,6 +25,9 @@ Other useful packages that are used in our examples are:
 
 Windows
 --------
+Using anaconda
+~~~~~~~~~~~~~~
+To install LoopStructural using windows
 
 Installing WSL
 ~~~~~~~~~~~~~~

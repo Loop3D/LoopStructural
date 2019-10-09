@@ -115,5 +115,5 @@ FME/cython/*.c
 
 # python environment
 fme_lg/*
-LoopStructural/*
 *.swp
+*.c

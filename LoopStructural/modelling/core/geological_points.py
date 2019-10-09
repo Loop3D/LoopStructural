@@ -3,11 +3,16 @@ import math as m
 from numpy import linalg as nla
 
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class Point():
     """
     Base object for a point contains the geospatial location
     """
     def __init__(self, pos):
+        self.type = 'Point'
         self.pos = np.array(pos)
         self.orig = np.array(pos)
     def transform(self,t):
@@ -26,16 +31,11 @@ class Point():
         if self.pos.ndim == 2:# > point.pos.shape[1]:
             pos = np.tile(point.pos,(self.pos.shape[1],1)).T
             return nla.norm(pos - self.pos,axis=1)+eps, pos - self.pos
-        if point.pos.ndim == 2:# > point.pos.shape[1]:
-            ##d = np.zeros((point.pos.shape[1]))
-            ##delta = np.zeros((point.pos.shape[1],3))
-            ##if dist.dist_2d(point.pos.T,self.pos,d,delta):
-            ##    #add epsilon to radius to avoid sqrt(0) and /0
-            ##    return d+eps, delta.T
+        if point.pos.ndim == 2:
             raise BaseException
         d = 0.0
         d = dist.dist_1d(point.pos,self.pos,d)+eps
-        return d,point.pos-self.pos#nla.norm(point.pos - self.pos,axis=0)+eps, point.pos-self.pos
+        return d,point.pos-self.pos
     def dim(self):
         return len(self.pos)
 
@@ -46,6 +46,7 @@ class IPoint(Point):
     def __init__(self,pos,val):
         Point.__init__(self,pos)
         self.val = val
+        self.type = 'IPoint'
     def val(self):
         return self.val
 
@@ -55,6 +56,7 @@ class IePoint(Point):
     """
     def __init__(self,pos,val,greater=True):
         Point.__init__(self,pos)
+        self.type = 'IePoint'
         self.val = val
         self.greater = greater
     def val(self):
@@ -66,31 +68,21 @@ class GPoint(Point):
     """
     Planar point
     """
-    def __init__(self,pos,s_,d_=None):
-        Point.__init__(self,pos)        
-        if d_ is None:
-            self.dir = s_
-        else:
-            self.strike = s_
-            self.dip = d_
-            self.dir = np.zeros(3)
-            s_r = np.deg2rad(s_)
-            d_r = np.deg2rad(np.abs(d_))
-            self.dir[0] = m.sin(d_r)*m.cos(s_r)
-            self.dir[1] = -m.sin(d_r)*m.sin(s_r)
-            self.dir[2] = m.cos(d_r)
-            self.dir/= nla.norm(self.dir)
+    def __init__(self,pos,vec):
+        Point.__init__(self,pos)
+        self.type = 'GPoint'
+        self.vec = vec
     @classmethod
     def from_plunge_plunge_dir(cls, pos, plunge,plunge_dir, polarity=1):
         plunge = np.deg2rad(plunge)
         plunge_dir = np.deg2rad(plunge_dir+90)
-        dir = np.zeros(3)
-        dir[0] = m.sin(plunge) * m.cos(plunge_dir)
-        dir[1] = -m.sin(plunge) * m.sin(plunge_dir)
-        dir[2] = m.cos(plunge)
-        dir /= nla.norm(dir)
-        dir*=polarity
-        return cls(pos,dir)
+        vec = np.zeros(3)
+        vec[0] = m.sin(plunge) * m.cos(plunge_dir)
+        vec[1] = -m.sin(plunge) * m.sin(plunge_dir)
+        vec[2] = m.cos(plunge)
+        vec /= nla.norm(vec)
+        vec*=polarity
+        return cls(pos,vec)
     @classmethod
     def from_strike_and_dip(cls, pos, strike, dip, polarity=1):
         dir = np.zeros(3)
@@ -114,15 +106,16 @@ class GPoint(Point):
         dir*=polarity
         return cls(pos, dir)
     def dir_(self):
-        return self.dir
+        return self.vec
     def val(self,i):
-        return self.dir[i]
+        return self.vec[i]
 class TPoint(Point):
     """
     Tangent point
     """
     def __init__(self,pos,s_,d_=None):
-        Point.__init__(self,pos)        
+        Point.__init__(self,pos)
+        self.type = 'TPoint'
         if d_ is None:
             self.dir = s_
         else:

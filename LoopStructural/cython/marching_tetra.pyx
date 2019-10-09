@@ -14,7 +14,7 @@ cdef node_exists(nodes,node,n):
         if csum == 0:
             return i
     return -1
-cdef vertex_interp(double isolevel,double [:] v1, double [:] v2,double [:] point):
+cdef vertex_interp(double isolevel, double [:] v1, double [:] v2, double [:] point):
     """
     Find the coordinates of vertices on an edge where the isovalue intersects
     isovalue is a float of
@@ -26,17 +26,17 @@ cdef vertex_interp(double isolevel,double [:] v1, double [:] v2,double [:] point
     p2 = v2[:3]
     vp1 = v1[3]
     vp2 = v2[3]
-    #print(vp1,vp2,isolevel)
-    if abs(isolevel-vp1) < 0.00001 : 
+    # TODO make epsilon value a function of the value
+    if np.isclose(isolevel,vp1):
         for i in range(3):
             point[i] = p1[i]
         return  
-    if abs(isolevel-vp2) < 0.00001 : 
+    if np.isclose(isolevel,vp2):
         for i in range(3):
             point[i] = p2[i]
         return
     ##if the value of both points is really similar return p1
-    if abs(vp1-vp2) < 0.00001 : 
+    if np.isclose(vp1,vp2):
         for i in range(3):
             point[i] = p1[i]
         return  

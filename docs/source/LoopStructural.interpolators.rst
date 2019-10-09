@@ -1,9 +1,6 @@
 LoopStructural.interpolators package
 =========================
 
-Submodules
-----------
-
 LoopStructural.interpolators.discete\_interpolator module
 ----------------------------------------------
 

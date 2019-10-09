@@ -1,6 +1,9 @@
 from LoopStructural.interpolators.discete_interpolator import DiscreteInterpolator
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
     """
@@ -13,22 +16,16 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def __init__(self, mesh):
         """
 
-        :param mesh: the mesh to apply PLI on
-        :param kwargs: possible kwargs are 'region' being the subset of the mesh to approximate
-        the linear equations on
-        'propertyname' the name of the property that is interpolated on the mesh
+        Parameters
+        ----------
+        mesh
         """
-        # whether to assemble a rectangular matrix or a square matrix
+
         self.shape = 'rectangular'
-        self.support = mesh
+        DiscreteInterpolator.__init__(self, mesh)
+        # whether to assemble a rectangular matrix or a square matrix
         self.interpolator_type = 'PLI'
-
-        self.region = self.support.regions['everywhere']
-        self.region_map = np.zeros(mesh.n_nodes).astype(int)
-        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
-
-        DiscreteInterpolator.__init__(self)
         # TODO need to fix this, constructor of DI is breaking support
         self.support = mesh
 
@@ -36,7 +33,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
-
 
     def _setup_interpolator(self, **kwargs):
         """
@@ -72,21 +68,71 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         # iterate over all elements
-        A, idc, B = self.support.get_constant_gradient(region=self.region, shape='rectangular')
+        A, idc, B = self.support.get_constant_gradient(region=self.region)
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
+
+        gi = np.zeros(self.support.n_nodes)
+        gi[:] = np.nan
+        gi[self.region] = np.arange(0,self.nx)
+        idc = gi[idc]
+        #outside = ~np.any(idc==np.nan,axis=2)[:,0]
         # w/=A.shape[0]
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
     def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
         """
-        add gradient norm constraints to the interpolator
-        :param w: weight per constraint
-        :return:
+        Adds gradient constraints to the least squares system with a weighted defined by w
+        Parameters
+        ----------
+        w - either numpy array of length number of
+
+        Returns
+        -------
+
         """
-        points = self.get_gradient_control()
+        points = self.get_gradient_constraints()
+        if points.shape[0] > 0:
+            e, inside = self.support.elements_for_array(points[:, :3])
+            nodes = self.support.nodes[self.support.elements[e]]
+            vecs = nodes[:,1:,:] - nodes[:,0,None,:]
+            vol = np.abs(np.linalg.det(vecs)) #/ 6
+            d_t = self.support.get_elements_gradients(e)
+            norm = np.linalg.norm(d_t,axis=2)
+            d_t /= norm[:,:,None]
+            d_t *= vol[:,None,None]
+            # w*=10^11
+
+            points[:,3:] /= norm
+
+            # add in the element gradient matrix into the inte
+            e = np.tile(e,(3,1)).T
+            idc = self.support.elements[e]
+            # now map the index from global to region create array size of mesh
+            # initialise as np.nan, then map points inside region to 0->nx
+            gi = np.zeros(self.support.n_nodes).astype(int)
+            gi[:] = -1
+            gi[self.region] = np.arange(0,self.nx).astype(int)
+            w /= 3
+            idc = gi[idc]
+
+            outside = ~np.any(idc==-1,axis=2)[:,0]
+            self.add_constraints_to_least_squares(d_t[outside,:,:]*w,points[outside,3:]*w*vol[outside,None],idc[outside,:])
+    def add_norm_ctr_pts(self, w=1.0):
+        """
+
+        Parameters
+        ----------
+        w
+
+        Returns
+        -------
+
+        """
+
+        points = self.get_norm_constraints()
         if points.shape[0] > 0:
             e, inside = self.support.elements_for_array(points[:, :3])
             nodes = self.support.nodes[self.support.elements[e]]
@@ -104,16 +150,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = self.support.elements[e]
             w /= 3
             self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
-
     def add_tangent_ctr_pts(self, w=1.0):
-        """
-        Add tangent constraint to the scalar field
-        :param w: weight per constraint
-        :return:
-        """
-        return
-
-    def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
         """
 
         Parameters
@@ -124,9 +161,22 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
+        return
+
+    def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
+        """
+        Adds value constraints to the least squares system
+        Parameters
+        ----------
+        w
+
+        Returns
+        -------
+
+        """
 
         #get elements for points
-        points = self.get_control_points()
+        points = self.get_value_constraints()
         if points.shape[0] > 1:
             e, inside = self.support.elements_for_array(points[:, :3])
             # get barycentric coordinates for points
@@ -135,10 +185,15 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             vol = np.abs(np.linalg.det(vecs)) / 6
             A = self.support.calc_bary_c(e, points[:, :3])
             A *= vol[None,:]
-            #w /= 2059581*10**11
             idc = self.support.elements[e]
-            # w /= points.shape[0]
-            self.add_constraints_to_least_squares(A.T*w, points[:, 3]*w*vol[None,:], idc)
+            # now map the index from global to region create array size of mesh
+            # initialise as np.nan, then map points inside region to 0->nx
+            gi = np.zeros(self.support.n_nodes).astype(int)
+            gi[:] = -1
+            gi[self.region] = np.arange(0,self.nx)
+            idc = gi[idc]
+            outside = ~np.any(idc==-1,axis=1)
+            self.add_constraints_to_least_squares(A[:,outside].T*w, points[outside, 3]*w*vol[None,outside], idc[outside,:])
 
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """

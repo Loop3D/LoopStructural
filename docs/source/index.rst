@@ -13,7 +13,7 @@ The implicit geological modeling engine developed for the Loop consortium with a
     Installation <installation>
     Tutorials <tutorials>
     API Reference: LoopStructural <LoopStructural>
-    API Reference: Visualisation <LoopStructural.visualisation>
+
 Introduction
 ~~~~~~~~~~~~
 

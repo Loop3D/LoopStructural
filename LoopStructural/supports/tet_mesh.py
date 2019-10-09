@@ -5,7 +5,10 @@ from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
 from LoopStructural.cython.dsi_helper import cg
-from ..cython.marching_tetra import marching_tetra
+from LoopStructural.cython.marching_tetra import marching_tetra
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class TetMesh:
@@ -191,15 +194,16 @@ class TetMesh:
         grad /= 4
         self.property_gradients_nodes[propertyname] = grad
 
-    def calculate_constant_gradient(self, region, shape='rectangular'):
+    def calculate_constant_gradient(self, region):
         self.dinfo = np.zeros(self.n_elements).astype(bool)
         # add cg constraint for all of the
         EG = self.get_elements_gradients(np.arange(self.n_elements))
-        idc, c, ncons = cg(EG, self.neighbours, self.elements, self.nodes)
+        region = region.astype('int64')
+        idc, c, ncons = cg(EG, self.neighbours, self.elements, self.nodes, region)
         idc = np.array(idc[:ncons,:])
         c = np.array(c[:ncons,:])
         B = np.zeros(c.shape[0])
-        return c,idc,B
+        return c, idc, B
 
     def get_constant_gradient(self, w=0.1, region='everywhere', **kwargs):
         return self.calculate_constant_gradient(region, **kwargs)
@@ -253,7 +257,6 @@ class TetMesh:
 
         d, ee = self.tree.query(array)
 
-        iarray = self.pca.transform(array)
         inside = np.zeros(array.shape[0]).astype(bool)
         inside[:] = True
         # inside = iarray[:, 0] > self.minpc0[None]
@@ -365,7 +368,7 @@ class TetMesh:
         try:
             import meshio
         except ImportError:
-            print("Couldn't import meshio not saving VTK")
+            logger.warning("Couldn't import meshio not saving VTK")
             return
         meshio.write_points_cells(name,
                                   self.nodes, {"tetra": self.elements},

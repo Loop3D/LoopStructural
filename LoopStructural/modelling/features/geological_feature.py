@@ -1,15 +1,26 @@
-from LoopStructural.modelling.scalar_field import ScalarField
-from LoopStructural.modelling.geological_points import GPoint, IPoint, TPoint
+from LoopStructural.supports.scalar_field import ScalarField
+from LoopStructural.modelling.core.geological_points import GPoint, IPoint, TPoint
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class GeologicalFeatureInterpolator:
     """
-    A builder for a GeologicalFeature
+    A builder for a GeologicalFeature will link data to the interpolator
+    and run the interpolation
     """
     def __init__(self, interpolator, **kwargs):
+        """
+        The interpolator to use to build the geological feature
+        Parameters
+        ----------
+        interpolator - a GeologicalInterpolator
+        kwargs - name of the feature, region to interpolate the feature
+        """
         self.interpolator = interpolator
         self.name = "UnnamedFeature"
         if 'name' in kwargs:
@@ -61,7 +72,9 @@ class GeologicalFeatureInterpolator:
 
         """
         self.data.append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
+        self.interpolator.add_data(self.data[-1])
         self.data.append(IPoint(pos, val))
+        self.interpolator.add_data(self.data[-1])
 
     def add_point(self, pos, val):
         """
@@ -83,7 +96,7 @@ class GeologicalFeatureInterpolator:
 
         Parameters
         ----------
-        pos
+        pos -
         val
 
         Returns
@@ -158,7 +171,7 @@ class GeologicalFeatureInterpolator:
 
     def build(self, solver='cg', **kwargs):
         """
-
+        Runs the interpolation
         Parameters
         ----------
         solver
@@ -173,6 +186,7 @@ class GeologicalFeatureInterpolator:
         # we can add a fold to the interpolator if the interpolator is a fold interpolator
         # pass the dict with weights as kwargs to the fold interpolator
         # self.interpolator.reset()
+        self.interpolator.set_region(regionname=self.region)
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
             self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
@@ -180,7 +194,7 @@ class GeologicalFeatureInterpolator:
                 kwargs['cg'] = False
             # kwargs['cg'] = False
         self.interpolator.setup_interpolator(**kwargs)
-        self.interpolator.solve_system(solver=solver)
+        self.interpolator.solve_system(solver=solver,**kwargs)
         return GeologicalFeature(self.name,
                                  ScalarField.from_interpolator(self.interpolator),
                                  builder=self, data=self.data, region=self.region)
@@ -255,7 +269,7 @@ class GeologicalFeature:
 
     def mean(self):
         """
-
+        Calculate average of the support values
         Returns
         -------
 
@@ -273,7 +287,7 @@ class GeologicalFeature:
 
     def max(self):
         """
-
+        Calculate average of the support values
         Returns
         -------
 
@@ -282,7 +296,7 @@ class GeologicalFeature:
 
     def update(self):
         """
-
+        Calculate average of the support values
         Returns
         -------
 
@@ -296,6 +310,24 @@ class GeologicalFeature:
         self.support.interpolator.update()
         self.support.update_property(self.support.interpolator.c)
 
+    def get_interpolator(self):
+        """
+        Get the interpolator used to build this feature
+        Returns
+        -------
+        GeologicalInterpolator
+        """
+        return self.support.interpolator
+
+    def get_node_values(self):
+        """
+        Get the node values of the support used to build this interpolator if the
+        interpolator is a discrete interpolator
+        Returns
+        -------
+        numpy array of values
+        """
+        return self.support.get_node_values()
 
     def slice(self, isovalue, bounding_box = None, nsteps = None):
         """
@@ -319,13 +351,21 @@ class GeologicalFeature:
             xx,yy,zz = np.meshgrid(x,y,z, indexing='ij')
             val = self.evaluate_value(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
             step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
-            verts, faces, normals, values = marching_cubes(
-            val.reshape(nsteps, order='C'),
-            isovalue,
-            spacing=step_vector)
+            try:
+                verts, faces, normals, values = marching_cubes(
+                val.reshape(nsteps, order='C'),
+                isovalue,
+                spacing=step_vector)
 
-            return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+                return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+            except ValueError:
+                logger.warning("No surface to mesh, skipping")
+                return np.zeros((3,1)).astype(int),np.zeros((3,1))
         else:
-            return self.support.slice(isovalue,self.region)
+            try:
+                return self.support.slice(isovalue,self.region)
+            except RuntimeError:
+                logger.warning("No surface to mesh, skipping")
+                return np.zeros((3,1)).astype(int),np.zeros((3,1))
 
 

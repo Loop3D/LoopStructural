@@ -1,5 +1,9 @@
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 
 class ScalarField:
     def __init__(self, support, property_name):

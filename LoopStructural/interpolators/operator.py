@@ -1,5 +1,9 @@
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 class Operator(object):
 
     z = np.zeros((3,3))
@@ -25,3 +29,15 @@ class Operator(object):
     ],z])
     Dxz_mask = Dxy_mask.swapaxes(0,1)
     Dyz_mask = Dxy_mask.swapaxes(0,2)
+
+    #from https://en.wikipedia.org/wiki/Discrete_Laplace_operator
+    Lapacian = np.array([[[0, 0, 0],
+                          [0, 1, 0],  # first plane
+                          [0, 0, 0]]
+                            , [[0, 1, 0],
+                               [1, -6, 1],  # second plane
+                               [0, 1, 0]],
+                         [[0, 0, 0],
+                          [0, 1, 0],  # third plane
+                          [0, 0, 0]]]
+                        )

@@ -1,24 +1,32 @@
-from .geological_interpolator import GeologicalInterpolator
+from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 import numpy as np
 from scipy.sparse import coo_matrix, diags, bmat, eye
 from scipy.sparse import linalg as sla
 
+import logging
+logger = logging.getLogger(__name__)
 
 class DiscreteInterpolator(GeologicalInterpolator):
     """
     Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
     any interpolator that solves the system using least squares approximation
     """
-    def __init__(self):
+    def __init__(self, support):
         GeologicalInterpolator.__init__(self)
         self.B = []
+        self.support = support
+
+        region = 'everywhere'
+        self.region = self.support.regions[region]
+        self.region_map = np.zeros(support.n_nodes).astype(int)
+        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
+        self.nx = len(self.support.nodes[self.region])
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
         self.c_ = 0
         self.A = []  # sparse matrix storage coo format
         self.col = []
         self.row = []  # sparse matrix storage
-        self.support = None
         self.solver = None
         self.eq_const_C = []
         self.eq_const_row = []
@@ -26,16 +34,53 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d = []
         self.eq_const_c_ = 0
 
+
     def set_property_name(self, propertyname):
+        """
+        Set the property name attribute, this is usually used to
+        save the property on the support
+        Parameters
+        ----------
+        propertyname
+
+        Returns
+        -------
+
+        """
         self.propertyname = propertyname
 
     def set_region(self, regionname=None, region=None):
+        """
+        Set the region of the support the interpolator is working on
+        Parameters
+        ----------
+        regionname - string with name of region
+        region - numpy mask for region
+
+        Returns
+        -------
+
+        """
         if region is not None:
             self.region = region
         if regionname is not None:
             self.region = self.support.regions[regionname]
 
+        self.region_map = np.zeros(self.support.n_nodes).astype(int)
+        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
+        self.nx = len(self.support.nodes[self.region])
+
     def set_interpolation_weights(self, weights):
+        """
+        Set the interpolation weights dictionary
+        Parameters
+        ----------
+        weights - dictionary with the interpolation weights
+
+        Returns
+        -------
+
+        """
         for key in weights:
             self.up_to_date = False
             self.interpolation_weights[key] = weights[key]
@@ -44,7 +89,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         Reset the interpolation constraints
         """
-        print("Resetting interpolation constraints")
+        logger.debug("Resetting interpolation constraints")
         self.c_ = 0
         self.A = []  # sparse matrix storage coo format
         self.col = []
@@ -55,17 +100,27 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d = []
         self.eq_const_c_ = 0
         self.B = []
+
     def add_constraints_to_least_squares(self, A, B, idc):
         """
-        Adds constraints to the least squares system
-        :param A: A N x C block to add
-        :param B: B N vector
-        :param idc: N x C node indices
-        :return:
+        Adds constraints to the least squares system. Automatically works out the row
+        index given the shape of the input arrays
+        Parameters
+        ----------
+        A - RxC numpy array of constraints where C is number of columns,R rows
+        B - B values array length R
+        idc - RxC column index
+
+        Returns
+        -------
+
         """
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
+        if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
+            logger.warning("Constraints contain nan not adding constraints")
+            return
         nr = A.shape[0]
         if len(A.shape) >2:
             nr = A.shape[0]*A.shape[1]
@@ -73,7 +128,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows = np.tile(rows, (A.shape[-1],1)).T
         rows+= self.c_
         self.c_+=nr
-
         if self.shape == 'rectangular':
             # don't add operator where it is = 0 to the sparse matrix!
             A = A.flatten()
@@ -87,67 +141,47 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.B.extend(B.tolist())
 
     def add_equality_constraints(self, node_idx, values):
+        """
+        Adds hard constraints to the least squares system. For now this just sets
+        the node values to be fixed using a lagrangian.
+        Parameters
+        ----------
+        node_idx - int array of node indexes
+        values - array of node values
+
+        Returns
+        -------
+
+        """
         self.eq_const_C.extend(np.ones(node_idx.shape[0]).tolist())
         self.eq_const_col.extend(node_idx.tolist())
         self.eq_const_row.extend((np.arange(0,node_idx.shape[0])))
         self.eq_const_d.extend(values.tolist())
         self.eq_const_c_ += node_idx.shape[0]
 
-    def _solve(self, solver='spqr', **kwargs):
+    def build_matrix(self,damp=True):
         """
-        Solve the least squares problem with specified solver
-        :param solver: string for solver
-        :param clear:
-        :return:
+        Assemble constraints into interpolation matrix. Adds equaltiy constraints
+        using lagrange modifiers if necessary
+        Parameters
+        ----------
+        damp: bool
+            Flag whether damping should be added to the diagonal of the matrix
+        Returns
+        -------
+        Interpolation matrix and B
         """
-        # save the solver so we can rerun the interpolation at a later stage
-        self.solver = solver
-        # map node indicies from global to region
-        if self.shape == 'rectangular':
-
-            cols = np.array(self.col)
-            self.AA = coo_matrix((np.array(self.A), (np.array(self.row), \
-                                                     cols)), shape=(self.c_, self.nx), dtype=float)  # .tocsr()
-            if self.eq_const_c_ > 0:
-                self.C = coo_matrix((np.array(self.eq_const_C), (np.array(self.eq_const_row),
-                                                                 np.array(self.eq_const_col))),
-                                                                shape=(self.eq_const_c_,self.nx))
-        if self.shape == 'square':
-            cols = np.array(self.col)
-            rows = np.array(self.row)
-            self.AA = coo_matrix((np.array(self.A), (np.array(rows).astype(np.int64), \
-                                                     np.array(cols).astype(np.int64))), dtype=float)
-            d = np.zeros(self.nx)
-            d += np.finfo('float').eps
-            self.AA += spdiags(d, 0, self.nx, self.nx)
+        cols = np.array(self.col)
+        A = coo_matrix((np.array(self.A), (np.array(self.row), \
+                                                 cols)), shape=(self.c_, self.nx), dtype=float)  # .tocsr()
         B = np.array(self.B)
-        self.cc_ = [0, 0, 0, 0]
-        self.c = np.zeros(self.nx)
-        self.c[:] = np.nan
-        if solver == 'lsqr':
-            self.cc_ = sla.lsqr(self.AA, B)
-            self.up_to_date = True
-        elif solver == 'lsmr' and self.shape == 'rectangular':
-            self.cc_ = sla.lsmr(self.AA, B)
-            self.up_to_date = True
-
-        elif solver == 'eigenlsqr' and self.shape == 'rectangular':
-            try:
-                import eigensparse
-            except ImportError:
-                print("eigen sparse not installed")
-            self.c[self.region] = eigensparse.lsqrcg(self.AA.tocsr(), self.B)
-            self.up_to_date = True
-
-            return
-        elif solver == 'spqr' and self.shape == 'rectangular':
-            sys.path.insert(0, '/home/lgrose/dev/cpp/PyEigen/build')
-            import eigensparse
-            self.c[self.region] = eigensparse.lsqspqr(self.AA.tocsr(), self.B)
-            self.up_to_date = True
-
-            return
-        if solver == 'lueq':
+        AAT = A.T.dot(A)
+        BT = A.T.dot(B)
+        # add a small number to the matrix diagonal to smooth the results
+        # can help speed up solving, but might also introduce some errors
+        if damp:
+            AAT += eye(AAT.shape[0])*np.finfo('float').eps
+        if self.eq_const_c_ > 0:
             # solving constrained least squares using
             # | ATA CT | |c| = b
             # | C   0  | |y|   d
@@ -158,175 +192,131 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # and d are the equality constraints
             # c are the node values and y are the
             # lagrange multipliers#
+            C = coo_matrix((np.array(self.eq_const_C), (np.array(self.eq_const_row),
+                                                             np.array(self.eq_const_col))),
+                                shape=(self.eq_const_c_, self.nx))
+            d = np.array(self.eq_const_d)
+            AAT = bmat([[AAT, C.T], [C, None]])
+            BT = np.hstack([BT,d])
+        return AAT, BT
 
-            # check whether there are any equality constraints
-            if self.eq_const_c_ == 0:
-                solver = 'lu'
-            else:
-                # assemble the KKT matrix
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-                C = self.C
-                d = np.array(self.eq_const_d)
-                M = bmat([[A, C.T], [C, None]])
+    def _solve_lu(self, A, B):
+        """
+        Call scipy LU decomoposition
+        Parameters
+        ----------
+        A - square sparse matrix
+        B
 
-                # solve using lu decompositon masking the lagrange multipliers
-                lu = sla.splu(M.tocsc())
-                b = np.hstack([B,d]) # np.array([1, 2, 3, 4])
-                sol = lu.solve(b)
-                self.c = sol[:self.nx]
-                self.up_to_date = True
-                return
-        if solver == 'lu':
-            # print("Solving using scipy LU decomposition")
-            if self.shape == 'rectangular':
-                # print("Performing A.T @ A")
-                A = self.AA.T.dot(self.AA)
-                if 'damp' in kwargs:
-                    A += eye(A.shape[0])*kwargs['damp']
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            lu = sla.splu(A.tocsc())
-            b = B  # np.array([1, 2, 3, 4])
-            self.c[self.region] = lu.solve(b)
-            self.up_to_date = True
+        Returns
+        -------
 
+        """
+        lu = sla.splu(A.tocsc())
+        # b = np.hstack([B, d])  # np.array([1, 2, 3, 4])
+        sol = lu.solve(B)
+        return sol[:self.nx]
 
-            return
-        if solver == 'chol':
-            try:
-                from sksparse.cholmod import cholesky
-                if self.shape == 'rectangular':
-                    # print("Performing A.T @ A")
-                    A = self.AA.T.dot(self.AA)
-                    B = self.AA.T.dot(self.B)
-                if self.shape == 'square':
-                    A = self.AA
-                    B = self.B
-                factor = cholesky(A.tocsc())
-                self.c = factor(B)
-                self.up_to_date = True
+    def _solve_chol(self, A ,B):
+        """
+        Call suitesparse cholmod through scikitsparse
+        LINUX ONLY!
+        Parameters
+        ----------
+        A - square sparse matrix
+        B - numpy vector
 
-                return
-            except ImportError:
-                print("Scikit Sparse not installed trying cg")
-                solver = 'cg'
+        Returns
+        -------
 
-        if solver == 'cgp':
-            num_iter=0
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
+        """
+        try:
+            from sksparse.cholmod import cholesky
+            factor = cholesky(A.tocsc())
+            return factor(B)
+        except ImportError:
+            logger.warning("Scikit Sparse not installed try using cg instead")
+            return False
 
-            # precon = sla.spilu(A)
-            # M2 = sla.LinearOperator(A.shape, precon.solve)
-            # #print(precon)
-            self.cc_ = sla.cg(A, B, M=diags(1/A.diagonal()))
-            self.up_to_date = True
-        if solver == 'eigencg':
-            import sys
-            sys.path.insert(0, '/home/lgrose/dev/cpp/PyEigen/build')
-            import eigensparse
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            self.c = eigensparse.cg(A, B)
-            self.up_to_date = True
-            return
+    def _solve_cg(self, A, B, precon=None, **kwargs):
+        """
+        Call scipy conjugate gradient
+        Parameters
+        ----------
+        A - square sparse matrix
+        B - numpy vector
+        precon
+        kwargs
+
+        Returns
+        -------
+
+        """
+        cgargs={}
+        if 'maxiter' in kwargs:
+            cgargs['maxiter'] = kwargs['maxiter']
+        if 'x0' in kwargs:
+            cgargs['x0'] = kwargs['x0']
+        if 'tol' in kwargs:
+            cgargs['tol'] = kwargs['tol']
+        if 'atol' in kwargs:
+            cgargs['atol'] = kwargs['atol']
+        if 'callback' in kwargs:
+            cgargs['callback'] = kwargs['callback']
+        if precon is not None:
+            cgargs['M'] = precon(A)
+        return sla.cg(A,B,**cgargs)[0]
+
+    def _solve(self, solver, **kwargs):
+        """
+        Main entry point to run the solver and update the node value attribute for the
+        discreteinterpolator class
+        Parameters
+        ----------
+        solver - string of solver e.g. cg, lu, chol, custom
+        kwargs - kwargs for solver e.g. maxiter, preconditioner etc, damping for
+
+        Returns
+        -------
+        True if the interpolation is run
+
+        """
+        self.c = np.zeros(self.support.n_nodes)
+        self.c[:] = np.nan
+        damp = True
+        if 'damp' in kwargs:
+            damp = kwargs['damp']
+        A, B = self.build_matrix(damp=damp)
         if solver == 'cg':
+            self.c[self.region] = self._solve_cg(A, B, **kwargs)
+            return True
+        if solver == 'chol':
 
-            num_iter = 0
-
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            # precon = sla.spilu(A)
-            # M2 = sla.LinearOperator(A.shape, precon.solve)
-            #print(precon)
-            self.cc_ = sla.cg(A,B)#,M=M2)
-            if self.cc_[1] == 0:
-                print("Conjugate gradient converged")
-            if self.cc_[1] > 0:
-                print("CG used %i iterations and didn't converge"%self.cc_[1])
-            self.up_to_date = True
-        if solver == 'cgs':
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            self.cc_ = sla.cgs(A,B)
-            self.up_to_date = True
-
-        if solver == 'bicg':
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            self.cc_ = sla.bicg(A,B)
-            self.up_to_date = True
-
-        if solver == 'qmr':
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            self.cc_ = sla.qmr(A,B)
-            self.up_to_date = True
-
-        if solver == 'gmres':
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            self.cc_ = sla.gmres(A,B)
-            self.up_to_date = True
-
-        if solver == 'lgmres':
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            self.cc_ = sla.lgmres(A,B)
-            self.up_to_date = True
-
-        if solver == 'minres':
-            if self.shape == 'rectangular':
-                A = self.AA.T.dot(self.AA)
-                B = self.AA.T.dot(self.B)
-            if self.shape == 'square':
-                A = self.AA
-                B = self.B
-            self.cc_ = sla.minres(A,B)
-            self.up_to_date = True
-
-        self.c[self.region] = self.cc_[0]
-        self.node_values = self.c
-
+            self.c[self.region] = self._solve_chol(A, B)
+            return True
+        if solver == 'lu':
+            logger.info("Solving using scipy LU")
+            self.c[self.region] = self._solve_lu(A, B)
+            return True
+        if solver == 'external':
+            logger.warning("Using external solver")
+            self.c[self.region] = kwargs['external'](A, B)
+        if np.all(self.c == np.nan):
+            logger.warning("Solver not run, no scalar field")
+        if np.all(self.c[self.region] == 0):
+            logger.warning("No solution, scalar field 0")
     def update(self):
+        """
+        Check if the solver is up to date, if not rerun interpolation using
+        the previously used solver. If the interpolation has not been run before it will
+        return False
+        Returns
+        -------
+
+        """
         if self.solver is None:
-            print("Cannot rerun interpolator")
-            return
+            logging.debug("Cannot rerun interpolator")
+            return False
         if not self.up_to_date:
             self.setup_interpolator()
-            self._solve(self.solver)
+            return self._solve(self.solver)

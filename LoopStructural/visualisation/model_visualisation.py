@@ -2,6 +2,8 @@ import lavavu
 from lavavu.vutils import is_notebook
 import numpy as np
 
+import logging
+logger = logging.getLogger(__name__)
 
 class LavaVuModelViewer:
     def __init__(self, **kwargs):
@@ -13,7 +15,7 @@ class LavaVuModelViewer:
 
         Parameters
         ----------
-        **kwargs : lavavu viewere kwargs
+        **kwargs : lavavu viewer kwargs
 
         Attributes
         ----------
@@ -22,9 +24,10 @@ class LavaVuModelViewer:
         """
 
         self.lv = lavavu.Viewer(**kwargs)
+        self.lv['orthographic'] = True
         self.objects = {}
 
-    def plot_isosurface(self, geological_feature, **kwargs):
+    def add_isosurface(self, geological_feature, **kwargs):
         """
         Plot the surface of a geological feature if no kwargs are given plots the
         average surface and colours it red.
@@ -70,9 +73,9 @@ class LavaVuModelViewer:
 
         # do isosurfacing of support using marching tetras/cubes
         for isovalue in slices:
-            print("Creating isosurface for %f"%isovalue)
+            logger.debug("Creating isosurface for %f"%isovalue)
             if isovalue < min_property_val or isovalue > max_property_val:
-                print("No surface to create for isovalue")
+                logger.debug("No surface to create for isovalue")
                 continue #isovalue = kwargs['isovalue']
             if voxet is None:
                 tris, nodes = geological_feature.slice(isovalue)
@@ -115,7 +118,7 @@ class LavaVuModelViewer:
                 vec.vertices(tribc[::kwargs['normals'],:])
                 vec.vectors(crosses[::kwargs['normals'],::])
 
-    def plot_model_box(self, boundary_points, nsteps, name, **kwargs):
+    def add_scalar_field(self, boundary_points, nsteps, name, **kwargs):
         """
 
         Parameters
@@ -213,7 +216,10 @@ class LavaVuModelViewer:
         if painter is None:
             surf.colours(colour)
         if painter is not None:
-            surf.values(painter.evaluate_value(points),painter.name)
+            if 'norm' in kwargs:
+                surf.values(np.linalg.norm(painter.evaluate_gradient(points),axis=1),painter.name)
+            else:
+                surf.values(painter.evaluate_value(points),painter.name)
             surf["colourby"] = painter.name
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
@@ -221,7 +227,7 @@ class LavaVuModelViewer:
         surf.colourmap(cmap)  # nodes.shape[0]))
         #return tri, xx, yy, zz
 
-    def plot_vector_field(self, geological_feature, locations, **kwargs):
+    def add_vector_field(self, geological_feature, locations, **kwargs):
         """
         Plot the gradient of a geological feature at given locations
         Parameters
@@ -242,7 +248,7 @@ class LavaVuModelViewer:
         vectorfield.vectors(vector)
         return
 
-    def plot_data(self, feature, **kwargs):
+    def add_data(self, feature, **kwargs):
         """
         Plot the data linked to the feature
         Parameters
@@ -254,14 +260,24 @@ class LavaVuModelViewer:
         -------
 
         """
-        grad = feature.support.interpolator.get_gradient_control()
-        value = feature.support.interpolator.get_control_points()
-        if grad.shape[0] > 0:
-            self.plot_vector_data(grad[:,:3],grad[:,3:],feature.name+"_grad_cp",**kwargs)
-        if value.shape[0] > 0:
-            self.plot_value_data(value[:,:3],value[:,3],feature.name+"_value_cp",**kwargs)
+        name = feature.name
+        add_grad = True
+        add_value = True
+        if 'name' in kwargs:
+            name = kwargs['name']
+            del kwargs['name']
+        if 'grad' in kwargs:
+            add_grad = kwargs['grad']
+        if 'value' in kwargs:
+            add_value = kwargs['value']
+        grad = feature.support.interpolator.get_gradient_constraints()
+        value = feature.support.interpolator.get_value_constraints()
+        if grad.shape[0] > 0 and add_grad:
+            self.add_vector_data(grad[:, :3], grad[:, 3:], name + "_grad_cp", **kwargs)
+        if value.shape[0] > 0 and add_value:
+            self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp", **kwargs)
 
-    def plot_points(self, points, name, **kwargs):
+    def add_points(self, points, name, **kwargs):
         """
         Plot points location in the lavavu viewer
         Parameters
@@ -277,7 +293,7 @@ class LavaVuModelViewer:
         p = self.lv.points(name, **kwargs)
         p.vertices(points)
 
-    def plot_vector_data(self, position, vector, name, **kwargs):
+    def add_vector_data(self, position, vector, name, **kwargs):
         """
         Plot point data with a vector component into the lavavu viewer
         Parameters
@@ -301,7 +317,7 @@ class LavaVuModelViewer:
             vectorfield.vectors(vector)
             return
 
-    def plot_value_data(self, position, value, name, **kwargs):
+    def add_value_data(self, position, value, name, **kwargs):
         """
         Plot points data with a value component
         Parameters
@@ -329,11 +345,22 @@ class LavaVuModelViewer:
         p["colourby"] = "v"
         p.colourmap(cmap)
 
-    def plot_fold(self, fold, locations):
+    def add_fold(self, fold, locations):
+        """
+        Draw the vector components of the fold at the locations
+        Parameters
+        ----------
+        fold - fold object
+        locations - numpy array of xyz
+
+        Returns
+        -------
+
+        """
         r2r, fold_axis, dgz = fold.get_deformed_orientation(locations)
-        self.plot_vector_data(locations,r2r,'foldr2r',colour='red')
-        self.plot_vector_data(locations,fold_axis,'fold_axis',colour='black')
-        self.plot_vector_data(locations,dgz,'fold_norm',colour='green')
+        self.add_vector_data(locations, r2r, 'foldr2r', colour='red')
+        self.add_vector_data(locations, fold_axis, 'fold_axis', colour='black')
+        self.add_vector_data(locations, dgz, 'fold_norm', colour='green')
 
     def interactive(self):
         """
@@ -349,5 +376,32 @@ class LavaVuModelViewer:
             self.lv.control.show()
         if not is_notebook():
             self.lv.interactive()
+
+    def set_viewer_rotation(self, rotation):
+        """
+        Set the viewer rotation given a list of rotations x,y,z
+        Parameters
+        ----------
+        rotation numpy array of 3 rotation
+
+        Returns
+        -------
+
+        """
+        self.lv.rotate(rotation)
+
+    def save(self,fname,**kwargs):
+        """
+        Calls lavavu.Viewer.image to save the viewer current state as an image
+        Parameters
+        ----------
+        fname - file name string including relative path
+        kwargs - optional kwargs to give to lavavu e.g. transparent, resolution
+
+        Returns
+        -------
+
+        """
+        self.lv.image(fname, **kwargs)
 
 
