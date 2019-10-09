@@ -84,10 +84,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
         """
-
+        Adds gradient constraints to the least squares system with a weighted defined by w
         Parameters
         ----------
-        w
+        w - either numpy array of length number of
 
         Returns
         -------
@@ -112,12 +112,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = self.support.elements[e]
             # now map the index from global to region create array size of mesh
             # initialise as np.nan, then map points inside region to 0->nx
-            gi = np.zeros(self.support.n_nodes)
-            gi[:] = np.nan
-            gi[self.region] = np.arange(0,self.nx)
+            gi = np.zeros(self.support.n_nodes).astype(int)
+            gi[:] = -1
+            gi[self.region] = np.arange(0,self.nx).astype(int)
             w /= 3
             idc = gi[idc]
-            outside = ~np.any(idc==np.nan,axis=2)[:,0]
+
+            outside = ~np.any(idc==-1,axis=2)[:,0]
             self.add_constraints_to_least_squares(d_t[outside,:,:]*w,points[outside,3:]*w*vol[outside,None],idc[outside,:])
     def add_norm_ctr_pts(self, w=1.0):
         """
@@ -164,7 +165,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
         """
-
+        Adds value constraints to the least squares system
         Parameters
         ----------
         w
@@ -188,10 +189,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # now map the index from global to region create array size of mesh
             # initialise as np.nan, then map points inside region to 0->nx
             gi = np.zeros(self.support.n_nodes).astype(int)
-            gi[:] = np.nan
+            gi[:] = -1
             gi[self.region] = np.arange(0,self.nx)
             idc = gi[idc]
-            outside = ~np.any(idc==np.nan,axis=1)
+            outside = ~np.any(idc==-1,axis=1)
             self.add_constraints_to_least_squares(A[:,outside].T*w, points[outside, 3]*w*vol[None,outside], idc[outside,:])
 
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):

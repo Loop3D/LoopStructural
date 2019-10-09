@@ -216,7 +216,10 @@ class LavaVuModelViewer:
         if painter is None:
             surf.colours(colour)
         if painter is not None:
-            surf.values(painter.evaluate_value(points),painter.name)
+            if 'norm' in kwargs:
+                surf.values(np.linalg.norm(painter.evaluate_gradient(points),axis=1),painter.name)
+            else:
+                surf.values(painter.evaluate_value(points),painter.name)
             surf["colourby"] = painter.name
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
@@ -257,12 +260,22 @@ class LavaVuModelViewer:
         -------
 
         """
+        name = feature.name
+        add_grad = True
+        add_value = True
+        if 'name' in kwargs:
+            name = kwargs['name']
+            del kwargs['name']
+        if 'grad' in kwargs:
+            add_grad = kwargs['grad']
+        if 'value' in kwargs:
+            add_value = kwargs['value']
         grad = feature.support.interpolator.get_gradient_constraints()
         value = feature.support.interpolator.get_value_constraints()
-        if grad.shape[0] > 0:
-            self.add_vector_data(grad[:, :3], grad[:, 3:], feature.name + "_grad_cp", **kwargs)
-        if value.shape[0] > 0:
-            self.add_value_data(value[:, :3], value[:, 3], feature.name + "_value_cp", **kwargs)
+        if grad.shape[0] > 0 and add_grad:
+            self.add_vector_data(grad[:, :3], grad[:, 3:], name + "_grad_cp", **kwargs)
+        if value.shape[0] > 0 and add_value:
+            self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp", **kwargs)
 
     def add_points(self, points, name, **kwargs):
         """

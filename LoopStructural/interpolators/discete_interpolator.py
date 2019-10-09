@@ -159,10 +159,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d.extend(values.tolist())
         self.eq_const_c_ += node_idx.shape[0]
 
-    def build_matrix(self):
+    def build_matrix(self,damp=True):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy constraints
         using lagrange modifiers if necessary
+        Parameters
+        ----------
+        damp: bool
+            Flag whether damping should be added to the diagonal of the matrix
         Returns
         -------
         Interpolation matrix and B
@@ -173,9 +177,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         B = np.array(self.B)
         AAT = A.T.dot(A)
         BT = A.T.dot(B)
-        ## add a bit of a buffer to diagonal
-
-        AAT += eye(AAT.shape[0])*np.finfo('float').eps#0.000000000000001#wargs['damp']
+        # add a small number to the matrix diagonal to smooth the results
+        # can help speed up solving, but might also introduce some errors
+        if damp:
+            AAT += eye(AAT.shape[0])*np.finfo('float').eps
         if self.eq_const_c_ > 0:
             # solving constrained least squares using
             # | ATA CT | |c| = b
@@ -269,7 +274,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Parameters
         ----------
         solver - string of solver e.g. cg, lu, chol, custom
-        kwargs - kwargs for solver e.g. maxiter, preconditioner etc
+        kwargs - kwargs for solver e.g. maxiter, preconditioner etc, damping for
 
         Returns
         -------
@@ -278,7 +283,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
-        A, B = self.build_matrix()
+        damp = True
+        if 'damp' in kwargs:
+            damp = kwargs['damp']
+        A, B = self.build_matrix(damp=damp)
         if solver == 'cg':
             self.c[self.region] = self._solve_cg(A, B, **kwargs)
             return True
