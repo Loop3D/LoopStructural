@@ -74,10 +74,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         idc = np.array(idc)
 
         gi = np.zeros(self.support.n_nodes)
-        gi[:] = np.nan
+        gi[:] = -1
         gi[self.region] = np.arange(0,self.nx)
         idc = gi[idc]
-        #outside = ~np.any(idc==np.nan,axis=2)[:,0]
+        # outside = ~np.any(idc == -1, axis=2)[:,0]
         # w/=A.shape[0]
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return

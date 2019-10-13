@@ -153,13 +153,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
-        self.eq_const_C.extend(np.ones(node_idx.shape[0]).tolist())
-        self.eq_const_col.extend(node_idx.tolist())
-        self.eq_const_row.extend((np.arange(0,node_idx.shape[0])))
-        self.eq_const_d.extend(values.tolist())
-        self.eq_const_c_ += node_idx.shape[0]
+        # map from mesh node index to region node index
+        gi = np.zeros(self.support.n_nodes)
+        gi[:] = -1
+        gi[self.region] = np.arange(0,self.nx)
+        idc = gi[node_idx]
+        # check
+        outside = ~(idc == -1)
+        self.eq_const_C.extend(np.ones(idc[outside].shape[0]).tolist())
+        self.eq_const_col.extend(idc[outside].tolist())
+        self.eq_const_row.extend((np.arange(0,idc[outside].shape[0])))
+        self.eq_const_d.extend(values[outside].tolist())
+        self.eq_const_c_ += node_idx[outside].shape[0]
 
-    def build_matrix(self,damp=True):
+    def build_matrix(self, damp=True):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy constraints
         using lagrange modifiers if necessary
@@ -233,7 +240,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         try:
             from sksparse.cholmod import cholesky
             factor = cholesky(A.tocsc())
-            return factor(B)
+            return factor(B)[:self.nx]
         except ImportError:
             logger.warning("Scikit Sparse not installed try using cg instead")
             return False
@@ -265,7 +272,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs['callback'] = kwargs['callback']
         if precon is not None:
             cgargs['M'] = precon(A)
-        return sla.cg(A,B,**cgargs)[0]
+        return sla.cg(A,B,**cgargs)[0][:self.nx]
 
     def _solve(self, solver, **kwargs):
         """
@@ -283,7 +290,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
-        damp = True
+        damp = False
         if 'damp' in kwargs:
             damp = kwargs['damp']
         A, B = self.build_matrix(damp=damp)
@@ -300,7 +307,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return True
         if solver == 'external':
             logger.warning("Using external solver")
-            self.c[self.region] = kwargs['external'](A, B)
+            self.c[self.region] = kwargs['external'](A, B)[:self.nx]
         if np.all(self.c == np.nan):
             logger.warning("Solver not run, no scalar field")
         if np.all(self.c[self.region] == 0):
