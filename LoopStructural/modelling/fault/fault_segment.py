@@ -8,7 +8,8 @@ class FaultSegment:
     Class for representing a slip event of a fault
     """
 
-    def __init__(self, faultframe ,**kwargs):  # mesh,fault_event,data,name,region):
+    def __init__(self, faultframe, **kwargs):  # mesh,fault_event,data,name,region):
+
         """
         constructor
         :param faultframe: StructuralFrame object with three coordinates
