@@ -1,4 +1,10 @@
 from LoopStructural.modelling.core.geological_points import GPoint, IPoint
+from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
+from LoopStructural.supports.tet_mesh import TetMesh
+from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator, GeologicalFeature
+from LoopStructural.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
+from LoopStructural.supports.structured_grid import StructuredGrid
+
 import numpy as np
 import networkx as nx
 
@@ -34,6 +40,26 @@ class GeologicalModel:
         self.bounding_box = np.zeros((2, 3))
         self.bounding_box[0, :] = self.maxmimum-self.origin
         self.bounding_box /= self.scale_factor
+
+    def get_interpolator(self, interpolatortype, nelements, buffer, region = "everywhere"):
+        interpolator = None
+        bb = np.copy(self.bounding_box)
+        bb[0,:] -= buffer
+        bb[1,:] += buffer
+        if interpolatortype == "PLI":
+            mesh = TetMesh()
+
+            mesh.setup_mesh(bb, n_tetra=nelements,)
+            return PLI(mesh)
+
+        if interpolatortype == 'FDI':
+            # number of elements should be divided roughly to match the shape
+            ratio =  bb[1,:] / np.sum(bb[1,:])
+            ratio*=nelements
+            ratio = ratio.astype(int)
+            step_vector = 1. / np.max(ratio)
+            grid = StructuredGrid(nsteps=ratio,step_vector=step_vector)
+            return FDI(grid)
 
     def add_structural_frame(self, frame):
         # self.features[frame.name] = frame
