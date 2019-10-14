@@ -47,9 +47,13 @@ class FaultSegment:
             g = self.faultframe.features[1].evaluate_gradient(points)
             gy = self.faultframe.features[1].evaluate_value(points)
             gz = self.faultframe.features[2].evaluate_value(points)
-            # determine displacement magnitude
+            # determine displacement magnitude, for constant displacement
+            # hanging wall should be > 0
+
             d = np.zeros(gx.shape)
-            d[gx > 0] = 1.
+            d[np.isnan(gx)] = 0
+            d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
+            # d[gx > 0] = 1.
             if self.faultfunction is not None:
                 d = self.faultfunction(gx, gy, gz)
             d *= self.displacement
@@ -73,7 +77,8 @@ class FaultSegment:
             hw = self.faultframe.features[0].evaluate_value(np.array([d.pos])) > 0
             for i in range(steps):
                 g = self.faultframe.features[1].evaluate_gradient(np.array([d.pos]))
-                g /= np.linalg.norm(g, axis=1)[:, None]
+                length = np.linalg.norm(g, axis=1)
+                g[~np.isnan(length),:] /= length[~np.isnan(length),None]
                 if self.faultfunction is None and hw:
                     g *= (1. / steps) * 1.*self.displacement
                     g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
