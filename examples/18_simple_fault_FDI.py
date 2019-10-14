@@ -53,45 +53,51 @@ feature = feature_builder.build(
 )
 
 
-# fault_frame_interpolator = FDI(grid)
-# fault = StructuralFrameBuilder(interpolator=fault_frame_interpolator,support=grid,name='FaultSegment1')
-#
-# fault.add_point([2.5,.5,1.5],0.,itype='gz')
-# fault.add_point([2.5,0,1.5],1.,itype='gz')
-#
-# # fault.add_strike_dip_and_value([18., y, 18], strike=180, dip=35, val=0, itype='gx')
-#
-# # fault.add_point([10,0,5],1.,itype='gy')
-#
-# for y in range(0,15):
-#     fault.add_point([12.,y,12],0,itype='gy')
-#     fault.add_point([10,y,0],1.,itype='gy')
-#
-#     fault.add_strike_dip_and_value([12.,y,12],strike=180,dip=35,val=0,itype='gx')
-#
+fault_frame_interpolator = FDI(grid)
+fault = StructuralFrameBuilder(interpolator=fault_frame_interpolator,support=grid,name='FaultSegment1')
+
+fault.add_point([2.5,.5,1.5],0.,coord=2)
+fault.add_point([2.5,0,1.5],1.,coord=2)
+
+# fault.add_strike_dip_and_value([18., y, 18], strike=180, dip=35, val=0, itype='gx')
+
+# fault.add_point([10,0,5],1.,itype='gy')
+
+for y in range(0,15):
+    fault.add_point([12.,y,12],0,coord=1)
+    fault.add_point([10,y,2],1.,coord=1)
+
+    # fault.add_strike_dip_and_value([12.,y,12],strike=90,dip=35,val=0,coord=1)
+
+    fault.add_strike_dip_and_value([12.,y,12],strike=180,dip=35,val=0,coord=0)
+
 # ogw = 300
 # ogw /= grid.n_elements
 # cgw = 5000
-# fault_frame = fault.build(
-#     solver=solver,
-#    shape='rectangular',
-# )
-# #
-# fault = FaultSegment(fault_frame, displacement=4)
-# faulted_feature = FaultedGeologicalFeature(feature, fault)
+fault_frame = fault.build(
+    solver=solver,
+   shape='rectangular',
+)
+#
+fault = FaultSegment(fault_frame, displacement=4)
+faulted_feature = FaultedGeologicalFeature(feature, fault)
 viewer = LavaVuModelViewer(background='white')
-viewer.add_isosurface(feature,
-                      nslices=10,
+viewer.add_isosurface(faulted_feature,
+                      # nslices=10,
                       # isovalue=0,
-                                            # voxet={'bounding_box':boundary_points,'nsteps':(50,50,25)}
+                      voxet={'bounding_box':boundary_points,'nsteps':(50,50,25)}
                       )
+# viewer.add_scalar_field(boundary_points,(50,10,50),
+#                           'scalar',
+# #                             norm=True,
+#                          paint_with=faulted_feature,
+#                          cmap='tab20')
 # viewer.add_isosurface(fault_frame[0],colour='black')
-viewer.add_data(feature)
-# viewer.add_isosurface(feature)#, isovalue=0)
+viewer.add_isosurface(fault_frame[1],colour='black')
 
-# mask = fault_frame.features[0].support.get_node_values() > 0
-# mask[grid.elements] = np.any(mask[grid.elements] == True, axis=1)[:, None]
-# viewer.plot_points(grid.nodes[mask], "nodes", col="red")
-# viewer.add_isosurface(fault_frame.features[0], isovalue=0, colour='blue')
-# viewer.save('finite_difference_test.png')
+viewer.add_data(fault_frame[1])
+# print(grid.inside(grid.cell_centres(np.arange(grid.n_elements))))
+# print(grid.nodes.shape)
+# viewer.add_points(grid.nodes, 'test')
+
 viewer.interactive()

@@ -352,6 +352,10 @@ class GeologicalFeature:
             xx,yy,zz = np.meshgrid(x,y,z, indexing='ij')
             val = self.evaluate_value(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
             step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
+
+            if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
+                logger.warning("Isovalue doesn't exist inside bounding box")
+                return
             try:
                 verts, faces, normals, values = marching_cubes(
                 val.reshape(nsteps, order='C'),

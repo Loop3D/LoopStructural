@@ -20,10 +20,10 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.fw_feature = None
         self.fault.apply_to_data(self.parent_feature.data)
         # rerun the interpolator on the updated data point positions
-        self.parent_feature.support.interpolator.reset()
-        self.parent_feature.support.interpolator.setup_interpolator()
-        self.parent_feature.support.interpolator._solve(
-            solver=self.parent_feature.support.interpolator.solver)
+        # self.parent_feature.support.interpolator.reset()
+        # self.parent_feature.support.interpolator.setup_interpolator()
+        # self.parent_feature.support.interpolator._solve(
+        #     solver=self.parent_feature.support.interpolator.solver)
 
         # create a geological feature where the property is evaluated on the support nodes
         super().__init__(self.parent_feature.name + "_faulted", ScalarField.from_node_values(

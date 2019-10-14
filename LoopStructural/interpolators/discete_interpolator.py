@@ -294,24 +294,25 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if 'damp' in kwargs:
             damp = kwargs['damp']
         A, B = self.build_matrix(damp=damp)
+
+        # run the chosen solver
         if solver == 'cg':
             self.c[self.region] = self._solve_cg(A, B, **kwargs)
-            return True
         if solver == 'chol':
-
             self.c[self.region] = self._solve_chol(A, B)
-            return True
         if solver == 'lu':
             logger.info("Solving using scipy LU")
             self.c[self.region] = self._solve_lu(A, B)
-            return True
+
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]
+        # check solution is not nan
         if np.all(self.c == np.nan):
             logger.warning("Solver not run, no scalar field")
+        # if solution is all 0, probably didn't work
         if np.all(self.c[self.region] == 0):
-            logger.warning("No solution, scalar field 0")
+            logger.warning("No solution, scalar field 0. Add more data.")
     def update(self):
         """
         Check if the solver is up to date, if not rerun interpolation using

@@ -137,6 +137,7 @@ class StructuralFrameBuilder:
         self.interpolators.append(interpolator)
         self.interpolators.append(interpolator.copy())
         self.interpolators.append(interpolator.copy())
+        # self.builders
         self.interpolators[0].set_property_name(self.name+'_gx')
         self.interpolators[1].set_property_name(self.name+'_gy')
         self.interpolators[2].set_property_name(self.name+'_gz')
@@ -367,13 +368,12 @@ class StructuralFrameBuilder:
                       "Add some more and try again.")
         if len(self.data[1]) > 0:
             logger.debug("Building structural frame coordinate 1")
-            if gx_feature is not None:
-                self.interpolators[1].add_gradient_orthogonal_constraint(
-                    np.arange(0,self.support.n_elements),
-                    gx_feature.evaluate_gradient(self.support.barycentre),
-                    w=gxxgy)
-            self.interpolators[1
-            ].set_region(regionname=self.region)
+            # if gx_feature is not None:
+            #     self.interpolators[1].add_gradient_orthogonal_constraint(
+            #         np.arange(0,self.support.n_elements),
+            #         gx_feature.evaluate_gradient(self.support.barycentre),
+            #         w=gxxgy)
+            self.interpolators[1].set_region(regionname=self.region)
             self.interpolators[1].setup_interpolator()
 
             self.interpolators[1].solve_system(solver=solver,**kwargs)
@@ -397,7 +397,7 @@ class StructuralFrameBuilder:
                     w=gxxgz)
 
             self.interpolators[2].set_region(regionname=self.region)
-            self.interpolators[2].setup_interpolator()  # cgw=0.1)
+            self.interpolators[2].setup_interpolator()
             self.interpolators[2].solve_system(solver=solver,**kwargs)
             gz_feature = GeologicalFeature(self.name + '_2',
                                       ScalarField.from_interpolator(self.interpolators[2]),

@@ -39,7 +39,7 @@ class StructuredGrid:
         y = np.linspace(origin[1], nsteps[1] * step_vector[1], nsteps[1])
         z = np.linspace(origin[2], nsteps[2] * step_vector[2], nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        self.nodes = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        self.nodes = np.array([xx.flatten(order='F'), yy.flatten(order='F'), zz.flatten(order='F')]).T
         # self.nodes = np.array([posx,posy,posz])
         self.barycentre = self.cell_centres(np.arange(self.n_elements))#range())self.nodes+self.step_vector[:]*.5#np.array([np.mean(posx, axis=1), np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
 
