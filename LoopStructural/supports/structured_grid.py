@@ -13,10 +13,14 @@ class StructuredGrid:
                  ):
         """
 
-        :param nsteps:
-        :param step_vector:
-        :param origin:
+        Parameters
+        ----------
+        origin - 3d list or numpy array
+        nsteps - 3d list or numpy array of ints
+        step_vector - 3d list or numpy array of int
+        maximum
         """
+
         self.nsteps = np.array(nsteps)
         self.step_vector = np.array(step_vector)
         self.origin = np.array(origin)
@@ -65,11 +69,7 @@ class StructuredGrid:
         return np.array([x,y,z]).T
 
     def position_to_cell_index(self, pos):
-        """
 
-        :param pos:
-        :return:
-        """
         pos = self.check_position(pos)
 
         ix = pos[:, 0] - self.origin[None, 0]
@@ -91,11 +91,7 @@ class StructuredGrid:
         return inside
 
     def check_position(self, pos):
-        """
 
-        :param pos:
-        :return:
-        """
         if len(pos.shape) == 1:
             pos = np.array([pos])
         if len(pos.shape) != 2:
@@ -104,13 +100,7 @@ class StructuredGrid:
         return pos
 
     def trilinear(self, x, y, z):
-        """
-        trilinear interpolation for a unit cube
-        :param x:
-        :param y:
-        :param z:
-        :return:
-        """
+
         return np.array([(1 - x) * (1 - y) * (1 - z),
                          x * (1 - y) * (1 - z),
                          (1 - x) * y * (1 - z),
@@ -121,11 +111,7 @@ class StructuredGrid:
                          x * y * z])
 
     def position_to_local_coordinates(self, pos):
-        """
 
-        :param pos:
-        :return:
-        """
         # TODO check if inside mesh
 
         # calculate local coordinates for positions
@@ -136,32 +122,19 @@ class StructuredGrid:
         return local_x, local_y, local_z
 
     def position_to_dof_coefs(self, pos):
-        """
 
-        :param pos:
-        :return:
-        """
         x_local, y_local, local_z = self.position_to_local_coordinates(pos)
         weights = self.trilinear(x_local, y_local, local_z)
         return weights
 
     def global_indicies(self, indexes):
-        """
-        convert from xyz indexes to global index
-        :param indexes:
-        :return:
-        """
+
         indexes = np.array(indexes).swapaxes(0, 2)
         return indexes[:, :, 0] + self.nsteps[None, None, 0] * indexes[:, :, 1] + \
                self.nsteps[None, None, 0] * self.nsteps[None, None, 1] * indexes[:, :, 2]
 
     def neighbour_global_indexes(self, **kwargs):
-        """
-        Find the neighbours= nodes for a node
-        :param indexes: numpy array containing x,y,z indexes
-        :return: n*9 array of global indexes
-        """
-        """return -1 for neighbours that would be on the overside of the border"""
+
         indexes = None
         if "indexes" in kwargs:
             indexes = kwargs['indexes']
@@ -196,13 +169,7 @@ class StructuredGrid:
                self.nsteps[0, None, None] * self.nsteps[1, None, None] * neighbours[2, :, :]
 
     def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
-        """
 
-        :param x_cell_index:
-        :param y_cell_index:
-        :param z_cell_index:
-        :return:
-        """
         xcorner = np.array([0, 1, 0, 0, 1, 0, 1, 1])
         ycorner = np.array([0, 0, 1, 0, 0, 1, 1, 1])
         zcorner = np.array([0, 0, 0, 1, 1, 1, 0, 1])
@@ -212,25 +179,14 @@ class StructuredGrid:
         return xcorners, ycorners, zcorners
 
     def global_index_to_cell_index(self, global_index):
-        """
-        Convert from global index to grid index
-        :param global_index:
-        :return: x,y,z indices for the grid
-        """
+
         x_index = global_index % self.nsteps_cells[0, None]
         y_index = global_index // self.nsteps_cells[1, None] % self.nsteps_cells[0, None]
         z_index = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         return x_index, y_index, z_index
 
     def node_indexes_to_position(self, xindex, yindex, zindex):
-        """
-        convert array of xindexes and yindexes to positions
-        :param xindex:
-        :param yindex:
-        :param zindex:
 
-        :return: length Nx numpy array of coordinates
-        """
 
         x = self.origin[0] + self.step_vector[0] * xindex
         y = self.origin[1] + self.step_vector[1] * yindex
@@ -239,11 +195,7 @@ class StructuredGrid:
         return x, y, z
 
     def position_to_cell_corners(self, pos):
-        """
-        find containing cell and get the corner coords
-        :param pos:
-        :return:
-        """
+
         inside = self.inside(pos)
         ix, iy, iz = self.position_to_cell_index(pos)
         cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)

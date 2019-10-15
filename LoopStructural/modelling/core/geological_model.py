@@ -38,7 +38,7 @@ class GeologicalModel:
         self.scale_factor = np.max(lengths)
 
         self.bounding_box = np.zeros((2, 3))
-        self.bounding_box[0, :] = self.maxmimum-self.origin
+        self.bounding_box[0, :] = self.maximum-self.origin
         self.bounding_box /= self.scale_factor
 
     def get_interpolator(self, interpolatortype, nelements, buffer, region = "everywhere"):
@@ -54,8 +54,8 @@ class GeologicalModel:
 
         if interpolatortype == 'FDI':
             # number of elements should be divided roughly to match the shape
-            ratio =  bb[1,:] / np.sum(bb[1,:])
-            ratio*=nelements
+            ratio = bb[1,:] / np.sum(bb[1,:])
+            ratio *= nelements
             ratio = ratio.astype(int)
             step_vector = 1. / np.max(ratio)
             grid = StructuredGrid(nsteps=ratio,step_vector=step_vector)
@@ -70,7 +70,6 @@ class GeologicalModel:
 
     def add_feature(self, feature, name):
         self.features[name] = feature
-
 
     def rescale(self, points):
         points*=self.scale_factor

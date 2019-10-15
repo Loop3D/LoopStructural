@@ -76,7 +76,8 @@ for y in range(0,15):
 # cgw = 5000
 fault_frame = fault.build(
     solver=solver,
-   shape='rectangular',
+    # tol=1e-10,
+    # maxiter=1000
 )
 #
 fault = FaultSegment(fault_frame, displacement=4)

@@ -52,8 +52,8 @@ class FaultSegment:
 
             d = np.zeros(gx.shape)
             d[np.isnan(gx)] = 0
-            d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-            # d[gx > 0] = 1.
+            # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
+            d[gx > 0] = 1.
             if self.faultfunction is not None:
                 d = self.faultfunction(gx, gy, gz)
             d *= self.displacement
