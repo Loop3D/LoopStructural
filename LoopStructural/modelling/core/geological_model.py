@@ -75,7 +75,7 @@ class GeologicalModel:
                 series_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
                 break
         self.features.append(series_feature)
-        pass
+        return series_feature
 
     def create_and_add_unconformity(self, unconformity_surface_data,**kwargs):
         """
@@ -103,7 +103,7 @@ class GeologicalModel:
             if f.type is 'Unconformity':
                 uc_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
                 break
-        pass
+        return uc_feature
     def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
@@ -119,8 +119,8 @@ class GeologicalModel:
                 break
         fault = FaultSegment(fault_frame,**kwargs)
         self.features.append(fault)
-
-    def add_fold(self, fold):
+        return fault
+    def add_fold(self, fold_data, **kwargs):
         self.graph.add_node(fold, name=fold.name)
 
     def add_feature(self, feature, name):
