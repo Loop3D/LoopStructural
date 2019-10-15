@@ -27,6 +27,7 @@ class GeologicalFeatureInterpolator:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
         self.region = 'everywhere'
+
         if 'region' in kwargs:
             self.region = kwargs['region']
         self.data = []
@@ -224,8 +225,11 @@ class GeologicalFeature:
         self.data = data
         self.builder = builder
         self.region = region
+        self.regions = []
         if region is None:
             self.region = 'everywhere'
+    def add_region(self,region):
+        self.regions.append(region)
 
     def set_builder(self, builder):
         """
@@ -253,6 +257,10 @@ class GeologicalFeature:
         """
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
+        mask = np.zeros(evaluation_points.shape[0]).astype(bool)
+        # check regions
+        # for r in regions:
+        #     mask = np.logical_and(mask,r(evaluation_points)
         return self.support.evaluate_value(evaluation_points)
 
     def evaluate_gradient(self, locations):
