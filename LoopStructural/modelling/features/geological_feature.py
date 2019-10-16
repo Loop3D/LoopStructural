@@ -35,6 +35,20 @@ class GeologicalFeatureInterpolator:
     def update(self):
         pass
 
+    def add_data_from_data_frame(self, data_frame):
+        for i, r in data_frame.iterrows():
+
+            if np.isnan(r['X']) or np.isnan(r['X']) or np.isnan(r['X']):
+                continue
+            pos = r[['X', 'Y', 'Z']]
+            if ~np.isnan(r['val']):
+                self.add_point(pos,r['val'])
+            if ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
+                polarity = 1
+                if ~np.isnan(r['polarity']):
+                    polarity = r['polarity']
+                self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity)
+            #if ~np.isnan()
     def add_data(self, pos, strike = None, dip_dir = None, dip = None, dir = None,
                  val = None, plunge = None, plunge_dir = None,polarity = None):
         """
@@ -207,7 +221,7 @@ class GeologicalFeature:
     model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
     which 
     """
-    def __init__(self, name, support, builder = None, data = None, region = None):
+    def __init__(self, name, support, builder = None, data = None, region = None, type = None):
         """
 
         Parameters
@@ -218,6 +232,16 @@ class GeologicalFeature:
         builder
         data
         region
+
+        Attributes
+        ----------
+        name - string
+            should be a unique name for the geological feature
+        support - a ScalarField
+            holds the property values for the feature and links to the support geometry
+        data
+        regions - list of boolean functions defining whether the feature is active
+
         """
         self.name = name
         self.support = support
@@ -226,9 +250,23 @@ class GeologicalFeature:
         self.builder = builder
         self.region = region
         self.regions = []
+        self.type = type
         if region is None:
             self.region = 'everywhere'
+
     def add_region(self,region):
+        """
+
+        Parameters
+        ----------
+        region - boolean function(x,y,z)
+                - returns true if inside region, false if outside
+                can be passed as a lambda function e.g.
+                lambda pos : feature.evaluate_value(pos) > 0
+        Returns
+        -------
+
+        """
         self.regions.append(region)
 
     def set_builder(self, builder):
@@ -258,10 +296,12 @@ class GeologicalFeature:
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
         mask = np.zeros(evaluation_points.shape[0]).astype(bool)
+        mask[:] = True
         # check regions
-        # for r in regions:
-        #     mask = np.logical_and(mask,r(evaluation_points)
-        return self.support.evaluate_value(evaluation_points)
+        for r in self.regions:
+            mask = np.logical_and(mask,r(evaluation_points))
+        v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
+        return v#self.support.evaluate_value(evaluation_points)
 
     def evaluate_gradient(self, locations):
         """

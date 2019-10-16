@@ -169,7 +169,6 @@ class StructuredGrid:
                self.nsteps[0, None, None] * self.nsteps[1, None, None] * neighbours[2, :, :]
 
     def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
-
         xcorner = np.array([0, 1, 0, 0, 1, 0, 1, 1])
         ycorner = np.array([0, 0, 1, 0, 0, 1, 1, 1])
         zcorner = np.array([0, 0, 0, 1, 1, 1, 0, 1])
