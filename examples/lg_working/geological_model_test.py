@@ -7,9 +7,9 @@ model = GeologicalModel((-4,-4,-4),(4,4,4))
 print(model.bounding_box)
 df = pd.read_csv('model_input.csv')
 model.set_model_data(df)
-s0_2 = model.create_and_add_conformable_series('s0_2', solver='cg', damp=False)
-uc = model.create_and_add_unconformity('uc', solver='cg', damp=False)
-s0 = model.create_and_add_conformable_series('s0', solver='cg', damp=False)
+s0_2 = model.create_and_add_conformable_series('s0_2', nelements=100000, solver='lu', damp=False)
+uc = model.create_and_add_unconformity('uc', nelements=100000,solver='lu', damp=False)
+s0 = model.create_and_add_conformable_series('s0', nelements=100000,solver='lu', damp=False)
 
 viewer = LavaVuModelViewer(background='white')
 try:
@@ -46,7 +46,7 @@ viewer.add_data(uc)
 # #                             norm=True,
 #                          paint_with=uc,
 #                          cmap='tab20')
-print(uc.get_interpolator().get_value_constraints())
-print(uc.get_node_values())
-print(uc.evaluate_value(uc.get_interpolator().get_value_constraints()[:,:3]))
+# print(uc.get_interpolator().get_value_constraints())
+# print(uc.get_node_values())
+# print(uc.evaluate_value(uc.get_interpolator().get_value_constraints()[:,:3]))
 viewer.interactive()
