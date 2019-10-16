@@ -10,7 +10,7 @@ from LoopStructural.modelling.fault.fault_segment import FaultSegment
 import numpy as np
 import networkx as nx
 import pandas as pd
-
+from scipy.optimize import minimize
 import logging
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,8 @@ class GeologicalModel:
 
     def get_interpolator(self, interpolatortype = 'PLI', nelements = 5e2, buffer=1e-1,**kwargs):
         """
-        Returns an interpolator given the arguments
+        Returns an interpolator given the arguments, also constructs a support for a discrete
+        interpolator
         Parameters
         ----------
         interpolatortype - string
@@ -112,12 +113,19 @@ class GeologicalModel:
             return PLI(mesh)
 
         if interpolatortype == 'FDI':
-            # number of elements should be divided roughly to match the shape
-            ratio = bb[1,:] / np.sum(bb[1,:])
-            ratio *= nelements
-            ratio = ratio.astype(int)
-            step_vector = 1. / np.max(ratio)
-            grid = StructuredGrid(nsteps=ratio, step_vector=step_vector)
+            # find the volume of one element
+            ele_vol = bb[1,0]*bb[1,1]*bb[1,2] / nelements
+            # calculate the relative lengths of the volume (x+y+z = 1)
+            step_vector = bb[1,:] / np.sum(bb[1,:])
+            # length of element ratio*scale = element_volume / cuberoot(l1*l2*l3)
+            scale = (ele_vol / (step_vector[0]*step_vector[1]*step_vector[2]))**(1/3)
+            step_vector*=scale
+
+            # ratio = ratio.astype(int)
+            # round up nsteps = length of volume / cell size
+            nsteps = np.ceil(bb[1,0]/step_vector).astype(int)
+            print(nsteps)
+            grid = StructuredGrid(nsteps=nsteps, step_vector=step_vector)
             return FDI(grid)
         logger.warning("No interpolator")
         return interpolator
