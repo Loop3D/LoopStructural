@@ -146,6 +146,11 @@ class GeologicalModel:
         # add data
         series_data = self.data[self.data['type'] == series_surface_data]
         series_builder.add_data_from_data_frame(series_data)
+        for f in reversed(self.features):
+            if f.type == 'fault':
+                series_builder.add_fault(f)
+            if f.type == 'unconformity':
+                break
         # build feature
         series_feature = series_builder.build(**kwargs)
         series_feature.type = 'series'
@@ -174,10 +179,18 @@ class GeologicalModel:
         unconformity_data = self.data[self.data['type'] == unconformity_surface_data]
 
         unconformity_feature_builder.add_data_from_data_frame(unconformity_data)
+        # look through existing features if there is a fault before an unconformity
+        # then add to the feature, once we get to an unconformity stop
+        for f in reversed(self.features):
+            if f.type == 'fault':
+                unconformity_feature_builder.add_fault(f)
+            if f.type == 'unconformity':
+                break
 
         # build feature
         uc_feature = unconformity_feature_builder.build(**kwargs)
         uc_feature.type = 'unconformity'
+
         # iterate over existing features and add the unconformity as a region so the feature is only
         # evaluated where the unconformity is positive
         for f in self.features:
@@ -198,7 +211,10 @@ class GeologicalModel:
         #
         fault_frame_builder = StructuralFrameBuilder(interpolator,**kwargs)
         # add data
-        # if there is no fault slip data then
+        fault_frame_data = self.data[self.data['type'] == fault_surface_data]
+        fault_frame_builder.add_data_from_data_frame(fault_frame_data)
+        # if there is no fault slip data then we could find the strike of the fault and build
+        # the second coordinate
         fault_frame = fault_frame_builder.build(**kwargs)
         #
         for f in reversed(self.features):
@@ -209,8 +225,8 @@ class GeologicalModel:
         self.features.append(fault)
         return fault
 
-    def add_fold(self, fold_data, **kwargs):
-        self.graph.add_node(fold, name=fold.name)
+    # def add_fold(self, fold_data, **kwargs):
+    #     self.graph.add_node(fold, name=fold.name)
 
     def add_feature(self, feature, name):
         self.features[name] = feature

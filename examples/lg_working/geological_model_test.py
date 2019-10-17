@@ -4,12 +4,24 @@ import pandas as pd
 import numpy as np
 
 model = GeologicalModel((-4,-4,-4),(4,4,4))
-print(model.bounding_box)
 df = pd.read_csv('model_input.csv')
 model.set_model_data(df)
-s0_2 = model.create_and_add_conformable_series('s0_2', interpolatortype='FDI',nelements=50000, solver='cg', damp=False)
-uc = model.create_and_add_unconformity('uc', interpolatortype='FDI',nelements=50000,solver='lu', damp=False)
-s0 = model.create_and_add_conformable_series('s0', interpolatortype='FDI',nelements=50000,solver='lu', damp=False)
+s0_2 = model.create_and_add_conformable_series('s0_2',
+                                               interpolatortype='FDI',
+                                               nelements=50000,
+                                               solver='cg',
+                                               damp=False)
+uc = model.create_and_add_unconformity('uc',
+                                       interpolatortype='FDI',
+                                       nelements=50000,
+                                       solver='cg',
+                                       damp=False)
+fault = model.create_and_add_fault()
+s0 = model.create_and_add_conformable_series('s0',
+                                             interpolatortype='FDI',
+                                             nelements=50000,
+                                             solver='cg',
+                                             damp=False)
 
 viewer = LavaVuModelViewer(background='white')
 try:

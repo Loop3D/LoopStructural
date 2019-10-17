@@ -103,7 +103,6 @@ class StructuralFrame:
                 self.features[2].support.evaluate_gradient(evaluation_points))
 
 
-
 class StructuralFrameBuilder:
     def __init__(self, interpolator, **kwargs):
         """
@@ -143,6 +142,30 @@ class StructuralFrameBuilder:
         self.interpolators[2].set_property_name(self.name+'_gz')
         for i in range(3):
             self.interpolators[i].set_region(regionname=self.region)
+
+    def add_data_from_data_frame(self, data_frame):
+        """
+        extract the data for a fault from a data frame
+        Parameters
+        ----------
+        data_frame
+
+        Returns
+        -------
+
+        """
+        for i, r in data_frame.iterrows():
+
+            if np.isnan(r['X']) or np.isnan(r['X']) or np.isnan(r['X']):
+                continue
+            pos = r[['X', 'Y', 'Z']]
+            if ~np.isnan(r['val']):
+                self.add_point(pos, r['val'],coord=r['coord'])
+            if ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
+                polarity = 1
+                if ~np.isnan(r['polarity']):
+                    polarity = r['polarity']
+                self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity,coord=r['coord'])
 
     def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1, coord = None, itype= None):
         """
@@ -222,7 +245,7 @@ class StructuralFrameBuilder:
         coord: int
             index of structural frame
         itype:
-            depreciated
+            DO NOT USE depreciated
 
         Returns
         -------
@@ -316,6 +339,7 @@ class StructuralFrameBuilder:
         # if itype == 'gz':
         #     self.data[2].append(GPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir))
         pass
+
     def build(self, solver='lsqr', frame=StructuralFrame, **kwargs):
         """
         Build the structural frame
@@ -368,11 +392,11 @@ class StructuralFrameBuilder:
                       "Add some more and try again.")
         if len(self.data[1]) > 0:
             logger.debug("Building structural frame coordinate 1")
-            # if gx_feature is not None:
-            #     self.interpolators[1].add_gradient_orthogonal_constraint(
-            #         np.arange(0,self.support.n_elements),
-            #         gx_feature.evaluate_gradient(self.support.barycentre),
-            #         w=gxxgy)
+            if gx_feature is not None:
+                self.interpolators[1].add_gradient_orthogonal_constraint(
+                    np.arange(0,self.support.n_elements),
+                    gx_feature.evaluate_gradient(self.support.barycentre),
+                    w=gxxgy)
             self.interpolators[1].set_region(regionname=self.region)
             self.interpolators[1].setup_interpolator()
 
