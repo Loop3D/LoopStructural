@@ -83,7 +83,7 @@ class GeologicalModel:
         """
         self.data.append(newdata)
 
-    def get_interpolator(self, interpolatortype = 'PLI', nelements = 5e2, buffer=1e-1,**kwargs):
+    def get_interpolator(self, interpolatortype = 'PLI', nelements = 5e2, buffer=0.2,**kwargs):
         """
         Returns an interpolator given the arguments, also constructs a support for a discrete
         interpolator
@@ -104,8 +104,8 @@ class GeologicalModel:
         """
         interpolator = None
         bb = np.copy(self.bounding_box)
-        bb[0,:] -= buffer
-        bb[1,:] += buffer
+        bb[0,:] -= buffer*(bb[1,:]-bb[0,:])
+        bb[1,:] += buffer*(bb[1,:]-bb[0,:])
         if interpolatortype == "PLI":
             mesh = TetMesh()
 
@@ -124,8 +124,7 @@ class GeologicalModel:
             # ratio = ratio.astype(int)
             # round up nsteps = length of volume / cell size
             nsteps = np.ceil(bb[1,0]/step_vector).astype(int)
-            print(nsteps)
-            grid = StructuredGrid(nsteps=nsteps, step_vector=step_vector)
+            grid = StructuredGrid(origin=bb[0,:],nsteps=nsteps, step_vector=step_vector)
             return FDI(grid)
         logger.warning("No interpolator")
         return interpolator
@@ -209,7 +208,7 @@ class GeologicalModel:
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
-        fault_frame_builder = StructuralFrameBuilder(interpolator,**kwargs)
+        fault_frame_builder = StructuralFrameBuilder(interpolator,name=fault_surface_data,**kwargs)
         # add data
         fault_frame_data = self.data[self.data['type'] == fault_surface_data]
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
@@ -217,11 +216,13 @@ class GeologicalModel:
         # the second coordinate
         fault_frame = fault_frame_builder.build(**kwargs)
         #
-        for f in reversed(self.features):
-            if f.type is 'unconformity':
-                fault_frame[:].add_region(lambda pos: f.evaluate_value(pos) <= 0)
-                break
-        fault = FaultSegment(fault_frame,**kwargs)
+        # for f in reversed(self.features):
+        #     if f.type is 'unconformity':
+        #         fault_frame[0].add_region(lambda pos: f.evaluate_value(pos) <= 0)
+        #         fault_frame[1].add_region(lambda pos: f.evaluate_value(pos) <= 0)
+        #         fault_frame[2].add_region(lambda pos: f.evaluate_value(pos) <= 0)
+        #         break
+        fault = FaultSegment(fault_frame,displacement=displacement,**kwargs)
         self.features.append(fault)
         return fault
 

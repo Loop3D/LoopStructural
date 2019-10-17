@@ -129,6 +129,8 @@ class StructuralFrameBuilder:
             self.name = kwargs['name']
         if 'region' in kwargs:
             self.region = kwargs['region']
+        if self.support is None:
+            self.support = interpolator.support
         self.data = [ [] , [] ,[]]
         # list of interpolators
         self.interpolators = []
@@ -160,12 +162,12 @@ class StructuralFrameBuilder:
                 continue
             pos = r[['X', 'Y', 'Z']]
             if ~np.isnan(r['val']):
-                self.add_point(pos, r['val'],coord=r['coord'])
+                self.add_point(pos, r['val'],coord=int(r['coord']))
             if ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
                 polarity = 1
                 if ~np.isnan(r['polarity']):
                     polarity = r['polarity']
-                self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity,coord=r['coord'])
+                self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity,coord=int(r['coord']))
 
     def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1, coord = None, itype= None):
         """

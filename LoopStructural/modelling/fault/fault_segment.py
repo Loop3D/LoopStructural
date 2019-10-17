@@ -21,6 +21,7 @@ class FaultSegment:
         self.gy_min = -9999
         self.steps = 10
         self.faultfunction = None
+        self.type = 'fault'
         if 'name' in kwargs:
             self.name = kwargs['name']
         if 'faultfunction' in kwargs:
@@ -36,6 +37,12 @@ class FaultSegment:
 
     def evaluate(self, locations):
         return self.faultframe.features[0].evaluate_value(locations) > 0
+
+    def evaluate_values(self, locations):
+        self.faultframe[0].evaluate_value(locations)
+
+    def evaluate_gradient(self, locations):
+        self.faultframe[0].evaluate_gradient(locations)
 
     def apply_to_points(self, points):
         steps = self.steps
@@ -78,7 +85,7 @@ class FaultSegment:
             for i in range(steps):
                 g = self.faultframe.features[1].evaluate_gradient(np.array([d.pos]))
                 length = np.linalg.norm(g, axis=1)
-                g[~np.isnan(length),:] /= length[~np.isnan(length),None]
+                g[np.logical_and(~np.isnan(length),length>0),:] /= length[np.logical_and(~np.isnan(length),length>0),None]
                 if self.faultfunction is None and hw:
                     g *= (1. / steps) * 1.*self.displacement
                     g[np.any(np.isnan(g), axis=1)] = np.zeros(3)

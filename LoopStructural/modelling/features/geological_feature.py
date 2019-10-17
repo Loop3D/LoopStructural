@@ -292,6 +292,8 @@ class GeologicalFeature:
         if region is None:
             self.region = 'everywhere'
 
+    def __str__(self):
+        return self.name
     def add_region(self,region):
         """
 
@@ -343,7 +345,7 @@ class GeologicalFeature:
             mask = np.logical_and(mask,r(evaluation_points))
         # apply faulting after working out which regions are visible
         for f in self.faults:
-            evaluation_points = f.apply_to_data(evaluation_points)
+            evaluation_points = f.apply_to_points(evaluation_points)
         v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
         return v#self.support.evaluate_value(evaluation_points)
 
@@ -440,20 +442,17 @@ class GeologicalFeature:
             x = np.linspace(bounding_box[0,0],bounding_box[1,0],nsteps[0])
             y = np.linspace(bounding_box[0,1],bounding_box[1,1],nsteps[1])
             z = np.linspace(bounding_box[1,2],bounding_box[0,2],nsteps[2])
-
             xx,yy,zz = np.meshgrid(x,y,z, indexing='ij')
             val = self.evaluate_value(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
             step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
-
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
                 logger.warning("Isovalue doesn't exist inside bounding box")
-                return
+                return np.zeros((3,1)).astype(int),np.zeros((3,1))
             try:
                 verts, faces, normals, values = marching_cubes(
                 val.reshape(nsteps, order='C'),
                 isovalue,
                 spacing=step_vector)
-
                 return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
             except ValueError:
                 logger.warning("No surface to mesh, skipping")

@@ -75,7 +75,7 @@ class ScalarField:
         """
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
-        mask = np.any(np.isnan(evaluation_points),axis=1)
+        mask = np.any(evaluation_points == np.nan,axis=1)
 
         if evaluation_points[~mask,:].shape[0]>0:
             evaluated[~mask] = self.support.evaluate_value(
