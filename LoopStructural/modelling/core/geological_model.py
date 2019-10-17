@@ -1,7 +1,6 @@
-from LoopStructural.modelling.core.geological_points import GPoint, IPoint
 from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 from LoopStructural.supports.tet_mesh import TetMesh
-from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator, GeologicalFeature
+from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
 from LoopStructural.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
 from LoopStructural.supports.structured_grid import StructuredGrid
 from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
@@ -129,7 +128,7 @@ class GeologicalModel:
         logger.warning("No interpolator")
         return interpolator
 
-    def create_and_add_conformable_series(self, series_surface_data, **kwargs):
+    def create_and_add_conformable_foliation(self, series_surface_data, **kwargs):
         """
         Parameters
         ----------
@@ -205,6 +204,19 @@ class GeologicalModel:
         return uc_feature
 
     def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
+        """
+
+        Parameters
+        ----------
+        fault_surface_data - string
+            name of the fault surface data in the dataframe
+        displacement - displacement magnitude
+        kwargs - additional kwargs for Fault and interpolators
+
+        Returns
+        -------
+
+        """
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
@@ -215,7 +227,8 @@ class GeologicalModel:
         # if there is no fault slip data then we could find the strike of the fault and build
         # the second coordinate
         fault_frame = fault_frame_builder.build(**kwargs)
-        #
+        # if we add a region to the fault then the fault operator doesn't work but for visualisation
+        # we want to add a region!
         # for f in reversed(self.features):
         #     if f.type is 'unconformity':
         #         fault_frame[0].add_region(lambda pos: f.evaluate_value(pos) <= 0)
@@ -226,8 +239,9 @@ class GeologicalModel:
         self.features.append(fault)
         return fault
 
-    # def add_fold(self, fold_data, **kwargs):
-    #     self.graph.add_node(fold, name=fold.name)
+    def create_and_add_folded_foliation(self, folded_foliation_data, fold_frame, **kwargs):
+
+        pass
 
     def add_feature(self, feature, name):
         self.features[name] = feature
