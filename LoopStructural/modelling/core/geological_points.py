@@ -1,7 +1,7 @@
 import numpy as np
 import math as m
 from numpy import linalg as nla
-
+from LoopStructural.utils.helper import normal_vector_to_strike_and_dip, get_strike_vector, get_dip_vector
 
 import logging
 logger = logging.getLogger(__name__)
@@ -72,6 +72,7 @@ class GPoint(Point):
         Point.__init__(self,pos)
         self.type = 'GPoint'
         self.vec = vec
+        self.norm = False
     @classmethod
     def from_plunge_plunge_dir(cls, pos, plunge,plunge_dir, polarity=1):
         plunge = np.deg2rad(plunge)
@@ -81,7 +82,7 @@ class GPoint(Point):
         vec[1] = -m.sin(plunge) * m.sin(plunge_dir)
         vec[2] = m.cos(plunge)
         vec /= nla.norm(vec)
-        vec*=polarity
+        vec *= polarity
         return cls(pos,vec)
     @classmethod
     def from_strike_and_dip(cls, pos, strike, dip, polarity=1):
@@ -103,7 +104,7 @@ class GPoint(Point):
         dir[1] = -m.sin(dip) * m.sin(strike)
         dir[2] = m.cos(dip)
         dir /= nla.norm(dir)
-        dir*=polarity
+        dir *= polarity
         return cls(pos, dir)
     def dir_(self):
         return self.vec

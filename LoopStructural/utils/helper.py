@@ -2,8 +2,34 @@ import numpy as np
 
 import logging
 logger = logging.getLogger(__name__)
+def get_vectors(normal):
+    strikedip = normal_vector_to_strike_and_dip(normal)
+    dip_vec = get_dip_vector(strikedip[:,0],strikedip[:,1])
+    strike_vec = get_strike_vector(strikedip[:,0])
+    return strike_vec, dip_vec
+def get_strike_vector(strike):
+    """
 
+    Parameters
+    ----------
+    strike
 
+    Returns
+    -------
+
+    """
+    v = np.array([-np.sin(np.deg2rad(-strike)),
+              np.cos(np.deg2rad(-strike)),
+              np.zeros(strike.shape[0])
+              ])
+    return v
+
+def get_dip_vector(strike,dip):
+    v = np.array([-np.cos(np.deg2rad(-strike))*np.cos(-np.deg2rad(dip)),
+              np.sin(np.deg2rad(-strike))*np.cos(-np.deg2rad(dip)),
+              np.sin(-np.deg2rad(dip))
+              ])
+    return v
 def rotation(axis,angle):
     c = np.cos(np.deg2rad(angle))
     s = np.sin((np.deg2rad(angle)))

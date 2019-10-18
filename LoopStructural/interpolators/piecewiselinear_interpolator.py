@@ -1,4 +1,5 @@
 from LoopStructural.interpolators.discete_interpolator import DiscreteInterpolator
+from LoopStructural.utils.helper import get_vectors
 import numpy as np
 
 import logging
@@ -82,16 +83,21 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_constraints_to_least_squares(A*w,B*w,idc)
         return
 
-    def add_gradient_ctr_pts(self, w=1.0):  # for now weight all gradient points the same
+    def add_gradient_ctr_pts(self, w=1.0):
         """
-        Adds gradient constraints to the least squares system with a weighted defined by w
+        Adds gradient constraints to the least squares system with a weight defined by w
         Parameters
         ----------
         w - either numpy array of length number of
 
         Returns
         -------
-
+        Notes
+        -----
+        Gradient constraints add a constraint that the gradient of the implicit function should
+        be orthogonal to the strike vector and the dip vector defined by the normal.
+        This does not control the direction of the gradient and therefore requires at least two other
+        value constraints OR a norm constraint for the interpolant to solve.
         """
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
@@ -102,13 +108,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             d_t = self.support.get_elements_gradients(e)
             norm = np.linalg.norm(d_t,axis=2)
             d_t /= norm[:,:,None]
-            d_t *= vol[:,None,None]
+            #d_t *= vol[:,None,None]
             # w*=10^11
+            strike_vector, dip_vector = get_vectors(points[:,3:])
+            A = np.einsum('ji,ijk->ik', strike_vector, d_t)
 
-            points[:,3:] /= norm
+            A += np.einsum('ji,ijk->ik', dip_vector, d_t)
+            A *= vol[:,None]
+
+            #points[:,3:] /= norm
 
             # add in the element gradient matrix into the inte
-            e = np.tile(e,(3,1)).T
             idc = self.support.elements[e]
             # now map the index from global to region create array size of mesh
             # initialise as np.nan, then map points inside region to 0->nx
@@ -117,9 +127,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0,self.nx).astype(int)
             w /= 3
             idc = gi[idc]
-
-            outside = ~np.any(idc==-1,axis=2)[:,0]
-            self.add_constraints_to_least_squares(d_t[outside,:,:]*w,points[outside,3:]*w*vol[outside,None],idc[outside,:])
+            B = np.zeros(idc.shape[0])
+            outside = ~np.any(idc==-1,axis=1)
+            self.add_constraints_to_least_squares(A[outside,:]*w,B[outside],idc[outside,:])
     def add_norm_ctr_pts(self, w=1.0):
         """
 
@@ -129,7 +139,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         Returns
         -------
-
+        Notes
+        -----
+        Controls the direction and magnitude of the norm of the scalar field gradient.
+        This constraint can conflict with value constraints if the magnitude of the vector doesn't
+        match with the value constraints added to the implicit system.
         """
 
         points = self.get_norm_constraints()

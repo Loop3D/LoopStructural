@@ -17,7 +17,7 @@ class GeologicalInterpolator:
         :param kwargs: 'itype' what type of geological feature is being interpolated
         """
         self.p_i = [] #interface points #   TODO create data container
-        self.p_g = [] #gradeint points
+        self.p_g = [] #gradient points
         self.p_t = [] #tangent points
         self.p_n = [] #norm constraints
         self.n_i = 0
@@ -29,7 +29,6 @@ class GeologicalInterpolator:
             self.type = kwargs['itype']
         self.up_to_date = False
         self.constraints = []
-        self.headings = ["Constraint Type","Number of constraints", "Per Constraint Weighting"]
         self.propertyname = 'defaultproperty'
 
     def set_property_name(self,name):
@@ -61,16 +60,19 @@ class GeologicalInterpolator:
         self.n_i = self.n_i + 1
         self.p_i.append(IPoint(pos,val))
 
-    def add_planar_constraint(self,pos,val):
+    def add_planar_constraint(self,pos,val,norm=True):
         """
         Add a gradient constraint to the interpolator where the gradient is defined by a normal vector
         """
-        self.n_g = self.n_g+1
-        self.p_g.append(GPoint(pos,val))
+        if norm:
+            self.n_n = self.n_n+1
+            self.p_n.append(GPoint(pos,val))
+        elif norm is False:
+            self.n_g = self.n_g+1
+            self.p_g.append(GPoint(pos,val))
         self.up_to_date = False
 
-
-    def add_strike_and_dip(self,pos,s,d):
+    def add_strike_and_dip(self,pos,s,d, norm=True):
         """
         Add gradient constraint to the interpolator where the gradient is defined by strike and dip
         :param pos:
@@ -78,7 +80,7 @@ class GeologicalInterpolator:
         :param d:
         :return:
         """
-        self.n_g +=1
+        self.n_g += 1
         self.p_g.append(GPoint(pos,s,d))
         self.up_to_date = False
 
@@ -112,8 +114,12 @@ class GeologicalInterpolator:
         :return:
         """
         if data.type == 'GPoint':
-            self.p_g.append(data)
-            self.n_g+=1
+            if not data.norm:
+                self.p_g.append(data)
+                self.n_g+=1
+            if data.norm:
+                self.p_n.append(data)
+                self.n_n+=1
             self.up_to_date = False
             return
         if data.type == 'IPoint':
@@ -171,22 +177,6 @@ class GeologicalInterpolator:
         """
         #print(columnar.columnar(self.constraints,self.headings))
         self._setup_interpolator(**kwargs)
-
-    def interpolate_value(self,points):
-        """
-        Evaluate the interpolator at the points
-        :param points:
-        :return:
-        """
-        return self._interpolate_value(points)
-
-    def interpolate_gradient(self,points):
-        """
-        Evaluate the inteprolator gradient at the points
-        :param points:
-        :return:
-        """
-        return self._interpolate_gradient(points)
 
     def solve_system(self,**kwargs):
         """
