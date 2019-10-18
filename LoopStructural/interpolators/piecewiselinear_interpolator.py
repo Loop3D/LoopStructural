@@ -30,7 +30,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # TODO need to fix this, constructor of DI is breaking support
         self.support = mesh
 
-        self.interpolation_weights = {'cgw': 0.1, 'cpw' : 1., 'gpw':1., 'tpw':1.}
+        self.interpolation_weights = {'cgw': 0.1, 'cpw' : 1., 'npw':1., 'gpw':1., 'tpw':1.}
 
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
@@ -54,6 +54,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             self.up_to_date = False
             self.add_constant_gradient(self.interpolation_weights['cgw'])
         self.add_gradient_ctr_pts(self.interpolation_weights['gpw'])
+        self.add_norm_ctr_pts(self.interpolation_weights['npw'])
         self.add_ctr_pts(self.interpolation_weights['cpw'])
         self.add_tangent_ctr_pts(self.interpolation_weights['tpw'])
 
@@ -130,9 +131,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc==-1,axis=1)
             self.add_constraints_to_least_squares(A[outside,:]*w,B[outside],idc[outside,:])
+
     def add_norm_ctr_pts(self, w=1.0):
         """
-
+        Extracts the norm vectors from the interpolators p_n list and adds these to the implicit
+        system
         Parameters
         ----------
         w

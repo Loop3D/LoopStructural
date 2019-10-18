@@ -168,7 +168,7 @@ class GeologicalInterpolator:
         points = np.zeros((self.n_n,6))
         for i in range(self.n_n):
             points[i,:3] = self.p_n[i].pos
-            points[i,3:] = self.p_n[i].dir
+            points[i,3:] = self.p_n[i].vec
         return points
 
     def setup_interpolator(self, **kwargs):

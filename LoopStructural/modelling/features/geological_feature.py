@@ -220,6 +220,27 @@ class GeologicalFeatureInterpolator:
         # first move the data for the fault
         for f in self.faults:
             f.apply_to_data(self.data)
+        # Now check whether there are enough constraints for the interpolator to be able to solve
+        # we need at least 2 different value points or a single norm constraint. If there are not enough
+        # try converting grad to norms, if still not enough send user an error
+        constrained = False
+        vals = []
+        for d in self.data:
+            if d.type == "GPoint" and d.norm == True:
+                constrained = True
+                break
+            if d.type == 'IPoint':
+                vals.append(d.val)
+        if len(np.unique(vals)) > 1:
+            constrained = True
+        if not constrained:
+            for d in self.data:
+                if d.type == "GPoint":
+                    d.norm = True
+                    logger.warning("Setting gradient points to norm constraints")
+                    constrained = True
+        if not constrained:
+            logger.error("Not enough constraints for scalar field add more")
         for d in self.data:
             self.interpolator.add_data(d)
 
@@ -241,8 +262,10 @@ class GeologicalFeatureInterpolator:
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
             self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
-            if kwargs['cgw'] == 0:
-                kwargs['cg'] = False
+            if 'cgw' not in kwargs:
+                kwargs['cgw'] = 0.
+            # if self.interpolator.interpolation_weights['cgw'] == 0:
+            #     kwargs['cg'] = False
             # kwargs['cg'] = False
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver,**kwargs)
