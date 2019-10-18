@@ -27,7 +27,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # whether to assemble a rectangular matrix or a square matrix
         self.interpolator_type = 'PLI'
         self.nx = len(self.support.nodes[self.region])
-        # TODO need to fix this, constructor of DI is breaking support
         self.support = mesh
 
         self.interpolation_weights = {'cgw': 0.1, 'cpw' : 1., 'npw':1., 'gpw':1., 'tpw':1.}
@@ -69,6 +68,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
+        print("adding cg")
         # iterate over all elements
         A, idc, B = self.support.get_constant_gradient(region=self.region)
         A = np.array(A)

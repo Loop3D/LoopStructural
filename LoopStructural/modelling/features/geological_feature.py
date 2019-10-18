@@ -209,7 +209,7 @@ class GeologicalFeatureInterpolator:
         self.data.append(TPoint(pos, s, d))
         # self.interpolator.add_data(self.data[-1])
 
-    def add_data_to_interpolator(self):
+    def add_data_to_interpolator(self, constrained = False):
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
@@ -223,7 +223,6 @@ class GeologicalFeatureInterpolator:
         # Now check whether there are enough constraints for the interpolator to be able to solve
         # we need at least 2 different value points or a single norm constraint. If there are not enough
         # try converting grad to norms, if still not enough send user an error
-        constrained = False
         vals = []
         for d in self.data:
             if d.type == "GPoint" and d.norm == True:

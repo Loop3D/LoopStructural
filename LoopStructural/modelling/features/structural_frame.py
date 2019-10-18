@@ -134,24 +134,20 @@ class StructuralFrameBuilder:
             self.support = interpolator.support
         self.data = [ [] , [] ,[]]
         # list of interpolators
-        self.interpolators = []
+        # self.interpolators = []
         # Create the interpolation objects by copying the template
-        if interpolators is not None:
-            self.interpolators = interpolators
-        elif interpolator is not None:
-            self.interpolators.append(interpolator)
-            self.interpolators.append(interpolator.copy())
-            self.interpolators.append(interpolator.copy())
+        
+        if interpolators is None:
+            interpolators = []
+            interpolators.append(interpolator)
+            interpolators.append(interpolator.copy())
+            interpolators.append(interpolator.copy())
         if interpolators is None and interpolator is None:
             raise BaseException
         # self.builders
-        self.builders.append(GeologicalFeatureInterpolator(self.interpolators[0], name = self.name + '_0'))
-        self.builders.append(GeologicalFeatureInterpolator(self.interpolators[1], name = self.name + '_1'))
-        self.builders.append(GeologicalFeatureInterpolator(self.interpolators[2], name = self.name + '_2'))
-
-
-        for i in range(3):
-            self.interpolators[i].set_region(regionname=self.region)
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[0], name = self.name + '_0'))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[1], name = self.name + '_1'))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[2], name = self.name + '_2'))
 
     def __getitem__(self, item):
         return self.builders[0]
@@ -360,11 +356,6 @@ class StructuralFrameBuilder:
         -------
 
         """
-        # reset the interpolators
-        # for i in range(3):
-        #     self.interpolators[i].reset()
-        # all of the inteprolator weights should be set by accessing the interpolator weights
-        # dictionary directly
         gxxgy = 1.
         gxxgz = 1.
         gyxgz = 1.
@@ -390,7 +381,7 @@ class StructuralFrameBuilder:
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 1")
             if gx_feature is not None:
-                self.interpolators[1].add_gradient_orthogonal_constraint(
+                self.builders[1].interpolator.add_gradient_orthogonal_constraint(
                     np.arange(0,self.support.n_elements),
                     gx_feature.evaluate_gradient(self.support.barycentre),
                     w=gxxgy)
@@ -401,12 +392,12 @@ class StructuralFrameBuilder:
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 2")
             if gy_feature is not None:
-                self.interpolators[2].add_gradient_orthogonal_constraint(
+                self.builders[2].interpolator.add_gradient_orthogonal_constraint(
                     np.arange(0, self.support.n_elements),
                     gy_feature.evaluate_gradient(self.support.barycentre),
                     w=gyxgz)
             if gx_feature is not None:
-                self.interpolators[2].add_gradient_orthogonal_constraint(
+                self.builders[2].interpolator.add_gradient_orthogonal_constraint(
                     np.arange(0, self.support.n_elements),
                     gx_feature.evaluate_gradient(self.support.barycentre),
                     w=gxxgz)
