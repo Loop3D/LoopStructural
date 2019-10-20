@@ -30,19 +30,24 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.support = mesh
 
         self.interpolation_weights = {'cgw': 0.1, 'cpw' : 1., 'npw':1., 'gpw':1., 'tpw':1.}
+        self.__str = 'Piecewise Linear Interpolator with %i unknowns. \n'%self.nx
+    def __str__(self):
+        return self.__str
 
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
 
     def _setup_interpolator(self, **kwargs):
         """
-        adds all of the constraints to the interpolation matrix
-        :param kwargs: 'cgw' is the constant gradient weight
-        'cpw' control point weight
-        'gpw' gradient control point weight
-        'tpw' tangent control point weight
-        'cg' boolean is cg being used
-        :return:
+        Searches through kwargs for any interpolation weights and updates the dictionary.
+        Then adds the constraints to the linear system using the interpolation weights values
+        Parameters
+        ----------
+        kwargs
+
+        Returns
+        -------
+
         """
         # can't reset here, clears fold constraints
         #self.reset()
@@ -68,7 +73,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
-        print("adding cg")
         # iterate over all elements
         A, idc, B = self.support.get_constant_gradient(region=self.region)
         A = np.array(A)
@@ -110,8 +114,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             norm = np.linalg.norm(d_t,axis=2)
             d_t /= norm[:,:,None]
             #d_t *= vol[:,None,None]
-            # w*=10^11
             strike_vector, dip_vector = get_vectors(points[:,3:])
+            ## TODO check if this is ok, or should these be added separately?
             A = np.einsum('ji,ijk->ik', strike_vector, d_t)
 
             A += np.einsum('ji,ijk->ik', dip_vector, d_t)
