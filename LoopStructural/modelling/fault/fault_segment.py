@@ -9,11 +9,15 @@ class FaultSegment:
     """
 
     def __init__(self, faultframe, **kwargs):  # mesh,fault_event,data,name,region):
-
         """
-        constructor
-        :param faultframe: StructuralFrame object with three coordinates
-        :param kwargs:
+        A slip event of a faut
+        Parameters
+        ----------
+        faultframe - the fault frame defining the faut geometry
+        kwargs -
+        displacement magnitude of displacement
+        faultfunction F(fault_frame) describes displacement inside fault frame
+        steps - how many steps to apply the fault on
         """
         self.faultframe = faultframe
         self.displacement = 1
@@ -36,15 +40,59 @@ class FaultSegment:
             self.steps = kwargs['steps']
 
     def evaluate(self, locations):
+        """
+        Evaluate which side of fault
+        Parameters
+        ----------
+        locations numpy array
+            location to evaluate
+
+        Returns
+        -------
+            boolean array true if on hanging wall, false if on footwall
+
+        """
         return self.faultframe.features[0].evaluate_value(locations) > 0
 
-    def evaluate_values(self, locations):
+    def evaluate_value(self, locations):
+        """
+        Return the value of the fault surface scalar field
+        Parameters
+        ----------
+        locations - numpy array
+            location to evaluate scalar field
+
+        Returns
+        -------
+
+        """
         self.faultframe[0].evaluate_value(locations)
 
     def evaluate_gradient(self, locations):
-        self.faultframe[0].evaluate_gradient(locations)
+        """
+        Return the fault slip direction at the location
+        Parameters
+        ----------
+        locations - numpy array Nx3
+
+
+        Returns
+        -------
+
+        """
+        self.faultframe[1].evaluate_gradient(locations)
 
     def apply_to_points(self, points):
+        """
+        Unfault the array of points
+        Parameters
+        ----------
+        points - numpy array Nx3
+
+        Returns
+        -------
+
+        """
         steps = self.steps
         newp = np.copy(points).astype(float)
         # calculate the fault frame for the evaluation points
@@ -76,6 +124,16 @@ class FaultSegment:
         return newp
 
     def apply_to_data(self, data):
+        """
+        Unfault the data in the list provided
+        Parameters
+        ----------
+        data - list containing Points
+
+        Returns
+        -------
+
+        """
         steps = self.steps
         # TODO make this numpy arrays
         if data is None:
