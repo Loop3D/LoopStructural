@@ -34,7 +34,6 @@ class StructuredGrid:
         self.n_cell_z = self.nsteps[2] - 1
         self.properties = {}
         self.n_elements = self.n_cell_x * self.n_cell_y * self.n_cell_z
-        # BaseGrid.__init__(np.zeros((4,2)))
 
         xi, yi, zi = self.global_index_to_cell_index(np.arange(self.n_elements))
         cornerx, cornery, cornerz = self.cell_corner_indexes(xi, yi, zi)
@@ -100,7 +99,19 @@ class StructuredGrid:
         return pos
 
     def trilinear(self, x, y, z):
+        """
+        returns the trilinear interpolation for the local coordinates
+        Parameters
+        ----------
+        x - double, array of doubles
+        y - double, array of doubles
+        z - double, array of doubles
 
+        Returns
+        -------
+        array of interpolation coefficients
+
+        """
         return np.array([(1 - x) * (1 - y) * (1 - z),
                          x * (1 - y) * (1 - z),
                          (1 - x) * y * (1 - z),
@@ -111,7 +122,17 @@ class StructuredGrid:
                          x * y * z])
 
     def position_to_local_coordinates(self, pos):
+        """
+        Convert from global to local coordinates within a cel
+        Parameters
+        ----------
+        pos - array of positions inside
 
+        Returns
+        -------
+        localx, localy, localz
+
+        """
         # TODO check if inside mesh
 
         # calculate local coordinates for positions
@@ -122,19 +143,46 @@ class StructuredGrid:
         return local_x, local_y, local_z
 
     def position_to_dof_coefs(self, pos):
+        """
+        global posotion to interpolation coefficients
+        Parameters
+        ----------
+        pos
 
+        Returns
+        -------
+
+        """
         x_local, y_local, local_z = self.position_to_local_coordinates(pos)
         weights = self.trilinear(x_local, y_local, local_z)
         return weights
 
     def global_indicies(self, indexes):
+        """
+        xi, yi, zi to global index
+        Parameters
+        ----------
+        indexes
 
+        Returns
+        -------
+
+        """
         indexes = np.array(indexes).swapaxes(0, 2)
         return indexes[:, :, 0] + self.nsteps[None, None, 0] * indexes[:, :, 1] + \
                self.nsteps[None, None, 0] * self.nsteps[None, None, 1] * indexes[:, :, 2]
 
     def neighbour_global_indexes(self, **kwargs):
+        """
+        Get neighbour indexes
+        Parameters
+        ----------
+        kwargs - indexes array specifying the cells to return neighbours
 
+        Returns
+        -------
+
+        """
         indexes = None
         if "indexes" in kwargs:
             indexes = kwargs['indexes']
@@ -169,6 +217,18 @@ class StructuredGrid:
                self.nsteps[0, None, None] * self.nsteps[1, None, None] * neighbours[2, :, :]
 
     def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
+        """
+        Returns the indexes of the corners of a cell given its location xi, yi, zi
+        Parameters
+        ----------
+        x_cell_index
+        y_cell_index
+        z_cell_index
+
+        Returns
+        -------
+
+        """
         xcorner = np.array([0, 1, 0, 0, 1, 0, 1, 1])
         ycorner = np.array([0, 0, 1, 0, 0, 1, 1, 1])
         zcorner = np.array([0, 0, 0, 1, 1, 1, 0, 1])
@@ -178,7 +238,16 @@ class StructuredGrid:
         return xcorners, ycorners, zcorners
 
     def global_index_to_cell_index(self, global_index):
+        """
+        Convert from global indexes to xi,yi,zi
+        Parameters
+        ----------
+        global_index
 
+        Returns
+        -------
+
+        """
         x_index = global_index % self.nsteps_cells[0, None]
         y_index = global_index // self.nsteps_cells[1, None] % self.nsteps_cells[0, None]
         z_index = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
