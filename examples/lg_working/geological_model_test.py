@@ -12,30 +12,32 @@ s0 = model.create_and_add_conformable_foliation('s0',
                                                 solver='cg',
                                                 damp=False)
 
-uc = model.create_and_add_unconformity('uc',
-                                       interpolatortype='FDI',
-                                       nelements=20000,
-                                       solver='cg',
-                                       damp=False)
-fault = model.create_and_add_fault('fault', .3,
-                                      interpolatortype='FDI',
-                                      nelements=20000,
-                                      solver='cg',
-                                      damp=False)
-#
+# uc = model.create_and_add_unconformity('uc',
+#                                        interpolatortype='FDI',
+#                                        nelements=20000,
+#                                        solver='cg',
+#                                        damp=False)
+# fault = model.create_and_add_fault('fault', .3,
+#                                       interpolatortype='FDI',
+#                                       nelements=20000,
+#                                       solver='cg',
+#                                       damp=False)
+# #
 s0_2 = model.create_and_add_conformable_foliation('s0_2',
                                                   interpolatortype='FDI',
                                                   nelements=20000,
                                                   solver='cg',
                                                   damp=False)
 viewer = LavaVuModelViewer(background='white')
-
-viewer.add_isosurface(s0_2,
+try:
+    viewer.add_isosurface(s0_2,
                       # slices=[0,1,2],#3#isovalue=1,
                       nslices=10,
                     voxet=model.voxet(),
                       colour='black'
                   )
+except:
+    pass
 try:
     viewer.add_isosurface(fault.faultframe[0],
                           isovalue=0,

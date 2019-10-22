@@ -68,7 +68,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dyy'])
             operator = Operator.Dzz_mask
             self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dzz'])
-        self.add_norm_constraint(np.sqrt(self.vol)*self.interpolation_weights['npw'])
+        #self.add_norm_constraint(np.sqrt(self.vol)*self.interpolation_weights['npw'])
         self.add_gradient_constraint(np.sqrt(self.vol)*self.interpolation_weights['gpw'])
         self.add_vaue_constraint(np.sqrt(self.vol)*self.interpolation_weights['cpw'])
 
@@ -125,10 +125,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # this means we are only constraining direction of grad not the magnitude
             T = self.support.calcul_T(points[inside, :3])
             strike_vector, dip_vector = get_vectors(points[:,3:])
-            A = np.einsum('ij,ijk->ik', strike_vector, T)
-            A += np.einsum('ij,ijk->ik', dip_vector, T)
+            A = np.einsum('ij,ijk->ik', strike_vector.T, T)
+            A += np.einsum('ij,ijk->ik', dip_vector.T, T)
 
-            B = np.zeros(len(elements))
+            B = np.zeros(points.shape[0])
             self.add_constraints_to_least_squares(A * w, B, node_idx)
 
     def add_norm_constraint(self,w=1.):

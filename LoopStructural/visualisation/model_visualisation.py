@@ -26,6 +26,9 @@ class LavaVuModelViewer:
         self.lv = lavavu.Viewer(**kwargs)
         self.lv['orthographic'] = True
         self.objects = {}
+    def add_slice(self, geological_feature, axis='x', value):
+        
+        pass
 
     def add_isosurface(self, geological_feature, **kwargs):
         """
