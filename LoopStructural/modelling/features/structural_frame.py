@@ -150,7 +150,7 @@ class StructuralFrameBuilder:
         self.builders.append(GeologicalFeatureInterpolator(interpolators[2], name = self.name + '_2'))
 
     def __getitem__(self, item):
-        return self.builders[0]
+        return self.builders[item]
 
     def add_data_from_data_frame(self, data_frame):
         """
