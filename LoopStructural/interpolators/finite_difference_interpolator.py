@@ -68,7 +68,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dyy'])
             operator = Operator.Dzz_mask
             self.assemble_inner(operator, np.sqrt(self.vol)*self.interpolation_weights['dzz'])
-        #self.add_norm_constraint(np.sqrt(self.vol)*self.interpolation_weights['npw'])
+        self.add_norm_constraint(np.sqrt(self.vol)*self.interpolation_weights['npw'])
         self.add_gradient_constraint(np.sqrt(self.vol)*self.interpolation_weights['gpw'])
         self.add_vaue_constraint(np.sqrt(self.vol)*self.interpolation_weights['cpw'])
 
@@ -142,7 +142,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         -------
 
         """
-        points = self.get_gradient_constraints()
+        points = self.get_norm_constraints()
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
             # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
