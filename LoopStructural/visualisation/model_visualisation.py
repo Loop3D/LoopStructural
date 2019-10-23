@@ -1,5 +1,6 @@
 import lavavu
 from lavavu.vutils import is_notebook
+from LoopStructural.utils.helper import create_surface
 import numpy as np
 
 import logging
@@ -26,9 +27,52 @@ class LavaVuModelViewer:
         self.lv = lavavu.Viewer(**kwargs)
         self.lv['orthographic'] = True
         self.objects = {}
-    def add_slice(self, geological_feature, axis='x', value):
-        
-        pass
+        self.model = kwargs.get("model",None)
+
+
+    def add_section(self, geological_feature, axis='x', value = None, boundary_points = None, nsteps = None, **kwargs):
+        if boundary_points is None:
+            return False #boundary_points = geological_feature.support.support.
+
+        # nsteps = np.array(nsteps)
+        # xx = None
+        # yy = None
+        # zz = None
+        if axis == 'x':
+            tri, yy, zz = create_surface(boundary_points[:, [1, 2]], nsteps[[1, 2]])
+            xx = np.zeros(zz.shape)
+            xx[:] = boundary_points[1, 2]
+        if axis == 'y':
+            tri, xx, zz = create_surface(boundary_points[:, [0, 2]], nsteps[[0, 2]])
+            yy = np.zeros(xx.shape)
+            yy[:] = boundary_points[1, 2]
+        if axis == 'z':
+            tri, xx, yy = create_surface(boundary_points[0:2, :], nsteps[0:2])
+            zz = np.zeros(xx.shape)
+            zz[:] = boundary_points[1, 2]
+        name = kwargs.get('name',axis+'_slice')
+        colour = kwargs.get('colour','red')
+        points = np.zeros((len(xx), 3))  #
+        points[:, 0] = xx
+        points[:, 1] = yy
+        points[:, 2] = zz
+
+        surf = self.lv.triangles(name)
+        surf.vertices(points)
+        surf.indices(tri)
+        if geological_feature is None:
+            surf.colours(colour)
+        if geological_feature is not None:
+            if 'norm' in kwargs:
+                surf.values(np.linalg.norm(geological_feature.evaluate_gradient(points), axis=1),
+                            geological_feature.name)
+            else:
+                surf.values(geological_feature.evaluate_value(points), geological_feature.name)
+            surf["colourby"] = geological_feature.name
+        cmap = lavavu.cubehelix(100)
+        if 'cmap' in kwargs:
+            cmap = kwargs['cmap']
+        surf.colourmap(cmap)
 
     def add_isosurface(self, geological_feature, **kwargs):
         """
@@ -147,23 +191,7 @@ class LavaVuModelViewer:
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
 
-        def create_surface(bounding_box, nstep):
-            x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nstep[0])  #
-            y = np.linspace(bounding_box[0, 1], bounding_box[1, 1], nstep[1])
-            xx, yy = np.meshgrid(x, y, indexing='xy')
 
-            def gi(i, j):
-                return i + j * nstep[0]
-
-            corners = np.array([[0, 1, 0, 1], [0, 0, 1, 1]])
-            i = np.arange(0, nstep[0] - 1)
-
-            j = np.arange(0, nstep[1] - 1)
-            ii, jj = np.meshgrid(i, j, indexing='ij')
-            corner_gi = gi(ii[:, :, None] + corners[None, None, 0, :, ], jj[:, :, None] + corners[None, None, 1, :, ])
-            corner_gi = corner_gi.reshape((nstep[0] - 1) * (nstep[1] - 1), 4)
-            tri = np.vstack([corner_gi[:, :3], corner_gi[:, 1:]])
-            return tri, xx.flatten(), yy.flatten()
 
         nsteps = np.array(nsteps)
         tri, xx, yy = create_surface(boundary_points[0:2, :], nsteps[0:2])

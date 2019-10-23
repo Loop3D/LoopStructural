@@ -10,23 +10,26 @@ s0 = model.create_and_add_conformable_foliation('s0',
                                                 interpolatortype='FDI',
                                                 nelements=20000,
                                                 solver='cg',
+                                                # maxiter=1000,
                                                 damp=False)
 
-# uc = model.create_and_add_unconformity('uc',
-#                                        interpolatortype='FDI',
-#                                        nelements=20000,
-#                                        solver='cg',
-#                                        damp=False)
-# fault = model.create_and_add_fault('fault', .3,
-#                                       interpolatortype='FDI',
-#                                       nelements=20000,
-#                                       solver='cg',
-#                                       damp=False)
+uc = model.create_and_add_unconformity('uc',
+                                       interpolatortype='FDI',
+                                       nelements=20000,
+                                       solver='cg',
+                                       damp=False)
+fault = model.create_and_add_fault('fault', .3,
+                                      interpolatortype='FDI',
+                                      nelements=20000,
+                                      solver='cg',
+                                   # maxiter=1000,
+                                   damp=False)
 # #
 s0_2 = model.create_and_add_conformable_foliation('s0_2',
                                                   interpolatortype='FDI',
                                                   nelements=20000,
                                                   solver='cg',
+                                                  # maxiter=1000,
                                                   damp=False)
 viewer = LavaVuModelViewer(background='white')
 try:

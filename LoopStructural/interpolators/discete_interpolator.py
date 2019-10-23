@@ -297,6 +297,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         # run the chosen solver
         if solver == 'cg':
+            logger.info("Solving using conjugate gradient")
             self.c[self.region] = self._solve_cg(A, B, **kwargs)
         if solver == 'chol':
             self.c[self.region] = self._solve_chol(A, B)
@@ -313,6 +314,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # if solution is all 0, probably didn't work
         if np.all(self.c[self.region] == 0):
             logger.warning("No solution, scalar field 0. Add more data.")
+
     def update(self):
         """
         Check if the solver is up to date, if not rerun interpolation using
