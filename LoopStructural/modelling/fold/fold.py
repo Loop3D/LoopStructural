@@ -65,11 +65,6 @@ class FoldEvent:
         -------
 
         """
-        """
-        Get the
-        :param points:
-        :return:
-        """
         fold_axis = self.get_fold_axis_orientation(points)
         gx = self.foldframe.features[0].evaluate_value(points)
         dgx = self.foldframe.features[0].evaluate_gradient(points)
