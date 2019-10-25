@@ -59,7 +59,8 @@ class FoldEvent:
         Calculate the normal to the folded foliation at locations
         Parameters
         ----------
-        points
+        points - np.array
+            location Nx3 array of x,y,z locations to evaluate fold
 
         Returns
         -------
