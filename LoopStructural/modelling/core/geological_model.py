@@ -41,7 +41,7 @@ class GeologicalModel:
         # self.scale_factor = np.max(lengths)
 
         self.bounding_box = np.zeros((2, 3))
-        # self.bounding_box[1, :] = self.maximum-self.origin
+        self.bounding_box[1, :] = self.maximum-self.origin
         # self.bounding_box /= self.scale_factor
         self.bounding_box[0,:] = self.origin
         self.bounding_box[1,:] = self.maximum
@@ -62,9 +62,9 @@ class GeologicalModel:
         it is then used by the create functions to get the correct data
         """
         self.data = data
-        # self.data['X'] -= self.origin[0]
-        # self.data['Y'] -= self.origin[1]
-        # self.data['Z'] -= self.origin[2]
+        self.data['X'] -= self.origin[0]
+        self.data['Y'] -= self.origin[1]
+        self.data['Z'] -= self.origin[2]
         # self.data['X'] /= self.scale_factor
         # self.data['Y'] /= self.scale_factor
         # self.data['Z'] /= self.scale_factor

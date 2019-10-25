@@ -54,6 +54,7 @@ class StructuredGrid:
         print('Cell size: %f %f %f'%(self.step_vector[0],self.step_vector[1],self.step_vector[2]))
         max = self.origin+self.nsteps_cells*self.step_vector
         print('Max extent: %f %f %f'%(max[0],max[1],max[2]))
+
     def update_property(self, propertyname, values):
         if values.shape[0] == self.n_nodes:
             self.properties[propertyname] = values
