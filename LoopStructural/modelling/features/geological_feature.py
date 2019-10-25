@@ -73,8 +73,8 @@ class GeologicalFeatureInterpolator:
                 if ~np.isnan(r['polarity']):
                     polarity = r['polarity']
                 self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity)
-            # if ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
-            #     self.add_planar_constraint(r[['X','Y','Z']],)
+            if ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
+                 self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']])
     def add_data(self, pos, strike = None, dip_dir = None, dip = None, dir = None,
                  val = None, plunge = None, plunge_dir = None,polarity = None):
         """

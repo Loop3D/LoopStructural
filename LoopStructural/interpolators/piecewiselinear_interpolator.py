@@ -83,9 +83,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         gi[:] = -1
         gi[self.region] = np.arange(0,self.nx)
         idc = gi[idc]
-        # outside = ~np.any(idc == -1, axis=2)[:,0]
+        outside = ~np.any(idc == -1, axis=1)
         # w/=A.shape[0]
-        self.add_constraints_to_least_squares(A*w,B*w,idc)
+        self.add_constraints_to_least_squares(A[outside,:]*w,B[outside]*w,idc[outside,:])
         return
 
     def add_gradient_ctr_pts(self, w=1.0):

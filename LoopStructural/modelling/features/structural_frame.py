@@ -145,9 +145,9 @@ class StructuralFrameBuilder:
         if interpolators is None and interpolator is None:
             raise BaseException
         # self.builders
-        self.builders.append(GeologicalFeatureInterpolator(interpolators[0], name = self.name + '_0'))
-        self.builders.append(GeologicalFeatureInterpolator(interpolators[1], name = self.name + '_1'))
-        self.builders.append(GeologicalFeatureInterpolator(interpolators[2], name = self.name + '_2'))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[0], name = self.name + '_0'))#,region=self.region))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[1], name = self.name + '_1'))#,region=self.region))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[2], name = self.name + '_2'))#,region=self.region))
 
     def __getitem__(self, item):
         return self.builders[item]
@@ -176,6 +176,9 @@ class StructuralFrameBuilder:
                     polarity = r['polarity']
                 self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity,coord=int(r['coord']))
 
+            if ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
+                 self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']],
+                         coord=int(r['coord']))
     def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1, coord = None, itype= None):
         """
         Add a planar measurement and value to the interpolator for a coordinate of the fold frame
