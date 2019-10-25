@@ -101,6 +101,7 @@ class GeologicalModel:
         -------
 
         """
+        # get an interpolator for 
         interpolator = None
         bb = np.copy(self.bounding_box)
         bb[0,:] -= buffer*(bb[1,:]-bb[0,:])

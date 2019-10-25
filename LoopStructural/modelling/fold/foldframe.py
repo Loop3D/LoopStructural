@@ -19,18 +19,27 @@ class FoldFrame(StructuralFrame):
         """
         super().__init__(name, features)
 
-    def calculate_fold_axis_rotation(self, points):
+    def calculate_fold_axis_rotation(self, feature_builder):
         """
         Calculate the fold axis rotation angle by finding the angle between the
         intersection lineation and the gradient to the 1st coordinate of the fold frame
         Parameters
         ----------
-        points
+        feature_builder - GeologicalFeatureInterpolator
+            - the builder for the geological feature that is folded
 
         Returns
         -------
 
         """
+        gpoints = feature_builder[0].interpolator.get_gradient_constraints()
+        npoints = feature_builder[0].interpolator.get_norm_constraints()
+        points = []
+        if gpoints.shape[0] > 0:
+            points.append(gpoints)
+        if npoints.shape[0] > 0:
+            points.append(npoints)
+        points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
         # s1 = self.features[0].evaluate_value(points[:,:3])
@@ -55,18 +64,29 @@ class FoldFrame(StructuralFrame):
         # far[far<-90] = far[far<-90]+180
         return far
 
-    def calculate_fold_limb_rotation(self, points, axis):
+    def calculate_fold_limb_rotation(self, feature_builder, axis = None):
         """
         Calculate the fold limb rotation angle using the axis specified and the normals to the folded foliation
         Parameters
         ----------
-        points
-        axis
+        feature_builder - GeologicalFeatureInterpolator
+            the feature interpolator for the folded feature that has the datapoints the fold limb rotation angle is
+            going to be calculated for
+        axis - GeologicalFeature
+            Optional. Fold axis feature that when queried for location returns the fold axis
 
         Returns
         -------
 
         """
+        gpoints = feature_builder[0].interpolator.get_gradient_constraints()
+        npoints = feature_builder[0].interpolator.get_norm_constraints()
+        points = []
+        if gpoints.shape[0] > 0:
+            points.append(gpoints)
+        if npoints.shape[0] > 0:
+            points.append(npoints)
+        points = np.vstack(points)
 
         # get the normals from the points array
         s0g = points[:,3:]
@@ -80,8 +100,8 @@ class FoldFrame(StructuralFrame):
         # project s0 onto axis plane B X A X B
         projected_s0 = np.cross(axis, np.cross(s0g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
         projected_s1 = np.cross(axis, np.cross(s1g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
-        projected_s0/=np.linalg.norm(projected_s0, axis=1)[:,None]
-        projected_s1/=np.linalg.norm(projected_s1, axis=1)[:,None]
+        projected_s0 /= np.linalg.norm(projected_s0, axis=1)[:,None]
+        projected_s1 /= np.linalg.norm(projected_s1, axis=1)[:,None]
         r2 = np.einsum('ij,ij->i', s1g,s0g)#projected_s1, projected_s0)#
         # adjust the fold rotation angle so that its always between -90 and 90
         vv = np.cross(s1g, s0g, axisa=1, axisb=1)
@@ -91,18 +111,28 @@ class FoldFrame(StructuralFrame):
         flr = np.where(flr > 90, -(180.-flr), flr)
         return np.rad2deg(np.arcsin(r2))#flr
 
-    def calculate_intersection_lineation(self, points):
+    def calculate_intersection_lineation(self, feature_builder):
         """
         Calculate the intersection lineation by finding the cross product between the first fold frame
         coordinate and the vector representing the normal to the folded foliation
         Parameters
         ----------
-        points Nx6 array with x,y,z vx,vy,vz
+        feature_builder - GeologicalFeatureInterpolator
+            the feature builder that contains the data points that the intersection lineation is calculated for
+
 
         Returns Nx3 array of doubles
         -------
 
         """
+        gpoints = feature_builder[0].interpolator.get_gradient_constraints()
+        npoints = feature_builder[0].interpolator.get_norm_constraints()
+        points = []
+        if gpoints.shape[0] > 0:
+            points.append(gpoints)
+        if npoints.shape[0] > 0:
+            points.append(npoints)
+        points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(points[:,:3],axis=1)[:,None]
         s0g = points[:,3:]

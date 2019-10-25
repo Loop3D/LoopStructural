@@ -59,16 +59,12 @@ class FoldEvent:
         Calculate the normal to the folded foliation at locations
         Parameters
         ----------
-        points
+        points - np.array
+            location Nx3 array of x,y,z locations to evaluate fold
 
         Returns
         -------
 
-        """
-        """
-        Get the
-        :param points:
-        :return:
         """
         fold_axis = self.get_fold_axis_orientation(points)
         gx = self.foldframe.features[0].evaluate_value(points)
