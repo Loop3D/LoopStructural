@@ -45,6 +45,7 @@ class GeologicalModel:
         # self.bounding_box /= self.scale_factor
         # self.bounding_box[0,:] = self.origin
         # self.bounding_box[1,:] = self.maximum
+        
     def set_model_data(self, data):
         """
         Set the data array for the model
@@ -61,6 +62,13 @@ class GeologicalModel:
         Type can be any unique identifier for the feature the data point 'eg' 'S0', 'S2', 'F1_axis'
         it is then used by the create functions to get the correct data
         """
+        if type(data) != pd.DataFrame:
+            logger.warning("Data is not a pandas data frame, trying to read data frame from csv")
+            try:
+                data = pd.read_csv(data)
+            except:
+                logger.error("Could not load pandas data frame from data")
+
         self.data = data.copy()
         self.data['X'] -= self.origin[0]
         self.data['Y'] -= self.origin[1]

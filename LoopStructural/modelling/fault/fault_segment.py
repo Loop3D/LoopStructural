@@ -20,24 +20,13 @@ class FaultSegment:
         steps - how many steps to apply the fault on
         """
         self.faultframe = faultframe
-        self.displacement = 1
-        self.gy_max = 9999
-        self.gy_min = -9999
-        self.steps = 10
-        self.faultfunction = None
         self.type = 'fault'
-        if 'name' in kwargs:
-            self.name = kwargs['name']
-        if 'faultfunction' in kwargs:
-            self.faultfunction = kwargs['faultfunction']
-        if 'displacement' in kwargs:
-            self.displacement = kwargs['displacement']
-        if 'gy_min' in kwargs:
-            self.gy_min = kwargs['gy_min']
-        if 'gy_max' in kwargs:
-            self.gy_max = kwargs['gy_max']
-        if 'steps' in kwargs:
-            self.steps = kwargs['steps']
+        self.name = kwargs.get('name',self.faultframe.name)
+        self.displacement = kwargs.get('displacement', 1.)
+        self.gy_min = kwargs.get('gy_min', -9999)
+        self.gy_max = kwargs.get('gy_max', 9999)
+        self.faultfunction = kwargs.get('faultfunction', None)
+        self.steps = kwargs.get('steps', 10)
 
     def evaluate(self, locations):
         """
@@ -66,7 +55,16 @@ class FaultSegment:
         -------
 
         """
-        self.faultframe[0].evaluate_value(locations)
+        return self.faultframe[0].evaluate_value(locations)
+
+    def mean(self):
+        return self.faultframe[0].mean()
+
+    def max(self):
+        return self.faultframe[0].max()
+
+    def min(self):
+        return self.faultframe[0].min()
 
     def evaluate_gradient(self, locations):
         """
@@ -148,4 +146,6 @@ class FaultSegment:
                     g *= (1. / steps) * 1.*self.displacement
                     g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
                     d.pos = d.pos + g[0]
-        return
+
+    def slice(self, isovalue, bounding_box = None, nsteps = None):
+        return self.faultframe[0].slice(isovalue, bounding_box = bounding_box, nsteps = nsteps)
