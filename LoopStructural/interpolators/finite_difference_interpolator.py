@@ -103,7 +103,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             #a*=w
             self.add_constraints_to_least_squares(a.T*w, points[inside,3]*w, node_idx[inside,:])
 
-    def add_gradient_constraint(self,w=1.):
+    def add_gradient_constraint(self, w=1.):
         """
 
         Parameters
@@ -124,14 +124,14 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the magnitude
             T = self.support.calcul_T(points[inside, :3])
-            strike_vector, dip_vector = get_vectors(points[:,3:])
+            strike_vector, dip_vector = get_vectors(points[inside,3:])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
             A += np.einsum('ij,ijk->ik', dip_vector.T, T)
 
-            B = np.zeros(points.shape[0])
-            self.add_constraints_to_least_squares(A * w, B, node_idx)
+            B = np.zeros(points[inside,:].shape[0])
+            self.add_constraints_to_least_squares(A * w, B, node_idx[inside,:])
 
-    def add_norm_constraint(self,w=1.):
+    def add_norm_constraint(self, w=1.):
         """
         Add constraints to control the norm of the gradient of the scalar field
         Parameters

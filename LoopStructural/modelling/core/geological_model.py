@@ -61,7 +61,7 @@ class GeologicalModel:
         Type can be any unique identifier for the feature the data point 'eg' 'S0', 'S2', 'F1_axis'
         it is then used by the create functions to get the correct data
         """
-        self.data = data
+        self.data = data.copy()
         self.data['X'] -= self.origin[0]
         self.data['Y'] -= self.origin[1]
         self.data['Z'] -= self.origin[2]
@@ -104,26 +104,24 @@ class GeologicalModel:
         # get an interpolator for 
         interpolator = None
         bb = np.copy(self.bounding_box)
+        # add a buffer to the interpolation domain, this is necessary for faults but also generally a good
+        # idea to avoid boundary problems
         bb[0,:] -= buffer*(bb[1,:]-bb[0,:])
         bb[1,:] += buffer*(bb[1,:]-bb[0,:])
         if interpolatortype == "PLI":
             mesh = TetMesh()
-
             mesh.setup_mesh(bb, n_tetra=nelements,)
             return PLI(mesh)
 
         if interpolatortype == 'FDI':
             # find the volume of one element
             ele_vol = bb[1,0]*bb[1,1]*bb[1,2] / nelements
-            # calculate the relative lengths of the volume (x+y+z = 1)
-            step_vector = bb[1,:] / np.sum(bb[1,:])
-            # length of element ratio*scale = element_volume / cuberoot(l1*l2*l3)
-            scale = (ele_vol / (step_vector[0]*step_vector[1]*step_vector[2]))**(1/3)
-            step_vector*=scale
-
-            # ratio = ratio.astype(int)
-            # round up nsteps = length of volume / cell size
-            nsteps = np.ceil(bb[1,0]/step_vector).astype(int)
+            # calculate the step vector of a regular cube
+            step_vector = np.zeros(3)
+            step_vector[:] = ele_vol**(1./3.)
+            # number of steps is the length of the box / step vector
+            nsteps = ((bb[1,:]-bb[0,:])/step_vector).astype(int)
+            # create a structured grid using the origin and number of steps
             grid = StructuredGrid(origin=bb[0,:],nsteps=nsteps, step_vector=step_vector)
             return FDI(grid)
         logger.warning("No interpolator")
@@ -255,5 +253,7 @@ class GeologicalModel:
     def view(self):
 
         pass
+
     def voxet(self, nsteps = (50, 50, 25)):
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
+

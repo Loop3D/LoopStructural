@@ -61,19 +61,24 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
+        if 'X' not in data_frame.columns or 'X' not in data_frame.columns or 'X' not in data_frame.columns:
+            logger.error("No location in data frame")
+            return
         for i, r in data_frame.iterrows():
 
             if np.isnan(r['X']) or np.isnan(r['X']) or np.isnan(r['X']):
                 continue
             pos = r[['X', 'Y', 'Z']]
-            if ~np.isnan(r['val']):
+            if 'val' in data_frame.columns and ~np.isnan(r['val']):
                 self.add_point(pos,r['val'])
-            if ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
+            if 'strike' in data_frame.columns and  'dip' in data_frame.columns and  \
+                    ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
                 polarity = 1
-                if ~np.isnan(r['polarity']):
+                if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
                     polarity = r['polarity']
                 self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity)
-            if ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
+            if 'nx' in data_frame.columns and 'ny' in data_frame.columns and 'nz' in data_frame.columns and \
+                    ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
                  self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']])
     def add_data(self, pos, strike = None, dip_dir = None, dip = None, dir = None,
                  val = None, plunge = None, plunge_dir = None,polarity = None):

@@ -32,8 +32,8 @@ class FoldFrame(StructuralFrame):
         -------
 
         """
-        gpoints = feature_builder[0].interpolator.get_gradient_constraints()
-        npoints = feature_builder[0].interpolator.get_norm_constraints()
+        gpoints = feature_builder.interpolator.get_gradient_constraints()
+        npoints = feature_builder.interpolator.get_norm_constraints()
         points = []
         if gpoints.shape[0] > 0:
             points.append(gpoints)
@@ -62,7 +62,8 @@ class FoldFrame(StructuralFrame):
         # far[stp < 0] = 360.- far[stp < 0]
         # far[far>90] = far[far>90]+-180
         # far[far<-90] = far[far<-90]+180
-        return far
+
+        return far, self.features[0].evaluate_value(points[:,:3])
 
     def calculate_fold_limb_rotation(self, feature_builder, axis = None):
         """
@@ -77,10 +78,10 @@ class FoldFrame(StructuralFrame):
 
         Returns
         -------
-
+        fold_limb_rotation, coordinate_0
         """
-        gpoints = feature_builder[0].interpolator.get_gradient_constraints()
-        npoints = feature_builder[0].interpolator.get_norm_constraints()
+        gpoints = feature_builder.interpolator.get_gradient_constraints()
+        npoints = feature_builder.interpolator.get_norm_constraints()
         points = []
         if gpoints.shape[0] > 0:
             points.append(gpoints)
@@ -98,18 +99,18 @@ class FoldFrame(StructuralFrame):
         s1 = self.features[0].evaluate_value(points[:,:3])
 
         # project s0 onto axis plane B X A X B
-        projected_s0 = np.cross(axis, np.cross(s0g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
-        projected_s1 = np.cross(axis, np.cross(s1g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
-        projected_s0 /= np.linalg.norm(projected_s0, axis=1)[:,None]
-        projected_s1 /= np.linalg.norm(projected_s1, axis=1)[:,None]
+        # projected_s0 = np.cross(axis, np.cross(s0g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
+        # projected_s1 = np.cross(axis, np.cross(s1g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
+        # projected_s0 /= np.linalg.norm(projected_s0, axis=1)[:,None]
+        # projected_s1 /= np.linalg.norm(projected_s1, axis=1)[:,None]
         r2 = np.einsum('ij,ij->i', s1g,s0g)#projected_s1, projected_s0)#
         # adjust the fold rotation angle so that its always between -90 and 90
         vv = np.cross(s1g, s0g, axisa=1, axisb=1)
-        ds = np.einsum('ij,ij->i', axis, vv)
-        flr = np.where(ds > 0, np.rad2deg(np.arcsin(r2)), (- np.rad2deg(np.arcsin(r2))))
-        flr = np.where(flr < -90, (180.+flr), flr)
-        flr = np.where(flr > 90, -(180.-flr), flr)
-        return np.rad2deg(np.arcsin(r2))#flr
+        # ds = np.einsum('ij,ij->i', axis, vv)
+        # flr = np.where(ds > 0, np.rad2deg(np.arcsin(r2)), (- np.rad2deg(np.arcsin(r2))))
+        # flr = np.where(flr < -90, (180.+flr), flr)
+        # flr = np.where(flr > 90, -(180.-flr), flr)
+        return np.rad2deg(np.arcsin(r2)), self.features[0].evaluate_value(points[:,:3])
 
     def calculate_intersection_lineation(self, feature_builder):
         """
@@ -125,8 +126,8 @@ class FoldFrame(StructuralFrame):
         -------
 
         """
-        gpoints = feature_builder[0].interpolator.get_gradient_constraints()
-        npoints = feature_builder[0].interpolator.get_norm_constraints()
+        gpoints = feature_builder.interpolator.get_gradient_constraints()
+        npoints = feature_builder.interpolator.get_norm_constraints()
         points = []
         if gpoints.shape[0] > 0:
             points.append(gpoints)
