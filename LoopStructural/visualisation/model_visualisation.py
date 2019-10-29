@@ -2,7 +2,7 @@ import lavavu
 from lavavu.vutils import is_notebook
 from LoopStructural.utils.helper import create_surface
 import numpy as np
-
+import scipy as sp
 import logging
 logger = logging.getLogger(__name__)
 
@@ -117,7 +117,6 @@ class LavaVuModelViewer:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
-
         # do isosurfacing of support using marching tetras/cubes
         for isovalue in slices:
             logger.debug("Creating isosurface for %f"%isovalue)
@@ -148,12 +147,16 @@ class LavaVuModelViewer:
                 surf.colours(colour)
             if painter is not None:
                 # add a property to the surface nodes for visualisation
-                surf.values(painter.evaluate_value(nodes),painter.name)
+                # calculate the mode value, just to get the most common value
+                val = np.zeros(nodes.shape[0])
+                val[:] = isovalue
+                surf.values(val, painter.name)
                 surf["colourby"] = painter.name
                 cmap = lavavu.cubehelix(100)
                 if 'cmap' in kwargs:
                     cmap = kwargs['cmap']
-                surf.colourmap(cmap)#nodes.shape[0]))
+                surf.colourmap(cmap,range= (geological_feature.min(),geological_feature.max()))#nodes.shape[0]))
+
             if "normals" in kwargs:
                 a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]
                 b = nodes[tris[:, 0], :] - nodes[tris[:, 2], :]
