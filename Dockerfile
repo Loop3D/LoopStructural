@@ -40,39 +40,10 @@ RUN chmod +x /tini
 # install the notebook package
 RUN pip install --no-cache --upgrade pip && \
     pip install --no-cache notebook
-
+COPY requirements.txt ${HOME}
 RUN pip install setuptools
-RUN pip install \
-        packaging \
-        appdirs \
-        numpy \
-        jupyter \
-        notebook \
-        matplotlib \
-        runipy \
-        pillow \
-        scipy \
-        h5py \
-        rise \
-        jupyter-server-proxy \
-        jupyterlab \
-		geopandas \
-		scikit-learn \
-		meshio \
-		pyevtk \
-		vtk 
-RUN pip install \
-		cython 
-RUN pip install \	
-		lavavu \
-		scikit-sparse  \ 
-		pybind11 \
-		meshpy
 
-#Setup RISE for notebook slideshows
-RUN jupyter-nbextension install rise --py --sys-prefix
-RUN jupyter nbextension enable rise --py --sys-prefix
-
+RUN pip install -r requirements.txt
 RUN pip install jupyter_contrib_nbextensions
 
 
@@ -125,7 +96,8 @@ RUN cd ~ && \
 # note we use xvfb which to mimic the X display for lavavu
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/xvfbrun.sh"]
 USER root
-RUN mkdir /notebooks
+#RUN mkdir /notebooks
+#COPY 
 USER ${NB_USER}
 # launch notebook
-CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token='' ", "--no-browser","/notebooks"]
+CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token='' ", "--no-browser"]
