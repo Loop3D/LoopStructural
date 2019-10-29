@@ -77,6 +77,13 @@ class GeologicalFeatureInterpolator:
                 if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
                     polarity = r['polarity']
                 self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity)
+            if 'azimuth' in data_frame.columns and 'dip' in data_frame.columns and \
+                    ~np.isnan(r['azimuth']) and ~np.isnan(r['dip']):
+                polarity = 1
+                if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
+                    polarity = r['polarity']
+                self.add_plunge_and_plunge_dir(pos,r['dip'],r['azimuth'],polarity=polarity)
+
             if 'nx' in data_frame.columns and 'ny' in data_frame.columns and 'nz' in data_frame.columns and \
                     ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
                  self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']])
@@ -168,7 +175,7 @@ class GeologicalFeatureInterpolator:
         self.data.append(GPoint.from_strike_and_dip(pos, s, d, polarity))
         # self.interpolator.add_data(self.data[-1])
 
-    def add_plunge_and_plunge_dir(self,pos,plunge,plunge_dir):
+    def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, polarity=1):
         """
 
         Parameters
@@ -181,7 +188,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        self.data.append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir))
+        self.data.append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir,polarity))
         # self.interpolator.add_data(self.data[-1])
 
     def add_tangent_constraint(self, pos, val):

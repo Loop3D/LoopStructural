@@ -171,19 +171,30 @@ class StructuralFrameBuilder:
             if np.isnan(r['X']) or np.isnan(r['X']) or np.isnan(r['X']):
                 continue
             pos = r[['X', 'Y', 'Z']]
+            # by default add everything to the first coordinate of the structural frame
+            coord = 0
+            if 'coord' in data_frame.columns and ~np.isnan(r['coord']):
+                coord = int(r['coord'])
             if 'val' in data_frame.columns and ~np.isnan(r['val']):
-                self.add_point(pos, r['val'],coord=int(r['coord']))
+                self.add_point(pos, r['val'],coord=coord)
             if 'strike' in data_frame.columns and 'dip' in data_frame.columns and  \
                     ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
                 polarity = 1
                 if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
                     polarity = r['polarity']
-                self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity,coord=int(r['coord']))
-
+                self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity,
+                                        coord=coord)
+                if 'azimuth' in data_frame.columns and 'dip' in data_frame.columns and \
+                    ~np.isnan(r['azimuth']) and ~np.isnan(r['dip']):
+                    polarity = 1
+                    if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
+                        polarity = r['polarity']
+                    self.add_plunge_and_plunge_dir(pos,r['dip'],r['azimuth'],
+                                                   polarity=polarity,coord=coord)
             if 'nx' in data_frame.columns and 'ny' in data_frame.columns and 'nz' in data_frame.columns and \
                     ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
                  self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']],
-                         coord=int(r['coord']))
+                         coord=coord)
 
     def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1, coord = None, itype= None):
         """
@@ -302,7 +313,7 @@ class StructuralFrameBuilder:
             coord = 1
         if itype == 'gz':
             coord = 2
-        self.builders[coord].add_plunge_and_plunge_dir(pos,plunge,plunge_dir)
+        self.builders[coord].add_plunge_and_plunge_dir(pos,plunge,plunge_dir, polarity)
 
     def add_strike_and_dip(self, pos, strike, dip, polarity = 1, coord = None, itype= None):
         """
