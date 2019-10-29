@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 
 class CubicFunction:
     def __init__(self):
+        """
+        Class to represent a cubic function
+        """
         self.A = []#np.zeros((4,4))
         self.B = []#np.zeros((4))
         self.max_v = 999999

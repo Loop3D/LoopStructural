@@ -4,6 +4,52 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def create_surface(bounding_box, nstep):
+    x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nstep[0])  #
+    y = np.linspace(bounding_box[0, 1], bounding_box[1, 1], nstep[1])
+    xx, yy = np.meshgrid(x, y, indexing='xy')
+
+    def gi(i, j):
+        return i + j * nstep[0]
+
+    corners = np.array([[0, 1, 0, 1], [0, 0, 1, 1]])
+    i = np.arange(0, nstep[0] - 1)
+
+    j = np.arange(0, nstep[1] - 1)
+    ii, jj = np.meshgrid(i, j, indexing='ij')
+    corner_gi = gi(ii[:, :, None] + corners[None, None, 0, :, ], jj[:, :, None] + corners[None, None, 1, :, ])
+    corner_gi = corner_gi.reshape((nstep[0] - 1) * (nstep[1] - 1), 4)
+    tri = np.vstack([corner_gi[:, :3], corner_gi[:, 1:]])
+    return tri, xx.flatten(), yy.flatten()
+
+def get_vectors(normal):
+    strikedip = normal_vector_to_strike_and_dip(normal)
+    dip_vec = get_dip_vector(strikedip[:,0],strikedip[:,1])
+    strike_vec = get_strike_vector(strikedip[:,0])
+    return strike_vec, dip_vec
+def get_strike_vector(strike):
+    """
+
+    Parameters
+    ----------
+    strike
+
+    Returns
+    -------
+
+    """
+    v = np.array([-np.sin(np.deg2rad(-strike)),
+              np.cos(np.deg2rad(-strike)),
+              np.zeros(strike.shape[0])
+              ])
+    return v
+
+def get_dip_vector(strike,dip):
+    v = np.array([-np.cos(np.deg2rad(-strike))*np.cos(-np.deg2rad(dip)),
+              np.sin(np.deg2rad(-strike))*np.cos(-np.deg2rad(dip)),
+              np.sin(-np.deg2rad(dip))
+              ])
+    return v
 def rotation(axis,angle):
     c = np.cos(np.deg2rad(angle))
     s = np.sin((np.deg2rad(angle)))

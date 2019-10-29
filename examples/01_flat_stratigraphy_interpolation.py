@@ -90,6 +90,7 @@ viewer.add_isosurface(
     # nslices=10 #the number of evenly space isosurfaces
     )
 viewer.add_data(feature)
+viewer.add_section(feature, axis='y', boundary_points=boundary_points,nsteps=np.array([10,10,10]))
 # viewer.add_vector_data(
 #     feature_builder.interpolator.get_gradient_constraints()[:, :3],
 #     feature_builder.interpolator.get_gradient_constraints()[:, 3:],
@@ -106,7 +107,7 @@ viewer.add_data(feature)
 #                      paint_with=feature,
 #                      cmap='prism')
 viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
-viewer.save('01_flat_stratigraphy.png',transparent=True)
-
+# viewer.save('01_flat_stratigraphy.png',transparent=True)
+viewer.interactive()
 
 #print(feature.support.get_node_values()[np.isnan(feature.support.get_node_values())==True])

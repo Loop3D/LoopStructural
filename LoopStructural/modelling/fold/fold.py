@@ -59,16 +59,12 @@ class FoldEvent:
         Calculate the normal to the folded foliation at locations
         Parameters
         ----------
-        points
+        points - np.array
+            location Nx3 array of x,y,z locations to evaluate fold
 
         Returns
         -------
 
-        """
-        """
-        Get the
-        :param points:
-        :return:
         """
         fold_axis = self.get_fold_axis_orientation(points)
         gx = self.foldframe.features[0].evaluate_value(points)
@@ -78,9 +74,13 @@ class FoldEvent:
         dgz /= np.linalg.norm(dgz, axis=1)[:, None]
 
         R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))
-        R2R = np.einsum('ijk,ki->kj', R2, dgx)
-        R2R/=np.sum(R2R,axis=1)[:,None]
-        return R2R, fold_axis, dgz
+        fold_direction = np.einsum('ijk,ki->kj', R2, dgx)
+        fold_direction/= np.sum(fold_direction, axis=1)[:, None]
+        # calculate dot product between fold_direction and axis
+        # if its less than 0 then inverse dgz
+        d = np.einsum('ij,ik->i', fold_direction,fold_axis)
+        dgz[d < 0] = -dgz[d < 0 ]
+        return fold_direction, fold_axis, dgz
 
     def get_regularisation_direction(self, points):
         self.foldframe.features[2].evaluate_gradient(points)

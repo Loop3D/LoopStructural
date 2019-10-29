@@ -115,12 +115,17 @@ class SVariogram():
 
         Parameters
         ----------
-        x
-        y
-
+        x np.array or list
+            x axis data for plot
+        y np.array or list
+            y axis data for plot
         Returns
         -------
-
+        (np.array, np.array)
+        Notes
+        -----
+        Returns the loations of maxima/minima on the curve using finite difference forward/backwards
+        finding the change in derivative
         """
         if len(x) != len(y):
             return False

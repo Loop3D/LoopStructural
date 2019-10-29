@@ -1,6 +1,6 @@
 import logging
 from logging.config import dictConfig
-
+from .modelling.core.geological_model import GeologicalModel
 logging_config = dict(
     version=1,
     formatters = {
