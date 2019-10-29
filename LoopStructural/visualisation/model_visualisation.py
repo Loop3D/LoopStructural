@@ -309,8 +309,8 @@ class LavaVuModelViewer:
         if grad.shape[0] > 0 and add_grad:
             self.add_vector_data(grad[:, :3], grad[:, 3:], name + "_grad_cp", **kwargs)
         if value.shape[0] > 0 and add_value:
+            kwargs['range'] = [feature.min(), feature.max()]
             self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp", **kwargs)
-
     def add_points(self, points, name, **kwargs):
         """
         Plot points location in the lavavu viewer
@@ -370,14 +370,15 @@ class LavaVuModelViewer:
         if "pointsize" not in kwargs:
             kwargs["pointsize"] = 4
         # set the colour map to diverge unless user decides otherwise
-        cmap = "diverge"
-        if "colourmap" in kwargs:
-            cmap = kwargs["colourmap"]
+        cmap = kwargs.get('cmap',"diverge")
         p = self.lv.points(name, **kwargs)
         p.vertices(position)
         p.values(value,"v")
         p["colourby"] = "v"
-        p.colourmap(cmap)
+        if 'range' in kwargs:
+            p.colourmap(cmap,range=kwargs['range'])
+        else:
+            p.colourmap(cmap)
 
     def add_fold(self, fold, locations):
         """
