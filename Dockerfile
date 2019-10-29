@@ -96,8 +96,10 @@ RUN cd ~ && \
 # note we use xvfb which to mimic the X display for lavavu
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/xvfbrun.sh"]
 USER root
-#RUN mkdir /notebooks
+RUN rm -r ${HOME}/*
+COPY notebooks ${HOME}
+RUN mkdir shared_volume
 #COPY 
 USER ${NB_USER}
 # launch notebook
-CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token='' ", "--no-browser"]
+CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token='' ", "--no-browser" ]

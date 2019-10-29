@@ -22,7 +22,7 @@ boundary_points[1,0] = 20
 boundary_points[1,1] = 20
 boundary_points[1,2] = 1
 mesh = TetMesh()
-mesh.setup_mesh(boundary_points, nstep=1, n_tetra=100000,)
+mesh.setup_mesh(boundary_points, nstep=1, n_tetra=10000,)
 
 # ### Build a geological feature for the faulted surface
 # In this example we are going to cheat and just assume the feature was
@@ -34,10 +34,10 @@ stratigraphy_builder = GeologicalFeatureInterpolator(
     interpolator=interpolator,
     name='stratigraphy')
 solver = 'lu'
-stratigraphy_builder.add_point([6.1,0.1,1.1],0.)
+# stratigraphy_builder.add_point([6.1,0.1,1.1],0.)
 stratigraphy_builder.add_point([6.1,0.1,2.1],1.)
 stratigraphy_builder.add_strike_and_dip([1,1,1],90.,0.)
-stratigraphy = stratigraphy_builder.build(solver=solver,cgw=6000)
+stratigraphy = stratigraphy_builder.build(solver=solver)
 
 # ### Build fault frame
 # Create a base interpolator for the fault frame and add the data to the builder
@@ -46,21 +46,21 @@ fault = StructuralFrameBuilder(interpolator=fault_interpolator,mesh=mesh,name='F
 fault.add_strike_dip_and_value([5,0, -2], strike=90., dip=50., val=0, itype='gx')
 fault.add_strike_dip_and_value([15,0, -2], strike=90., dip=50., val=0, itype='gx')
 fault.add_strike_dip_and_value([10,0, -2], strike=90., dip=50., val=0, itype='gx')
+fault.add_point([5,-5,0],-1,itype='gx')
+fault.add_point([5,5,0],1,itype='gx')
+
 fault.add_point([-5,-18,0],0.,itype='gz')
 fault.add_point([15,10,0],1.,itype='gz')
 fault.add_point([-5,-10,0],0.,itype='gy')
 fault.add_point([-5,-10,-10],1.,itype='gy')
+fault.add_strike_and_dip([10,0, -2], 270., 40., itype='gy')
+
 ogw = 3000
 ogw /= mesh.n_elements
 cgw = 6000
 fault_frame = fault.build(
     solver=solver,
-    gxxgy=2 * ogw,
-    gxxgz=2 * ogw,
-    gyxgz=ogw,
-    gxcg=cgw,
-    gycg=cgw,
-    gzcg=cgw,
+
     shape='rectangular')
 
 # ### Define fault displacements
@@ -70,15 +70,15 @@ fault_frame = fault.build(
 hw = CubicFunction()
 hw.add_cstr(0,1)
 hw.add_grad(0,0)
-hw.add_cstr(20,0)
-hw.add_grad(20,0)
-hw.add_max(20)
+hw.add_cstr(1,0)
+hw.add_grad(1,0)
+hw.add_max(1)
 fw = CubicFunction()
 fw.add_cstr(0,-1)
 fw.add_grad(0,0)
-fw.add_cstr(-20,0)
-fw.add_grad(-20,0)
-fw.add_min(-20)
+fw.add_cstr(-1,0)
+fw.add_grad(-1,0)
+fw.add_min(-1)
 gyf = Ones()# CubicFunction()
 # gyf.add_cstr(-.5,0)
 # gyf.add_cstr(.5,0)
@@ -87,14 +87,14 @@ gyf = Ones()# CubicFunction()
 # gyf.add_grad(0,0)
 # gyf.add_min(-.5)
 # gyf.add_max(.5)
-gzf = CubicFunction()
-gzf.add_cstr(-.5,0)
-gzf.add_cstr(.5,0)
-gzf.add_cstr(-0.2,1)
-gzf.add_cstr(0.2,1)
-gzf.add_grad(0,0)
-gzf.add_min(-.5)
-gzf.add_max(.5)
+gzf = Ones()
+# gzf.add_cstr(-.5,0)
+# gzf.add_cstr(.5,0)
+# gzf.add_cstr(-0.2,1)
+# gzf.add_cstr(0.2,1)
+# gzf.add_grad(0,0)
+# gzf.add_min(-.5)
+# gzf.add_max(.5)
 
 # ### Fault displacement field
 # Fault displacement can be defined by a volumetric function that will return the
@@ -126,13 +126,32 @@ locations = mesh.barycentre[::20,:]
 # viewer.plot_isosurface(
 #     faulted_strat.hw_feature,
 #     isovalue=-9)
-# viewer.plot_isosurface(
-#     faulted_strat.fw_feature,
-#     isovalue=-9)
+viewer.add_isosurface(
+    fault,
+    slices=[-1,0,1],
+    paint_with=fault,
+    cmap='rainbow')
+viewer.add_isosurface(
+    fault_frame[1],
+    slices=[-1,0,1],
+    paint_with=fault_frame[1],
+    cmap='rainbow')
+viewer.add_isosurface(
+    fault_frame[2],
+    slices=[-1,0,1],
+    paint_with=fault_frame[2],
+    cmap='rainbow')
 viewer.add_isosurface(
     faulted_strat,
-    nslices=10,
+    nslices=2,
     paint_with=faulted_strat
 )
+# viewer.add_isosurface(
+#     stratigraphy,
+#     nslices=10,
+#     paint_with=faulted_strat
+# )
 viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
-viewer.save('fault_ellipsoid.png')
+
+# viewer.save('fault_ellipsoid.png')
+viewer.interactive()

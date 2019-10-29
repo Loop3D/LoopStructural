@@ -13,6 +13,7 @@ class FaultedGeologicalFeature(GeologicalFeature):
     surface and another feature representing the surface pre faulting.
     """
     def __init__(self, feature, fault):
+        logger.error("FaultedGeologicalFeature is depreciated and will be removed")
         # start with the feature to be faulted this is the parent feature
         self.parent_feature = feature
         self.fault = fault

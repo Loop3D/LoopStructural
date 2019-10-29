@@ -42,7 +42,7 @@ try:
 except:
     pass
 try:
-    viewer.add_isosurface(fault.faultframe[0],
+    viewer.add_isosurface(fault,
                           isovalue=0,
                           # nslices=4,
                         voxet=model.voxet(),

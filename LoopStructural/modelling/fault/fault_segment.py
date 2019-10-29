@@ -27,6 +27,23 @@ class FaultSegment:
         self.gy_max = kwargs.get('gy_max', 9999)
         self.faultfunction = kwargs.get('faultfunction', None)
         self.steps = kwargs.get('steps', 10)
+        self.regions = []
+
+    def add_region(self, region):
+        """
+
+        Parameters
+        ----------
+        region - boolean function(x,y,z)
+                - returns true if inside region, false if outside
+                can be passed as a lambda function e.g.
+                lambda pos : feature.evaluate_value(pos) > 0
+        Returns
+        -------
+
+        """
+
+        self.regions.append(region)
 
     def evaluate(self, locations):
         """
@@ -41,6 +58,7 @@ class FaultSegment:
             boolean array true if on hanging wall, false if on footwall
 
         """
+
         return self.faultframe.features[0].evaluate_value(locations) > 0
 
     def evaluate_value(self, locations):
@@ -55,7 +73,16 @@ class FaultSegment:
         -------
 
         """
-        return self.faultframe[0].evaluate_value(locations)
+        v = np.zeros(locations.shape[0])
+        v[:] = np.nan
+        mask = np.zeros(locations.shape[0]).astype(bool)
+        mask[:] = True
+        # check regions
+        print('eval')
+        for r in self.regions:
+            print('regio')
+            mask = np.logical_and(mask,r(locations))
+        return self.faultframe[0].evaluate_value(locations[mask,:])
 
     def mean(self):
         return self.faultframe[0].mean()
@@ -78,7 +105,14 @@ class FaultSegment:
         -------
 
         """
-        self.faultframe[1].evaluate_gradient(locations)
+        v = np.zeros(locations.shape[0])
+        v[:] = np.nan
+        mask = np.zeros(locations.shape[0]).astype(bool)
+        mask[:] = True
+        # check regions
+        for r in self.regions:
+            mask = np.logical_and(mask,r(locations))
+        self.faultframe[1].evaluate_gradient(locations[mask,:])
 
     def apply_to_points(self, points):
         """

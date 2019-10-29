@@ -236,13 +236,13 @@ class GeologicalModel:
         fault_frame = fault_frame_builder.build(**kwargs)
         # if we add a region to the fault then the fault operator doesn't work but for visualisation
         # we want to add a region!
-        # for f in reversed(self.features):
-        #     if f.type is 'unconformity':
-        #         fault_frame[0].add_region(lambda pos: f.evaluate_value(pos) <= 0)
-        #         fault_frame[1].add_region(lambda pos: f.evaluate_value(pos) <= 0)
-        #         fault_frame[2].add_region(lambda pos: f.evaluate_value(pos) <= 0)
-        #         break
+
         fault = FaultSegment(fault_frame,displacement=displacement,**kwargs)
+        for f in reversed(self.features):
+            if f.type is 'unconformity':
+                fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
+                print("adding region")
+                break
         self.features.append(fault)
         return fault
 

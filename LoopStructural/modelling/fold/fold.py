@@ -4,7 +4,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class FoldEvent:
     """
     A fold event describes the geometry of the fold using a fold frame
@@ -24,6 +23,7 @@ class FoldEvent:
         self.fold_axis_rotation = fold_axis_rotation
         self.fold_limb_rotation = fold_limb_rotation
         self.fold_axis = fold_axis
+
     def get_fold_axis_orientation(self, points):
         """
         gets the fold axis orientation for evaluation points
