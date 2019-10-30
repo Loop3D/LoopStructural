@@ -34,22 +34,28 @@ class LavaVuModelViewer:
         if boundary_points is None:
             return False #boundary_points = geological_feature.support.support.
 
-        # nsteps = np.array(nsteps)
-        # xx = None
-        # yy = None
-        # zz = None
+
         if axis == 'x':
             tri, yy, zz = create_surface(boundary_points[:, [1, 2]], nsteps[[1, 2]])
             xx = np.zeros(zz.shape)
-            xx[:] = boundary_points[1, 2]
+            if value is None:
+                xx[:] = np.mean(boundary_points[:,0])
+            else:
+                xx[:] = value
         if axis == 'y':
             tri, xx, zz = create_surface(boundary_points[:, [0, 2]], nsteps[[0, 2]])
             yy = np.zeros(xx.shape)
-            yy[:] = boundary_points[1, 2]
+            if value is None:
+                yy[:] = np.mean(boundary_points[:,1])
+            else:
+                yy[:] = value
         if axis == 'z':
-            tri, xx, yy = create_surface(boundary_points[0:2, :], nsteps[0:2])
+            tri, xx, yy = create_surface(boundary_points[:, 0:2], nsteps[0:2])
             zz = np.zeros(xx.shape)
-            zz[:] = boundary_points[1, 2]
+            if value is None:
+                zz[:] = np.mean(boundary_points[:,2])
+            else:
+                zz[:] = value
         name = kwargs.get('name',axis+'_slice')
         colour = kwargs.get('colour','red')
         points = np.zeros((len(xx), 3))  #
@@ -72,7 +78,7 @@ class LavaVuModelViewer:
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
             cmap = kwargs['cmap']
-        surf.colourmap(cmap)
+        surf.colourmap(cmap,range=[geological_feature.min(),geological_feature.max()])
 
     def add_isosurface(self, geological_feature, **kwargs):
         """
