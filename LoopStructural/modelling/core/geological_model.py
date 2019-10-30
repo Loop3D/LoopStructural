@@ -196,7 +196,6 @@ class GeologicalModel:
     def create_and_add_folded_foliation(self, foliation_data, fold_frame, **kwargs):
         fold = FoldEvent(fold_frame)
         fold_interpolator = self.get_interpolator("DFI")
-        print(fold_interpolator)
         series_builder = GeologicalFeatureInterpolator(
             interpolator=fold_interpolator,
             name=foliation_data)
@@ -240,7 +239,6 @@ class GeologicalModel:
                 if f.type == 'unconformity':
                     break
         # build feature
-        print("idu")
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
         series_feature = series_builder.build(**kwargs)
