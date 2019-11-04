@@ -39,6 +39,8 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
+        if len(points) == 0:
+            return 0, 0
         points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
@@ -87,6 +89,9 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
+        if len(points) == 0:
+            logger.error("No points to calculate fold rotation angle")
+            return np.array([0]), np.array([0])
         points = np.vstack(points)
 
         # get the normals from the points array
