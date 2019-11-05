@@ -10,4 +10,5 @@ jupyter
 matplotlib
 meshio
 geopandas
+pyamg
 setuptools
