@@ -29,6 +29,8 @@ class FaultSegment:
         self.steps = kwargs.get('steps', 10)
         self.regions = []
 
+    def __getitem__(self, item):
+        return self.faultframe[item]
     def add_region(self, region):
         """
 

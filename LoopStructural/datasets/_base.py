@@ -11,8 +11,9 @@ def load_claudius():
 
 def load_noddy_single_fold():
     module_path = dirname(__file__)
-    data = pd.read_pickle()
-
+    data = pd.read_pickle(join(module_path,'data/onefolddata.pkl'))
+    bb = np.loadtxt(join(module_path,'data/onefoldbb.txt'))
+    return data, bb
 def load_laurent2016():
     pass
 

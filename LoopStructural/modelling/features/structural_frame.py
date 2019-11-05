@@ -168,7 +168,8 @@ class StructuralFrameBuilder:
             return
         for i, r in data_frame.iterrows():
 
-            if np.isnan(r['X']) or np.isnan(r['X']) or np.isnan(r['X']):
+            if np.isnan(r['X']) or np.isnan(r['Y']) or np.isnan(r['Z']):
+                logger.debug("X,Y,Z all NAN")
                 continue
             pos = r[['X', 'Y', 'Z']]
             # by default add everything to the first coordinate of the structural frame
@@ -184,13 +185,13 @@ class StructuralFrameBuilder:
                     polarity = r['polarity']
                 self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity,
                                         coord=coord)
-                if 'azimuth' in data_frame.columns and 'dip' in data_frame.columns and \
-                    ~np.isnan(r['azimuth']) and ~np.isnan(r['dip']):
-                    polarity = 1
-                    if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
-                        polarity = r['polarity']
-                    self.add_plunge_and_plunge_dir(pos,r['dip'],r['azimuth'],
-                                                   polarity=polarity,coord=coord)
+            if 'azimuth' in data_frame.columns and 'dip' in data_frame.columns and \
+                ~np.isnan(r['azimuth']) and ~np.isnan(r['dip']):
+                polarity = 1
+                if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
+                    polarity = r['polarity']
+                self.add_plunge_and_plunge_dir(pos,r['dip'],r['azimuth'],
+                                               polarity=polarity,coord=coord)
             if 'nx' in data_frame.columns and 'ny' in data_frame.columns and 'nz' in data_frame.columns and \
                     ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
                  self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']],
@@ -363,7 +364,7 @@ class StructuralFrameBuilder:
         #     self.data[2].append(GPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir))
         pass
 
-    def build(self, solver='cg', frame=StructuralFrame, **kwargs):
+    def build(self, solver='pyamg', frame=StructuralFrame, **kwargs):
         """
         Build the structural frame
         Parameters
@@ -390,14 +391,15 @@ class StructuralFrameBuilder:
         gx_feature = None
         gy_feature = None
         gz_feature = None
+
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 0")
             gx_feature = self.builders[0].build(solver=solver,**kwargs)
             # remove fold from kwargs
             fold = kwargs.pop('fold',False)
-            if gx_feature is None:
-                logger.warning("Not enough constraints for structural frame coordinate 0, \n"
-                      "Add some more and try again.")
+        if gx_feature is None:
+            logger.warning("Not enough constraints for structural frame coordinate 0, \n"
+                  "Add some more and try again.")
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 1")
             if gx_feature is not None:
@@ -406,9 +408,9 @@ class StructuralFrameBuilder:
                     gx_feature.evaluate_gradient(self.support.barycentre),
                     w=gxxgy)
             gy_feature = self.builders[1].build(solver=solver,**kwargs)
-            if gy_feature is None:
-                logger.warning("Not enough constraints for structural frame coordinate 1, \n"
-                      "Add some more and try again.")
+        if gy_feature is None:
+            logger.warning("Not enough constraints for structural frame coordinate 1, \n"
+                  "Add some more and try again.")
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 2")
             if gy_feature is not None:

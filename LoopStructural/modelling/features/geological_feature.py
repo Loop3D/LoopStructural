@@ -256,7 +256,7 @@ class GeologicalFeatureInterpolator:
         for d in self.data:
             self.interpolator.add_data(d)
 
-    def build(self, solver='cg', **kwargs):
+    def build(self, solver='pyamg', **kwargs):
         """
         Runs the interpolation
         Parameters

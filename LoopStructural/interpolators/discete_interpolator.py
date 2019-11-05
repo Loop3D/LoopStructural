@@ -1,5 +1,6 @@
 from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 import numpy as np
+from pyamg import solve
 from scipy.sparse import coo_matrix, diags, bmat, eye
 from scipy.sparse import linalg as sla
 
@@ -33,7 +34,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
-
 
     def set_property_name(self, propertyname):
         """
@@ -165,7 +165,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_row.extend((np.arange(0,idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += node_idx[outside].shape[0]
-
     def build_matrix(self, damp=True):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy constraints
@@ -260,6 +259,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         cgargs={}
+        cgargs['tol'] = 1e-12
         if 'maxiter' in kwargs:
             cgargs['maxiter'] = kwargs['maxiter']
         if 'x0' in kwargs:
@@ -273,7 +273,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if precon is not None:
             cgargs['M'] = precon(A)
         return sla.cg(A,B,**cgargs)[0][:self.nx]
-
+    def _solve_pyamg(self, A, B, kwargs):
+        pyamgargs = {}
+        pyamgargs['verb'] = False
+        return solve(A,B,**pyamgargs)[:self.nx]
     def _solve(self, solver, **kwargs):
         """
         Main entry point to run the solver and update the node value attribute for the
@@ -303,8 +306,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_chol(A, B)
         if solver == 'lu':
             logger.info("Solving using scipy LU")
-            self.c[self.region] = self._solve_lu(A, B)
-
+            self.c[self.region] = self._solve_lu(images/folded_surface.pngA, B)
+        if solver == 'pyamg':
+            logger.info("Solving with pyamg solve")
+            self.c[self.region]  = self._solve_pyamg(A,B,kwargs)
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]

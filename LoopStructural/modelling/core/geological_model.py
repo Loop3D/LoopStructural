@@ -41,11 +41,11 @@ class GeologicalModel:
 
         self.maximum = np.array(maximum)
         lengths = self.maximum - self.origin
-        # self.scale_factor = np.max(lengths)
+        self.scale_factor = np.max(lengths)
 
         self.bounding_box = np.zeros((2, 3))
         self.bounding_box[1, :] = self.maximum-self.origin
-        # self.bounding_box /= self.scale_factor
+        self.bounding_box /= self.scale_factor
         # self.bounding_box[0,:] = self.origin
         # self.bounding_box[1,:] = self.maximum
         
@@ -76,9 +76,9 @@ class GeologicalModel:
         self.data['X'] -= self.origin[0]
         self.data['Y'] -= self.origin[1]
         self.data['Z'] -= self.origin[2]
-        # self.data['X'] /= self.scale_factor
-        # self.data['Y'] /= self.scale_factor
-        # self.data['Z'] /= self.scale_factor
+        self.data['X'] /= self.scale_factor
+        self.data['Y'] /= self.scale_factor
+        self.data['Z'] /= self.scale_factor
 
     def extend_model_data(self, newdata):
         """
@@ -259,6 +259,9 @@ class GeologicalModel:
                 series_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
                 break
         self.features.append(series_feature)
+        results = {}
+        results['feature'] = series_feature
+
         return series_feature
 
     def create_and_add_folded_fold_frame(self, foliation_data, fold_frame, **kwargs):
@@ -324,27 +327,34 @@ class GeologicalModel:
         """
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
-        #
         fault_frame_builder = StructuralFrameBuilder(interpolator,name=fault_surface_data,**kwargs)
         # add data
         fault_frame_data = self.data[self.data['type'] == fault_surface_data]
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # if there is no fault slip data then we could find the strike of the fault and build
         # the second coordinate
-        fault_frame = fault_frame_builder.build(**kwargs)
         # if we add a region to the fault then the fault operator doesn't work but for visualisation
         # we want to add a region!
 
-        fault = FaultSegment(fault_frame,displacement=displacement,**kwargs)
+        if 'splayregion' in kwargs and 'splay' in kwargs:
+            for i in range(3):
+                # work out the values of the nodes where we want hard constraints
+                idc = np.arange(0, interpolator.support.n_nodes)[
+                    kwargs['splayregion'](interpolator.support.nodes)]
+                val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes)[
+                    kwargs['splayregion'](interpolator.support.nodes)]
+
+                fault_frame_builder[i].interpolator.add_equality_constraints(idc, val)
+        fault_frame = fault_frame_builder.build(**kwargs)
+        if 'abut' in kwargs:
+            fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
+        fault = FaultSegment(fault_frame, displacement=displacement, **kwargs)
         for f in reversed(self.features):
             if f.type is 'unconformity':
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
         self.features.append(fault)
         return fault
-
-    def add_feature(self, feature, name):
-        self.features[name] = feature
 
     def rescale(self, points):
         points*=self.scale_factor
