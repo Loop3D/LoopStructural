@@ -306,7 +306,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_chol(A, B)
         if solver == 'lu':
             logger.info("Solving using scipy LU")
-            self.c[self.region] = self._solve_lu(images/folded_surface.pngA, B)
+            self.c[self.region] = self._solve_lu(A, B)
         if solver == 'pyamg':
             logger.info("Solving with pyamg solve")
             self.c[self.region]  = self._solve_pyamg(A,B,kwargs)
