@@ -325,6 +325,7 @@ class GeologicalModel:
         -------
 
         """
+        displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         fault_frame_builder = StructuralFrameBuilder(interpolator,name=fault_surface_data,**kwargs)
@@ -337,18 +338,28 @@ class GeologicalModel:
         # we want to add a region!
 
         if 'splayregion' in kwargs and 'splay' in kwargs:
-            for i in range(3):
+            # for i in range(3):
+            i = 0
                 # work out the values of the nodes where we want hard constraints
-                idc = np.arange(0, interpolator.support.n_nodes)[
-                    kwargs['splayregion'](interpolator.support.nodes)]
-                val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes)[
-                    kwargs['splayregion'](interpolator.support.nodes)]
+            idc = np.arange(0, interpolator.support.n_nodes)[
+                kwargs['splayregion'](interpolator.support.nodes)]
+            val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes)[
+                kwargs['splayregion'](interpolator.support.nodes)]
 
-                fault_frame_builder[i].interpolator.add_equality_constraints(idc, val)
+            fault_frame_builder[i].interpolator.add_equality_constraints(idc, val)
+        # check if any faults exist in the stack
+        for f in reversed(self.features):
+            if f.type == 'fault':
+                fault_frame_builder[0].add_fault(f)
+                fault_frame_builder[1].add_fault(f)
+                fault_frame_builder[2].add_fault(f)
+            if f.type == 'unconformity':
+                break
+
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:
             fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
-        fault = FaultSegment(fault_frame, displacement=displacement, **kwargs)
+        fault = FaultSegment(fault_frame, displacement=displacement_scaled, **kwargs)
         for f in reversed(self.features):
             if f.type is 'unconformity':
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)

@@ -194,7 +194,7 @@ class StructuralFrameBuilder:
                                                polarity=polarity,coord=coord)
             if 'nx' in data_frame.columns and 'ny' in data_frame.columns and 'nz' in data_frame.columns and \
                     ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
-                 self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']],
+                 self.add_planar_constraint(pos,r[['nx','ny','nz']],
                          coord=coord)
 
     def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1, coord = None, itype= None):

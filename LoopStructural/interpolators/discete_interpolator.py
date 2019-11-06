@@ -17,10 +17,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.B = []
         self.support = support
 
-        region = 'everywhere'
-        self.region = self.support.regions[region]
+        self.region = np.arange(0,support.n_nodes)
         self.region_map = np.zeros(support.n_nodes).astype(int)
-        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
+        # self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
@@ -49,23 +48,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.propertyname = propertyname
 
-    def set_region(self, regionname=None, region=None):
+    def set_region(self, region = None):
         """
         Set the region of the support the interpolator is working on
         Parameters
         ----------
-        regionname - string with name of region
-        region - numpy mask for region
+        region - function(position)
+            return true when in region, false when out
 
         Returns
         -------
 
         """
-        if region is not None:
-            self.region = region
-        if regionname is not None:
-            self.region = self.support.regions[regionname]
-
+        # evaluate the region function on the support to determine
+        # which nodes are inside update region map and degrees of freedom
+        self.region = region(self.support.nodes)
         self.region_map = np.zeros(self.support.n_nodes).astype(int)
         self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])

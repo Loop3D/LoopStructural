@@ -26,7 +26,8 @@ class GeologicalFeatureInterpolator:
         if 'name' in kwargs:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
-        self.region = 'everywhere'
+        # everywhere region is just a lambda that returns true for all locations
+        self.region = lambda pos : np.ones(pos.shape[0], dtype=bool)
 
         if 'region' in kwargs:
             self.region = kwargs['region']
@@ -270,7 +271,7 @@ class GeologicalFeatureInterpolator:
         """
         if not self.data_added:
             self.add_data_to_interpolator()
-        self.interpolator.set_region(regionname=self.region)
+        self.interpolator.set_region(region=self.region)
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
             self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
