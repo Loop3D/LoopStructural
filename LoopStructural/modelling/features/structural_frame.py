@@ -118,7 +118,7 @@ class StructuralFrameBuilder:
         self.support = None
         self.fault_event = None
         self.name = 'Undefined'
-        self.region = 'everywhere'
+        #self.region = 'everywhere'
         self.builders = []
         if 'support' in kwargs:
             self.support = kwargs['support']
@@ -128,6 +128,7 @@ class StructuralFrameBuilder:
             del kwargs['mesh']
         if 'name' in kwargs:
             self.name = kwargs['name']
+            kwargs.pop('name')
         if 'region' in kwargs:
             self.region = kwargs['region']
         if self.support is None:
@@ -145,9 +146,9 @@ class StructuralFrameBuilder:
         if interpolators is None and interpolator is None:
             raise BaseException
         # self.builders
-        self.builders.append(GeologicalFeatureInterpolator(interpolators[0], name = self.name + '_0'))#,region=self.region))
-        self.builders.append(GeologicalFeatureInterpolator(interpolators[1], name = self.name + '_1'))#,region=self.region))
-        self.builders.append(GeologicalFeatureInterpolator(interpolators[2], name = self.name + '_2'))#,region=self.region))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[0], name = self.name + '_0', **kwargs))#,region=self.region))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[1], name = self.name + '_1', **kwargs))#,region=self.region))
+        self.builders.append(GeologicalFeatureInterpolator(interpolators[2], name = self.name + '_2', **kwargs))#,region=self.region))
 
     def __getitem__(self, item):
         return self.builders[item]

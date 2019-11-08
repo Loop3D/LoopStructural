@@ -30,11 +30,13 @@ class GeologicalFeatureInterpolator:
         self.region = lambda pos : np.ones(pos.shape[0], dtype=bool)
 
         if 'region' in kwargs:
+            print('region kwarg')
             self.region = kwargs['region']
         self.data = []
         self.data_original = []
         self.faults = []
         self.data_added = False
+
     def update(self):
         pass
 
@@ -43,7 +45,8 @@ class GeologicalFeatureInterpolator:
         Add a fault to the geological feature builder
         Parameters
         ----------
-        fault
+        fault FaultSegment
+            A faultsegment to add to the geological feature
 
         Returns
         -------

@@ -1,6 +1,7 @@
 from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 import numpy as np
-from pyamg import solve
+#from pyamg import ruge_stuben_solver
+import pyamg
 from scipy.sparse import coo_matrix, diags, bmat, eye
 from scipy.sparse import linalg as sla
 
@@ -162,6 +163,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_row.extend((np.arange(0,idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += node_idx[outside].shape[0]
+
     def build_matrix(self, damp=True):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy constraints
@@ -182,8 +184,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         BT = A.T.dot(B)
         # add a small number to the matrix diagonal to smooth the results
         # can help speed up solving, but might also introduce some errors
-        if damp:
-            AAT += eye(AAT.shape[0])*np.finfo('float').eps
+
         if self.eq_const_c_ > 0:
             # solving constrained least squares using
             # | ATA CT | |c| = b
@@ -201,6 +202,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             d = np.array(self.eq_const_d)
             AAT = bmat([[AAT, C.T], [C, None]])
             BT = np.hstack([BT,d])
+        if damp:
+            AAT += eye(AAT.shape[0])*np.finfo('float').eps
         return AAT, BT
 
     def _solve_lu(self, A, B):
@@ -270,10 +273,33 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if precon is not None:
             cgargs['M'] = precon(A)
         return sla.cg(A,B,**cgargs)[0][:self.nx]
-    def _solve_pyamg(self, A, B, kwargs):
+
+    def _solve_pyamg(self, A, B, **kwargs):
         pyamgargs = {}
         pyamgargs['verb'] = False
-        return solve(A,B,**pyamgargs)[:self.nx]
+        pyamgargs['tol'] = 1e-30
+        # #m1 = ruge_stuben_solver(A)
+        # # Smoothed Aggregation Parameters
+        # theta = np.pi / 8.0  # Angle of rotation
+        # epsilon = 0.001  # Anisotropic coefficient
+        # mcoarse = 10  # Max coarse grid size
+        # prepost = ('gauss_seidel',  # pre/post smoother
+        #            {'sweep': 'symmetric', 'iterations': 1})
+        # smooth = ('energy', {'maxiter': 9, 'degree': 3})  # Prolongation Smoother
+        # classic_theta = 0.0  # Classic Strength Measure
+        # #    Drop Tolerance
+        # # evolution Strength Measure
+        # evolution_theta = 4.0
+        # #    Drop Tolerance
+        # ml = pyamg.smoothed_aggregation_solver(A,
+        #                                    max_coarse=mcoarse,
+        #                                    coarse_solver='pinv2',
+        #                                    presmoother=prepost,
+        #                                    postsmoother=prepost,
+        #                                    smooth=smooth,
+        #                                    strength=('evolution', {'epsilon': evolution_theta, 'k': 2}))
+        return pyamg.solve(A,B)[:self.nx]
+
     def _solve(self, solver, **kwargs):
         """
         Main entry point to run the solver and update the node value attribute for the
@@ -306,7 +332,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_lu(A, B)
         if solver == 'pyamg':
             logger.info("Solving with pyamg solve")
-            self.c[self.region]  = self._solve_pyamg(A,B,kwargs)
+            self.c[self.region]  = self._solve_pyamg(A,B,**kwargs)
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]

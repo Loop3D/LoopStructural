@@ -249,8 +249,12 @@ class StructuredGrid:
         -------
 
         """
+        # determine the ijk indices for the global index.
+        # remainder when dividing by nx = i
+        # remained when dividing modulus of nx by ny is j
+
         x_index = global_index % self.nsteps_cells[0, None]
-        y_index = global_index // self.nsteps_cells[1, None] % self.nsteps_cells[0, None]
+        y_index = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
         z_index = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         return x_index, y_index, z_index
 

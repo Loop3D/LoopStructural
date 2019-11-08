@@ -117,8 +117,8 @@ class GeologicalModel:
         bb = np.copy(self.bounding_box)
         # add a buffer to the interpolation domain, this is necessary for faults but also generally a good
         # idea to avoid boundary problems
-        bb[0,:] -= buffer*(bb[1,:]-bb[0,:])
-        bb[1,:] += buffer*(bb[1,:]-bb[0,:])
+        bb[0,:] -= buffer#*(bb[1,:]-bb[0,:])
+        bb[1,:] += buffer#*(bb[1,:]-bb[0,:])
         if interpolatortype == "PLI":
             mesh = TetMesh()
             mesh.setup_mesh(bb, n_tetra=nelements,)
@@ -151,10 +151,11 @@ class GeologicalModel:
 
         Returns
         -------
+        results dict
 
         """
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(interpolator,name=series_surface_data)
+        series_builder = GeologicalFeatureInterpolator(interpolator,name=series_surface_data, **kwargs)
         # add data
         series_data = self.data[self.data['type'] == series_surface_data]
         series_builder.add_data_from_data_frame(series_data)
@@ -172,6 +173,8 @@ class GeologicalModel:
                 series_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
                 break
         self.features.append(series_feature)
+        result = {}
+        result['feature'] = series_feature
         return series_feature
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
@@ -259,10 +262,9 @@ class GeologicalModel:
                 series_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
                 break
         self.features.append(series_feature)
-        results = {}
-        results['feature'] = series_feature
-
-        return series_feature
+        result = {}
+        result['feature'] = series_feature
+        return result
 
     def create_and_add_folded_fold_frame(self, foliation_data, fold_frame, **kwargs):
 
@@ -273,7 +275,8 @@ class GeologicalModel:
 
         Parameters
         ----------
-        unconformity_surface_data
+        unconformity_surface_data string
+            name of the unconformity data in the data frame
 
         Returns
         -------
@@ -309,7 +312,9 @@ class GeologicalModel:
                 break
 
         self.features.append(uc_feature)
-        return uc_feature
+        result = {}
+        result['feature'] = uc_feature
+        return result
 
     def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
         """
@@ -323,6 +328,7 @@ class GeologicalModel:
 
         Returns
         -------
+        dictionary
 
         """
         displacement_scaled = displacement / self.scale_factor
@@ -343,11 +349,11 @@ class GeologicalModel:
                 # work out the values of the nodes where we want hard constraints
             idc = np.arange(0, interpolator.support.n_nodes)[
                 kwargs['splayregion'](interpolator.support.nodes)]
-            val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes)[
-                kwargs['splayregion'](interpolator.support.nodes)]
-
-            fault_frame_builder[i].interpolator.add_equality_constraints(idc, val)
+            val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes[kwargs['splayregion'](interpolator.support.nodes),:])
+            mask = ~np.isnan(val)
+            fault_frame_builder[i].interpolator.add_equality_constraints(idc[mask], val[mask])
         # check if any faults exist in the stack
+
         for f in reversed(self.features):
             if f.type == 'fault':
                 fault_frame_builder[0].add_fault(f)
@@ -364,8 +370,12 @@ class GeologicalModel:
             if f.type is 'unconformity':
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
+        if displacement == 0:
+            fault.type = 'fault_inactive'
         self.features.append(fault)
-        return fault
+        result = {}
+        result['feature']= fault
+        return result
 
     def rescale(self, points):
         points*=self.scale_factor

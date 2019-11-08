@@ -161,4 +161,4 @@ class ScalarField:
         -------
 
         """
-        return self.support.slice(self.property_name, isovalue, region)
+        return self.support.slice(self.property_name, isovalue, "everywhere")

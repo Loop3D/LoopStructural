@@ -80,9 +80,7 @@ class FaultSegment:
         mask = np.zeros(locations.shape[0]).astype(bool)
         mask[:] = True
         # check regions
-        print('eval')
         for r in self.regions:
-            print('regio')
             mask = np.logical_and(mask,r(locations))
         return self.faultframe[0].evaluate_value(locations[mask,:])
 
