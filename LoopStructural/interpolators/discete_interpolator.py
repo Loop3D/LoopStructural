@@ -138,6 +138,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
 
+
+
     def add_equality_constraints(self, node_idx, values):
         """
         Adds hard constraints to the least squares system. For now this just sets
@@ -156,13 +158,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         gi[:] = -1
         gi[self.region] = np.arange(0,self.nx)
         idc = gi[node_idx]
-        # check
         outside = ~(idc == -1)
+
         self.eq_const_C.extend(np.ones(idc[outside].shape[0]).tolist())
         self.eq_const_col.extend(idc[outside].tolist())
         self.eq_const_row.extend((np.arange(0,idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
-        self.eq_const_c_ += node_idx[outside].shape[0]
+        self.eq_const_c_ += idc[outside].shape[0]
 
     def build_matrix(self, damp=True):
         """

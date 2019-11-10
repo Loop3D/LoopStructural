@@ -30,12 +30,12 @@ class GeologicalFeatureInterpolator:
         self.region = lambda pos : np.ones(pos.shape[0], dtype=bool)
 
         if 'region' in kwargs:
-            print('region kwarg')
             self.region = kwargs['region']
         self.data = []
         self.data_original = []
         self.faults = []
         self.data_added = False
+        self.interpolator.set_region(region=self.region)
 
     def update(self):
         pass
@@ -274,7 +274,8 @@ class GeologicalFeatureInterpolator:
         """
         if not self.data_added:
             self.add_data_to_interpolator()
-        self.interpolator.set_region(region=self.region)
+        # moving this to init because it needs to be done before constraints are added?
+        # self.interpolator.set_region(region=self.region)
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
             self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
