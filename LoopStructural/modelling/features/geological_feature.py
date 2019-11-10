@@ -390,18 +390,30 @@ class GeologicalFeature:
         v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
         return v#self.support.evaluate_value(evaluation_points)
 
-    def evaluate_gradient(self, locations):
+    def evaluate_gradient(self, evaluation_points):
         """
 
         Parameters
         ----------
-        locations
+        locations numpy array
+            location where the gradient is being evaluated
 
         Returns
         -------
 
         """
-        return self.support.evaluate_gradient(locations)
+        v = np.zeros(evaluation_points.shape)
+        v[:] = np.nan
+        mask = np.zeros(evaluation_points.shape[0]).astype(bool)
+        mask[:] = True
+        # check regions
+        for r in self.regions:
+            mask = np.logical_and(mask,r(evaluation_points))
+        # apply faulting after working out which regions are visible
+        for f in self.faults:
+            evaluation_points = f.apply_to_points(evaluation_points)
+        v[mask,:] = self.support.evaluate_gradient(evaluation_points)
+        return v
 
     def mean(self):
         """
