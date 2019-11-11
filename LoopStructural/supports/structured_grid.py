@@ -34,17 +34,16 @@ class StructuredGrid:
         self.n_cell_z = self.nsteps[2] - 1
         self.properties = {}
         self.n_elements = self.n_cell_x * self.n_cell_y * self.n_cell_z
+
+        # calculate the node positions using numpy (this should probably not be stored as it defeats
+        # the purpose of a structured grid
         max = self.origin+self.nsteps_cells*self.step_vector
-        xi, yi, zi = self.global_index_to_cell_index(np.arange(self.n_elements))
-        cornerx, cornery, cornerz = self.cell_corner_indexes(xi, yi, zi)
-        posx, posy, posz = self.node_indexes_to_position(cornerx, cornery, cornerz)
-        x = np.arange(origin[0],max[0]+step_vector[0],step_vector[0])#-0.1,1.064+0.025876,0.025876)
-        y = np.arange(origin[1],max[1]+step_vector[1],step_vector[1])#-0.1,1.064+0.025876,0.025876)
-        z = np.arange(origin[2],max[2]+step_vector[2],step_vector[2])#-0.1,1.064+0.025876,0.025876)
+        x = np.linspace(origin[0],max[0],nsteps[0])
+        y = np.linspace(origin[1],max[1],nsteps[1])
+        z = np.linspace(origin[2],max[2],nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         self.nodes = np.array([xx.flatten(order='F'), yy.flatten(order='F'), zz.flatten(order='F')]).T
-        # self.nodes = np.array([posx,posy,posz])
-        self.barycentre = self.cell_centres(np.arange(self.n_elements))#range())self.nodes+self.step_vector[:]*.5#np.array([np.mean(posx, axis=1), np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
+        self.barycentre = self.cell_centres(np.arange(self.n_elements))
 
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)

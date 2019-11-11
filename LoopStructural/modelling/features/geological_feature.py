@@ -54,6 +54,7 @@ class GeologicalFeatureInterpolator:
         """
         self.faults.append(fault)
 
+
     def add_data_from_data_frame(self, data_frame):
         """
         Extract data from a pandas dataframe with columns for

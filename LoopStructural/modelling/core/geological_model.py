@@ -23,7 +23,7 @@ class GeologicalModel:
     A geological model is the recipe for building a 3D model and includes the rescaling
     of the model between 0 and 1.
     """
-    def __init__(self, origin, maximum):
+    def __init__(self, origin, maximum, rescale=True):
         """
 
         Parameters
@@ -41,10 +41,12 @@ class GeologicalModel:
 
         self.maximum = np.array(maximum)
         lengths = self.maximum - self.origin
-        self.scale_factor = np.max(lengths)
-
+        self.scale_factor = 1.
         self.bounding_box = np.zeros((2, 3))
         self.bounding_box[1, :] = self.maximum-self.origin
+        if rescale:
+            self.scale_factor = np.max(lengths)
+
         self.bounding_box /= self.scale_factor
         # self.bounding_box[0,:] = self.origin
         # self.bounding_box[1,:] = self.maximum
@@ -197,6 +199,8 @@ class GeologicalModel:
         return fold_frame
 
     def create_and_add_folded_foliation(self, foliation_data, fold_frame, **kwargs):
+        result = {}
+
         fold = FoldEvent(fold_frame)
         fold_interpolator = self.get_interpolator("DFI",fold=fold,**kwargs)
         series_builder = GeologicalFeatureInterpolator(
@@ -222,8 +226,10 @@ class GeologicalModel:
             else:
                 popt, pcov = curve_fit(fourier_series,fad,np.tan(np.rad2deg(far)),guess)
                 fold.fold_axis_rotation = lambda x: np.rad2deg(np.arctan(fourier_series(x,popt[0],popt[1],popt[2],popt[3])))
-
-        flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)
+            result['axis_direction'] = fad
+            result['axis_rotation'] = far
+            result['axis_svario'] = axis_svariogram
+            flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)
         limb_wl = kwargs.get("limb_wl",None)
         if limb_wl is None:
             limb_svariogram = SVariogram(s,flr)
@@ -238,6 +244,7 @@ class GeologicalModel:
             fold.fold_limb_rotation = lambda x: np.rad2deg(
             np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
         fold_weights = kwargs.get('fold_weights',None)
+
         if fold_weights is None:
             fold_weights = {}
             fold_weights['fold_orientation'] = 10. # reference values?
@@ -262,8 +269,9 @@ class GeologicalModel:
                 series_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
                 break
         self.features.append(series_feature)
-        result = {}
         result['feature'] = series_feature
+        result['fold'] = fold
+        result['foliation'] = s
         return result
 
     def create_and_add_folded_fold_frame(self, foliation_data, fold_frame, **kwargs):

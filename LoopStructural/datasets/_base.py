@@ -25,3 +25,9 @@ def load_grose2018():
 
 def load_grose2019():
     pass
+
+def load_intrusion():
+    module_path = dirname(__file__)
+    data = pd.read_pickle(join(module_path,'data/intrusion.pkl'))
+    bb = np.loadtxt(join(module_path,'data/intrusiondbb.txt'))
+    return data, bb

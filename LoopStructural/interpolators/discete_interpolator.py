@@ -300,7 +300,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         #                                    postsmoother=prepost,
         #                                    smooth=smooth,
         #                                    strength=('evolution', {'epsilon': evolution_theta, 'k': 2}))
-        return pyamg.solve(A,B)[:self.nx]
+        return pyamg.solve(A,B,verb=False)[:self.nx]
 
     def _solve(self, solver, **kwargs):
         """
