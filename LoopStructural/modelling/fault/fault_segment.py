@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
 logger = logging.getLogger(__name__)
 
 
@@ -29,8 +30,13 @@ class FaultSegment:
         self.steps = kwargs.get('steps', 10)
         self.regions = []
 
+        self.displacementfeature = None
+        if self.faultframe is not None:
+            self.displacementfeature = FaultDisplacementFeature(self.faultframe,self.faultfunction)
+
     def __getitem__(self, item):
         return self.faultframe[item]
+
     def add_region(self, region):
         """
 
@@ -181,5 +187,9 @@ class FaultSegment:
                     g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
                     d.pos = d.pos + g[0]
 
-    def slice(self, isovalue, bounding_box = None, nsteps = None):
-        return self.faultframe[0].slice(isovalue, bounding_box = bounding_box, nsteps = nsteps)
+    def slice(self, isovalue, bounding_box = None, nsteps = None, region = None):
+        # if there is a fault function we only want to display the fault where the displacement is > 0
+        if region is None:
+            if self.faultfunction is not None:
+                region = lambda pos : self.displacementfeature.evaluate_on_surface(pos) > 0.01
+        return self.faultframe[0].slice(isovalue, bounding_box = bounding_box, nsteps = nsteps, region=region)

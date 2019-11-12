@@ -95,7 +95,7 @@ class GeologicalModel:
         """
         self.data.append(newdata)
 
-    def get_interpolator(self, interpolatortype = 'PLI', nelements = 5e5, buffer=0.2,**kwargs):
+    def get_interpolator(self, interpolatortype = 'PLI', nelements = 5e5, buffer=0.02,**kwargs):
         """
         Returns an interpolator given the arguments, also constructs a support for a discrete
         interpolator
@@ -144,7 +144,7 @@ class GeologicalModel:
         logger.warning("No interpolator")
         return interpolator
 
-    def create_and_add_conformable_foliation(self, series_surface_data, **kwargs):
+    def create_and_add_foliation(self, series_surface_data, **kwargs):
         """
         Parameters
         ----------
@@ -177,7 +177,7 @@ class GeologicalModel:
         self.features.append(series_feature)
         result = {}
         result['feature'] = series_feature
-        return series_feature
+        return result
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
         # create fault frame
@@ -229,7 +229,9 @@ class GeologicalModel:
             result['axis_direction'] = fad
             result['axis_rotation'] = far
             result['axis_svario'] = axis_svariogram
-            flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)
+        flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)
+        result['limb_rotation'] = flr
+        result['foliation'] = s
         limb_wl = kwargs.get("limb_wl",None)
         if limb_wl is None:
             limb_svariogram = SVariogram(s,flr)
@@ -271,7 +273,6 @@ class GeologicalModel:
         self.features.append(series_feature)
         result['feature'] = series_feature
         result['fold'] = fold
-        result['foliation'] = s
         return result
 
     def create_and_add_folded_fold_frame(self, foliation_data, fold_frame, **kwargs):

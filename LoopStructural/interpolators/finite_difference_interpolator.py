@@ -159,7 +159,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
 
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
-
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)

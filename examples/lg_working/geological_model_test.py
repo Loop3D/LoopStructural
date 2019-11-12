@@ -6,12 +6,12 @@ import numpy as np
 model = GeologicalModel((0,0,0),(4,6,4))
 df = pd.read_csv('model_input.csv')
 model.set_model_data(df)
-s0 = model.create_and_add_conformable_foliation('s0',
-                                                interpolatortype='FDI',
-                                                nelements=20000,
-                                                solver='cg',
-                                                # maxiter=1000,
-                                                damp=False)
+s0 = model.create_and_add_foliation('s0',
+                                    interpolatortype='FDI',
+                                    nelements=20000,
+                                    solver='cg',
+                                    # maxiter=1000,
+                                    damp=False)
 
 uc = model.create_and_add_unconformity('uc',
                                        interpolatortype='FDI',
@@ -25,12 +25,12 @@ fault = model.create_and_add_fault('fault', .3,
                                    # maxiter=1000,
                                    damp=False)
 # #
-s0_2 = model.create_and_add_conformable_foliation('s0_2',
-                                                  interpolatortype='FDI',
-                                                  nelements=10000,
-                                                  solver='cg',
-                                                  # maxiter=1000,
-                                                  damp=False)
+s0_2 = model.create_and_add_foliation('s0_2',
+                                      interpolatortype='FDI',
+                                      nelements=10000,
+                                      solver='cg',
+                                      # maxiter=1000,
+                                      damp=False)
 viewer = LavaVuModelViewer(background='white')
 try:
     viewer.add_isosurface(s0_2,

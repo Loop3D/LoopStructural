@@ -124,6 +124,7 @@ class LavaVuModelViewer:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
+        region = kwargs.get('region',None)
         # do isosurfacing of support using marching tetras/cubes
         for isovalue in slices:
             logger.debug("Creating isosurface for %f"%isovalue)
@@ -131,11 +132,11 @@ class LavaVuModelViewer:
                 logger.debug("No surface to create for isovalue")
                 continue #isovalue = kwargs['isovalue']
             if voxet is None:
-                tris, nodes = geological_feature.slice(isovalue)
+                tris, nodes = geological_feature.slice(isovalue, region=region)
             if voxet:
                 tris, nodes = geological_feature.slice(isovalue,
                                                        bounding_box=voxet['bounding_box'],
-                                                       nsteps=voxet['nsteps'])
+                                                       nsteps=voxet['nsteps'], region=region)
             if nodes.shape[0] == 0:
                 continue
 
@@ -156,13 +157,13 @@ class LavaVuModelViewer:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
                 val = np.zeros(nodes.shape[0])
-                val[:] = isovalue
+                val[:] = painter.evaluate_value(nodes)#isovalue
                 surf.values(val, painter.name)
                 surf["colourby"] = painter.name
                 cmap = lavavu.cubehelix(100)
                 if 'cmap' in kwargs:
                     cmap = kwargs['cmap']
-                surf.colourmap(cmap,range= (geological_feature.min(),geological_feature.max()))#nodes.shape[0]))
+                surf.colourmap(cmap,range= (painter.min(),painter.max()))#nodes.shape[0]))
 
             if "normals" in kwargs:
                 a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]

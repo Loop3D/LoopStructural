@@ -478,7 +478,7 @@ class GeologicalFeature:
         """
         return self.support.get_node_values()
 
-    def slice(self, isovalue, bounding_box = None, nsteps = None):
+    def slice(self, isovalue, bounding_box = None, nsteps = None, region=None):
         """
         Calculate an isosurface of a geological feature.
         Option to specify a new support to calculate the isosurface on
@@ -487,6 +487,7 @@ class GeologicalFeature:
         isovalue
         bounding_box
         nsteps
+        region
 
         Returns
         -------
@@ -498,6 +499,8 @@ class GeologicalFeature:
             z = np.linspace(bounding_box[1,2],bounding_box[0,2],nsteps[2])
             xx,yy,zz = np.meshgrid(x,y,z, indexing='ij')
             val = self.evaluate_value(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
+            if region is not None:
+                val[~region(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)] = np.nan
             step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
                 logger.warning("Isovalue doesn't exist inside bounding box")
