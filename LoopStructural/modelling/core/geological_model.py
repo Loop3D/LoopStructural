@@ -10,6 +10,7 @@ from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.fold import FoldEvent
 from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.modelling.fold.fold_rotation_angle_feature import fourier_series
+from LoopStructural.modelling.features import RegionFeature
 from scipy.optimize import curve_fit
 import numpy as np
 import pandas as pd
@@ -37,9 +38,9 @@ class GeologicalModel:
 
         # we want to rescale the model area so that the maximum length is
         # 1
-        self.origin = np.array(origin)
+        self.origin = np.array(origin).astype(float)
 
-        self.maximum = np.array(maximum)
+        self.maximum = np.array(maximum).astype(float)
         lengths = self.maximum - self.origin
         self.scale_factor = 1.
         self.bounding_box = np.zeros((2, 3))
@@ -340,6 +341,7 @@ class GeologicalModel:
         dictionary
 
         """
+        result = {}
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
@@ -353,14 +355,15 @@ class GeologicalModel:
         # we want to add a region!
 
         if 'splayregion' in kwargs and 'splay' in kwargs:
-            # for i in range(3):
-            i = 0
+            result['splayregionfeature'] = RegionFeature(kwargs['splayregion'])
+            # apply splay to all parts of fault frame
+            for i in range(3):
                 # work out the values of the nodes where we want hard constraints
-            idc = np.arange(0, interpolator.support.n_nodes)[
-                kwargs['splayregion'](interpolator.support.nodes)]
-            val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes[kwargs['splayregion'](interpolator.support.nodes),:])
-            mask = ~np.isnan(val)
-            fault_frame_builder[i].interpolator.add_equality_constraints(idc[mask], val[mask])
+                idc = np.arange(0, interpolator.support.n_nodes)[
+                    kwargs['splayregion'](interpolator.support.nodes)]
+                val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes[kwargs['splayregion'](interpolator.support.nodes),:])
+                mask = ~np.isnan(val)
+                fault_frame_builder[i].interpolator.add_equality_constraints(idc[mask], val[mask])
         # check if any faults exist in the stack
 
         for f in reversed(self.features):
@@ -382,7 +385,6 @@ class GeologicalModel:
         if displacement == 0:
             fault.type = 'fault_inactive'
         self.features.append(fault)
-        result = {}
         result['feature']= fault
         return result
 
@@ -390,7 +392,13 @@ class GeologicalModel:
         points*=self.scale_factor
         points+=self.origin
         return points
-
+    def scale(self, points):
+        points[:,:] -= self.origin
+        points/=self.scale_factor
+        return points
+        self.data['X'] /= self.scale_factor
+        self.data['Y'] /= self.scale_factor
+        self.data['Z'] /= self.scale_factor
     def view(self):
 
         pass

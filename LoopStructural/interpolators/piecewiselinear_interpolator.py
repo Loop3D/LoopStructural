@@ -53,6 +53,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # can't reset here, clears fold constraints
         #self.reset()
         for key in kwargs:
+            if 'regularisation' in kwargs:
+                self.interpolation_weights['cgw'] = 0.1*kwargs['regularisation']
             self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]
         if self.interpolation_weights['cgw'] > 0.:
