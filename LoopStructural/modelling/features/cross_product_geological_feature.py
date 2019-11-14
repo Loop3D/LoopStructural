@@ -6,13 +6,10 @@ logger = logging.getLogger(__name__)
 
 
 class CrossProductGeologicalFeature(GeologicalFeature):
-    """
-    Create a geological feature for a vector field using the cross product between
-    two existing features
-    """
     def __init__(self, name, geological_feature_a, geological_feature_b):
         """
-
+        Create a geological feature for a vector field using the cross product between
+        two existing features
         Parameters
         ----------
         name - feature name

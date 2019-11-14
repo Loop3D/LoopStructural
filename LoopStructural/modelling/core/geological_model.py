@@ -230,7 +230,7 @@ class GeologicalModel:
             result['axis_direction'] = fad
             result['axis_rotation'] = far
             result['axis_svario'] = axis_svariogram
-        flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)
+        flr, s = fold_frame.calculate_fold_limb_rotation(series_builder,axis=fold.get_fold_axis_orientation)
         result['limb_rotation'] = flr
         result['foliation'] = s
         limb_wl = kwargs.get("limb_wl",None)
@@ -392,16 +392,11 @@ class GeologicalModel:
         points*=self.scale_factor
         points+=self.origin
         return points
+
     def scale(self, points):
         points[:,:] -= self.origin
         points/=self.scale_factor
         return points
-        self.data['X'] /= self.scale_factor
-        self.data['Y'] /= self.scale_factor
-        self.data['Z'] /= self.scale_factor
-    def view(self):
-
-        pass
 
     def voxet(self, nsteps = (50, 50, 25)):
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}

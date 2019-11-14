@@ -9,13 +9,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class StructuralFrame:
-    """
-    Structural frame is a curvilinear coordinate system defined by structural
-    observations associated with a fault or fold.
-    """
     def __init__(self, name, features):
         """
-
+        Structural frame is a curvilinear coordinate system defined by structural
+        observations associated with a fault or fold.
         Parameters
         ----------
         name - name of the structural frame

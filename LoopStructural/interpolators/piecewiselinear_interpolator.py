@@ -7,16 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
-    """
-    Piecewise Linear Interpolator
-    Approximates scalar field by finding coefficients to a piecewise linear
-    equation on a tetrahedral mesh
-
-    """
 
     def __init__(self, mesh):
         """
-
+        Piecewise Linear Interpolator
+        Approximates scalar field by finding coefficients to a piecewise linear
+        equation on a tetrahedral mesh. Uses constant gradient regularisation.
         Parameters
         ----------
         mesh
