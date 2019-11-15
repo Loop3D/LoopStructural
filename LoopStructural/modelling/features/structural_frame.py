@@ -384,7 +384,7 @@ class StructuralFrameBuilder:
             gxxgz = kwargs['gxxgz']
         if 'gyxgz' in kwargs:
             gyxgz = kwargs['gyxgz']
-        regularisation=kwargs.pop('regularisation',5.)
+        regularisation=kwargs.pop('regularisation',[5.,5.,5.])
         # initialise features as none then where data exists build
         gx_feature = None
         gy_feature = None
@@ -392,7 +392,7 @@ class StructuralFrameBuilder:
 
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 0")
-            gx_feature = self.builders[0].build(solver=solver,regularisation=regularisation,**kwargs)
+            gx_feature = self.builders[0].build(solver=solver,regularisation=regularisation[0],**kwargs)
             # remove fold from kwargs
             fold = kwargs.pop('fold',False)
         if gx_feature is None:
@@ -411,7 +411,7 @@ class StructuralFrameBuilder:
                     gx_feature.evaluate_gradient(self.support.barycentre),
                     w=gxxgz)
 
-            gz_feature = self.builders[2].build(solver=solver,regularisation=regularisation,**kwargs)
+            gz_feature = self.builders[2].build(solver=solver,regularisation=regularisation[0],**kwargs)
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 1")
             if gx_feature is not None:
@@ -424,7 +424,7 @@ class StructuralFrameBuilder:
                     np.arange(0, self.support.n_elements),
                     gz_feature.evaluate_gradient(self.support.barycentre),
                     w=gyxgz)
-            gy_feature = self.builders[1].build(solver=solver,regularisation=regularisation,**kwargs)
+            gy_feature = self.builders[1].build(solver=solver,regularisation=regularisation[0],**kwargs)
         if gy_feature is None:
             logger.warning("Not enough constraints for structural frame coordinate 1, \n"
                   "Add some more and try again.")
