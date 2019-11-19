@@ -1,5 +1,7 @@
 from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 import numpy as np
+#from pyamg import ruge_stuben_solver
+import pyamg
 from scipy.sparse import coo_matrix, diags, bmat, eye
 from scipy.sparse import linalg as sla
 
@@ -16,10 +18,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.B = []
         self.support = support
 
-        region = 'everywhere'
-        self.region = self.support.regions[region]
+        self.region = np.arange(0,support.n_nodes)
         self.region_map = np.zeros(support.n_nodes).astype(int)
-        self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
+        # self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
@@ -33,7 +34,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
-
 
     def set_property_name(self, propertyname):
         """
@@ -49,23 +49,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.propertyname = propertyname
 
-    def set_region(self, regionname=None, region=None):
+    def set_region(self, region = None):
         """
         Set the region of the support the interpolator is working on
         Parameters
         ----------
-        regionname - string with name of region
-        region - numpy mask for region
+        region - function(position)
+            return true when in region, false when out
 
         Returns
         -------
 
         """
-        if region is not None:
-            self.region = region
-        if regionname is not None:
-            self.region = self.support.regions[regionname]
-
+        # evaluate the region function on the support to determine
+        # which nodes are inside update region map and degrees of freedom
+        self.region = region(self.support.nodes)
         self.region_map = np.zeros(self.support.n_nodes).astype(int)
         self.region_map[self.region] = np.array(range(0,len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
@@ -140,6 +138,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
 
+
+
     def add_equality_constraints(self, node_idx, values):
         """
         Adds hard constraints to the least squares system. For now this just sets
@@ -158,13 +158,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         gi[:] = -1
         gi[self.region] = np.arange(0,self.nx)
         idc = gi[node_idx]
-        # check
         outside = ~(idc == -1)
+
         self.eq_const_C.extend(np.ones(idc[outside].shape[0]).tolist())
         self.eq_const_col.extend(idc[outside].tolist())
         self.eq_const_row.extend((np.arange(0,idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
-        self.eq_const_c_ += node_idx[outside].shape[0]
+        self.eq_const_c_ += idc[outside].shape[0]
 
     def build_matrix(self, damp=True):
         """
@@ -186,8 +186,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         BT = A.T.dot(B)
         # add a small number to the matrix diagonal to smooth the results
         # can help speed up solving, but might also introduce some errors
-        if damp:
-            AAT += eye(AAT.shape[0])*np.finfo('float').eps
+
         if self.eq_const_c_ > 0:
             # solving constrained least squares using
             # | ATA CT | |c| = b
@@ -205,6 +204,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             d = np.array(self.eq_const_d)
             AAT = bmat([[AAT, C.T], [C, None]])
             BT = np.hstack([BT,d])
+        if damp:
+            AAT += eye(AAT.shape[0])*np.finfo('float').eps
         return AAT, BT
 
     def _solve_lu(self, A, B):
@@ -260,6 +261,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         cgargs={}
+        cgargs['tol'] = 1e-12
         if 'maxiter' in kwargs:
             cgargs['maxiter'] = kwargs['maxiter']
         if 'x0' in kwargs:
@@ -273,6 +275,32 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if precon is not None:
             cgargs['M'] = precon(A)
         return sla.cg(A,B,**cgargs)[0][:self.nx]
+
+    def _solve_pyamg(self, A, B, **kwargs):
+        pyamgargs = {}
+        pyamgargs['verb'] = False
+        pyamgargs['tol'] = 1e-30
+        # #m1 = ruge_stuben_solver(A)
+        # # Smoothed Aggregation Parameters
+        # theta = np.pi / 8.0  # Angle of rotation
+        # epsilon = 0.001  # Anisotropic coefficient
+        # mcoarse = 10  # Max coarse grid size
+        # prepost = ('gauss_seidel',  # pre/post smoother
+        #            {'sweep': 'symmetric', 'iterations': 1})
+        # smooth = ('energy', {'maxiter': 9, 'degree': 3})  # Prolongation Smoother
+        # classic_theta = 0.0  # Classic Strength Measure
+        # #    Drop Tolerance
+        # # evolution Strength Measure
+        # evolution_theta = 4.0
+        # #    Drop Tolerance
+        # ml = pyamg.smoothed_aggregation_solver(A,
+        #                                    max_coarse=mcoarse,
+        #                                    coarse_solver='pinv2',
+        #                                    presmoother=prepost,
+        #                                    postsmoother=prepost,
+        #                                    smooth=smooth,
+        #                                    strength=('evolution', {'epsilon': evolution_theta, 'k': 2}))
+        return pyamg.solve(A,B,verb=False)[:self.nx]
 
     def _solve(self, solver, **kwargs):
         """
@@ -304,7 +332,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if solver == 'lu':
             logger.info("Solving using scipy LU")
             self.c[self.region] = self._solve_lu(A, B)
-
+        if solver == 'pyamg':
+            logger.info("Solving with pyamg solve")
+            self.c[self.region]  = self._solve_pyamg(A,B,**kwargs)
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]

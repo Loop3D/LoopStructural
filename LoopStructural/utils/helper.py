@@ -3,6 +3,14 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
+def plunge_and_plunge_dir_to_vector(plunge,plunge_dir):
+    plunge = np.deg2rad(plunge)
+    plunge_dir = np.deg2rad(plunge_dir)
+    vec = np.zeros(3)
+    vec[0] = np.sin(plunge_dir) * np.cos(plunge)
+    vec[1] = np.cos(plunge_dir)*np.cos(plunge)
+    vec[2] = -np.sin(plunge)
+    return vec
 
 def create_surface(bounding_box, nstep):
     x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nstep[0])  #

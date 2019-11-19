@@ -92,8 +92,8 @@ class GPoint(Point):
         dir[0] = m.sin(dip) * m.cos(strike)
         dir[1] = -m.sin(dip) * m.sin(strike)
         dir[2] = m.cos(dip)
-        dir /= nla.norm(dir)
         dir*=polarity
+        dir /= nla.norm(dir)
         return cls(pos, dir)
     @classmethod
     def from_dip_dip_dir(cls, pos, dip_dir, dip, polarity=1):
@@ -103,8 +103,8 @@ class GPoint(Point):
         dir[0] = m.sin(dip) * m.cos(strike)
         dir[1] = -m.sin(dip) * m.sin(strike)
         dir[2] = m.cos(dip)
-        dir /= nla.norm(dir)
         dir *= polarity
+        dir /= nla.norm(dir)
         return cls(pos, dir)
     def dir_(self):
         return self.vec

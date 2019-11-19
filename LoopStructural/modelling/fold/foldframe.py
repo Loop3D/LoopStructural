@@ -39,6 +39,8 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
+        if len(points) == 0:
+            return 0, 0
         points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
@@ -87,6 +89,9 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
+        if len(points) == 0:
+            logger.error("No points to calculate fold rotation angle")
+            return np.array([0]), np.array([0])
         points = np.vstack(points)
 
         # get the normals from the points array
@@ -97,20 +102,24 @@ class FoldFrame(StructuralFrame):
         s1g = self.features[0].evaluate_gradient(points[:,:3])
         s1g /= np.linalg.norm(s1g,axis=1)[:,None]
         s1 = self.features[0].evaluate_value(points[:,:3])
-
-        # project s0 onto axis plane B X A X B
-        # projected_s0 = np.cross(axis, np.cross(s0g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
-        # projected_s1 = np.cross(axis, np.cross(s1g, axis, axisa=1, axisb=1), axisa=1, axisb=1)
-        # projected_s0 /= np.linalg.norm(projected_s0, axis=1)[:,None]
-        # projected_s1 /= np.linalg.norm(projected_s1, axis=1)[:,None]
-        r2 = np.einsum('ij,ij->i', s1g,s0g)#projected_s1, projected_s0)#
-        # adjust the fold rotation angle so that its always between -90 and 90
-        vv = np.cross(s1g, s0g, axisa=1, axisb=1)
-        # ds = np.einsum('ij,ij->i', axis, vv)
-        # flr = np.where(ds > 0, np.rad2deg(np.arcsin(r2)), (- np.rad2deg(np.arcsin(r2))))
-        # flr = np.where(flr < -90, (180.+flr), flr)
-        # flr = np.where(flr > 90, -(180.-flr), flr)
-        return np.rad2deg(np.arcsin(r2)), self.features[0].evaluate_value(points[:,:3])
+        if axis is None:
+            r2 = np.einsum('ij,ij->i', s1g,s0g)
+            return np.rad2deg(np.arcsin(r2)), self.features[0].evaluate_value(points[:,:3])
+        if axis is not None:
+            fold_axis = axis(points[:,:3])
+            # project s0 onto axis plane B X A X B
+            projected_s0 = np.cross(fold_axis, np.cross(s0g, fold_axis, axisa=1, axisb=1), axisa=1, axisb=1)
+            projected_s1 = np.cross(fold_axis, np.cross(s1g, fold_axis, axisa=1, axisb=1), axisa=1, axisb=1)
+            projected_s0 /= np.linalg.norm(projected_s0, axis=1)[:,None]
+            projected_s1 /= np.linalg.norm(projected_s1, axis=1)[:,None]
+            r2 = np.einsum('ij,ij->i', projected_s1, projected_s0)#
+            # adjust the fold rotation angle so that its always between -90 and 90
+            vv = np.cross(s1g, s0g, axisa=1, axisb=1)
+            ds = np.einsum('ij,ij->i', fold_axis, vv)
+            flr = np.where(ds > 0, np.rad2deg(np.arcsin(r2)), (- np.rad2deg(np.arcsin(r2))))
+            flr = np.where(flr < -90, (180.+flr), flr)
+            flr = np.where(flr > 90, -(180.-flr), flr)
+            return flr, self.features[0].evaluate_value(points[:,:3])
 
     def calculate_intersection_lineation(self, feature_builder):
         """

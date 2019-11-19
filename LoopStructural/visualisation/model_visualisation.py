@@ -28,28 +28,35 @@ class LavaVuModelViewer:
         self.lv['orthographic'] = True
         self.objects = {}
         self.model = kwargs.get("model",None)
-
+        # prerotate to a nice view
+        self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
 
     def add_section(self, geological_feature, axis='x', value = None, boundary_points = None, nsteps = None, **kwargs):
         if boundary_points is None:
             return False #boundary_points = geological_feature.support.support.
 
-        # nsteps = np.array(nsteps)
-        # xx = None
-        # yy = None
-        # zz = None
+
         if axis == 'x':
             tri, yy, zz = create_surface(boundary_points[:, [1, 2]], nsteps[[1, 2]])
             xx = np.zeros(zz.shape)
-            xx[:] = boundary_points[1, 2]
+            if value is None:
+                xx[:] = np.mean(boundary_points[:,0])
+            else:
+                xx[:] = value
         if axis == 'y':
             tri, xx, zz = create_surface(boundary_points[:, [0, 2]], nsteps[[0, 2]])
             yy = np.zeros(xx.shape)
-            yy[:] = boundary_points[1, 2]
+            if value is None:
+                yy[:] = np.mean(boundary_points[:,1])
+            else:
+                yy[:] = value
         if axis == 'z':
-            tri, xx, yy = create_surface(boundary_points[0:2, :], nsteps[0:2])
+            tri, xx, yy = create_surface(boundary_points[:, 0:2], nsteps[0:2])
             zz = np.zeros(xx.shape)
-            zz[:] = boundary_points[1, 2]
+            if value is None:
+                zz[:] = np.mean(boundary_points[:,2])
+            else:
+                zz[:] = value
         name = kwargs.get('name',axis+'_slice')
         colour = kwargs.get('colour','red')
         points = np.zeros((len(xx), 3))  #
@@ -72,7 +79,7 @@ class LavaVuModelViewer:
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
             cmap = kwargs['cmap']
-        surf.colourmap(cmap)
+        surf.colourmap(cmap,range=[geological_feature.min(),geological_feature.max()])
 
     def add_isosurface(self, geological_feature, **kwargs):
         """
@@ -117,6 +124,7 @@ class LavaVuModelViewer:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
+        region = kwargs.get('region',None)
         # do isosurfacing of support using marching tetras/cubes
         for isovalue in slices:
             logger.debug("Creating isosurface for %f"%isovalue)
@@ -124,11 +132,11 @@ class LavaVuModelViewer:
                 logger.debug("No surface to create for isovalue")
                 continue #isovalue = kwargs['isovalue']
             if voxet is None:
-                tris, nodes = geological_feature.slice(isovalue)
+                tris, nodes = geological_feature.slice(isovalue, region=region)
             if voxet:
                 tris, nodes = geological_feature.slice(isovalue,
                                                        bounding_box=voxet['bounding_box'],
-                                                       nsteps=voxet['nsteps'])
+                                                       nsteps=voxet['nsteps'], region=region)
             if nodes.shape[0] == 0:
                 continue
 
@@ -149,13 +157,13 @@ class LavaVuModelViewer:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
                 val = np.zeros(nodes.shape[0])
-                val[:] = isovalue
+                val[:] = painter.evaluate_value(nodes)#isovalue
                 surf.values(val, painter.name)
                 surf["colourby"] = painter.name
                 cmap = lavavu.cubehelix(100)
                 if 'cmap' in kwargs:
                     cmap = kwargs['cmap']
-                surf.colourmap(cmap,range= (geological_feature.min(),geological_feature.max()))#nodes.shape[0]))
+                surf.colourmap(cmap,range= (painter.min(),painter.max()))#nodes.shape[0]))
 
             if "normals" in kwargs:
                 a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]
@@ -276,10 +284,11 @@ class LavaVuModelViewer:
         """
         vector = geological_feature.evaluate_gradient(locations)
         # normalise
-        vector /= np.linalg.norm(vector, axis=1)[:, None]
+        mask = ~np.any(np.isnan(vector),axis=1)
+        vector[mask,:] /= np.linalg.norm(vector[mask,:], axis=1)[:, None]
         vectorfield = self.lv.vectors(geological_feature.name + "_grad", **kwargs)
-        vectorfield.vertices(locations)
-        vectorfield.vectors(vector)
+        vectorfield.vertices(locations[mask,:])
+        vectorfield.vectors(vector[mask,:])
         return
 
     def add_data(self, feature, **kwargs):
@@ -305,12 +314,15 @@ class LavaVuModelViewer:
         if 'value' in kwargs:
             add_value = kwargs['value']
         grad = feature.support.interpolator.get_gradient_constraints()
+        norm = feature.support.interpolator.get_norm_constraints()
         value = feature.support.interpolator.get_value_constraints()
         if grad.shape[0] > 0 and add_grad:
             self.add_vector_data(grad[:, :3], grad[:, 3:], name + "_grad_cp", **kwargs)
+        if norm.shape[0] > 0 and add_grad:
+            self.add_vector_data(norm[:, :3], norm[:, 3:], name + "_norm_cp", **kwargs)
         if value.shape[0] > 0 and add_value:
+            kwargs['range'] = [feature.min(), feature.max()]
             self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp", **kwargs)
-
     def add_points(self, points, name, **kwargs):
         """
         Plot points location in the lavavu viewer
@@ -370,14 +382,15 @@ class LavaVuModelViewer:
         if "pointsize" not in kwargs:
             kwargs["pointsize"] = 4
         # set the colour map to diverge unless user decides otherwise
-        cmap = "diverge"
-        if "colourmap" in kwargs:
-            cmap = kwargs["colourmap"]
+        cmap = kwargs.get('cmap',"diverge")
         p = self.lv.points(name, **kwargs)
         p.vertices(position)
         p.values(value,"v")
         p["colourby"] = "v"
-        p.colourmap(cmap)
+        if 'range' in kwargs:
+            p.colourmap(cmap,range=kwargs['range'])
+        else:
+            p.colourmap(cmap)
 
     def add_fold(self, fold, locations):
         """

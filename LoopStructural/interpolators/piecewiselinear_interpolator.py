@@ -7,16 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
-    """
-    Piecewise Linear Interpolator
-    Approximates scalar field by finding coefficients to a piecewise linear
-    equation on a tetrahedral mesh
-
-    """
 
     def __init__(self, mesh):
         """
-
+        Piecewise Linear Interpolator
+        Approximates scalar field by finding coefficients to a piecewise linear
+        equation on a tetrahedral mesh. Uses constant gradient regularisation.
         Parameters
         ----------
         mesh
@@ -31,6 +27,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         self.interpolation_weights = {'cgw': 0.1, 'cpw' : 1., 'npw':1., 'gpw':1., 'tpw':1.}
         self.__str = 'Piecewise Linear Interpolator with %i unknowns. \n'%self.nx
+
     def __str__(self):
         return self.__str
 
@@ -52,6 +49,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # can't reset here, clears fold constraints
         #self.reset()
         for key in kwargs:
+            if 'regularisation' in kwargs:
+                self.interpolation_weights['cgw'] = 0.1*kwargs['regularisation']
             self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]
         if self.interpolation_weights['cgw'] > 0.:
@@ -167,10 +166,20 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             points[:,3:] /= np.linalg.norm(points[:,3:],axis=1)[:,None]
 
             # add in the element gradient matrix into the inte
+
+
             e=np.tile(e,(3,1)).T
             idc = self.support.elements[e]
+            gi = np.zeros(self.support.n_nodes).astype(int)
+            gi[:] = -1
+            gi[self.region] = np.arange(0,self.nx).astype(int)
             w /= 3
-            self.add_constraints_to_least_squares(d_t*w,points[:,3:]*w*vol[:,None],idc)
+            idc = gi[idc]
+            B = np.zeros(idc.shape[0])
+            outside = ~np.any(idc==-1,axis=2)
+            outside = outside[:,0]
+            w /= 3
+            self.add_constraints_to_least_squares(d_t[outside,:,:]*w,points[outside,3:]*w*vol[outside,None],idc[outside])
     def add_tangent_ctr_pts(self, w=1.0):
         """
 

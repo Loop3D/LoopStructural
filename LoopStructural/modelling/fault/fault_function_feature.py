@@ -14,6 +14,7 @@ class FaultDisplacementFeature:
         self.fault_frame = fault_frame
         self.displacement = displacement
         self.name = 'fault_displacement'
+
     def evaluate_value(self, location):
         """
         Return the value of the fault displacement
@@ -46,4 +47,16 @@ class FaultDisplacementFeature:
         fault_displacement = self.fault_frame.features[1].evaluate_value(location)
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement(fault_suface, fault_displacement, fault_strike)
+        return d
+
+    def min(self):
+        return 0
+
+    def max(self):
+        return 1
+
+    def evaluate_on_surface(self, location):
+        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
+        fault_strike = self.fault_frame.features[2].evaluate_value(location)
+        d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d

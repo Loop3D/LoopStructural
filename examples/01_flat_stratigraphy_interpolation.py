@@ -47,10 +47,11 @@ mesh.setup_mesh(boundary_points, n_tetra=50000,)
 # gradient constraints **add_strike_and_dip**(pos,strike,dip)
 # The resulting feature can be interpolated by calling **build**(kwargs) where the kwargs are
 # passed to the interpolator you have chosen e.g. which solver to use, what weights etc..
-mesh.regions['test'] = mesh.nodes[:,1]>-.5
+# mesh.regions['test'] = mesh.nodes[:,1]>-.5
 
 interpolator = PLI(mesh)
-feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy', region='test')
+feature_builder = GeologicalFeatureInterpolator(interpolator, name='stratigraphy')
+
 feature_builder.add_strike_and_dip([0,0,0],0,90)
 feature_builder.add_point([0.1,0,0],0)
 feature_builder.add_point([0.2,0,0],1)

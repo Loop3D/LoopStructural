@@ -35,16 +35,15 @@ class StructuredGrid:
         self.properties = {}
         self.n_elements = self.n_cell_x * self.n_cell_y * self.n_cell_z
 
-        xi, yi, zi = self.global_index_to_cell_index(np.arange(self.n_elements))
-        cornerx, cornery, cornerz = self.cell_corner_indexes(xi, yi, zi)
-        posx, posy, posz = self.node_indexes_to_position(cornerx, cornery, cornerz)
-        x = np.linspace(origin[0], nsteps[0] * step_vector[0], nsteps[0])
-        y = np.linspace(origin[1], nsteps[1] * step_vector[1], nsteps[1])
-        z = np.linspace(origin[2], nsteps[2] * step_vector[2], nsteps[2])
+        # calculate the node positions using numpy (this should probably not be stored as it defeats
+        # the purpose of a structured grid
+        max = self.origin+self.nsteps_cells*self.step_vector
+        x = np.linspace(origin[0],max[0],nsteps[0])
+        y = np.linspace(origin[1],max[1],nsteps[1])
+        z = np.linspace(origin[2],max[2],nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         self.nodes = np.array([xx.flatten(order='F'), yy.flatten(order='F'), zz.flatten(order='F')]).T
-        # self.nodes = np.array([posx,posy,posz])
-        self.barycentre = self.cell_centres(np.arange(self.n_elements))#range())self.nodes+self.step_vector[:]*.5#np.array([np.mean(posx, axis=1), np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
+        self.barycentre = self.cell_centres(np.arange(self.n_elements))
 
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
@@ -249,8 +248,12 @@ class StructuredGrid:
         -------
 
         """
+        # determine the ijk indices for the global index.
+        # remainder when dividing by nx = i
+        # remained when dividing modulus of nx by ny is j
+
         x_index = global_index % self.nsteps_cells[0, None]
-        y_index = global_index // self.nsteps_cells[1, None] % self.nsteps_cells[0, None]
+        y_index = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
         z_index = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         return x_index, y_index, z_index
 
