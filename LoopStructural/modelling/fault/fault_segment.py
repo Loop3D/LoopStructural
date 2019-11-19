@@ -118,7 +118,8 @@ class FaultSegment:
         # check regions
         for r in self.regions:
             mask = np.logical_and(mask,r(locations))
-        self.faultframe[1].evaluate_gradient(locations[mask,:])
+        # need to scale with fault displacement
+        return self.faultframe[1].evaluate_gradient(locations[mask,:])
 
     def apply_to_points(self, points):
         """

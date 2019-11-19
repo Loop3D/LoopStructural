@@ -284,10 +284,11 @@ class LavaVuModelViewer:
         """
         vector = geological_feature.evaluate_gradient(locations)
         # normalise
-        vector /= np.linalg.norm(vector, axis=1)[:, None]
+        mask = ~np.any(np.isnan(vector),axis=1)
+        vector[mask,:] /= np.linalg.norm(vector[mask,:], axis=1)[:, None]
         vectorfield = self.lv.vectors(geological_feature.name + "_grad", **kwargs)
-        vectorfield.vertices(locations)
-        vectorfield.vectors(vector)
+        vectorfield.vertices(locations[mask,:])
+        vectorfield.vectors(vector[mask,:])
         return
 
     def add_data(self, feature, **kwargs):
