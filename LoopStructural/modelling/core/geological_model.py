@@ -182,6 +182,17 @@ class GeologicalModel:
         return result
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
+        """
+
+        Parameters
+        ----------
+        foldframe_data
+        kwargs
+
+        Returns
+        -------
+
+        """
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
@@ -398,19 +409,49 @@ class GeologicalModel:
         if displacement == 0:
             fault.type = 'fault_inactive'
         self.features.append(fault)
-        result['feature']= fault
+        result['feature'] = fault
         return result
 
     def rescale(self, points):
+        """
+
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
         points*=self.scale_factor
         points+=self.origin
         return points
 
     def scale(self, points):
+        """
+
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
         points[:,:] -= self.origin
         points/=self.scale_factor
         return points
 
     def voxet(self, nsteps = (50, 50, 25)):
+        """
+
+        Parameters
+        ----------
+        nsteps
+
+        Returns
+        -------
+
+        """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
 
