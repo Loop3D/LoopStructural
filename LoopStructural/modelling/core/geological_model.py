@@ -167,6 +167,7 @@ class GeologicalModel:
                 series_builder.add_fault(f)
             if f.type == 'unconformity':
                 break
+
         # build feature
         series_feature = series_builder.build(**kwargs)
         series_feature.type = 'series'
@@ -200,6 +201,18 @@ class GeologicalModel:
         return fold_frame
 
     def create_and_add_folded_foliation(self, foliation_data, fold_frame, **kwargs):
+        """
+        Create a folded foliation field from data and a fold frame
+        Parameters
+        ----------
+        foliation_data
+        fold_frame
+        kwargs
+
+        Returns
+        -------
+        dict
+        """
         result = {}
 
         fold = FoldEvent(fold_frame)

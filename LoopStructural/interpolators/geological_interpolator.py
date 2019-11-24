@@ -6,15 +6,12 @@ logger = logging.getLogger(__name__)
 
 
 class GeologicalInterpolator:
-    """
-    This class is the base class for a geological interpolator and contains all of the
-    main interface functions. Any class that is inheriting from this should be callable
-    by using any of these functions. This will enable interpolators to be interchanged.
-    """
-    def __init__(self,**kwargs):
+
+    def __init__(self):
         """
-        Default constructor requires no arguments
-        :param kwargs: 'itype' what type of geological feature is being interpolated
+        This class is the base class for a geological interpolator and contains all of the
+        main interface functions. Any class that is inheriting from this should be callable
+        by using any of these functions. This will enable interpolators to be interchanged.
         """
         self.p_i = [] #interface points #   TODO create data container
         self.p_g = [] #gradient points
@@ -25,24 +22,38 @@ class GeologicalInterpolator:
         self.n_t = 0
         self.n_n = 0
         self.type = 'undefined'
-        if 'itype' in kwargs:
-            self.type = kwargs['itype']
         self.up_to_date = False
         self.constraints = []
         self.propertyname = 'defaultproperty'
 
     def set_property_name(self,name):
+        """
+        Set the name of the interpolated property
+        Parameters
+        ----------
+        name string
+            name
+
+        Returns
+        -------
+
+        """
         self.propertyname = name
 
-    def add_strike_dip_and_value(self,pos,strike,dip,val):
+    def add_strike_dip_and_value(self, pos, strike, dip, val):
         """
         Add a gradient and value constraint at a location gradient is in the form of strike and dip with the rh thumb
-        rule
-        :param pos:
-        :param strike:
-        :param dip:
-        :param val:
-        :return:
+
+        Parameters
+        ----------
+        pos
+        strike
+        dip
+        val
+
+        Returns
+        -------
+
         """
         self.n_g +=1
         self.p_g.append(GPoint(pos,strike,dip))
@@ -52,33 +63,57 @@ class GeologicalInterpolator:
 
     def add_point(self,pos,val):
         """
-        Add interface point to the interpolator
-        :param pos:
-        :param val:
-        :return:
+        Add a value constraint to the interpolator
+        Parameters
+        ----------
+        pos
+        val
+
+        Returns
+        -------
+
         """
+
         self.n_i = self.n_i + 1
         self.p_i.append(IPoint(pos,val))
 
-    def add_planar_constraint(self,pos,val,norm=True):
+    def add_planar_constraint(self, position, vector, norm=True):
         """
         Add a gradient constraint to the interpolator where the gradient is defined by a normal vector
+
+        Parameters
+        ----------
+        pos
+        val
+        norm bool
+            whether to constrain the magnitude and directon or only direction
+
+        Returns
+        -------
+
         """
         if norm:
             self.n_n = self.n_n+1
-            self.p_n.append(GPoint(pos,val))
+            self.p_n.append(GPoint(position,vector))
         elif norm is False:
             self.n_g = self.n_g+1
-            self.p_g.append(GPoint(pos,val))
+            self.p_g.append(GPoint(position,vector))
         self.up_to_date = False
 
     def add_strike_and_dip(self,pos,s,d, norm=True):
         """
         Add gradient constraint to the interpolator where the gradient is defined by strike and dip
-        :param pos:
-        :param s:
-        :param d:
-        :return:
+
+        Parameters
+        ----------
+        pos
+        s
+        d
+        norm
+
+        Returns
+        -------
+
         """
         self.n_g += 1
         self.p_g.append(GPoint(pos,s,d))
@@ -175,7 +210,6 @@ class GeologicalInterpolator:
         """
         Runs all of the required setting up stuff
         """
-        #print(columnar.columnar(self.constraints,self.headings))
         self._setup_interpolator(**kwargs)
 
     def solve_system(self,**kwargs):

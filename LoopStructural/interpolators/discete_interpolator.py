@@ -276,30 +276,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs['M'] = precon(A)
         return sla.cg(A,B,**cgargs)[0][:self.nx]
 
-    def _solve_pyamg(self, A, B, **kwargs):
-        pyamgargs = {}
-        pyamgargs['verb'] = False
-        pyamgargs['tol'] = 1e-30
-        # #m1 = ruge_stuben_solver(A)
-        # # Smoothed Aggregation Parameters
-        # theta = np.pi / 8.0  # Angle of rotation
-        # epsilon = 0.001  # Anisotropic coefficient
-        # mcoarse = 10  # Max coarse grid size
-        # prepost = ('gauss_seidel',  # pre/post smoother
-        #            {'sweep': 'symmetric', 'iterations': 1})
-        # smooth = ('energy', {'maxiter': 9, 'degree': 3})  # Prolongation Smoother
-        # classic_theta = 0.0  # Classic Strength Measure
-        # #    Drop Tolerance
-        # # evolution Strength Measure
-        # evolution_theta = 4.0
-        # #    Drop Tolerance
-        # ml = pyamg.smoothed_aggregation_solver(A,
-        #                                    max_coarse=mcoarse,
-        #                                    coarse_solver='pinv2',
-        #                                    presmoother=prepost,
-        #                                    postsmoother=prepost,
-        #                                    smooth=smooth,
-        #                                    strength=('evolution', {'epsilon': evolution_theta, 'k': 2}))
+    def _solve_pyamg(self, A, B,**kwargs):
+        """
+        Solve least squares system using pyamg algorithmic multigrid solver
+        Parameters
+        ----------
+        A
+        B
+        kwargs
+            none used but catches any extra arguments
+
+        Returns
+        -------
+
+        """
+
         return pyamg.solve(A,B,verb=False)[:self.nx]
 
     def _solve(self, solver, **kwargs):

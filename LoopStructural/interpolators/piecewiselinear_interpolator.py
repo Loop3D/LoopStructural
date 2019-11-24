@@ -15,7 +15,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         equation on a tetrahedral mesh. Uses constant gradient regularisation.
         Parameters
         ----------
-        mesh
+        mesh - TetMesh
+            interpolation support
         """
 
         self.shape = 'rectangular'
@@ -40,7 +41,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         Then adds the constraints to the linear system using the interpolation weights values
         Parameters
         ----------
-        kwargs
+        kwargs -
+            interpolation weights
 
         Returns
         -------
@@ -83,7 +85,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         gi[self.region] = np.arange(0,self.nx)
         idc = gi[idc]
         outside = ~np.any(idc == -1, axis=1)
-        # w/=A.shape[0]
         self.add_constraints_to_least_squares(A[outside,:]*w,B[outside]*w,idc[outside,:])
         return
 
