@@ -134,7 +134,24 @@ class FaultSegment:
         """
         steps = self.steps
         newp = np.copy(points).astype(float)
-        # gx = self.faultframe.features[0].evaluate_value(points)
+        # evaluate fault function for all points then define mask for only points affected by fault
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # all of these operations should be independent so just run as different threads
+            gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
+            gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
+            gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
+            gx = gx_future.result()
+            gy = gy_future.result()
+            gz = gz_future.result()
+
+        d = np.zeros(gx.shape)
+        d[np.isnan(gx)] = 0
+        # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
+        d[gx > 0] = 1.
+        if self.faultfunction is not None:
+            d = self.faultfunction(gx, gy, gz)
+        mask = d > 0.
+        d *= self.displacement
         # g = self.faultframe.features[1].evaluate_gradient(points)
         # gy = self.faultframe.features[1].evaluate_value(points)
         # gz = self.faultframe.features[2].evaluate_value(points)
@@ -142,10 +159,10 @@ class FaultSegment:
         for i in range(steps):
             with ThreadPoolExecutor(max_workers=8) as executor:
                 # all of these operations should be independent so just run as different threads
-                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
-                g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp)
-                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
-                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
+                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp[mask,:])
+                g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp[mask,:])
+                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp[mask,:])
+                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp[mask,:])
                 gx = gx_future.result()
                 g = g_future.result()
                 gy = gy_future.result()
@@ -165,7 +182,6 @@ class FaultSegment:
             if self.faultfunction is not None:
                 d = self.faultfunction(gx, gy, gz)
             d *= self.displacement
-
             # normalise when length is >0
             g_mag = np.linalg.norm(g, axis=1)
             g[g_mag>0.] /= g_mag[g_mag >0,None]
@@ -173,7 +189,7 @@ class FaultSegment:
             g *= (1./steps)*d[:,None]
             
             # apply displacement
-            newp += g
+            newp[mask,:] += g
         return newp
 
     def apply_to_data(self, data):
