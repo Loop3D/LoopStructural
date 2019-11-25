@@ -2,7 +2,7 @@ import numpy as np
 import logging
 from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
 logger = logging.getLogger(__name__)
-
+from concurrent.futures import ThreadPoolExecutor
 
 class FaultSegment:
     """
@@ -134,13 +134,27 @@ class FaultSegment:
         """
         steps = self.steps
         newp = np.copy(points).astype(float)
+        # gx = self.faultframe.features[0].evaluate_value(points)
+        # g = self.faultframe.features[1].evaluate_gradient(points)
+        # gy = self.faultframe.features[1].evaluate_value(points)
+        # gz = self.faultframe.features[2].evaluate_value(points)
         # calculate the fault frame for the evaluation points
         for i in range(steps):
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                # all of these operations should be independent so just run as different threads
+                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
+                g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp)
+                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
+                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
+                gx = gx_future.result()
+                g = g_future.result()
+                gy = gy_future.result()
+                gz = gz_future.result()
             # get the fault frame val/grad for the points
-            gx = self.faultframe.features[0].evaluate_value(points)
-            g = self.faultframe.features[1].evaluate_gradient(points)
-            gy = self.faultframe.features[1].evaluate_value(points)
-            gz = self.faultframe.features[2].evaluate_value(points)
+            # gx = self.faultframe.features[0].evaluate_value(points)
+            # g = self.faultframe.features[1].evaluate_gradient(points)
+            # gy = self.faultframe.features[1].evaluate_value(points)
+            # gz = self.faultframe.features[2].evaluate_value(points)
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
 

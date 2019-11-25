@@ -369,7 +369,7 @@ class GeologicalModel:
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
-        fault_frame_builder = StructuralFrameBuilder(interpolator,name=fault_surface_data,**kwargs)
+        fault_frame_builder = StructuralFrameBuilder(interpolator, name=fault_surface_data, **kwargs)
         # add data
         fault_frame_data = self.data[self.data['type'] == fault_surface_data]
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
