@@ -358,9 +358,11 @@ class StructuredGrid:
         return T
 
     def slice(self, propertyname, isovalue, region):
-
-        verts, faces, normals, values = marching_cubes(
-            self.properties[propertyname].reshape(self.nsteps, order='F'),
-            isovalue,
-            spacing=self.step_vector)
-        return faces, verts + self.origin[None, :]
+        logger.error("function has been removed, please use the modelviewer class")
+        return
+        #
+        # verts, faces, normals, values = marching_cubes(
+        #     self.properties[propertyname].reshape(self.nsteps, order='F'),
+        #     isovalue,
+        #     spacing=self.step_vector)
+        # return faces, verts + self.origin[None, :]

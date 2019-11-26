@@ -14,7 +14,6 @@ from LoopStructural.modelling.features import RegionFeature
 from scipy.optimize import curve_fit
 import numpy as np
 import pandas as pd
-from scipy.optimize import minimize
 import logging
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,7 @@ class GeologicalModel:
     A geological model is the recipe for building a 3D model and includes the rescaling
     of the model between 0 and 1.
     """
-    def __init__(self, origin, maximum, rescale=True):
+    def __init__(self, origin, maximum, rescale=True, nsteps = (40,40,40)):
         """
 
         Parameters
@@ -34,7 +33,7 @@ class GeologicalModel:
         """
         self.features = []
         self.data = None
-
+        self.nsteps = nsteps
 
         # we want to rescale the model area so that the maximum length is
         # 1
@@ -236,6 +235,8 @@ class GeologicalModel:
         series_builder.add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
+        if "av_fold_axis" in kwargs:
+            pass
         if "fold_axis" not in kwargs:
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 series_builder)
@@ -454,4 +455,22 @@ class GeologicalModel:
 
         """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
+
+    def regular_grid(self, nsteps = (50,50,25)):
+        """
+        Return a regular grid within the model bounding box
+        Parameters
+        ----------
+        nsteps tuple
+            number of cells in x,y,z
+
+        Returns
+        -------
+
+        """
+        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], nsteps[0])
+        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], nsteps[1])
+        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], nsteps[2])
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        return np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
 

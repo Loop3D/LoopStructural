@@ -1,6 +1,5 @@
 from LoopStructural.supports.scalar_field import ScalarField
 from LoopStructural.modelling.core.geological_points import GPoint, IPoint, TPoint
-from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 import numpy as np
 
@@ -478,47 +477,50 @@ class GeologicalFeature:
         """
         return self.support.get_node_values()
 
-    def slice(self, isovalue, bounding_box = None, nsteps = None, region=None):
-        """
-        Calculate an isosurface of a geological feature.
-        Option to specify a new support to calculate the isosurface on
-        Parameters
-        ----------
-        isovalue
-        bounding_box
-        nsteps
-        region
-
-        Returns
-        -------
-
-        """
-        if bounding_box is not None and nsteps is not None:
-            x = np.linspace(bounding_box[0,0],bounding_box[1,0],nsteps[0])
-            y = np.linspace(bounding_box[0,1],bounding_box[1,1],nsteps[1])
-            z = np.linspace(bounding_box[1,2],bounding_box[0,2],nsteps[2])
-            xx, yy, zz = np.meshgrid(x,y,z, indexing='ij')
-            val = self.evaluate_value(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)
-            if region is not None:
-                val[~region(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)] = np.nan
-            step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
-            if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
-                logger.warning("Isovalue doesn't exist inside bounding box")
-                return np.zeros((3,1)).astype(int),np.zeros((3,1))
-            try:
-                verts, faces, normals, values = marching_cubes(
-                val.reshape(nsteps, order='C'),
-                isovalue,
-                spacing=step_vector)
-                return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
-            except ValueError:
-                logger.warning("No surface to mesh, skipping")
-                return np.zeros((3,1)).astype(int),np.zeros((3,1))
-        else:
-            try:
-                return self.support.slice(isovalue,self.region)
-            except RuntimeError:
-                logger.warning("No surface to mesh, skipping")
-                return np.zeros((3,1)).astype(int),np.zeros((3,1))
+    def slice(self, **kwargs):
+        logger.error("function has been removed, please use the modelviewer class")
+        return
+    # def slice(self, isovalue, bounding_box = None, nsteps = None, region=None):
+    #     """
+    #     Calculate an isosurface of a geological feature.
+    #     Option to specify a new support to calculate the isosurface on
+    #     Parameters
+    #     ----------
+    #     isovalue
+    #     bounding_box
+    #     nsteps
+    #     region
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     if bounding_box is not None and nsteps is not None:
+    #         x = np.linspace(bounding_box[0,0],bounding_box[1,0],nsteps[0])
+    #         y = np.linspace(bounding_box[0,1],bounding_box[1,1],nsteps[1])
+    #         z = np.linspace(bounding_box[1,2],bounding_box[0,2],nsteps[2])
+    #         xx, yy, zz = np.meshgrid(x,y,z, indexing='ij')
+    #         val = self.evaluate_value(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)
+    #         if region is not None:
+    #             val[~region(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)] = np.nan
+    #         step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
+    #         if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
+    #             logger.warning("Isovalue doesn't exist inside bounding box")
+    #             return np.zeros((3,1)).astype(int),np.zeros((3,1))
+    #         try:
+    #             verts, faces, normals, values = marching_cubes(
+    #             val.reshape(nsteps, order='C'),
+    #             isovalue,
+    #             spacing=step_vector)
+    #             return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+    #         except ValueError:
+    #             logger.warning("No surface to mesh, skipping")
+    #             return np.zeros((3,1)).astype(int),np.zeros((3,1))
+    #     else:
+    #         try:
+    #             return self.support.slice(isovalue,self.region)
+    #         except RuntimeError:
+    #             logger.warning("No surface to mesh, skipping")
+    #             return np.zeros((3,1)).astype(int),np.zeros((3,1))
 
 
