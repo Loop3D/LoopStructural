@@ -150,7 +150,7 @@ class FaultSegment:
         d[gx > 0] = 1.
         if self.faultfunction is not None:
             d = self.faultfunction(gx, gy, gz)
-        mask = d > 0.
+        mask = np.abs(d) > 0.
         d *= self.displacement
         # g = self.faultframe.features[1].evaluate_gradient(points)
         # gy = self.faultframe.features[1].evaluate_value(points)
@@ -191,6 +191,7 @@ class FaultSegment:
             # apply displacement
             newp[mask,:] += g
         return newp
+
 
     def apply_to_data(self, data):
         """

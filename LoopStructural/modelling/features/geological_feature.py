@@ -388,7 +388,7 @@ class GeologicalFeature:
         for f in self.faults:
             evaluation_points = f.apply_to_points(evaluation_points)
         v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
-        return v#self.support.evaluate_value(evaluation_points)
+        return v
 
     def evaluate_gradient(self, evaluation_points):
         """
@@ -409,10 +409,17 @@ class GeologicalFeature:
         # check regions
         for r in self.regions:
             mask = np.logical_and(mask,r(evaluation_points))
+
         # apply faulting after working out which regions are visible
         for f in self.faults:
             evaluation_points = f.apply_to_points(evaluation_points)
-        v[mask,:] = self.support.evaluate_gradient(evaluation_points)
+        v[mask, :] = self.support.evaluate_gradient(evaluation_points)
+        # for f in self.faults:
+        #     # apply fault to the vector
+        #     pts, vec = f.apply_to_vector_field(evaluation_points, v[mask,:])
+        #     v[mask,:] = vec-pts
+        #     v[mask,:] /= np.linalg.norm(v[mask,:],axis=1)[:,None]
+        #     # v[mask,:] = f.apply_to_vector_field(evaluation_points, v[mask,:])
         return v
 
     def mean(self):

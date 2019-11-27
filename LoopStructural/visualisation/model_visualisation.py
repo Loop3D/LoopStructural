@@ -189,25 +189,16 @@ class LavaVuModelViewer:
             if painter is not None:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
-                val = np.zeros(nodes.shape[0])
-                val[:] = painter.evaluate_value(nodes)#isovalue
-                surf.values(val, painter.name)
+                surfaceval = np.zeros(verts.shape[0])
+                surfaceval[:] = painter.evaluate_value(verts)#isovalue
+                surf.values(surfaceval, painter.name)
                 surf["colourby"] = painter.name
                 cmap = lavavu.cubehelix(100)
                 if 'cmap' in kwargs:
                     cmap = kwargs['cmap']
-                surf.colourmap(cmap,range= (painter.min(),painter.max()))#nodes.shape[0]))
-
-            if "normals" in kwargs:
-                a = nodes[tris[:, 0], :] - nodes[tris[:, 1], :]
-                b = nodes[tris[:, 0], :] - nodes[tris[:, 2], :]
-
-                crosses = np.cross(a, b)
-                crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
-                tribc = np.mean(nodes[tris, :], axis=1)
-                vec = self.lv.vectors(name+"grad", colour="black")
-                vec.vertices(tribc[::kwargs['normals'],:])
-                vec.vectors(crosses[::kwargs['normals'],::])
+                vmin = kwargs.get('vmin', painter.min())
+                vmax = kwargs.get('vmax', painter.max())
+                surf.colourmap(cmap,range= (vmin,vmax))#nodes.shape[0]))
 
     def add_scalar_field(self, geological_feature, **kwargs):
         """
@@ -291,7 +282,10 @@ class LavaVuModelViewer:
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
             cmap = kwargs['cmap']
-        surf.colourmap(cmap)  # nodes.shape[0]))
+        vmin = kwargs.get('vmin',geological_feature.min())
+        vmax = kwargs.get('vmax',geological_feature.max())
+        # surf.colourmap(cmap,range= (painter.min(),painter.max()))
+        surf.colourmap(cmap,range=(vmin,vmax))  # nodes.shape[0]))
         #return tri, xx, yy, zz
 
     def add_vector_field(self, geological_feature, **kwargs):
@@ -491,5 +485,7 @@ class LavaVuModelViewer:
 
         """
         self.lv.image(fname, **kwargs)
+
+
 
 
