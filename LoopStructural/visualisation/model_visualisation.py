@@ -486,6 +486,22 @@ class LavaVuModelViewer:
         """
         self.lv.image(fname, **kwargs)
 
+    def display(self):
+        self.lv.display()
 
+    def image(self,name):
 
+        self.lv.image(name)
+    def rotatex(self,r):
+
+        self.lv.rotatex(r)
+    def rotatey(self,r):
+
+        self.lv.rotatey(r)
+    def rotatez(self,r):
+
+        self.lv.rotatez(r)
+
+    def rotate(self,r):
+        self.lv.rotate(r)
 
