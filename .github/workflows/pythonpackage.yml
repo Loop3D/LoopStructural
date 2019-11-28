@@ -21,6 +21,7 @@ jobs:
       run: |
         sudo apt-get install pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc
         python -m pip install --upgrade pip
+        pip install pybind11
         pip install -r requirements.txt
         python setup.py install build_ext --inplace
     - name: Lint with flake8
