@@ -23,6 +23,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install pybind11
         pip install -r requirements.txt
+    - name: Build library
+      run: |
         python setup.py install build_ext --inplace
     - name: Lint with flake8
       run: |
