@@ -1,9 +1,9 @@
+cython
 scikit-learn
 scikit-image
 meshpy
 scipy
 lavavu
-cython
 numpy
 matplotlib
 pyamg
