@@ -1,6 +1,7 @@
 import numpy as np
 import logging
 from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
+from concurrent.futures import ThreadPoolExecutor
 logger = logging.getLogger(__name__)
 
 
@@ -137,10 +138,16 @@ class FaultSegment:
         # calculate the fault frame for the evaluation points
         for i in range(steps):
             # get the fault frame val/grad for the points
-            gx = self.faultframe.features[0].evaluate_value(points)
-            g = self.faultframe.features[1].evaluate_gradient(points)
-            gy = self.faultframe.features[1].evaluate_value(points)
-            gz = self.faultframe.features[2].evaluate_value(points)
+            executor = ThreadPoolExecutor(max_workers=4)
+            gx = executor.submit(self.faultframe.features[0].evaluate_value, points)
+            g = executor.submit(self.faultframe.features[1].evaluate_gradient, points)
+            gy = executor.submit(self.faultframe.features[1].evaluate_value, points)
+            gz = executor.submit(self.faultframe.features[2].evaluate_value, points)
+
+            # gx = self.faultframe.features[0].evaluate_value(points)
+            # g = self.faultframe.features[1].evaluate_gradient(points)
+            # gy = self.faultframe.features[1].evaluate_value(points)
+            # gz = self.faultframe.features[2].evaluate_value(points)
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
 
