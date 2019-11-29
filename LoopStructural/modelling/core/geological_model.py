@@ -192,7 +192,7 @@ class GeologicalModel:
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
         for f in reversed(self.features):
-            if f.type is 'unconformity':
+            if f.type == 'unconformity':
                 series_feature.add_region(
                     lambda pos: f.evaluate_value(pos) < 0)
                 break
@@ -216,7 +216,7 @@ class GeologicalModel:
         # the second coordinate
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
         for f in reversed(self.features):
-            if f.type is 'unconformity':
+            if f.type == 'unconformity':
                 fold_frame.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
         fold_frame.type = 'structuralframe'
@@ -300,7 +300,7 @@ class GeologicalModel:
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
         for f in reversed(self.features):
-            if f.type is 'unconformity':
+            if f.type == 'unconformity':
                 series_feature.add_region(
                     lambda pos: f.evaluate_value(pos) < 0)
                 break
@@ -427,7 +427,7 @@ class GeologicalModel:
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
                              **kwargs)
         for f in reversed(self.features):
-            if f.type is 'unconformity':
+            if f.type == 'unconformity':
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
         if displacement == 0:
