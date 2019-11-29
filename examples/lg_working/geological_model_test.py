@@ -1,9 +1,9 @@
+import pandas as pd
+
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
-import pandas as pd
-import numpy as np
 
-model = GeologicalModel((0,0,0),(4,6,4))
+model = GeologicalModel((0, 0, 0), (4, 6, 4))
 df = pd.read_csv('model_input.csv')
 model.set_model_data(df)
 s0 = model.create_and_add_foliation('s0',
@@ -19,9 +19,9 @@ uc = model.create_and_add_unconformity('uc',
                                        solver='cg',
                                        damp=False)
 fault = model.create_and_add_fault('fault', .3,
-                                      interpolatortype='FDI',
-                                      nelements=10000,
-                                      solver='cg',
+                                   interpolatortype='FDI',
+                                   nelements=10000,
+                                   solver='cg',
                                    # maxiter=1000,
                                    damp=False)
 # #
@@ -34,26 +34,26 @@ s0_2 = model.create_and_add_foliation('s0_2',
 viewer = LavaVuModelViewer(background='white')
 try:
     viewer.add_isosurface(s0_2,
-                      # slices=[0,1,2],#3#isovalue=1,
-                      nslices=10,
-                    voxet=model.voxet(),
-                      colour='black'
-                  )
+                          # slices=[0,1,2],#3#isovalue=1,
+                          nslices=10,
+                          voxet=model.voxet(),
+                          colour='black'
+                          )
 except:
     pass
 try:
     viewer.add_isosurface(fault,
                           isovalue=0,
                           # nslices=4,
-                        voxet=model.voxet(),
+                          voxet=model.voxet(),
                           colour='black'
-                      )
+                          )
 except:
     print('fault')
     pass
 try:
     viewer.add_isosurface(s0,
-                        voxet=model.voxet(),
+                          voxet=model.voxet(),
                           nslices=10,
                           colour='green'
 
@@ -63,9 +63,9 @@ except:
     pass
 try:
     viewer.add_isosurface(uc,
-                      slices=[0],
-                        voxet=model.voxet()
-                      )
+                          slices=[0],
+                          voxet=model.voxet()
+                          )
 except:
     print('uc')
     pass

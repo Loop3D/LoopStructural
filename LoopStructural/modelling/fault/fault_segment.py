@@ -1,6 +1,10 @@
-import numpy as np
 import logging
-from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
+
+import numpy as np
+
+from LoopStructural.modelling.fault.fault_function_feature import \
+    FaultDisplacementFeature
+
 logger = logging.getLogger(__name__)
 
 
@@ -9,7 +13,8 @@ class FaultSegment:
     Class for representing a slip event of a fault
     """
 
-    def __init__(self, faultframe, **kwargs):  # mesh,fault_event,data,name,region):
+    def __init__(self, faultframe,
+                 **kwargs):  # mesh,fault_event,data,name,region):
         """
         A slip event of a faut
         Parameters
@@ -22,7 +27,7 @@ class FaultSegment:
         """
         self.faultframe = faultframe
         self.type = 'fault'
-        self.name = kwargs.get('name',self.faultframe.name)
+        self.name = kwargs.get('name', self.faultframe.name)
         self.displacement = kwargs.get('displacement', 1.)
         self.gy_min = kwargs.get('gy_min', -9999)
         self.gy_max = kwargs.get('gy_max', 9999)
@@ -32,7 +37,8 @@ class FaultSegment:
 
         self.displacementfeature = None
         if self.faultframe is not None:
-            self.displacementfeature = FaultDisplacementFeature(self.faultframe,self.faultfunction)
+            self.displacementfeature = FaultDisplacementFeature(
+                self.faultframe, self.faultfunction)
 
     def __getitem__(self, item):
         return self.faultframe[item]
@@ -87,8 +93,8 @@ class FaultSegment:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask,r(locations))
-        return self.faultframe[0].evaluate_value(locations[mask,:])
+            mask = np.logical_and(mask, r(locations))
+        return self.faultframe[0].evaluate_value(locations[mask, :])
 
     def mean(self):
         return self.faultframe[0].mean()
@@ -117,9 +123,9 @@ class FaultSegment:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask,r(locations))
+            mask = np.logical_and(mask, r(locations))
         # need to scale with fault displacement
-        return self.faultframe[1].evaluate_gradient(locations[mask,:])
+        return self.faultframe[1].evaluate_gradient(locations[mask, :])
 
     def apply_to_points(self, points):
         """
@@ -154,10 +160,11 @@ class FaultSegment:
 
             # normalise when length is >0
             g_mag = np.linalg.norm(g, axis=1)
-            g[g_mag>0.] /= g_mag[g_mag >0,None]
-            # multiply displacement vector by the displacement magnitude for step
-            g *= (1./steps)*d[:,None]
-            
+            g[g_mag > 0.] /= g_mag[g_mag > 0, None]
+            # multiply displacement vector by the displacement magnitude for
+            # step
+            g *= (1. / steps) * d[:, None]
+
             # apply displacement
             newp += g
         return newp
@@ -178,19 +185,26 @@ class FaultSegment:
         if data is None:
             return
         for d in data:
-            hw = self.faultframe.features[0].evaluate_value(np.array([d.pos])) > 0
+            hw = self.faultframe.features[0].evaluate_value(
+                np.array([d.pos])) > 0
             for i in range(steps):
-                g = self.faultframe.features[1].evaluate_gradient(np.array([d.pos]))
+                g = self.faultframe.features[1].evaluate_gradient(
+                    np.array([d.pos]))
                 length = np.linalg.norm(g, axis=1)
-                g[np.logical_and(~np.isnan(length),length>0),:] /= length[np.logical_and(~np.isnan(length),length>0),None]
+                g[np.logical_and(~np.isnan(length), length > 0), :] /= length[
+                    np.logical_and(~np.isnan(length), length > 0), None]
                 if self.faultfunction is None and hw:
-                    g *= (1. / steps) * 1.*self.displacement
+                    g *= (1. / steps) * 1. * self.displacement
                     g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
                     d.pos = d.pos + g[0]
 
-    def slice(self, isovalue, bounding_box = None, nsteps = None, region = None):
-        # if there is a fault function we only want to display the fault where the displacement is > 0
+    def slice(self, isovalue, bounding_box=None, nsteps=None, region=None):
+        # if there is a fault function we only want to display the fault
+        # where the displacement is > 0
         if region is None:
             if self.faultfunction is not None:
-                region = lambda pos : self.displacementfeature.evaluate_on_surface(pos) > 0.01
-        return self.faultframe[0].slice(isovalue, bounding_box = bounding_box, nsteps = nsteps, region=region)
+                region = lambda \
+                    pos: self.displacementfeature.evaluate_on_surface(
+                    pos) > 0.01
+        return self.faultframe[0].slice(isovalue, bounding_box=bounding_box,
+                                        nsteps=nsteps, region=region)

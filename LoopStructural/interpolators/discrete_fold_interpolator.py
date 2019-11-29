@@ -1,16 +1,19 @@
-from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator
-from LoopStructural.cython.dsi_helper import fold_cg
-import numpy as np
-
 import logging
+
+import numpy as np
+from LoopStructural.cython.dsi_helper import fold_cg
+
+from LoopStructural.interpolators.piecewiselinear_interpolator import \
+    PiecewiseLinearInterpolator
+
 logger = logging.getLogger(__name__)
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
-    def __init__(self, mesh, fold ):
-         PiecewiseLinearInterpolator.__init__(self, mesh)
-         self.type = ['foldinterpolator']
-         self.fold = fold
+    def __init__(self, mesh, fold):
+        PiecewiseLinearInterpolator.__init__(self, mesh)
+        self.type = ['foldinterpolator']
+        self.fold = fold
 
     @classmethod
     def from_piecewise_linear_and_fold(cls, pli, fold):
@@ -34,18 +37,20 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
     def update_fold(self, fold):
         self.fold = fold
 
-    def add_fold_constraints(self,**kwargs):
+    def add_fold_constraints(self, **kwargs):
         """
         add the fold constraints to the interpolation matrix
         using the fold object
         :param kwargs:
         :return:
         """
-        #get the gradient of all of the elements of the mesh
-        eg = self.support.get_elements_gradients(np.arange(self.support.n_elements))
+        # get the gradient of all of the elements of the mesh
+        eg = self.support.get_elements_gradients(
+            np.arange(self.support.n_elements))
         # get array of all nodes for all elements N,4,3
-        nodes = self.support.nodes[self.support.elements[np.arange(self.support.n_elements)]]
-        #calculate the fold geometry for the elements barycentre
+        nodes = self.support.nodes[
+            self.support.elements[np.arange(self.support.n_elements)]]
+        # calculate the fold geometry for the elements barycentre
         deformed_orientation, fold_axis, dgz = \
             self.fold.get_deformed_orientation(self.support.barycentre)
 
@@ -57,8 +62,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             dot product between vector in deformed ori plane = 0
             """
             A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
-            A*=vol[:,None]
-            A*=kwargs['fold_orientation']
+            A *= vol[:, None]
+            A *= kwargs['fold_orientation']
             B = np.zeros(self.support.n_elements)
             idc = self.support.elements
             self.add_constraints_to_least_squares(A, B, idc)
@@ -68,35 +73,35 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             dot product between axis and gradient should be 0
             """
             A = np.einsum('ij,ijk->ik', fold_axis, eg)
-            A*=vol[:,None]
-            A*=kwargs['fold_axis']
+            A *= vol[:, None]
+            A *= kwargs['fold_axis']
             B = np.zeros(self.support.n_elements).tolist()
-            self.add_constraints_to_least_squares(A , B, self.support.elements)
+            self.add_constraints_to_least_squares(A, B, self.support.elements)
 
         if "fold_normalisation" in kwargs:
             """
             specify scalar norm in X direction
             """
 
-            A  = np.einsum('ij,ijk->ik', dgz, eg)
-            A*=vol[:,None]
-            A*= kwargs['fold_normalisation']
+            A = np.einsum('ij,ijk->ik', dgz, eg)
+            A *= vol[:, None]
+            A *= kwargs['fold_normalisation']
             B = np.ones(self.support.n_elements)
-            
+
             if "fold_norm" in kwargs:
                 B[:] = kwargs['fold_norm']
-            B*=kwargs['fold_normalisation']
-            B*=vol
+            B *= kwargs['fold_normalisation']
+            B *= vol
             self.add_constraints_to_least_squares(A, B, self.support.elements)
 
         if "fold_regularisation" in kwargs:
             """
             fold constant gradient  
             """
-            idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours, self.support.elements, self.support.nodes)
-            A = np.array(c[:ncons,:])
+            idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours,
+                                    self.support.elements, self.support.nodes)
+            A = np.array(c[:ncons, :])
             A *= kwargs['fold_regularisation']
             B = np.zeros(A.shape[0])
-            idc = np.array(idc[:ncons,:])
+            idc = np.array(idc[:ncons, :])
             self.add_constraints_to_least_squares(A, B, idc)
-

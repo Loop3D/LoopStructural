@@ -13,7 +13,6 @@ class RegionFeature:
         self.name = 'region'
 
     def evaluate_value(self, pos):
-
         return self.function(pos).astype(float)
 
     def mean(self):

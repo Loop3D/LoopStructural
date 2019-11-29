@@ -1,13 +1,13 @@
+import logging
+
 import meshpy.tet
 import numpy as np
+from LoopStructural.cython.dsi_helper import cg
+from LoopStructural.cython.marching_tetra import marching_tetra
 from numpy import linalg as la
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
-from LoopStructural.cython.dsi_helper import cg
-from LoopStructural.cython.marching_tetra import marching_tetra
-
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +23,8 @@ class TetMesh:
 
     def __init__(self, **kwargs):
         """
-        Creates a mesh object. This just assigns the mesh a name and a location to save
+        Creates a mesh object. This just assigns the mesh a name and a
+        location to save
 
         """
         self.name = 'TetMesh'
@@ -50,13 +51,15 @@ class TetMesh:
         self.regions = {}
         self.points = None
         self.surfaces = {}
+
     def setup_mesh(self, boundary_points, **kwargs):
         """
         Build a mesh given the boundary points
         Can define the resolution of the mesh using the kwargs
          
         n_tetra: number of tetrahedron
-        maxvol: maximum volume for a single tetra - if both are specified this one is used.
+        maxvol: maximum volume for a single tetra - if both are specified
+        this one is used.
         """
         self.pca = PCA(n_components=3)
         minx = boundary_points[0, 0]
@@ -75,12 +78,16 @@ class TetMesh:
             (maxx, maxy, maxz),
             (minx, maxy, maxz)
         ])
-        self.surfaces['top'] = ((minx, miny, maxz),(maxx, miny, maxz),(maxx, maxy, maxz),(minx, maxy, maxz))
-        self.surfaces['bottom'] = ((minx, miny, minz),(maxx, miny, minz),(maxx, maxy, minz),(minx, maxy, minz))
-
+        self.surfaces['top'] = (
+            (minx, miny, maxz), (maxx, miny, maxz), (maxx, maxy, maxz),
+            (minx, maxy, maxz))
+        self.surfaces['bottom'] = (
+            (minx, miny, minz), (maxx, miny, minz), (maxx, maxy, minz),
+            (minx, maxy, minz))
 
         self.points = points
-        # calculate the 3 principal components to find the local coordinate system
+        # calculate the 3 principal components to find the local coordinate
+        # system
         self.pca.fit(points)
         # project the points into this coordinate system
         newp = self.pca.transform(points)
@@ -113,13 +120,15 @@ class TetMesh:
         # use the projected points to build the mesh
         info.set_points(newp)
         info.set_facets(facets)
-        meshpy_mesh = meshpy.tet.build(info, max_volume=maxvol, options=meshpy.tet.Options('pqn'))
+        meshpy_mesh = meshpy.tet.build(info, max_volume=maxvol,
+                                       options=meshpy.tet.Options('pqn'))
         self.nodes = self.pca.inverse_transform(np.array(meshpy_mesh.points))
-        self.elements = np.array(meshpy_mesh.elements,dtype=np.int64)
-        self.neighbours = np.array(meshpy_mesh.neighbors,dtype=np.int64)
+        self.elements = np.array(meshpy_mesh.elements, dtype=np.int64)
+        self.neighbours = np.array(meshpy_mesh.neighbors, dtype=np.int64)
         self.n_nodes = len(self.nodes)
         self.n_elements = len(self.elements)
-        self.barycentre = np.sum(self.nodes[self.elements][:, :, :], axis=1) / 4.
+        self.barycentre = np.sum(self.nodes[self.elements][:, :, :],
+                                 axis=1) / 4.
         self.tree = cKDTree(self.barycentre)
         self.minx = minx  # np.min(newp[:,0])#minx
         self.miny = miny  # np.min(newp[:,1])#miny
@@ -137,13 +146,17 @@ class TetMesh:
 
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
 
-        # precalculate the gradient matrices for all elements to save time later
+        # precalculate the gradient matrices for all elements to save time
+        # later
         e = np.arange(self.n_elements)
         ps = self.nodes[self.elements[e]]
         m = np.array(
-            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]), (ps[:, 1, 2] - ps[:, 0, 2])],
-             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]), (ps[:, 2, 2] - ps[:, 0, 2])],
-             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]), (ps[:, 3, 2] - ps[:, 0, 2])]])
+            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),
+              (ps[:, 1, 2] - ps[:, 0, 2])],
+             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]),
+              (ps[:, 2, 2] - ps[:, 0, 2])],
+             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]),
+              (ps[:, 3, 2] - ps[:, 0, 2])]])
         I = np.array(
             [[-1., 1., 0., 0.],
              [-1., 0., 1., 0.],
@@ -174,7 +187,8 @@ class TetMesh:
         """
         self.properties[name] = value
         grads = self.get_elements_gradients(np.arange(self.n_elements))
-        props = self.properties[name][self.elements[np.arange(self.n_elements)]]
+        props = self.properties[name][
+            self.elements[np.arange(self.n_elements)]]
         grad = np.einsum('ikj,ij->ik', grads, props)
         self.property_gradients[name] = grad
         if self.save_mesh:
@@ -199,9 +213,10 @@ class TetMesh:
         # add cg constraint for all of the
         EG = self.get_elements_gradients(np.arange(self.n_elements))
         region = region.astype('int64')
-        idc, c, ncons = cg(EG, self.neighbours, self.elements, self.nodes, region)
-        idc = np.array(idc[:ncons,:])
-        c = np.array(c[:ncons,:])
+        idc, c, ncons = cg(EG, self.neighbours, self.elements, self.nodes,
+                           region)
+        idc = np.array(idc[:ncons, :])
+        c = np.array(c[:ncons, :])
         B = np.zeros(c.shape[0])
         return c, idc, B
 
@@ -214,7 +229,6 @@ class TetMesh:
         Sped up using numpy
         """
         return self.element_gradients[e]
-
 
     def calc_bary_c(self, e, p):
         """
@@ -268,7 +282,7 @@ class TetMesh:
 
         return ee, inside
 
-    def evaluate_value(self, array, prop,region='everywhere'):
+    def evaluate_value(self, array, prop, region='everywhere'):
         return self.eval_interpolant(array, prop, region)
 
     def evaluate_gradient(self, array, prop, region='everywhere'):
@@ -277,7 +291,8 @@ class TetMesh:
     def eval_interpolant(self, array, prop, k=5, e=None, region='everywhere'):
         """
         Evaluate an interpolant from property on an array of points.
-        Uses numpy to speed up calculations but could be expensive for large mesh/points
+        Uses numpy to speed up calculations but could be expensive for large
+        mesh/points
         """
         if e == None:
             e, inside = self.elements_for_array(array, k)
@@ -318,7 +333,6 @@ class TetMesh:
         """
         e = np.arange(self.n_elements)
 
-
         grads = self.element_gradients[e]
         vals = self.properties[prop][self.elements[e]]
         # grads = np.swapaxes(grads,1,2)
@@ -330,14 +344,18 @@ class TetMesh:
     def eval_gradient(self, array, prop, k=5, region='everywhere'):
         """
         Evaluate an interpolant from property on an array of points.
-        Uses numpy to speed up calculations but could be expensive for large mesh/points
+        Uses numpy to speed up calculations but could be expensive for large
+        mesh/points
         """
         e, inside = self.elements_for_array(array, k)
         # ps = self.nodes[self.elements[e[inside]]]
         # m = np.array(
-        #     [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]), (ps[:, 1, 2] - ps[:, 0, 2])],
-        #      [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]), (ps[:, 2, 2] - ps[:, 0, 2])],
-        #      [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]), (ps[:, 3, 2] - ps[:, 0, 2])]])
+        #     [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),
+        #     (ps[:, 1, 2] - ps[:, 0, 2])],
+        #      [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]),
+        #      (ps[:, 2, 2] - ps[:, 0, 2])],
+        #      [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]),
+        #      (ps[:, 3, 2] - ps[:, 0, 2])]])
         # I = np.array(
         #     [[-1., 1., 0., 0.],
         #      [-1., 0., 1., 0.],
@@ -356,7 +374,7 @@ class TetMesh:
         a[inside] = (grads * vals[:, None, :]).sum(2) / 4.  # @ vals.T/
         a[~inside, :] = np.nan
         asum = np.zeros(a.shape[0])
-        asum[inside] = np.sum(a[inside,:], axis=1)
+        asum[inside] = np.sum(a[inside, :], axis=1)
         inside = ~np.isnan(asum)
         logic = np.zeros(asum.shape).astype(bool)
         logic[:] = False
@@ -379,18 +397,21 @@ class TetMesh:
     def save(self):
         if self.save_mesh:
             self.export_to_vtk(self.path + self.name + '.vtk')
+
     def get_connected_nodes_for_mask(self, mask):
         """
-        adjusts mask to return all nodes where any node in the element is true as true
+        adjusts mask to return all nodes where any node in the element is
+        true as true
         :param mask: original mask
         :return: nodes and adjusted mask
         """
         mask1 = np.copy(mask)
         element_mask = mask[self.elements]
         element_mask2 = np.any(element_mask == True, axis=1)
-        element_mask2 = np.tile(element_mask2,(4,1)).T
+        element_mask2 = np.tile(element_mask2, (4, 1)).T
         mask[self.elements] = element_mask2
         return self.nodes[mask], mask
+
     def slice(self, propertyname, isovalue, region='everywhere'):
         """
         Create a triangular surface from an isovalue of the scalar field
@@ -414,9 +435,12 @@ class TetMesh:
         ##create a triangle indices array and initialise to -1
         tris = np.zeros((ntri, 3)).astype(int)
         tris[:, :] = -1
-        ##create a dict for storing nodes index where the key is the node as as a tuple.
-        # A dict is preferable because it is very quick to check if a key exists
-        # assemble arrays for unique vertex and triangles defined by vertex indices
+        ##create a dict for storing nodes index where the key is the node as
+        # as a tuple.
+        # A dict is preferable because it is very quick to check if a key
+        # exists
+        # assemble arrays for unique vertex and triangles defined by vertex
+        # indices
         nodes = {}
         n = 0  # counter
         for i in range(ntri):
@@ -436,15 +460,17 @@ class TetMesh:
         b = nodes_np[tris[:, 0], :] - nodes_np[tris[:, 2], :]
 
         crosses = np.cross(a, b)
-        crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:, np.newaxis]
+        crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:,
+                            np.newaxis]
         tribc = np.mean(nodes_np[tris, :], axis=1)
         mask = np.any(~np.isnan(tribc), axis=1)
         tribc = tribc[mask, :]
 
-        propertygrad = self.evaluate_gradient(tribc,propertyname)
+        propertygrad = self.evaluate_gradient(tribc, propertyname)
         propertygrad /= np.linalg.norm(propertygrad, axis=1)[:, None]
 
-        # dot product between gradient and normal indicates if faces are incorrectly ordered
+        # dot product between gradient and normal indicates if faces are
+        # incorrectly ordered
         dotproducts = np.zeros(tris.shape[0])
         dotproducts[mask] = (propertygrad * crosses[mask]).sum(axis=1)
         # if dot product > 0 then adjust triangle indexing

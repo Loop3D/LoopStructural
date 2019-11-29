@@ -1,6 +1,7 @@
+import logging
+
 import numpy as np
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -20,8 +21,10 @@ class SVariogram():
     def calc_semivariogram(self, **kwargs):
         """
         Calculate a semi-variogram for the x and y data for this object.
-        You can specify the lags as an array or specify the step size and number of steps.
-        If neither are specified then the lags are created to be the average spacing of the data
+        You can specify the lags as an array or specify the step size and
+        number of steps.
+        If neither are specified then the lags are created to be the average
+        spacing of the data
 
         Parameters
         ----------
@@ -50,7 +53,8 @@ class SVariogram():
 
             step = np.mean(np.nanmin(d, axis=1))
             # find number of steps to cover range in data
-            nstep = int(np.ceil((np.max(self.xdata) - np.min(self.xdata)) / step))
+            nstep = int(
+                np.ceil((np.max(self.xdata) - np.min(self.xdata)) / step))
             self.lags = np.arange(step / 2., nstep * step, step)
         tol = self.lags[1] - self.lags[0]
         self.variogram = np.zeros(self.lags.shape)
@@ -58,7 +62,8 @@ class SVariogram():
         npairs = np.zeros(self.lags.shape)
         for i in range(len(self.lags)):
             logic = np.logical_and(self.dist > self.lags[i]
-                                   - tol / 2., self.dist < self.lags[i] + tol / 2.)
+                                   - tol / 2.,
+                                   self.dist < self.lags[i] + tol / 2.)
             npairs[i] = np.sum(logic.astype(int))
             if npairs[i] > 0:
                 self.variogram[i] = np.mean(self.variance_matrix[logic])
@@ -66,8 +71,10 @@ class SVariogram():
 
     def find_wavelengths(self, **kwargs):
         """
-        Picks the wavelengths of the fold by finding the maximum and minimums of the s-variogram
-        the fold wavelength is the first minimum but it is more reliable to use the first maximum
+        Picks the wavelengths of the fold by finding the maximum and
+        minimums of the s-variogram
+        the fold wavelength is the first minimum but it is more reliable to
+        use the first maximum
         as the estimate of the wavelength.
         Parameters
         ----------
@@ -124,7 +131,8 @@ class SVariogram():
         (np.array, np.array)
         Notes
         -----
-        Returns the loations of maxima/minima on the curve using finite difference forward/backwards
+        Returns the loations of maxima/minima on the curve using finite
+        difference forward/backwards
         finding the change in derivative
         """
         if len(x) != len(y):

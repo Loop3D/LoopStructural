@@ -1,14 +1,18 @@
+import logging
+
 import numpy as np
 
-from LoopStructural.modelling.features.geological_feature import GeologicalFeature
-import logging
+from LoopStructural.modelling.features.geological_feature import \
+    GeologicalFeature
+
 logger = logging.getLogger(__name__)
 
 
 class CrossProductGeologicalFeature(GeologicalFeature):
     def __init__(self, name, geological_feature_a, geological_feature_b):
         """
-        Create a geological feature for a vector field using the cross product between
+        Create a geological feature for a vector field using the cross
+        product between
         two existing features
         Parameters
         ----------
@@ -22,7 +26,8 @@ class CrossProductGeologicalFeature(GeologicalFeature):
 
     def evaluate_gradient(self, locations):
         """
-        Calculate the gradient of the geological feature by using numpy to calculate the cross
+        Calculate the gradient of the geological feature by using numpy to
+        calculate the cross
         product between the two existing feature gradients.
         This means both features have to be evaluated for the locations
         Parameters

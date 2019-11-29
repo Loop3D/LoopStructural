@@ -1,10 +1,12 @@
-from LoopStructural.supports.scalar_field import ScalarField
-from LoopStructural.modelling.core.geological_points import GPoint, IPoint, TPoint
-from skimage.measure import marching_cubes_lewiner as marching_cubes
+import logging
 
 import numpy as np
+from skimage.measure import marching_cubes_lewiner as marching_cubes
 
-import logging
+from LoopStructural.modelling.core.geological_points import GPoint, IPoint, \
+    TPoint
+from LoopStructural.supports.scalar_field import ScalarField
+
 logger = logging.getLogger(__name__)
 
 
@@ -13,6 +15,7 @@ class GeologicalFeatureInterpolator:
     A builder for a GeologicalFeature will link data to the interpolator
     and run the interpolation
     """
+
     def __init__(self, interpolator, **kwargs):
         """
         The interpolator to use to build the geological feature
@@ -26,8 +29,9 @@ class GeologicalFeatureInterpolator:
         if 'name' in kwargs:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
-        # everywhere region is just a lambda that returns true for all locations
-        self.region = lambda pos : np.ones(pos.shape[0], dtype=bool)
+        # everywhere region is just a lambda that returns true for all
+        # locations
+        self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
 
         if 'region' in kwargs:
             self.region = kwargs['region']
@@ -54,7 +58,6 @@ class GeologicalFeatureInterpolator:
         """
         self.faults.append(fault)
 
-
     def add_data_from_data_frame(self, data_frame):
         """
         Extract data from a pandas dataframe with columns for
@@ -66,7 +69,8 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        if 'X' not in data_frame.columns or 'X' not in data_frame.columns or 'X' not in data_frame.columns:
+        if 'X' not in data_frame.columns or 'X' not in data_frame.columns or\
+                'X' not in data_frame.columns:
             logger.error("No location in data frame")
             return
         for i, r in data_frame.iterrows():
@@ -75,25 +79,35 @@ class GeologicalFeatureInterpolator:
                 continue
             pos = r[['X', 'Y', 'Z']]
             if 'val' in data_frame.columns and ~np.isnan(r['val']):
-                self.add_point(pos,r['val'])
-            if 'strike' in data_frame.columns and  'dip' in data_frame.columns and  \
+                self.add_point(pos, r['val'])
+            if 'strike' in data_frame.columns and 'dip' in \
+                    data_frame.columns and \
                     ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
                 polarity = 1
-                if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
+                if 'polarity' in data_frame.columns and ~np.isnan(
+                        r['polarity']):
                     polarity = r['polarity']
-                self.add_strike_and_dip(pos, r['strike'], r['dip'], polarity=polarity)
-            if 'azimuth' in data_frame.columns and 'dip' in data_frame.columns and \
+                self.add_strike_and_dip(pos, r['strike'], r['dip'],
+                                        polarity=polarity)
+            if 'azimuth' in data_frame.columns and 'dip' in \
+                    data_frame.columns and \
                     ~np.isnan(r['azimuth']) and ~np.isnan(r['dip']):
                 polarity = 1
-                if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
+                if 'polarity' in data_frame.columns and ~np.isnan(
+                        r['polarity']):
                     polarity = r['polarity']
-                self.add_plunge_and_plunge_dir(pos,r['dip'],r['azimuth'],polarity=polarity)
+                self.add_plunge_and_plunge_dir(pos, r['dip'], r['azimuth'],
+                                               polarity=polarity)
 
-            if 'nx' in data_frame.columns and 'ny' in data_frame.columns and 'nz' in data_frame.columns and \
-                    ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
-                 self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']])
-    def add_data(self, pos, strike = None, dip_dir = None, dip = None, dir = None,
-                 val = None, plunge = None, plunge_dir = None,polarity = None):
+            if 'nx' in data_frame.columns and 'ny' in data_frame.columns and\
+                    'nz' in data_frame.columns and \
+                    ~np.isnan(r['nx']) and ~np.isnan(r['ny']) and ~np.isnan(
+                r['nz']):
+                self.add_planar_constraint(r[['X', 'Y', 'Z']],
+                                           r[['nx', 'ny', 'nz']])
+
+    def add_data(self, pos, strike=None, dip_dir=None, dip=None, dir=None,
+                 val=None, plunge=None, plunge_dir=None, polarity=None):
         """
         Generic function to add data to a geological feature.
         Parameters
@@ -115,7 +129,7 @@ class GeologicalFeatureInterpolator:
         """
         pass
 
-    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1):
+    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity=1):
         """
 
         Parameters
@@ -129,7 +143,8 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        self.data.append(GPoint.from_strike_and_dip(pos, strike, dip, polarity))
+        self.data.append(
+            GPoint.from_strike_and_dip(pos, strike, dip, polarity))
         # self.interpolator.add_data(self.data[-1])
         self.data.append(IPoint(pos, val))
         # self.interpolator.add_data(self.data[-1])
@@ -193,7 +208,8 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        self.data.append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir,polarity))
+        self.data.append(
+            GPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir, polarity))
         # self.interpolator.add_data(self.data[-1])
 
     def add_tangent_constraint(self, pos, val):
@@ -227,7 +243,7 @@ class GeologicalFeatureInterpolator:
         self.data.append(TPoint(pos, s, d))
         # self.interpolator.add_data(self.data[-1])
 
-    def add_data_to_interpolator(self, constrained = False):
+    def add_data_to_interpolator(self, constrained=False):
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
@@ -238,8 +254,10 @@ class GeologicalFeatureInterpolator:
         # first move the data for the fault
         for f in self.faults:
             f.apply_to_data(self.data)
-        # Now check whether there are enough constraints for the interpolator to be able to solve
-        # we need at least 2 different value points or a single norm constraint. If there are not enough
+        # Now check whether there are enough constraints for the
+        # interpolator to be able to solve
+        # we need at least 2 different value points or a single norm
+        # constraint. If there are not enough
         # try converting grad to norms, if still not enough send user an error
         vals = []
         for d in self.data:
@@ -254,7 +272,8 @@ class GeologicalFeatureInterpolator:
             for d in self.data:
                 if d.type == "GPoint":
                     d.norm = True
-                    logger.warning("Setting gradient points to norm constraints")
+                    logger.warning(
+                        "Setting gradient points to norm constraints")
                     constrained = True
         if not constrained:
             logger.error("Not enough constraints for scalar field add more")
@@ -275,7 +294,8 @@ class GeologicalFeatureInterpolator:
         """
         if not self.data_added:
             self.add_data_to_interpolator()
-        # moving this to init because it needs to be done before constraints are added?
+        # moving this to init because it needs to be done before constraints
+        # are added?
         # self.interpolator.set_region(region=self.region)
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
@@ -286,20 +306,26 @@ class GeologicalFeatureInterpolator:
             #     kwargs['cg'] = False
             # kwargs['cg'] = False
         self.interpolator.setup_interpolator(**kwargs)
-        self.interpolator.solve_system(solver=solver,**kwargs)
+        self.interpolator.solve_system(solver=solver, **kwargs)
         return GeologicalFeature(self.name,
-                                 ScalarField.from_interpolator(self.interpolator),
-                                 builder=self, data=self.data, region=self.region,
-                                 faults = self.faults)
+                                 ScalarField.from_interpolator(
+                                     self.interpolator),
+                                 builder=self, data=self.data,
+                                 region=self.region,
+                                 faults=self.faults)
 
 
 class GeologicalFeature:
     """
-    Geological feature is class that is used to represent a geometrical element in a geological
-    model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
+    Geological feature is class that is used to represent a geometrical
+    element in a geological
+    model. For example foliations, fault planes, fold rotation angles etc.
+    The feature has a support
     which 
     """
-    def __init__(self, name, support, builder = None, data = None, region = None, type = None, faults = []):
+
+    def __init__(self, name, support, builder=None, data=None, region=None,
+                 type=None, faults=[]):
         """
 
         Parameters
@@ -316,9 +342,11 @@ class GeologicalFeature:
         name - string
             should be a unique name for the geological feature
         support - a ScalarField
-            holds the property values for the feature and links to the support geometry
+            holds the property values for the feature and links to the
+            support geometry
         data
-        regions - list of boolean functions defining whether the feature is active
+        regions - list of boolean functions defining whether the feature is
+        active
         faults - list of faults that affect this feature
         """
         self.name = name
@@ -336,7 +364,7 @@ class GeologicalFeature:
     def __str__(self):
         return self.name
 
-    def add_region(self,region):
+    def add_region(self, region):
         """
 
         Parameters
@@ -376,7 +404,6 @@ class GeologicalFeature:
 
         """
 
-
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
@@ -384,12 +411,12 @@ class GeologicalFeature:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask,r(evaluation_points))
+            mask = np.logical_and(mask, r(evaluation_points))
         # apply faulting after working out which regions are visible
         for f in self.faults:
             evaluation_points = f.apply_to_points(evaluation_points)
         v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
-        return v#self.support.evaluate_value(evaluation_points)
+        return v  # self.support.evaluate_value(evaluation_points)
 
     def evaluate_gradient(self, evaluation_points):
         """
@@ -409,11 +436,11 @@ class GeologicalFeature:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask,r(evaluation_points))
+            mask = np.logical_and(mask, r(evaluation_points))
         # apply faulting after working out which regions are visible
         for f in self.faults:
             evaluation_points = f.apply_to_points(evaluation_points)
-        v[mask,:] = self.support.evaluate_gradient(evaluation_points)
+        v[mask, :] = self.support.evaluate_gradient(evaluation_points)
         return v
 
     def mean(self):
@@ -453,7 +480,8 @@ class GeologicalFeature:
         # re-run the interpolator and update the support.
         # this is a bit clumsy and not abstract, i think
         # if evaluating the property doesn't require the dictionary on
-        # the nodes and actually just uses the interpolator values this would be
+        # the nodes and actually just uses the interpolator values this
+        # would be
         # much better.
         self.support.interpolator.up_to_date = False
         self.support.interpolator.update()
@@ -470,7 +498,8 @@ class GeologicalFeature:
 
     def get_node_values(self):
         """
-        Get the node values of the support used to build this interpolator if the
+        Get the node values of the support used to build this interpolator
+        if the
         interpolator is a discrete interpolator
         Returns
         -------
@@ -478,7 +507,7 @@ class GeologicalFeature:
         """
         return self.support.get_node_values()
 
-    def slice(self, isovalue, bounding_box = None, nsteps = None, region=None):
+    def slice(self, isovalue, bounding_box=None, nsteps=None, region=None):
         """
         Calculate an isosurface of a geological feature.
         Option to specify a new support to calculate the isosurface on
@@ -494,31 +523,33 @@ class GeologicalFeature:
 
         """
         if bounding_box is not None and nsteps is not None:
-            x = np.linspace(bounding_box[0,0],bounding_box[1,0],nsteps[0])
-            y = np.linspace(bounding_box[0,1],bounding_box[1,1],nsteps[1])
-            z = np.linspace(bounding_box[1,2],bounding_box[0,2],nsteps[2])
-            xx,yy,zz = np.meshgrid(x,y,z, indexing='ij')
-            val = self.evaluate_value(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
+            x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nsteps[0])
+            y = np.linspace(bounding_box[0, 1], bounding_box[1, 1], nsteps[1])
+            z = np.linspace(bounding_box[1, 2], bounding_box[0, 2], nsteps[2])
+            xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+            val = self.evaluate_value(
+                np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)
             if region is not None:
-                val[~region(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)] = np.nan
-            step_vector = np.array([x[1]-x[0],y[1]-y[0],z[1]-z[0]])
+                val[~region(np.array(
+                    [xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
+            step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
                 logger.warning("Isovalue doesn't exist inside bounding box")
-                return np.zeros((3,1)).astype(int),np.zeros((3,1))
+                return np.zeros((3, 1)).astype(int), np.zeros((3, 1))
             try:
                 verts, faces, normals, values = marching_cubes(
-                val.reshape(nsteps, order='C'),
-                isovalue,
-                spacing=step_vector)
-                return faces, verts + np.array([bounding_box[0,0],bounding_box[0,1],bounding_box[1,2]])
+                    val.reshape(nsteps, order='C'),
+                    isovalue,
+                    spacing=step_vector)
+                return faces, verts + np.array(
+                    [bounding_box[0, 0], bounding_box[0, 1],
+                     bounding_box[1, 2]])
             except ValueError:
                 logger.warning("No surface to mesh, skipping")
-                return np.zeros((3,1)).astype(int),np.zeros((3,1))
+                return np.zeros((3, 1)).astype(int), np.zeros((3, 1))
         else:
             try:
-                return self.support.slice(isovalue,self.region)
+                return self.support.slice(isovalue, self.region)
             except RuntimeError:
                 logger.warning("No surface to mesh, skipping")
-                return np.zeros((3,1)).astype(int),np.zeros((3,1))
-
-
+                return np.zeros((3, 1)).astype(int), np.zeros((3, 1))

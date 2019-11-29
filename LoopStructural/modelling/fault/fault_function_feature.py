@@ -1,4 +1,5 @@
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +28,8 @@ class FaultDisplacementFeature:
 
         """
         fault_suface = self.fault_frame.features[0].evaluate_value(location)
-        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
+        fault_displacement = self.fault_frame.features[1].evaluate_value(
+            location)
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement(fault_suface, fault_displacement, fault_strike)
         return d
@@ -44,7 +46,8 @@ class FaultDisplacementFeature:
 
         """
         fault_suface = self.fault_frame.features[0].evaluate_value(location)
-        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
+        fault_displacement = self.fault_frame.features[1].evaluate_value(
+            location)
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement(fault_suface, fault_displacement, fault_strike)
         return d
@@ -56,7 +59,8 @@ class FaultDisplacementFeature:
         return 1
 
     def evaluate_on_surface(self, location):
-        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
+        fault_displacement = self.fault_frame.features[1].evaluate_value(
+            location)
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d
