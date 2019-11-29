@@ -402,6 +402,7 @@ class GeologicalModel:
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:
             fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
+
         fault = FaultSegment(fault_frame, displacement=displacement_scaled, **kwargs)
         for f in reversed(self.features):
             if f.type is 'unconformity':
@@ -411,6 +412,9 @@ class GeologicalModel:
             fault.type = 'fault_inactive'
         self.features.append(fault)
         result['feature'] = fault
+        # antithetic faults
+        if 'isabut' in kwargs:
+            kwargs['feature'][0].add_region(lambda pos: fault.evaluate(pos))
         return result
 
     def rescale(self, points):

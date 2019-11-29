@@ -42,7 +42,7 @@ class LavaVuModelViewer:
         # prerotate to a nice view
         #self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
 
-    def add_section(self, geological_feature, axis='x', value = None, **kwargs):
+    def add_section(self, geological_feature = None, axis='x', value = None, **kwargs):
         """
         Plot a section/map thru the model and paint with a geological feature
         Parameters
@@ -105,10 +105,10 @@ class LavaVuModelViewer:
             else:
                 surf.values(geological_feature.evaluate_value(points), geological_feature.name)
             surf["colourby"] = geological_feature.name
-        cmap = lavavu.cubehelix(100)
-        if 'cmap' in kwargs:
-            cmap = kwargs['cmap']
-        surf.colourmap(cmap, range=[geological_feature.min(),geological_feature.max()])
+            cmap = lavavu.cubehelix(100)
+            if 'cmap' in kwargs:
+                cmap = kwargs['cmap']
+            surf.colourmap(cmap, range=[geological_feature.min(),geological_feature.max()])
 
     def add_isosurface(self, geological_feature, **kwargs):
         """
