@@ -5,7 +5,6 @@ from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
 from LoopStructural.cython.dsi_helper import cg
-from LoopStructural.cython.marching_tetra import marching_tetra
 
 import logging
 logger = logging.getLogger(__name__)

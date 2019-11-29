@@ -203,7 +203,7 @@ class GeologicalModel:
         # the second coordinate
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
         for f in reversed(self.features):
-            if f.type is 'unconformity':
+            if f.type == 'unconformity':
                 fold_frame.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
         fold_frame.type = 'structuralframe'
