@@ -34,7 +34,7 @@ class Point():
         if point.pos.ndim == 2:
             raise BaseException
         d = 0.0
-        d = dist.dist_1d(point.pos,self.pos,d)+eps
+        # d = dist.dist_1d(point.pos,self.pos,d)+eps
         return d,point.pos-self.pos
     def dim(self):
         return len(self.pos)
