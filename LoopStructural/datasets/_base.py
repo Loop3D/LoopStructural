@@ -31,3 +31,18 @@ def load_intrusion():
     data = pd.read_pickle(join(module_path,'data/intrusion.pkl'))
     bb = np.loadtxt(join(module_path,'data/intrusionbb.txt'))
     return data, bb
+def load_unconformity():
+    module_path = dirname(__file__)
+    data = pd.read_pickle(join(module_path,'data/unconformity.pkl'))
+    bb = np.array([[0,0,0],
+                   [4,6,4]]
+                  )
+    return data,bb
+def value_headers():
+    return ['X','Y','Z','val']
+
+def strike_dip_headers():
+    return ['X','Y','Z','strike','dip']
+
+def normal_vector_headers():
+    return ['X','Y','Z','nx','ny','nz']

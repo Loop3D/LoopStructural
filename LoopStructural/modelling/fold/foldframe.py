@@ -6,12 +6,11 @@ logger = logging.getLogger(__name__)
 
 
 class FoldFrame(StructuralFrame):
-    """
-    A structural frame that can calculate the fold axis/limb rotation angle
-    """
     def __init__(self, name, features):
         """
+        A structural frame that can calculate the fold axis/limb rotation angle
         Same constructor arguments as parent StructuralFrame
+
         Parameters
         ----------
         name

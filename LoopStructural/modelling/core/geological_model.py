@@ -14,8 +14,8 @@ from LoopStructural.modelling.features import RegionFeature
 from scipy.optimize import curve_fit
 import numpy as np
 import pandas as pd
-from scipy.optimize import minimize
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,7 +24,8 @@ class GeologicalModel:
     A geological model is the recipe for building a 3D model and includes the rescaling
     of the model between 0 and 1.
     """
-    def __init__(self, origin, maximum, rescale=True):
+
+    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40)):
         """
 
         Parameters
@@ -34,7 +35,7 @@ class GeologicalModel:
         """
         self.features = []
         self.data = None
-
+        self.nsteps = nsteps
 
         # we want to rescale the model area so that the maximum length is
         # 1
@@ -44,14 +45,14 @@ class GeologicalModel:
         lengths = self.maximum - self.origin
         self.scale_factor = 1.
         self.bounding_box = np.zeros((2, 3))
-        self.bounding_box[1, :] = self.maximum-self.origin
+        self.bounding_box[1, :] = self.maximum - self.origin
         if rescale:
             self.scale_factor = np.max(lengths)
 
         self.bounding_box /= self.scale_factor
         # self.bounding_box[0,:] = self.origin
         # self.bounding_box[1,:] = self.maximum
-        
+
     def set_model_data(self, data):
         """
         Set the data array for the model
@@ -96,7 +97,7 @@ class GeologicalModel:
         """
         self.data.append(newdata)
 
-    def get_interpolator(self, interpolatortype = 'PLI', nelements = 5e5, buffer=0.02,**kwargs):
+    def get_interpolator(self, interpolatortype='PLI', nelements=5e5, buffer=0.02, **kwargs):
         """
         Returns an interpolator given the arguments, also constructs a support for a discrete
         interpolator
@@ -120,28 +121,28 @@ class GeologicalModel:
         bb = np.copy(self.bounding_box)
         # add a buffer to the interpolation domain, this is necessary for faults but also generally a good
         # idea to avoid boundary problems
-        bb[0,:] -= buffer#*(bb[1,:]-bb[0,:])
-        bb[1,:] += buffer#*(bb[1,:]-bb[0,:])
+        bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
+        bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         if interpolatortype == "PLI":
             mesh = TetMesh()
-            mesh.setup_mesh(bb, n_tetra=nelements,)
+            mesh.setup_mesh(bb, n_tetra=nelements, )
             return PLI(mesh)
 
         if interpolatortype == 'FDI':
             # find the volume of one element
-            ele_vol = bb[1,0]*bb[1,1]*bb[1,2] / nelements
+            ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
-            step_vector[:] = ele_vol**(1./3.)
+            step_vector[:] = ele_vol ** (1. / 3.)
             # number of steps is the length of the box / step vector
-            nsteps = ((bb[1,:]-bb[0,:])/step_vector).astype(int)
+            nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            grid = StructuredGrid(origin=bb[0,:],nsteps=nsteps, step_vector=step_vector)
+            grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector)
             return FDI(grid)
-        if interpolatortype == "DFI":# "fold" in kwargs:
+        if interpolatortype == "DFI":  # "fold" in kwargs:
             mesh = TetMesh()
-            mesh.setup_mesh(bb, n_tetra=nelements,)
-            return DFI(mesh,kwargs['fold'])
+            mesh.setup_mesh(bb, n_tetra=nelements, )
+            return DFI(mesh, kwargs['fold'])
         logger.warning("No interpolator")
         return interpolator
 
@@ -158,7 +159,7 @@ class GeologicalModel:
 
         """
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(interpolator,name=series_surface_data, **kwargs)
+        series_builder = GeologicalFeatureInterpolator(interpolator, name=series_surface_data, **kwargs)
         # add data
         series_data = self.data[self.data['type'] == series_surface_data]
         series_builder.add_data_from_data_frame(series_data)
@@ -196,7 +197,7 @@ class GeologicalModel:
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
-        fold_frame_builder = StructuralFrameBuilder(interpolator,name=foldframe_data,**kwargs)
+        fold_frame_builder = StructuralFrameBuilder(interpolator, name=foldframe_data, **kwargs)
         # add data
         fold_frame_data = self.data[self.data['type'] == foldframe_data]
         fold_frame_builder.add_data_from_data_frame(fold_frame_data)
@@ -204,7 +205,7 @@ class GeologicalModel:
         # the second coordinate
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
         for f in reversed(self.features):
-            if f.type is 'unconformity':
+            if f.type == 'unconformity':
                 fold_frame.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
         fold_frame.type = 'structuralframe'
@@ -227,19 +228,21 @@ class GeologicalModel:
         result = {}
 
         fold = FoldEvent(fold_frame)
-        fold_interpolator = self.get_interpolator("DFI",fold=fold,**kwargs)
+        fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         series_builder = GeologicalFeatureInterpolator(
             interpolator=fold_interpolator,
             name=foliation_data)
 
-        series_builder.add_data_from_data_frame(self.data[self.data['type']==foliation_data])
+        series_builder.add_data_from_data_frame(self.data[self.data['type'] == foliation_data])
         series_builder.add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
+        if "av_fold_axis" in kwargs:
+            pass
         if "fold_axis" not in kwargs:
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 series_builder)
-            axis_wl = kwargs.get("axis_wavelength",None)
+            axis_wl = kwargs.get("axis_wavelength", None)
             if axis_wl is None:
                 axis_svariogram = SVariogram(fad, far)
                 axis_wl = axis_svariogram.find_wavelengths()
@@ -249,17 +252,18 @@ class GeologicalModel:
                 logger.warning("Not enough data to fit curve")
                 fold.fold_axis_rotation = lambda x: 0
             else:
-                popt, pcov = curve_fit(fourier_series,fad,np.tan(np.rad2deg(far)),guess)
-                fold.fold_axis_rotation = lambda x: np.rad2deg(np.arctan(fourier_series(x,popt[0],popt[1],popt[2],popt[3])))
+                popt, pcov = curve_fit(fourier_series, fad, np.tan(np.rad2deg(far)), guess)
+                fold.fold_axis_rotation = lambda x: np.rad2deg(
+                    np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
             result['axis_direction'] = fad
             result['axis_rotation'] = far
             result['axis_svario'] = axis_svariogram
-        flr, s = fold_frame.calculate_fold_limb_rotation(series_builder,axis=fold.get_fold_axis_orientation)
+        flr, s = fold_frame.calculate_fold_limb_rotation(series_builder, axis=fold.get_fold_axis_orientation)
         result['limb_rotation'] = flr
         result['foliation'] = s
-        limb_wl = kwargs.get("limb_wl",None)
+        limb_wl = kwargs.get("limb_wl", None)
         if limb_wl is None:
-            limb_svariogram = SVariogram(s,flr)
+            limb_svariogram = SVariogram(s, flr)
             limb_wl = limb_svariogram.find_wavelengths()
         guess = np.zeros(4)
         guess[3] = limb_wl
@@ -269,15 +273,15 @@ class GeologicalModel:
         else:
             popt, pcov = curve_fit(fourier_series, s, np.tan(np.deg2rad(flr)), guess)
             fold.fold_limb_rotation = lambda x: np.rad2deg(
-            np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
-        fold_weights = kwargs.get('fold_weights',None)
+                np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
+        fold_weights = kwargs.get('fold_weights', None)
 
         if fold_weights is None:
             fold_weights = {}
-            fold_weights['fold_orientation'] = 10. # reference values?
-            fold_weights['fold_axis'] = 10. # reference values?
-            fold_weights['fold_normalisation'] = 1. # reference values?
-            fold_weights['fold_regularisation'] = .100# reference values?
+            fold_weights['fold_orientation'] = 10.  # reference values?
+            fold_weights['fold_axis'] = 10.  # reference values?
+            fold_weights['fold_normalisation'] = 1.  # reference values?
+            fold_weights['fold_regularisation'] = .100  # reference values?
             kwargs['fold_weights'] = fold_weights
 
             for f in reversed(self.features):
@@ -304,7 +308,7 @@ class GeologicalModel:
 
         pass
 
-    def create_and_add_unconformity(self, unconformity_surface_data,**kwargs):
+    def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
         """
 
         Parameters
@@ -369,7 +373,7 @@ class GeologicalModel:
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
-        fault_frame_builder = StructuralFrameBuilder(interpolator,name=fault_surface_data,**kwargs)
+        fault_frame_builder = StructuralFrameBuilder(interpolator, name=fault_surface_data, **kwargs)
         # add data
         fault_frame_data = self.data[self.data['type'] == fault_surface_data]
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
@@ -385,7 +389,8 @@ class GeologicalModel:
                 # work out the values of the nodes where we want hard constraints
                 idc = np.arange(0, interpolator.support.n_nodes)[
                     kwargs['splayregion'](interpolator.support.nodes)]
-                val = kwargs['splay'][i].evaluate_value(interpolator.support.nodes[kwargs['splayregion'](interpolator.support.nodes),:])
+                val = kwargs['splay'][i].evaluate_value(
+                    interpolator.support.nodes[kwargs['splayregion'](interpolator.support.nodes), :])
                 mask = ~np.isnan(val)
                 fault_frame_builder[i].interpolator.add_equality_constraints(idc[mask], val[mask])
         # check if any faults exist in the stack
@@ -401,6 +406,7 @@ class GeologicalModel:
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:
             fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
+
         fault = FaultSegment(fault_frame, displacement=displacement_scaled, **kwargs)
         for f in reversed(self.features):
             if f.type is 'unconformity':
@@ -410,11 +416,12 @@ class GeologicalModel:
             fault.type = 'fault_inactive'
         self.features.append(fault)
         result['feature'] = fault
+
         return result
 
     def rescale(self, points):
         """
-
+        Convert from model scale to real world scale - in the future this should also do transformations?
         Parameters
         ----------
         points
@@ -423,8 +430,8 @@ class GeologicalModel:
         -------
 
         """
-        points*=self.scale_factor
-        points+=self.origin
+        points *= self.scale_factor
+        points += self.origin
         return points
 
     def scale(self, points):
@@ -438,13 +445,13 @@ class GeologicalModel:
         -------
 
         """
-        points[:,:] -= self.origin
-        points/=self.scale_factor
+        points[:, :] -= self.origin
+        points /= self.scale_factor
         return points
 
-    def voxet(self, nsteps = (50, 50, 25)):
+    def voxet(self, nsteps=(50, 50, 25)):
         """
-
+        Returns a voxet dict with the nsteps specified
         Parameters
         ----------
         nsteps
@@ -455,3 +462,20 @@ class GeologicalModel:
         """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
 
+    def regular_grid(self, nsteps=(50, 50, 25)):
+        """
+        Return a regular grid within the model bounding box
+        Parameters
+        ----------
+        nsteps tuple
+            number of cells in x,y,z
+
+        Returns
+        -------
+
+        """
+        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], nsteps[0])
+        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], nsteps[1])
+        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], nsteps[2])
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        return np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T

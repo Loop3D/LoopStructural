@@ -31,8 +31,8 @@ class GeologicalInterpolator:
         Set the name of the interpolated property
         Parameters
         ----------
-        name string
-            name
+        name : string
+            name of the property to be saved on a mesh
 
         Returns
         -------
@@ -46,10 +46,14 @@ class GeologicalInterpolator:
 
         Parameters
         ----------
-        pos
-        strike
-        dip
-        val
+        pos : numpy array
+            position of the orientation and value thats being added
+        strike : double
+            strike of the plane in right hand thumb rule
+        dip : double
+            dip of the plane
+        val : double
+            value of the interpolant
 
         Returns
         -------
@@ -66,8 +70,10 @@ class GeologicalInterpolator:
         Add a value constraint to the interpolator
         Parameters
         ----------
-        pos
-        val
+        pos : numpy array
+            location of the value constraint
+        val : double
+            value of the constraint
 
         Returns
         -------

@@ -12,9 +12,9 @@ class CrossProductGeologicalFeature(GeologicalFeature):
         two existing features
         Parameters
         ----------
-        name - feature name
-        geological_feature_a - first feature
-        geological_feature_b - second feature
+        name: feature name
+        geological_feature_a: first feature
+        geological_feature_b: second feature
         """
         super().__init__(name, geological_feature_a.support)
         self.geological_feature_a = geological_feature_a

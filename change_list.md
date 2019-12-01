@@ -1,3 +1,9 @@
+# December 2019
+* When using LavaVuModelViewer you must now give initialise the class with either a GeologicalModel or the boundary_box or nsteps.
+* Some other changes to the API for visualisation, now everything should be callable by passing only a geologicalfeature
+* WHen building a structural frame you can pass a kwarg regularisation = [1.,2.,3.] which specified the amount of regularisation for the different coordinates
+* When building a geological feature you can pass a kwarg regularisation which manages the constant gradient or finite difference regularisation
+# November 2019
 * Dockerfile updated to use requirements.txt and no longer mounts notebooks directory as editable
 * GeologicalModel class implemented where multiple different geological features can be built from a high level api. Currently supports unconformities, faults and stratigraphy NOT folds
 * Modified base discrete interpolator so that solvers are separate functions and building the interpolation matrix is performed from a separate function. Inequaltiies are added for all interpolators and external solvers can be used by passing a function(A,B).
