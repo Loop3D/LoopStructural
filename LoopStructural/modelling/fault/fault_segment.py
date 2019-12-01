@@ -102,6 +102,7 @@ class FaultSegment:
     def evaluate_gradient(self, locations):
         """
         Return the fault slip direction at the location
+
         Parameters
         ----------
         locations - numpy array Nx3
@@ -192,10 +193,10 @@ class FaultSegment:
             newp[mask,:] += g
         return newp
 
-
     def apply_to_data(self, data):
         """
         Unfault the data in the list provided
+
         Parameters
         ----------
         data - list containing Points
@@ -219,9 +220,3 @@ class FaultSegment:
                     g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
                     d.pos = d.pos + g[0]
 
-    def slice(self, isovalue, bounding_box = None, nsteps = None, region = None):
-        # if there is a fault function we only want to display the fault where the displacement is > 0
-        if region is None:
-            if self.faultfunction is not None:
-                region = lambda pos : self.displacementfeature.evaluate_on_surface(pos) > 0.01
-        return self.faultframe[0].slice(isovalue, bounding_box = bounding_box, nsteps = nsteps, region=region)

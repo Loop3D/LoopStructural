@@ -4,17 +4,16 @@ from LoopStructural.modelling.core.geological_points import GPoint, IPoint, TPoi
 import numpy as np
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
 class GeologicalFeatureInterpolator:
-    """
-    A builder for a GeologicalFeature will link data to the interpolator
-    and run the interpolation
-    """
     def __init__(self, interpolator, **kwargs):
         """
-        The interpolator to use to build the geological feature
+        A builder for a GeologicalFeature will link data to the interpolator
+        and run the interpolation
+
         Parameters
         ----------
         interpolator - a GeologicalInterpolator
@@ -26,7 +25,7 @@ class GeologicalFeatureInterpolator:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
         # everywhere region is just a lambda that returns true for all locations
-        self.region = lambda pos : np.ones(pos.shape[0], dtype=bool)
+        self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
 
         if 'region' in kwargs:
             self.region = kwargs['region']
@@ -42,6 +41,7 @@ class GeologicalFeatureInterpolator:
     def add_fault(self, fault):
         """
         Add a fault to the geological feature builder
+
         Parameters
         ----------
         fault FaultSegment
@@ -53,10 +53,10 @@ class GeologicalFeatureInterpolator:
         """
         self.faults.append(fault)
 
-
     def add_data_from_data_frame(self, data_frame):
         """
         Extract data from a pandas dataframe with columns for
+
         Parameters
         ----------
         data_frame - pandas data frame
@@ -74,8 +74,8 @@ class GeologicalFeatureInterpolator:
                 continue
             pos = r[['X', 'Y', 'Z']]
             if 'val' in data_frame.columns and ~np.isnan(r['val']):
-                self.add_point(pos,r['val'])
-            if 'strike' in data_frame.columns and  'dip' in data_frame.columns and  \
+                self.add_point(pos, r['val'])
+            if 'strike' in data_frame.columns and 'dip' in data_frame.columns and \
                     ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
                 polarity = 1
                 if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
@@ -86,15 +86,17 @@ class GeologicalFeatureInterpolator:
                 polarity = 1
                 if 'polarity' in data_frame.columns and ~np.isnan(r['polarity']):
                     polarity = r['polarity']
-                self.add_plunge_and_plunge_dir(pos,r['dip'],r['azimuth'],polarity=polarity)
+                self.add_plunge_and_plunge_dir(pos, r['dip'], r['azimuth'], polarity=polarity)
 
             if 'nx' in data_frame.columns and 'ny' in data_frame.columns and 'nz' in data_frame.columns and \
-                    ~np.isnan(r['nx']) and ~np.isnan(r['ny'])and ~np.isnan(r['nz']):
-                 self.add_planar_constraint(r[['X','Y','Z']],r[['nx','ny','nz']])
-    def add_data(self, pos, strike = None, dip_dir = None, dip = None, dir = None,
-                 val = None, plunge = None, plunge_dir = None,polarity = None):
+                    ~np.isnan(r['nx']) and ~np.isnan(r['ny']) and ~np.isnan(r['nz']):
+                self.add_planar_constraint(r[['X', 'Y', 'Z']], r[['nx', 'ny', 'nz']])
+
+    def add_data(self, pos, strike=None, dip_dir=None, dip=None, dir=None,
+                 val=None, plunge=None, plunge_dir=None, polarity=None):
         """
         Generic function to add data to a geological feature.
+
         Parameters
         ----------
         pos - required numpy array for position
@@ -114,7 +116,7 @@ class GeologicalFeatureInterpolator:
         """
         pass
 
-    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity = 1):
+    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity=1):
         """
 
         Parameters
@@ -192,7 +194,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        self.data.append(GPoint.from_plunge_plunge_dir(pos,plunge,plunge_dir,polarity))
+        self.data.append(GPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir, polarity))
         # self.interpolator.add_data(self.data[-1])
 
     def add_tangent_constraint(self, pos, val):
@@ -226,10 +228,11 @@ class GeologicalFeatureInterpolator:
         self.data.append(TPoint(pos, s, d))
         # self.interpolator.add_data(self.data[-1])
 
-    def add_data_to_interpolator(self, constrained = False):
+    def add_data_to_interpolator(self, constrained=False):
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
+
         Returns
         -------
 
@@ -263,6 +266,7 @@ class GeologicalFeatureInterpolator:
     def build(self, solver='pyamg', **kwargs):
         """
         Runs the interpolation
+
         Parameters
         ----------
         solver
@@ -285,26 +289,23 @@ class GeologicalFeatureInterpolator:
             #     kwargs['cg'] = False
             # kwargs['cg'] = False
         self.interpolator.setup_interpolator(**kwargs)
-        self.interpolator.solve_system(solver=solver,**kwargs)
+        self.interpolator.solve_system(solver=solver, **kwargs)
         return GeologicalFeature(self.name,
                                  ScalarField.from_interpolator(self.interpolator),
                                  builder=self, data=self.data, region=self.region,
-                                 faults = self.faults)
+                                 faults=self.faults)
 
 
 class GeologicalFeature:
-    """
-    Geological feature is class that is used to represent a geometrical element in a geological
-    model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
-    which 
-    """
-    def __init__(self, name, support, builder = None, data = None, region = None, type = None, faults = []):
+    def __init__(self, name, support, builder=None, data=None, region=None, type=None, faults=[]):
         """
+        Geological feature is class that is used to represent a geometrical element in a geological
+        model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
+        which
 
         Parameters
         ----------
         name: string
-
         support
         builder
         data
@@ -335,7 +336,7 @@ class GeologicalFeature:
     def __str__(self):
         return self.name
 
-    def add_region(self,region):
+    def add_region(self, region):
         """
 
         Parameters
@@ -375,7 +376,6 @@ class GeologicalFeature:
 
         """
 
-
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
@@ -383,7 +383,7 @@ class GeologicalFeature:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask,r(evaluation_points))
+            mask = np.logical_and(mask, r(evaluation_points))
         # apply faulting after working out which regions are visible
         for f in self.faults:
             evaluation_points = f.apply_to_points(evaluation_points)
@@ -408,7 +408,7 @@ class GeologicalFeature:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask,r(evaluation_points))
+            mask = np.logical_and(mask, r(evaluation_points))
 
         # apply faulting after working out which regions are visible
         for f in self.faults:
@@ -529,5 +529,3 @@ class GeologicalFeature:
     #         except RuntimeError:
     #             logger.warning("No surface to mesh, skipping")
     #             return np.zeros((3,1)).astype(int),np.zeros((3,1))
-
-

@@ -69,6 +69,7 @@ class SVariogram():
         Picks the wavelengths of the fold by finding the maximum and minimums of the s-variogram
         the fold wavelength is the first minimum but it is more reliable to use the first maximum
         as the estimate of the wavelength.
+
         Parameters
         ----------
         kwargs : object

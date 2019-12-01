@@ -11,8 +11,6 @@ logger = logging.getLogger(__name__)
 class LavaVuModelViewer:
     def __init__(self, model = None, bounding_box = None, nsteps = None, **kwargs):
         """
-        LavaVuModelViewer
-
 
         A wrapper to plot LoopStructural object with lavavu
 
@@ -44,14 +42,16 @@ class LavaVuModelViewer:
 
     def add_section(self, geological_feature = None, axis='x', value = None, **kwargs):
         """
+
         Plot a section/map thru the model and paint with a geological feature
+
         Parameters
         ----------
-        geological_feature Geological feature
+        geological_feature : Geological feature
             The feature to paint the section with
-        axis string
+        axis : string
             which axis, x,y,z
-        value float
+        value : float
             Where to make the section
         kwargs
             additional kwargs passes to lavavu for colourmaps etc
@@ -112,8 +112,10 @@ class LavaVuModelViewer:
 
     def add_isosurface(self, geological_feature, **kwargs):
         """
+
         Plot the surface of a geological feature if no kwargs are given plots the
         average surface and colours it red.
+
         Parameters
         ----------
         geological_feature
@@ -283,14 +285,16 @@ class LavaVuModelViewer:
         if 'cmap' in kwargs:
             cmap = kwargs['cmap']
         vmin = kwargs.get('vmin',geological_feature.min())
-        vmax = kwargs.get('vmax',geological_feature.max())
+        vmax = kwargs.gem('vmax',geological_feature.max())
         # surf.colourmap(cmap,range= (painter.min(),painter.max()))
         surf.colourmap(cmap,range=(vmin,vmax))  # nodes.shape[0]))
         #return tri, xx, yy, zz
 
     def add_vector_field(self, geological_feature, **kwargs):
         """
+
         Plot the gradient of a geological feature at given locations
+
         Parameters
         ----------
         geological_feature : Geological Feature to evaluate gradient
@@ -319,7 +323,10 @@ class LavaVuModelViewer:
 
     def add_data(self, feature, **kwargs):
         """
-        Plot the data linked to the feature
+
+        Plot the data linked to the feature, can choose whether to plot all data types
+        using value and grad kwargs
+
         Parameters
         ----------
         feature
@@ -351,7 +358,9 @@ class LavaVuModelViewer:
             self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp", **kwargs)
     def add_points(self, points, name, **kwargs):
         """
+
         Plot points location in the lavavu viewer
+
         Parameters
         ----------
         points : numpy array of the points locations
@@ -367,7 +376,9 @@ class LavaVuModelViewer:
 
     def add_vector_data(self, position, vector, name, **kwargs):
         """
+
         Plot point data with a vector component into the lavavu viewer
+
         Parameters
         ----------
         position : numpy array N,3 for xyz locations
@@ -391,7 +402,9 @@ class LavaVuModelViewer:
 
     def add_value_data(self, position, value, name, **kwargs):
         """
+
         Plot points data with a value component
+
         Parameters
         ----------
         position : numpy array N,3 for xyz locations
@@ -421,6 +434,7 @@ class LavaVuModelViewer:
     def add_fold(self, fold, **kwargs):
         """
         Draw the vector components of the fold at the locations
+
         Parameters
         ----------
         fold - fold object
@@ -446,6 +460,7 @@ class LavaVuModelViewer:
         """
         Runs the lavavu viewer as either a jupyter notebook
         inline interactive viewer or as a separate window
+
         Returns
         -------
 
@@ -462,6 +477,7 @@ class LavaVuModelViewer:
     def set_viewer_rotation(self, rotation):
         """
         Set the viewer rotation given a list of rotations x,y,z
+
         Parameters
         ----------
         rotation numpy array of 3 rotation
@@ -475,6 +491,7 @@ class LavaVuModelViewer:
     def save(self,fname,**kwargs):
         """
         Calls lavavu.Viewer.image to save the viewer current state as an image
+
         Parameters
         ----------
         fname - file name string including relative path
@@ -487,21 +504,88 @@ class LavaVuModelViewer:
         self.lv.image(fname, **kwargs)
 
     def display(self):
+        """
+        Calls the lv object display function. Shows a static image of the viewer inline.
+
+        Returns
+        -------
+
+        """
         self.lv.display()
 
-    def image(self,name):
+    def image(self, name, **kwargs):
+        """
+        Calls the lv object image function to save the display state
 
+        Parameters
+        ----------
+        name : string
+            name of the image file to save
+        kwargs
+
+        Returns
+        -------
+
+        """
         self.lv.image(name)
-    def rotatex(self,r):
 
+    def rotatex(self, r):
+        """
+        Rotate the viewer in the x plane
+
+        Parameters
+        ----------
+        r : double
+            degrees to rotate, can be +ve or -ve
+
+        Returns
+        -------
+
+        """
         self.lv.rotatex(r)
-    def rotatey(self,r):
 
+    def rotatey(self, r):
+        """
+        Rotate the viewer in the Y plane
+
+        Parameters
+        ----------
+        r : double
+            degrees to rotate, can be +ve or -ve
+
+        Returns
+        -------
+
+        """
         self.lv.rotatey(r)
-    def rotatez(self,r):
 
+    def rotatez(self, r):
+        """
+        Rotate the viewer in the z plane
+
+        Parameters
+        ----------
+        r : double
+            degrees to rotate, can be +ve or -ve
+
+        Returns
+        -------
+
+        """
         self.lv.rotatez(r)
 
-    def rotate(self,r):
+    def rotate(self, r):
+        """
+        Rotate by a vector of rotation angles
+
+        Parameters
+        ----------
+        r : list/numpy array
+            a vector of rotations
+
+        Returns
+        -------
+
+        """
         self.lv.rotate(r)
 

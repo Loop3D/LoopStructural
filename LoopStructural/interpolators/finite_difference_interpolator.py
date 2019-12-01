@@ -13,6 +13,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def __init__(self, grid):
         """
         Finite difference interpolation on a regular cartesian grid
+
         Parameters
         ----------
         grid
@@ -82,6 +83,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def copy(self):
         """
         Create a new identical interpolator
+
         Returns
         -------
         returns a new empy interpolator from the same support
@@ -152,6 +154,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def add_norm_constraint(self, w=1.):
         """
         Add constraints to control the norm of the gradient of the scalar field
+
         Parameters
         ----------
         w - weighting of this constraint (double)
@@ -188,6 +191,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
         constraints scalar field to be orthogonal to a given vector
+
         Parameters
         ----------
         elements

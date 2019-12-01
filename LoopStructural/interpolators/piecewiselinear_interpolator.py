@@ -13,6 +13,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         Piecewise Linear Interpolator
         Approximates scalar field by finding coefficients to a piecewise linear
         equation on a tetrahedral mesh. Uses constant gradient regularisation.
+
         Parameters
         ----------
         mesh - TetMesh
@@ -39,6 +40,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         Searches through kwargs for any interpolation weights and updates the dictionary.
         Then adds the constraints to the linear system using the interpolation weights values
+
         Parameters
         ----------
         kwargs -
@@ -66,6 +68,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def add_constant_gradient(self, w=0.1):
         """
         Add the constant gradient regularisation to the system
+
         Parameters
         ----------
         w (double) - weighting of the cg parameter
@@ -91,6 +94,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def add_gradient_ctr_pts(self, w=1.0):
         """
         Adds gradient constraints to the least squares system with a weight defined by w
+
         Parameters
         ----------
         w - either numpy array of length number of
@@ -140,6 +144,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         Extracts the norm vectors from the interpolators p_n list and adds these to the implicit
         system
+
         Parameters
         ----------
         w
@@ -197,6 +202,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
         """
         Adds value constraints to the least squares system
+
         Parameters
         ----------
         w
@@ -229,6 +235,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
         """
         constraints scalar field to be orthogonal to a given vector
+
         Parameters
         ----------
         elements
