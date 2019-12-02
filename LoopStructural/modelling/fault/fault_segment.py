@@ -1,8 +1,11 @@
 import logging
+
 from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
-from concurrent.futures import ThreadPoolExecutor
+
 logger = logging.getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
+import numpy as np
+
 
 class FaultSegment:
     """
@@ -162,10 +165,10 @@ class FaultSegment:
         for i in range(steps):
             with ThreadPoolExecutor(max_workers=8) as executor:
                 # all of these operations should be independent so just run as different threads
-                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp[mask,:])
-                g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp[mask,:])
-                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp[mask,:])
-                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp[mask,:])
+                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp[mask, :])
+                g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp[mask, :])
+                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp[mask, :])
+                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp[mask, :])
                 gx = gx_future.result()
                 g = g_future.result()
                 gy = gy_future.result()
@@ -199,7 +202,7 @@ class FaultSegment:
             g *= (1. / steps) * d[:, None]
 
             # apply displacement
-            newp[mask,:] += g
+            newp[mask, :] += g
         return newp
 
     def apply_to_data(self, data):
@@ -231,5 +234,3 @@ class FaultSegment:
                     g *= (1. / steps) * 1. * self.displacement
                     g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
                     d.pos = d.pos + g[0]
-
-

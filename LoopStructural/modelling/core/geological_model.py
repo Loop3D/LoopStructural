@@ -16,13 +16,13 @@ from LoopStructural.modelling.features.geological_feature import \
     GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.structural_frame import \
     StructuralFrameBuilder
-from LoopStructural.modelling.fold.fold import FoldEvent
-from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
+from LoopStructural.modelling.fold import FoldEvent
+from LoopStructural.modelling.fold import \
     fourier_series
-from LoopStructural.modelling.fold.foldframe import FoldFrame
+from LoopStructural.modelling.fold import FoldFrame
 from LoopStructural.supports.structured_grid import StructuredGrid
 from LoopStructural.supports.tet_mesh import TetMesh
-
+from LoopStructural.modelling.fold import SVariogram
 logger = logging.getLogger(__name__)
 
 
