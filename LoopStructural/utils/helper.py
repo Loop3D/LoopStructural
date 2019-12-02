@@ -1,6 +1,7 @@
+import logging
+
 import numpy as np
 
-import logging
 logger = logging.getLogger(__name__)
 
 def plunge_and_plunge_dir_to_vector(plunge,plunge_dir):
@@ -254,7 +255,7 @@ def normalz(gx):
     return gxn
 
 def savePoints(filename,points,data):
-    from pyevtk.hl import gridToVTK, pointsToVTK
+    from pyevtk.hl import pointsToVTK
     pointsToVTK('../data/'+filename,points[0,:],points[1,:],points[2,:],data)
 def strike_dip_vector(strike,dip):
     vec = np.zeros((len(strike),3))

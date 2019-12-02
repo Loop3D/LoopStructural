@@ -2,7 +2,6 @@ import lavavu
 from lavavu.vutils import is_notebook
 from LoopStructural.utils.helper import create_surface
 import numpy as np
-import scipy as sp
 import logging
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 logger = logging.getLogger(__name__)

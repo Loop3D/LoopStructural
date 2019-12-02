@@ -178,9 +178,12 @@ class GeologicalInterpolator:
 
     def get_value_constraints(self):
         """
-        Getter for all active control points
-        :return: numpy array Nx4 where 0:3 are the position
+
+        Returns
+        -------
+        numpy array
         """
+
         points = np.zeros((self.n_i,4))#array
         for i in range(self.n_i):
             points[i,:3] = self.p_i[i].pos
@@ -189,8 +192,10 @@ class GeologicalInterpolator:
 
     def get_gradient_constraints(self):
         """
-        Getter for all gradient control points
-        :return: numpy array Nx6 where 0:3 are pos and 3:5 are vector
+
+        Returns
+        -------
+        numpy array
         """
         points = np.zeros((self.n_g,6))  # array
         for i in range(self.n_g):
@@ -199,6 +204,12 @@ class GeologicalInterpolator:
         return points
 
     def get_tangent_constraints(self):
+        """
+
+        Returns
+        -------
+        numpy array
+        """
         points = np.zeros((self.n_t,6))  # array
         for i in range(self.n_t):
             points[i,:3] = self.p_t[i].pos
@@ -206,6 +217,12 @@ class GeologicalInterpolator:
         return points
 
     def get_norm_constraints(self):
+        """
+
+        Returns
+        -------
+        numpy array
+        """
         points = np.zeros((self.n_n,6))
         for i in range(self.n_n):
             points[i,:3] = self.p_n[i].pos
