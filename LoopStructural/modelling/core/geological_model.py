@@ -19,6 +19,7 @@ from LoopStructural.modelling.features.structural_frame import \
 from LoopStructural.modelling.fold.fold import FoldEvent
 from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
     fourier_series
+from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.supports.structured_grid import StructuredGrid
 from LoopStructural.supports.tet_mesh import TetMesh
