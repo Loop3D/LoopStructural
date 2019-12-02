@@ -13,13 +13,17 @@ logger = logging.getLogger(__name__)
 
 
 class DiscreteInterpolator(GeologicalInterpolator):
-    """
-    Base class for a discrete interpolator e.g. piecewise linear or finite
-    difference which is
-    any interpolator that solves the system using least squares approximation
-    """
 
     def __init__(self, support):
+        """
+        Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
+        any interpolator that solves the system using least squares approximation
+
+        Parameters
+        ----------
+        support
+            A discrete mesh with, nodes, elements, etc
+        """
         GeologicalInterpolator.__init__(self)
         self.B = []
         self.support = support
@@ -46,6 +50,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         Set the property name attribute, this is usually used to
         save the property on the support
+
         Parameters
         ----------
         propertyname
@@ -59,6 +64,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def set_region(self, region=None):
         """
         Set the region of the support the interpolator is working on
+
         Parameters
         ----------
         region - function(position)
@@ -79,9 +85,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def set_interpolation_weights(self, weights):
         """
         Set the interpolation weights dictionary
+
         Parameters
         ----------
-        weights - dictionary with the interpolation weights
+        weights - dictionary
+            Entry of new weights to assign to self.interpolation_weights
 
         Returns
         -------
@@ -112,11 +120,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Adds constraints to the least squares system. Automatically works
         out the row
         index given the shape of the input arrays
+
         Parameters
         ----------
-        A - RxC numpy array of constraints where C is number of columns,R rows
-        B - B values array length R
-        idc - RxC column index
+        A : numpy array / list
+            RxC numpy array of constraints where C is number of columns,R rows
+        B : numpy array /list
+            B values array length R
+        idc : numpy array/list
+            RxC column index
 
         Returns
         -------
@@ -152,10 +164,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Adds hard constraints to the least squares system. For now this just
         sets
         the node values to be fixed using a lagrangian.
+
         Parameters
         ----------
-        node_idx - int array of node indexes
-        values - array of node values
+        node_idx : numpy array/list
+            int array of node indexes
+        values : numpy array/list
+            array of node values
 
         Returns
         -------
@@ -179,6 +194,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Assemble constraints into interpolation matrix. Adds equaltiy
         constraints
         using lagrange modifiers if necessary
+
         Parameters
         ----------
         damp: bool
@@ -222,6 +238,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def _solve_lu(self, A, B):
         """
         Call scipy LU decomoposition
+
         Parameters
         ----------
         A - square sparse matrix
@@ -240,10 +257,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         Call suitesparse cholmod through scikitsparse
         LINUX ONLY!
+
         Parameters
         ----------
-        A - square sparse matrix
-        B - numpy vector
+        A - scipy.sparse.matrix
+            square sparse matrix
+        B - numpy array
+            RHS of equation
 
         Returns
         -------
@@ -260,16 +280,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def _solve_cg(self, A, B, precon=None, **kwargs):
         """
         Call scipy conjugate gradient
+
         Parameters
         ----------
-        A - square sparse matrix
-        B - numpy vector
-        precon
+        A : scipy.sparse.matrix
+            square sparse matrix
+        B : numpy vector
+        precon : scipy.sparse.matrix
+            a preconditioner for the conjugate gradient system
         kwargs
+            kwargs to pass to scipy solve e.g. atol, btol, callback etc
 
         Returns
         -------
-
+        numpy array
         """
         cgargs = {}
         cgargs['tol'] = 1e-12
@@ -288,48 +312,38 @@ class DiscreteInterpolator(GeologicalInterpolator):
         return sla.cg(A, B, **cgargs)[0][:self.nx]
 
     def _solve_pyamg(self, A, B, **kwargs):
-        pyamgargs = {}
-        pyamgargs['verb'] = False
-        pyamgargs['tol'] = 1e-30
-        # #m1 = ruge_stuben_solver(A)
-        # # Smoothed Aggregation Parameters
-        # theta = np.pi / 8.0  # Angle of rotation
-        # epsilon = 0.001  # Anisotropic coefficient
-        # mcoarse = 10  # Max coarse grid size
-        # prepost = ('gauss_seidel',  # pre/post smoother
-        #            {'sweep': 'symmetric', 'iterations': 1})
-        # smooth = ('energy', {'maxiter': 9, 'degree': 3})  # Prolongation
-        # Smoother
-        # classic_theta = 0.0  # Classic Strength Measure
-        # #    Drop Tolerance
-        # # evolution Strength Measure
-        # evolution_theta = 4.0
-        # #    Drop Tolerance
-        # ml = pyamg.smoothed_aggregation_solver(A,
-        #                                    max_coarse=mcoarse,
-        #                                    coarse_solver='pinv2',
-        #                                    presmoother=prepost,
-        #                                    postsmoother=prepost,
-        #                                    smooth=smooth,
-        #                                    strength=('evolution',
-        #                                    {'epsilon': evolution_theta,
-        #                                    'k': 2}))
-        return pyamg.solve(A, B, verb=False)[:self.nx]
+        """
+        Solve least squares system using pyamg algorithmic multigrid solver
+
+        Parameters
+        ----------
+        A :  scipy.sparse.matrix
+        B : numpy array
+
+        Returns
+        -------
+
+        """
+
+        return pyamg.solve(A,B,verb=False)[:self.nx]
 
     def _solve(self, solver, **kwargs):
         """
         Main entry point to run the solver and update the node value
         attribute for the
         discreteinterpolator class
+
         Parameters
         ----------
-        solver - string of solver e.g. cg, lu, chol, custom
-        kwargs - kwargs for solver e.g. maxiter, preconditioner etc, damping
-        for
-
+        solver : string
+            solver e.g. cg, lu, chol, custom
+        kwargs
+            kwargs for solver e.g. maxiter, preconditioner etc, damping for
+        
         Returns
         -------
-        True if the interpolation is run
+        bool
+            True if the interpolation is run
 
         """
         self.c = np.zeros(self.support.n_nodes)
@@ -367,8 +381,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         the previously used solver. If the interpolation has not been run
         before it will
         return False
+
         Returns
         -------
+        bool
 
         """
         if self.solver is None:

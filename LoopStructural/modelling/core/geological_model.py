@@ -20,7 +20,6 @@ from LoopStructural.modelling.fold.fold import FoldEvent
 from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
     fourier_series
 from LoopStructural.modelling.fold.foldframe import FoldFrame
-from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.supports.structured_grid import StructuredGrid
 from LoopStructural.supports.tet_mesh import TetMesh
 
@@ -34,7 +33,7 @@ class GeologicalModel:
     of the model between 0 and 1.
     """
 
-    def __init__(self, origin, maximum, rescale=True):
+    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40)):
         """
 
         Parameters
@@ -44,6 +43,7 @@ class GeologicalModel:
         """
         self.features = []
         self.data = None
+        self.nsteps = nsteps
 
         # we want to rescale the model area so that the maximum length is
         # 1
@@ -187,6 +187,7 @@ class GeologicalModel:
                 series_builder.add_fault(f)
             if f.type == 'unconformity':
                 break
+
         # build feature
         series_feature = series_builder.build(**kwargs)
         series_feature.type = 'series'
@@ -202,6 +203,17 @@ class GeologicalModel:
         return result
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
+        """
+
+        Parameters
+        ----------
+        foldframe_data
+        kwargs
+
+        Returns
+        -------
+
+        """
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
@@ -223,8 +235,20 @@ class GeologicalModel:
         self.features.append(fold_frame)
         return fold_frame
 
-    def create_and_add_folded_foliation(self, foliation_data, fold_frame,
-                                        **kwargs):
+    def create_and_add_folded_foliation(self, foliation_data, fold_frame, **kwargs):
+        """
+        Create a folded foliation field from data and a fold frame
+        Parameters
+        ----------
+        foliation_data
+        fold_frame
+        kwargs
+
+        Returns
+        -------
+        dict
+        """
+
         result = {}
 
         fold = FoldEvent(fold_frame)
@@ -233,11 +257,14 @@ class GeologicalModel:
             interpolator=fold_interpolator,
             name=foliation_data)
 
+
         series_builder.add_data_from_data_frame(
             self.data[self.data['type'] == foliation_data])
         series_builder.add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
+        if "av_fold_axis" in kwargs:
+            pass
         if "fold_axis" not in kwargs:
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 series_builder)
@@ -251,6 +278,7 @@ class GeologicalModel:
                 logger.warning("Not enough data to fit curve")
                 fold.fold_axis_rotation = lambda x: 0
             else:
+
                 popt, pcov = curve_fit(fourier_series, fad,
                                        np.tan(np.rad2deg(far)), guess)
                 fold.fold_axis_rotation = lambda x: np.rad2deg(
@@ -424,6 +452,7 @@ class GeologicalModel:
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:
             fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
+
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
                              **kwargs)
         for f in reversed(self.features):
@@ -434,17 +463,68 @@ class GeologicalModel:
             fault.type = 'fault_inactive'
         self.features.append(fault)
         result['feature'] = fault
+
         return result
 
     def rescale(self, points):
+        """
+        Convert from model scale to real world scale - in the future this should also do transformations?
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
         points *= self.scale_factor
         points += self.origin
         return points
 
     def scale(self, points):
+        """
+
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
+
         points[:, :] -= self.origin
         points /= self.scale_factor
         return points
 
     def voxet(self, nsteps=(50, 50, 25)):
+        """
+        Returns a voxet dict with the nsteps specified
+        Parameters
+        ----------
+        nsteps
+
+        Returns
+        -------
+
+        """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
+
+    def regular_grid(self, nsteps=(50, 50, 25)):
+        """
+        Return a regular grid within the model bounding box
+        Parameters
+        ----------
+        nsteps tuple
+            number of cells in x,y,z
+
+        Returns
+        -------
+
+        """
+        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], nsteps[0])
+        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], nsteps[1])
+        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], nsteps[2])
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        return np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+

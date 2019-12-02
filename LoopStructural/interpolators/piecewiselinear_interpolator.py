@@ -16,9 +16,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         Piecewise Linear Interpolator
         Approximates scalar field by finding coefficients to a piecewise linear
         equation on a tetrahedral mesh. Uses constant gradient regularisation.
+
         Parameters
         ----------
-        mesh
+        mesh - TetMesh
+            interpolation support
         """
 
         self.shape = 'rectangular'
@@ -47,7 +49,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         interpolation weights values
         Parameters
         ----------
-        kwargs
+        kwargs -
+            interpolation weights
 
         Returns
         -------
@@ -72,6 +75,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def add_constant_gradient(self, w=0.1):
         """
         Add the constant gradient regularisation to the system
+
         Parameters
         ----------
         w (double) - weighting of the cg parameter
@@ -91,6 +95,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         gi[self.region] = np.arange(0, self.nx)
         idc = gi[idc]
         outside = ~np.any(idc == -1, axis=1)
+
         # w/=A.shape[0]
         self.add_constraints_to_least_squares(A[outside, :] * w,
                                               B[outside] * w, idc[outside, :])
@@ -154,9 +159,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         Extracts the norm vectors from the interpolators p_n list and adds
         these to the implicit
         system
+
         Parameters
         ----------
-        w
+        w : double
+            weighting of the norm constraints in a least squares system
 
         Returns
         -------
@@ -195,6 +202,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=2)
             outside = outside[:, 0]
             w /= 3
+
             self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
                                                   points[outside, 3:] * w *
                                                   vol[outside, None],
@@ -216,6 +224,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
         """
         Adds value constraints to the least squares system
+
         Parameters
         ----------
         w
@@ -252,6 +261,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                            B=0):
         """
         constraints scalar field to be orthogonal to a given vector
+
         Parameters
         ----------
         elements

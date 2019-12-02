@@ -6,14 +6,10 @@ logger = logging.getLogger(__name__)
 
 
 class FoldEvent:
-    """
-    A fold event describes the geometry of the fold using a fold frame
-    and two geometrical descriptors
-    """
-
-    def __init__(self, foldframe, fold_axis_rotation=None,
-                 fold_limb_rotation=None, fold_axis=None):
+    def __init__(self, foldframe, fold_axis_rotation=None, fold_limb_rotation=None, fold_axis = None):
         """
+        A fold event describes the geometry of the fold using a fold frame
+        and two geometrical descriptors
 
         Parameters
         ----------
@@ -60,6 +56,7 @@ class FoldEvent:
     def get_deformed_orientation(self, points):
         """
         Calculate the normal to the folded foliation at locations
+
         Parameters
         ----------
         points - np.array
@@ -91,6 +88,7 @@ class FoldEvent:
     def rot_mat(self, axis, angle):
         """
         Create a rotation matrix for axis and angle
+
         Parameters
         ----------
         axis Nx3 vector for axis

@@ -3,6 +3,7 @@ class RegionFeature:
         """
         Create a GeologicalFeature to represent a region in a model
         The region is defined by a boolean function on position.
+
         Parameters
         ----------
         function lambda function

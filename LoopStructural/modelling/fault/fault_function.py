@@ -113,16 +113,22 @@ class FaultDisplacement:
 
     def __call__(self, gx, gy, gz):
         if self.gx_bounds is not None:
-            gx = (gx) / (self.gx_bounds[1] - self.gx_bounds[0])
+            mid =(self.gx_bounds[1]+self.gx_bounds[0])/2.
+            gx = (gx -mid) / (self.gx_bounds[1]-self.gx_bounds[0])
         if self.gy_bounds is not None:
-            gy = (gy) / (self.gy_bounds[1] - self.gy_bounds[0])
+            mid =  (self.gy_bounds[1]+self.gy_bounds[0])/2.
+            gy = (gy -mid) / (self.gy_bounds[1]-self.gy_bounds[0])
         if self.gz_bounds is not None:
-            gz = (gz) / (self.gz_bounds[1] - self.gz_bounds[0])
-        return self.gx(gx) * self.gy(gy) * self.gz(gz)
+            mid =(self.gz_bounds[1]+self.gz_bounds[0])/2.
+            gz = (gz -mid) / (self.gz_bounds[1]-self.gz_bounds[0])
+        return self.gx(gx)*self.gy(gy)*self.gz(gz)
 
     def evaluate(self, gy, gz):
         if self.gy_bounds is not None:
-            gy = (gy) / (self.gy_bounds[1] - self.gy_bounds[0])
+            mid =  (self.gy_bounds[1]+self.gy_bounds[0])/2.
+            gy = (gy -mid) / (self.gy_bounds[1]-self.gy_bounds[0])
         if self.gz_bounds is not None:
-            gz = (gz) / (self.gz_bounds[1] - self.gz_bounds[0])
-        return self.gy(gy) * self.gz(gz)
+            mid =(self.gz_bounds[1]+self.gz_bounds[0])/2.
+            gz = (gz -mid) / (self.gz_bounds[1]-self.gz_bounds[0])
+        return self.gy(gy)*self.gz(gz)
+

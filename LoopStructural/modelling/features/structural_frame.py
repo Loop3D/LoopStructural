@@ -17,6 +17,7 @@ class StructuralFrame:
         Structural frame is a curvilinear coordinate system defined by
         structural
         observations associated with a fault or fold.
+
         Parameters
         ----------
         name - name of the structural frame
@@ -42,6 +43,7 @@ class StructuralFrame:
     def get_feature(self, i):
         """
         Return the ith feature
+
         Parameters
         ----------
         i
@@ -55,6 +57,7 @@ class StructuralFrame:
     def set_data(self, data):
         """
         Associate data with structural frame
+
         Parameters
         ----------
         data
@@ -69,6 +72,7 @@ class StructuralFrame:
         """
         Evaluate the value of the structural frame for the points.
         Can optionally only evaluate one coordinate
+
         Parameters
         ----------
         evaluation_points
@@ -88,6 +92,7 @@ class StructuralFrame:
         """
         Evaluate the gradient of the structural frame.
         Can optionally only evaluate the ith coordinate
+
         Parameters
         ----------
         evaluation_points
@@ -169,6 +174,7 @@ class StructuralFrameBuilder:
     def add_data_from_data_frame(self, data_frame):
         """
         extract the data for a fault from a data frame
+
         Parameters
         ----------
         data_frame
@@ -452,9 +458,8 @@ class StructuralFrameBuilder:
                     gx_feature.evaluate_gradient(self.support.barycentre),
                     w=gxxgz)
 
-            gz_feature = self.builders[2].build(solver=solver,
-                                                regularisation=regularisation[
-                                                    0], **kwargs)
+            gz_feature = self.builders[2].build(solver=solver,regularisation=regularisation[1],**kwargs)
+
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 1")
             if gx_feature is not None:
@@ -469,9 +474,8 @@ class StructuralFrameBuilder:
                     np.arange(0, self.support.n_elements),
                     gz_feature.evaluate_gradient(self.support.barycentre),
                     w=gyxgz)
-            gy_feature = self.builders[1].build(solver=solver,
-                                                regularisation=regularisation[
-                                                    0], **kwargs)
+            gy_feature = self.builders[1].build(solver=solver,regularisation=regularisation[2],**kwargs)
+
         if gy_feature is None:
             logger.warning(
                 "Not enough constraints for structural frame coordinate 1, \n"

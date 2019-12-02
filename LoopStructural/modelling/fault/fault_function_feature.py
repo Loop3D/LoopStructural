@@ -7,6 +7,7 @@ class FaultDisplacementFeature:
     def __init__(self, fault_frame, displacement):
         """
         Geological feature representing the fault displacement
+
         Parameters
         ----------
         fault_frame - geometry of the fault
@@ -19,6 +20,7 @@ class FaultDisplacementFeature:
     def evaluate_value(self, location):
         """
         Return the value of the fault displacement
+
         Parameters
         ----------
         location
@@ -37,6 +39,7 @@ class FaultDisplacementFeature:
     def evaluate_gradient(self, location):
         """
         get the scaled displacement
+
         Parameters
         ----------
         location

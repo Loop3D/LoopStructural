@@ -106,7 +106,6 @@ def normalz(gx):
     gxn[np.isnan(gx)] = np.nan
     return gxn
 
-
 def strike_dip_vector(strike, dip):
     vec = np.zeros((len(strike), 3))
     s_r = np.deg2rad(strike)

@@ -11,14 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class GeologicalFeatureInterpolator:
-    """
-    A builder for a GeologicalFeature will link data to the interpolator
-    and run the interpolation
-    """
-
     def __init__(self, interpolator, **kwargs):
         """
-        The interpolator to use to build the geological feature
+        A builder for a GeologicalFeature will link data to the interpolator
+        and run the interpolation
+
         Parameters
         ----------
         interpolator - a GeologicalInterpolator
@@ -29,8 +26,7 @@ class GeologicalFeatureInterpolator:
         if 'name' in kwargs:
             self.name = kwargs['name']
             self.interpolator.set_property_name(self.name)
-        # everywhere region is just a lambda that returns true for all
-        # locations
+        # everywhere region is just a lambda that returns true for all locations
         self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
 
         if 'region' in kwargs:
@@ -47,6 +43,7 @@ class GeologicalFeatureInterpolator:
     def add_fault(self, fault):
         """
         Add a fault to the geological feature builder
+
         Parameters
         ----------
         fault FaultSegment
@@ -61,6 +58,7 @@ class GeologicalFeatureInterpolator:
     def add_data_from_data_frame(self, data_frame):
         """
         Extract data from a pandas dataframe with columns for
+
         Parameters
         ----------
         data_frame - pandas data frame
@@ -110,6 +108,7 @@ class GeologicalFeatureInterpolator:
                  val=None, plunge=None, plunge_dir=None, polarity=None):
         """
         Generic function to add data to a geological feature.
+
         Parameters
         ----------
         pos - required numpy array for position
@@ -247,6 +246,7 @@ class GeologicalFeatureInterpolator:
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
+
         Returns
         -------
 
@@ -283,6 +283,7 @@ class GeologicalFeatureInterpolator:
     def build(self, solver='pyamg', **kwargs):
         """
         Runs the interpolation
+
         Parameters
         ----------
         solver
@@ -308,6 +309,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(solver=solver, **kwargs)
         return GeologicalFeature(self.name,
+
                                  ScalarField.from_interpolator(
                                      self.interpolator),
                                  builder=self, data=self.data,
@@ -316,22 +318,15 @@ class GeologicalFeatureInterpolator:
 
 
 class GeologicalFeature:
-    """
-    Geological feature is class that is used to represent a geometrical
-    element in a geological
-    model. For example foliations, fault planes, fold rotation angles etc.
-    The feature has a support
-    which 
-    """
-
-    def __init__(self, name, support, builder=None, data=None, region=None,
-                 type=None, faults=[]):
+    def __init__(self, name, support, builder=None, data=None, region=None, type=None, faults=[]):
         """
+        Geological feature is class that is used to represent a geometrical element in a geological
+        model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
+        which
 
         Parameters
         ----------
         name: string
-
         support
         builder
         data
@@ -416,7 +411,7 @@ class GeologicalFeature:
         for f in self.faults:
             evaluation_points = f.apply_to_points(evaluation_points)
         v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
-        return v  # self.support.evaluate_value(evaluation_points)
+        return v
 
     def evaluate_gradient(self, evaluation_points):
         """
@@ -437,10 +432,12 @@ class GeologicalFeature:
         # check regions
         for r in self.regions:
             mask = np.logical_and(mask, r(evaluation_points))
+        
         # apply faulting after working out which regions are visible
         for f in self.faults:
             evaluation_points = f.apply_to_points(evaluation_points)
         v[mask, :] = self.support.evaluate_gradient(evaluation_points)
+
         return v
 
     def mean(self):
@@ -507,49 +504,7 @@ class GeologicalFeature:
         """
         return self.support.get_node_values()
 
-    def slice(self, isovalue, bounding_box=None, nsteps=None, region=None):
-        """
-        Calculate an isosurface of a geological feature.
-        Option to specify a new support to calculate the isosurface on
-        Parameters
-        ----------
-        isovalue
-        bounding_box
-        nsteps
-        region
-
-        Returns
-        -------
-
-        """
-        if bounding_box is not None and nsteps is not None:
-            x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nsteps[0])
-            y = np.linspace(bounding_box[0, 1], bounding_box[1, 1], nsteps[1])
-            z = np.linspace(bounding_box[1, 2], bounding_box[0, 2], nsteps[2])
-            xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-            val = self.evaluate_value(
-                np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)
-            if region is not None:
-                val[~region(np.array(
-                    [xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
-            step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
-            if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
-                logger.warning("Isovalue doesn't exist inside bounding box")
-                return np.zeros((3, 1)).astype(int), np.zeros((3, 1))
-            try:
-                verts, faces, normals, values = marching_cubes(
-                    val.reshape(nsteps, order='C'),
-                    isovalue,
-                    spacing=step_vector)
-                return faces, verts + np.array(
-                    [bounding_box[0, 0], bounding_box[0, 1],
-                     bounding_box[1, 2]])
-            except ValueError:
-                logger.warning("No surface to mesh, skipping")
-                return np.zeros((3, 1)).astype(int), np.zeros((3, 1))
-        else:
-            try:
-                return self.support.slice(isovalue, self.region)
-            except RuntimeError:
-                logger.warning("No surface to mesh, skipping")
-                return np.zeros((3, 1)).astype(int), np.zeros((3, 1))
+    def slice(self, **kwargs):
+        logger.error("function has been removed, please use the modelviewer class")
+        return
+    

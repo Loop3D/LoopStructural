@@ -8,6 +8,9 @@ from numpy import linalg as la
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
+from LoopStructural.cython.dsi_helper import cg
+
+import logging
 logger = logging.getLogger(__name__)
 
 
@@ -423,61 +426,6 @@ class TetMesh:
         -------
 
         """
-        tri, ntri = marching_tetra(isovalue,
-                                   self.elements,
-                                   self.nodes,
-                                   self.regions[region],
-                                   self.properties[propertyname])
+        logger.error("function has been removed, please use the modelviewer class")
+        return
 
-        ##convert from memoryview to np array
-        tri = np.array(tri)
-        ntri = np.array(ntri)[0]
-        ##create a triangle indices array and initialise to -1
-        tris = np.zeros((ntri, 3)).astype(int)
-        tris[:, :] = -1
-        ##create a dict for storing nodes index where the key is the node as
-        # as a tuple.
-        # A dict is preferable because it is very quick to check if a key
-        # exists
-        # assemble arrays for unique vertex and triangles defined by vertex
-        # indices
-        nodes = {}
-        n = 0  # counter
-        for i in range(ntri):
-            for j in range(3):
-                if tuple(tri[i, j, :]) in nodes:
-                    tris[i, j] = nodes[tuple(tri[i, j, :])]
-                else:
-                    nodes[tuple(tri[i, j, :])] = n
-                    tris[i, j] = n
-                    n += 1
-        nodes_np = np.zeros((n, 3))
-        for v in nodes.keys():
-            nodes_np[nodes[v], :] = np.array(v)
-
-        # find the normal vector to the faces using the vertex order
-        a = nodes_np[tris[:, 0], :] - nodes_np[tris[:, 1], :]
-        b = nodes_np[tris[:, 0], :] - nodes_np[tris[:, 2], :]
-
-        crosses = np.cross(a, b)
-        crosses = crosses / (np.sum(crosses ** 2, axis=1) ** (0.5))[:,
-                            np.newaxis]
-        tribc = np.mean(nodes_np[tris, :], axis=1)
-        mask = np.any(~np.isnan(tribc), axis=1)
-        tribc = tribc[mask, :]
-
-        propertygrad = self.evaluate_gradient(tribc, propertyname)
-        propertygrad /= np.linalg.norm(propertygrad, axis=1)[:, None]
-
-        # dot product between gradient and normal indicates if faces are
-        # incorrectly ordered
-        dotproducts = np.zeros(tris.shape[0])
-        dotproducts[mask] = (propertygrad * crosses[mask]).sum(axis=1)
-        # if dot product > 0 then adjust triangle indexing
-        dotproducts[np.isnan(dotproducts)] = -1
-        # todo need to check if nan
-        indices = (dotproducts > 0)
-        tris[indices] = tris[indices, ::-1]
-        #
-        #
-        return tris, nodes_np

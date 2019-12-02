@@ -17,6 +17,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def __init__(self, grid):
         """
         Finite difference interpolation on a regular cartesian grid
+
         Parameters
         ----------
         grid
@@ -37,6 +38,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'cpw': 1.,
                                       'gpw': 1.,
                                       'npw': 1.}
+
         self.vol = grid.step_vector[0] * grid.step_vector[1] * \
                    grid.step_vector[2]
 
@@ -46,6 +48,21 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         Parameters
         ----------
         kwargs
+            possible kwargs are weights for the different masks and masks.
+
+        Notes
+        -----
+        Default masks are the second derivative in x,y,z direction and the second derivative of x wrt
+        y and y wrt z and z wrt x. Custom masks can be used by specifying the operator as a 3d numpy array
+        e.g. [ [ [ 0 0 0 ]
+                 [ 0 1 0 ]
+                 [ 0 0 0 ] ]
+                 [ [ 1 1 1 ]
+                 [ 1 1 1 ]
+                 [ 1 1 1 ] ]
+                 [ [ 0 0 0 ]
+                 [ 0 1 0 ]
+                 [ 0 0 0 ] ]
 
         Returns
         -------
@@ -75,6 +92,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # otherwise just use defaults
         if 'operators' not in kwargs:
             operator = Operator.Dxy_mask
+
             self.assemble_inner(operator, np.sqrt(2 * self.vol) *
                                 self.interpolation_weights['dxy'])
             operator = Operator.Dyz_mask
@@ -105,6 +123,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def copy(self):
         """
         Create a new identical interpolator
+
         Returns
         -------
         returns a new empy interpolator from the same support
@@ -116,7 +135,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        w
+        w : double or numpy array
 
         Returns
         -------
@@ -126,6 +145,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points = self.get_value_constraints()
         # check that we have added some points
         if points.shape[0] > 0:
+
             node_idx, inside = self.support.position_to_cell_corners(
                 points[:, :3])
             # print(points[inside,:].shape)
@@ -137,6 +157,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             a = self.support.position_to_dof_coefs(points[inside, :3])
             # a*=w
+
             self.add_constraints_to_least_squares(a.T * w,
                                                   points[inside, 3] * w,
                                                   idc[inside, :])
@@ -146,7 +167,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        w
+        w : double / numpy array
 
         Returns
         -------
@@ -180,9 +201,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def add_norm_constraint(self, w=1.):
         """
         Add constraints to control the norm of the gradient of the scalar field
+
         Parameters
         ----------
-        w - weighting of this constraint (double)
+        w : double
+            weighting of this constraint (double)
 
         Returns
         -------
@@ -224,28 +247,21 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                            B=0):
         """
         constraints scalar field to be orthogonal to a given vector
+
         Parameters
         ----------
-        elements
-        normals
-        w
-        B
+        elements : numpy array
+        normals : numpy array
+        w : double
+        B : numpy array
 
         Returns
         -------
 
         """
-        # get the cell gradient for the global indices
-        # ix,iy,iz = self.support.global_index_to_cell_index(elements)
-        # cornerx, cornery, cornerz = self.support.cell_corner_indexes(
-        #     ix,iy,iz
-        #     )
-        # posx, posy, posz = self.support.node_indexes_to_position(cornerx,
-        # cornery, cornerz)
-
         pos = np.array(self.support.cell_centres(
-            elements))  # np.array([np.mean(posx, axis=1),np.mean(posz,
-        # axis=1), np.mean(posz, axis=1)]).T
+            elements))  # np.array([np.mean(posx, axis=1),np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
+
         idc, inside = self.support.position_to_cell_corners(pos)
 
         T = self.support.calcul_T(pos)
@@ -284,8 +300,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        operator
-        w
+        operator : Operator
+        w : double
 
         Returns
         -------
