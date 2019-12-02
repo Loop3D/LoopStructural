@@ -1,14 +1,16 @@
+import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from LoopStructural.utils.helper import normal_vector_to_strike_and_dip
 from LoopStructural.utils.utils import strike_symbol
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 class MapView:
-    def __init__(self, origin, maximum, nsteps,**kwargs):
+    def __init__(self, origin, maximum, nsteps, **kwargs):
         """
 
         Parameters
@@ -21,10 +23,10 @@ class MapView:
         self.origin = origin
         self.maximum = maximum
         self.nsteps = nsteps
-        x = np.linspace(self.origin[0],self.maximum[0],self.nsteps[0])
-        y = np.linspace(self.origin[1],self.maximum[1],self.nsteps[1])
-        self.xx, self.yy = np.meshgrid(x,y,indexing='ij')
-        self.xx=self.xx.flatten()
+        x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
+        y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
+        self.xx, self.yy = np.meshgrid(x, y, indexing='ij')
+        self.xx = self.xx.flatten()
         self.yy = self.yy.flatten()
         self.fig, self.ax = plt.subplots(1, figsize=(10, 10))
 
@@ -63,12 +65,13 @@ class MapView:
         """
         gradient_data = feature.support.interpolator.get_gradient_constraints()
         value_data = feature.support.interpolator.get_value_constraints()
-        self.ax.scatter(value_data[:,0],value_data[:,1],c=value_data[:,3],
-                        vmin=feature.min(),vmax=feature.max(),**kwargs)
-        #points = strati.support.interpolator.get_gradient_control()
+        self.ax.scatter(value_data[:, 0], value_data[:, 1], c=value_data[:, 3],
+                        vmin=feature.min(), vmax=feature.max(), **kwargs)
+        # points = strati.support.interpolator.get_gradient_control()
         strike = normal_vector_to_strike_and_dip(gradient_data[:, 3:])
         for i in range(len(strike)):
-            self.draw_strike(gradient_data[i, 0], gradient_data[i, 1], -strike[i, 0],**kwargs)
+            self.draw_strike(gradient_data[i, 0], gradient_data[i, 1],
+                             -strike[i, 0], **kwargs)
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """
@@ -85,10 +88,11 @@ class MapView:
         """
         zz = np.zeros(self.xx.shape)
         zz[:] = z
-        v = feature.evaluate_value(np.array([self.xx, self.yy,zz]).T)
+        v = feature.evaluate_value(np.array([self.xx, self.yy, zz]).T)
         self.ax.imshow(v.reshape(self.nsteps),
-                   extent=[self.origin[0],self.maximum[0],self.origin[1],self.maximum[1]],
-                       vmin=feature.min(),vmax=feature.max(),**kwargs)
+                       extent=[self.origin[0], self.maximum[0], self.origin[1],
+                               self.maximum[1]],
+                       vmin=feature.min(), vmax=feature.max(), **kwargs)
 
     def add_contour(self, feature):
         pass

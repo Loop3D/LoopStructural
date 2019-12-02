@@ -1,8 +1,10 @@
-from LoopStructural.interpolators.discete_interpolator import DiscreteInterpolator
-from LoopStructural.utils.helper import get_vectors
+import logging
+
 import numpy as np
 
-import logging
+from LoopStructural.interpolators.discete_interpolator import \
+    DiscreteInterpolator
+from LoopStructural.utils.helper import get_vectors
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +30,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.nx = len(self.support.nodes[self.region])
         self.support = mesh
 
-        self.interpolation_weights = {'cgw': 0.1, 'cpw': 1., 'npw': 1., 'gpw': 1., 'tpw': 1.}
-        self.__str = 'Piecewise Linear Interpolator with %i unknowns. \n' % self.nx
+        self.interpolation_weights = {'cgw': 0.1, 'cpw': 1., 'npw': 1.,
+                                      'gpw': 1., 'tpw': 1.}
+        self.__str = 'Piecewise Linear Interpolator with %i unknowns. \n' % \
+                     self.nx
 
     def __str__(self):
         return self.__str
@@ -39,9 +43,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
     def _setup_interpolator(self, **kwargs):
         """
-        Searches through kwargs for any interpolation weights and updates the dictionary.
-        Then adds the constraints to the linear system using the interpolation weights values
-
+        Searches through kwargs for any interpolation weights and updates
+        the dictionary.
+        Then adds the constraints to the linear system using the
+        interpolation weights values
         Parameters
         ----------
         kwargs -
@@ -55,7 +60,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # self.reset()
         for key in kwargs:
             if 'regularisation' in kwargs:
-                self.interpolation_weights['cgw'] = 0.1 * kwargs['regularisation']
+                self.interpolation_weights['cgw'] = 0.1 * kwargs[
+                    'regularisation']
             self.up_to_date = False
             self.interpolation_weights[key] = kwargs[key]
         if self.interpolation_weights['cgw'] > 0.:
@@ -89,13 +95,16 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         gi[self.region] = np.arange(0, self.nx)
         idc = gi[idc]
         outside = ~np.any(idc == -1, axis=1)
-        self.add_constraints_to_least_squares(A[outside, :] * w, B[outside] * w, idc[outside, :])
+
+        # w/=A.shape[0]
+        self.add_constraints_to_least_squares(A[outside, :] * w,
+                                              B[outside] * w, idc[outside, :])
         return
 
     def add_gradient_ctr_pts(self, w=1.0):
         """
-        Adds gradient constraints to the least squares system with a weight defined by w
-
+        Adds gradient constraints to the least squares system with a weight
+        defined by w
         Parameters
         ----------
         w - either numpy array of length number of
@@ -104,9 +113,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
         Notes
         -----
-        Gradient constraints add a constraint that the gradient of the implicit function should
-        be orthogonal to the strike vector and the dip vector defined by the normal.
-        This does not control the direction of the gradient and therefore requires at least two other
+        Gradient constraints add a constraint that the gradient of the
+        implicit function should
+        be orthogonal to the strike vector and the dip vector defined by the
+        normal.
+        This does not control the direction of the gradient and therefore
+        requires at least two other
         value constraints OR a norm constraint for the interpolant to solve.
         """
         points = self.get_gradient_constraints()
@@ -139,11 +151,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = gi[idc]
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
-            self.add_constraints_to_least_squares(A[outside, :] * w, B[outside], idc[outside, :])
+            self.add_constraints_to_least_squares(A[outside, :] * w,
+                                                  B[outside], idc[outside, :])
 
     def add_norm_ctr_pts(self, w=1.0):
         """
-        Extracts the norm vectors from the interpolators p_n list and adds these to the implicit
+        Extracts the norm vectors from the interpolators p_n list and adds
+        these to the implicit
         system
 
         Parameters
@@ -155,8 +169,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
         Notes
         -----
-        Controls the direction and magnitude of the norm of the scalar field gradient.
-        This constraint can conflict with value constraints if the magnitude of the vector doesn't
+        Controls the direction and magnitude of the norm of the scalar field
+        gradient.
+        This constraint can conflict with value constraints if the magnitude
+        of the vector doesn't
         match with the value constraints added to the implicit system.
         """
 
@@ -186,7 +202,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=2)
             outside = outside[:, 0]
             w /= 3
-            self.add_constraints_to_least_squares(d_t[outside, :, :] * w, points[outside, 3:] * w * vol[outside, None],
+
+            self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
+                                                  points[outside, 3:] * w *
+                                                  vol[outside, None],
                                                   idc[outside])
 
     def add_tangent_ctr_pts(self, w=1.0):
@@ -233,10 +252,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
-            self.add_constraints_to_least_squares(A[:, outside].T * w, points[outside, 3] * w * vol[None, outside],
+            self.add_constraints_to_least_squares(A[:, outside].T * w,
+                                                  points[outside, 3] * w * vol[
+                                                      None, outside],
                                                   idc[outside, :])
 
-    def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0, B=0):
+    def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0,
+                                           B=0):
         """
         constraints scalar field to be orthogonal to a given vector
 
@@ -259,7 +281,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         mask = np.abs(dot_p) > 0
         normals[mask[:, 0], :] = normals[mask[:, 0], :] / dot_p[mask][:, None]
         magnitude = np.einsum('ij,ij->i', normals, normals)
-        normals[magnitude > 0] = normals[magnitude > 0] / magnitude[magnitude > 0, None]
+        normals[magnitude > 0] = normals[magnitude > 0] / magnitude[
+            magnitude > 0, None]
         A = np.einsum('ij,ijk->ik', normals, d_t)
         A *= vol[:, None]
         idc = self.support.elements[elements]

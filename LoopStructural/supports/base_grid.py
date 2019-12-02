@@ -1,6 +1,7 @@
+import logging
+
 import numpy as np
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -8,15 +9,15 @@ class BaseGrid:
     """
     A base class for a model support handles the coordinate transformations
     """
+
     def __init__(self, corners):
         """
         base constructor
         :param corners:
         """
         self.corners = corners
-        
 
-    def update_properties(self,propertyname,values):
+    def update_properties(self, propertyname, values):
         if values.shape[0] == self.n:
             self.proeprties[propertyname] = values
         if values.shape[0] == self.n_cell:
@@ -50,4 +51,3 @@ class BaseGrid:
         """
 
         pass
-

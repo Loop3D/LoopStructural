@@ -1,19 +1,24 @@
+import logging
+
 import numpy as np
 
-from LoopStructural.modelling.features.geological_feature import GeologicalFeature
+from LoopStructural.modelling.features.geological_feature import \
+    GeologicalFeature
 from LoopStructural.supports.scalar_field import ScalarField
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 class FaultedGeologicalFeature(GeologicalFeature):
     """
-    Creates a geological feature that has been faulted using the geological feature representing the fault
+    Creates a geological feature that has been faulted using the geological
+    feature representing the fault
     surface and another feature representing the surface pre faulting.
     """
+
     def __init__(self, feature, fault):
-        logger.error("FaultedGeologicalFeature is depreciated and will be removed")
+        logger.error(
+            "FaultedGeologicalFeature is depreciated and will be removed")
         # start with the feature to be faulted this is the parent feature
         self.parent_feature = feature
         self.fault = fault
@@ -21,22 +26,27 @@ class FaultedGeologicalFeature(GeologicalFeature):
         self.fw_feature = None
         self.fault.apply_to_data(self.parent_feature.data)
 
-        # create a geological feature where the property is evaluated on the support nodes
-        super().__init__(self.parent_feature.name + "_faulted", ScalarField.from_node_values(
-             self.parent_feature.support.support, 
-            self.parent_feature.name+'_faulted', 
-            self.evaluate_value(self.parent_feature.support.support.nodes)))
+        # create a geological feature where the property is evaluated on the
+        # support nodes
+        super().__init__(self.parent_feature.name + "_faulted",
+                         ScalarField.from_node_values(
+                             self.parent_feature.support.support,
+                             self.parent_feature.name + '_faulted',
+                             self.evaluate_value(
+                                 self.parent_feature.support.support.nodes)))
 
     def update(self):
         """
-        Rerun the interpolator for the parent feature and update this features scalar field
+        Rerun the interpolator for the parent feature and update this
+        features scalar field
         Returns
         -------
 
         """
         self.parent_feature.support.interpolator.reset()
         self.parent_feature.update()
-        self.support.update_property(self.evaluate_value(self.parent_feature.support.support.nodes))
+        self.support.update_property(
+            self.evaluate_value(self.parent_feature.support.support.nodes))
 
     def evaluate_value(self, locations):
         """

@@ -1,20 +1,25 @@
+import logging
+
 import numpy as np
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 class ScalarField:
     def __init__(self, support, property_name):
         """
-         A scalar field is a distance from a reference location/horizon within a model area
-        currently the scalar field just interfaces between the model support and the geological
-        feature. In the future, the property values might be stored on the scalar field rather
+         A scalar field is a distance from a reference location/horizon
+         within a model area
+        currently the scalar field just interfaces between the model support
+        and the geological
+        feature. In the future, the property values might be stored on the
+        scalar field rather
         than as a dict on the tetmesh?
         Parameters
         ----------
         support -
-            some geometrical object that represents a discrete supprort such as a
+            some geometrical object that represents a discrete supprort such
+            as a
             tetmesh or structured grid
         property_name - string
             name of the property saved on the support
@@ -26,7 +31,8 @@ class ScalarField:
     @classmethod
     def from_node_values(cls, support, property_name, node_values):
         """
-        Build a scalar field from an array of node values on a support saving the
+        Build a scalar field from an array of node values on a support
+        saving the
         values in the property dictionary
         Parameters
         ----------
@@ -54,13 +60,13 @@ class ScalarField:
 
         """
         interpolator.update()
-        interpolator.support.update_property(interpolator.propertyname, interpolator.c)
+        interpolator.support.update_property(interpolator.propertyname,
+                                             interpolator.c)
         scalar_field = cls(
             interpolator.support,
             interpolator.propertyname)
         scalar_field.interpolator = interpolator
         return scalar_field
-
 
     def evaluate_value(self, evaluation_points):
         """
@@ -75,9 +81,9 @@ class ScalarField:
         """
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
-        mask = np.any(evaluation_points == np.nan,axis=1)
+        mask = np.any(evaluation_points == np.nan, axis=1)
 
-        if evaluation_points[~mask,:].shape[0]>0:
+        if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.support.evaluate_value(
                 evaluation_points[~mask], self.property_name)
         return evaluated
@@ -93,9 +99,10 @@ class ScalarField:
         -------
 
         """
-        if evaluation_points.shape[0]>0:
-            return self.support.evaluate_gradient(evaluation_points, self.property_name)
-        return np.zeros((0,3))
+        if evaluation_points.shape[0] > 0:
+            return self.support.evaluate_gradient(evaluation_points,
+                                                  self.property_name)
+        return np.zeros((0, 3))
 
     def mean(self):
         """

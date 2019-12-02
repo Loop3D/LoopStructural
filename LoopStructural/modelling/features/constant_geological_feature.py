@@ -1,9 +1,9 @@
-import numpy as np
 import logging
+
 logger = logging.getLogger(__name__)
 
 
 class ConstantGeologicalFeature:
 
-    def __init__(self,name,value=None, vector=None):
+    def __init__(self, name, value=None, vector=None):
         pass

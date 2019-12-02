@@ -1,6 +1,7 @@
+import logging
+
 import numpy as np
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -43,14 +44,14 @@ class FoldEvent:
             dgy /= np.linalg.norm(dgy, axis=1)[:, None]
             # get gy
             gy = self.foldframe.features[0].evaluate_value(points)
-            R1 = self.rot_mat(-dgx,self.fold_axis_rotation(gy))
-            fold_axis = np.einsum('ijk,ki->kj',R1,dgy)
-            fold_axis/=np.linalg.norm(fold_axis,axis=1)[:,None]
+            R1 = self.rot_mat(-dgx, self.fold_axis_rotation(gy))
+            fold_axis = np.einsum('ijk,ki->kj', R1, dgy)
+            fold_axis /= np.linalg.norm(fold_axis, axis=1)[:, None]
             return fold_axis
 
         # use constant fold axis
         if self.fold_axis is not None:
-            return np.tile(self.fold_axis,(points.shape[0],1))
+            return np.tile(self.fold_axis, (points.shape[0], 1))
 
     def get_deformed_orientation(self, points):
         """
@@ -74,11 +75,11 @@ class FoldEvent:
 
         R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))
         fold_direction = np.einsum('ijk,ki->kj', R2, dgx)
-        fold_direction/= np.sum(fold_direction, axis=1)[:, None]
+        fold_direction /= np.sum(fold_direction, axis=1)[:, None]
         # calculate dot product between fold_direction and axis
         # if its less than 0 then inverse dgz
-        d = np.einsum('ij,ik->i', fold_direction,fold_axis)
-        dgz[d < 0] = -dgz[d < 0 ]
+        d = np.einsum('ij,ik->i', fold_direction, fold_axis)
+        dgz[d < 0] = -dgz[d < 0]
         return fold_direction, fold_axis, dgz
 
     def get_regularisation_direction(self, points):
@@ -100,28 +101,28 @@ class FoldEvent:
         c = np.cos(np.deg2rad(angle))
         s = np.sin(np.deg2rad(angle))
         C = 1.0 - c
-        x = axis[:,0]
-        y = axis[:,1]
-        z = axis[:,2]
-        xs = x*s
-        ys = y*s
-        zs = z*s
-        xC = x*C
-        yC = y*C
-        zC = z*C
-        xyC = x*yC
-        yzC = y*zC
-        zxC = z*xC
-        rotation_mat = np.zeros((3,3,len(angle)))
-        rotation_mat[0,0,:] = x*xC+c
-        rotation_mat[0,1,:] = xyC-zs
-        rotation_mat[0,2,:] = zxC+ys
+        x = axis[:, 0]
+        y = axis[:, 1]
+        z = axis[:, 2]
+        xs = x * s
+        ys = y * s
+        zs = z * s
+        xC = x * C
+        yC = y * C
+        zC = z * C
+        xyC = x * yC
+        yzC = y * zC
+        zxC = z * xC
+        rotation_mat = np.zeros((3, 3, len(angle)))
+        rotation_mat[0, 0, :] = x * xC + c
+        rotation_mat[0, 1, :] = xyC - zs
+        rotation_mat[0, 2, :] = zxC + ys
 
-        rotation_mat[1,0,:] = xyC+zs
-        rotation_mat[1,1,:] = y*yC+c
-        rotation_mat[1,2,:] = yzC-xs
+        rotation_mat[1, 0, :] = xyC + zs
+        rotation_mat[1, 1, :] = y * yC + c
+        rotation_mat[1, 2, :] = yzC - xs
 
-        rotation_mat[2,0,:] = zxC -ys
-        rotation_mat[2,1,:] = yzC+xs
-        rotation_mat[2,2,:] = z*zC+c
-        return rotation_mat    
+        rotation_mat[2, 0, :] = zxC - ys
+        rotation_mat[2, 1, :] = yzC + xs
+        rotation_mat[2, 2, :] = z * zC + c
+        return rotation_mat

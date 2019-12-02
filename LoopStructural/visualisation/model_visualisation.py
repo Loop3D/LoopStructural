@@ -1,9 +1,14 @@
+import logging
+
 import lavavu
+import numpy as np
 from lavavu.vutils import is_notebook
+
 from LoopStructural.utils.helper import create_surface
 import numpy as np
 import logging
 from skimage.measure import marching_cubes_lewiner as marching_cubes
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,10 +104,12 @@ class LavaVuModelViewer:
             surf.colours(colour)
         if geological_feature is not None:
             if 'norm' in kwargs:
-                surf.values(np.linalg.norm(geological_feature.evaluate_gradient(points), axis=1),
+                surf.values(np.linalg.norm(
+                    geological_feature.evaluate_gradient(points), axis=1),
                             geological_feature.name)
             else:
-                surf.values(geological_feature.evaluate_value(points), geological_feature.name)
+                surf.values(geological_feature.evaluate_value(points),
+                            geological_feature.name)
             surf["colourby"] = geological_feature.name
             cmap = lavavu.cubehelix(100)
             if 'cmap' in kwargs:
@@ -148,13 +155,16 @@ class LavaVuModelViewer:
         if 'nslices' in kwargs:
             var = max_property_val - min_property_val
             # buffer slices by 5%
-            slices = np.linspace(min_property_val+var*0.05, max_property_val-var*0.05, kwargs['nslices'])
+            slices = np.linspace(min_property_val + var * 0.05,
+                                 max_property_val - var * 0.05,
+                                 kwargs['nslices'])
         if 'colour' in kwargs:
             colour = kwargs['colour']
         if 'paint_with' in kwargs:
             painter = kwargs['paint_with']
 
         region = kwargs.get('region',None)
+
         # do isosurfacing of support using marching tetras/cubes
         x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
         y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
@@ -167,6 +177,7 @@ class LavaVuModelViewer:
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
         for isovalue in slices:
             logger.debug("Creating isosurface for %f"%isovalue)
+
 
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
                 logger.warning("Isovalue doesn't exist inside bounding box")
@@ -221,19 +232,16 @@ class LavaVuModelViewer:
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
             cmap = kwargs['cmap']
-            if isinstance(cmap,str):
+            if isinstance(cmap, str):
                 cmap = lavavu.matplotlib_colourmap(cmap)
 
-
-
-
-
         tri, xx, yy = create_surface(self.bounding_box[0:2, :], self.nsteps[0:2])
+
 
         zz = np.zeros(xx.shape)
         zz[:] = self.bounding_box[1, 2]
 
-        tri = np.vstack([tri, tri + np.max(tri)+1])
+        tri = np.vstack([tri, tri + np.max(tri) + 1])
         xx = np.hstack([xx, xx])
         yy = np.hstack([yy, yy])
 
@@ -243,6 +251,7 @@ class LavaVuModelViewer:
         # y faces
         t, x, z = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
         tri = np.vstack([tri, t + np.max(tri)+1])
+
         y = np.zeros(x.shape)
         y[:] = self.bounding_box[0, 1]
         xx = np.hstack([xx, x])
@@ -313,11 +322,12 @@ class LavaVuModelViewer:
             locations = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         vector = geological_feature.evaluate_gradient(locations)
         # normalise
-        mask = ~np.any(np.isnan(vector),axis=1)
-        vector[mask,:] /= np.linalg.norm(vector[mask,:], axis=1)[:, None]
-        vectorfield = self.lv.vectors(geological_feature.name + "_grad", **kwargs)
-        vectorfield.vertices(locations[mask,:])
-        vectorfield.vectors(vector[mask,:])
+        mask = ~np.any(np.isnan(vector), axis=1)
+        vector[mask, :] /= np.linalg.norm(vector[mask, :], axis=1)[:, None]
+        vectorfield = self.lv.vectors(geological_feature.name + "_grad",
+                                      **kwargs)
+        vectorfield.vertices(locations[mask, :])
+        vectorfield.vectors(vector[mask, :])
         return
 
     def add_data(self, feature, **kwargs):
@@ -349,12 +359,16 @@ class LavaVuModelViewer:
         norm = feature.support.interpolator.get_norm_constraints()
         value = feature.support.interpolator.get_value_constraints()
         if grad.shape[0] > 0 and add_grad:
-            self.add_vector_data(grad[:, :3], grad[:, 3:], name + "_grad_cp", **kwargs)
+            self.add_vector_data(grad[:, :3], grad[:, 3:], name + "_grad_cp",
+                                 **kwargs)
         if norm.shape[0] > 0 and add_grad:
-            self.add_vector_data(norm[:, :3], norm[:, 3:], name + "_norm_cp", **kwargs)
+            self.add_vector_data(norm[:, :3], norm[:, 3:], name + "_norm_cp",
+                                 **kwargs)
         if value.shape[0] > 0 and add_value:
             kwargs['range'] = [feature.min(), feature.max()]
-            self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp", **kwargs)
+            self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp",
+                                **kwargs)
+
     def add_points(self, points, name, **kwargs):
         """
 
@@ -420,13 +434,13 @@ class LavaVuModelViewer:
         if "pointsize" not in kwargs:
             kwargs["pointsize"] = 4
         # set the colour map to diverge unless user decides otherwise
-        cmap = kwargs.get('cmap',"diverge")
+        cmap = kwargs.get('cmap', "diverge")
         p = self.lv.points(name, **kwargs)
         p.vertices(position)
-        p.values(value,"v")
+        p.values(value, "v")
         p["colourby"] = "v"
         if 'range' in kwargs:
-            p.colourmap(cmap,range=kwargs['range'])
+            p.colourmap(cmap, range=kwargs['range'])
         else:
             p.colourmap(cmap)
 
@@ -487,7 +501,7 @@ class LavaVuModelViewer:
         """
         self.lv.rotate(rotation)
 
-    def save(self,fname,**kwargs):
+    def save(self, fname, **kwargs):
         """
         Calls lavavu.Viewer.image to save the viewer current state as an image
 
@@ -587,4 +601,5 @@ class LavaVuModelViewer:
 
         """
         self.lv.rotate(r)
+
 

@@ -1,8 +1,11 @@
-from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator
-from LoopStructural.cython.dsi_helper import fold_cg
-import numpy as np
-
 import logging
+
+import numpy as np
+from LoopStructural.cython.dsi_helper import fold_cg
+
+from LoopStructural.interpolators.piecewiselinear_interpolator import \
+    PiecewiseLinearInterpolator
+
 
 logger = logging.getLogger(__name__)
 
@@ -147,3 +150,4 @@ def add_fold_constraints(self, fold_orientation=None, fold_axis=None, fold_regul
         B = np.zeros(A.shape[0])
         idc = np.array(idc[:ncons, :])
         self.add_constraints_to_least_squares(A, B, idc)
+

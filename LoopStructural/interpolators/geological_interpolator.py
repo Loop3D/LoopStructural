@@ -1,7 +1,10 @@
-import numpy as np
-from LoopStructural.modelling.core.geological_points import IPoint, GPoint, TPoint
-
 import logging
+
+import numpy as np
+
+from LoopStructural.modelling.core.geological_points import IPoint, GPoint, \
+    TPoint
+
 logger = logging.getLogger(__name__)
 
 
@@ -13,10 +16,10 @@ class GeologicalInterpolator:
         main interface functions. Any class that is inheriting from this should be callable
         by using any of these functions. This will enable interpolators to be interchanged.
         """
-        self.p_i = [] #interface points #   TODO create data container
-        self.p_g = [] #gradient points
-        self.p_t = [] #tangent points
-        self.p_n = [] #norm constraints
+        self.p_i = []  # interface points #   TODO create data container
+        self.p_g = []  # gradient points
+        self.p_t = []  # tangent points
+        self.p_n = []  # norm constraints
         self.n_i = 0
         self.n_g = 0
         self.n_t = 0
@@ -59,13 +62,13 @@ class GeologicalInterpolator:
         -------
 
         """
-        self.n_g +=1
-        self.p_g.append(GPoint(pos,strike,dip))
+        self.n_g += 1
+        self.p_g.append(GPoint(pos, strike, dip))
         self.n_i = self.n_i + 1
-        self.p_i.append(IPoint(pos,val))
+        self.p_i.append(IPoint(pos, val))
         self.up_to_date = False
 
-    def add_point(self,pos,val):
+    def add_point(self, pos, val):
         """
         Add a value constraint to the interpolator
         Parameters
@@ -81,7 +84,7 @@ class GeologicalInterpolator:
         """
 
         self.n_i = self.n_i + 1
-        self.p_i.append(IPoint(pos,val))
+        self.p_i.append(IPoint(pos, val))
 
     def add_planar_constraint(self, position, vector, norm=True):
         """
@@ -104,9 +107,10 @@ class GeologicalInterpolator:
         elif norm is False:
             self.n_g = self.n_g+1
             self.p_g.append(GPoint(position,vector))
+
         self.up_to_date = False
 
-    def add_strike_and_dip(self,pos,s,d, norm=True):
+    def add_strike_and_dip(self, pos, s, d, norm=True):
         """
         Add gradient constraint to the interpolator where the gradient is defined by strike and dip
 
@@ -120,32 +124,35 @@ class GeologicalInterpolator:
         Returns
         -------
 
+
         """
         self.n_g += 1
-        self.p_g.append(GPoint(pos,s,d))
+        self.p_g.append(GPoint(pos, s, d))
         self.up_to_date = False
 
-    def add_tangent_constraint(self,pos,val):
+    def add_tangent_constraint(self, pos, val):
         """
-        Add tangent constraint to the interpolator where the tangent is described by a vector
+        Add tangent constraint to the interpolator where the tangent is
+        described by a vector
         :param pos:
         :param val:
         :return:
         """
         self.n_t = self.n_t + 1
-        self.p_t.append(TPoint(pos,val))
+        self.p_t.append(TPoint(pos, val))
         self.up_to_date = False
 
-    def add_tangent_constraint_angle(self,pos,s,d):
+    def add_tangent_constraint_angle(self, pos, s, d):
         """
-        Add tangent constraint to the interpolator where the trangent is described by the strike and dip
+        Add tangent constraint to the interpolator where the trangent is
+        described by the strike and dip
         :param pos:
         :param s:
         :param d:
         :return:
         """
         self.n_t = self.n_t + 1
-        self.p_t.append(TPoint(pos,s,d))
+        self.p_t.append(TPoint(pos, s, d))
         self.up_to_date = False
 
     def add_data(self, data):
@@ -157,20 +164,20 @@ class GeologicalInterpolator:
         if data.type == 'GPoint':
             if not data.norm:
                 self.p_g.append(data)
-                self.n_g+=1
+                self.n_g += 1
             if data.norm:
                 self.p_n.append(data)
-                self.n_n+=1
+                self.n_n += 1
             self.up_to_date = False
             return
         if data.type == 'IPoint':
             self.p_i.append(data)
-            self.n_i+=1
+            self.n_i += 1
             self.up_to_date = False
             return
         if data.type == 'TPoint':
             self.p_t.append(data)
-            self.n_t+=1
+            self.n_t += 1
             self.up_to_date = False
             return
         else:
@@ -183,11 +190,11 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-
         points = np.zeros((self.n_i,4))#array
+
         for i in range(self.n_i):
-            points[i,:3] = self.p_i[i].pos
-            points[i,3] = self.p_i[i].val
+            points[i, :3] = self.p_i[i].pos
+            points[i, 3] = self.p_i[i].val
         return points
 
     def get_gradient_constraints(self):
@@ -197,10 +204,10 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((self.n_g,6))  # array
+        points = np.zeros((self.n_g, 6))  # array
         for i in range(self.n_g):
-            points[i,:3] = self.p_g[i].pos
-            points[i,3:] = self.p_g[i].vec
+            points[i, :3] = self.p_g[i].pos
+            points[i, 3:] = self.p_g[i].vec
         return points
 
     def get_tangent_constraints(self):
@@ -211,9 +218,10 @@ class GeologicalInterpolator:
         numpy array
         """
         points = np.zeros((self.n_t,6))  # array
+
         for i in range(self.n_t):
-            points[i,:3] = self.p_t[i].pos
-            points[i,3:] = self.p_t[i].dir
+            points[i, :3] = self.p_t[i].pos
+            points[i, 3:] = self.p_t[i].dir
         return points
 
     def get_norm_constraints(self):
@@ -224,9 +232,10 @@ class GeologicalInterpolator:
         numpy array
         """
         points = np.zeros((self.n_n,6))
+
         for i in range(self.n_n):
-            points[i,:3] = self.p_n[i].pos
-            points[i,3:] = self.p_n[i].vec
+            points[i, :3] = self.p_n[i].pos
+            points[i, 3:] = self.p_n[i].vec
         return points
 
     def setup_interpolator(self, **kwargs):
@@ -235,10 +244,9 @@ class GeologicalInterpolator:
         """
         self._setup_interpolator(**kwargs)
 
-    def solve_system(self,**kwargs):
+    def solve_system(self, **kwargs):
         """
         Solves the interpolation equations
         """
         self._solve(**kwargs)
         self.up_to_date = True
-

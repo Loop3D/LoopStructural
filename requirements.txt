@@ -1,14 +1,10 @@
-networkx
+cython
 scikit-learn
 scikit-image
 meshpy
 scipy
 lavavu
-cython
 numpy
-jupyter
 matplotlib
-meshio
-geopandas
 pyamg
 setuptools
