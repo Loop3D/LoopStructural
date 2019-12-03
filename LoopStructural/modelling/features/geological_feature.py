@@ -282,7 +282,10 @@ class GeologicalFeatureInterpolator:
         # self.interpolator.set_region(region=self.region)
         if "fold" in kwargs and "fold_weights" in kwargs:
             self.interpolator.update_fold(kwargs['fold'])
-            self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
+            if kwargs['fold_weights'] is None:
+                self.interpolator.add_fold_constraints()
+            else:
+               self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
             if 'cgw' not in kwargs:
                 kwargs['cgw'] = 0.
             # if self.interpolator.interpolation_weights['cgw'] == 0:

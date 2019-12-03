@@ -1,27 +1,81 @@
-from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
-from LoopStructural.interpolators.discrete_fold_interpolator import DiscreteFoldInterpolator as DFI
-from LoopStructural.supports.tet_mesh import TetMesh
-from LoopStructural.modelling.features.geological_feature import GeologicalFeatureInterpolator
-from LoopStructural.interpolators.finite_difference_interpolator import FiniteDifferenceInterpolator as FDI
-from LoopStructural.supports.structured_grid import StructuredGrid
-from LoopStructural.modelling.features.structural_frame import StructuralFrameBuilder
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
-from LoopStructural.modelling.fold.foldframe import FoldFrame
-from LoopStructural.modelling.fold.fold import FoldEvent
-from LoopStructural.modelling.fold.svariogram import SVariogram
-from LoopStructural.modelling.fold.fold_rotation_angle_feature import fourier_series
-from LoopStructural.modelling.features import RegionFeature
-from scipy.optimize import curve_fit
+import logging
+
 import numpy as np
 import pandas as pd
-import logging
+from scipy.optimize import curve_fit
+
+from LoopStructural.interpolators.discrete_fold_interpolator import \
+    DiscreteFoldInterpolator as DFI
+from LoopStructural.interpolators.finite_difference_interpolator import \
+    FiniteDifferenceInterpolator as FDI
+from LoopStructural.interpolators.piecewiselinear_interpolator import \
+    PiecewiseLinearInterpolator as PLI
+from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.features import RegionFeature
+from LoopStructural.modelling.features.geological_feature import \
+    GeologicalFeatureInterpolator
+from LoopStructural.modelling.features.structural_frame import \
+    StructuralFrameBuilder
+from LoopStructural.modelling.fold.fold import FoldEvent
+from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
+    fourier_series
+from LoopStructural.modelling.fold.svariogram import SVariogram
+from LoopStructural.modelling.fold.foldframe import FoldFrame
+from LoopStructural.supports.structured_grid import StructuredGrid
+from LoopStructural.supports.tet_mesh import TetMesh
 
 logger = logging.getLogger(__name__)
 
 
+def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl):
+    flr, s = fold_frame.calculate_fold_limb_rotation(series_builder,
+                                                     axis=fold.get_fold_axis_orientation)
+    result['limb_rotation'] = flr
+    result['foliation'] = s
+    if limb_wl is None:
+        limb_svariogram = SVariogram(s, flr)
+        limb_wl = limb_svariogram.find_wavelengths()
+    guess = np.zeros(4)
+    guess[3] = limb_wl
+    if len(flr) < len(guess):
+        logger.warning("Not enough data to fit curve")
+        fold.fold_limb_rotation = lambda x: 0
+    else:
+        popt, pcov = curve_fit(fourier_series, s, np.tan(np.deg2rad(flr)),
+                               guess)
+        fold.fold_limb_rotation = lambda x: np.rad2deg(
+            np.arctan(
+                fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
+
+
+def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl):
+    far, fad = fold_frame.calculate_fold_axis_rotation(
+        series_builder)
+    # axis_wl = kwargs.get("axis_wavelength", None)
+    if axis_wl is None:
+        axis_svariogram = SVariogram(fad, far)
+        axis_wl = axis_svariogram.find_wavelengths()
+    guess = np.zeros(3)
+    guess[2] = axis_wl
+    if len(far) < len(guess):
+        logger.warning("Not enough data to fit curve")
+        fold.fold_axis_rotation = lambda x: -1
+    else:
+
+        popt, pcov = curve_fit(fourier_series, fad,
+                               np.tan(np.rad1deg(far)), guess)
+        fold.fold_axis_rotation = lambda x: np.rad1deg(
+            np.arctan(
+                fourier_series(x, popt[-1], popt[1], popt[2], popt[3])))
+    result['axis_direction'] = fad
+    result['axis_rotation'] = far
+    result['axis_svario'] = axis_svariogram
+
+
 class GeologicalModel:
     """
-    A geological model is the recipe for building a 3D model and includes the rescaling
+    A geological model is the recipe for building a 3D model and includes
+    the rescaling
     of the model between 0 and 1.
     """
 
@@ -59,18 +113,22 @@ class GeologicalModel:
         Parameters
         ----------
         data - pandas data frame with column headers corresponding to the
-         type, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge, plunge_dir, azimuth
+         type, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
+         plunge_dir, azimuth
 
         Returns
         -------
 
         Note
         ----
-        Type can be any unique identifier for the feature the data point 'eg' 'S0', 'S2', 'F1_axis'
+        Type can be any unique identifier for the feature the data point
+        'eg' 'S0', 'S2', 'F1_axis'
         it is then used by the create functions to get the correct data
         """
         if type(data) != pd.DataFrame:
-            logger.warning("Data is not a pandas data frame, trying to read data frame from csv")
+            logger.warning(
+                "Data is not a pandas data frame, trying to read data frame "
+                "from csv")
             try:
                 data = pd.read_csv(data)
             except:
@@ -97,9 +155,11 @@ class GeologicalModel:
         """
         self.data.append(newdata)
 
-    def get_interpolator(self, interpolatortype='PLI', nelements=5e5, buffer=0.02, **kwargs):
+    def get_interpolator(self, interpolatortype='PLI', nelements=5e5,
+                         buffer=0.02, **kwargs):
         """
-        Returns an interpolator given the arguments, also constructs a support for a discrete
+        Returns an interpolator given the arguments, also constructs a
+        support for a discrete
         interpolator
         Parameters
         ----------
@@ -119,7 +179,8 @@ class GeologicalModel:
         # get an interpolator for 
         interpolator = None
         bb = np.copy(self.bounding_box)
-        # add a buffer to the interpolation domain, this is necessary for faults but also generally a good
+        # add a buffer to the interpolation domain, this is necessary for
+        # faults but also generally a good
         # idea to avoid boundary problems
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
@@ -137,7 +198,8 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector)
+            grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,
+                                  step_vector=step_vector)
             return FDI(grid)
         if interpolatortype == "DFI":  # "fold" in kwargs:
             mesh = TetMesh()
@@ -150,7 +212,8 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        series_surface_data - string corresponding to the type in the data frame column
+        series_surface_data - string corresponding to the type in the data
+        frame column
         kwargs
 
         Returns
@@ -159,7 +222,9 @@ class GeologicalModel:
 
         """
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(interpolator, name=series_surface_data, **kwargs)
+        series_builder = GeologicalFeatureInterpolator(interpolator,
+                                                       name=series_surface_data,
+                                                       **kwargs)
         # add data
         series_data = self.data[self.data['type'] == series_surface_data]
         series_builder.add_data_from_data_frame(series_data)
@@ -174,8 +239,9 @@ class GeologicalModel:
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
         for f in reversed(self.features):
-            if f.type is 'unconformity':
-                series_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
+            if f.type == 'unconformity':
+                series_feature.add_region(
+                    lambda pos: f.evaluate_value(pos) < 0)
                 break
         self.features.append(series_feature)
         result = {}
@@ -197,11 +263,14 @@ class GeologicalModel:
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
-        fold_frame_builder = StructuralFrameBuilder(interpolator, name=foldframe_data, **kwargs)
+        fold_frame_builder = StructuralFrameBuilder(interpolator,
+                                                    name=foldframe_data,
+                                                    **kwargs)
         # add data
         fold_frame_data = self.data[self.data['type'] == foldframe_data]
         fold_frame_builder.add_data_from_data_frame(fold_frame_data)
-        # if there is no fault slip data then we could find the strike of the fault and build
+        # if there is no fault slip data then we could find the strike of
+        # the fault and build
         # the second coordinate
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
         for f in reversed(self.features):
@@ -225,6 +294,7 @@ class GeologicalModel:
         -------
         dict
         """
+
         result = {}
 
         fold = FoldEvent(fold_frame)
@@ -233,80 +303,95 @@ class GeologicalModel:
             interpolator=fold_interpolator,
             name=foliation_data)
 
-        series_builder.add_data_from_data_frame(self.data[self.data['type'] == foliation_data])
+        series_builder.add_data_from_data_frame(
+            self.data[self.data['type'] == foliation_data])
         series_builder.add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
             pass
         if "fold_axis" not in kwargs:
-            far, fad = fold_frame.calculate_fold_axis_rotation(
-                series_builder)
             axis_wl = kwargs.get("axis_wavelength", None)
-            if axis_wl is None:
-                axis_svariogram = SVariogram(fad, far)
-                axis_wl = axis_svariogram.find_wavelengths()
-            guess = np.zeros(4)
-            guess[3] = axis_wl
-            if len(far) < len(guess):
-                logger.warning("Not enough data to fit curve")
-                fold.fold_axis_rotation = lambda x: 0
-            else:
-                popt, pcov = curve_fit(fourier_series, fad, np.tan(np.rad2deg(far)), guess)
-                fold.fold_axis_rotation = lambda x: np.rad2deg(
-                    np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
-            result['axis_direction'] = fad
-            result['axis_rotation'] = far
-            result['axis_svario'] = axis_svariogram
-        flr, s = fold_frame.calculate_fold_limb_rotation(series_builder, axis=fold.get_fold_axis_orientation)
-        result['limb_rotation'] = flr
-        result['foliation'] = s
+            _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl)
         limb_wl = kwargs.get("limb_wl", None)
-        if limb_wl is None:
-            limb_svariogram = SVariogram(s, flr)
-            limb_wl = limb_svariogram.find_wavelengths()
-        guess = np.zeros(4)
-        guess[3] = limb_wl
-        if len(flr) < len(guess):
-            logger.warning("Not enough data to fit curve")
-            fold.fold_limb_rotation = lambda x: 0
-        else:
-            popt, pcov = curve_fit(fourier_series, s, np.tan(np.deg2rad(flr)), guess)
-            fold.fold_limb_rotation = lambda x: np.rad2deg(
-                np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
-        fold_weights = kwargs.get('fold_weights', None)
+        _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl)
+        kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
-        if fold_weights is None:
-            fold_weights = {}
-            fold_weights['fold_orientation'] = 10.  # reference values?
-            fold_weights['fold_axis'] = 10.  # reference values?
-            fold_weights['fold_normalisation'] = 1.  # reference values?
-            fold_weights['fold_regularisation'] = .100  # reference values?
-            kwargs['fold_weights'] = fold_weights
 
-            for f in reversed(self.features):
-                if f.type == 'fault':
-                    series_builder.add_fault(f)
-                if f.type == 'unconformity':
-                    break
+
+        self._add_faults(series_builder)
         # build feature
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
         series_feature = series_builder.build(**kwargs)
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
-        for f in reversed(self.features):
-            if f.type is 'unconformity':
-                series_feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
-                break
+        self._add_unconformity_above(series_feature)
+
         self.features.append(series_feature)
+
         result['feature'] = series_feature
         result['fold'] = fold
         return result
 
-    def create_and_add_folded_fold_frame(self, foliation_data, fold_frame, **kwargs):
+    def create_and_add_folded_fold_frame(self, fold_frame_data, fold_frame,
+                                         **kwargs):
+        result = {}
 
-        pass
+        fold = FoldEvent(fold_frame)
+        fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+        frame_interpolator = self.get_interpolator(**kwargs)
+        interpolators = [fold_interpolator, frame_interpolator, frame_interpolator.copy()]
+        fold_frame_builder = StructuralFrameBuilder(interpolators=interpolators, name=fold_frame_data, **kwargs)
+        fold_frame_builder.add_data_from_data_frame(fold_frame_data)
+
+        series_builder = GeologicalFeatureInterpolator(
+            interpolator=fold_interpolator,
+            name=fold_frame_data)
+        ## add the data to the interpolator for the main foliation
+        fold_frame_builder.add_data_to_interpolator(True)
+        if "fold_axis" in kwargs:
+            fold.fold_axis = kwargs['fold_axis']
+        if "av_fold_axis" in kwargs:
+            pass
+        if "fold_axis" not in kwargs:
+            axis_wl = kwargs.get("axis_wavelength", None)
+            _interpolate_fold_axis_rotation_angle(fold_frame_builder[0],
+                                                  fold_frame,
+                                                  fold, result, axis_wl)
+        limb_wl = kwargs.get("limb_wl", None)
+        _interpolate_fold_limb_rotation_angle(fold_frame_builder[0], fold_frame, fold, result, limb_wl)
+        kwargs['fold_weights'] = kwargs.get('fold_weights', None)
+
+        for i in range(3):
+            self._add_faults(fold_frame_builder[i])
+        # build feature
+        kwargs['cgw'] = 0.
+        kwargs['fold'] = fold
+        fold_frame = fold_frame_builder.build(**kwargs)
+        fold_frame.type = 'structuralframe'
+        # see if any unconformities are above this feature if so add region
+        for i in range(3):
+            self._add_unconformity_above(fold_frame[i])
+
+        self.features.append(fold_frame)
+
+        result['feature'] = fold_frame
+        result['fold'] = fold
+        return result
+
+    def _add_faults(self, feature_builder):
+        for f in reversed(self.features):
+            if f.type == 'fault':
+                feature_builder.add_fault(f)
+            if f.type == 'unconformity':
+                break
+
+    def _add_unconformity_above(self, feature):
+        for f in reversed(self.features):
+            if f.type == 'unconformity':
+                feature.add_region(lambda pos: f.evaluate_value(pos) <= 0)
+                break
 
     def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
         """
@@ -321,33 +406,31 @@ class GeologicalModel:
 
         """
         interpolator = self.get_interpolator(**kwargs)
-        unconformity_feature_builder = GeologicalFeatureInterpolator(interpolator, name=unconformity_surface_data)
+        unconformity_feature_builder = GeologicalFeatureInterpolator(
+            interpolator, name=unconformity_surface_data)
         # add data
-        unconformity_data = self.data[self.data['type'] == unconformity_surface_data]
+        unconformity_data = self.data[
+            self.data['type'] == unconformity_surface_data]
 
-        unconformity_feature_builder.add_data_from_data_frame(unconformity_data)
-        # look through existing features if there is a fault before an unconformity
+        unconformity_feature_builder.add_data_from_data_frame(
+            unconformity_data)
+        # look through existing features if there is a fault before an
+        # unconformity
         # then add to the feature, once we get to an unconformity stop
-        for f in reversed(self.features):
-            if f.type == 'fault':
-                unconformity_feature_builder.add_fault(f)
-            if f.type == 'unconformity':
-                break
+        self._add_faults(unconformity_feature_builder)
 
         # build feature
         uc_feature = unconformity_feature_builder.build(**kwargs)
         uc_feature.type = 'unconformity'
 
-        # iterate over existing features and add the unconformity as a region so the feature is only
+        # iterate over existing features and add the unconformity as a
+        # region so the feature is only
         # evaluated where the unconformity is positive
         for f in self.features:
             f.add_region(lambda pos: uc_feature.evaluate_value(pos) >= 0)
 
         # see if any unconformities are above this feature if so add region
-        for f in reversed(self.features):
-            if f.type == 'unconformity':
-                uc_feature.add_region(lambda pos: f.evaluate_value(pos) <= 0)
-                break
+        self._add_unconformity_above(uc_feature)
 
         self.features.append(uc_feature)
         result = {}
@@ -373,26 +456,33 @@ class GeologicalModel:
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
-        fault_frame_builder = StructuralFrameBuilder(interpolator, name=fault_surface_data, **kwargs)
+        fault_frame_builder = StructuralFrameBuilder(interpolator,
+                                                     name=fault_surface_data,
+                                                     **kwargs)
         # add data
         fault_frame_data = self.data[self.data['type'] == fault_surface_data]
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
-        # if there is no fault slip data then we could find the strike of the fault and build
+        # if there is no fault slip data then we could find the strike of
+        # the fault and build
         # the second coordinate
-        # if we add a region to the fault then the fault operator doesn't work but for visualisation
+        # if we add a region to the fault then the fault operator doesn't
+        # work but for visualisation
         # we want to add a region!
 
         if 'splayregion' in kwargs and 'splay' in kwargs:
             result['splayregionfeature'] = RegionFeature(kwargs['splayregion'])
             # apply splay to all parts of fault frame
             for i in range(3):
-                # work out the values of the nodes where we want hard constraints
+                # work out the values of the nodes where we want hard
+                # constraints
                 idc = np.arange(0, interpolator.support.n_nodes)[
                     kwargs['splayregion'](interpolator.support.nodes)]
                 val = kwargs['splay'][i].evaluate_value(
-                    interpolator.support.nodes[kwargs['splayregion'](interpolator.support.nodes), :])
+                    interpolator.support.nodes[
+                    kwargs['splayregion'](interpolator.support.nodes), :])
                 mask = ~np.isnan(val)
-                fault_frame_builder[i].interpolator.add_equality_constraints(idc[mask], val[mask])
+                fault_frame_builder[i].interpolator.add_equality_constraints(
+                    idc[mask], val[mask])
         # check if any faults exist in the stack
 
         for f in reversed(self.features):
@@ -407,9 +497,10 @@ class GeologicalModel:
         if 'abut' in kwargs:
             fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
 
-        fault = FaultSegment(fault_frame, displacement=displacement_scaled, **kwargs)
+        fault = FaultSegment(fault_frame, displacement=displacement_scaled,
+                             **kwargs)
         for f in reversed(self.features):
-            if f.type is 'unconformity':
+            if f.type == 'unconformity':
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
         if displacement == 0:
@@ -445,6 +536,7 @@ class GeologicalModel:
         -------
 
         """
+
         points[:, :] -= self.origin
         points /= self.scale_factor
         return points
