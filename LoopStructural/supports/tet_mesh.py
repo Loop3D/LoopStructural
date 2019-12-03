@@ -3,14 +3,10 @@ import logging
 import meshpy.tet
 import numpy as np
 from LoopStructural.cython.dsi_helper import cg
-from LoopStructural.cython.marching_tetra import marching_tetra
 from numpy import linalg as la
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
-from LoopStructural.cython.dsi_helper import cg
-
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -385,35 +381,7 @@ class TetMesh:
         a[logic] /= asum[logic, None]
         return a
 
-    def export_to_vtk(self, name='mesh.vtk'):
-        try:
-            import meshio
-        except ImportError:
-            logger.warning("Couldn't import meshio not saving VTK")
-            return
-        meshio.write_points_cells(name,
-                                  self.nodes, {"tetra": self.elements},
-                                  point_data=self.properties,
-                                  cell_data={'tetra': self.property_gradients}
-                                  )
 
-    def save(self):
-        if self.save_mesh:
-            self.export_to_vtk(self.path + self.name + '.vtk')
-
-    def get_connected_nodes_for_mask(self, mask):
-        """
-        adjusts mask to return all nodes where any node in the element is
-        true as true
-        :param mask: original mask
-        :return: nodes and adjusted mask
-        """
-        mask1 = np.copy(mask)
-        element_mask = mask[self.elements]
-        element_mask2 = np.any(element_mask == True, axis=1)
-        element_mask2 = np.tile(element_mask2, (4, 1)).T
-        mask[self.elements] = element_mask2
-        return self.nodes[mask], mask
 
     def slice(self, propertyname, isovalue, region='everywhere'):
         """

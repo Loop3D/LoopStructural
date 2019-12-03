@@ -109,7 +109,7 @@ class FoldFrame(StructuralFrame):
         # for the locations and normalise
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
-        s1 = self.features[0].evaluate_value(points[:, :3])
+        # s1 = self.features[0].evaluate_value(points[:, :3])
         if axis is None:
             r2 = np.einsum('ij,ij->i', s1g, s0g)
             return np.rad2deg(np.arcsin(r2)), self.features[0].evaluate_value(
