@@ -293,7 +293,7 @@ class LavaVuModelViewer:
         if 'cmap' in kwargs:
             cmap = kwargs['cmap']
         vmin = kwargs.get('vmin',geological_feature.min())
-        vmax = kwargs.gem('vmax',geological_feature.max())
+        vmax = kwargs.get('vmax',geological_feature.max())
         # surf.colourmap(cmap,range= (painter.min(),painter.max()))
         surf.colourmap(cmap,range=(vmin,vmax))  # nodes.shape[0]))
         #return tri, xx, yy, zz
