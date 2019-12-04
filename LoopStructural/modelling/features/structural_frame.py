@@ -122,19 +122,19 @@ class StructuralFrameBuilder:
         self.name = 'Undefined'
         #self.region = 'everywhere'
         self.builders = []
-        if 'support' in kwargs:
-            self.support = kwargs['support']
-            del kwargs['support']
-        if 'mesh' in kwargs:
-            self.support = kwargs['mesh']
-            del kwargs['mesh']
+        # if 'support' in kwargs:
+        #     self.support = kwargs['support']
+        #     del kwargs['support']
+        # if 'mesh' in kwargs:
+        #     self.support = kwargs['mesh']
+        #     del kwargs['mesh']
         if 'name' in kwargs:
             self.name = kwargs['name']
             kwargs.pop('name')
-        if 'region' in kwargs:
-            self.region = kwargs['region']
-        if self.support is None:
-            self.support = interpolator.support
+        # if 'region' in kwargs:
+        #     self.region = kwargs['region']
+        # if self.support is None:
+        #     self.support = interpolator.support
         self.data = [ [] , [] ,[]]
         # list of interpolators
         # self.interpolators = []
@@ -413,24 +413,14 @@ class StructuralFrameBuilder:
             #         gy_feature.evaluate_gradient(self.support.barycentre),
             #         w=gyxgz)
             if gx_feature is not None:
-                self.builders[2].interpolator.add_gradient_orthogonal_constraint(
-                    np.arange(0, self.support.n_elements),
-                    gx_feature.evaluate_gradient(self.support.barycentre),
-                    w=gxxgz)
-
+                self.builders[2].add_orthogonal_feature(gx_feature,gxxgz)
             gz_feature = self.builders[2].build(solver=solver,regularisation=regularisation[1],**kwargs)
         if len(self.builders[0].data) > 0:
             logger.debug("Building structural frame coordinate 1")
             if gx_feature is not None:
-                self.builders[1].interpolator.add_gradient_orthogonal_constraint(
-                    np.arange(0,self.support.n_elements),
-                    gx_feature.evaluate_gradient(self.support.barycentre),
-                    w=gxxgy)
+                self.builders[1].add_orthogonal_feature(gx_feature,gxxgy)
             if gz_feature is not None:
-                self.builders[1].interpolator.add_gradient_orthogonal_constraint(
-                    np.arange(0, self.support.n_elements),
-                    gz_feature.evaluate_gradient(self.support.barycentre),
-                    w=gyxgz)
+                self.builders[1].add_orthogonal_feature(gz_feature,gyxgz)
             gy_feature = self.builders[1].build(solver=solver,regularisation=regularisation[2],**kwargs)
         if gy_feature is None:
             logger.warning("Not enough constraints for structural frame coordinate 1, \n"

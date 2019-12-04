@@ -4,6 +4,45 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def find_peaks_and_troughs(x, y):
+    """
+
+    Parameters
+    ----------
+    x np.array or list
+        x axis data for plot
+    y np.array or list
+        y axis data for plot
+    Returns
+    -------
+    (np.array, np.array)
+    Notes
+    -----
+    Returns the loations of maxima/minima on the curve using finite difference forward/backwards
+    finding the change in derivative
+    """
+    if len(x) != len(y):
+        return False
+    pairsx = []
+    pairsy = []
+    for i in range(0, len(x)):
+        if i < 1:
+            pairsx.append(x[i])
+            pairsy.append(y[i])
+
+            continue
+        if i > len(x) - 2:
+            pairsx.append(x[i])
+            pairsy.append(y[i])
+            continue
+        left_grad = (y[i - 1] - y[i]) / (x[i - 1] - x[i])
+        right_grad = (y[i] - y[i + 1]) / (x[i] - x[i + 1])
+        if np.sign(left_grad) != np.sign(right_grad):
+            pairsx.append(x[i])
+            pairsy.append(y[i])
+    return pairsx, pairsy
+
+
 class SVariogram():
     """
     The SVariogram is an experimental semi-variogram.
@@ -48,7 +87,7 @@ class SVariogram():
             d = np.copy(self.dist)
             d[d == 0] = np.nan
 
-            step = np.mean(np.nanmin(d, axis=1))
+            step = np.mean(np.nanmin(d, axis=1))*4.
             # find number of steps to cover range in data
             nstep = int(np.ceil((np.max(self.xdata) - np.min(self.xdata)) / step))
             self.lags = np.arange(step / 2., nstep * step, step)
@@ -76,7 +115,7 @@ class SVariogram():
         """
         h, var, npairs = self.calc_semivariogram(**kwargs)
 
-        px, py = self.find_peaks_and_troughs(h, var)
+        px, py = find_peaks_and_troughs(h, var)
 
         averagex = []
         averagey = []
@@ -85,7 +124,7 @@ class SVariogram():
             averagey.append((py[i] + py[i + 1]) / 2.)
             i += 1  # iterate twice
         # find the extrema of the average curve
-        px2, py2 = self.find_peaks_and_troughs(averagex, averagey)
+        px2, py2 = find_peaks_and_troughs(averagex, averagey)
         wl1 = 0.
         wl1py = 0.
         for i in range(len(px)):
@@ -107,44 +146,9 @@ class SVariogram():
                         if wl2 > 0. and wl2 > wl1 * 2 and wl1py < py2[i]:
                             break
         if wl1 == 0.0 and wl2 == 0.0:
-            return 0.0, 2 * (np.max(self.xdata) - np.min(self.xdata))
+            logger.info('Could not pick a wavelength, using data range')
+            return np.array([2 * (np.max(self.xdata) - np.min(self.xdata)),0.])
         # wavelength is 2x the peak on the curve
+        if np.isclose(wl1, 0.0):
+            return np.array([wl2 * 2., wl1 * 2.])
         return np.array([wl1 * 2., wl2 * 2.])
-
-    def find_peaks_and_troughs(self, x, y):
-        """
-
-        Parameters
-        ----------
-        x np.array or list
-            x axis data for plot
-        y np.array or list
-            y axis data for plot
-        Returns
-        -------
-        (np.array, np.array)
-        Notes
-        -----
-        Returns the loations of maxima/minima on the curve using finite difference forward/backwards
-        finding the change in derivative
-        """
-        if len(x) != len(y):
-            return False
-        pairsx = []
-        pairsy = []
-        for i in range(0, len(x)):
-            if i < 1:
-                pairsx.append(x[i])
-                pairsy.append(y[i])
-
-                continue
-            if i > len(x) - 2:
-                pairsx.append(x[i])
-                pairsy.append(y[i])
-                continue
-            left_grad = (y[i - 1] - y[i]) / (x[i - 1] - x[i])
-            right_grad = (y[i] - y[i + 1]) / (x[i] - x[i + 1])
-            if np.sign(left_grad) != np.sign(right_grad):
-                pairsx.append(x[i])
-                pairsy.append(y[i])
-        return pairsx, pairsy

@@ -1,8 +1,10 @@
-from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator
-from LoopStructural.cython.dsi_helper import fold_cg
-import numpy as np
-
 import logging
+
+import numpy as np
+from LoopStructural.cython.dsi_helper import fold_cg
+
+from LoopStructural.interpolators.piecewiselinear_interpolator import \
+    PiecewiseLinearInterpolator
 
 logger = logging.getLogger(__name__)
 
@@ -24,126 +26,124 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         self.type = ['foldinterpolator']
         self.fold = fold
 
-
-@classmethod
-def from_piecewise_linear_and_fold(cls, pli, fold):
-    """
-    Constructor from an existing piecewise linear interpolation object and a fold object
-    copies data from the PLI to the DFI
-
-    Parameters
-    ----------
-    pli : PiecewiseLinearInterpolator
-        existing interpolator
-    fold : FoldEvent
-        a fold event with a valid
-
-    Returns
-    -------
-    DiscreteFoldInterpolator
-
-    """
-    # create a blank fold interpolator
-    interpolator = cls(pli.support, fold)
-
-    # copy the data and stuff from the existing interpolator
-    interpolator.region = pli.region
-    interpolator.shape = pli.shape
-    interpolator.region_map = pli.region_map
-    interpolator.p_i = pli.p_i
-    interpolator.p_g = pli.p_g
-    interpolator.p_t = pli.p_t
-    interpolator.n_i = pli.n_i
-    interpolator.n_g = pli.n_g
-    interpolator.n_t = pli.n_t
-    interpolator.propertyname = pli.propertyname
-    return interpolator
-
-
-def update_fold(self, fold):
-    logger.error('updating fold, this should be done by accessing the fold attribute')
-    self.fold = fold
-
-
-def add_fold_constraints(self, fold_orientation=None, fold_axis=None, fold_regularisation=None, fold_normalisation=None,
-                         fold_norm=None):
-    """
-
-    Parameters
-    ----------
-    fold_orientation : double
-        weight for the fold direction/orientation in the least squares system
-    fold_axis : double
-        weight for the fold axis in the least squares system
-    fold_regularisation : double
-        weight for the fold regularisation in the least squares system
-    fold_normalisation : double
-        weight for the fold norm constraint in the least squares system
-    fold_norm
-        length of the interpolation norm in the least squares system
-
-    Returns
-    -------
-
-    Notes
-    -----
-    For more information about the fold weights see EPSL paper by Gautier Laurent 2016
-    """
-    # get the gradient of all of the elements of the mesh
-    eg = self.support.get_elements_gradients(np.arange(self.support.n_elements))
-    # get array of all nodes for all elements N,4,3
-    nodes = self.support.nodes[self.support.elements[np.arange(self.support.n_elements)]]
-    # calculate the fold geometry for the elements barycentre
-    deformed_orientation, fold_axis, dgz = \
-        self.fold.get_deformed_orientation(self.support.barycentre)
-
-    # calculate element volume for weighting
-    vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
-    vol = np.abs(np.linalg.det(vecs)) / 6
-    if fold_orientation is not None:
+    @classmethod
+    def from_piecewise_linear_and_fold(cls, pli, fold):
         """
-        dot product between vector in deformed ori plane = 0
-        """
-        A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
-        A *= vol[:, None]
-        A *= fold_orientation
-        B = np.zeros(self.support.n_elements)
-        idc = self.support.elements
-        self.add_constraints_to_least_squares(A, B, idc)
+        Constructor from an existing piecewise linear interpolation object and a fold object
+        copies data from the PLI to the DFI
 
-    if fold_axis is not None:
-        """
-        dot product between axis and gradient should be 0
-        """
-        A = np.einsum('ij,ijk->ik', fold_axis, eg)
-        A *= vol[:, None]
-        A *= fold_axis
-        B = np.zeros(self.support.n_elements).tolist()
-        self.add_constraints_to_least_squares(A, B, self.support.elements)
+        Parameters
+        ----------
+        pli : PiecewiseLinearInterpolator
+            existing interpolator
+        fold : FoldEvent
+            a fold event with a valid
 
-    if fold_normalisation is not None:
+        Returns
+        -------
+        DiscreteFoldInterpolator
+
         """
-        specify scalar norm in X direction
+        # create a blank fold interpolator
+        interpolator = cls(pli.support, fold)
+
+        # copy the data and stuff from the existing interpolator
+        interpolator.region = pli.region
+        interpolator.shape = pli.shape
+        interpolator.region_map = pli.region_map
+        interpolator.p_i = pli.p_i
+        interpolator.p_g = pli.p_g
+        interpolator.p_t = pli.p_t
+        interpolator.n_i = pli.n_i
+        interpolator.n_g = pli.n_g
+        interpolator.n_t = pli.n_t
+        interpolator.propertyname = pli.propertyname
+        return interpolator
+
+    def update_fold(self, fold):
+        logger.error('updating fold, this should be done by accessing the fold attribute')
+        self.fold = fold
+
+    def add_fold_constraints(self, fold_orientation=10., fold_axis_w=10., fold_regularisation=.1,
+                             fold_normalisation=1.,
+                             fold_norm=1.):
         """
 
-        A = np.einsum('ij,ijk->ik', dgz, eg)
-        A *= vol[:, None]
-        A *= fold_normalisation
-        B = np.ones(self.support.n_elements)
+        Parameters
+        ----------
+        fold_orientation : double
+            weight for the fold direction/orientation in the least squares system
+        fold_axis_w : double
+            weight for the fold axis in the least squares system
+        fold_regularisation : double
+            weight for the fold regularisation in the least squares system
+        fold_normalisation : double
+            weight for the fold norm constraint in the least squares system
+        fold_norm
+            length of the interpolation norm in the least squares system
 
-        if fold_norm is not None:
-            B[:] = fold_norm
-        B *= fold_normalisation
-        B *= vol
-        self.add_constraints_to_least_squares(A, B, self.support.elements)
+        Returns
+        -------
 
-    if fold_regularisation is not None:
+        Notes
+        -----
+        For more information about the fold weights see EPSL paper by Gautier Laurent 2016
         """
-        fold constant gradient  
-        """
-        idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours, self.support.elements, self.support.nodes)
-        A = np.array(c[:ncons, :])
-        A *= fold_regularisation
-        B = np.zeros(A.shape[0])
-        idc = np.array(idc[:ncons, :])
-        self.add_constraints_to_least_squares(A, B, idc)
+        # get the gradient of all of the elements of the mesh
+        eg = self.support.get_elements_gradients(np.arange(self.support.n_elements))
+        # get array of all nodes for all elements N,4,3
+        nodes = self.support.nodes[self.support.elements[np.arange(self.support.n_elements)]]
+        # calculate the fold geometry for the elements barycentre
+        deformed_orientation, fold_axis, dgz = \
+            self.fold.get_deformed_orientation(self.support.barycentre)
+
+        # calculate element volume for weighting
+        vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
+        vol = np.abs(np.linalg.det(vecs)) / 6
+        if fold_orientation is not None:
+            """
+            dot product between vector in deformed ori plane = 0
+            """
+            A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
+            A *= vol[:, None]
+            A *= fold_orientation
+            B = np.zeros(self.support.n_elements)
+            idc = self.support.elements
+            self.add_constraints_to_least_squares(A, B, idc)
+
+        if fold_axis_w is not None:
+            """
+            dot product between axis and gradient should be 0
+            """
+            A = np.einsum('ij,ijk->ik', fold_axis, eg)
+            A *= vol[:, None]
+            A *= fold_axis_w
+            B = np.zeros(self.support.n_elements).tolist()
+            self.add_constraints_to_least_squares(A, B, self.support.elements)
+
+        if fold_normalisation is not None:
+            """
+            specify scalar norm in X direction
+            """
+
+            A = np.einsum('ij,ijk->ik', dgz, eg)
+            A *= vol[:, None]
+            A *= fold_normalisation
+            B = np.ones(self.support.n_elements)
+
+            if fold_norm is not None:
+                B[:] = fold_norm
+            B *= fold_normalisation
+            B *= vol
+            self.add_constraints_to_least_squares(A, B, self.support.elements)
+
+        if fold_regularisation is not None:
+            """
+            fold constant gradient  
+            """
+            idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours, self.support.elements, self.support.nodes)
+            A = np.array(c[:ncons, :])
+            A *= fold_regularisation
+            B = np.zeros(A.shape[0])
+            idc = np.array(idc[:ncons, :])
+            self.add_constraints_to_least_squares(A, B, idc)
