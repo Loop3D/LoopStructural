@@ -355,7 +355,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_lu(A, B)
         if solver == 'pyamg':
             logger.info("Solving with pyamg solve")
-            self.c[self.region]  = self._solve_pyamg(A,B,**kwargs)
+            self.c[self.region]  = self._solve_pyamg(A,B)
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]

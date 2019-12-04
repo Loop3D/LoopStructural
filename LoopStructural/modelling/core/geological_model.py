@@ -35,8 +35,9 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
     if limb_wl is None:
         limb_svariogram = SVariogram(s, flr)
         limb_wl = limb_svariogram.find_wavelengths()
+        result['limb_svariogram'] = limb_svariogram
     guess = np.zeros(4)
-    guess[3] = limb_wl
+    guess[3] = limb_wl[0]#np.max(limb_wl)
     if len(flr) < len(guess):
         logger.warning("Not enough data to fit curve")
         fold.fold_limb_rotation = lambda x: 0
@@ -47,6 +48,10 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
             np.arctan(
                 fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
 
+def _calculate_average_intersection(series_builder,fold_frame,fold):
+    l2 = fold_frame.calculate_intersection_lineation(
+    series_builder)
+    fold.fold_axis = np.mean(l2,axis=0)
 
 def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl):
     far, fad = fold_frame.calculate_fold_axis_rotation(
@@ -54,7 +59,7 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
     # axis_wl = kwargs.get("axis_wavelength", None)
     if axis_wl is None:
         axis_svariogram = SVariogram(fad, far)
-        axis_wl = axis_svariogram.find_wavelengths()
+        axis_wl = axis_svariogram.find_wavelengths(nsteps=10)
     guess = np.zeros(3)
     guess[2] = axis_wl
     if len(far) < len(guess):
@@ -260,6 +265,7 @@ class GeologicalModel:
         -------
 
         """
+        result = {}
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
@@ -279,16 +285,18 @@ class GeologicalModel:
                 break
         fold_frame.type = 'structuralframe'
         self.features.append(fold_frame)
-        return fold_frame
+        result['feature'] = fold_frame
+        return result
 
-    def create_and_add_folded_foliation(self, foliation_data, fold_frame, **kwargs):
+    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, **kwargs):
         """
         Create a folded foliation field from data and a fold frame
         Parameters
         ----------
-        foliation_data
-        fold_frame
+        foliation_data : string
+        fold_frame :  FoldFrame
         kwargs
+            additional kwargs to be passed through to other functions
 
         Returns
         -------
@@ -296,7 +304,10 @@ class GeologicalModel:
         """
 
         result = {}
-
+        if fold_frame is None:
+            logger.info("Using last feature as fold frame")
+            fold_frame = self.features[-1]
+        assert(type(fold_frame) == FoldFrame, "Please specify a FoldFrame")
         fold = FoldEvent(fold_frame)
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         series_builder = GeologicalFeatureInterpolator(
@@ -309,7 +320,7 @@ class GeologicalModel:
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
-            pass
+            _calculate_average_intersection(series_builder,fold_frame,fold)
         if "fold_axis" not in kwargs:
             axis_wl = kwargs.get("axis_wavelength", None)
             _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl)
@@ -334,27 +345,28 @@ class GeologicalModel:
         result['fold'] = fold
         return result
 
-    def create_and_add_folded_fold_frame(self, fold_frame_data, fold_frame,
+    def create_and_add_folded_fold_frame(self, fold_frame_data, fold_frame = None,
                                          **kwargs):
         result = {}
-
+        if fold_frame is None:
+            logger.info("Using last feature as fold frame")
+            fold_frame = self.features[-1]
+        assert(type(fold_frame) == FoldFrame, "Please specify a FoldFrame")
         fold = FoldEvent(fold_frame)
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         frame_interpolator = self.get_interpolator(**kwargs)
         interpolators = [fold_interpolator, frame_interpolator, frame_interpolator.copy()]
         fold_frame_builder = StructuralFrameBuilder(interpolators=interpolators, name=fold_frame_data, **kwargs)
-        fold_frame_builder.add_data_from_data_frame(fold_frame_data)
+        fold_frame_builder.add_data_from_data_frame(self.data[self.data['type'] == fold_frame_data])
 
-        series_builder = GeologicalFeatureInterpolator(
-            interpolator=fold_interpolator,
-            name=fold_frame_data)
+
         ## add the data to the interpolator for the main foliation
-        fold_frame_builder.add_data_to_interpolator(True)
+        fold_frame_builder[0].add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
-            pass
-        if "fold_axis" not in kwargs:
+            _calculate_average_intersection(fold_frame_builder[0],fold_frame,fold)
+        if fold.fold_axis is None:
             axis_wl = kwargs.get("axis_wavelength", None)
             _interpolate_fold_axis_rotation_angle(fold_frame_builder[0],
                                                   fold_frame,
@@ -368,7 +380,7 @@ class GeologicalModel:
         # build feature
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
-        fold_frame = fold_frame_builder.build(**kwargs)
+        fold_frame = fold_frame_builder.build(**kwargs,frame=FoldFrame)
         fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region
         for i in range(3):

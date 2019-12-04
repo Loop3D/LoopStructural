@@ -33,6 +33,7 @@ class GeologicalFeatureInterpolator:
         self.data_original = []
         self.faults = []
         self.data_added = False
+        self.orthogonal_features = []
         self.interpolator.set_region(region=self.region)
 
     def update(self):
@@ -227,7 +228,12 @@ class GeologicalFeatureInterpolator:
         """
         self.data.append(TPoint(pos, s, d))
         # self.interpolator.add_data(self.data[-1])
-
+    def add_orthogonal_feature(self,feature,w = 1., region = None):
+        self.interpolator.add_gradient_orthogonal_constraint(
+                np.arange(0,self.interpolator.support.n_elements),
+                feature.evaluate_gradient(self.interpolator.support.barycentre),
+                w=w
+            )
     def add_data_to_interpolator(self, constrained=False):
         """
         Iterates through the list of data and applies any faults active on the
@@ -262,6 +268,8 @@ class GeologicalFeatureInterpolator:
             logger.error("Not enough constraints for scalar field add more")
         for d in self.data:
             self.interpolator.add_data(d)
+
+
 
     def build(self, solver='pyamg', **kwargs):
         """
