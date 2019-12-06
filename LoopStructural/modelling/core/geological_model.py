@@ -27,7 +27,27 @@ from LoopStructural.supports.tet_mesh import TetMesh
 logger = logging.getLogger(__name__)
 
 
-def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl):
+def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl = None):
+    """
+    Wrapper for fitting fold limb rotation angle from data using a fourier series.
+
+    Parameters
+    ----------
+    series_builder : GeologicalFeatureInterpolator
+        foliation builder
+    fold_frame : FoldFrame
+        fold frame for calculating rotation angles from
+    fold : FoldEvent
+        fold event to add fold rotation angle to
+    result : dict
+        container to save the results in
+    limb_wl : double
+        wavelength guess, if none then uses s=variogram to pick wavelength
+
+    Returns
+    -------
+
+    """
     flr, s = fold_frame.calculate_fold_limb_rotation(series_builder,
                                                      axis=fold.get_fold_axis_orientation)
     result['limb_rotation'] = flr
@@ -36,8 +56,10 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
         limb_svariogram = SVariogram(s, flr)
         limb_wl = limb_svariogram.find_wavelengths()
         result['limb_svariogram'] = limb_svariogram
+        # for now only consider single fold wavelength
+        limb_wl = limb_wl[0]
     guess = np.zeros(4)
-    guess[3] = limb_wl[0]  # np.max(limb_wl)
+    guess[3] = limb_wl  # np.max(limb_wl)
     if len(flr) < len(guess):
         logger.warning("Not enough data to fit curve")
         fold.fold_limb_rotation = lambda x: 0
@@ -50,12 +72,38 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
 
 
 def _calculate_average_intersection(series_builder, fold_frame, fold):
+    """
+
+    Parameters
+    ----------
+    series_builder
+    fold_frame
+    fold
+
+    Returns
+    -------
+
+    """
     l2 = fold_frame.calculate_intersection_lineation(
         series_builder)
     fold.fold_axis = np.mean(l2, axis=0)
 
 
 def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl):
+    """
+
+    Parameters
+    ----------
+    series_builder
+    fold_frame
+    fold
+    result
+    axis_wl
+
+    Returns
+    -------
+
+    """
     far, fad = fold_frame.calculate_fold_axis_rotation(
         series_builder)
     # axis_wl = kwargs.get("axis_wavelength", None)
@@ -295,7 +343,7 @@ class GeologicalModel:
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert (type(fold_frame) == FoldFrame, "Please specify a FoldFrame")
+        assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame)
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         series_builder = GeologicalFeatureInterpolator(
@@ -309,7 +357,7 @@ class GeologicalModel:
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(series_builder, fold_frame, fold)
-        if "fold_axis" not in kwargs:
+        if fold.fold_axis is None:
             axis_wl = kwargs.get("axis_wavelength", None)
             _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl)
         limb_wl = kwargs.get("limb_wl", None)
@@ -333,11 +381,23 @@ class GeologicalModel:
 
     def create_and_add_folded_fold_frame(self, fold_frame_data, fold_frame=None,
                                          **kwargs):
+        """
+
+        Parameters
+        ----------
+        fold_frame_data
+        fold_frame
+        kwargs
+
+        Returns
+        -------
+
+        """
         result = {}
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert (type(fold_frame) == FoldFrame, "Please specify a FoldFrame")
+        assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame)
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         frame_interpolator = self.get_interpolator(**kwargs)
@@ -378,6 +438,16 @@ class GeologicalModel:
         return result
 
     def _add_faults(self, feature_builder):
+        """
+
+        Parameters
+        ----------
+        feature_builder
+
+        Returns
+        -------
+
+        """
         for f in reversed(self.features):
             if f.type == 'fault':
                 feature_builder.add_fault(f)
@@ -385,6 +455,16 @@ class GeologicalModel:
                 break
 
     def _add_unconformity_above(self, feature):
+        """
+
+        Parameters
+        ----------
+        feature
+
+        Returns
+        -------
+
+        """
         for f in reversed(self.features):
             if f.type == 'unconformity':
                 feature.add_region(lambda pos: f.evaluate_value(pos) <= 0)

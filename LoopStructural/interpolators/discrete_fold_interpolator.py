@@ -63,13 +63,23 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
 
     def update_fold(self, fold):
+        """
+
+        Parameters
+        ----------
+        fold
+
+        Returns
+        -------
+
+        """
         logger.error('updating fold, this should be done by accessing the fold attribute')
         self.fold = fold
 
 
-    def add_fold_constraints(self, fold_orientation=None, fold_axis_w=None, fold_regularisation=None,
-                             fold_normalisation=None,
-                             fold_norm=None):
+    def add_fold_constraints(self, fold_orientation=10., fold_axis_w=10., fold_regularisation=.1,
+                             fold_normalisation=1.,
+                             fold_norm=1.):
         """
 
         Parameters

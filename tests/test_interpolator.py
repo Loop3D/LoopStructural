@@ -1,19 +1,16 @@
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
-import pandas as pd
-import numpy as np
-from LoopStructural.datasets import load_unconformity
+from LoopStructural.datasets import load_claudius
 def test_create_model():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0,:],bb[1,:])
 
 def test_add_data():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0,:],bb[1,:])
     model.set_model_data(data)
 
 def test_create_stratigraphy_FDI_cg():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation('s0',
@@ -23,7 +20,7 @@ def test_create_stratigraphy_FDI_cg():
                                         damp=False)
 
 def test_create_stratigraphy_FDI_lu():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation('s0',
@@ -34,7 +31,7 @@ def test_create_stratigraphy_FDI_lu():
 
 
 def test_create_stratigraphy_FDI_pyamg():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation('s0',
@@ -44,7 +41,7 @@ def test_create_stratigraphy_FDI_pyamg():
                                         damp=True)
 
 def test_create_stratigraphy_PLI_cg():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation('s0',
@@ -54,7 +51,7 @@ def test_create_stratigraphy_PLI_cg():
                                         damp=False)
 
 def test_create_stratigraphy_PLI_lu():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation('s0',
@@ -65,7 +62,7 @@ def test_create_stratigraphy_PLI_lu():
 
 
 def test_create_stratigraphy_PLI_pyamg():
-    data, bb = load_unconformity()
+    data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation('s0',
@@ -73,4 +70,3 @@ def test_create_stratigraphy_PLI_pyamg():
                                         nelements=1000,
                                         solver='pyamg',
                                         damp=True)
-

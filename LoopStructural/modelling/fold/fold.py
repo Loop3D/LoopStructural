@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class FoldEvent:
-    def __init__(self, foldframe, fold_axis_rotation=None, fold_limb_rotation=None, fold_axis = None):
+    def __init__(self, foldframe, fold_axis_rotation=None, fold_limb_rotation=None, fold_axis=None, name='Fold'):
         """
         A fold event describes the geometry of the fold using a fold frame
         and two geometrical descriptors
@@ -22,6 +22,7 @@ class FoldEvent:
         self.fold_axis_rotation = fold_axis_rotation
         self.fold_limb_rotation = fold_limb_rotation
         self.fold_axis = fold_axis
+        self.name = name
 
     def get_fold_axis_orientation(self, points):
         """
