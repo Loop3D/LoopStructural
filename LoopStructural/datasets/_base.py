@@ -19,7 +19,10 @@ def load_noddy_single_fold():
 
 
 def load_laurent2016():
-    pass
+    module_path = dirname(__file__)
+    data = pd.read_pickle(join(module_path, 'data/refolded_fold.pkl'))
+    bb = np.loadtxt(join(module_path, 'data/refolded_bb.txt'))
+    return data, bb
 
 
 def load_grose2017():

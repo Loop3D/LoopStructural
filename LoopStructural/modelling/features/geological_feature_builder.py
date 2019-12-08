@@ -308,6 +308,7 @@ class GeologicalFeatureInterpolator:
         if "fold" in kwargs and "fold_weights" in kwargs:
 
             self.interpolator.fold = kwargs['fold']
+            # if we have fold weights use those, otherwise just use default
             if kwargs['fold_weights'] is None:
                 self.interpolator.add_fold_constraints()
             else:
