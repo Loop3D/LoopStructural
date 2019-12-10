@@ -11,7 +11,7 @@ from LoopStructural.supports.scalar_field import ScalarField
 
 
 class GeologicalFeatureInterpolator:
-    def __init__(self, interpolator, **kwargs):
+    def __init__(self, interpolator, name = 'Feature', region = None, **kwargs):
         """
         A builder for a GeologicalFeature will link data to the interpolator
         and run the interpolation
@@ -22,15 +22,13 @@ class GeologicalFeatureInterpolator:
         kwargs - name of the feature, region to interpolate the feature
         """
         self.interpolator = interpolator
-        self.name = "UnnamedFeature"
-        if 'name' in kwargs:
-            self.name = kwargs['name']
-            self.interpolator.set_property_name(self.name)
+        self.name = name
+        self.interpolator.set_property_name(self.name)
         # everywhere region is just a lambda that returns true for all locations
-        self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
-
-        if 'region' in kwargs:
-            self.region = kwargs['region']
+        if region is None:
+            self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
+        else:
+            self.region = region
         self.data = []
         self.data_original = []
         self.faults = []
@@ -178,7 +176,7 @@ class GeologicalFeatureInterpolator:
         self.data.append(GPoint(pos, val))
         # self.interpolator.add_data(self.data[-1])
 
-    def add_strike_and_dip(self, pos, s, d, polarity=1):
+    def add_strike_and_dip(self, pos, s, d, polarity=1, weight =1.):
         """
 
         Parameters
@@ -192,6 +190,7 @@ class GeologicalFeatureInterpolator:
 
         """
         self.data.append(GPoint.from_strike_and_dip(pos, s, d, polarity))
+        self.data[0].weight=weight
         # self.interpolator.add_data(self.data[-1])
 
     def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, polarity=1):
@@ -287,9 +286,9 @@ class GeologicalFeatureInterpolator:
         for d in self.data:
             self.interpolator.add_data(d)
 
-    def build(self, solver='pyamg', **kwargs):
+    def build(self, fold = None, fold_weights = None, **kwargs):
         """
-        Runs the interpolation
+        Runs the interpolation and builds the geological feature
 
         Parameters
         ----------
@@ -304,22 +303,19 @@ class GeologicalFeatureInterpolator:
             self.add_data_to_interpolator()
         # moving this to init because it needs to be done before constraints
         # are added?
-        # self.interpolator.set_region(region=self.region)
-        if "fold" in kwargs and "fold_weights" in kwargs:
+        if fold is not None:
 
-            self.interpolator.fold = kwargs['fold']
+            self.interpolator.fold = fold
             # if we have fold weights use those, otherwise just use default
-            if kwargs['fold_weights'] is None:
+            if fold_weights is None:
                 self.interpolator.add_fold_constraints()
             else:
-                self.interpolator.add_fold_constraints(**kwargs['fold_weights'])
+                self.interpolator.add_fold_constraints(fold_weights)
             if 'cgw' not in kwargs:
                 kwargs['cgw'] = 0.
-            # if self.interpolator.interpolation_weights['cgw'] == 0:
-            #     kwargs['cg'] = False
-            # kwargs['cg'] = False
+
         self.interpolator.setup_interpolator(**kwargs)
-        self.interpolator.solve_system(solver=solver, **kwargs)
+        self.interpolator.solve_system(**kwargs)
         return GeologicalFeature(self.name,
 
                                  ScalarField.from_interpolator(

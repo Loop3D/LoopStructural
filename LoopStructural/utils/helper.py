@@ -99,13 +99,6 @@ def rotation(axis, angle):
     return rotation_mat
 
 
-def normalz(gx):
-    gxn = (2. / (np.max(gx[~np.isnan(gx)]) - np.min(gx[~np.isnan(gx)])))
-    gxn *= (gx - (
-                (np.min(gx[~np.isnan(gx)]) + np.max(gx[~np.isnan(gx)])) / 2.))
-    gxn[np.isnan(gx)] = np.nan
-    return gxn
-
 def strike_dip_vector(strike, dip):
     vec = np.zeros((len(strike), 3))
     s_r = np.deg2rad(strike)
@@ -119,7 +112,7 @@ def strike_dip_vector(strike, dip):
 
 def normal_vector_to_strike_and_dip(normal_vector):
     normal_vector /= np.linalg.norm(normal_vector, axis=1)[:, None]
-    dip = np.rad2deg(np.arccos(normal_vector[:, 2]));
+    dip = np.rad2deg(np.arccos(normal_vector[:, 2]))
     strike = np.rad2deg(np.arctan2(normal_vector[:, 1], normal_vector[:,
                                                         0]))  # atan2(v2[1],v2[0])*rad2deg;
     return np.array([strike, dip]).T
