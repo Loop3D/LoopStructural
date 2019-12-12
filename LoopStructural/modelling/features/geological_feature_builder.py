@@ -258,6 +258,7 @@ class GeologicalFeatureInterpolator:
 
         """
         # first move the data for the fault
+        logger.info("Adding %i faults to %s"%(len(self.faults),self.name))
         for f in self.faults:
             f.apply_to_data(self.data)
         # Now check whether there are enough constraints for the
@@ -278,13 +279,15 @@ class GeologicalFeatureInterpolator:
             for d in self.data:
                 if d.type == "GPoint":
                     d.norm = True
-                    logger.warning(
+                    logger.debug(
                         "Setting gradient points to norm constraints")
                     constrained = True
         if not constrained:
             logger.error("Not enough constraints for scalar field add more")
         for d in self.data:
             self.interpolator.add_data(d)
+
+        self.data_added = True
 
     def build(self, fold = None, fold_weights = None, **kwargs):
         """
@@ -304,7 +307,7 @@ class GeologicalFeatureInterpolator:
         # moving this to init because it needs to be done before constraints
         # are added?
         if fold is not None:
-
+            logger.info("Adding fold to %s"%self.name)
             self.interpolator.fold = fold
             # if we have fold weights use those, otherwise just use default
             if fold_weights is None:

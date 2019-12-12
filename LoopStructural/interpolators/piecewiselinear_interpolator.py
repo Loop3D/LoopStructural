@@ -58,6 +58,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         # can't reset here, clears fold constraints
         # self.reset()
+        logger.info("Setting up PLI interpolator for %s"%self.propertyname)
         for key in kwargs:
             if 'regularisation' in kwargs:
                 self.interpolation_weights['cgw'] = 0.1 * kwargs[
@@ -67,6 +68,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if self.interpolation_weights['cgw'] > 0.:
             self.up_to_date = False
             self.add_constant_gradient(self.interpolation_weights['cgw'])
+            logger.info("Using constant gradient regularisation w = %f"
+                        %self.interpolation_weights['cgw'])
+        logger.info("Added %i gradient constraints, %i normal constraints,"
+                    "%i tangent constraints and %i value constraints"
+                    "to %s" % (self.n_g, self.n_n,
+                               self.n_t, self.n_i, self.propertyname))
         self.add_gradient_ctr_pts(self.interpolation_weights['gpw'])
         self.add_norm_ctr_pts(self.interpolation_weights['npw'])
         self.add_ctr_pts(self.interpolation_weights['cpw'])

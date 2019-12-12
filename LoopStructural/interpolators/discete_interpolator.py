@@ -203,6 +203,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
         Interpolation matrix and B
         """
+        logger.info("Interpolation matrix is %i x %i"%(self.c_,self.nx))
         cols = np.array(self.col)
         A = coo_matrix((np.array(self.A), (np.array(self.row), \
                                            cols)), shape=(self.c_, self.nx),
@@ -214,6 +215,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # can help speed up solving, but might also introduce some errors
 
         if self.eq_const_c_ > 0:
+            logger("Equality block is %i x %i"%(self.eq_const_c_,self.nx))
             # solving constrained least squares using
             # | ATA CT | |c| = b
             # | C   0  | |y|   d
@@ -232,6 +234,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             AAT = bmat([[AAT, C.T], [C, None]])
             BT = np.hstack([BT, d])
         if damp:
+            logger.info("Adding eps to matrix diagonal")
             AAT += eye(AAT.shape[0]) * np.finfo('float').eps
         return AAT, BT
 
@@ -327,7 +330,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         return pyamg.solve(A,B,verb=False)[:self.nx]
 
-    def _solve(self, solver, **kwargs):
+    def _solve(self, solver='pyamg', **kwargs):
         """
         Main entry point to run the solver and update the node value
         attribute for the

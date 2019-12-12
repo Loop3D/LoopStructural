@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
 from LoopStructural.modelling.features.cross_product_geological_feature \
     import \
     CrossProductGeologicalFeature
@@ -295,13 +296,16 @@ class StructuralFrameBuilder:
         #     plunge_dir))
         pass
 
-    def build(self, solver='pyamg', frame=StructuralFrame, **kwargs):
+    def build(self, w1=1., w2=1., w3=1., frame=StructuralFrame, **kwargs):
         """
         Build the structural frame
         Parameters
         ----------
         solver solver to use
         frame - type of frame to build StructuralFrame or FoldFrame
+        w3
+        w2
+        w1
         kwargs
 
         Returns
@@ -324,9 +328,8 @@ class StructuralFrameBuilder:
         gz_feature = None
 
         if len(self.builders[0].data) > 0:
-            logger.debug("Building structural frame coordinate 0")
-            gx_feature = self.builders[0].build(solver=solver,
-                                                regularisation=regularisation[
+            logger.info("Building %s coordinate 0"%self.name)
+            gx_feature = self.builders[0].build(regularisation=regularisation[
                                                     0], **kwargs)
             # remove fold from kwargs
             fold = kwargs.pop('fold', False)
@@ -334,8 +337,8 @@ class StructuralFrameBuilder:
             logger.warning(
                 "Not enough constraints for structural frame coordinate 0, \n"
                 "Add some more and try again.")
-        if len(self.builders[0].data) > 0:
-            logger.debug("Building structural frame coordinate 2")
+        if len(self.builders[2].data) > 0:
+            logger.info("Building %s coordinate 2"%self.name)
             # if gy_feature is not None:
             #     self.builders[
             #     2].interpolator.add_gradient_orthogonal_constraint(
@@ -345,15 +348,15 @@ class StructuralFrameBuilder:
             if gx_feature is not None:
                 self.builders[2].add_orthogonal_feature(gx_feature, gxxgz)
 
-            gz_feature = self.builders[2].build(solver=solver, regularisation=regularisation[1], **kwargs)
+            gz_feature = self.builders[2].build(regularisation=regularisation[1], **kwargs)
 
-        if len(self.builders[0].data) > 0:
-            logger.debug("Building structural frame coordinate 1")
+        if len(self.builders[1].data) > 0:
+            logger.info("Building %s coordinate 1"%self.name)
             if gx_feature is not None:
                 self.builders[1].add_orthogonal_feature(gx_feature, gxxgy)
             if gz_feature is not None:
                 self.builders[1].add_orthogonal_feature(gz_feature, gyxgz)
-            gy_feature = self.builders[1].build(solver=solver, regularisation=regularisation[2], **kwargs)
+            gy_feature = self.builders[1].build(regularisation=regularisation[2], **kwargs)
 
         if gy_feature is None:
             logger.warning(

@@ -117,6 +117,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between vector in deformed ori plane = 0
             """
+            logger.info("Adding fold orientation constraint to %s w = %f"%(self.propertyname,fold_orientation))
             A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
             A *= vol[:, None]
             A *= fold_orientation
@@ -128,6 +129,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between axis and gradient should be 0
             """
+            logger.info("Adding fold axis constraint to %s w = %f"%(self.propertyname,fold_axis_w))
             A = np.einsum('ij,ijk->ik', fold_axis, eg)
             A *= vol[:, None]
             A *= fold_axis_w
@@ -138,7 +140,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             specify scalar norm in X direction
             """
-
+            logger.info("Adding fold normalisation constraint to %s w = %f"%(self.propertyname,fold_normalisation))
             A = np.einsum('ij,ijk->ik', dgz, eg)
             A *= vol[:, None]
             A *= fold_normalisation
@@ -154,6 +156,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             fold constant gradient  
             """
+            logger.info("Adding fold regularisation constraint to %s w = %f"%(self.propertyname,fold_regularisation))
             idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours, self.support.elements, self.support.nodes)
             A = np.array(c[:ncons, :])
             A *= fold_regularisation

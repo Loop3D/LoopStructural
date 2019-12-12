@@ -48,8 +48,8 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
     -------
 
     """
-    flr, s = fold_frame.calculate_fold_limb_rotation(series_builder,
-                                                     axis=fold.get_fold_axis_orientation)
+    flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)#,
+                                                     # axis=fold.get_fold_axis_orientation)
     result['limb_rotation'] = flr
     result['foliation'] = s
     if limb_wl is None:
@@ -379,7 +379,7 @@ class GeologicalModel:
         result['fold'] = fold
         return result
 
-    def create_and_add_folded_fold_frame(self, fold_frame_data, fold_frame=None,
+    def create_and_add_folded_structural_frame(self, fold_frame_data, fold_frame=None,
                                          **kwargs):
         """
 
