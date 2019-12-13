@@ -173,12 +173,12 @@ class FaultSegment:
                 g = g_future.result()
                 gy = gy_future.result()
                 gz = gz_future.result()
-            # get the fault frame val/grad for the points
-            executor = ThreadPoolExecutor(max_workers=4)
-            gx = executor.submit(self.faultframe.features[0].evaluate_value, points)
-            g = executor.submit(self.faultframe.features[1].evaluate_gradient, points)
-            gy = executor.submit(self.faultframe.features[1].evaluate_value, points)
-            gz = executor.submit(self.faultframe.features[2].evaluate_value, points)
+            # # get the fault frame val/grad for the points
+            # executor = ThreadPoolExecutor(max_workers=4)
+            # gx = executor.submit(self.faultframe.features[0].evaluate_value, points)
+            # g = executor.submit(self.faultframe.features[1].evaluate_gradient, points)
+            # gy = executor.submit(self.faultframe.features[1].evaluate_value, points)
+            # gz = executor.submit(self.faultframe.features[2].evaluate_value, points)
 
             # gx = self.faultframe.features[0].evaluate_value(points)
             # g = self.faultframe.features[1].evaluate_gradient(points)
@@ -217,6 +217,7 @@ class FaultSegment:
         -------
 
         """
+        logger.info("Applying fault")
         steps = self.steps
         # TODO make this numpy arrays
         if data is None:

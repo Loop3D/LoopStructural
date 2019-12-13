@@ -64,7 +64,17 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
         logger.warning("Not enough data to fit curve")
         fold.fold_limb_rotation = lambda x: 0
     else:
-        popt, pcov = curve_fit(fourier_series, s, np.tan(np.deg2rad(flr)),
+        mask = np.logical_or(~np.isnan(s),~np.isnan(flr))
+        logger.info("There are %i nans for the fold limb rotation angle and "
+                    "%i observations"%(np.sum(~mask),np.sum(mask)))
+        if np.sum(mask) < 4:
+            logger.error("Not enough data points to fit Fourier series setting fold rotation angle"
+                         "to 0")
+            fold.fold_limb_rotation = lambda x: np.zeros(x.shape)
+            return
+        popt, pcov = curve_fit(fourier_series,
+                               s[np.logical_or(~np.isnan(s),~np.isnan(flr))],
+                               np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s),~np.isnan(flr))])),
                                guess)
         fold.fold_limb_rotation = lambda x: np.rad2deg(
             np.arctan(
@@ -312,9 +322,15 @@ class GeologicalModel:
         # add data
         fold_frame_data = self.data[self.data['type'] == foldframe_data]
         fold_frame_builder.add_data_from_data_frame(fold_frame_data)
-        # if there is no fault slip data then we could find the strike of
-        # the fault and build
-        # the second coordinate
+        for f in reversed(self.features):
+            if f.type == 'fault':
+                fold_frame_builder[0].add_fault(f)
+                fold_frame_builder[1].add_fault(f)
+                fold_frame_builder[2].add_fault(f)
+
+            if f.type == 'unconformity':
+                break
+
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
         for f in reversed(self.features):
             if f.type == 'unconformity':
@@ -352,6 +368,8 @@ class GeologicalModel:
 
         series_builder.add_data_from_data_frame(
             self.data[self.data['type'] == foliation_data])
+        self._add_faults(series_builder)
+
         series_builder.add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
@@ -425,6 +443,14 @@ class GeologicalModel:
         # build feature
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
+        for f in reversed(self.features):
+            if f.type == 'fault':
+                fold_frame_builder[0].add_fault(f)
+                fold_frame_builder[1].add_fault(f)
+                fold_frame_builder[2].add_fault(f)
+
+            if f.type == 'unconformity':
+                break
         fold_frame = fold_frame_builder.build(**kwargs, frame=FoldFrame)
         fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region

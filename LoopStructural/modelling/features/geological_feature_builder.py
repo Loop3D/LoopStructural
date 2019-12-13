@@ -1,4 +1,5 @@
 import logging
+import copy
 
 import numpy as np
 
@@ -259,15 +260,16 @@ class GeologicalFeatureInterpolator:
         """
         # first move the data for the fault
         logger.info("Adding %i faults to %s"%(len(self.faults),self.name))
+        data = copy.deepcopy(self.data)
         for f in self.faults:
-            f.apply_to_data(self.data)
+            f.apply_to_data(data)
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
         # we need at least 2 different value points or a single norm
         # constraint. If there are not enough
         # try converting grad to norms, if still not enough send user an error
         vals = []
-        for d in self.data:
+        for d in data:
             if d.type == "GPoint" and d.norm == True:
                 constrained = True
                 break
@@ -276,7 +278,7 @@ class GeologicalFeatureInterpolator:
         if len(np.unique(vals)) > 1:
             constrained = True
         if not constrained:
-            for d in self.data:
+            for d in data:
                 if d.type == "GPoint":
                     d.norm = True
                     logger.debug(
@@ -284,10 +286,75 @@ class GeologicalFeatureInterpolator:
                     constrained = True
         if not constrained:
             logger.error("Not enough constraints for scalar field add more")
-        for d in self.data:
+        for d in data:
             self.interpolator.add_data(d)
 
         self.data_added = True
+
+    def get_value_constraints(self):
+        """
+        Get the value constraints for this geological feature
+
+        Returns
+        -------
+        numpy array
+        """
+        points = np.zeros((len(self.data),4))#array
+        c = 0
+        for d in self.data:
+            if d.type == 'IPoint':
+                points[c,:3] = d.pos
+                points[c,4] = d.val
+                c+=1
+        return points[:c,:]
+
+    def get_gradient_constraints(self):
+        """
+
+        Returns
+        -------
+        numpy array
+        """
+        points = np.zeros((len(self.data), 6))  # array
+        c = 0
+        for d in self.data:
+            if d.type == 'GPoint':
+                points[c, :3] = d.pos
+                points[c, 3:] = d.vec
+                c += 1
+        return points[:c, :]
+
+    def get_tangent_constraints(self):
+        """
+
+        Returns
+        -------
+        numpy array
+        """
+        points = np.zeros((len(self.data), 6))  # array
+        c = 0
+        for d in self.data:
+            if d.type == 'TPoint':
+                points[c, :3] = d.pos
+                points[c, 3:] = d.vec
+                c += 1
+        return points[:c, :]
+
+    def get_norm_constraints(self):
+        """
+
+        Returns
+        -------
+        numpy array
+        """
+        points = np.zeros((len(self.data), 6))  # array
+        c = 0
+        for d in self.data:
+            if d.type == 'NPoint':
+                points[c, :3] = d.pos
+                points[c, 3:] = d.vec
+                c += 1
+        return points[:c, :]
 
     def build(self, fold = None, fold_weights = None, **kwargs):
         """

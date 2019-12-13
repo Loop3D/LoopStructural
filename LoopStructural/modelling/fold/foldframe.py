@@ -100,7 +100,6 @@ class FoldFrame(StructuralFrame):
             logger.error("No points to calculate fold rotation angle")
             return np.array([0]), np.array([0])
         points = np.vstack(points)
-
         # get the normals from the points array
         s0g = points[:, 3:]
 
