@@ -1,6 +1,6 @@
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
-# from LoopStructural.datasets import load_intrusion
+from LoopStructural.datasets import load_intrusion
+data, bb = load_intrusion()
 model = GeologicalModel(bb[0,:],bb[1,:])
 model.set_model_data(data)
 fault = model.create_and_add_fault('fault',
