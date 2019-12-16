@@ -18,7 +18,8 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate loop
-        FOR /F "delims=~" %f in (requirements.txt) DO conda install --yes "%f -c conda-forge" || pip install "%f"
+        conda install meshpy -c conda-forge
+        pip install -r requirements.txt
         pip install .
         conda info
         conda list
