@@ -15,7 +15,7 @@ jobs:
         conda-build-version: '3.17'  # optional. If not provided conda build is not installed.
     - run: conda create --name loop python=3.6
     - name: Using PowerShell Core
-      shell: bash -l {0}
+      shell: pwsh
       run: |
         conda activate loop
         conda install meshpy -c conda-forge
