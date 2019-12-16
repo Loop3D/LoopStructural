@@ -9,24 +9,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Install Miniconda
-      shell: bash
-      run: |
-        if [[ "${{ runner.os }}" = "Linux" ]]; then
-          MINICONDA_FILENAME=Miniconda3-latest-Linux-x86_64.sh
-          curl -o $MINICONDA_FILENAME "https://repo.continuum.io/miniconda/$MINICONDA_FILENAME"
-          bash ${MINICONDA_FILENAME} -b -f -p $HOME/miniconda3
-        elif [[ "${{ runner.os }}" = "macOS" ]]; then
-          MINICONDA_FILENAME=Miniconda3-latest-MacOSX-x86_64.sh
-          curl -o $MINICONDA_FILENAME "https://repo.continuum.io/miniconda/$MINICONDA_FILENAME"
-          bash ${MINICONDA_FILENAME} -b -f -p $HOME/miniconda3
-        elif [[ "${{ runner.os }}" = "Windows" ]]; then
-          MINICONDA_FILENAME=Miniconda3-latest-Windows-x86_64.exe
-          curl -o $MINICONDA_FILENAME "https://repo.continuum.io/miniconda/$MINICONDA_FILENAME"
-          ./Miniconda3-latest-Windows-x86_64.exe //InstallationType=JustMe //RegisterPython=0 //S
-        fi
-
-    - name: Install requirements
+    - uses: goanpeca/action-setup-conda@master
+      with:
+        conda-version: '4.8'         # optional. Version of conda to use for base evironment.
+        conda-build-version: '3.17'  # optional. If not provided conda build is not installed.
+    - run: conda create --name loop python=3.6
+    - name: Using PowerShell Core
       shell: pwsh
       run: |
-        conda install numpy
+        conda activate test
+        conda info
+        conda list
