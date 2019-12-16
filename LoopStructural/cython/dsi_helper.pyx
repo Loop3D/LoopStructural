@@ -5,6 +5,7 @@ cimport numpy as np
 from math import *
 @cython.boundscheck(False)
 @cython.wraparound(False)
+#cython: language_level=3
 #cimport numpy.linalg as la
 def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes, long long [:] region):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
