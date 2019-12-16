@@ -18,5 +18,7 @@ jobs:
       shell: pwsh
       run: |
         conda activate loop
+        pip install -r requirements.txt
+        pip install .
         conda info
         conda list
