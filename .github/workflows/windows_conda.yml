@@ -18,7 +18,7 @@ jobs:
       shell: pwsh
       run: |
         conda activate loop
-        pip install -r requirements.txt
+        FOR /F "delims=~" %f in (requirements.txt) DO conda install --yes "%f -c conda-forge" || pip install "%f"
         pip install .
         conda info
         conda list
