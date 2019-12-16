@@ -26,8 +26,8 @@ jobs:
           ./Miniconda3-latest-Windows-x86_64.exe //InstallationType=JustMe //RegisterPython=0 //S
         fi
 
-    - name: Setup paths
+    - name: Install requirements
       shell: bash
       run: |
-        echo "::add-path::$HOME/miniconda3/bin"
-        echo "::add-path::$HOME/miniconda3/Scripts"
+        ::add-path::$HOME/miniconda3/bin
+        conda install numpy
