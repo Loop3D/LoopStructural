@@ -41,6 +41,7 @@ class GeologicalFeature:
         self.regions = []
         self.type = type
         self.faults = faults
+        self.faults_enabled = True
         if region is None:
             self.region = 'everywhere'
 
@@ -96,8 +97,9 @@ class GeologicalFeature:
         for r in self.regions:
             mask = np.logical_and(mask, r(evaluation_points))
         # apply faulting after working out which regions are visible
-        for f in self.faults:
-            evaluation_points = f.apply_to_points(evaluation_points)
+        if self.faults_enabled:
+            for f in self.faults:
+                evaluation_points = f.apply_to_points(evaluation_points)
         v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
         return v
 
@@ -122,8 +124,9 @@ class GeologicalFeature:
             mask = np.logical_and(mask, r(evaluation_points))
 
         # apply faulting after working out which regions are visible
-        for f in self.faults:
-            evaluation_points = f.apply_to_points(evaluation_points)
+        if self.faults_enabled:
+            for f in self.faults:
+                evaluation_points = f.apply_to_points(evaluation_points)
         v[mask, :] = self.support.evaluate_gradient(evaluation_points)
 
         return v

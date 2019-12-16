@@ -44,14 +44,20 @@ class FoldFrame(StructuralFrame):
         if len(points) == 0:
             return 0, 0
         points = np.vstack(points)
+        # We need to ignore the fault when we are calculating the splot because it is done
+        # in the restored space
+        self.features[0].faults_enabled = False
+        self.features[1].faults_enabled = False
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
-        # s1 = self.features[0].evaluate_value(points[:,:3])
         s1gyg = self.features[1].evaluate_gradient(points[:, :3])
         s1gyg /= np.linalg.norm(s1gyg, axis=1)[:, None]
-        # s1gy = self.features[0].evaluate_value(points[:,:3])
-        l1 = points[:, 3:]  # np.cross(s1g,s0g,axisa=1,axisb=1)
+        l1 = points[:, 3:]
         l1 /= np.linalg.norm(l1, axis=1)[:, None]
+        fad = self.features[1].evaluate_value(points[:, :3])
+        # Turn the faults back on
+        self.features[0].faults_enabled = True
+        self.features[1].faults_enabled = True
 
         # project s0 onto axis plane B X A X B
         projected_l1 = np.cross(s1g, np.cross(l1, s1g, axisa=1, axisb=1),
@@ -69,7 +75,7 @@ class FoldFrame(StructuralFrame):
         # far[far>90] = far[far>90]+-180
         # far[far<-90] = far[far<-90]+180
 
-        return far, self.features[0].evaluate_value(points[:, :3])
+        return far, fad
 
     def calculate_fold_limb_rotation(self, feature_builder, axis=None):
         """
@@ -89,6 +95,8 @@ class FoldFrame(StructuralFrame):
         -------
         fold_limb_rotation, coordinate_0
         """
+        self.features[0].faults_enabled = False
+        self.features[1].faults_enabled = False
         gpoints = feature_builder.interpolator.get_gradient_constraints()
         npoints = feature_builder.interpolator.get_norm_constraints()
         points = []
@@ -108,11 +116,13 @@ class FoldFrame(StructuralFrame):
         # for the locations and normalise
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
-        # s1 = self.features[0].evaluate_value(points[:, :3])
+        s1 = self.features[0].evaluate_value(points[:, :3])
+        self.features[0].faults_enabled = True
+        self.features[1].faults_enabled = True
         if axis is None:
             r2 = np.einsum('ij,ij->i', s1g, s0g)
-            return np.rad2deg(np.arcsin(r2)), self.features[0].evaluate_value(
-                points[:, :3])
+
+            return np.rad2deg(np.arcsin(r2)), s1
         if axis is not None:
             fold_axis = axis(points[:, :3])
             # project s0 onto axis plane B X A X B
@@ -133,7 +143,7 @@ class FoldFrame(StructuralFrame):
                            (- np.rad2deg(np.arcsin(r2))))
             flr = np.where(flr < -90, (180. + flr), flr)
             flr = np.where(flr > 90, -(180. - flr), flr)
-            return flr, self.features[0].evaluate_value(points[:, :3])
+            return flr, s1
 
     def calculate_intersection_lineation(self, feature_builder):
         """
@@ -152,6 +162,8 @@ class FoldFrame(StructuralFrame):
         -------
 
         """
+        self.features[0].faults_enabled = False
+        self.features[1].faults_enabled = False
         gpoints = feature_builder.interpolator.get_gradient_constraints()
         npoints = feature_builder.interpolator.get_norm_constraints()
         points = []
@@ -166,4 +178,6 @@ class FoldFrame(StructuralFrame):
         s0g /= np.linalg.norm(s0g, axis=1)[:, None]
         l1 = np.cross(s1g, s0g, axisa=1, axisb=1)
         l1 /= np.linalg.norm(l1, axis=1)[:, None]
+        self.features[0].faults_enabled = True
+        self.features[1].faults_enabled = True
         return l1
