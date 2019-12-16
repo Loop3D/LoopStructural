@@ -27,7 +27,6 @@ jobs:
         fi
 
     - name: Install requirements
-      shell: bash
+      shell: pwsh
       run: |
-        ::add-path::$HOME/miniconda3/bin
         conda install numpy
