@@ -20,10 +20,11 @@ jobs:
         conda activate loop
         conda install meshpy -c conda-forge
         pip install -r requirements.txt
-        pip install .
+        python setup.py build_ext --inplace
         conda info
         conda list
     - name: Lint with flake8
+      shell: pwsh
       run: |
         conda activate loop
         pip install flake8
@@ -32,6 +33,7 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      shell: pwsh
       run: |
         conda activate loop
         pip install pytest
