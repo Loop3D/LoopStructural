@@ -1,0 +1,24 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: goanpeca/action-setup-conda@master
+      with:
+        conda-version: '4.8'         # optional. Version of conda to use for base evironment.
+        conda-build-version: '3.17'  # optional. If not provided conda build is not installed.
+    - run: conda create --name loop python=3.6
+    - name: Using PowerShell Core
+      shell: pwsh
+      run: |
+        conda activate loop
+        pip install -r requirements.txt
+        pip install .
+        conda info
+        conda list
