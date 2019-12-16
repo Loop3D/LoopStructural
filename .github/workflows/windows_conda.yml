@@ -17,6 +17,6 @@ jobs:
     - name: Using PowerShell Core
       shell: pwsh
       run: |
-        conda activate test
+        conda activate loop
         conda info
         conda list
