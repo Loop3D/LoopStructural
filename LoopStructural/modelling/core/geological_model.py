@@ -3,7 +3,6 @@ import logging
 import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
-
 from LoopStructural.interpolators.discrete_fold_interpolator import \
     DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators.finite_difference_interpolator import \
@@ -25,6 +24,9 @@ from LoopStructural.supports.structured_grid import StructuredGrid
 from LoopStructural.supports.tet_mesh import TetMesh
 
 logger = logging.getLogger(__name__)
+
+
+
 
 
 def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl = None):
@@ -229,6 +231,8 @@ class GeologicalModel:
             number of elements in the interpolator
         buffer - double or numpy array 3x1
             value(s) between 0,1 specifying the buffer around the bounding box
+        data_bb - bool
+            whether to use the model boundary or the boundary around
         kwargs - no kwargs used, this just catches any additional arguments
         Returns
         -------
@@ -282,6 +286,9 @@ class GeologicalModel:
                                                        **kwargs)
         # add data
         series_data = self.data[self.data['type'] == series_surface_data]
+        if series_data.shape[0] == 0:
+            logger.warning("No data for %s, skipping"%series_surface_data)
+            return
         series_builder.add_data_from_data_frame(series_data)
         for f in reversed(self.features):
             if f.type == 'fault':

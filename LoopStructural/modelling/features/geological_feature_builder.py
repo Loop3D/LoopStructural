@@ -9,7 +9,7 @@ from LoopStructural.modelling.core.geological_points import GPoint, IPoint, \
     TPoint
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.supports.scalar_field import ScalarField
-
+from LoopStructural.utils.helper import get_data_axis_aligned_bounding_box
 
 class GeologicalFeatureInterpolator:
     def __init__(self, interpolator, name = 'Feature', region = None, **kwargs):
@@ -20,6 +20,8 @@ class GeologicalFeatureInterpolator:
         Parameters
         ----------
         interpolator - a GeologicalInterpolator
+        region : lambda function
+            defining whether the location (xyz) should be included in the
         kwargs - name of the feature, region to interpolate the feature
         """
         self.interpolator = interpolator
@@ -356,21 +358,39 @@ class GeologicalFeatureInterpolator:
                 c += 1
         return points[:c, :]
 
-    def build(self, fold = None, fold_weights = None, **kwargs):
+    def get_data_locations(self):
+        points = np.zeros((len(self.data),3))  # array
+        c = 0
+        for d in self.data:
+                points[c, :] = d.pos
+                c += 1
+        return points[:c, :]
+
+    def build(self, fold = None, fold_weights = None, data_region = None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
 
         Parameters
         ----------
-        solver
+        fold : FoldEvent
+        fold_weights : dict
+        data_region : double <1
+            If not none adds a region around the data points to the interpolation
+            with data_region as a buffer
         kwargs
 
         Returns
         -------
 
         """
+
+        if data_region is not None:
+            xyz = self.get_data_locations()
+            bb, region = get_data_axis_aligned_bounding_box(xyz, data_region)
+            self.interpolator.set_region(region=region)
         if not self.data_added:
             self.add_data_to_interpolator()
+
         # moving this to init because it needs to be done before constraints
         # are added?
         if fold is not None:

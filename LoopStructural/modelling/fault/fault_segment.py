@@ -159,9 +159,6 @@ class FaultSegment:
             d = self.faultfunction(gx, gy, gz)
         mask = np.abs(d) > 0.
         d *= self.displacement
-        # g = self.faultframe.features[1].evaluate_gradient(points)
-        # gy = self.faultframe.features[1].evaluate_value(points)
-        # gz = self.faultframe.features[2].evaluate_value(points)
         # calculate the fault frame for the evaluation points
         for i in range(steps):
             with ThreadPoolExecutor(max_workers=8) as executor:
@@ -175,22 +172,11 @@ class FaultSegment:
                 gy = gy_future.result()
                 gz = gz_future.result()
             # # get the fault frame val/grad for the points
-            # executor = ThreadPoolExecutor(max_workers=4)
-            # gx = executor.submit(self.faultframe.features[0].evaluate_value, points)
-            # g = executor.submit(self.faultframe.features[1].evaluate_gradient, points)
-            # gy = executor.submit(self.faultframe.features[1].evaluate_value, points)
-            # gz = executor.submit(self.faultframe.features[2].evaluate_value, points)
-
-            # gx = self.faultframe.features[0].evaluate_value(points)
-            # g = self.faultframe.features[1].evaluate_gradient(points)
-            # gy = self.faultframe.features[1].evaluate_value(points)
-            # gz = self.faultframe.features[2].evaluate_value(points)
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
 
             d = np.zeros(gx.shape)
             d[np.isnan(gx)] = 0
-            # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
             d[gx > 0] = 1.
             d[gx < 0] = -1
             if self.faultfunction is not None:
