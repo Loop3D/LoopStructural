@@ -1,5 +1,6 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_laurent2016
+
 def average_axis():
     data, bb = load_laurent2016()
 
