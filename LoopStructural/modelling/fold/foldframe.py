@@ -161,7 +161,6 @@ class FoldFrame(StructuralFrame):
 
         """
         self.features[0].faults_enabled = False
-        self.features[1].faults_enabled = False
         gpoints = feature_builder.interpolator.get_gradient_constraints()
         npoints = feature_builder.interpolator.get_norm_constraints()
         points = []
@@ -177,5 +176,4 @@ class FoldFrame(StructuralFrame):
         l1 = np.cross(s1g, s0g, axisa=1, axisb=1)
         l1 /= np.linalg.norm(l1, axis=1)[:, None]
         self.features[0].faults_enabled = True
-        self.features[1].faults_enabled = True
         return l1

@@ -71,7 +71,8 @@ class FoldEvent:
         gx = self.foldframe.features[0].evaluate_value(points)
         dgx = self.foldframe.features[0].evaluate_gradient(points)
         dgx /= np.linalg.norm(dgx, axis=1)[:, None]
-        dgz = self.foldframe.features[2].evaluate_gradient(points)
+        dgz = np.cross(dgx,fold_axis,axisa=1,axisb=1)
+        # dgz = self.foldframe.features[2].evaluate_gradient(points)
         dgz /= np.linalg.norm(dgz, axis=1)[:, None]
 
         R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))

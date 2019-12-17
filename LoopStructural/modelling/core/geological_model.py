@@ -397,7 +397,7 @@ class GeologicalModel:
         result['fold'] = fold
         return result
 
-    def create_and_add_folded_structural_frame(self, fold_frame_data, fold_frame=None,
+    def create_and_add_folded_fold_frame(self, fold_frame_data, fold_frame=None,
                                          **kwargs):
         """
 
