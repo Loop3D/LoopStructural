@@ -96,7 +96,6 @@ class FoldFrame(StructuralFrame):
         fold_limb_rotation, coordinate_0
         """
         self.features[0].faults_enabled = False
-        self.features[1].faults_enabled = False
         gpoints = feature_builder.interpolator.get_gradient_constraints()
         npoints = feature_builder.interpolator.get_norm_constraints()
         points = []
@@ -118,7 +117,6 @@ class FoldFrame(StructuralFrame):
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
         s1 = self.features[0].evaluate_value(points[:, :3])
         self.features[0].faults_enabled = True
-        self.features[1].faults_enabled = True
         if axis is None:
             r2 = np.einsum('ij,ij->i', s1g, s0g)
 
