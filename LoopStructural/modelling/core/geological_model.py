@@ -22,7 +22,7 @@ from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.supports.structured_grid import StructuredGrid
 from LoopStructural.supports.tet_mesh import TetMesh
-
+from LoopStructural.datasets import normal_vector_headers
 logger = logging.getLogger(__name__)
 
 
@@ -565,6 +565,24 @@ class GeologicalModel:
                                                      **kwargs)
         # add data
         fault_frame_data = self.data[self.data['type'] == fault_surface_data]
+        if 'coord' not in fault_frame_data:
+            fault_frame_data['coord'] = 0
+        # if there is no slip direction data assume vertical
+        if fault_frame_data[fault_frame_data['coord'] == 1].shape[0] == 0:
+            logger.info("Adding fault frame slip")
+            loc = np.mean(fault_frame_data[['X','Y','Z']],axis=0)
+            coord1 = pd.DataFrame([[loc[0],loc[1],loc[2],0,0,-1]],columns=normal_vector_headers())
+            coord1['coord'] = 1
+            fault_frame_data = pd.concat([fault_frame_data, coord1],sort=False)
+        if fault_frame_data[fault_frame_data['coord']==2].shape[0] == 0:
+            logger.info("Adding fault extent data as first and last point")
+            ## first and last point of the line
+            coord2 = fault_frame_data.loc[[0,len(fault_frame_data)-1]]
+            coord2['coord'] = 2
+            coord2.loc[0,'val'] = -1
+            coord2.loc[1,'val'] = 1
+            print(coord2)
+            fault_frame_data = pd.concat([fault_frame_data, coord2],sort=False)
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # if there is no fault slip data then we could find the strike of
         # the fault and build
