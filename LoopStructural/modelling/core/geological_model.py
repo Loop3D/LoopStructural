@@ -607,13 +607,13 @@ class GeologicalModel:
                     idc[mask], val[mask])
         # check if any faults exist in the stack
 
-        for f in reversed(self.features):
-            if f.type == 'fault':
-                fault_frame_builder[0].add_fault(f)
-                fault_frame_builder[1].add_fault(f)
-                fault_frame_builder[2].add_fault(f)
-            if f.type == 'unconformity':
-                break
+        # for f in reversed(self.features):
+        #     if f.type == 'fault':
+        #         fault_frame_builder[0].add_fault(f)
+        #         fault_frame_builder[1].add_fault(f)
+        #         fault_frame_builder[2].add_fault(f)
+        #     if f.type == 'unconformity':
+        #         break
 
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:
