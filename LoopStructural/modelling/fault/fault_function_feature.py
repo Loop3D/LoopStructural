@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 
 
 class FaultDisplacementFeature:
-    def __init__(self, fault_frame, displacement):
+    def __init__(self, fault_frame, displacement, name = 'fault_displacement'):
         """
         Geological feature representing the fault displacement
 
@@ -15,7 +15,7 @@ class FaultDisplacementFeature:
         """
         self.fault_frame = fault_frame
         self.displacement = displacement
-        self.name = 'fault_displacement'
+        self.name = name +'_displacement'
 
     def evaluate_value(self, location):
         """
@@ -56,7 +56,7 @@ class FaultDisplacementFeature:
         return d
 
     def min(self):
-        return 0
+        return -1
 
     def max(self):
         return 1
@@ -67,3 +67,6 @@ class FaultDisplacementFeature:
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d
+
+    def mean(self):
+        return 0

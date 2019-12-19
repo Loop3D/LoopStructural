@@ -3,6 +3,8 @@ import logging
 import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
+
+from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
     DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators.finite_difference_interpolator import \
@@ -22,14 +24,11 @@ from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.supports.structured_grid import StructuredGrid
 from LoopStructural.supports.tet_mesh import TetMesh
-from LoopStructural.datasets import normal_vector_headers
+
 logger = logging.getLogger(__name__)
 
 
-
-
-
-def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl = None):
+def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl=None):
     """
     Wrapper for fitting fold limb rotation angle from data using a fourier series.
 
@@ -50,8 +49,8 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
     -------
 
     """
-    flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)#,
-                                                     # axis=fold.get_fold_axis_orientation)
+    flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)  # ,
+    # axis=fold.get_fold_axis_orientation)
     result['limb_rotation'] = flr
     result['foliation'] = s
     if limb_wl is None:
@@ -66,17 +65,17 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
         logger.warning("Not enough data to fit curve")
         fold.fold_limb_rotation = lambda x: 0
     else:
-        mask = np.logical_or(~np.isnan(s),~np.isnan(flr))
+        mask = np.logical_or(~np.isnan(s), ~np.isnan(flr))
         logger.info("There are %i nans for the fold limb rotation angle and "
-                    "%i observations"%(np.sum(~mask),np.sum(mask)))
+                    "%i observations" % (np.sum(~mask), np.sum(mask)))
         if np.sum(mask) < 4:
             logger.error("Not enough data points to fit Fourier series setting fold rotation angle"
                          "to 0")
             fold.fold_limb_rotation = lambda x: np.zeros(x.shape)
             return
         popt, pcov = curve_fit(fourier_series,
-                               s[np.logical_or(~np.isnan(s),~np.isnan(flr))],
-                               np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s),~np.isnan(flr))])),
+                               s[np.logical_or(~np.isnan(s), ~np.isnan(flr))],
+                               np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s), ~np.isnan(flr))])),
                                guess)
         fold.fold_limb_rotation = lambda x: np.rad2deg(
             np.arctan(
@@ -287,7 +286,7 @@ class GeologicalModel:
         # add data
         series_data = self.data[self.data['type'] == series_surface_data]
         if series_data.shape[0] == 0:
-            logger.warning("No data for %s, skipping"%series_surface_data)
+            logger.warning("No data for %s, skipping" % series_surface_data)
             return
         series_builder.add_data_from_data_frame(series_data)
         for f in reversed(self.features):
@@ -570,19 +569,20 @@ class GeologicalModel:
         # if there is no slip direction data assume vertical
         if fault_frame_data[fault_frame_data['coord'] == 1].shape[0] == 0:
             logger.info("Adding fault frame slip")
-            loc = np.mean(fault_frame_data[['X','Y','Z']],axis=0)
-            coord1 = pd.DataFrame([[loc[0],loc[1],loc[2],0,0,-1]],columns=normal_vector_headers())
+            loc = np.mean(fault_frame_data[['X', 'Y', 'Z']], axis=0)
+            coord1 = pd.DataFrame([[loc[0], loc[1], loc[2], 0, 0, -1]], columns=normal_vector_headers())
             coord1['coord'] = 1
-            fault_frame_data = pd.concat([fault_frame_data, coord1],sort=False)
-        if fault_frame_data[fault_frame_data['coord']==2].shape[0] == 0:
+            fault_frame_data = pd.concat([fault_frame_data, coord1], sort=False)
+        if fault_frame_data[fault_frame_data['coord'] == 2].shape[0] == 0:
             logger.info("Adding fault extent data as first and last point")
             ## first and last point of the line
-            coord2 = fault_frame_data.loc[[0,len(fault_frame_data)-1]]
+            value_data = fault_frame_data[fault_frame_data['val'] == 0]
+            coord2 = value_data.iloc[[0, len(value_data) - 1]]
+            coord2 = coord2.reset_index(drop=True)
             coord2['coord'] = 2
-            coord2.loc[0,'val'] = -1
-            coord2.loc[1,'val'] = 1
-            print(coord2)
-            fault_frame_data = pd.concat([fault_frame_data, coord2],sort=False)
+            coord2.loc[0, 'val'] = -1
+            coord2.loc[1, 'val'] = 1
+            fault_frame_data = pd.concat([fault_frame_data, coord2], sort=False)
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # if there is no fault slip data then we could find the strike of
         # the fault and build

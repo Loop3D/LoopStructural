@@ -132,3 +132,40 @@ class FaultDisplacement:
             gz = (gz -mid) / (self.gz_bounds[1]-self.gz_bounds[0])
         return self.gy(gy)*self.gz(gz)
 
+
+class BaseFault(object):
+    hw = CubicFunction()
+    hw.add_cstr(0, 1)
+    hw.add_grad(0, 0)
+    hw.add_cstr(1, 0)
+    # hw.add_cstr(1,1)
+
+    hw.add_grad(1, 0)
+    hw.add_max(1)
+    fw = CubicFunction()
+    fw.add_cstr(0, -1)
+    fw.add_grad(0, 0)
+    fw.add_cstr(-1, 0)
+    fw.add_grad(-1, 0)
+    fw.add_min(-1)
+    gyf = CubicFunction()
+    gyf.add_cstr(-1, 0)
+    gyf.add_cstr(1, 0)
+    gyf.add_cstr(-0.2, 1)
+    gyf.add_cstr(0.2, 1)
+    gyf.add_grad(0, 0)
+    gyf.add_min(-1)
+    gyf.add_max(1)
+    gzf = CubicFunction()
+    gzf.add_cstr(-1, 0)
+    gzf.add_cstr(1, 0)
+    gzf.add_cstr(-0.2, 1)
+    gzf.add_cstr(0.2, 1)
+    gzf.add_grad(0, 0)
+    gzf.add_min(-1)
+    gzf.add_max(1)
+    gxf = Composite(hw, fw)
+    fault_displacement = FaultDisplacement(gx=gxf, gy=gyf, gz=gzf,
+                                           gxmin=-1, gxmax=1,
+                                           gzmin=-1, gzmax=1,
+                                           gymin=-1, gymax=1)

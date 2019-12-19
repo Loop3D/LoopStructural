@@ -37,7 +37,7 @@ class FaultSegment:
         self.displacementfeature = None
         if self.faultframe is not None:
             self.displacementfeature = FaultDisplacementFeature(
-                self.faultframe, self.faultfunction)
+                self.faultframe, self.faultfunction, name = self.name)
 
     def __getitem__(self, item):
         return self.faultframe[item]
