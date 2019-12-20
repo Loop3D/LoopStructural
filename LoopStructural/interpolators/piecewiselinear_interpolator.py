@@ -194,7 +194,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             d_t *= vol[:, None, None]
             # w*=10^11
 
-            points[:, 3:] /= np.linalg.norm(points[:, 3:], axis=1)[:, None]
+            # points[:, 3:] /= np.linalg.norm(points[:, 3:], axis=1)[:, None]
 
             # add in the element gradient matrix into the inte
 
