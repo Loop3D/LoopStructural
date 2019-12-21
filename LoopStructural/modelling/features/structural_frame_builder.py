@@ -337,6 +337,14 @@ class StructuralFrameBuilder:
             logger.warning(
                 "Not enough constraints for structural frame coordinate 0, \n"
                 "Add some more and try again.")
+        # make sure that all of the coordinates are using the same region
+        if gx_feature.get_interpolator().region_function is not None:
+            self.builders[1].interpolator.set_region(gx_feature.get_interpolator().region_function)
+            self.builders[2].interpolator.set_region(gx_feature.get_interpolator().region_function)
+            if 'data_region' in kwargs:
+                kwargs.pop('data_region')
+            if 'region' in kwargs:
+                kwargs.pop('region')
         if len(self.builders[2].data) > 0:
             logger.info("Building %s coordinate 2"%self.name)
             # if gy_feature is not None:
@@ -347,8 +355,7 @@ class StructuralFrameBuilder:
             #         w=gyxgz)
             if gx_feature is not None:
                 self.builders[2].add_orthogonal_feature(gx_feature, gxxgz)
-
-            gz_feature = self.builders[2].build(regularisation=regularisation[1], **kwargs)
+            gz_feature = self.builders[2].build(regularisation=regularisation[2], **kwargs)
 
         if len(self.builders[1].data) > 0:
             logger.info("Building %s coordinate 1"%self.name)
@@ -356,7 +363,7 @@ class StructuralFrameBuilder:
                 self.builders[1].add_orthogonal_feature(gx_feature, gxxgy)
             if gz_feature is not None:
                 self.builders[1].add_orthogonal_feature(gz_feature, gyxgz)
-            gy_feature = self.builders[1].build(regularisation=regularisation[2], **kwargs)
+            gy_feature = self.builders[1].build(regularisation=regularisation[1], **kwargs)
 
         if gy_feature is None:
             logger.warning(
@@ -367,7 +374,7 @@ class StructuralFrameBuilder:
             if gy_feature is not None:
                 logger.debug(
                     "Creating analytical structural frame coordinate 2")
-                gz_feature = CrossProductGeologicalFeature(self.name + '_gz',
+                gz_feature = CrossProductGeologicalFeature(self.name + '_2',
                                                            gy_feature,
                                                            gx_feature)
             if gy_feature is None or gx_feature is None:

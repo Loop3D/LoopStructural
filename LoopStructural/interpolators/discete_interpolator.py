@@ -27,7 +27,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         GeologicalInterpolator.__init__(self)
         self.B = []
         self.support = support
-
+        self.region_function = None
         self.region = np.arange(0, support.n_nodes)
         self.region_map = np.zeros(support.n_nodes).astype(int)
         # self.region_map[self.region] = np.array(range(0,
@@ -76,6 +76,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         # evaluate the region function on the support to determine
         # which nodes are inside update region map and degrees of freedom
+        self.region_function = region
         self.region = region(self.support.nodes)
         self.region_map = np.zeros(self.support.n_nodes).astype(int)
         self.region_map[self.region] = np.array(
