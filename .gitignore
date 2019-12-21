@@ -117,3 +117,4 @@ FME/cython/*.c
 fme_lg/*
 *.swp
 *.c
+.vscode/settings.json
