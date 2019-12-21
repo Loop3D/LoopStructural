@@ -20,7 +20,13 @@ jobs:
         conda activate loop
         conda install meshpy -c conda-forge
         pip install -r requirements.txt
-        pip install . 
+        conda info
+        conda list
+    - name: setup loop
+      shell: pwsh
+      run: |
+        conda activate loop
+        python setup.py install build_ext --inplace
         conda info
         conda list
     - name: Lint with flake8
