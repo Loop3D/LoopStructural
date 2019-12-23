@@ -11,19 +11,17 @@ jobs:
     - uses: actions/checkout@v1
     - uses: goanpeca/action-setup-conda@master
       with:
-        conda-version: '4.8'         # optional. Version of conda to use for base evironment.
-        conda-build-version: '3.17'  # optional. If not provided conda build is not installed.
-    - run: conda create --name loop python=3.6
+        miniconda-version: 'latest'
+        activate-environment: loop    
     - name: Installing loop structural
-      shell: pwsh
+      shell: bash -l {0}
       run: |
-        conda activate loop
         conda install meshpy -c conda-forge
         pip install -r requirements.txt
         conda info
         conda list
     - name: setup loop
-      shell: pwsh
+      shell: bash -l {0}
       run: |
         conda activate loop
         python setup.py install build_ext --inplace 2>&1 | Write-Host
