@@ -47,7 +47,7 @@ jobs:
         author_name: Lachlan Grose
         author_email: lachlan.grose@monash.edu
         message: "Adding wheel"
-        path: "./dist"
+        path: "dist"
         pattern: "*.whl"
         force: false
       env:
