@@ -41,4 +41,15 @@ jobs:
       run: |
         pip install pytest
         pytest
+    - name: Commit changes # This is the step name that will be displayed in your runs
+      uses: EndBug/add-and-commit@v2 # You can change this to use a specific version
+      with: # See more info about inputs below
+        author_name: Lachlan Grose
+        author_email: lachlan.grose@monash.edu
+        message: "Adding wheel"
+        path: "./dist"
+        pattern: "*.whl"
+        force: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
 
