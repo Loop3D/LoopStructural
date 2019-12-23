@@ -10,5 +10,5 @@ setup(
         packages=find_packages(),
 	# ext_modules=cythonize("LoopStructural/cython/*.pyx",compiler_directives={"language_level": "3"}),
 	include_dirs=[numpy.get_include()],
-	include_package_data=True,
+	#include_package_data=True,
 	)
