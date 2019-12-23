@@ -23,7 +23,6 @@ jobs:
     - name: setup loop
       shell: bash -l {0}
       run: |
-        conda activate loop
         python setup.py install build_ext --inplace
         conda info
         conda list
