@@ -26,7 +26,7 @@ jobs:
       shell: pwsh
       run: |
         conda activate loop
-        python setup.py install build_ext --inplace
+        python setup.py install build_ext --inplace 2>&1 | Write-Host
         conda info
         conda list
     - name: Lint with flake8
