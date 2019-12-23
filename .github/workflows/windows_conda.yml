@@ -23,9 +23,11 @@ jobs:
     - name: setup loop
       shell: bash -l {0}
       run: |
+        python setup.py bdist_wheel
         python setup.py install build_ext --inplace
         conda info
         conda list
+        dir
     - name: Lint with flake8
       shell: bash -l {0}
       run: |
