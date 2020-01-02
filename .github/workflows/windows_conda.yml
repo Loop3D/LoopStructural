@@ -44,6 +44,7 @@ jobs:
     - name: Add test.txt
       shell: bash -l {0}
       run: |
+        mkdir test
         echo .>> test.txt
         dir
     - name: Commit changes # This is the step name that will be displayed in your runs
