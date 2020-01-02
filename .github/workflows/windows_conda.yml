@@ -55,7 +55,7 @@ jobs:
         message: "Adding wheel"
 #         path: ""
         pattern: "test.txt"
-        force: false
+        force: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
 
