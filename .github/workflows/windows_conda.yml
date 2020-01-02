@@ -46,6 +46,7 @@ jobs:
       run: |
         mkdir test
         echo .>> test.txt
+        git add test.txt
         dir
     - name: Commit changes # This is the step name that will be displayed in your runs
       uses: EndBug/add-and-commit@v2 # You can change this to use a specific version
