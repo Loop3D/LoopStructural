@@ -54,7 +54,7 @@ jobs:
         author_email: lachlan.grose@monash.edu
         message: "Adding wheel"
 #         path: ""
-        pattern: "test.txt"
+        pattern: "*.txt"
         force: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
