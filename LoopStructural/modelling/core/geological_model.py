@@ -276,6 +276,7 @@ class GeologicalModel:
         series_surface_data - string corresponding to the type in the data
         frame column
         kwargs
+
         Returns
         -------
         results dict
@@ -317,6 +318,7 @@ class GeologicalModel:
         ----------
         foldframe_data
         kwargs
+
         Returns
         -------
         """
@@ -352,12 +354,14 @@ class GeologicalModel:
     def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, **kwargs):
         """
         Create a folded foliation field from data and a fold frame
+
         Parameters
         ----------
         foliation_data : string
         fold_frame :  FoldFrame
         kwargs
             additional kwargs to be passed through to other functions
+
         Returns
         -------
         dict
@@ -609,13 +613,13 @@ class GeologicalModel:
                     idc[mask], val[mask])
         # check if any faults exist in the stack
 
-        # for f in reversed(self.features):
-        #     if f.type == 'fault':
-        #         fault_frame_builder[0].add_fault(f)
-        #         fault_frame_builder[1].add_fault(f)
-        #         fault_frame_builder[2].add_fault(f)
-        #     if f.type == 'unconformity':
-        #         break
+        for f in reversed(self.features):
+            if f.type == 'fault':
+                fault_frame_builder[0].add_fault(f)
+                fault_frame_builder[1].add_fault(f)
+                fault_frame_builder[2].add_fault(f)
+            if f.type == 'unconformity':
+                break
 
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:
