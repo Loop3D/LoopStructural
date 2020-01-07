@@ -176,11 +176,13 @@ class GeologicalModel:
     def set_model_data(self, data):
         """
         Set the data array for the model
+
         Parameters
         ----------
         data - pandas data frame with column headers corresponding to the
          type, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
          plunge_dir, azimuth
+
         Returns
         -------
         Note
@@ -209,9 +211,11 @@ class GeologicalModel:
     def extend_model_data(self, newdata):
         """
         Extends the data frame
+
         Parameters
         ----------
         newdata - pandas data frame
+
         Returns
         -------
         """
@@ -221,8 +225,8 @@ class GeologicalModel:
                          buffer=0.02, **kwargs):
         """
         Returns an interpolator given the arguments, also constructs a
-        support for a discrete
-        interpolator
+        support for a discrete interpolator
+
         Parameters
         ----------
         interpolatortype - string
@@ -234,6 +238,7 @@ class GeologicalModel:
         data_bb - bool
             whether to use the model boundary or the boundary around
         kwargs - no kwargs used, this just catches any additional arguments
+
         Returns
         -------
         """
@@ -514,6 +519,7 @@ class GeologicalModel:
         ----------
         unconformity_surface_data string
             name of the unconformity data in the data frame
+
         Returns
         -------
         """
@@ -557,6 +563,7 @@ class GeologicalModel:
             name of the fault surface data in the dataframe
         displacement - displacement magnitude
         kwargs - additional kwargs for Fault and interpolators
+
         Returns
         -------
         dictionary
@@ -644,6 +651,7 @@ class GeologicalModel:
         Parameters
         ----------
         points
+
         Returns
         -------
         """
@@ -656,6 +664,7 @@ class GeologicalModel:
         Parameters
         ----------
         points
+
         Returns
         -------
         """
@@ -667,9 +676,11 @@ class GeologicalModel:
     def voxet(self, nsteps=(50, 50, 25)):
         """
         Returns a voxet dict with the nsteps specified
+
         Parameters
         ----------
         nsteps
+
         Returns
         -------
         """
@@ -678,10 +689,12 @@ class GeologicalModel:
     def regular_grid(self, nsteps=(50, 50, 25)):
         """
         Return a regular grid within the model bounding box
+
         Parameters
         ----------
         nsteps tuple
             number of cells in x,y,z
+
         Returns
         -------
         """

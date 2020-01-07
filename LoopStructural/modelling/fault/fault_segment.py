@@ -18,12 +18,16 @@ class FaultSegment:
                  displacement=1.,
                  **kwargs):
         """
-        A slip event of a faut
+        A slip event of a fault
+
         Parameters
         ----------
-        faultframe - the fault frame defining the faut geometry
-        faultfunction :
+        faultframe : FaultFrame
+            the fault frame defining the faut geometry
+        faultfunction : function/lambda function
+            optional displacement function for spatially variable fault displacement
         steps : int
+            how many integration steps for faults
         kwargs
         """
         self.faultframe = faultframe
@@ -40,6 +44,16 @@ class FaultSegment:
                 self.faultframe, self.faultfunction, name = self.name)
 
     def __getitem__(self, item):
+        """
+
+        Parameters
+        ----------
+        item
+
+        Returns
+        -------
+
+        """
         return self.faultframe[item]
 
     def add_region(self, region):
@@ -47,8 +61,8 @@ class FaultSegment:
 
         Parameters
         ----------
-        region - boolean function(x,y,z)
-                - returns true if inside region, false if outside
+        region : boolean function(x,y,z)
+                A function that returns true if inside region, false if outside
                 can be passed as a lambda function e.g.
                 lambda pos : feature.evaluate_value(pos) > 0
         Returns
@@ -61,6 +75,7 @@ class FaultSegment:
     def evaluate(self, locations):
         """
         Evaluate which side of fault
+
         Parameters
         ----------
         locations numpy array
@@ -77,6 +92,7 @@ class FaultSegment:
     def evaluate_value(self, locations):
         """
         Return the value of the fault surface scalar field
+
         Parameters
         ----------
         locations - numpy array
@@ -130,6 +146,7 @@ class FaultSegment:
     def apply_to_points(self, points):
         """
         Unfault the array of points
+
         Parameters
         ----------
         points - numpy array Nx3
