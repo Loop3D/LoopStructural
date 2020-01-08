@@ -17,6 +17,7 @@ from LoopStructural.modelling.features import \
 from LoopStructural.modelling.features import RegionFeature
 from LoopStructural.modelling.features import \
     StructuralFrameBuilder
+from LoopStructural.modelling.features import UnconformityFeature
 from LoopStructural.modelling.fold.fold import FoldEvent
 from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
     fourier_series
@@ -510,7 +511,7 @@ class GeologicalModel:
         """
         for f in reversed(self.features):
             if f.type == 'unconformity':
-                feature.add_region(lambda pos: f.evaluate_value(pos) <= 0)
+                feature.add_region(lambda pos: f.evaluate(pos))
                 break
 
     def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
@@ -538,14 +539,19 @@ class GeologicalModel:
         self._add_faults(unconformity_feature_builder)
 
         # build feature
-        uc_feature = unconformity_feature_builder.build(**kwargs)
-        uc_feature.type = 'unconformity'
-
+        uc_feature_base = unconformity_feature_builder.build(**kwargs)
+        uc_feature_base.type = 'unconformity_base'
+        # uc_feature = UnconformityFeature(uc_feature_base,0)
         # iterate over existing features and add the unconformity as a
         # region so the feature is only
         # evaluated where the unconformity is positive
+        return self.add_unconformity(uc_feature_base, 0)
+
+    def add_unconformity(self, feature, value):
+        uc_feature = UnconformityFeature(feature,value)
+
         for f in self.features:
-            f.add_region(lambda pos: uc_feature.evaluate_value(pos) >= 0)
+            f.add_region(lambda pos: uc_feature.evaluate(pos))
 
         # see if any unconformities are above this feature if so add region
         self._add_unconformity_above(uc_feature)
@@ -619,12 +625,13 @@ class GeologicalModel:
                 fault_frame_builder[i].interpolator.add_equality_constraints(
                     idc[mask], val[mask])
         # check if any faults exist in the stack
-
+        overprinted = kwargs.get('overprinted',None)
         for f in reversed(self.features):
-            if f.type == 'fault':
-                fault_frame_builder[0].add_fault(f)
-                fault_frame_builder[1].add_fault(f)
-                fault_frame_builder[2].add_fault(f)
+            if overprinted is not None:
+                if f.type == 'fault' and f.name in overprinted:
+                    fault_frame_builder[0].add_fault(f)
+                    fault_frame_builder[1].add_fault(f)
+                    fault_frame_builder[2].add_fault(f)
             if f.type == 'unconformity':
                 break
 
@@ -648,6 +655,7 @@ class GeologicalModel:
     def rescale(self, points):
         """
         Convert from model scale to real world scale - in the future this should also do transformations?
+
         Parameters
         ----------
         points
