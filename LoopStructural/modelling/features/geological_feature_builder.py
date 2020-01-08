@@ -11,6 +11,7 @@ from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.supports.scalar_field import ScalarField
 from LoopStructural.utils.helper import get_data_axis_aligned_bounding_box
 
+
 class GeologicalFeatureInterpolator:
     def __init__(self, interpolator, name = 'Feature', region = None, **kwargs):
         """
@@ -68,8 +69,8 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        if 'X' not in data_frame.columns or 'X' not in data_frame.columns or \
-                'X' not in data_frame.columns:
+        if 'X' not in data_frame.columns or 'Y' not in data_frame.columns or \
+                'Z' not in data_frame.columns:
             logger.error("No location in data frame")
             return
         for i, r in data_frame.iterrows():
@@ -263,8 +264,15 @@ class GeologicalFeatureInterpolator:
         # first move the data for the fault
         logger.info("Adding %i faults to %s"%(len(self.faults),self.name))
         data = copy.deepcopy(self.data)
+        # convert data locations to numpy array and then update
+        locations = self.get_data_locations()
         for f in self.faults:
-            f.apply_to_data(data)
+            locations = f.apply_to_points(locations)
+        i = 0
+        for d in data:
+            d.pos = locations[i,:]
+            i+=1
+
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
         # we need at least 2 different value points or a single norm
@@ -365,6 +373,12 @@ class GeologicalFeatureInterpolator:
                 points[c, :] = d.pos
                 c += 1
         return points[:c, :]
+
+    def update_data_locations(self,locations):
+        i = 0
+        for d in self.data:
+            d.pos = locations[i,:]
+            i+=1
 
     def build(self, fold = None, fold_weights = None, data_region = None, **kwargs):
         """
