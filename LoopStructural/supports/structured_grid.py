@@ -187,7 +187,7 @@ class StructuredGrid:
                self.nsteps[None, None, 0] * self.nsteps[
                    None, None, 1] * indexes[:, :, 2]
 
-    def neighbour_global_indexes(self, **kwargs):
+    def neighbour_global_indexes(self, mask = None, **kwargs):
         """
         Get neighbour indexes
 
@@ -217,17 +217,19 @@ class StructuredGrid:
         if indexes.ndim != 2:
             print(indexes.ndim)
             return
-        mask = np.array([
-            [-1, 0, 1, -1, 0, 1, -1, 0, 1,
-             -1, 0, 1, -1, 0, 1, -1, 0, 1,
-             -1, 0, 1, -1, 0, 1, -1, 0, 1],
-            [-1, -1, -1, 0, 0, 0, 1, 1, 1,
-             -1, -1, -1, 0, 0, 0, 1, 1, 1,
-             -1, -1, -1, 0, 0, 0, 1, 1, 1],
-            [-1, -1, -1, -1, -1, -1, -1, -1, -1,
-             0, 0, 0, 0, 0, 0, 0, 0, 0,
-             1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ])
+        # determine which neighbours to return default is diagonals included.
+        if mask is None:
+            mask = np.array([
+                [-1, 0, 1, -1, 0, 1, -1, 0, 1,
+                 -1, 0, 1, -1, 0, 1, -1, 0, 1,
+                 -1, 0, 1, -1, 0, 1, -1, 0, 1],
+                [-1, -1, -1, 0, 0, 0, 1, 1, 1,
+                 -1, -1, -1, 0, 0, 0, 1, 1, 1,
+                 -1, -1, -1, 0, 0, 0, 1, 1, 1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1,
+                 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ])
         neighbours = indexes[:, None, :] + mask[:, :, None]
         return neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1,
                                                                   :, :] + \

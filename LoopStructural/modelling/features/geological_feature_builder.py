@@ -69,8 +69,8 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        if 'X' not in data_frame.columns or 'X' not in data_frame.columns or \
-                'X' not in data_frame.columns:
+        if 'X' not in data_frame.columns or 'Y' not in data_frame.columns or \
+                'Z' not in data_frame.columns:
             logger.error("No location in data frame")
             return
         for i, r in data_frame.iterrows():
