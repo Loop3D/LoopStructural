@@ -548,6 +548,20 @@ class GeologicalModel:
         return self.add_unconformity(uc_feature_base, 0)
 
     def add_unconformity(self, feature, value):
+        """
+        Use an existing feature to add an unconformity to the model.
+
+        Parameters
+        ----------
+        feature : GeologicalFeature
+            existing geological feature
+        value : float
+            scalar value of isosurface that represents
+
+        Returns
+        -------
+
+        """
         uc_feature = UnconformityFeature(feature,value)
 
         for f in self.features:
