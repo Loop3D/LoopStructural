@@ -181,8 +181,10 @@ class GeologicalModel:
         data - pandas data frame with column headers corresponding to the
          type, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
          plunge_dir, azimuth
+
         Returns
         -------
+
         Note
         ----
         Type can be any unique identifier for the feature the data point
@@ -212,6 +214,7 @@ class GeologicalModel:
         Parameters
         ----------
         newdata - pandas data frame
+
         Returns
         -------
         """
@@ -223,6 +226,7 @@ class GeologicalModel:
         Returns an interpolator given the arguments, also constructs a
         support for a discrete
         interpolator
+
         Parameters
         ----------
         interpolatortype - string
@@ -234,6 +238,7 @@ class GeologicalModel:
         data_bb - bool
             whether to use the model boundary or the boundary around
         kwargs - no kwargs used, this just catches any additional arguments
+
         Returns
         -------
         """
@@ -276,6 +281,7 @@ class GeologicalModel:
         series_surface_data - string corresponding to the type in the data
         frame column
         kwargs
+
         Returns
         -------
         results dict
@@ -317,6 +323,7 @@ class GeologicalModel:
         ----------
         foldframe_data
         kwargs
+
         Returns
         -------
         """
@@ -358,6 +365,7 @@ class GeologicalModel:
         fold_frame :  FoldFrame
         kwargs
             additional kwargs to be passed through to other functions
+
         Returns
         -------
         dict
@@ -510,6 +518,7 @@ class GeologicalModel:
         ----------
         unconformity_surface_data string
             name of the unconformity data in the data frame
+
         Returns
         -------
         """
@@ -553,6 +562,7 @@ class GeologicalModel:
             name of the fault surface data in the dataframe
         displacement - displacement magnitude
         kwargs - additional kwargs for Fault and interpolators
+
         Returns
         -------
         dictionary
@@ -640,6 +650,7 @@ class GeologicalModel:
         Parameters
         ----------
         points
+
         Returns
         -------
         """
@@ -652,6 +663,7 @@ class GeologicalModel:
         Parameters
         ----------
         points
+
         Returns
         -------
         """
@@ -666,6 +678,7 @@ class GeologicalModel:
         Parameters
         ----------
         nsteps
+
         Returns
         -------
         """
@@ -678,6 +691,7 @@ class GeologicalModel:
         ----------
         nsteps tuple
             number of cells in x,y,z
+
         Returns
         -------
         """

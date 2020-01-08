@@ -22,15 +22,16 @@ class GeologicalFeature:
 
         Attributes
         ----------
-        name - string
+        name : string
             should be a unique name for the geological feature
-        support - a ScalarField
+        support : a ScalarField
             holds the property values for the feature and links to the
             support geometry
-        data
-        regions - list of boolean functions defining whether the feature is
-        active
-        faults - list of faults that affect this feature
+        data : list
+            list containing geological data
+        region : list of boolean functions defining whether the feature is
+            active
+        faults : list of faults that affect this feature
         """
         self.name = name
         self.support = support
@@ -53,10 +54,11 @@ class GeologicalFeature:
 
         Parameters
         ----------
-        region - boolean function(x,y,z)
+        region : boolean function(x,y,z)
                 - returns true if inside region, false if outside
                 can be passed as a lambda function e.g.
                 lambda pos : feature.evaluate_value(pos) > 0
+
         Returns
         -------
 
@@ -108,7 +110,7 @@ class GeologicalFeature:
 
         Parameters
         ----------
-        locations numpy array
+        locations : numpy array
             location where the gradient is being evaluated
 
         Returns
@@ -134,6 +136,7 @@ class GeologicalFeature:
     def mean(self):
         """
         Calculate average of the support values
+
         Returns
         -------
 
@@ -152,6 +155,7 @@ class GeologicalFeature:
     def max(self):
         """
         Calculate average of the support values
+
         Returns
         -------
 
@@ -161,6 +165,7 @@ class GeologicalFeature:
     def update(self):
         """
         Calculate average of the support values
+
         Returns
         -------
 
@@ -178,6 +183,7 @@ class GeologicalFeature:
     def get_interpolator(self):
         """
         Get the interpolator used to build this feature
+
         Returns
         -------
         GeologicalInterpolator
@@ -189,6 +195,7 @@ class GeologicalFeature:
         Get the node values of the support used to build this interpolator
         if the
         interpolator is a discrete interpolator
+
         Returns
         -------
         numpy array of values
