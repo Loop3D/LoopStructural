@@ -1,34 +1,20 @@
 LoopStructural.modelling.fold package
-==========================
-LoopStructural.modelling.fold.fold module
-------------------------------
+=====================================
 
-.. automodule:: LoopStructural.modelling.fold.fold
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Submodules
+----------
 
-LoopStructural.modelling.fold.foldframe module
------------------------------------
+.. toctree::
 
-.. automodule:: LoopStructural.modelling.fold.foldframe
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-LoopStructural.modelling.fold.svariogram module
-------------------------------------
-
-.. automodule:: LoopStructural.modelling.fold.svariogram
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   LoopStructural.modelling.fold.fold
+   LoopStructural.modelling.fold.fold_rotation_angle_feature
+   LoopStructural.modelling.fold.foldframe
+   LoopStructural.modelling.fold.svariogram
 
 Module contents
 ---------------
 
 .. automodule:: LoopStructural.modelling.fold
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

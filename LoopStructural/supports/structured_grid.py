@@ -172,6 +172,7 @@ class StructuredGrid:
     def global_indicies(self, indexes):
         """
         xi, yi, zi to global index
+
         Parameters
         ----------
         indexes
@@ -186,9 +187,10 @@ class StructuredGrid:
                self.nsteps[None, None, 0] * self.nsteps[
                    None, None, 1] * indexes[:, :, 2]
 
-    def neighbour_global_indexes(self, **kwargs):
+    def neighbour_global_indexes(self, mask = None, **kwargs):
         """
         Get neighbour indexes
+
         Parameters
         ----------
         kwargs - indexes array specifying the cells to return neighbours
@@ -215,17 +217,19 @@ class StructuredGrid:
         if indexes.ndim != 2:
             print(indexes.ndim)
             return
-        mask = np.array([
-            [-1, 0, 1, -1, 0, 1, -1, 0, 1,
-             -1, 0, 1, -1, 0, 1, -1, 0, 1,
-             -1, 0, 1, -1, 0, 1, -1, 0, 1],
-            [-1, -1, -1, 0, 0, 0, 1, 1, 1,
-             -1, -1, -1, 0, 0, 0, 1, 1, 1,
-             -1, -1, -1, 0, 0, 0, 1, 1, 1],
-            [-1, -1, -1, -1, -1, -1, -1, -1, -1,
-             0, 0, 0, 0, 0, 0, 0, 0, 0,
-             1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ])
+        # determine which neighbours to return default is diagonals included.
+        if mask is None:
+            mask = np.array([
+                [-1, 0, 1, -1, 0, 1, -1, 0, 1,
+                 -1, 0, 1, -1, 0, 1, -1, 0, 1,
+                 -1, 0, 1, -1, 0, 1, -1, 0, 1],
+                [-1, -1, -1, 0, 0, 0, 1, 1, 1,
+                 -1, -1, -1, 0, 0, 0, 1, 1, 1,
+                 -1, -1, -1, 0, 0, 0, 1, 1, 1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1,
+                 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ])
         neighbours = indexes[:, None, :] + mask[:, :, None]
         return neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1,
                                                                   :, :] + \
@@ -236,6 +240,7 @@ class StructuredGrid:
         """
         Returns the indexes of the corners of a cell given its location xi,
         yi, zi
+
         Parameters
         ----------
         x_cell_index
@@ -257,6 +262,7 @@ class StructuredGrid:
     def global_index_to_cell_index(self, global_index):
         """
         Convert from global indexes to xi,yi,zi
+
         Parameters
         ----------
         global_index
@@ -297,6 +303,7 @@ class StructuredGrid:
         """
         Evaluate the value of of the property at the locations.
         Trilinear interpolation dot corner values
+
         Parameters
         ----------
         evaluation_points np array of locations

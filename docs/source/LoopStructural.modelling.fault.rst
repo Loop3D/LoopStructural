@@ -1,35 +1,19 @@
 LoopStructural.modelling.fault package
-===========================
+======================================
 
-LoopStructural.modelling.fault.fault module
---------------------------------
+Submodules
+----------
 
-.. automodule:: LoopStructural.modelling.fault.fault
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. toctree::
 
-LoopStructural.modelling.fault.fault\_function module
-------------------------------------------
-
-.. automodule:: LoopStructural.modelling.fault.fault_function
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-LoopStructural.modelling.fault.fault\_segment module
------------------------------------------
-
-.. automodule:: LoopStructural.modelling.fault.fault_segment
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   LoopStructural.modelling.fault.fault_function
+   LoopStructural.modelling.fault.fault_function_feature
+   LoopStructural.modelling.fault.fault_segment
 
 Module contents
 ---------------
 
 .. automodule:: LoopStructural.modelling.fault
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

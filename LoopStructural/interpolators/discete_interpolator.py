@@ -27,7 +27,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         GeologicalInterpolator.__init__(self)
         self.B = []
         self.support = support
-
+        self.region_function = None
         self.region = np.arange(0, support.n_nodes)
         self.region_map = np.zeros(support.n_nodes).astype(int)
         # self.region_map[self.region] = np.array(range(0,
@@ -76,6 +76,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         # evaluate the region function on the support to determine
         # which nodes are inside update region map and degrees of freedom
+        self.region_function = region
         self.region = region(self.support.nodes)
         self.region_map = np.zeros(self.support.n_nodes).astype(int)
         self.region_map[self.region] = np.array(
@@ -203,6 +204,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
         Interpolation matrix and B
         """
+        logger.info("Interpolation matrix is %i x %i"%(self.c_,self.nx))
         cols = np.array(self.col)
         A = coo_matrix((np.array(self.A), (np.array(self.row), \
                                            cols)), shape=(self.c_, self.nx),
@@ -214,6 +216,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # can help speed up solving, but might also introduce some errors
 
         if self.eq_const_c_ > 0:
+            logger("Equality block is %i x %i"%(self.eq_const_c_,self.nx))
             # solving constrained least squares using
             # | ATA CT | |c| = b
             # | C   0  | |y|   d
@@ -232,6 +235,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             AAT = bmat([[AAT, C.T], [C, None]])
             BT = np.hstack([BT, d])
         if damp:
+            logger.info("Adding eps to matrix diagonal")
             AAT += eye(AAT.shape[0]) * np.finfo('float').eps
         return AAT, BT
 
@@ -311,7 +315,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs['M'] = precon(A)
         return sla.cg(A, B, **cgargs)[0][:self.nx]
 
-    def _solve_pyamg(self, A, B, **kwargs):
+    def _solve_pyamg(self, A, B):
         """
         Solve least squares system using pyamg algorithmic multigrid solver
 
@@ -327,7 +331,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         return pyamg.solve(A,B,verb=False)[:self.nx]
 
-    def _solve(self, solver, **kwargs):
+    def _solve(self, solver='pyamg', **kwargs):
         """
         Main entry point to run the solver and update the node value
         attribute for the
@@ -364,7 +368,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_lu(A, B)
         if solver == 'pyamg':
             logger.info("Solving with pyamg solve")
-            self.c[self.region] = self._solve_pyamg(A, B, **kwargs)
+            self.c[self.region] = self._solve_pyamg(A, B)
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]

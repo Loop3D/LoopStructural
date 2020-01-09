@@ -1,10 +1,87 @@
 import logging
 
 import numpy as np
+from sklearn.decomposition import pca
 
 logger = logging.getLogger(__name__)
 
+def get_data_axis_aligned_bounding_box(xyz, buffer):
+    minx = np.min(xyz[:,0])
+    maxx = np.max(xyz[:,0])
+    miny = np.min(xyz[:,1])
+    maxy = np.max(xyz[:,1])
+    minz = np.min(xyz[:,2])
+    maxz = np.max(xyz[:,2])
 
+    xlen = maxx-minx
+    ylen = maxy-miny
+    zlen = maxz-minz
+    length = np.max([xlen,ylen,zlen])
+    minx-=length*buffer
+    maxx+=length*buffer
+
+    miny-=length*buffer
+    maxy+=length*buffer
+
+    minz-=length*buffer
+    maxz+=length*buffer
+
+    bb = np.array([[minx,miny,minz],
+                   [maxx,maxy,maxz]
+                   ])
+    def region(xyz):
+        # print(xyz)
+        # print(bb)
+        b = np.ones(xyz.shape[0]).astype(bool)
+        b = np.logical_and(b,xyz[:,0]>minx)
+        b = np.logical_and(b,xyz[:,0]<maxx)
+        b = np.logical_and(b,xyz[:,1]>miny)
+        b = np.logical_and(b,xyz[:,1]<maxy)
+        # b = np.logical_and(b,xyz[:,2]>minz)
+        # b = np.logical_and(b,xyz[:,2]<maxz)
+        return b
+    return bb, region
+
+def get_data_bounding_box(xyz, buffer):
+    # find the aligned coordinates box using pca
+    modelpca = pca.PCA(n_components=3)
+    modelpca.fit(xyz)
+    # transform the data to this new coordinate then find extents
+    transformed_xyz = modelpca.transform(xyz)
+    minx = np.min(xyz[:,0])
+    maxx = np.max(xyz[:,0])
+    miny = np.min(xyz[:,1])
+    maxy = np.max(xyz[:,1])
+    minz = np.min(xyz[:,2])
+    maxz = np.max(xyz[:,2])
+
+    xlen = maxx-minx
+    ylen = maxy-miny
+    zlen = maxz-minz
+
+    minx-=xlen*buffer
+    maxx+=xlen*buffer
+
+    miny-=ylen*buffer
+    maxy+=ylen*buffer
+
+    minz-=zlen*buffer
+    maxz+=zlen*buffer
+
+    bb = np.array([[minx,miny,minz],
+                   [maxx,maxy,maxz]
+                   ])
+
+    def region(xyz):
+        b = np.ones(xyz.shape[0]).astype(bool)
+        b = np.logical_and(b,xyz[:,0]>minx)
+        b = np.logical_and(b,xyz[:,0]<maxx)
+        b = np.logical_and(b,xyz[:,1]>miny)
+        b = np.logical_and(b,xyz[:,1]<maxy)
+        b = np.logical_and(b,xyz[:,2]>minz)
+        b = np.logical_and(b,xyz[:,2]<maxz)
+        return b
+    return bb, region
 def plunge_and_plunge_dir_to_vector(plunge, plunge_dir):
     plunge = np.deg2rad(plunge)
     plunge_dir = np.deg2rad(plunge_dir)
@@ -99,13 +176,6 @@ def rotation(axis, angle):
     return rotation_mat
 
 
-def normalz(gx):
-    gxn = (2. / (np.max(gx[~np.isnan(gx)]) - np.min(gx[~np.isnan(gx)])))
-    gxn *= (gx - (
-                (np.min(gx[~np.isnan(gx)]) + np.max(gx[~np.isnan(gx)])) / 2.))
-    gxn[np.isnan(gx)] = np.nan
-    return gxn
-
 def strike_dip_vector(strike, dip):
     vec = np.zeros((len(strike), 3))
     s_r = np.deg2rad(strike)
@@ -119,7 +189,7 @@ def strike_dip_vector(strike, dip):
 
 def normal_vector_to_strike_and_dip(normal_vector):
     normal_vector /= np.linalg.norm(normal_vector, axis=1)[:, None]
-    dip = np.rad2deg(np.arccos(normal_vector[:, 2]));
+    dip = np.rad2deg(np.arccos(normal_vector[:, 2]))
     strike = np.rad2deg(np.arctan2(normal_vector[:, 1], normal_vector[:,
                                                         0]))  # atan2(v2[1],v2[0])*rad2deg;
     return np.array([strike, dip]).T

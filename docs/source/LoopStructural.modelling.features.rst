@@ -1,51 +1,22 @@
 LoopStructural.modelling.features package
-==============================
+=========================================
 
-LoopStructural.modelling.features.composite\_geological\_feature module
-------------------------------------------------------------
+Submodules
+----------
 
-.. automodule:: LoopStructural.modelling.features.composite_geological_feature
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. toctree::
 
-LoopStructural.modelling.features.cross\_product\_geological\_feature module
------------------------------------------------------------------
-
-.. automodule:: LoopStructural.modelling.features.cross_product_geological_feature
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-LoopStructural.modelling.features.faulted\_geological\_feature module
-----------------------------------------------------------
-
-.. automodule:: LoopStructural.modelling.features.faulted_geological_feature
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-LoopStructural.modelling.features.geological\_feature module
--------------------------------------------------
-
-.. automodule:: LoopStructural.modelling.features.geological_feature
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: LoopStructural.modelling.features.structural_frame
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   LoopStructural.modelling.features.constant_geological_feature
+   LoopStructural.modelling.features.cross_product_geological_feature
+   LoopStructural.modelling.features.faulted_geological_feature
+   LoopStructural.modelling.features.geological_feature
+   LoopStructural.modelling.features.region_feature
+   LoopStructural.modelling.features.structural_frame
 
 Module contents
 ---------------
 
 .. automodule:: LoopStructural.modelling.features
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,56 @@
+name: Windows build
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: goanpeca/action-setup-conda@master
+      with:
+        python-version: 3.7
+        #miniconda-version: 'latest'
+        activate-environment: loop    
+    - name: Installing dependencies
+      shell: bash -l {0}
+      run: |
+        conda install meshpy -c conda-forge
+        pip install -r requirements.txt
+        conda info
+        conda list
+    - name: Building Loop wheel and installing
+      shell: bash -l {0}
+      run: |
+        python setup.py bdist_wheel
+        python setup.py install build_ext --inplace
+        conda info
+        conda list
+        dir
+    - name: Checking formatting of code
+      shell: bash -l {0}
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Running tests
+      shell: bash -l {0}
+      run: |
+        pip install pytest
+        pytest
+    - name: Add built wheel to the repository # This is the step name that will be displayed in your runs
+      uses: EndBug/add-and-commit@v2 # You can change this to use a specific version
+      with: # See more info about inputs below
+        author_name: Lachlan Grose
+        author_email: lachlan.grose@monash.edu
+        message: "Adding wheel"
+#         path: ""
+        pattern: "*.whl"
+        force: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+

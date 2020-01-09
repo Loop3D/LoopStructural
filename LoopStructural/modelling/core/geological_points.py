@@ -16,7 +16,7 @@ class Point():
         self.type = 'Point'
         self.pos = np.array(pos)
         self.orig = np.array(pos)
-
+        self.weight = 1.
     def transform(self, t):
         t /= nla.norm(t)
         t[0] = - t[1]

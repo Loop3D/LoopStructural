@@ -5,6 +5,7 @@ cimport numpy as np
 from math import *
 @cython.boundscheck(False)
 @cython.wraparound(False)
+#cython: language_level=3
 #cimport numpy.linalg as la
 def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes, long long [:] region):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
@@ -48,7 +49,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
             e2 = EG[neigh,:,:]
 
 
-            
+
             for i in range(Nc):
                 idc[ncons,i] = -1
 
@@ -101,7 +102,6 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
     Na = 4 #number of nodes
     Ns = Na -1
     ne = len(neighbours)
-    print(ne)
     ncons = 0
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
@@ -134,7 +134,7 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
             Xr = X[neigh,:]
 
 
-            
+
             for i in range(Nc):
                 idc[ncons,i] = -1
             i=0

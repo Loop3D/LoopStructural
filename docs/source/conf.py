@@ -84,3 +84,5 @@ html_theme_options = {
     # Set the name of the project to appear in the sidebar
     "project_nav_name": "Project Name",
 }
+
+add_module_names = False

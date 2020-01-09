@@ -13,33 +13,47 @@ class FaultSegment:
     """
 
     def __init__(self, faultframe,
-                 **kwargs):  # mesh,fault_event,data,name,region):
+                 faultfunction = None,
+                 steps = 3,
+                 displacement=1.,
+                 **kwargs):
         """
-        A slip event of a faut
+        A slip event of a fault
+
         Parameters
         ----------
-        faultframe - the fault frame defining the faut geometry
-        kwargs -
-        displacement magnitude of displacement
-        faultfunction F(fault_frame) describes displacement inside fault frame
-        steps - how many steps to apply the fault on
+        faultframe : FaultFrame
+            the fault frame defining the faut geometry
+        faultfunction : function/lambda function
+            optional displacement function for spatially variable fault displacement
+        steps : int
+            how many integration steps for faults
+        kwargs
         """
         self.faultframe = faultframe
         self.type = 'fault'
         self.name = kwargs.get('name', self.faultframe.name)
-        self.displacement = kwargs.get('displacement', 1.)
-        self.gy_min = kwargs.get('gy_min', -9999)
-        self.gy_max = kwargs.get('gy_max', 9999)
-        self.faultfunction = kwargs.get('faultfunction', None)
-        self.steps = kwargs.get('steps', 10)
+        self.displacement = displacement
+        self.faultfunction = faultfunction
+        self.steps = steps
         self.regions = []
 
         self.displacementfeature = None
         if self.faultframe is not None:
             self.displacementfeature = FaultDisplacementFeature(
-                self.faultframe, self.faultfunction)
+                self.faultframe, self.faultfunction, name = self.name)
 
     def __getitem__(self, item):
+        """
+
+        Parameters
+        ----------
+        item
+
+        Returns
+        -------
+
+        """
         return self.faultframe[item]
 
     def add_region(self, region):
@@ -47,8 +61,8 @@ class FaultSegment:
 
         Parameters
         ----------
-        region - boolean function(x,y,z)
-                - returns true if inside region, false if outside
+        region : boolean function(x,y,z)
+                A function that returns true if inside region, false if outside
                 can be passed as a lambda function e.g.
                 lambda pos : feature.evaluate_value(pos) > 0
         Returns
@@ -61,6 +75,7 @@ class FaultSegment:
     def evaluate(self, locations):
         """
         Evaluate which side of fault
+
         Parameters
         ----------
         locations numpy array
@@ -77,6 +92,7 @@ class FaultSegment:
     def evaluate_value(self, locations):
         """
         Return the value of the fault surface scalar field
+
         Parameters
         ----------
         locations - numpy array
@@ -130,6 +146,7 @@ class FaultSegment:
     def apply_to_points(self, points):
         """
         Unfault the array of points
+
         Parameters
         ----------
         points - numpy array Nx3
@@ -154,13 +171,11 @@ class FaultSegment:
         d[np.isnan(gx)] = 0
         # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
         d[gx > 0] = 1.
+        d[gx < 0] = 0.
         if self.faultfunction is not None:
             d = self.faultfunction(gx, gy, gz)
         mask = np.abs(d) > 0.
         d *= self.displacement
-        # g = self.faultframe.features[1].evaluate_gradient(points)
-        # gy = self.faultframe.features[1].evaluate_value(points)
-        # gz = self.faultframe.features[2].evaluate_value(points)
         # calculate the fault frame for the evaluation points
         for i in range(steps):
             with ThreadPoolExecutor(max_workers=8) as executor:
@@ -173,24 +188,14 @@ class FaultSegment:
                 g = g_future.result()
                 gy = gy_future.result()
                 gz = gz_future.result()
-            # get the fault frame val/grad for the points
-            executor = ThreadPoolExecutor(max_workers=4)
-            gx = executor.submit(self.faultframe.features[0].evaluate_value, points)
-            g = executor.submit(self.faultframe.features[1].evaluate_gradient, points)
-            gy = executor.submit(self.faultframe.features[1].evaluate_value, points)
-            gz = executor.submit(self.faultframe.features[2].evaluate_value, points)
-
-            # gx = self.faultframe.features[0].evaluate_value(points)
-            # g = self.faultframe.features[1].evaluate_gradient(points)
-            # gy = self.faultframe.features[1].evaluate_value(points)
-            # gz = self.faultframe.features[2].evaluate_value(points)
+            # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
 
             d = np.zeros(gx.shape)
             d[np.isnan(gx)] = 0
-            # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
             d[gx > 0] = 1.
+            d[gx < 0] = 0.
             if self.faultfunction is not None:
                 d = self.faultfunction(gx, gy, gz)
             d *= self.displacement
@@ -217,6 +222,7 @@ class FaultSegment:
         -------
 
         """
+        logger.info("Applying fault")
         steps = self.steps
         # TODO make this numpy arrays
         if data is None:

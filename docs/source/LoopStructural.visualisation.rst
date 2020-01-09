@@ -1,27 +1,20 @@
 LoopStructural.visualisation package
-=========================
+====================================
 
-LoopStructural.visualisation.model\_visualisation module
----------------------------------------------
+Submodules
+----------
 
-.. automodule:: LoopStructural.visualisation.model_visualisation
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. toctree::
 
-LoopStructural.visualisation.rotation\_angle\_plotter module
--------------------------------------------------
-
-.. automodule:: LoopStructural.visualisation.rotation_angle_plotter
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   LoopStructural.visualisation.map_viewer
+   LoopStructural.visualisation.model_plotter
+   LoopStructural.visualisation.model_visualisation
+   LoopStructural.visualisation.rotation_angle_plotter
 
 Module contents
 ---------------
 
 .. automodule:: LoopStructural.visualisation
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

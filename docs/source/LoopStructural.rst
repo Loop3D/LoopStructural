@@ -1,17 +1,23 @@
 LoopStructural package
-===========
+======================
 
 Subpackages
 -----------
-LoopStructural is separated into a number of submodules:
 
 .. toctree::
-    :maxdepth: 1
 
+   LoopStructural.cython
+   LoopStructural.datasets
+   LoopStructural.interpolators
+   LoopStructural.modelling
+   LoopStructural.supports
+   LoopStructural.utils
+   LoopStructural.visualisation
 
-    Modelling <LoopStructural.modelling>
-    Interpolators <LoopStructural.interpolators>
-    Supports <LoopStructural.supports>
-    Utils <LoopStructural.utils>
-    Visualisation <LoopStructural.visualisation>
+Module contents
+---------------
 
+.. automodule:: LoopStructural
+   :members:
+   :undoc-members:
+   :show-inheritance:

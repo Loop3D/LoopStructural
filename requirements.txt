@@ -8,3 +8,4 @@ numpy
 matplotlib
 pyamg
 setuptools
+pandas
