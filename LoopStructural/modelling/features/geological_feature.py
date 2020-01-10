@@ -49,6 +49,9 @@ class GeologicalFeature:
     def __str__(self):
         return self.name
 
+    def toggle_faults(self):
+        self.faults_enabled = ~self.faults_enabled
+
     def add_region(self, region):
         """
 

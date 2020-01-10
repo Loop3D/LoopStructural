@@ -37,7 +37,7 @@ class FaultSegment:
         self.faultfunction = faultfunction
         self.steps = steps
         self.regions = []
-
+        self.faults_enabled = True
         self.displacementfeature = None
         if self.faultframe is not None:
             self.displacementfeature = FaultDisplacementFeature(
@@ -55,7 +55,10 @@ class FaultSegment:
 
         """
         return self.faultframe[item]
-
+    def toggle_faults(self):
+        self.faults_enabled = ~self.faults_enabled
+        for i in range(3):
+            self.faultframe[i].toggle_faults()
     def add_region(self, region):
         """
 

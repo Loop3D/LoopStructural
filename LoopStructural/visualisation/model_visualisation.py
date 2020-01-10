@@ -132,11 +132,20 @@ class LavaVuModelViewer:
         # update the feature to make sure its current
         if 'update' in kwargs:
             geological_feature.update()
-        # get the stats to check what we are plotting
-        mean_property_val = geological_feature.mean()
-        min_property_val = geological_feature.min()
-        max_property_val = geological_feature.max()
 
+
+        # do isosurfacing of support using marching tetras/cubes
+        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
+        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
+        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2])
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        val = geological_feature.evaluate_value(points)
+
+        # get the stats to check what we are plotting
+        mean_property_val = np.mean(val)#geological_feature.mean()
+        min_property_val = np.min(val)#geological_feature.min()
+        max_property_val = np.max(val)#geological_feature.max()
         # set default parameters
         slices = [mean_property_val]
         colour = 'red'
@@ -164,13 +173,7 @@ class LavaVuModelViewer:
 
         region = kwargs.get('region', None)
 
-        # do isosurfacing of support using marching tetras/cubes
-        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
-        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
-        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        val = geological_feature.evaluate_value(points)
+
         if region is not None:
             val[~region(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
@@ -282,7 +285,8 @@ class LavaVuModelViewer:
         surf = self.lv.triangles(name)
         surf.vertices(points)
         surf.indices(tri)
-        surf.values(geological_feature.evaluate_value(points), geological_feature.name)
+        val =geological_feature.evaluate_value(points)
+        surf.values(val, geological_feature.name)
         surf["colourby"] = geological_feature.name
         cmap = lavavu.cubehelix(100)
         if 'cmap' in kwargs:
@@ -290,8 +294,8 @@ class LavaVuModelViewer:
         logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
                                                                                geological_feature.min(),
                                                                                geological_feature.max()))
-        vmin = kwargs.get('vmin', geological_feature.min())
-        vmax = kwargs.get('vmax', geological_feature.max())
+        vmin = kwargs.get('vmin', np.min(val)) #geological_feature.min())
+        vmax = kwargs.get('vmax', np.max(val)) #geological_feature.max())
         surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
 
     def add_vector_field(self, geological_feature, **kwargs):
