@@ -153,7 +153,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
-            idc = gi[node_idx]
+            idc = gi[node_idx[inside]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             a = self.support.position_to_dof_coefs(points[inside, :3])
             # a*=w
@@ -187,7 +187,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
-            idc = gi[node_idx]
+            idc = gi[node_idx[inside]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
@@ -221,7 +221,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
-            idc = gi[node_idx]
+            idc = gi[node_idx[inside]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             # calculate unit vector for node gradients

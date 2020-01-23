@@ -92,6 +92,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         # iterate over all elements
+        print('getting cg')
         A, idc, B = self.support.get_constant_gradient(region=self.region)
         A = np.array(A)
         B = np.array(B)
@@ -130,32 +131,33 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
-            e, inside = self.support.elements_for_array(points[:, :3])
-            nodes = self.support.nodes[self.support.elements[e]]
-            vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
+            vertices, element_gradients, tetras = self.support.get_tetra_gradient_for_location(points[:,:3])
+            #e, inside = self.support.elements_for_array(points[:, :3])
+            #nodes = self.support.nodes[self.support.elements[e]]
+            vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
-            d_t = self.support.get_elements_gradients(e)
-            norm = np.linalg.norm(d_t, axis=2)
-            d_t /= norm[:, :, None]
+            # d_t = self.support.get_elements_gradients(e)
+            norm = np.linalg.norm(element_gradients, axis=2)
+            element_gradients /= norm[:, :, None]
             # d_t *= vol[:,None,None]
             strike_vector, dip_vector = get_vectors(points[:, 3:])
             ## TODO check if this is ok, or should these be added separately?
-            A = np.einsum('ji,ijk->ik', strike_vector, d_t)
+            A = np.einsum('ji,ijk->ik', strike_vector, element_gradients)
 
-            A += np.einsum('ji,ijk->ik', dip_vector, d_t)
+            A += np.einsum('ji,ijk->ik', dip_vector, element_gradients)
             A *= vol[:, None]
 
             # points[:,3:] /= norm
 
             # add in the element gradient matrix into the inte
-            idc = self.support.elements[e]
+            # idc = self.support.elements[e]
             # now map the index from global to region create array size of mesh
             # initialise as np.nan, then map points inside region to 0->nx
             gi = np.zeros(self.support.n_nodes).astype(int)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx).astype(int)
             w /= 3
-            idc = gi[idc]
+            idc = gi[tetras]
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :] * w,

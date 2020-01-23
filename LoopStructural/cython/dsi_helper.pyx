@@ -8,6 +8,7 @@ from math import *
 #cython: language_level=3
 #cimport numpy.linalg as la
 def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes, long long [:] region):
+    print('ahaha')
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
     Nc = 5 #numer of constraints shared nodes + independent
     Na = 4 #number of nodes
@@ -27,6 +28,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
     cdef double area = 0
     cdef long long [:] idl  = np.zeros(4,dtype=np.int64)
     cdef long long [:] idr = np.zeros(4,dtype=np.int64)
+    print('print')
     for e in range(ne):
         idl = elements[e,:]
         e1 = EG[e,:,:]
@@ -35,7 +37,6 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
         if region[idl[0]] == 0 or region[idl[1]] == 0 or region[idl[2]] == 0 or region[idl[3]] == 0:
             continue
         for n in range(4):
-
             neigh = neighbours[e,n]
             idr = elements[neigh,:]
 
@@ -72,8 +73,8 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
             # we want to weight the cg by the area of the shared face
             # area of triangle is half area of parallelogram
             # https://math.stackexchange.com/questions/128991/how-to-calculate-the-area-of-a-3d-triangle
-
             area = 0.5*np.linalg.norm(norm)
+            print(area)
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
                 for i in range(3):
@@ -95,6 +96,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
                 for i in range(3):
                     c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]*area
             ncons+=1
+    print('returning')
     return idc, c, ncons
 def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
