@@ -211,7 +211,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             w /= 3
 
             self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
-                                                  points[outside, 3:] * w *
+                                                  points[outside, 3:6] * w *
                                                   vol[outside, None],
                                                   idc[outside])
 

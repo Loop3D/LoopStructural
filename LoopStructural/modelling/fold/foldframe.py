@@ -34,8 +34,8 @@ class FoldFrame(StructuralFrame):
         -------
 
         """
-        gpoints = feature_builder.interpolator.get_gradient_constraints()
-        npoints = feature_builder.interpolator.get_norm_constraints()
+        gpoints = feature_builder.interpolator.get_gradient_constraints()[:,:6]
+        npoints = feature_builder.interpolator.get_norm_constraints()[:,:6]
         points = []
         if gpoints.shape[0] > 0:
             points.append(gpoints)
@@ -96,8 +96,8 @@ class FoldFrame(StructuralFrame):
         fold_limb_rotation, coordinate_0
         """
         self.features[0].faults_enabled = False
-        gpoints = feature_builder.interpolator.get_gradient_constraints()
-        npoints = feature_builder.interpolator.get_norm_constraints()
+        gpoints = feature_builder.interpolator.get_gradient_constraints()[:,:6]
+        npoints = feature_builder.interpolator.get_norm_constraints()[:,:6]
         points = []
         if gpoints.shape[0] > 0:
             points.append(gpoints)
@@ -161,8 +161,8 @@ class FoldFrame(StructuralFrame):
 
         """
         self.features[0].faults_enabled = False
-        gpoints = feature_builder.interpolator.get_gradient_constraints()
-        npoints = feature_builder.interpolator.get_norm_constraints()
+        gpoints = feature_builder.interpolator.get_gradient_constraints()[:,:6]
+        npoints = feature_builder.interpolator.get_norm_constraints()[:,:6]
         points = []
         if gpoints.shape[0] > 0:
             points.append(gpoints)

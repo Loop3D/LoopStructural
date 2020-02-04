@@ -297,6 +297,8 @@ class StructuredGrid:
         cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
         globalidx = self.global_indicies(
             np.dstack([cornersx, cornersy, cornersz]).T)
+        # if global index is not inside the support set to -1
+        globalidx[~inside] = -1
         return globalidx, inside
 
     def evaluate_value(self, evaluation_points, property_name):

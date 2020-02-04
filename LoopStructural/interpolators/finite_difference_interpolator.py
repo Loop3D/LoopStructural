@@ -158,8 +158,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             a = self.support.position_to_dof_coefs(points[inside, :3])
             # a*=w
 
-            self.add_constraints_to_least_squares(a.T * w,
-                                                  points[inside, 3] * w,
+            self.add_constraints_to_least_squares(a.T * points[inside,4],
+                                                  points[inside, 3] * points[inside,4],
                                                   idc[inside, :])
 
     def add_gradient_constraint(self, w=1.):
@@ -191,12 +191,12 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
-            strike_vector, dip_vector = get_vectors(points[inside, 3:])
+            strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
             A += np.einsum('ij,ijk->ik', dip_vector.T, T)
 
             B = np.zeros(points[inside, :].shape[0])
-            self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
+            self.add_constraints_to_least_squares(A * points[inside,6], B, idc[inside, :])
 
     def add_norm_constraint(self, w=1.):
         """
@@ -233,14 +233,14 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # points[inside,3:]/= norm
             # T /= np.linalg.norm(T,axis=1)[:,None,:]
             w /= 3
-            self.add_constraints_to_least_squares(T[:, 0, :] * w,
-                                                  points[inside, 3] * w,
+            self.add_constraints_to_least_squares(T[:, 0, :] * points[inside,6],
+                                                  points[inside, 3] * points[inside,6],
                                                   idc[inside, :])
-            self.add_constraints_to_least_squares(T[:, 1, :] * w,
-                                                  points[inside, 4] * w,
+            self.add_constraints_to_least_squares(T[:, 1, :] * points[inside,6],
+                                                  points[inside, 4] * points[inside,6],
                                                   idc[inside, :])
-            self.add_constraints_to_least_squares(T[:, 2, :] * w,
-                                                  points[inside, 5] * w,
+            self.add_constraints_to_least_squares(T[:, 2, :] * points[inside,6],
+                                                  points[inside, 5] * points[inside,6],
                                                   idc[inside, :])
 
     def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0,

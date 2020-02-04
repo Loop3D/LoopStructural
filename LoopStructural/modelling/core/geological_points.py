@@ -12,11 +12,11 @@ class Point():
     Base object for a point contains the geospatial location
     """
 
-    def __init__(self, pos):
+    def __init__(self, pos, w):
         self.type = 'Point'
         self.pos = np.array(pos)
         self.orig = np.array(pos)
-        self.weight = 1.
+        self.weight = w
     def transform(self, t):
         t /= nla.norm(t)
         t[0] = - t[1]
@@ -50,8 +50,8 @@ class IPoint(Point):
     Interface point
     """
 
-    def __init__(self, pos, val):
-        Point.__init__(self, pos)
+    def __init__(self, pos, val, w=1.):
+        Point.__init__(self, pos, w)
         self.val = val
         self.type = 'IPoint'
 
@@ -64,8 +64,8 @@ class IePoint(Point):
     Inequality point
     """
 
-    def __init__(self, pos, val, greater=True):
-        Point.__init__(self, pos)
+    def __init__(self, pos, val, w = 1., greater=True):
+        Point.__init__(self, pos, w)
         self.type = 'IePoint'
         self.val = val
         self.greater = greater
@@ -82,14 +82,14 @@ class GPoint(Point):
     Planar point
     """
 
-    def __init__(self, pos, vec):
-        Point.__init__(self, pos)
+    def __init__(self, pos, vec, w = 1.):
+        Point.__init__(self, pos,w)
         self.type = 'GPoint'
         self.vec = vec
         self.norm = False
 
     @classmethod
-    def from_plunge_plunge_dir(cls, pos, plunge, plunge_dir, polarity=1):
+    def from_plunge_plunge_dir(cls, pos, plunge, plunge_dir, polarity=1, w=1.):
         plunge = np.deg2rad(plunge)
         plunge_dir = np.deg2rad(plunge_dir + 90)
         vec = np.zeros(3)
@@ -98,10 +98,10 @@ class GPoint(Point):
         vec[2] = m.cos(plunge)
         vec /= nla.norm(vec)
         vec *= polarity
-        return cls(pos, vec)
+        return cls(pos, vec, w)
 
     @classmethod
-    def from_strike_and_dip(cls, pos, strike, dip, polarity=1):
+    def from_strike_and_dip(cls, pos, strike, dip, polarity=1, w=1.):
         dir = np.zeros(3)
         strike = np.deg2rad(strike)
         dip = np.deg2rad(np.abs(dip))
@@ -110,10 +110,10 @@ class GPoint(Point):
         dir[2] = m.cos(dip)
         dir *= polarity
         dir /= nla.norm(dir)
-        return cls(pos, dir)
+        return cls(pos, dir, w)
 
     @classmethod
-    def from_dip_dip_dir(cls, pos, dip_dir, dip, polarity=1):
+    def from_dip_dip_dir(cls, pos, dip_dir, dip, polarity=1, w=1.):
         dir = np.zeros(3)
         strike = np.deg2rad(dip_dir + 90)
         dip = np.deg2rad(dip)
@@ -122,7 +122,7 @@ class GPoint(Point):
         dir[2] = m.cos(dip)
         dir *= polarity
         dir /= nla.norm(dir)
-        return cls(pos, dir)
+        return cls(pos, dir, w)
 
     def dir_(self):
         return self.vec
@@ -136,8 +136,8 @@ class TPoint(Point):
     Tangent point
     """
 
-    def __init__(self, pos, s_, d_=None):
-        Point.__init__(self, pos)
+    def __init__(self, pos, s_, d_=None, w=1):
+        Point.__init__(self, pos, w)
         self.type = 'TPoint'
         if d_ is None:
             self.dir = s_

@@ -43,7 +43,7 @@ class GeologicalInterpolator:
         """
         self.propertyname = name
 
-    def add_strike_dip_and_value(self, pos, strike, dip, val):
+    def add_strike_dip_and_value(self, pos, strike, dip, val, w1 = 1., w2 = 1.):
         """
         Add a gradient and value constraint at a location gradient is in the form of strike and dip with the rh thumb
 
@@ -63,12 +63,12 @@ class GeologicalInterpolator:
 
         """
         self.n_g += 1
-        self.p_g.append(GPoint(pos, strike, dip))
+        self.p_g.append(GPoint(pos, strike, dip, w1))
         self.n_i = self.n_i + 1
-        self.p_i.append(IPoint(pos, val))
+        self.p_i.append(IPoint(pos, val, w2))
         self.up_to_date = False
 
-    def add_point(self, pos, val):
+    def add_point(self, pos, val, w=1.):
         """
         Add a value constraint to the interpolator
         Parameters
@@ -84,9 +84,9 @@ class GeologicalInterpolator:
         """
 
         self.n_i = self.n_i + 1
-        self.p_i.append(IPoint(pos, val))
+        self.p_i.append(IPoint(pos, val,w))
 
-    def add_planar_constraint(self, position, vector, norm=True):
+    def add_planar_constraint(self, position, vector, norm=True, w=1.):
         """
         Add a gradient constraint to the interpolator where the gradient is defined by a normal vector
 
@@ -103,14 +103,14 @@ class GeologicalInterpolator:
         """
         if norm:
             self.n_n = self.n_n+1
-            self.p_n.append(GPoint(position,vector))
+            self.p_n.append(GPoint(position,vector,w))
         elif norm is False:
             self.n_g = self.n_g+1
-            self.p_g.append(GPoint(position,vector))
+            self.p_g.append(GPoint(position,vector,w))
 
         self.up_to_date = False
 
-    def add_strike_and_dip(self, pos, s, d, norm=True):
+    def add_strike_and_dip(self, pos, s, d, norm=True, w=1.):
         """
         Add gradient constraint to the interpolator where the gradient is defined by strike and dip
 
@@ -127,10 +127,10 @@ class GeologicalInterpolator:
 
         """
         self.n_g += 1
-        self.p_g.append(GPoint(pos, s, d))
+        self.p_g.append(GPoint(pos, s, d,w))
         self.up_to_date = False
 
-    def add_tangent_constraint(self, pos, val):
+    def add_tangent_constraint(self, pos, val,w):
         """
         Add tangent constraint to the interpolator where the tangent is
         described by a vector
@@ -139,21 +139,21 @@ class GeologicalInterpolator:
         :return:
         """
         self.n_t = self.n_t + 1
-        self.p_t.append(TPoint(pos, val))
+        self.p_t.append(TPoint(pos, val,w))
         self.up_to_date = False
 
-    def add_tangent_constraint_angle(self, pos, s, d):
-        """
-        Add tangent constraint to the interpolator where the trangent is
-        described by the strike and dip
-        :param pos:
-        :param s:
-        :param d:
-        :return:
-        """
-        self.n_t = self.n_t + 1
-        self.p_t.append(TPoint(pos, s, d))
-        self.up_to_date = False
+    # def add_tangent_constraint_angle(self, pos, strike):
+    #     """
+    #     Add tangent constraint to the interpolator where the trangent is
+    #     described by the strike and dip
+    #     :param pos:
+    #     :param s:
+    #     :param d:
+    #     :return:
+    #     """
+    #     self.n_t = self.n_t + 1
+    #     self.p_t.append(TPoint(pos, strike, d))
+    #     self.up_to_date = False
 
     def add_data(self, data):
         """
@@ -190,11 +190,12 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((self.n_i,4))#array
+        points = np.zeros((self.n_i,5))#array
 
         for i in range(self.n_i):
             points[i, :3] = self.p_i[i].pos
             points[i, 3] = self.p_i[i].val
+            points[i, 4] = self.p_i[i].weight
         return points
 
     def get_gradient_constraints(self):
@@ -204,10 +205,11 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((self.n_g, 6))  # array
+        points = np.zeros((self.n_g, 7))  # array
         for i in range(self.n_g):
             points[i, :3] = self.p_g[i].pos
-            points[i, 3:] = self.p_g[i].vec
+            points[i, 3:6] = self.p_g[i].vec
+            points[i, 6] = self.p_g[i].weight
         return points
 
     def get_tangent_constraints(self):
@@ -217,11 +219,12 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((self.n_t,6))  # array
+        points = np.zeros((self.n_t,7))  # array
 
         for i in range(self.n_t):
             points[i, :3] = self.p_t[i].pos
-            points[i, 3:] = self.p_t[i].dir
+            points[i, 3:6] = self.p_t[i].dir
+            points[i, 6] = self.p_t[i].weight
         return points
 
     def get_norm_constraints(self):
@@ -231,11 +234,12 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((self.n_n,6))
+        points = np.zeros((self.n_n,7))
 
         for i in range(self.n_n):
             points[i, :3] = self.p_n[i].pos
-            points[i, 3:] = self.p_n[i].vec
+            points[i, 3:6] = self.p_n[i].vec
+            points[i, 6] = self.p_n[i].weight
         return points
 
     def setup_interpolator(self, **kwargs):

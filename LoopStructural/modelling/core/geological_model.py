@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
 
-from LoopStructural.datasets import normal_vector_headers
+from LoopStructural.datasets import normal_vector_headers, value_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
     DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators.finite_difference_interpolator import \
@@ -599,6 +599,34 @@ class GeologicalModel:
         fault_frame_data = self.data[self.data['type'] == fault_surface_data]
         if 'coord' not in fault_frame_data:
             fault_frame_data['coord'] = 0
+        vals = fault_frame_data['val']
+
+        if len(np.unique(vals[~np.isnan(vals)])) == 1:
+            xyz = fault_frame_data[['X','Y','Z']].to_numpy()
+            p1 = xyz[0,:]#fault_frame_data.loc[0 ,['X','Y']]
+            p2 = xyz[-1,:]#fault_frame_data.loc[-1 ,['X','Y']]
+            # get a vector that goes from p1-p2 and normalise
+            vector = p1 - p2
+            length = np.linalg.norm(vector)
+            vector /= length
+            # now create the orthogonal vector
+            newvector = np.zeros(3)
+            newvector[0] = vector[1]
+            newvector[1] = -vector[0]
+            newvector[2] = vector[2]
+            length/=3
+            length/=2
+            newvector*=length
+            mid_point = xyz[len(xyz)//2,:]
+            # now we want to add orthogonal vector to the mid point
+            newpoint1 = mid_point + newvector
+            newpoint2 = mid_point - newvector
+
+            fault_frame_data = pd.concat([fault_frame_data,pd.DataFrame([[newpoint1[0],newpoint1[1],newpoint1[2],-1,0],
+                          [newpoint2[0], newpoint2[1], newpoint2[2], 1, 0]],
+                          columns=value_headers()+['coord']
+                         )], sort = False)
+
         # if there is no slip direction data assume vertical
         if fault_frame_data[fault_frame_data['coord'] == 1].shape[0] == 0:
             logger.info("Adding fault frame slip")
@@ -612,9 +640,9 @@ class GeologicalModel:
             value_data = fault_frame_data[fault_frame_data['val'] == 0]
             coord2 = value_data.iloc[[0, len(value_data) - 1]]
             coord2 = coord2.reset_index(drop=True)
-            coord2['coord'] = 2
             coord2.loc[0, 'val'] = -1
             coord2.loc[1, 'val'] = 1
+            coord2['coord'] = 2
             fault_frame_data = pd.concat([fault_frame_data, coord2], sort=False)
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # if there is no fault slip data then we could find the strike of
