@@ -216,7 +216,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # can help speed up solving, but might also introduce some errors
 
         if self.eq_const_c_ > 0:
-            logger("Equality block is %i x %i"%(self.eq_const_c_,self.nx))
+            logger.info("Equality block is %i x %i"%(self.eq_const_c_,self.nx))
             # solving constrained least squares using
             # | ATA CT | |c| = b
             # | C   0  | |y|   d
