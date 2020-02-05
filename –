@@ -1,0 +1,261 @@
+#!/usr/bin/env bash
+set -e
+
+URL="https://linux.kite.com/linux/current/kite-installer"
+
+# Exit codes:
+#  1 - unknown/generic error
+# 10 - OS unsupported
+# 12 - no AVX support
+# 15 - missing dependencies
+# 20 - root user unsupported
+# 30 - systemctl not found
+# 40 - MS WSL unsupported
+# 50 - wget and curl unavailable
+
+function checkPrerequisites(){
+    if ! uname -a | grep -i "x86_64" | grep -qi "Linux"; then
+        echo >&2 "Sorry! This installer is only compatible with Linux on x86_64. Terminating."
+        exit 10
+    fi
+
+    if ! grep -q '\<avx[^ ]*\>' /proc/cpuinfo; then
+        echo >&2 "Sorry! Kite only runs on processor architectures with AVX support. Exiting now."
+        exit 12
+    fi
+
+    if [ -f /etc/centos-release ] && [ $(cat /etc/centos-release | tr -dc '0-9.' | cut -d \. -f1) -lt 8 ]; then
+        echo >&2 "Sorry! This installer is not compatible with CentOS 7 and earlier due to incomplete systemd support."
+        echo >&2 "See https://bugzilla.redhat.com/show_bug.cgi?id=1173278 for details. Exiting now."
+        exit 10
+    fi
+
+    if [ -f /etc/redhat-release ] && [ $(cat /etc/redhat-release | tr -dc '0-9.' | cut -d \. -f1) -lt 8 ]; then
+        echo >&2 "Sorry! This installer is not compatible with RHEL 7 and earlier due to incomplete systemd support."
+        echo >&2 "See https://bugzilla.redhat.com/show_bug.cgi?id=1173278 for details. Exiting now."
+        exit 10
+    fi
+
+    if [ "$(id -u)" = "0" ]; then
+        echo >&2 "Sorry! This installer should not be run as root. Terminating."
+        exit 20
+    fi
+
+    if ! command -v systemctl &> /dev/null; then
+        echo >&2 "Sorry! We use systemd to setup services as part of the Kite install, and we couldn't find it on"
+        echo >&2 "your system. We currently don't support distributions that do not use systemd. Exiting now."
+        exit 30
+    fi
+
+    if uname -r | grep -qi "Microsoft"; then
+        echo >&2 "Sorry! This installer is not compatible with Windows Subsystem for Linux. Exiting now."
+        exit 40
+    fi
+}
+
+function promptDependencies() {
+    echo "Checking to see if all dependencies are installed...."
+    echo
+
+    if command -v yum >/dev/null 2>&1; then
+        if ! yum list installed libXScrnSaver &> /dev/null; then
+            echo "Did not find libXScrnSaver on your system. We can install it now or you can install and re-run this script"
+            read -r -e -p "Install it now? (you might be asked for your sudo password) [Y/n] " INSTALL
+            INSTALL=${INSTALL:-Y}
+            if [[ $INSTALL == "Y" || $INSTALL == "y" ]]; then
+                sudo yum install -y -q libXScrnSaver
+            else
+                echo "Please run 'sudo yum install libXScrnSaver' and rerun this script! Exiting now."
+                exit 15
+            fi
+        fi
+    elif command -v zypper >/dev/null 2>&1; then
+        if ! zypper se -i -x libXss1 >/dev/null 2>&1; then
+            echo "Did not find libXss1 on your system. We can install it now or you can install and re-run this script"
+            read -r -e -p "Install it now? (you might be asked for your sudo password) [Y/n] " INSTALL
+            INSTALL=${INSTALL:-Y}
+            if [[ $INSTALL == "Y" || $INSTALL == "y" ]]; then
+                sudo zypper -n -q install libXss1
+            else
+                echo "Please run 'sudo zypper install libXss1' and rerun this script! Exiting now."
+                exit 15
+            fi
+        fi
+    elif command -v pacman >/dev/null 2>&1; then
+        if ! pacman -Qs 'libxss' >/dev/null 2>&1; then
+            echo "Did not find libxss on your system. we can install it now or you can install and re-run this script"
+            read -r -e -p "Install it now? (you might be asked for your sudo password) [Y/n] " INSTALL
+            INSTALL=${INSTALL:-Y}
+            if [[ $INSTALL == "Y" || $INSTALL == "y" ]]; then
+                sudo pacman -q --noconfirm -S libxss
+            else
+                echo "Please run 'sudo pacman -S libxss' and rerun this script! Exiting now."
+                exit 15
+            fi
+        fi
+    elif command -v dpkg >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+        if ! dpkg -S libxss1 &> /dev/null; then
+            echo "Did not find libxss1 on your system. We can install it now or you can install and re-run this script"
+            read -r -e -p "Install it now? (you might be asked for your sudo password) [Y/n] " INSTALL
+            INSTALL=${INSTALL:-Y}
+            if [[ $INSTALL == "Y" || $INSTALL == "y" ]]; then
+                sudo apt-get install -y -qq libxss1
+            else
+                echo "Please run 'sudo apt-get install libxss1' and rerun this script! Exiting now."
+                exit 15
+            fi
+        fi
+    else
+        echo
+        echo "Unable to determine if libxss1/libXScrnSaver is installed on your system. Please use your "
+        echo "system's package manager to verify this package is installed and manually run:"
+        echo
+        echo "    ./kite-installer install"
+        echo
+        echo "Exiting now."
+        exit 1
+    fi
+}
+
+function promptInotifySetup {
+    if command -v sysctl >/dev/null 2>&1 \
+            && [ ! -f /etc/sysctl.d/30-kite.conf ] \
+            && [ "$(sysctl -n fs.inotify.max_user_watches)" != "524288" ]; then
+
+        echo "Kite watches your workspace to be notified when python files change on disk. This allows us to"
+        echo "provide the latest information & completions from your coding environment. However, for larger"
+        echo "workspaces, Kite can exceed the default limits on inotify watches, which can result in a degraded experience. "
+        echo
+        echo "We can fix this by placing a file in /etc/sysctl.d/ to increase this limit."
+
+        read -r -e -p "Configure inotify now? (you might be asked for your sudo password) [Y/n] " INSTALL
+        INSTALL=${INSTALL:-Y}
+        if [[ $INSTALL == "Y" || $INSTALL == "y" ]]; then
+            echo "Creating /etc/sysctl.d/30-kite.conf..."
+            sudo bash -c "echo fs.inotify.max_user_watches = 524288 > /etc/sysctl.d/30-kite.conf && sysctl -q --system"
+        else
+            echo
+            echo "If you'd like to configure this yourself, you can run:"
+            echo
+            echo "    sudo echo fs.inotify.max_user_watches = 524288 > /etc/sysctl.d/30-kite.conf && sysctl -q --system"
+            echo
+        fi
+    fi
+}
+
+# Download the binary kite-installer and store it at the location defined by the first parameter
+# It sets the executable flag after a successful download
+function downloadKiteInstaller() {
+    local target="$1"
+
+    if command -v wget >/dev/null 2>&1; then
+        echo "Downloading $target binary using wget..."
+        wget -q -O "$target" "$URL" || { echo >&2 "Failed to download $target. Run 'wget -O \"$target\" \"$URL\"' for more information. Exiting now."; exit 1; }
+    elif command -v curl >/dev/null 2>&1; then
+        echo "Downloading $target binary using curl..."
+        curl -L --output "$target" "$URL" || { echo >&2 "Failed to download $target. Run 'curl -L --output \"$target\" \"$URL\" for more information. Exiting now."; exit 1; }
+    else
+        echo >&2 "Sorry! either wget or curl have to be available to download the installer. terminating."
+        exit 50
+    fi
+
+    [ -f "$target" ] || { echo >&2 "Unable to locate downloaded file $target. terminating."; exit 1; }
+    chmod u+x "$downloadFile" || { echo >&2 "Failed to make $downloadFile executable. Run 'chmod u+x $downloadFile' for more information. Exiting now."; exit 1; }
+}
+
+# Uses the kite-installer passed as first argument to download the Kite installation package
+function downloadKitePackage() {
+    local target="$1"
+    case "$target" in
+      /*) ;; # absolute path
+       *) target="./$target" ;; # relative path
+    esac
+    [ -x "$target" ] || { echo >&2 "Unable to locate executable file $target. terminating."; exit 1; }
+
+    "$target" install --download || { echo >&2 "Unable to download Kite executable package. terminating."; exit 1; }
+}
+
+function installKite() {
+    local downloadFile="$1"
+    shift # we're using the remaining args later on
+    case "$downloadFile" in
+      /*) ;; # absolute path
+       *) downloadFile="./$downloadFile" ;; # relative path
+    esac
+
+    [ -f "$downloadFile" ] || { echo "Unable to locate kite-installer at $downloadFile. Exiting now."; exit 1; }
+
+    echo "Running $downloadFile install $@"
+    "$downloadFile" install "$@"
+    status="$?"
+    if [ "$status" != "0" ]; then
+        echo
+        echo "There was an error installing kite. Please reach out to support@kite.com with the logs above."
+        echo
+        echo "Keeping kite-installer in the current directory in case you'd like to try again by running:"
+        echo
+        echo "    $downloadFile install"
+        echo
+        echo "Exiting now."
+        exit "$status"
+    else
+        rm -rf "$downloadFile"
+    fi
+}
+
+mode="all"
+downloadFile="$PWD/kite-installer"
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    shift
+    case "$key" in
+    "--help")
+        cat - << EOF
+    $(basename "$0") [--download [path] | --install [path]]
+    Usage:
+        --download [path]:  Downloads the binary installer of Kite and stores it at the given path. path defaults to ./kite-installer.
+        --install [path]:   Installs Kite using the provided path to the binary installer. path defaults to ./kite-installer.
+EOF
+        exit 0
+        ;;
+    "--download")
+        mode="download"
+        [ -n "$1" ] && { downloadFile="$1"; shift; }
+        ;;
+    "--install")
+        mode="install"
+        [ -n "$1" ] && { downloadFile="$1"; shift; }
+        ;;
+    *) shift ;;
+    esac
+done
+
+checkPrerequisites
+
+case "$mode" in
+"all")
+    echo
+    echo "This script will install Kite!"
+    echo
+    echo "We hope you enjoy! If you run into any issues, please reach out at support@kite.com or feedback@kite.com"
+    echo
+    echo "- The Kite Team"
+    echo
+    read -r -e -p "Press enter to continue..."
+
+    downloadKiteInstaller "$downloadFile"
+    promptInotifySetup
+    promptDependencies
+    installKite "$downloadFile"
+    echo "Removing kite-installer"
+    rm -f "$downloadFile"
+    ;;
+"download")
+    downloadKiteInstaller "$downloadFile"
+    downloadKitePackage "$downloadFile"
+    ;;
+"install")
+    [ -f "$downloadFile" ] || downloadKiteInstaller "$downloadFile"
+    installKite "$downloadFile" "--no-launch"
+    ;;
+esac

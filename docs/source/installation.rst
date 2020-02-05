@@ -1,5 +1,5 @@
 LoopStructural Installation
-================
+===========================
 LoopStructural is a python3 library with a few dependencies. A makefile exists to make the installation process easier on unix systems.
 For a windows use it is recommended to use the `Windows Subsystem for Linux` <https://docs.microsoft.com/en-us/windows/wsl/install-win10> for running WLS or using a docker container.
 
