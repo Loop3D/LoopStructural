@@ -28,7 +28,12 @@ class GeologicalInterpolator:
         self.up_to_date = False
         self.constraints = []
         self.propertyname = 'defaultproperty'
+        self.__str = 'Base Geological Interpolator'
 
+    def __str__(self):
+        
+        return self.__str
+    
     def set_property_name(self,name):
         """
         Set the name of the interpolated property

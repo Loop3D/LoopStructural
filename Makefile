@@ -1,7 +1,7 @@
 SHELL :=/bin/bash
 .PHONY: all build notebook notebookbuild
 build:
-	. ${LOOP_ENV}/bin/activate &&	python3 setup.py install build_ext --inplace;
+	python3 setup.py install build_ext --inplace;
 
 dependencies:
 	sudo apt-get update  && sudo apt-get install python3 python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++; 

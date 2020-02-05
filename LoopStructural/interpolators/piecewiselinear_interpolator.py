@@ -106,6 +106,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # w/=A.shape[0]
         self.add_constraints_to_least_squares(A[outside, :] * w,
                                               B[outside] * w, idc[outside, :])
+        self.__str += 'Constant gradient regularisation, weight = %8.2f \n' %w
         return
 
     def add_gradient_ctr_pts(self, w=1.0):
@@ -158,6 +159,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = gi[idc]
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
+            self.__str += '%i gradient constraints weighted at %8.2f \n' %(points.shape[0],w)
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                                   B[outside], idc[outside, :])
 
@@ -209,6 +211,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=2)
             outside = outside[:, 0]
             w /= 3
+            self.__str += '%i gradient norm constraints weighted at %8.2f \n' %(points.shape[0],w)
 
             self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
                                                   points[outside, 3:6] * w *
@@ -259,6 +262,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
+            self.__str += '%i value constraints weighted at %8.2f \n' %(points.shape[0],w)
+
             self.add_constraints_to_least_squares(A[:, outside].T * w,
                                                   points[outside, 3] * w * vol[
                                                       None, outside],
@@ -294,4 +299,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         A *= vol[:, None]
         idc = self.support.elements[elements]
         B = np.zeros(len(elements))
+        self.__str += 'Gradient orthogonal to weighted at %8.2f \n'\
+             %(w)
+
         self.add_constraints_to_least_squares(A * w, B, idc)

@@ -323,7 +323,7 @@ class StructuralFrameBuilder:
             gyxgz = kwargs['gyxgz']
         # set regularisation so the the main surface (foliation, fault) is smooth
         # and the fields are allowed to vary more
-        regularisation = kwargs.pop('regularisation', [5., 1., 1.])
+        regularisation = kwargs.pop('regularisation', [1., 1., 1.])
         # initialise features as none then where data exists build
         gx_feature = None
         gy_feature = None

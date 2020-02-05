@@ -130,8 +130,8 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
     else:
 
         popt, pcov = curve_fit(fourier_series, fad,
-                               np.tan(np.rad1deg(far)), guess)
-        fold.fold_axis_rotation = lambda x: np.rad1deg(
+                               np.tan(np.rad2deg(far)), guess)
+        fold.fold_axis_rotation = lambda x: np.rad2deg(
             np.arctan(
                 fourier_series(x, popt[-1], popt[1], popt[2], popt[3])))
     result['axis_direction'] = fad
@@ -600,7 +600,6 @@ class GeologicalModel:
         if 'coord' not in fault_frame_data:
             fault_frame_data['coord'] = 0
         vals = fault_frame_data['val']
-
         if len(np.unique(vals[~np.isnan(vals)])) == 1:
             xyz = fault_frame_data[['X','Y','Z']].to_numpy()
             p1 = xyz[0,:]#fault_frame_data.loc[0 ,['X','Y']]
@@ -610,23 +609,24 @@ class GeologicalModel:
             length = np.linalg.norm(vector)
             vector /= length
             # now create the orthogonal vector
-            newvector = np.zeros(3)
-            newvector[0] = vector[1]
-            newvector[1] = -vector[0]
-            newvector[2] = vector[2]
+            # newvector = np.zeros(3)
             length/=3
-            length/=2
-            newvector*=length
-            mid_point = xyz[len(xyz)//2,:]
-            # now we want to add orthogonal vector to the mid point
-            newpoint1 = mid_point + newvector
-            newpoint2 = mid_point - newvector
-
-            fault_frame_data = pd.concat([fault_frame_data,pd.DataFrame([[newpoint1[0],newpoint1[1],newpoint1[2],-1,0],
-                          [newpoint2[0], newpoint2[1], newpoint2[2], 1, 0]],
-                          columns=value_headers()+['coord']
-                         )], sort = False)
-
+            # length/=2
+            # print(fault_frame_data)
+            mask = ~np.isnan(fault_frame_data['nx'])
+            vectors = fault_frame_data[mask][['nx','ny','nz']].to_numpy()
+            lengths = np.linalg.norm(vectors,axis=1)
+            print(lengths)
+            vectors/=lengths
+            lengths = np.linalg.norm(vectors,axis=1)
+            print(lengths,vectors)
+            vectors/=length
+            lengths = np.linalg.norm(vectors,axis=1)
+            print(lengths)
+            fault_frame_data.loc[mask,['nx','ny','nz']] = vectors
+            if 'strike' in fault_frame_data.columns and 'dip' in fault_frame_data.columns:
+                fault_frame_data = fault_frame_data.drop(['dip','strike'],axis=1)
+        #     print(fault_frame_data)
         # if there is no slip direction data assume vertical
         if fault_frame_data[fault_frame_data['coord'] == 1].shape[0] == 0:
             logger.info("Adding fault frame slip")
