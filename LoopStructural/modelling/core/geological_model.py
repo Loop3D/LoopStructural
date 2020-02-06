@@ -616,13 +616,10 @@ class GeologicalModel:
             mask = ~np.isnan(fault_frame_data['nx'])
             vectors = fault_frame_data[mask][['nx','ny','nz']].to_numpy()
             lengths = np.linalg.norm(vectors,axis=1)
-            print(lengths)
             vectors/=lengths
             lengths = np.linalg.norm(vectors,axis=1)
-            print(lengths,vectors)
             vectors/=length
             lengths = np.linalg.norm(vectors,axis=1)
-            print(lengths)
             fault_frame_data.loc[mask,['nx','ny','nz']] = vectors
             if 'strike' in fault_frame_data.columns and 'dip' in fault_frame_data.columns:
                 fault_frame_data = fault_frame_data.drop(['dip','strike'],axis=1)
@@ -666,7 +663,7 @@ class GeologicalModel:
                 mask = ~np.isnan(val)
                 fault_frame_builder[i].interpolator.add_equality_constraints(
                     idc[mask], val[mask])
-        # check if any faults exist in the stack
+        # check if this fault overprint any existing faults exist in the stack
         overprinted = kwargs.get('overprinted',None)
         for f in reversed(self.features):
             if overprinted is not None:
