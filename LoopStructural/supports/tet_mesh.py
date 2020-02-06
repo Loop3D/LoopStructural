@@ -272,12 +272,13 @@ class TetMesh:
 
         inside = np.zeros(array.shape[0]).astype(bool)
         inside[:] = True
-        # inside = iarray[:, 0] > self.minpc0[None]
-        # inside *= iarray[:, 0] < self.maxpc0[None]
-        # inside *= iarray[:, 1] > self.minpc1[None]
-        # inside *= iarray[:, 1] < self.maxpc1[None]
-        # inside *= iarray[:, 2] > self.minpc2[None]
-        # inside *= iarray[:, 2] < self.maxpc2[None]
+        ## check if the points are inside the bounding box of the tetra
+        inside = array[:, 0] > self.minx[None]
+        inside *= array[:, 0] < self.maxx[None]
+        inside *= array[:, 1] > self.miny[None]
+        inside *= array[:, 1] < self.maxy[None]
+        inside *= array[:, 2] > self.minz[None]
+        inside *= array[:, 2] < self.maxz[None]
 
         return ee, inside
 
