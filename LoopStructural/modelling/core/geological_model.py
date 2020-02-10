@@ -24,7 +24,8 @@ from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
 from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.supports.structured_grid import StructuredGrid
-from LoopStructural.supports.tet_mesh import TetMesh
+# from LoopStructural.supports.tet_mesh import TetMesh
+from LoopStructural.supports.structured_tetra import TetMesh
 
 logger = logging.getLogger(__name__)
 
@@ -252,8 +253,17 @@ class GeologicalModel:
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         if interpolatortype == "PLI":
-            mesh = TetMesh()
-            mesh.setup_mesh(bb, n_tetra=nelements, )
+            ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
+            # calculate the step vector of a regular cube
+            step_vector = np.zeros(3)
+            step_vector[:] = ele_vol ** (1. / 3.)
+            # number of steps is the length of the box / step vector
+            nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            # create a structured grid using the origin and number of steps
+            mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
+                                  step_vector=step_vector)
+            # mesh = TetMesh()
+            # mesh.setup_mesh(bb, n_tetra=nelements, )
             return PLI(mesh)
 
         if interpolatortype == 'FDI':

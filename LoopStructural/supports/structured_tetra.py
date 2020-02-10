@@ -93,18 +93,14 @@ class TetMesh:
         tetras = np.zeros((c_xi.shape[0], 5, 4)).astype(int)
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
-
-        return points[mask, :, :], c[mask], tetras[:,mask,:].reshape((tetras.shape[0],tetras.shape[2]))
+        return points[mask, :, :], c[mask], tetras[mask,:].reshape((tetras.shape[0],tetras.shape[2]))
 
     def get_constant_gradient(self, region='everywhere'):
-        print('eg')
         elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
         # ps = self.nodes[self.elements[e]]
         region = region.astype('int64')
-        print('neigh')
 
         neighbours = self.get_neighbours()
-        print('el')
         elements = self.get_elements()
         # print('cg')
         # print(elements_gradients)

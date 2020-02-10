@@ -8,7 +8,6 @@ from math import *
 #cython: language_level=3
 #cimport numpy.linalg as la
 def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes, long long [:] region):
-    print('ahaha')
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
     Nc = 5 #numer of constraints shared nodes + independent
     Na = 4 #number of nodes
@@ -28,7 +27,6 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
     cdef double area = 0
     cdef long long [:] idl  = np.zeros(4,dtype=np.int64)
     cdef long long [:] idr = np.zeros(4,dtype=np.int64)
-    print('print')
     for e in range(ne):
         idl = elements[e,:]
         e1 = EG[e,:,:]
@@ -39,17 +37,15 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
         for n in range(4):
             neigh = neighbours[e,n]
             idr = elements[neigh,:]
-
             if flag[neigh]== 1:
                 continue
-            if neigh == -1:
+            if neigh < 0:
                 continue
             # if not in region then skip this tetra
             if region[idr[0]] == 0 or region[idr[1]] == 0 or region[idr[2]] == 0 or region[idr[3]] == 0:
                 continue
+
             e2 = EG[neigh,:,:]
-
-
 
             for i in range(Nc):
                 idc[ncons,i] = -1
@@ -74,7 +70,6 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
             # area of triangle is half area of parallelogram
             # https://math.stackexchange.com/questions/128991/how-to-calculate-the-area-of-a-3d-triangle
             area = 0.5*np.linalg.norm(norm)
-            print(area)
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
                 for i in range(3):
@@ -96,7 +91,6 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
                 for i in range(3):
                     c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]*area
             ncons+=1
-    print('returning')
     return idc, c, ncons
 def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh

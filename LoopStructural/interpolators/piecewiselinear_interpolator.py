@@ -92,7 +92,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         # iterate over all elements
-        print('getting cg')
         A, idc, B = self.support.get_constant_gradient(region=self.region)
         A = np.array(A)
         B = np.array(B)
@@ -246,14 +245,15 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # get elements for points
         points = self.get_value_constraints()
         if points.shape[0] > 1:
-            e, inside = self.support.elements_for_array(points[:, :3])
+            vertices, c, tetras = self.support.get_tetra_for_location(points[:,:3])
+            #e, inside = self.support.elements_for_array(points[:, :3])
             # get barycentric coordinates for points
-            nodes = self.support.nodes[self.support.elements[e]]
-            vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
+            #nodes = self.support.nodes[self.support.elements[e]]
+            vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs)) / 6
-            A = self.support.calc_bary_c(e, points[:, :3])
-            A *= vol[None, :]
-            idc = self.support.elements[e]
+            A = c#self.support.calc_bary_c(e, points[:, :3])
+            A *= vol[:,None]
+            idc = tetras#self.support.elements[e]
             # now map the index from global to region create array size of mesh
             # initialise as np.nan, then map points inside region to 0->nx
             gi = np.zeros(self.support.n_nodes).astype(int)
@@ -261,7 +261,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
-            self.add_constraints_to_least_squares(A[:, outside].T * w,
+            self.add_constraints_to_least_squares(A[outside,:] * w,
                                                   points[outside, 3] * w * vol[
                                                       None, outside],
                                                   idc[outside, :])
