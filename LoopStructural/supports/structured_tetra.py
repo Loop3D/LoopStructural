@@ -1,9 +1,9 @@
 import numpy as np
 from LoopStructural.cython.dsi_helper import cg
-
+from LoopStructural.cython.dsi_helper import tetra_neighbours
 
 class TetMesh:
-    def __init__(self, origin, nsteps, step_vector):
+    def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):
         self.origin = np.array(origin)
         self.step_vector = np.array(step_vector)
         self.nsteps = np.array(nsteps)
@@ -34,15 +34,67 @@ class TetMesh:
             [0, 1, 2, 3],
             [3, 7, 5, 2],
             [1, 7, 3, 4]])
+        self.even_neighbour_mask = np.array([
 
+
+        ])
         self.ntetra = self.n_cells * 5
+
+        self.properties = {}
+        self.property_gradients = {}
+        self.n_elements = self.ntetra
+
+    def barycentre(self):
+        elements = self.get_elements()
+        barycentre = np.sum(self.nodes[elements][:, :, :],
+                                 axis=1) / 4.
+        return barycentre
+
+    def update_property(self, name, value, save=True):
+
+        self.properties[name] = value
+        # grads = self.get_elements_gradients(np.arange(self.n_elements))
+        # props = self.properties[name][
+        #     self.elements[np.arange(self.n_elements)]]
+        # grad = np.einsum('ikj,ij->ik', grads, props)
+        # self.property_gradients[name] = grad
+
+    def evaluate_value(self, pos, prop):
+        values = np.zeros(pos.shape[0])
+        values[:] = np.nan
+        vertices, c, tetras, inside = self.get_tetra_for_location(pos)
+        #
+        # bc = self.calc_bary_c(e[inside], array[inside])
+        # prop_int = np.zeros(e.shape)
+        # nv = np.zeros(self.properties[prop].shape)
+        # nv[~self.regions[region]] = np.nan
+        # nv[self.regions[region]] = self.properties[prop][self.regions[region]]
+        # props = self.properties[prop][self.elements[e[inside]]]
+        # prop_int[inside] = np.sum((bc.T * props), axis=1)
+        # prop_int[~inside] = np.nan
+        # return prop_int
+        values[inside] = np.sum(c*self.properties[prop][tetras],axis=1)
+        return values
+
+    def evaluate_gradient(self, pos, prop):
+        print(pos.shape)
+        values = np.zeros(pos.shape)
+        values[:] = np.nan
+        vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
+        print(tetras.shape, inside.shape)
+        vertex_vals = self.properties[prop][tetras]
+        print(vertex_vals.shape, tetras.shape, values[inside,:].shape)
+        #grads = np.zeros(tetras.shape)
+        values[inside,:] = (element_gradients*vertex_vals[:, None, :]).sum(2)
+        length = np.sum(values[inside,:],axis=1)
+        values[inside,:] /= length[:,None]
+        return values
 
     def get_tetra_for_location(self, pos):
         pos = np.array(pos)
         # initialise array for tetrahedron vertices
-        points = np.zeros((5, 4, pos.shape[0], 3))
-        points[:] = np.nan
-
+        vertices = np.zeros((5, 4, pos.shape[0], 3))
+        vertices[:] = np.nan
         # get cell indexes
         c_xi, c_yi, c_zi = self.position_to_cell_index(pos)
 
@@ -53,22 +105,22 @@ class TetMesh:
         # convert to node locations
         nodes = self.node_indexes_to_position(xi, yi, zi).T
 
-        points[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
-        points[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
+        vertices[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
+        vertices[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
         # changing order to points, tetra, nodes, coord
-        points = points.swapaxes(0, 2)
-        points = points.swapaxes(1, 2)
+        vertices = vertices.swapaxes(0, 2)
+        vertices = vertices.swapaxes(1, 2)
 
         # use scalar triple product to calculate barycentric coords
-        vap = pos[:, None, :] - points[:, :, 0, :]
-        vbp = pos[:, None, :] - points[:, :, 1, :]
+        vap = pos[:, None, :] - vertices[:, :, 0, :]
+        vbp = pos[:, None, :] - vertices[:, :, 1, :]
         #         # vcp = p - points[:, 2, :]
         #         # vdp = p - points[:, 3, :]
-        vab = points[:, :, 1, :] - points[:, :, 0, :]
-        vac = points[:, :, 2, :] - points[:, :, 0, :]
-        vad = points[:, :, 3, :] - points[:, :, 0, :]
-        vbc = points[:, :, 2, :] - points[:, :, 1, :]
-        vbd = points[:, :, 3, :] - points[:, :, 1, :]
+        vab = vertices[:, :, 1, :] - vertices[:, :, 0, :]
+        vac = vertices[:, :, 2, :] - vertices[:, :, 0, :]
+        vad = vertices[:, :, 3, :] - vertices[:, :, 0, :]
+        vbc = vertices[:, :, 2, :] - vertices[:, :, 1, :]
+        vbd = vertices[:, :, 3, :] - vertices[:, :, 1, :]
         va = np.einsum('ikj, ikj->ik', vbp, np.cross(vbd, vbc, axisa=2, axisb=2)) / 6.
         vb = np.einsum('ikj, ikj->ik', vap, np.cross(vac, vad, axisa=2, axisb=2)) / 6.
         vc = np.einsum('ikj, ikj->ik', vap, np.cross(vad, vab, axisa=2, axisb=2)) / 6.
@@ -85,15 +137,28 @@ class TetMesh:
         # if all coords are +ve then point is inside cell
         mask = np.all(c > 0, axis=2)
 
+        inside = np.any(mask,axis=1)
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
 
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         gi = xi + yi * self.n_cell_x + zi * self.n_cell_x * self.n_cell_y
-        tetras = np.zeros((c_xi.shape[0], 5, 4)).astype(int)
+        tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
+
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
-        return points[mask, :, :], c[mask], tetras[mask,:].reshape((tetras.shape[0],tetras.shape[2]))
+
+        vertices_return = np.zeros((pos.shape[0],4,3))
+        vertices_return[:] = np.nan
+        print(vertices[mask,:,:].shape)
+        vertices_return[inside,:,:] = vertices[mask,:,:]
+        c_return = np.zeros((pos.shape[0],4))
+        c_return[:] = np.nan
+        c_return[inside] = c[mask]
+        tetra_return = np.zeros((pos.shape[0],4)).astype(int)
+        tetra_return[:] = -1
+        tetra_return[inside,:] = tetras[mask,:]
+        return vertices_return, c_return, tetra_return, inside
 
     def get_constant_gradient(self, region='everywhere'):
         elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
@@ -108,12 +173,20 @@ class TetMesh:
         # print(self.nodes)
         idc, c, ncons = cg(elements_gradients, neighbours, elements, self.nodes,
                            region)
+
         idc = np.array(idc[:ncons, :])
         c = np.array(c[:ncons, :])
         B = np.zeros(c.shape[0])
+
         return c, idc, B
 
     def get_elements(self):
+        """
+
+        Returns
+        -------
+
+        """
         x = np.arange(0, self.n_cell_x)
         y = np.arange(0, self.n_cell_y)
         z = np.arange(0, self.n_cell_z)
@@ -124,16 +197,26 @@ class TetMesh:
         c_zi = c_zi.flatten()
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
-
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
-        gi = xi + yi * self.n_cell_x + zi * self.n_cell_x * self.n_cell_y
+        gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
         tetras = np.zeros((c_xi.shape[0], 5, 4)).astype(int)
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
         return tetras.reshape((tetras.shape[0]*tetras.shape[1],tetras.shape[2]))
 
 
-    def get_element_gradients(self,elements):
+    def get_element_gradients(self, elements):
+        """
+        Get the gradients of all tetras
+
+        Parameters
+        ----------
+        elements
+
+        Returns
+        -------
+
+        """
         x = np.arange(0, self.n_cell_x)
         y = np.arange(0, self.n_cell_y)
         z = np.arange(0, self.n_cell_z)
@@ -181,7 +264,18 @@ class TetMesh:
         return element_gradients
 
     def get_tetra_gradient_for_location(self, pos):
-        vertices, bc, tetras = self.get_tetra_for_location(pos)
+        """
+        Get the gradient of the tetra for a location
+
+        Parameters
+        ----------
+        pos
+
+        Returns
+        -------
+
+        """
+        vertices, bc, tetras, inside = self.get_tetra_for_location(pos)
         ps = vertices
         m = np.array(
             [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),
@@ -199,10 +293,20 @@ class TetMesh:
 
         element_gradients = element_gradients.swapaxes(1, 2)
         element_gradients = element_gradients @ I
-        return vertices, element_gradients, tetras
+        return vertices, element_gradients, tetras, inside
 
     def inside(self, pos):
+        """
+        Check if a point is inside the structured grid
 
+        Parameters
+        ----------
+        pos
+
+        Returns
+        -------
+
+        """
         # check whether point is inside box
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
@@ -212,12 +316,34 @@ class TetMesh:
         return inside
 
     def global_node_indicies(self, indexes):
+        """
+        Convert from node indexes to global node index
+
+        Parameters
+        ----------
+        indexes
+
+        Returns
+        -------
+
+        """
         indexes = np.array(indexes).swapaxes(0, 2)
         return indexes[:, :, 0] + self.nsteps[None, None, 0] \
                * indexes[:, :, 1] + self.nsteps[None, None, 0] * \
                self.nsteps[None, None, 1] * indexes[:, :, 2]
 
     def global_cell_indicies(self, indexes):
+        """
+        Convert from cell indexes to global cell index
+
+        Parameters
+        ----------
+        indexes
+
+        Returns
+        -------
+
+        """
         indexes = np.array(indexes).swapaxes(0, 2)
         return indexes[:, :, 0] + self.nsteps_cells[None, None, 0] \
                * indexes[:, :, 1] + self.nsteps_cells[None, None, 0] * \
@@ -251,6 +377,17 @@ class TetMesh:
         return xcorners, ycorners, zcorners
 
     def position_to_cell_corners(self, pos):
+        """
+        Find the nodes that belong to a cell which contains a point
+
+        Parameters
+        ----------
+        pos
+
+        Returns
+        -------
+
+        """
         inside = self.inside(pos)
         ix, iy, iz = self.position_to_cell_index(pos)
         cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
@@ -259,6 +396,17 @@ class TetMesh:
         return globalidx, inside
 
     def position_to_cell_index(self, pos):
+        """
+        Find which cell a point is in
+
+        Parameters
+        ----------
+        pos
+
+        Returns
+        -------
+
+        """
         ix = pos[:, 0] - self.origin[None, 0]
         iy = pos[:, 1] - self.origin[None, 1]
         iz = pos[:, 2] - self.origin[None, 2]
@@ -268,7 +416,19 @@ class TetMesh:
         return ix.astype(int), iy.astype(int), iz.astype(int)
 
     def node_indexes_to_position(self, xindex, yindex, zindex):
+        """
+        Get the xyz position from the node coordinates
 
+        Parameters
+        ----------
+        xindex
+        yindex
+        zindex
+
+        Returns
+        -------
+
+        """
         x = self.origin[0] + self.step_vector[0] * xindex
         y = self.origin[1] + self.step_vector[1] * yindex
         z = self.origin[2] + self.step_vector[2] * zindex
@@ -321,99 +481,20 @@ class TetMesh:
         return x_index, y_index, z_index
 
     def get_neighbours(self):
+        """
+        This function goes through all of the elements in the mesh and assembles a numpy array
+        with the neighbours for each element
+
+        Returns
+        -------
+
+        """
         # for each cell
-        cell_neighbours = np.zeros((self.ntetra, 4)).astype(int)
-        cell_neighbours[:] = -1
-        cell_gi = np.arange(0, self.n_cells)
-        cell_xi, cell_yi, cell_zi = self.global_index_to_cell_index(cell_gi)
-        corners_xi, corners_yi, corners_zi = self.cell_corner_indexes(cell_xi, cell_yi, cell_zi)
-        corners = np.dstack([corners_xi, corners_yi, corners_zi])
-        corners = np.array(corners).swapaxes(0, 2)
-        global_index = self.global_node_indicies(corners)
-
-        tetras = np.zeros((self.n_cells, 5, 4,)).astype(int)
-        mask = (cell_xi + cell_yi + cell_zi) % 2 == 0
-        tetras[mask, :, :] = global_index[mask, :][:, self.tetra_mask_even]
-        tetras[~mask, :, :] = global_index[~mask, :][:, self.tetra_mask]
-
-        tetras = tetras.reshape(self.n_cells * 5, 4)
-
-        neighbours = np.zeros((tetras.shape[0], 4)).astype(int)
+        # cell_neighbours = np.zeros((self.ntetra, 4)).astype(int)
+        # cell_neighbours[:] = -1
+        neighbours = np.zeros((self.n_elements,4)).astype(int)
         neighbours[:] = -1
-        xi, yi, zi = self.global_index_to_cell_index(np.arange(0, self.n_cells))
-        indexes = np.vstack([xi, yi, zi])
-        neighbour_mask = np.array([[-1, 1, 0, 0, 0, 0],
-                                   [0, 0, -1, 1, 0, 0],
-                                   [0, 0, 0, 0, -1, 1]])
-
-        cell_neighbours = indexes[:, None, :] + neighbour_mask[:, :, None]
-
-        cell_neighbours = cell_neighbours.T
-        for i in range(cell_neighbours.shape[0]):
-            cells = cell_neighbours[i, :]  # np.vstack([neighbours[i,:],[xi[i],yi[i],zi[i]]])
-            mask = ~np.any(cells < 0, axis=1)
-            mask = np.logical_and(mask, cells[:, 0] < self.n_cell_x)
-            mask = np.logical_and(mask, cells[:, 1] < self.n_cell_y)
-            mask = np.logical_and(mask, cells[:, 2] < self.n_cell_z)
-            #     continue
-            # get the possible neighbour tetras
-            corners_xi, corners_yi, corners_zi = self.cell_corner_indexes(
-                cells[mask, 0], cells[mask, 1], cells[mask, 2])
-            corners = np.dstack([corners_xi, corners_yi, corners_zi])
-            corners = np.array(corners).swapaxes(0, 2)
-
-            global_index = self.global_node_indicies(corners)
-            neighbour_tetras = np.zeros((global_index.shape[0], 5, 4,)).astype(int)
-            mask2 = (cells[mask, 0] + cells[mask, 1] + cells[mask, 2]) % 2 == 0
-            neighbour_tetras[mask2, :, :] = global_index[mask2, :][:, self.tetra_mask_even]
-            neighbour_tetras[~mask2, :, :] = global_index[~mask2, :][:, self.tetra_mask]
-
-            corners_xi, corners_yi, corners_zi = self.cell_corner_indexes(
-                [xi[i]], [yi[i]], [zi[i]])
-            corners = np.dstack([corners_xi, corners_yi, corners_zi])
-            corners = np.array(corners).swapaxes(0, 2)
-
-            global_index = self.global_node_indicies(corners)
-            cell_tetra = np.zeros((5, 4,)).astype(int)
-            mask2 = (xi[i] + yi[i] + zi[i]) % 2 == 0
-            # if even then use even mask, if odd use odd mask
-            if mask2:
-                cell_tetra[:, :] = global_index[:, self.tetra_mask_even]
-            else:
-                cell_tetra[:, :] = global_index[:, self.tetra_mask]
-            # loop over all tetra inside the voxet
-            for ii in range(5):
-                t = cell_tetra[ii, :]
-                nn = 0
-                # check for neighbours first in the voxet this tetra comes from
-                for j in range(5):
-                    neighbour = cell_tetra[j, :]
-                    if np.sum(t - neighbour) == 0:
-                        continue
-                    n = 0
-                    for k in range(4):
-                        for l in range(4):
-                            if t[k] == neighbour[l]:
-                                n += 1
-                    if n == 3:
-                        neighbours[i * 5 + ii, nn] = i * 5 + j
-                        nn += 1
-                # and then in the neighbouring cells that share a face
-                for nc in range(neighbour_tetras.shape[0]):
-                    for nt in range(neighbour_tetras.shape[1]):
-                        n = 0
-                        neighbour = neighbour_tetras[nc, nt, :]
-                        if np.sum(t - neighbour) == 0:
-                            continue
-                        for k in range(4):
-                            for l in range(4):
-                                if t[k] == neighbour[l]:
-                                    n += 1
-                        if n == 3:
-                            ci = cells[nc][0] + cells[nc, 1] * self.n_cell_x + cells[
-                                nc, 2] * self.n_cell_x * self.n_cell_z
-                            neighbours[i * 5 + ii, nn] = ci * 5 + nt
-                            nn += 1
+        tetra_neighbours(self.get_elements(),neighbours)
         return neighbours
 
 

@@ -173,3 +173,20 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
                     c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]*area
             ncons+=1
     return idc, c, ncons
+
+def tetra_neighbours(long [:,:] elements, long [:,:] neighbours):
+    cdef int ie, ne, nn, n, i, j
+    for ie in range(len(elements)):
+        nn = 0 ## counter for number of neighbours
+        for ne in range(len(elements)):
+            n = 0 # counter for how many shared nodes
+            if ne == ie:
+                continue
+            for i in range(4):
+                for j in range(4):
+                    if elements[ie,i] == elements[ne,j]:
+                        n+=1
+            if n == 3:
+                neighbours[ie,nn] = ne
+                nn+=1
+
