@@ -492,6 +492,25 @@ class TetMesh:
         # for each cell
         # cell_neighbours = np.zeros((self.ntetra, 4)).astype(int)
         # cell_neighbours[:] = -1
+        tetra_index = np.arange(self.ntetra)
+        x = np.arange(0, self.n_cell_x)
+        y = np.arange(0, self.n_cell_y)
+        z = np.arange(0, self.n_cell_z)
+
+        c_xi, c_yi, c_zi = np.meshgrid(x, y, z)
+        c_xi = c_xi.flatten()
+        c_yi = c_yi.flatten()
+        c_zi = c_zi.flatten()
+        # get cell corners
+        xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
+        even_mask = (c_xi + c_yi + c_zi) % 2 == 0
+        gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
+        tetras = np.zeros((c_xi.shape[0], 5, 4)).astype(int)
+        tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
+        tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
+        return tetras.reshape(
+            (tetras.shape[0] * tetras.shape[1], tetras.shape[2]))
+
         neighbours = np.zeros((self.n_elements,4)).astype(int)
         neighbours[:] = -1
         tetra_neighbours(self.get_elements(),neighbours)
