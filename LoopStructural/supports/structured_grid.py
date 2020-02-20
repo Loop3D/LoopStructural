@@ -47,10 +47,13 @@ class StructuredGrid:
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         self.nodes = np.array([xx.flatten(order='F'), yy.flatten(order='F'),
                                zz.flatten(order='F')]).T
-        self.barycentre = self.cell_centres(np.arange(self.n_elements))
+        # self.barycentre = self.cell_centres(np.arange(self.n_elements))
 
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
+
+    def barycentre(self):
+        return self.cell_centres(np.arange(self.n_elements))
 
     def print_geometry(self):
         print('Origin: %f %f %f' % (

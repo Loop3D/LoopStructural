@@ -103,12 +103,12 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         For more information about the fold weights see EPSL paper by Gautier Laurent 2016
         """
         # get the gradient of all of the elements of the mesh
-        eg = self.support.get_elements_gradients(np.arange(self.support.n_elements))
+        eg = self.support.get_element_gradients(np.arange(self.support.n_elements))
         # get array of all nodes for all elements N,4,3
-        nodes = self.support.nodes[self.support.elements[np.arange(self.support.n_elements)]]
+        nodes = self.support.nodes[self.support.get_elements()[np.arange(self.support.n_elements)]]
         # calculate the fold geometry for the elements barycentre
         deformed_orientation, fold_axis, dgz = \
-            self.fold.get_deformed_orientation(self.support.barycentre)
+            self.fold.get_deformed_orientation(self.support.barycentre())
 
         # calculate element volume for weighting
         vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
@@ -122,7 +122,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A *= vol[:, None]
             A *= fold_orientation
             B = np.zeros(self.support.n_elements)
-            idc = self.support.elements
+            idc = self.support.get_elements()
             self.add_constraints_to_least_squares(A, B, idc)
 
         if fold_axis_w is not None:
@@ -134,7 +134,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A *= vol[:, None]
             A *= fold_axis_w
             B = np.zeros(self.support.n_elements).tolist()
-            self.add_constraints_to_least_squares(A, B, self.support.elements)
+            self.add_constraints_to_least_squares(A, B, self.support.get_elements())
 
         if fold_normalisation is not None:
             """
@@ -150,14 +150,15 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
                 B[:] = fold_norm
             B *= fold_normalisation
             B *= vol
-            self.add_constraints_to_least_squares(A, B, self.support.elements)
+            self.add_constraints_to_least_squares(A, B, self.support.get_elements())
 
         if fold_regularisation is not None:
             """
             fold constant gradient  
             """
             logger.info("Adding fold regularisation constraint to %s w = %f"%(self.propertyname,fold_regularisation))
-            idc, c, ncons = fold_cg(eg, dgz, self.support.neighbours, self.support.elements, self.support.nodes)
+            print(eg.shape,dgz.shape,self.support.get_neighbours().shape,self.support.get_elements().shape)
+            idc, c, ncons = fold_cg(eg, dgz, self.support.get_neighbours(), self.support.get_elements(), self.support.nodes)
             A = np.array(c[:ncons, :])
             A *= fold_regularisation
             B = np.zeros(A.shape[0])

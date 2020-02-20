@@ -188,27 +188,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # d_t = self.support.get_elements_gradients(e)
             norm = np.linalg.norm(element_gradients[inside,:,:], axis=2)
             element_gradients /= norm[:, :, None]
-            # d_t *= vol[:,None,None]
-                        # add in the element gradient matrix into the inte
-            # idc = self.support.elements[e]
-            # now map the index from global to region create array size of mesh
-            # initialise as np.nan, then map points inside region to 0->nx
-            # gi = np.zeros(self.support.n_nodes).astype(int)
-            # gi[:] = -1
-            # gi[self.region] = np.arange(0, self.nx).astype(int)
-            # w /= 3
-            # idc = gi[tetras]
-            # B = np.zeros(idc.shape[0])
-            # outside = ~np.any(idc == -1, axis=1)
-            # self.add_constraints_to_least_squares(A[outside, :] * w,
-            #                                       B[outside], idc[outside, :])
 
-
-            # e, inside = self.support.elements_for_array(points[:, :3])
-            # nodes = self.support.nodes[self.support.elements[e]]
-            # vecs = vertices[:, 1:, :] - nodes[:, 0, None, :]
-            # vol = np.abs(np.linalg.det(vecs))  # / 6
-            # d_t = self.support.get_elements_gradients(e)
             d_t = element_gradients
             d_t *= vol[:, None, None]
             # w*=10^11

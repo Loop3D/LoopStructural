@@ -484,7 +484,7 @@ class TetMesh:
         """
 
         tetra_index = np.arange(0, self.ntetra)
-        neighbours = np.zeros((self.ntetra, 4)).astype(int)
+        neighbours = np.zeros((self.ntetra, 4)).astype('int64')
         neighbours[:] = -9999
         neighbours[tetra_index%5 == 0,:] = tetra_index[tetra_index%5 == 0,None]  + np.arange(1,5)[None,:] # first tetra is the centre one so all of its neighbours are in the same cell
         neighbours[tetra_index % 5 != 0, 0] = np.tile(
