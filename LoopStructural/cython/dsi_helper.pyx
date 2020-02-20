@@ -174,8 +174,8 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
             ncons+=1
     return idc, c, ncons
 
-def tetra_neighbours(long [:,:] elements, long [:,:] neighbours):
-    cdef int ie, ne, nn, n, i, j
+def tetra_neighbours(long long [:,:] elements, long long [:,:] neighbours):
+    cdef long long ie, ne, nn, n, i, j
     for ie in range(len(elements)):
         nn = 0 ## counter for number of neighbours
         for ne in range(len(elements)):

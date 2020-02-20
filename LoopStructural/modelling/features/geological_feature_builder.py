@@ -248,7 +248,7 @@ class GeologicalFeatureInterpolator:
     def add_orthogonal_feature(self, feature, w=1., region=None):
         self.interpolator.add_gradient_orthogonal_constraint(
             np.arange(0, self.interpolator.support.n_elements),
-            feature.evaluate_gradient(self.interpolator.support.barycentre),
+            feature.evaluate_gradient(self.interpolator.support.barycentre()),
             w=w
         )
 
