@@ -279,8 +279,16 @@ class GeologicalModel:
                                   step_vector=step_vector)
             return FDI(grid)
         if interpolatortype == "DFI":  # "fold" in kwargs:
-            mesh = TetMesh()
-            mesh.setup_mesh(bb, n_tetra=nelements, )
+            ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
+            # calculate the step vector of a regular cube
+            step_vector = np.zeros(3)
+            step_vector[:] = ele_vol ** (1. / 3.)
+            # number of steps is the length of the box / step vector
+            nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            # create a structured grid using the origin and number of steps
+            mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
+                           step_vector=step_vector)
+            # mesh = TetMesh()
             return DFI(mesh, kwargs['fold'])
         logger.warning("No interpolator")
         return interpolator

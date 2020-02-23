@@ -99,6 +99,7 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
     Ns = Na -1
     ne = len(neighbours)
     ncons = 0
+    print(ne)
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
     cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
@@ -166,16 +167,17 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
                 if common_index != -1:
                     position_to_write = common_index
                 else:
-                    position_to_write = next_available_position
+                    position_to_write = 4#next_available_position
                     next_available_position+=1
+
                 idc[ncons,position_to_write] = idr[itr_right]
                 for i in range(3):
                     c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]*area
             ncons+=1
     return idc, c, ncons
 
-def tetra_neighbours(long [:,:] elements, long [:,:] neighbours):
-    cdef int ie, ne, nn, n, i, j
+def tetra_neighbours(long long [:,:] elements, long long [:,:] neighbours):
+    cdef long long ie, ne, nn, n, i, j
     for ie in range(len(elements)):
         nn = 0 ## counter for number of neighbours
         for ne in range(len(elements)):
