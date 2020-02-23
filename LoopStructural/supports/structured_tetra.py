@@ -486,7 +486,8 @@ class TetMesh:
         tetra_index = np.arange(0, self.ntetra)
         neighbours = np.zeros((self.ntetra, 4)).astype('int64')
         neighbours[:] = -9999
-        neighbours[tetra_index%5 == 0,:] = tetra_index[tetra_index%5 == 0,None]  + np.arange(1,5)[None,:] # first tetra is the centre one so all of its neighbours are in the same cell
+        neighbours[tetra_index%5 == 0,:] = tetra_index[tetra_index%5 == 0,None]  \
+                                           + np.arange(1,5)[None,:] # first tetra is the centre one so all of its neighbours are in the same cell
         neighbours[tetra_index % 5 != 0, 0] = np.tile(
             tetra_index[tetra_index % 5 == 0], (4, 1)).flatten(
             order='F')  # add first tetra to other neighbours
@@ -507,11 +508,11 @@ class TetMesh:
         # apply masks to
         masks = []
         masks.append([np.logical_and(one_mask, even_mask),
-                      np.array([[1, 0, 0, 2], [0, -1, 0, 4], [0, 0, -1, 3]])])
+                      np.array([[-1, 0, 0, 2], [0, 1, 0, 4], [0, 0, 1, 3]])])
         masks.append([np.logical_and(two_mask.astype(bool), even_mask),
                       np.array([[-1, 0, 0, 1], [0, -1, 0, 3], [0, 0, -1, 4]])])
         masks.append([np.logical_and(three_mask, even_mask),
-                      np.array([[-1, 0, 0, 4], [0, 1, 0, 2], [0, 0, -1, 1]])])
+                      np.array([[1, 0, 0, 4], [0, -1, 0, 2], [0, 0, 1, 1]])])
         masks.append([np.logical_and(four_mask, even_mask),
                       np.array([[1, 0, 0, 3], [0, 1, 0, 1], [0, 0, -1, 2]])])
 
