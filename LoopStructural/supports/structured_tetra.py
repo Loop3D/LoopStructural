@@ -541,6 +541,9 @@ class TetMesh:
             # raise BaseException
             global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
+            global_neighbour_idx = (self.global_cell_indicies(neigh_cell[:, :, :]) + neigh_cell[:, :, 1] * \
+                                    self.n_cell_x + neigh_cell[:, :, 2] * \
+                                    self.n_cell_x * self.n_cell_y) * 5 + mask[:, 3]
             # print('gi', global_neighbour_idx)
             # print(global_neighbour_idx)
             # *5+mask[:,3]
