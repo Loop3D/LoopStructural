@@ -23,17 +23,32 @@ class TetMesh:
                                zz.flatten(order='F')]).T
 
         self.tetra_mask = np.array([
-            [0, 6, 5, 4],
-            [0, 4, 5, 3],
-            [4, 6, 7, 5],
-            [0, 1, 6, 4],
-            [0, 6, 5, 2]])
+            [7,1,2,4],
+            [6,2,4,7],
+            [5,1,4,7],
+            [0,1,2,4],
+            [3,1,2,7]
+        ])
+
         self.tetra_mask_even = np.array([
-            [1, 2, 3, 7],
-            [1, 6, 7, 2],
-            [0, 1, 2, 3],
-            [3, 7, 5, 2],
-            [1, 7, 3, 4]])
+            [0,6,5,3],
+            [7,3,5,6],
+            [4,0,5,6],
+            [2,0,3,6],
+            [1,0,3,5]
+        ])
+        # self.tetra_mask = np.array([
+        #     [0, 6, 5, 4],
+        #     [0, 4, 5, 3],
+        #     [4, 6, 7, 5],
+        #     [0, 1, 6, 4],
+        #     [0, 6, 5, 2]])
+        # self.tetra_mask_even = np.array([
+        #     [1, 2, 3, 7],
+        #     [1, 6, 7, 2],
+        #     [0, 1, 2, 3],
+        #     [3, 7, 5, 2],
+        #     [1, 7, 3, 4]])
         self.ntetra = self.n_cells * 5
         self.properties = {}
         self.property_gradients = {}
@@ -68,7 +83,7 @@ class TetMesh:
         # prop_int[inside] = np.sum((bc.T * props), axis=1)
         # prop_int[~inside] = np.nan
         # return prop_int
-        values[inside] = np.sum(c*self.properties[prop][tetras],axis=1)
+        values = np.sum(c*self.properties[prop][tetras],axis=1)
         return values
 
     def evaluate_gradient(self, pos, prop):
@@ -361,9 +376,9 @@ class TetMesh:
         y_cell_index = np.array(y_cell_index)
         z_cell_index = np.array(z_cell_index)
 
-        xcorner = np.array([0, 1, 0, 0, 1, 0, 1, 1])
-        ycorner = np.array([0, 0, 1, 0, 0, 1, 1, 1])
-        zcorner = np.array([0, 0, 0, 1, 1, 1, 0, 1])
+        xcorner = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+        ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
+        zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
         xcorners = x_cell_index[:, None] + xcorner[None, :]
         ycorners = y_cell_index[:, None] + ycorner[None, :]
         zcorners = z_cell_index[:, None] + zcorner[None, :]
@@ -507,23 +522,24 @@ class TetMesh:
 
         # apply masks to
         masks = []
+        masks = []
         masks.append([np.logical_and(one_mask, even_mask),
-                      np.array([[-1, 0, 0, 2], [0, 1, 0, 4], [0, 0, 1, 3]])])
-        masks.append([np.logical_and(two_mask.astype(bool), even_mask),
-                      np.array([[-1, 0, 0, 1], [0, -1, 0, 3], [0, 0, -1, 4]])])
+                      np.array([[1, 0, 0, 4], [0, 1, 0, 1], [0, 0, 1, 2]])])
+        masks.append([np.logical_and(two_mask, even_mask),
+                      np.array([[1, 0, 0, 3], [0, -1, 0, 2], [0, 0, -1, 1]])])
         masks.append([np.logical_and(three_mask, even_mask),
-                      np.array([[1, 0, 0, 4], [0, -1, 0, 2], [0, 0, 1, 1]])])
+                      np.array([[-1, 0, 0, 1], [0, -1, 0, 4], [0, 0, 1, 3]])])
         masks.append([np.logical_and(four_mask, even_mask),
-                      np.array([[1, 0, 0, 3], [0, 1, 0, 1], [0, 0, -1, 2]])])
+                      np.array([[-1, 0, 0, 2], [0, 1, 0, 3], [0, 0, -1, 4]])])
 
         masks.append([np.logical_and(one_mask, odd_mask),
-                      np.array([[1, 0, 0, 2], [0, -1, 0, 4], [0, 0, -1, 3]])])
+                      np.array([[1, 0, 0, 4], [0, 1, 0, 1], [0, 0, 1, 2]])])
         masks.append([np.logical_and(two_mask, odd_mask),
-                      np.array([[1, 0, 0, 1], [0, 1, 0, 3], [0, 0, 1, 4]])])
+                      np.array([[1, 0, 0, 3], [0, -1, 0, 2], [0, 0, -1, 1]])])
         masks.append([np.logical_and(three_mask, odd_mask),
-                      np.array([[-1, 0, 0, 4], [0, 1, 0, 2], [0, 0, -1, 1]])])
+                      np.array([[-1, 0, 0, 1], [0, -1, 0, 4], [0, 0, 1, 3]])])
         masks.append([np.logical_and(four_mask, odd_mask),
-                      np.array([[-1, 0, 0, 3], [0, -1, 0, 1], [0, 0, 1, 2]])])
+                      np.array([[-1, 0, 0, 2], [0, 1, 0, 3], [0, 0, -1, 4]])])
 
         for m in masks:
             logic = m[0]
