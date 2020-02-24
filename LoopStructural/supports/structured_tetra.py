@@ -22,7 +22,7 @@ class TetMesh:
         self.nodes = np.array([xx.flatten(order='F'), yy.flatten(order='F'),
                                zz.flatten(order='F')]).T
 
-        self.tetra_mask = np.array([
+        self.tetra_mask_even = np.array([
             [7,1,2,4],
             [6,2,4,7],
             [5,1,4,7],
@@ -30,7 +30,7 @@ class TetMesh:
             [3,1,2,7]
         ])
 
-        self.tetra_mask_even = np.array([
+        self.tetra_mask = np.array([
             [0,6,5,3],
             [7,3,5,6],
             [4,0,5,6],
@@ -83,7 +83,7 @@ class TetMesh:
         # prop_int[inside] = np.sum((bc.T * props), axis=1)
         # prop_int[~inside] = np.nan
         # return prop_int
-        values = np.sum(c*self.properties[prop][tetras],axis=1)
+        values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
         return values
 
     def evaluate_gradient(self, pos, prop):
@@ -185,6 +185,7 @@ class TetMesh:
         idc = np.array(idc[:ncons, :])
         c = np.array(c[:ncons, :])
         B = np.zeros(c.shape[0])
+        import pickle
 
         return c, idc, B
 
@@ -199,10 +200,10 @@ class TetMesh:
         y = np.arange(0, self.n_cell_y)
         z = np.arange(0, self.n_cell_z)
 
-        c_xi, c_yi, c_zi = np.meshgrid(x, y, z)
-        c_xi = c_xi.flatten()
-        c_yi = c_yi.flatten()
-        c_zi = c_zi.flatten()
+        c_xi, c_yi, c_zi = np.meshgrid(x, y, z,indexing='ij')
+        c_xi = c_xi.flatten(order='F')
+        c_yi = c_yi.flatten(order='F')
+        c_zi = c_zi.flatten(order='F')
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
@@ -229,10 +230,10 @@ class TetMesh:
         y = np.arange(0, self.n_cell_y)
         z = np.arange(0, self.n_cell_z)
 
-        c_xi, c_yi, c_zi = np.meshgrid(x, y, z)
-        c_xi = c_xi.flatten()
-        c_yi = c_yi.flatten()
-        c_zi = c_zi.flatten()
+        c_xi, c_yi, c_zi = np.meshgrid(x, y, z, indexing='ij')
+        c_xi = c_xi.flatten(order='F')
+        c_yi = c_yi.flatten(order='F')
+        c_zi = c_zi.flatten(order='F')
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)  # global_index_to_node_index(gi)
@@ -497,7 +498,11 @@ class TetMesh:
         -------
 
         """
-
+        # elements = self.get_elements()
+        # neighbours = np.zeros((self.ntetra,4)).astype('int64')
+        # neighbours[:] = -1
+        # tetra_neighbours(elements,neighbours)
+        # return neighbours
         tetra_index = np.arange(0, self.ntetra)
         neighbours = np.zeros((self.ntetra, 4)).astype('int64')
         neighbours[:] = -9999
@@ -516,30 +521,27 @@ class TetMesh:
         # create masks for whether cell is odd or even
         odd_mask = np.sum(self.global_index_to_cell_index(tetra_index // 5),
                           axis=0) % 2 == 1
-        odd_mask = odd_mask.astype(bool)
-
-        even_mask = ~odd_mask  # ~even_mask
+        odd_mask = ~odd_mask.astype(bool)
 
         # apply masks to
         masks = []
-        masks = []
-        masks.append([np.logical_and(one_mask, even_mask),
-                      np.array([[1, 0, 0, 4], [0, 1, 0, 1], [0, 0, 1, 2]])])
-        masks.append([np.logical_and(two_mask, even_mask),
-                      np.array([[1, 0, 0, 3], [0, -1, 0, 2], [0, 0, -1, 1]])])
-        masks.append([np.logical_and(three_mask, even_mask),
-                      np.array([[-1, 0, 0, 1], [0, -1, 0, 4], [0, 0, 1, 3]])])
-        masks.append([np.logical_and(four_mask, even_mask),
-                      np.array([[-1, 0, 0, 2], [0, 1, 0, 3], [0, 0, -1, 4]])])
-
         masks.append([np.logical_and(one_mask, odd_mask),
-                      np.array([[1, 0, 0, 4], [0, 1, 0, 1], [0, 0, 1, 2]])])
+                      np.array([[-1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 3]])])
         masks.append([np.logical_and(two_mask, odd_mask),
-                      np.array([[1, 0, 0, 3], [0, -1, 0, 2], [0, 0, -1, 1]])])
+                      np.array([[1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 4]])])
         masks.append([np.logical_and(three_mask, odd_mask),
-                      np.array([[-1, 0, 0, 1], [0, -1, 0, 4], [0, 0, 1, 3]])])
+                      np.array([[-1, 0, 0, 4], [0, -1, 0, 3], [0, 0, -1, 2]])])
         masks.append([np.logical_and(four_mask, odd_mask),
-                      np.array([[-1, 0, 0, 2], [0, 1, 0, 3], [0, 0, -1, 4]])])
+                      np.array([[1, 0, 0, 3], [0, 1, 0, 4], [0, 0, -1, 1]])])
+
+        masks.append([np.logical_and(one_mask, ~odd_mask),
+                      np.array([[1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 4]])])
+        masks.append([np.logical_and(two_mask, ~odd_mask),
+                      np.array([[-1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 3]])])
+        masks.append([np.logical_and(three_mask, ~odd_mask),
+                      np.array([[-1, 0, 0, 4], [0, 1, 0, 3], [0, 0, -1, 1]])])
+        masks.append([np.logical_and(four_mask, ~odd_mask),
+                      np.array([[1, 0, 0, 3], [0, -1, 0, 4], [0, 0, -1, 2]])])
 
         for m in masks:
             logic = m[0]
