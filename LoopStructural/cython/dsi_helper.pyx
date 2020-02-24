@@ -37,10 +37,11 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
         for n in range(4):
             neigh = neighbours[e,n]
             idr = elements[neigh,:]
-            if flag[neigh]== 1:
-                continue
             if neigh < 0:
                 continue
+            if flag[neigh]== 1:
+                continue
+
             # if not in region then skip this tetra
             if region[idr[0]] == 0 or region[idr[1]] == 0 or region[idr[2]] == 0 or region[idr[3]] == 0:
                 continue
@@ -123,9 +124,9 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
         for n in range(4):
             neigh = neighbours[e,n]
             idr = elements[neigh,:]
-            if flag[neigh]== 1:
-                continue
             if neigh == -1:
+                continue
+            if flag[neigh]== 1:
                 continue
             e2 = EG[neigh,:,:]
             Xr = X[neigh,:]

@@ -13,7 +13,7 @@ class TetMesh:
         self.n_cell_z = self.nsteps[2] - 1
         self.n_cells = self.n_cell_x * self.n_cell_y * self.n_cell_z
         self.n_nodes = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
-
+        print(self.n_cell_x,self.n_cell_y,self.n_cell_z,self.nsteps,self.nsteps_cells)
         max = self.origin + self.nsteps_cells * self.step_vector
         x = np.linspace(origin[0], max[0], nsteps[0])
         y = np.linspace(origin[1], max[1], nsteps[1])
@@ -482,14 +482,17 @@ class TetMesh:
         -------
 
         """
+        elements = self.get_elements()
+        neighbours2 = np.zeros((self.ntetra, 4)).astype('int64')
+        neighbours2[:] = -1
+        tetra_neighbours(elements,neighbours2)
 
         tetra_index = np.arange(0, self.ntetra)
-        neighbours = np.zeros((self.ntetra, 4)).astype('int64')
+        neighbours = np.zeros((self.ntetra, 4)).astype(int)
         neighbours[:] = -9999
-        neighbours[tetra_index%5 == 0,:] = tetra_index[tetra_index%5 == 0,None]  \
-                                           + np.arange(1,5)[None,:] # first tetra is the centre one so all of its neighbours are in the same cell
-        neighbours[tetra_index % 5 != 0, 0] = np.tile(
-            tetra_index[tetra_index % 5 == 0], (4, 1)).flatten(
+        neighbours[tetra_index % 5 == 0, :] = tetra_index[tetra_index % 5 == 0, None] + np.arange(1, 5)[None,
+                                                                                        :]  # first tetra is the centre one so all of its neighbours are in the same cell
+        neighbours[tetra_index % 5 != 0, 0] = np.tile(tetra_index[tetra_index % 5 == 0], (4, 1)).flatten(
             order='F')  # add first tetra to other neighbours
 
         # now create masks for the different tetra indexes
@@ -497,39 +500,31 @@ class TetMesh:
         two_mask = tetra_index % 5 == 2
         three_mask = tetra_index % 5 == 3
         four_mask = tetra_index % 5 == 4
-
-        # create masks for whether cell is odd or even
-        odd_mask = np.sum(self.global_index_to_cell_index(tetra_index // 5),
-                          axis=0) % 2 == 1
+        # print(mesh.global_index_to_cell_index(tetra_index//5))
+        odd_mask = np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=0) % 2 == 1
         odd_mask = odd_mask.astype(bool)
-
+        # raise BaseException
+        # print(even_mask.astype(bool))
+        # print(np.sum(mesh.global_index_to_cell_index(tetra_index//5),axis=0))
         even_mask = ~odd_mask  # ~even_mask
-
-        # apply masks to
+        # print(tetra_index[odd_mask]//5)
+        # raise BaseException
         masks = []
-        masks.append([np.logical_and(one_mask, even_mask),
-                      np.array([[-1, 0, 0, 2], [0, 1, 0, 4], [0, 0, 1, 3]])])
-        masks.append([np.logical_and(two_mask.astype(bool), even_mask),
-                      np.array([[-1, 0, 0, 1], [0, -1, 0, 3], [0, 0, -1, 4]])])
-        masks.append([np.logical_and(three_mask, even_mask),
-                      np.array([[1, 0, 0, 4], [0, -1, 0, 2], [0, 0, 1, 1]])])
-        masks.append([np.logical_and(four_mask, even_mask),
-                      np.array([[1, 0, 0, 3], [0, 1, 0, 1], [0, 0, -1, 2]])])
+        masks.append([np.logical_and(one_mask, even_mask), np.array([[-1, 0, 0, 2], [0, 1, 0, 4], [0, 0, 1, 3]])])
+        masks.append([np.logical_and(two_mask, even_mask), np.array([[-1, 0, 0, 1], [0, -1, 0, 3], [0, 0, -1, 4]])])
+        masks.append([np.logical_and(three_mask, even_mask), np.array([[1, 0, 0, 4], [0, -1, 0, 2], [0, 0, 1, 1]])])
+        masks.append([np.logical_and(four_mask, even_mask), np.array([[1, 0, 0, 3], [0, 1, 0, 1], [0, 0, -1, 2]])])
 
-        masks.append([np.logical_and(one_mask, odd_mask),
-                      np.array([[1, 0, 0, 2], [0, -1, 0, 4], [0, 0, -1, 3]])])
-        masks.append([np.logical_and(two_mask, odd_mask),
-                      np.array([[1, 0, 0, 1], [0, 1, 0, 3], [0, 0, 1, 4]])])
-        masks.append([np.logical_and(three_mask, odd_mask),
-                      np.array([[-1, 0, 0, 4], [0, 1, 0, 2], [0, 0, -1, 1]])])
-        masks.append([np.logical_and(four_mask, odd_mask),
-                      np.array([[-1, 0, 0, 3], [0, -1, 0, 1], [0, 0, 1, 2]])])
-
+        masks.append([np.logical_and(one_mask, odd_mask), np.array([[1, 0, 0, 2], [0, -1, 0, 4], [0, 0, -1, 3]])])
+        masks.append([np.logical_and(two_mask, odd_mask), np.array([[1, 0, 0, 1], [0, 1, 0, 3], [0, 0, 1, 4]])])
+        masks.append([np.logical_and(three_mask, odd_mask), np.array([[-1, 0, 0, 4], [0, 1, 0, 2], [0, 0, -1, 1]])])
+        masks.append([np.logical_and(four_mask, odd_mask), np.array([[-1, 0, 0, 3], [0, -1, 0, 1], [0, 0, 1, 2]])])
         for m in masks:
             logic = m[0]
             mask = m[1]
-            c_xi, c_yi, c_zi = self.global_index_to_cell_index(
-                tetra_index[logic] // 5)
+            # print('m',mask)
+            # neighbours[np.logical_and(one_mask,even_mask)] = 0 #x+1, t = 4 and z-1 t=2, y+1 t3
+            c_xi, c_yi, c_zi = self.global_index_to_cell_index(tetra_index[logic] // 5)
             # mask = np.array([[1,0,0,4],[0,0,-1,2],[0,1,0,3],[0,0,0,0]])
             neigh_cell = np.zeros((c_xi.shape[0], 3, 3)).astype(int)
             neigh_cell[:, :, 0] = c_xi[:, None] + mask[:, 0]
@@ -538,25 +533,26 @@ class TetMesh:
             inside = neigh_cell[:, :, 0] >= 0
             inside = np.logical_and(inside, neigh_cell[:, :, 1] >= 0)
             inside = np.logical_and(inside, neigh_cell[:, :, 2] >= 0)
-            inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 0] < self.n_cell_x)
-            inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 1] < self.n_cell_y)
-            inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 2] < self.n_cell_z)
-
+            inside = np.logical_and(inside, neigh_cell[:, :, 0] < self.n_cell_x)
+            inside = np.logical_and(inside, neigh_cell[:, :, 1] < self.n_cell_y)
+            inside = np.logical_and(inside, neigh_cell[:, :, 2] < self.n_cell_z)
+            # print(neigh_cell)
+            # print(mesh.n_cell_x,mesh.n_cell_y,mesh.n_cell_z)
+            # raise BaseException
             global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
-            global_neighbour_idx = (neigh_cell[:, :, 0] + neigh_cell[:, :, 1] * \
-                                    self.n_cell_x + neigh_cell[:, :,
-                                                    2] * self.n_cell_x * self.n_cell_y) * 5 + mask[
-                                                                                              :,
-                                                                                              3]
-
-
+            # print('gi', global_neighbour_idx)
+            # print(global_neighbour_idx)
+            # *5+mask[:,3]
             global_neighbour_idx[~inside] = -1
             neighbours[logic, 1:] = global_neighbour_idx
+        neighbours = np.sort(neighbours)[:, ::-1]
+        neighbours2 = np.sort(neighbours2)[:, ::-1]
 
+        for i in range(neighbours.shape[0]):
+            if np.sum(neighbours[i,:]-neighbours2[i,:] != 0):
+                print(i,neighbours[i,:],neighbours2[i,:])
+        # print(np.sum(np.sort(neighbours2)[:, ::-1]-np.sort(neighbours)[:,::-1]))  # neighbours
         return neighbours
 
 
