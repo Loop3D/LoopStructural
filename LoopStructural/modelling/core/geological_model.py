@@ -63,6 +63,7 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
         limb_wl = limb_wl[0]
     guess = np.zeros(4)
     guess[3] = limb_wl  # np.max(limb_wl)
+    logger.info('Guess: %f %f %f %f'%(guess[0],guess[1],guess[2],guess[3]))
     if len(flr) < len(guess):
         logger.warning("Not enough data to fit curve")
         fold.fold_limb_rotation = lambda x: 0
@@ -75,10 +76,15 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
                          "to 0")
             fold.fold_limb_rotation = lambda x: np.zeros(x.shape)
             return
-        popt, pcov = curve_fit(fourier_series,
-                               s[np.logical_or(~np.isnan(s), ~np.isnan(flr))],
-                               np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s), ~np.isnan(flr))])),
-                               guess)
+        try:
+            popt, pcov = curve_fit(fourier_series,
+                                   s[np.logical_or(~np.isnan(s), ~np.isnan(flr))],
+                                   np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s), ~np.isnan(flr))])),
+                                   guess)
+        except RuntimeError:
+            popt = guess
+            print('cant fit')
+        logger.info('Fitted: %f %f %f %f'%(popt[0],popt[1],popt[2],popt[3]))
         fold.fold_limb_rotation = lambda x: np.rad2deg(
             np.arctan(
                 fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
