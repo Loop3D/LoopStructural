@@ -54,9 +54,11 @@ class TetMesh:
         self.property_gradients = {}
         self.n_elements = self.ntetra
 
-    def barycentre(self):
-        elements = self.get_elements()
-        barycentre = np.sum(self.nodes[elements][:, :, :],
+    def barycentre(self, elements = None):
+        if elements is None:
+            elements = np.arange(0,self.ntetra)
+        tetra = self.get_elements()[elements]
+        barycentre = np.sum(self.nodes[tetra][:, :, :],
                                  axis=1) / 4.
         return barycentre
 
@@ -196,6 +198,7 @@ class TetMesh:
         -------
 
         """
+
         x = np.arange(0, self.n_cell_x)
         y = np.arange(0, self.n_cell_y)
         z = np.arange(0, self.n_cell_z)
@@ -211,10 +214,11 @@ class TetMesh:
         tetras = np.zeros((c_xi.shape[0], 5, 4)).astype('int64')
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
+
         return tetras.reshape((tetras.shape[0]*tetras.shape[1],tetras.shape[2]))
 
 
-    def get_element_gradients(self, elements):
+    def get_element_gradients(self, elements = None):
         """
         Get the gradients of all tetras
 
@@ -226,6 +230,8 @@ class TetMesh:
         -------
 
         """
+        if elements is None:
+            elements = np.arange(0,self.ntetra)
         x = np.arange(0, self.n_cell_x)
         y = np.arange(0, self.n_cell_y)
         z = np.arange(0, self.n_cell_z)
@@ -270,7 +276,7 @@ class TetMesh:
         element_gradients = element_gradients.swapaxes(1, 2)
         element_gradients = element_gradients @ I
 
-        return element_gradients
+        return element_gradients[elements,:,:]
 
     def get_tetra_gradient_for_location(self, pos):
         """

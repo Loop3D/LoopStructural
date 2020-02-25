@@ -261,14 +261,14 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                                       None, outside],
                                                   idc[outside, :])
 
-    def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0,
+    def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
                                            B=0):
         """
         constraints scalar field to be orthogonal to a given vector
 
         Parameters
         ----------
-        elements
+        position
         normals
         w
         B
@@ -277,18 +277,42 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
-        nodes = self.support.nodes[self.support.get_elements()[elements]]
-        vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
-        vol = np.abs(np.linalg.det(vecs)) / 6
-        d_t = self.support.get_element_gradients(elements)
-        dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
-        mask = np.abs(dot_p) > 0
-        normals[mask[:, 0], :] = normals[mask[:, 0], :] / dot_p[mask][:, None]
-        magnitude = np.einsum('ij,ij->i', normals, normals)
-        normals[magnitude > 0] = normals[magnitude > 0] / magnitude[
-            magnitude > 0, None]
-        A = np.einsum('ij,ijk->ik', normals, d_t)
-        A *= vol[:, None]
-        idc = self.support.get_elements()[elements]
-        B = np.zeros(len(elements))
-        self.add_constraints_to_least_squares(A * w, B, idc)
+        if points.shape[0] > 0:
+            vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:,:3])
+            #e, inside = self.support.elements_for_array(points[:, :3])
+            #nodes = self.support.nodes[self.support.elements[e]]
+            vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
+            vol = np.abs(np.linalg.det(vecs))  # / 6
+            # d_t = self.support.get_elements_gradients(e)
+            norm = np.linalg.norm(element_gradients, axis=2)
+            element_gradients /= norm[:, :, None]
+
+            print(vector.shape,element_gradients.shape)
+            A = np.einsum('ij,ijk->ik', vector, element_gradients)
+
+            A *= vol[:, None]
+
+            gi = np.zeros(self.support.n_nodes).astype(int)
+            gi[:] = -1
+            gi[self.region] = np.arange(0, self.nx).astype(int)
+            w /= 3
+            idc = gi[tetras]
+            B = np.zeros(idc.shape[0])
+            outside = ~np.any(idc == -1, axis=1)
+            self.add_constraints_to_least_squares(A[outside, :] * w,
+                                                  B[outside], idc[outside, :])
+        # nodes = self.support.nodes[self.support.get_elements()[elements]]
+        # vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
+        # vol = np.abs(np.linalg.det(vecs)) / 6
+        # d_t = self.support.get_element_gradients(elements)
+        # dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
+        # mask = np.abs(dot_p) > 0
+        # normals[mask[:, 0], :] = normals[mask[:, 0], :] / dot_p[mask][:, None]
+        # magnitude = np.einsum('ij,ij->i', normals, normals)
+        # normals[magnitude > 0] = normals[magnitude > 0] / magnitude[
+        #     magnitude > 0, None]
+        # A = np.einsum('ij,ijk->ik', normals, d_t)
+        # A *= vol[:, None]
+        # idc = self.support.get_elements()[elements]
+        # B = np.zeros(len(elements))
+        # self.add_constraints_to_least_squares(A * w, B, idc)
