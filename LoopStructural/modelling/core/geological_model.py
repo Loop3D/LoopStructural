@@ -55,10 +55,11 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
     # axis=fold.get_fold_axis_orientation)
     result['limb_rotation'] = flr
     result['foliation'] = s
+    limb_svariogram = SVariogram(s, flr)
+    limb_svariogram.calc_semivariogram()
+    result['limb_svariogram'] = limb_svariogram
     if limb_wl is None:
-        limb_svariogram = SVariogram(s, flr)
         limb_wl = limb_svariogram.find_wavelengths()
-        result['limb_svariogram'] = limb_svariogram
         # for now only consider single fold wavelength
         limb_wl = limb_wl[0]
     guess = np.zeros(4)
@@ -82,8 +83,14 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
                                    np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s), ~np.isnan(flr))])),
                                    guess)
         except RuntimeError:
-            popt = guess
-            print('cant fit')
+            try:
+                logger.info("Running curve fit without initial guess")
+                popt, pcov = curve_fit(fourier_series,
+                                       s[np.logical_or(~np.isnan(s), ~np.isnan(flr))],
+                                       np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s), ~np.isnan(flr))])))
+            except RuntimeError:
+                popt = guess
+                logger.error("Could not fit curve to S-Plot, check the wavelength")
         logger.info('Fitted: %f %f %f %f'%(popt[0],popt[1],popt[2],popt[3]))
         fold.fold_limb_rotation = lambda x: np.rad2deg(
             np.arctan(
@@ -269,7 +276,8 @@ class GeologicalModel:
             # create a structured grid using the origin and number of steps
             mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
                                   step_vector=step_vector)
-            print('n tetra', mesh.ntetra)
+            logger.info("Creating regular tetrahedron mesh with %i elements \n"
+                        "for modelling using PLI" %(mesh.ntetra))
             # mesh = TetMesh()
             # mesh.setup_mesh(bb, n_tetra=nelements, )
             return PLI(mesh)
@@ -285,7 +293,8 @@ class GeologicalModel:
             # create a structured grid using the origin and number of steps
             grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,
                                   step_vector=step_vector)
-            print('n elements',grid.n_elements)
+            logger.info("Creating regular grid with %i elements \n"
+                        "for modelling using FDI"%grid.n_elements)
             return FDI(grid)
         if interpolatortype == "DFI":  # "fold" in kwargs:
             nelements/=5
@@ -299,6 +308,8 @@ class GeologicalModel:
             mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
                            step_vector=step_vector)
             # mesh = TetMesh()
+            logger.info("Creating regular tetrahedron mesh with %i elements \n"
+                        "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
         logger.warning("No interpolator")
         return interpolator
@@ -344,6 +355,7 @@ class GeologicalModel:
         self.features.append(series_feature)
         result = {}
         result['feature'] = series_feature
+        result['support'] = series_feature.get_interpolator().support
         return result
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
@@ -383,6 +395,8 @@ class GeologicalModel:
         fold_frame.type = 'structuralframe'
         self.features.append(fold_frame)
         result['feature'] = fold_frame
+        result['support'] = fold_frame[0].get_interpolator().support
+
         return result
 
     def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, **kwargs):
@@ -441,6 +455,8 @@ class GeologicalModel:
 
         result['feature'] = series_feature
         result['fold'] = fold
+        result['support'] = series_feature.get_interpolator().support
+
         return result
 
     def create_and_add_folded_fold_frame(self, fold_frame_data, fold_frame=None,
@@ -507,6 +523,8 @@ class GeologicalModel:
 
         result['feature'] = fold_frame
         result['fold'] = fold
+        result['support'] = fold_frame[0].get_interpolator().support
+
         return result
 
     def _add_faults(self, feature_builder):

@@ -37,24 +37,25 @@ class TetMesh:
             [2,0,3,6],
             [1,0,3,5]
         ])
-        # self.tetra_mask = np.array([
-        #     [0, 6, 5, 4],
-        #     [0, 4, 5, 3],
-        #     [4, 6, 7, 5],
-        #     [0, 1, 6, 4],
-        #     [0, 6, 5, 2]])
-        # self.tetra_mask_even = np.array([
-        #     [1, 2, 3, 7],
-        #     [1, 6, 7, 2],
-        #     [0, 1, 2, 3],
-        #     [3, 7, 5, 2],
-        #     [1, 7, 3, 4]])
         self.ntetra = self.n_cells * 5
         self.properties = {}
         self.property_gradients = {}
         self.n_elements = self.ntetra
 
     def barycentre(self, elements = None):
+        """
+        Return the barycentres of all tetrahedrons or of specified tetras using
+        global index
+
+        Parameters
+        ----------
+        elements - numpy array
+            global index
+
+        Returns
+        -------
+
+        """
         if elements is None:
             elements = np.arange(0,self.ntetra)
         tetra = self.get_elements()[elements]
@@ -62,37 +63,48 @@ class TetMesh:
                                  axis=1) / 4.
         return barycentre
 
-    def update_property(self, name, value, save=True):
+    def update_property(self, name, value):
 
         self.properties[name] = value
-        # grads = self.get_elements_gradients(np.arange(self.n_elements))
-        # props = self.properties[name][
-        #     self.elements[np.arange(self.n_elements)]]
-        # grad = np.einsum('ikj,ij->ik', grads, props)
-        # self.property_gradients[name] = grad
+
 
     def evaluate_value(self, pos, prop):
+        """
+        Evaluate value of interpolant
+
+        Parameters
+        ----------
+        pos - numpy array
+            locations
+        prop - string
+            property name
+
+        Returns
+        -------
+
+        """
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_tetra_for_location(pos)
-        #
-        # bc = self.calc_bary_c(e[inside], array[inside])
-        # prop_int = np.zeros(e.shape)
-        # nv = np.zeros(self.properties[prop].shape)
-        # nv[~self.regions[region]] = np.nan
-        # nv[self.regions[region]] = self.properties[prop][self.regions[region]]
-        # props = self.properties[prop][self.elements[e[inside]]]
-        # prop_int[inside] = np.sum((bc.T * props), axis=1)
-        # prop_int[~inside] = np.nan
-        # return prop_int
-        values[inside]
-        c[inside,:]
-        self.properties[prop]
-        self.properties[prop][tetras[inside,:]]
         values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
         return values
 
     def evaluate_gradient(self, pos, prop):
+        """
+        Evaluate the gradient of an interpolant at the locations
+
+        Parameters
+        ----------
+        pos - numpy array
+            locations
+        prop - string
+            property to evaluate
+
+
+        Returns
+        -------
+
+        """
         values = np.zeros(pos.shape)
         values[:] = np.nan
         vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
@@ -104,13 +116,24 @@ class TetMesh:
         return values
 
     def get_tetra_for_location(self, pos):
+        """
+        Determine the tetrahedron from a numpy array of points
+
+        Parameters
+        ----------
+        pos - numpy array
+
+
+        Returns
+        -------
+
+        """
         pos = np.array(pos)
         # initialise array for tetrahedron vertices
         vertices = np.zeros((5, 4, pos.shape[0], 3))
         vertices[:] = np.nan
         # get cell indexes
         c_xi, c_yi, c_zi = self.position_to_cell_index(pos)
-
         # determine if using +ve or -ve mask
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # get cell corners
@@ -124,6 +147,7 @@ class TetMesh:
         vertices = vertices.swapaxes(0, 2)
         vertices = vertices.swapaxes(1, 2)
         # use scalar triple product to calculate barycentric coords
+
         vap = pos[:, None, :] - vertices[:, :, 0, :]
         vbp = pos[:, None, :] - vertices[:, :, 1, :]
         #         # vcp = p - points[:, 2, :]
@@ -139,7 +163,6 @@ class TetMesh:
         vd = np.einsum('ikj, ikj->ik', vap, np.cross(vab, vac, axisa=2, axisb=2)) / 6.
         v = np.einsum('ikj, ikj->ik', vab, np.cross(vac, vad, axisa=2, axisb=2)) / 6.
         c = np.zeros((va.shape[0], va.shape[1], 4))
-        # print(va.shape)
         c[:, :, 0] = va / v
         c[:, :, 1] = vb / v
         c[:, :, 2] = vc / v
@@ -154,52 +177,47 @@ class TetMesh:
 
         #create mask to see which cells are even
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
-
         # create global node index list
         gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
+
         # container for tetras
         tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
 
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
-
+        inside = np.logical_and(inside,self.inside(pos))
         vertices_return = np.zeros((pos.shape[0],4,3))
         vertices_return[:] = np.nan
-        vertices_return[inside,:,:] = vertices[mask,:,:]
+        vertices_return[inside,:,:] = vertices[mask,:,:][inside,:,:]
         c_return = np.zeros((pos.shape[0],4))
         c_return[:] = np.nan
-        c_return[inside] = c[mask]
+        c_return[inside] = c[mask][inside]
         tetra_return = np.zeros((pos.shape[0],4)).astype(int)
         tetra_return[:] = -1
-        tetra_return[inside,:] = tetras[mask,:]
+        tetra_return[inside,:] = tetras[mask,:][inside,:]
         return vertices_return, c_return, tetra_return, inside
 
     def get_constant_gradient(self, region='everywhere'):
         elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
-        # ps = self.nodes[self.elements[e]]
         region = region.astype('int64')
 
         neighbours = self.get_neighbours()
         elements = self.get_elements()
-        # print('cg')
-        # print(elements_gradients)
-        # print(neighbours)
-        # print(self.nodes)
         idc, c, ncons = cg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
                            region.astype('int64'))
 
         idc = np.array(idc[:ncons, :])
         c = np.array(c[:ncons, :])
         B = np.zeros(c.shape[0])
-        import pickle
-
         return c, idc, B
 
     def get_elements(self):
         """
+        Get a numpy array of all of the elements in the mesh
 
         Returns
         -------
+        numpy array elements
 
         """
 
@@ -254,13 +272,10 @@ class TetMesh:
         points[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
         points[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
 
-        # points[:, :, even_mask, :] = nodes[:, even_mask, :][mesh.tetra_mask_even, :, :]
-        # points[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][mesh.tetra_mask, :, :]
         # changing order to points, tetra, nodes, coord
         points = points.swapaxes(0, 2)
         points = points.swapaxes(1, 2)
-        # printpoints.shape
-        # ps = points.reshape()
+
         ps = points.reshape(points.shape[0] * points.shape[1], points.shape[2], points.shape[3])
 
         m = np.array(

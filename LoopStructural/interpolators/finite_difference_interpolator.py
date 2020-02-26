@@ -196,16 +196,17 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             idc[:] = -1
             node_idx[inside, :].shape
             gi[node_idx[inside, :]]
-            print(node_idx.shape, inside.shape, idc.shape)
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
             strike_vector, dip_vector = get_vectors(points[inside, 3:])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
-            A += np.einsum('ij,ijk->ik', dip_vector.T, T)
+
 
             B = np.zeros(points[inside, :].shape[0])
+            self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
+            A = np.einsum('ij,ijk->ik', dip_vector.T, T)
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
 
     def add_norm_constraint(self, w=1.):

@@ -100,7 +100,6 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
     Ns = Na -1
     ne = len(neighbours)
     ncons = 0
-    print(ne)
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
     cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)

@@ -140,10 +140,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             element_gradients /= norm[:, :, None]
             # d_t *= vol[:,None,None]
             strike_vector, dip_vector = get_vectors(points[:, 3:])
-            ## TODO check if this is ok, or should these be added separately?
             A = np.einsum('ji,ijk->ik', strike_vector, element_gradients)
 
-            A += np.einsum('ji,ijk->ik', dip_vector, element_gradients)
             A *= vol[:, None]
 
             gi = np.zeros(self.support.n_nodes).astype(int)
@@ -155,7 +153,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                                   B[outside], idc[outside, :])
+            A = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
+            A *= vol[:, None]
 
+            self.add_constraints_to_least_squares(A[outside, :] * w,
+                                          B[outside], idc[outside, :])
     def add_norm_ctr_pts(self, w=1.0):
         """
         Extracts the norm vectors from the interpolators p_n list and adds
@@ -209,7 +211,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             w /= 3
 
             self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
-                                                  points[outside, 3:] * w *
+                                                  points[inside,:][outside, 3:] * w *
                                                   vol[outside, None],
                                                   idc[outside])
 
@@ -246,18 +248,20 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # calculate volume of tetras
             vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
             vol = np.abs(np.linalg.det(vecs)) / 6
-            A = c
+            A = c[inside]
             A *= vol[:,None]
             idc = tetras[inside,:]
             # now map the index from global to region create array size of mesh
             # initialise as np.nan, then map points inside region to 0->nx
             gi = np.zeros(self.support.n_nodes).astype(int)
             gi[:] = -1
+
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
+
             self.add_constraints_to_least_squares(A[outside,:] * w,
-                                                  points[outside, 3] * w * vol[
+                                                  points[inside,:][outside, 3] * w * vol[
                                                       None, outside],
                                                   idc[outside, :])
 

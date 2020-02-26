@@ -157,7 +157,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             fold constant gradient  
             """
             logger.info("Adding fold regularisation constraint to %s w = %f"%(self.propertyname,fold_regularisation))
-            print(eg.shape,dgz.shape,self.support.get_neighbours().shape,self.support.get_elements().shape)
             idc, c, ncons = fold_cg(eg, dgz, self.support.get_neighbours(), self.support.get_elements(), self.support.nodes)
             A = np.array(c[:ncons, :])
             A *= fold_regularisation
