@@ -259,6 +259,7 @@ class GeologicalModel:
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         if interpolatortype == "PLI":
+            nelements/=5
             ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
@@ -268,6 +269,7 @@ class GeologicalModel:
             # create a structured grid using the origin and number of steps
             mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
                                   step_vector=step_vector)
+            print('n tetra', mesh.ntetra)
             # mesh = TetMesh()
             # mesh.setup_mesh(bb, n_tetra=nelements, )
             return PLI(mesh)
@@ -283,8 +285,10 @@ class GeologicalModel:
             # create a structured grid using the origin and number of steps
             grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,
                                   step_vector=step_vector)
+            print('n elements',grid.n_elements)
             return FDI(grid)
         if interpolatortype == "DFI":  # "fold" in kwargs:
+            nelements/=5
             ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)

@@ -85,6 +85,10 @@ class TetMesh:
         # prop_int[inside] = np.sum((bc.T * props), axis=1)
         # prop_int[~inside] = np.nan
         # return prop_int
+        values[inside]
+        c[inside,:]
+        self.properties[prop]
+        self.properties[prop][tetras[inside,:]]
         values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
         return values
 
