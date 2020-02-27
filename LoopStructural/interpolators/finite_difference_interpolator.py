@@ -42,11 +42,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.vol = grid.step_vector[0] * grid.step_vector[1] * \
                    grid.step_vector[2]
 
-        self.__str = 'Finite Difference Interpolator with %i unknowns \n' %self.nx
-    
-    def __str__(self):
-        return self.__str
-
     def _setup_interpolator(self, **kwargs):
         """
 
@@ -158,12 +153,16 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
-            idc = gi[node_idx]
+            idc = np.zeros(node_idx.shape)
+            idc[:] = -1
+            node_idx[inside, :].shape
+            gi[node_idx[inside, :]]
+            print(node_idx.shape, inside.shape, idc.shape)
+            idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             a = self.support.position_to_dof_coefs(points[inside, :3])
             # a*=w
-            self.__str += '%i value constraints weighted at %8.2f \n' %(points.shape[0],w)
-           
+
             self.add_constraints_to_least_squares(a.T * w,
                                                   points[inside, 3] * w,
                                                   idc[inside, :])
@@ -193,15 +192,21 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
-            idc = gi[node_idx]
+            idc = np.zeros(node_idx.shape)
+            idc[:] = -1
+            node_idx[inside, :].shape
+            gi[node_idx[inside, :]]
+            idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
-            strike_vector, dip_vector = get_vectors(points[inside, 3:6])
+            strike_vector, dip_vector = get_vectors(points[inside, 3:])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
-            A += np.einsum('ij,ijk->ik', dip_vector.T, T)
-            self.__str += '%i gradient constraints weighted at %8.2f \n' %(points.shape[0],w)
+
+
             B = np.zeros(points[inside, :].shape[0])
+            self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
+            A = np.einsum('ij,ijk->ik', dip_vector.T, T)
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
 
     def add_norm_constraint(self, w=1.):
@@ -227,15 +232,21 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
-            idc = gi[node_idx]
+            idc = np.zeros(node_idx.shape)
+            idc[:] = -1
+            node_idx[inside,:].shape
+            gi[node_idx[inside, :]]
+            idc[inside,:] = gi[node_idx[inside,:]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
             # magnitude
             T = self.support.calcul_T(points[inside, :3])
-            self.__str += '%i gradient norm constraints weighted at %8.2f \n' %(points.shape[0],w)
-
+            # norm = np.linalg.norm(T,axis=2)
+            # T /= norm[:,:,None]
+            # points[inside,3:]/= norm
+            # T /= np.linalg.norm(T,axis=1)[:,None,:]
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :] * w,
                                                   points[inside, 3] * w,
@@ -247,7 +258,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                                   points[inside, 5] * w,
                                                   idc[inside, :])
 
-    def add_gradient_orthogonal_constraint(self, elements, normals, w=1.0,
+    def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
                                            B=0):
         """
         constraints scalar field to be orthogonal to a given vector
@@ -263,27 +274,32 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         -------
 
         """
-        pos = np.array(self.support.cell_centres(
-            elements))  # np.array([np.mean(posx, axis=1),np.mean(posz, axis=1), np.mean(posz, axis=1)]).T
+        if points.shape[0] > 0:
+            # calculate unit vector for orientation data
+            # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
 
-        idc, inside = self.support.position_to_cell_corners(pos)
+            node_idx, inside = self.support.position_to_cell_corners(
+                points[:, :3])
+            # calculate unit vector for node gradients
+            # this means we are only constraining direction of grad not the
+            # magnitude
+            gi = np.zeros(self.support.n_nodes)
+            gi[:] = -1
+            gi[self.region] = np.arange(0, self.nx)
+            idc = np.zeros(node_idx.shape)
+            idc[:] = -1
+            node_idx[inside, :].shape
+            gi[node_idx[inside, :]]
+            idc[inside, :] = gi[node_idx[inside, :]]
+            inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
-        T = self.support.calcul_T(pos)
-        # find the dot product between the normals and the gradient and add
-        # this as a
-        # constraint
-        A = np.einsum('ij,ijk->ik', normals, T)
+            T = self.support.calcul_T(points[inside, :3])
+            A = np.einsum('ij,ijk->ik', vector, T)
 
-        gi = np.zeros(self.support.n_nodes)
-        gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
-        idc = gi[idc]
-        inside = np.logical_and(inside, ~np.any(idc == -1, axis=1))
-        self.__str += 'Gradient orthogonal constraints weighted at %8.2f \n' %(w)
+            B = np.zeros(points[inside, :].shape[0])
+            self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
 
-        B = np.zeros(len(elements))
-        self.add_constraints_to_least_squares(A[inside, :] * w, B[inside],
-                                              idc[inside, :])
+
 
     def add_regularisation(self, operator, w=0.1):
         """
