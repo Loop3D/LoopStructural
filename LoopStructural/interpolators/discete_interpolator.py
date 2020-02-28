@@ -1,8 +1,6 @@
 import logging
 
 import numpy as np
-# from pyamg import ruge_stuben_solver
-import pyamg
 from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
 
@@ -159,7 +157,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.row.extend(rows[~mask].tolist())
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
-
     def add_equality_constraints(self, node_idx, values):
         """
         Adds hard constraints to the least squares system. For now this just

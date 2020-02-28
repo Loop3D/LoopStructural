@@ -110,7 +110,7 @@ class TetMesh:
         vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
         vertex_vals = self.properties[prop][tetras]
         #grads = np.zeros(tetras.shape)
-        values[inside,:] = (element_gradients*vertex_vals[:, None, :]).sum(2)
+        values[inside,:] = (element_gradients[inside,:,:]*vertex_vals[inside, None, :]).sum(2)
         length = np.sum(values[inside,:],axis=1)
         values[inside,:] /= length[:,None]
         return values

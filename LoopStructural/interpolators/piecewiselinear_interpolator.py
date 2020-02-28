@@ -188,14 +188,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
             # d_t = self.support.get_elements_gradients(e)
-            norm = np.linalg.norm(element_gradients[inside,:,:], axis=2)
+            norm = np.zeros((element_gradients.shape[0],element_gradients.shape[1]))
+            norm[inside,:] = np.linalg.norm(element_gradients[inside,:,:], axis=2)
             element_gradients /= norm[:, :, None]
 
             d_t = element_gradients
-            d_t *= vol[:, None, None]
+            d_t[inside,:,:] *= vol[:, None, None]
             # w*=10^11
-
-            # points[:, 3:] /= np.linalg.norm(points[:, 3:], axis=1)[:, None]
 
             # add in the element gradient matrix into the inte
             idc = np.tile(tetras[inside,:], (3, 1, 1))
@@ -209,7 +208,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=2)
             outside = outside[:, 0]
             w /= 3
-
+            d_t = d_t.swapaxes(1,2)
+            idc = idc.swapaxes(1,2)
             self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
                                                   points[inside,:][outside, 3:] * w *
                                                   vol[outside, None],
@@ -259,10 +259,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
-
             self.add_constraints_to_least_squares(A[outside,:] * w,
-                                                  points[inside,:][outside, 3] * w * vol[
-                                                      None, outside],
+                                                  points[inside,:][outside, 3] * w * vol[outside],
                                                   idc[outside, :])
 
     def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,

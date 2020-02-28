@@ -9,4 +9,9 @@ fault = model.create_and_add_fault('fault',
                                    steps=4,
                                    interpolatortype='PLI',
                                    buffer=0.2)
-# strati = model.create_and_add_foliation('strati',nelements=30000,interpolatortype='PLI',cgw=0.1, buffer=0.1)
+strati = model.create_and_add_foliation('strati',
+                                        nelements=30000,
+                                        interpolatortype='PLI',
+                                        cgw=0.1,
+                                        buffer=0.1
+                                        )

@@ -91,10 +91,10 @@ class SVariogram():
             d = np.copy(self.dist)
             d[d == 0] = np.nan
 
-            step = np.mean(np.nanmin(d, axis=1))*4.
+            step = np.nanmean(np.nanmin(d, axis=1))*4.
             # find number of steps to cover range in data
             nstep = int(
-                np.ceil((np.max(self.xdata) - np.min(self.xdata)) / step))
+                np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
             self.lags = np.arange(step / 2., nstep * step, step)
         tol = self.lags[1] - self.lags[0]
         self.variogram = np.zeros(self.lags.shape)
