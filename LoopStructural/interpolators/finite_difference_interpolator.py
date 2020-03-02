@@ -155,9 +155,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
-            node_idx[inside, :].shape
-            gi[node_idx[inside, :]]
-            print(node_idx.shape, inside.shape, idc.shape)
+
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             a = self.support.position_to_dof_coefs(points[inside, :3])
@@ -194,8 +192,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
-            node_idx[inside, :].shape
-            gi[node_idx[inside, :]]
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
@@ -234,8 +230,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
-            node_idx[inside,:].shape
-            gi[node_idx[inside, :]]
             idc[inside,:] = gi[node_idx[inside,:]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
@@ -288,8 +282,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
-            node_idx[inside, :].shape
-            gi[node_idx[inside, :]]
+
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 

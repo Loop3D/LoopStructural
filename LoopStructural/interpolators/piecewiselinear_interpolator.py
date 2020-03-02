@@ -139,7 +139,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             norm = np.linalg.norm(element_gradients, axis=2)
             element_gradients /= norm[:, :, None]
             # d_t *= vol[:,None,None]
-            strike_vector, dip_vector = get_vectors(points[:, 3:])
+            strike_vector, dip_vector = get_vectors(points[:, 3:6])
             A = np.einsum('ji,ijk->ik', strike_vector, element_gradients)
 
             A *= vol[:, None]
@@ -208,10 +208,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=2)
             outside = outside[:, 0]
             w /= 3
-            d_t = d_t.swapaxes(1,2)
-            idc = idc.swapaxes(1,2)
             self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
-                                                  points[inside,:][outside, 3:] * w *
+                                                  points[inside,:][outside, 3:6] * w *
                                                   vol[outside, None],
                                                   idc[outside])
 
