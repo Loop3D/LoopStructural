@@ -116,6 +116,7 @@ class ScalarField:
     def min(self):
         """
         Min value of the scalar field
+
         Returns
         -------
 
@@ -128,6 +129,7 @@ class ScalarField:
     def get_node_values(self):
         """
         Node values from the mesh object
+
         Returns
         -------
 
@@ -137,6 +139,7 @@ class ScalarField:
     def number_of_nodes(self):
         """
         Number of nodes in the mesh
+
         Returns
         -------
 

@@ -1,8 +1,6 @@
 import logging
 
 import numpy as np
-# from pyamg import ruge_stuben_solver
-import pyamg
 from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
 
@@ -159,7 +157,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.row.extend(rows[~mask].tolist())
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
-
     def add_equality_constraints(self, node_idx, values):
         """
         Adds hard constraints to the least squares system. For now this just
@@ -328,10 +325,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
-
+        import pyamg
         return pyamg.solve(A,B,verb=False)[:self.nx]
 
-    def _solve(self, solver='pyamg', **kwargs):
+    def _solve(self, solver='cg', **kwargs):
         """
         Main entry point to run the solver and update the node value
         attribute for the
@@ -352,7 +349,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
-        damp = False
+        damp = True
         if 'damp' in kwargs:
             damp = kwargs['damp']
         A, B = self.build_matrix(damp=damp)
@@ -367,8 +364,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.info("Solving using scipy LU")
             self.c[self.region] = self._solve_lu(A, B)
         if solver == 'pyamg':
-            logger.info("Solving with pyamg solve")
-            self.c[self.region] = self._solve_pyamg(A, B)
+            try:
+                logger.info("Solving with pyamg solve")
+                self.c[self.region] = self._solve_pyamg(A, B)
+            except ImportError:
+                logger.warn("Pyamg not installed using cg instead")
+                self.c[self.region] = self._solve_cg(A,B)
+
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]

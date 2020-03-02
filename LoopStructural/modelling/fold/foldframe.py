@@ -118,6 +118,7 @@ class FoldFrame(StructuralFrame):
         s1 = self.features[0].evaluate_value(points[:, :3])
         self.features[0].faults_enabled = True
         if axis is None:
+            logger.info("Not using fold axis for fold limb rotation angle calculation")
             r2 = np.einsum('ij,ij->i', s1g, s0g)
 
             return np.rad2deg(np.arcsin(r2)), s1

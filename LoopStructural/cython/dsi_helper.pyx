@@ -35,20 +35,18 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
         if region[idl[0]] == 0 or region[idl[1]] == 0 or region[idl[2]] == 0 or region[idl[3]] == 0:
             continue
         for n in range(4):
-
             neigh = neighbours[e,n]
             idr = elements[neigh,:]
-
+            if neigh < 0:
+                continue
             if flag[neigh]== 1:
                 continue
-            if neigh == -1:
-                continue
+
             # if not in region then skip this tetra
             if region[idr[0]] == 0 or region[idr[1]] == 0 or region[idr[2]] == 0 or region[idr[3]] == 0:
                 continue
+
             e2 = EG[neigh,:,:]
-
-
 
             for i in range(Nc):
                 idc[ncons,i] = -1
@@ -72,7 +70,6 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
             # we want to weight the cg by the area of the shared face
             # area of triangle is half area of parallelogram
             # https://math.stackexchange.com/questions/128991/how-to-calculate-the-area-of-a-3d-triangle
-
             area = 0.5*np.linalg.norm(norm)
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
@@ -126,9 +123,9 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
         for n in range(4):
             neigh = neighbours[e,n]
             idr = elements[neigh,:]
-            if flag[neigh]== 1:
-                continue
             if neigh == -1:
+                continue
+            if flag[neigh]== 1:
                 continue
             e2 = EG[neigh,:,:]
             Xr = X[neigh,:]
@@ -170,10 +167,28 @@ def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long 
                 if common_index != -1:
                     position_to_write = common_index
                 else:
-                    position_to_write = next_available_position
+                    position_to_write = 4#next_available_position
                     next_available_position+=1
+
                 idc[ncons,position_to_write] = idr[itr_right]
                 for i in range(3):
                     c[ncons,position_to_write] -= Xr[i]*e2[i][itr_right]*area
             ncons+=1
     return idc, c, ncons
+
+def tetra_neighbours(long long [:,:] elements, long long [:,:] neighbours):
+    cdef long long ie, ne, nn, n, i, j
+    for ie in range(len(elements)):
+        nn = 0 ## counter for number of neighbours
+        for ne in range(len(elements)):
+            n = 0 # counter for how many shared nodes
+            if ne == ie:
+                continue
+            for i in range(4):
+                for j in range(4):
+                    if elements[ie,i] == elements[ne,j]:
+                        n+=1
+            if n == 3:
+                neighbours[ie,nn] = ne
+                nn+=1
+

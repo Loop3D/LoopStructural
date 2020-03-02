@@ -360,10 +360,10 @@ class LavaVuModelViewer:
         norm = feature.support.interpolator.get_norm_constraints()
         value = feature.support.interpolator.get_value_constraints()
         if grad.shape[0] > 0 and add_grad:
-            self.add_vector_data(grad[:, :3], grad[:, 3:], name + "_grad_cp",
+            self.add_vector_data(grad[:, :3], grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
         if norm.shape[0] > 0 and add_grad:
-            self.add_vector_data(norm[:, :3], norm[:, 3:], name + "_norm_cp",
+            self.add_vector_data(norm[:, :3], norm[:, 3:6], name + "_norm_cp",
                                  **kwargs)
         if value.shape[0] > 0 and add_value:
             kwargs['range'] = [feature.min(), feature.max()]
