@@ -132,22 +132,35 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
     """
     far, fad = fold_frame.calculate_fold_axis_rotation(
         series_builder)
-    # axis_wl = kwargs.get("axis_wavelength", None)
+
+
+    axis_svariogram = SVariogram(fad, far)
+    axis_svariogram.calc_semivariogram()
+    result['axis_svariogram'] = axis_svariogram
+
     if axis_wl is None:
-        axis_svariogram = SVariogram(fad, far)
-        axis_wl = axis_svariogram.find_wavelengths(nsteps=10)
-    guess = np.zeros(3)
-    guess[2] = axis_wl
+        axis_wl = axis_svariogram.find_wavelengths(nsteps=10)[0]
+    guess = np.zeros(4)
+    guess[3] = axis_wl
     if len(far) < len(guess):
         logger.warning("Not enough data to fit curve")
         fold.fold_axis_rotation = lambda x: -1
     else:
-
-        popt, pcov = curve_fit(fourier_series, fad,
-                               np.tan(np.rad2deg(far)), guess)
+        try:
+            popt, pcov = curve_fit(fourier_series, fad,
+                                   np.tan(np.deg2rad(far)), guess)
+        except RuntimeError:
+            logger.info("Curve fit failed with intial guess, trying without guess")
+            try:
+                popt, pcov = curve_fit(fourier_series, fad,
+                                       np.tan(np.deg2rad(far)))
+            except RuntimeError:
+                logger.error("Could not fit fourier series")
+                popt = guess
+        logger.info('Fitted: %f %f %f %f'%(popt[0],popt[1],popt[2],popt[3]))
         fold.fold_axis_rotation = lambda x: np.rad2deg(
             np.arctan(
-                fourier_series(x, popt[-1], popt[1], popt[2], popt[3])))
+                fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
     result['axis_direction'] = fad
     result['axis_rotation'] = far
     result['axis_svario'] = axis_svariogram
@@ -795,4 +808,6 @@ class GeologicalModel:
         y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], nsteps[1])
         z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        return np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        locs = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        np.random.shuffle(locs)
+        return locs

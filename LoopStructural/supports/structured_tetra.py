@@ -188,13 +188,16 @@ class TetMesh:
         inside = np.logical_and(inside,self.inside(pos))
         vertices_return = np.zeros((pos.shape[0],4,3))
         vertices_return[:] = np.nan
-        vertices_return[inside,:,:] = vertices[mask,:,:][inside,:,:]
+        # set all masks not inside to False
+        mask[~inside,:] = False
+        #print(mask.shape,inside.shape,vertices.shape,vertices_return.shape,vertices[mask,:,:].shape)
+        vertices_return[inside,:,:] = vertices[mask,:,:]#[mask,:,:]#[inside,:,:]
         c_return = np.zeros((pos.shape[0],4))
         c_return[:] = np.nan
-        c_return[inside] = c[mask][inside]
+        c_return[inside] = c[mask]
         tetra_return = np.zeros((pos.shape[0],4)).astype(int)
         tetra_return[:] = -1
-        tetra_return[inside,:] = tetras[mask,:][inside,:]
+        tetra_return[inside,:] = tetras[mask,:]
         return vertices_return, c_return, tetra_return, inside
 
     def get_constant_gradient(self, region='everywhere'):

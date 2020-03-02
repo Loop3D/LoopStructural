@@ -71,9 +71,10 @@ class FoldFrame(StructuralFrame):
         # scalar triple product
         stp = np.einsum('ij,ij->i', np.cross(l1, s1gyg, axisa=1, axisb=1), s1g)
         # check bounds
+        far-=90
         # far[stp < 0] = 360.- far[stp < 0]
-        # far[far>90] = far[far>90]+-180
-        # far[far<-90] = far[far<-90]+180
+        far[far>90] = far[far>90]+-180
+        far[far<-90] = far[far<-90]+180
 
         return far, fad
 
