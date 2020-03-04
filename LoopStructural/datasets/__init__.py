@@ -9,3 +9,4 @@ from ._base import normal_vector_headers
 from ._base import strike_dip_headers
 from ._base import value_headers
 from ._base import load_unconformity
+from ._base import load_duplex

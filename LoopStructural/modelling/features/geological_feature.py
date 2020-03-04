@@ -204,7 +204,3 @@ class GeologicalFeature:
         numpy array of values
         """
         return self.support.get_node_values()
-
-    def slice(self, **kwargs):
-        logger.error("function has been removed, please use the modelviewer class")
-        return

@@ -101,6 +101,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def reset(self):
         """
         Reset the interpolation constraints
+
         """
         logger.debug("Resetting interpolation constraints")
         self.c_ = 0
@@ -157,6 +158,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.row.extend(rows[~mask].tolist())
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
+
     def add_equality_constraints(self, node_idx, values):
         """
         Adds hard constraints to the least squares system. For now this just
@@ -201,6 +203,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
         Interpolation matrix and B
         """
+
         logger.info("Interpolation matrix is %i x %i"%(self.c_,self.nx))
         cols = np.array(self.col)
         A = coo_matrix((np.array(self.A), (np.array(self.row), \
@@ -250,7 +253,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         lu = sla.splu(A.tocsc())
-        # b = np.hstack([B, d])  # np.array([1, 2, 3, 4])
         sol = lu.solve(B)
         return sol[:self.nx]
 
@@ -299,12 +301,16 @@ class DiscreteInterpolator(GeologicalInterpolator):
         cgargs = {}
         cgargs['tol'] = 1e-12
         if 'maxiter' in kwargs:
+            logger.info("Using %i maximum iterations"%kwargs['maxiter'])
             cgargs['maxiter'] = kwargs['maxiter']
         if 'x0' in kwargs:
+            logger.info("Using starting guess")
             cgargs['x0'] = kwargs['x0']
         if 'tol' in kwargs:
+            logger.info('Using tolerance of %f'%kwargs['tol'])
             cgargs['tol'] = kwargs['tol']
         if 'atol' in kwargs:
+            logger.info('Using atol of %f'%kwargs['atol'])
             cgargs['atol'] = kwargs['atol']
         if 'callback' in kwargs:
             cgargs['callback'] = kwargs['callback']

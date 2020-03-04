@@ -24,6 +24,11 @@ def load_laurent2016():
     bb = np.loadtxt(join(module_path, 'data/refolded_bb.txt'))
     return data, bb
 
+def load_duplex():
+    module_path = dirname(__file__)
+    data = pd.read_pickle(join(module_path, 'data/duplex.pkl'))
+    bb = np.loadtxt(join(module_path, 'data/duplexbb.txt'))
+    return data, bb
 
 def load_grose2017():
     pass
