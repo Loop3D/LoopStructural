@@ -194,6 +194,7 @@ class GeologicalModel:
         self.scale_factor = 1.
         self.bounding_box = np.zeros((2, 3))
         self.bounding_box[1, :] = self.maximum - self.origin
+        self.bounding_box[1, :] = self.maximum - self.origin
         if rescale:
             self.scale_factor = np.max(lengths)
 

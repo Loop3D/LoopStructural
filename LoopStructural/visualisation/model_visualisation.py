@@ -67,21 +67,21 @@ class LavaVuModelViewer:
             tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
             xx = np.zeros(zz.shape)
             if value is None:
-                xx[:] = np.mean(self.bounding_box[:, 0])
+                xx[:] = np.nanmean(self.bounding_box[:, 0])
             else:
                 xx[:] = value
         if axis == 'y':
             tri, xx, zz = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
             yy = np.zeros(xx.shape)
             if value is None:
-                yy[:] = np.mean(self.bounding_box[:, 1])
+                yy[:] = np.nanmean(self.bounding_box[:, 1])
             else:
                 yy[:] = value
         if axis == 'z':
             tri, xx, yy = create_surface(self.bounding_box[:, 0:2], self.nsteps[0:2])
             zz = np.zeros(xx.shape)
             if value is None:
-                zz[:] = np.mean(self.bounding_box[:, 2])
+                zz[:] = np.nanmean(self.bounding_box[:, 2])
             else:
                 zz[:] = value
         name = kwargs.get('name', axis + '_slice')
@@ -141,11 +141,10 @@ class LavaVuModelViewer:
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         val = geological_feature.evaluate_value(points)
-
         # get the stats to check what we are plotting
-        mean_property_val = np.mean(val)#geological_feature.mean()
-        min_property_val = np.min(val)#geological_feature.min()
-        max_property_val = np.max(val)#geological_feature.max()
+        mean_property_val = np.nanmean(val)#geological_feature.mean()
+        min_property_val = np.nanmin(val)#geological_feature.min()
+        max_property_val = np.nanmax(val)#geological_feature.max()
         # set default parameters
         slices = [mean_property_val]
         colour = 'red'
@@ -294,8 +293,8 @@ class LavaVuModelViewer:
         logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
                                                                                geological_feature.min(),
                                                                                geological_feature.max()))
-        vmin = kwargs.get('vmin', np.min(val)) #geological_feature.min())
-        vmax = kwargs.get('vmax', np.max(val)) #geological_feature.max())
+        vmin = kwargs.get('vmin', np.nanmin(val)) #geological_feature.min())
+        vmax = kwargs.get('vmax', np.nanmax(val)) #geological_feature.max())
         surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
 
     def add_vector_field(self, geological_feature, **kwargs):

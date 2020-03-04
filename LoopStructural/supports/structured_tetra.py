@@ -67,7 +67,6 @@ class TetMesh:
 
         self.properties[name] = value
 
-
     def evaluate_value(self, pos, prop):
         """
         Evaluate value of interpolant
