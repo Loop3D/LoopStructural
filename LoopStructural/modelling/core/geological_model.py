@@ -676,10 +676,7 @@ class GeologicalModel:
             mask = ~np.isnan(fault_frame_data['nx'])
             vectors = fault_frame_data[mask][['nx','ny','nz']].to_numpy()
             lengths = np.linalg.norm(vectors,axis=1)
-            vectors/=lengths
-            lengths = np.linalg.norm(vectors,axis=1)
-            vectors/=length
-            lengths = np.linalg.norm(vectors,axis=1)
+            vectors/=lengths[:,None]
             fault_frame_data.loc[mask,['nx','ny','nz']] = vectors
             if 'strike' in fault_frame_data.columns and 'dip' in fault_frame_data.columns:
                 fault_frame_data = fault_frame_data.drop(['dip','strike'],axis=1)
