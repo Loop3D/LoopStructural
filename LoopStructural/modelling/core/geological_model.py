@@ -201,7 +201,16 @@ class GeologicalModel:
         self.bounding_box /= self.scale_factor
         # self.bounding_box[0,:] = self.origin
         # self.bounding_box[1,:] = self.maximum
+    def _add_feature(self, feature):
 
+        if feature.name in self.feature_name_index:
+            logger.info("Feature %s already exists at %i, overwriting"%
+                        (feature.name, self.feature_name_index[feature.name]))
+            self.features[self.feature_name_index[feature.name]] = feature
+        else:
+            self.features.append(feature)
+            self.feature_name_index[feature.name] = len(self.features)
+            logger.info("Adding %s to model at location %i"%(feature.name,len(self.features)))
     def set_model_data(self, data):
         """
         Set the data array for the model
@@ -366,7 +375,7 @@ class GeologicalModel:
                 series_feature.add_region(
                     lambda pos: f.evaluate_value(pos) < 0)
                 break
-        self.features.append(series_feature)
+        self._add_feature(series_feature)
         result = {}
         result['feature'] = series_feature
         result['support'] = series_feature.get_interpolator().support
@@ -408,6 +417,7 @@ class GeologicalModel:
                 break
         fold_frame.type = 'structuralframe'
         self.features.append(fold_frame)
+        self.feature_name_index[fold_frame_data] = len(self.features)
         result['feature'] = fold_frame
         result['support'] = fold_frame[0].get_interpolator().support
 
@@ -451,9 +461,12 @@ class GeologicalModel:
             _calculate_average_intersection(series_builder, fold_frame, fold)
         if fold.fold_axis is None:
             axis_wl = kwargs.get("axis_wavelength", None)
-            _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl)
+            fold_axis_fitter = kwargs.get('fold_axis_function',_interpolate_fold_axis_rotation_angle)
+            fold_axis_fitter(series_builder, fold_frame, fold, result, axis_wl)
         limb_wl = kwargs.get("limb_wl", None)
-        _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl)
+        # give option of passing own fold limb rotation function
+        fold_limb_fitter = kwargs.get("fold_limb_function",_interpolate_fold_limb_rotation_angle)
+        fold_limb_fitter(series_builder, fold_frame, fold, result, limb_wl)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         self._add_faults(series_builder)
@@ -465,8 +478,7 @@ class GeologicalModel:
         # see if any unconformities are above this feature if so add region
         self._add_unconformity_above(series_feature)
 
-        self.features.append(series_feature)
-
+        self._add_feature(series_feature)
         result['feature'] = series_feature
         result['fold'] = fold
         result['support'] = series_feature.get_interpolator().support
@@ -533,8 +545,7 @@ class GeologicalModel:
         for i in range(3):
             self._add_unconformity_above(fold_frame[i])
 
-        self.features.append(fold_frame)
-
+        self._add_feature(fold_frame)
         result['feature'] = fold_frame
         result['fold'] = fold
         result['support'] = fold_frame[0].get_interpolator().support
@@ -630,7 +641,7 @@ class GeologicalModel:
         # see if any unconformities are above this feature if so add region
         self._add_unconformity_above(uc_feature)
 
-        self.features.append(uc_feature)
+        self._add_feature(uc_feature)
         result = {}
         result['feature'] = uc_feature
         return result
@@ -656,7 +667,7 @@ class GeologicalModel:
                                                      name=fault_surface_data,
                                                      **kwargs)
         # add data
-        fault_frame_data = self.data[self.data['type'] == fault_surface_data]
+        fault_frame_data = self.data[self.data['type'] == fault_surface_data].copy()
         if 'coord' not in fault_frame_data:
             fault_frame_data['coord'] = 0
         vals = fault_frame_data['val']
@@ -743,7 +754,7 @@ class GeologicalModel:
                 break
         if displacement == 0:
             fault.type = 'fault_inactive'
-        self.features.append(fault)
+        self._add_feature(fault)
         result['feature'] = fault
 
         return result
