@@ -33,28 +33,6 @@ class MapView:
         self.yy = self.yy.flatten()
         self.fig, self.ax = plt.subplots(1, figsize=(10, 10))
         self.ax.set_aspect('equal', adjustable='box')
-    def draw_strike(self, gradient_data, scale=.01, colour='black'):
-        """
-        Draw a strike symbol on the map
-        Parameters
-        ----------
-        x
-        y
-        strike
-        scale
-        colour
-
-        Returns
-        -------
-
-        """
-        gradient
-        rotated, r2 = strike_symbol(-strike)
-        rotated *= scale
-        r2 *= scale
-        self.ax.plot([x, x + rotated[0]], [y, y + rotated[1]], colour)
-        self.ax.plot([x - rotated[0], x], [y - rotated[1], y], colour)
-        self.ax.plot([x, x + r2[0]], [y, y + r2[1]], colour)
 
     def add_data(self, feature, val=True, grad=True, **kwargs):
         """
