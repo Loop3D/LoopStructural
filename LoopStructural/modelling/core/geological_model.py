@@ -416,8 +416,7 @@ class GeologicalModel:
                 fold_frame.add_region(lambda pos: f.evaluate_value(pos) <= 0)
                 break
         fold_frame.type = 'structuralframe'
-        self.features.append(fold_frame)
-        self.feature_name_index[fold_frame_data] = len(self.features)
+        self._add_feature(fold_frame)
         result['feature'] = fold_frame
         result['support'] = fold_frame[0].get_interpolator().support
 
