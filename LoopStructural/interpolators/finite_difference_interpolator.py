@@ -237,10 +237,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # this means we are only constraining direction of grad not the
             # magnitude
             T = self.support.calcul_T(points[inside, :3])
-            # norm = np.linalg.norm(T,axis=2)
-            # T /= norm[:,:,None]
-            # points[inside,3:]/= norm
-            # T /= np.linalg.norm(T,axis=1)[:,None,:]
+
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :] * w,
                                                   points[inside, 3] * w,

@@ -34,7 +34,7 @@ class GeologicalInterpolator:
         
         return self.__str
     
-    def set_property_name(self,name):
+    def set_property_name(self, name):
         """
         Set the name of the interpolated property
         Parameters
@@ -121,7 +121,7 @@ class GeologicalInterpolator:
 
         Parameters
         ----------
-        pos
+        pos : 
         s
         d
         norm

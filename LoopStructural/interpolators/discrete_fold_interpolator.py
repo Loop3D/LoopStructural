@@ -67,7 +67,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
         Parameters
         ----------
-        fold
+        fold : FoldEvent
+            a fold that contrains the geometry we are trying to add
 
         Returns
         -------

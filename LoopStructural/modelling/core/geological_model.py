@@ -260,7 +260,7 @@ class GeologicalModel:
         self.data.append(newdata)
 
     def get_interpolator(self, interpolatortype='PLI', nelements=5e5,
-                         buffer=0.02, **kwargs):
+                         buffer=0.2, **kwargs):
         """
         Returns an interpolator given the arguments, also constructs a
         support for a discrete interpolator

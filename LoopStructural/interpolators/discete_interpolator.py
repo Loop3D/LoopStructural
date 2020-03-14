@@ -189,7 +189,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += idc[outside].shape[0]
 
-    def build_matrix(self, damp=True):
+    def build_matrix(self, square=True, damp=True):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy
         constraints
@@ -210,6 +210,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
                                            cols)), shape=(self.c_, self.nx),
                        dtype=float)  # .tocsr()
         B = np.array(self.B)
+        if not square:
+            logger.info("Using square matrix, equality constraints are not used")
+            return A, B
         AAT = A.T.dot(A)
         BT = A.T.dot(B)
         # add a small number to the matrix diagonal to smooth the results
@@ -246,7 +249,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Parameters
         ----------
         A - square sparse matrix
-        B
+        B : numpy vector
 
         Returns
         -------
@@ -255,6 +258,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         lu = sla.splu(A.tocsc())
         sol = lu.solve(B)
         return sol[:self.nx]
+
+    def _solve_lsqr(self, A, B):
+        """
+        Call scipy lsqr
+
+        Parameters
+        ----------
+        A : rectangular sparse matrix
+        B : vector
+
+        Returns
+        -------
+
+        """
+        return sla.lsqr(A,B)[0]
 
     def _solve_chol(self, A, B):
         """

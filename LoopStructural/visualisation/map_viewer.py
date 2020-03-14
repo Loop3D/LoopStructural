@@ -3,9 +3,6 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 
-from LoopStructural.utils.helper import normal_vector_to_strike_and_dip
-from LoopStructural.utils.utils import strike_symbol
-
 logger = logging.getLogger(__name__)
 
 
