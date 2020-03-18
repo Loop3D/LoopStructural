@@ -1,11 +1,9 @@
 cython
 scikit-learn
 scikit-image
-meshpy
 scipy
 lavavu
 numpy
 matplotlib
-pyamg
 setuptools
 pandas
