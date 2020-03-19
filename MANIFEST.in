@@ -1,3 +1,0 @@
-include *.rst
-recursive-include doc *
-recursive-include LoopStructural/datasets *.txt *.pkl *.csv
