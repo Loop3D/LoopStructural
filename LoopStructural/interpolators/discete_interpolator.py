@@ -211,7 +211,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                        dtype=float)  # .tocsr()
         B = np.array(self.B)
         if not square:
-            logger.info("Using square matrix, equality constraints are not used")
+            logger.info("Using rectangular matrix, equality constraints are not used")
             return A, B
         AAT = A.T.dot(A)
         BT = A.T.dot(B)
@@ -259,7 +259,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         sol = lu.solve(B)
         return sol[:self.nx]
 
-    def _solve_lsqr(self, A, B):
+    def _solve_lsqr(self, A, B, **kwargs):
         """
         Call scipy lsqr
 
@@ -272,7 +272,26 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
-        return sla.lsqr(A,B)[0]
+
+        lsqrargs = {}
+        # lsqrargs['tol'] = 1e-12
+        if 'iter_lim' in kwargs:
+            logger.info("Using %i maximum iterations" % kwargs['iter_lim'])
+            lsqrargs['iter_lim'] = kwargs['iter_lim']
+        if 'damp' in kwargs:
+            logger.info("Using damping coefficient")
+            lsqrargs['damp'] = kwargs['damp']
+        if 'atol' in kwargs:
+            logger.info('Using a tolerance of %f' % kwargs['atol'])
+            lsqrargs['atol'] = kwargs['atol']
+        if 'btol' in kwargs:
+            logger.info('Using btol of %f' % kwargs['btol'])
+            lsqrargs['btol'] = kwargs['btol']
+        if 'show' in kwargs:
+            lsqrargs['show'] = kwargs['show']
+        if 'conlim' in kwargs:
+            lsqrargs['conlim'] = kwargs['conlim']
+        return sla.lsqr(A,B, **lsqrargs)[0]
 
     def _solve_chol(self, A, B):
         """
@@ -376,7 +395,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         damp = True
         if 'damp' in kwargs:
             damp = kwargs['damp']
-        A, B = self.build_matrix(damp=damp)
+        if solver is 'lsqr':
+            A, B =  self.build_matrix(False)
+        else:
+            A, B = self.build_matrix(damp=damp)
 
         # run the chosen solver
         if solver == 'cg':
@@ -393,8 +415,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 self.c[self.region] = self._solve_pyamg(A, B)
             except ImportError:
                 logger.warn("Pyamg not installed using cg instead")
-                self.c[self.region] = self._solve_cg(A,B)
-
+                self.c[self.region] = self._solve_cg(A, B)
+        if solver == 'lsqr':
+            self.c[self.region] = self._solve_lsqr(A, B, **kwargs)
         if solver == 'external':
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]
