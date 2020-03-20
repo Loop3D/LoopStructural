@@ -158,6 +158,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                           B[outside], idc[outside, :])
+            
     def add_norm_ctr_pts(self, w=1.0):
         """
         Extracts the norm vectors from the interpolators p_n list and adds
