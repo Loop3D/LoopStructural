@@ -114,8 +114,8 @@ def create_surface(bounding_box, nstep):
 
 def get_vectors(normal):
     strikedip = normal_vector_to_strike_and_dip(normal)
-    dip_vec = get_dip_vector(strikedip[:, 0], strikedip[:, 1])
     strike_vec = get_strike_vector(strikedip[:, 0])
+    dip_vec = np.cross(strike_vec,normal,axisa=0,axisb=1).T#(strikedip[:, 0], strikedip[:, 1])
     return strike_vec, dip_vec
 
 
@@ -130,10 +130,12 @@ def get_strike_vector(strike):
     -------
 
     """
-    v = np.array([-np.sin(np.deg2rad(-strike)),
-                  np.cos(np.deg2rad(-strike)),
+
+    v = np.array([np.sin(np.deg2rad(-strike)),
+                  -np.cos(np.deg2rad(-strike)),
                   np.zeros(strike.shape[0])
                   ])
+
     return v
 
 
@@ -190,6 +192,7 @@ def strike_dip_vector(strike, dip):
 def normal_vector_to_strike_and_dip(normal_vector):
     normal_vector /= np.linalg.norm(normal_vector, axis=1)[:, None]
     dip = np.rad2deg(np.arccos(normal_vector[:, 2]))
-    strike = np.rad2deg(np.arctan2(normal_vector[:, 1], normal_vector[:,
+    strike = -np.rad2deg(np.arctan2(normal_vector[:, 1], normal_vector[:,
                                                         0]))  # atan2(v2[1],v2[0])*rad2deg;
+
     return np.array([strike, dip]).T

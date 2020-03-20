@@ -5,7 +5,7 @@ import numpy as np
 from lavavu.vutils import is_notebook
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 
-from LoopStructural.utils.helper import create_surface
+from LoopStructural.utils.helper import create_surface, get_vectors
 
 logger = logging.getLogger(__name__)
 
@@ -361,6 +361,7 @@ class LavaVuModelViewer:
         if grad.shape[0] > 0 and add_grad:
             self.add_vector_data(grad[:, :3], grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
+
         if norm.shape[0] > 0 and add_grad:
             self.add_vector_data(norm[:, :3], norm[:, 3:6], name + "_norm_cp",
                                  **kwargs)
