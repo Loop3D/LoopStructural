@@ -30,7 +30,7 @@ from LoopStructural.supports.structured_tetra import TetMesh
 logger = logging.getLogger(__name__)
 
 
-def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl=None):
+def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl=None, **kwargs):
     """
     Wrapper for fitting fold limb rotation angle from data using a fourier series.
 
@@ -56,10 +56,10 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
     result['limb_rotation'] = flr
     result['foliation'] = s
     limb_svariogram = SVariogram(s, flr)
-    limb_svariogram.calc_semivariogram()
+    limb_svariogram.calc_semivariogram(**kwargs)
     result['limb_svariogram'] = limb_svariogram
     if limb_wl is None:
-        limb_wl = limb_svariogram.find_wavelengths()
+        limb_wl = limb_svariogram.find_wavelengths(**kwargs)
         # for now only consider single fold wavelength
         limb_wl = limb_wl[0]
     guess = np.zeros(4)
@@ -97,7 +97,7 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
                 fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
 
 
-def _calculate_average_intersection(series_builder, fold_frame, fold):
+def _calculate_average_intersection(series_builder, fold_frame, fold, **kwargs):
     """
 
     Parameters
@@ -115,7 +115,7 @@ def _calculate_average_intersection(series_builder, fold_frame, fold):
     fold.fold_axis = np.mean(l2, axis=0)
 
 
-def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl):
+def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl, **kwargs):
     """
 
     Parameters
@@ -135,11 +135,11 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
 
 
     axis_svariogram = SVariogram(fad, far)
-    axis_svariogram.calc_semivariogram()
+    axis_svariogram.calc_semivariogram(**kwargs)
     result['axis_svariogram'] = axis_svariogram
 
     if axis_wl is None:
-        axis_wl = axis_svariogram.find_wavelengths(nsteps=10)[0]
+        axis_wl = axis_svariogram.find_wavelengths(**kwargs)[0]
     guess = np.zeros(4)
     guess[3] = axis_wl
     if len(far) < len(guess):
@@ -201,6 +201,7 @@ class GeologicalModel:
         self.bounding_box /= self.scale_factor
         # self.bounding_box[0,:] = self.origin
         # self.bounding_box[1,:] = self.maximum
+
     def _add_feature(self, feature):
 
         if feature.name in self.feature_name_index:
@@ -211,6 +212,7 @@ class GeologicalModel:
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) -1
             logger.info("Adding %s to model at location %i"%(feature.name,len(self.features)))
+
     def set_model_data(self, data):
         """
         Set the data array for the model
@@ -301,8 +303,7 @@ class GeologicalModel:
                                   step_vector=step_vector)
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using PLI" %(mesh.ntetra))
-            # mesh = TetMesh()
-            # mesh.setup_mesh(bb, n_tetra=nelements, )
+
             return PLI(mesh)
 
         if interpolatortype == 'FDI':
@@ -319,6 +320,7 @@ class GeologicalModel:
             logger.info("Creating regular grid with %i elements \n"
                         "for modelling using FDI"%grid.n_elements)
             return FDI(grid)
+
         if interpolatortype == "DFI":  # "fold" in kwargs:
             nelements/=5
             ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
@@ -330,7 +332,6 @@ class GeologicalModel:
             # create a structured grid using the origin and number of steps
             mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
                            step_vector=step_vector)
-            # mesh = TetMesh()
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
@@ -341,8 +342,7 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        series_surface_data - string corresponding to the type in the data
-        frame column
+        series_surface_data : string corresponding to the type in the data
         kwargs
 
         Returns
@@ -461,11 +461,11 @@ class GeologicalModel:
         if fold.fold_axis is None:
             axis_wl = kwargs.get("axis_wavelength", None)
             fold_axis_fitter = kwargs.get('fold_axis_function',_interpolate_fold_axis_rotation_angle)
-            fold_axis_fitter(series_builder, fold_frame, fold, result, axis_wl)
+            fold_axis_fitter(series_builder, fold_frame, fold, result, axis_wl,**kwargs)
         limb_wl = kwargs.get("limb_wl", None)
         # give option of passing own fold limb rotation function
         fold_limb_fitter = kwargs.get("fold_limb_function",_interpolate_fold_limb_rotation_angle)
-        fold_limb_fitter(series_builder, fold_frame, fold, result, limb_wl)
+        fold_limb_fitter(series_builder, fold_frame, fold, result, limb_wl,**kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         self._add_faults(series_builder)
@@ -520,9 +520,10 @@ class GeologicalModel:
             axis_wl = kwargs.get("axis_wavelength", None)
             _interpolate_fold_axis_rotation_angle(fold_frame_builder[0],
                                                   fold_frame,
-                                                  fold, result, axis_wl)
+                                                  fold, result, axis_wl,**kwargs)
         limb_wl = kwargs.get("limb_wl", None)
-        _interpolate_fold_limb_rotation_angle(fold_frame_builder[0], fold_frame, fold, result, limb_wl)
+        _interpolate_fold_limb_rotation_angle(fold_frame_builder[0], fold_frame,
+                                              fold, result, limb_wl, **kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         for i in range(3):
