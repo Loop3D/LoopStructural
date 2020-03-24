@@ -61,7 +61,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         interpolator.propertyname = pli.propertyname
         return interpolator
 
-
     def update_fold(self, fold):
         """
 
@@ -77,7 +76,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         logger.error('updating fold, this should be done by accessing the fold attribute')
         self.fold = fold
 
-
     def add_fold_constraints(self, fold_orientation=10., fold_axis_w=10., fold_regularisation=.1,
                              fold_normalisation=1.,
                              fold_norm=1.):
@@ -87,7 +85,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         ----------
         fold_orientation : double
             weight for the fold direction/orientation in the least squares system
-        fold_axis : double
+        fold_axis_w : double
             weight for the fold axis in the least squares system
         fold_regularisation : double
             weight for the fold regularisation in the least squares system
@@ -102,6 +100,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         Notes
         -----
         For more information about the fold weights see EPSL paper by Gautier Laurent 2016
+
         """
         # get the gradient of all of the elements of the mesh
         eg = self.support.get_element_gradients(np.arange(self.support.n_elements))
@@ -118,7 +117,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between vector in deformed ori plane = 0
             """
-            logger.info("Adding fold orientation constraint to %s w = %f"%(self.propertyname,fold_orientation))
+            logger.info("Adding fold orientation constraint to %s w = %f"%(self.propertyname, fold_orientation))
             A = np.einsum('ij,ijk->ik', deformed_orientation, eg)
             A *= vol[:, None]
             A *= fold_orientation

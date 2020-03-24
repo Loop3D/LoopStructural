@@ -47,6 +47,13 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
     limb_wl : double
         wavelength guess, if none then uses s=variogram to pick wavelength
 
+    Kwargs
+    ------
+    lag : double
+        lag distance for s-variogram
+    nlags : int
+        number of lag (steps) for s-variogram
+
     Returns
     -------
 
@@ -126,6 +133,13 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
     result
     axis_wl
 
+    Kwargs
+    ------
+    lag : double
+        lag distance for s-variogram
+    nlags : int
+        number of lag (steps) for s-variogram
+
     Returns
     -------
 
@@ -177,8 +191,13 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        origin - numpy array specifying the origin of the model
-        maximum - numpy array specifying the maximum extent of the model
+        origin : numpy array
+            specifying the origin of the model
+        maximum : numpy array
+            specifying the maximum extent of the model
+        rescale : bool
+            whether to rescale the model to between 0/1
+
         """
         self.features = []
         self.feature_name_index = {}
@@ -199,10 +218,17 @@ class GeologicalModel:
             self.scale_factor = np.max(lengths)
 
         self.bounding_box /= self.scale_factor
-        # self.bounding_box[0,:] = self.origin
-        # self.bounding_box[1,:] = self.maximum
 
     def _add_feature(self, feature):
+        """
+        Add a feature to the model stack
+
+        Parameters
+        ----------
+        feature : GeologicalFeature
+            the geological feature to add
+
+        """
 
         if feature.name in self.feature_name_index:
             logger.info("Feature %s already exists at %i, overwriting"%
@@ -219,7 +245,8 @@ class GeologicalModel:
 
         Parameters
         ----------
-        data - pandas data frame with column headers corresponding to the
+        data : pandas data frame
+            with column headers corresponding to the
          type, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
          plunge_dir, azimuth
 
@@ -254,12 +281,19 @@ class GeologicalModel:
 
         Parameters
         ----------
-        newdata - pandas data frame
-
+        newdata : pandas data frame
+            data to add to the existing dataframe
         Returns
         -------
         """
-        self.data.append(newdata)
+        data_temp = newdata.copy()
+        data_temp['X'] -= self.origin[0]
+        data_temp['Y'] -= self.origin[1]
+        data_temp['Z'] -= self.origin[2]
+        data_temp['X'] /= self.scale_factor
+        data_temp['Y'] /= self.scale_factor
+        data_temp['Z'] /= self.scale_factor
+        self.data.concat([self.data, data_temp], sort=True)
 
     def get_interpolator(self, interpolatortype='PLI', nelements=5e5,
                          buffer=0.2, **kwargs):
@@ -269,15 +303,15 @@ class GeologicalModel:
 
         Parameters
         ----------
-        interpolatortype - string
+        interpolatortype : string
             define the interpolator type
-        nelements - int
+        nelements : int
             number of elements in the interpolator
-        buffer - double or numpy array 3x1
+        buffer : double or numpy array 3x1
             value(s) between 0,1 specifying the buffer around the bounding box
-        data_bb - bool
+        data_bb : bool
             whether to use the model boundary or the boundary around
-        kwargs - no kwargs used, this just catches any additional arguments
+        kwargs : no kwargs used, this just catches any additional arguments
 
         Returns
         -------
@@ -342,7 +376,8 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        series_surface_data : string corresponding to the type in the data
+        series_surface_data : string
+            corresponding to the type in the data
         kwargs
 
         Returns
@@ -385,7 +420,9 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        foldframe_data
+        foldframe_data : string
+            unique string in type column
+
         kwargs
 
         Returns
@@ -429,6 +466,7 @@ class GeologicalModel:
         Parameters
         ----------
         foliation_data : string
+            unique string in type column of data frame
         fold_frame :  FoldFrame
         kwargs
             additional kwargs to be passed through to other functions
@@ -490,8 +528,10 @@ class GeologicalModel:
 
         Parameters
         ----------
-        fold_frame_data
-        fold_frame
+        fold_frame_data : string
+
+        fold_frame : StructuralFrame
+
         kwargs
 
         Returns
@@ -589,7 +629,7 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        unconformity_surface_data string
+        unconformity_surface_data : string
             name of the unconformity data in the data frame
 
         Returns
@@ -650,10 +690,10 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        fault_surface_data - string
+        fault_surface_data : string
             name of the fault surface data in the dataframe
-        displacement - displacement magnitude
-        kwargs - additional kwargs for Fault and interpolators
+        displacement : displacement magnitude
+        kwargs : additional kwargs for Fault and interpolators
 
         Returns
         -------

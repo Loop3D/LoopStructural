@@ -1,6 +1,5 @@
 import numpy as np
 from LoopStructural.cython.dsi_helper import cg
-from LoopStructural.cython.dsi_helper import tetra_neighbours
 
 class TetMesh:
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):

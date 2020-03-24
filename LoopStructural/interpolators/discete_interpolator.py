@@ -369,7 +369,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         import pyamg
-        return pyamg.solve(A,B,verb=False)[:self.nx]
+        return pyamg.solve(A, B, verb=False)[:self.nx]
 
     def _solve(self, solver='cg', **kwargs):
         """
