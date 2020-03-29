@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
 
-from LoopStructural.datasets import normal_vector_headers, value_headers
+from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
     DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators.finite_difference_interpolator import \
@@ -24,7 +24,6 @@ from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
 from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.supports.structured_grid import StructuredGrid
-# from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.supports.structured_tetra import TetMesh
 
 logger = logging.getLogger(__name__)
@@ -71,7 +70,7 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
         limb_wl = limb_wl[0]
     guess = np.zeros(4)
     guess[3] = limb_wl  # np.max(limb_wl)
-    logger.info('Guess: %f %f %f %f'%(guess[0],guess[1],guess[2],guess[3]))
+    logger.info('Guess: %f %f %f %f' % (guess[0], guess[1], guess[2], guess[3]))
     if len(flr) < len(guess):
         logger.warning("Not enough data to fit curve")
         fold.fold_limb_rotation = lambda x: 0
@@ -98,7 +97,7 @@ def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, resu
             except RuntimeError:
                 popt = guess
                 logger.error("Could not fit curve to S-Plot, check the wavelength")
-        logger.info('Fitted: %f %f %f %f'%(popt[0],popt[1],popt[2],popt[3]))
+        logger.info('Fitted: %f %f %f %f' % (popt[0], popt[1], popt[2], popt[3]))
         fold.fold_limb_rotation = lambda x: np.rad2deg(
             np.arctan(
                 fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
@@ -122,7 +121,7 @@ def _calculate_average_intersection(series_builder, fold_frame, fold, **kwargs):
     fold.fold_axis = np.mean(l2, axis=0)
 
 
-def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl, **kwargs):
+def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl=None, **kwargs):
     """
 
     Parameters
@@ -147,7 +146,6 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
     far, fad = fold_frame.calculate_fold_axis_rotation(
         series_builder)
 
-
     axis_svariogram = SVariogram(fad, far)
     axis_svariogram.calc_semivariogram(**kwargs)
     result['axis_svariogram'] = axis_svariogram
@@ -171,7 +169,7 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
             except RuntimeError:
                 logger.error("Could not fit fourier series")
                 popt = guess
-        logger.info('Fitted: %f %f %f %f'%(popt[0],popt[1],popt[2],popt[3]))
+        logger.info('Fitted: %f %f %f %f' % (popt[0], popt[1], popt[2], popt[3]))
         fold.fold_axis_rotation = lambda x: np.rad2deg(
             np.arctan(
                 fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
@@ -231,13 +229,13 @@ class GeologicalModel:
         """
 
         if feature.name in self.feature_name_index:
-            logger.info("Feature %s already exists at %i, overwriting"%
+            logger.info("Feature %s already exists at %i, overwriting" %
                         (feature.name, self.feature_name_index[feature.name]))
             self.features[self.feature_name_index[feature.name]] = feature
         else:
             self.features.append(feature)
-            self.feature_name_index[feature.name] = len(self.features) -1
-            logger.info("Adding %s to model at location %i"%(feature.name,len(self.features)))
+            self.feature_name_index[feature.name] = len(self.features) - 1
+            logger.info("Adding %s to model at location %i" % (feature.name, len(self.features)))
 
     def set_model_data(self, data):
         """
@@ -325,7 +323,7 @@ class GeologicalModel:
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         if interpolatortype == "PLI":
-            nelements/=5
+            nelements /= 5
             ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
@@ -334,9 +332,9 @@ class GeologicalModel:
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
             mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
-                                  step_vector=step_vector)
+                           step_vector=step_vector)
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
-                        "for modelling using PLI" %(mesh.ntetra))
+                        "for modelling using PLI" % (mesh.ntetra))
 
             return PLI(mesh)
 
@@ -352,11 +350,11 @@ class GeologicalModel:
             grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,
                                   step_vector=step_vector)
             logger.info("Creating regular grid with %i elements \n"
-                        "for modelling using FDI"%grid.n_elements)
+                        "for modelling using FDI" % grid.n_elements)
             return FDI(grid)
 
         if interpolatortype == "DFI":  # "fold" in kwargs:
-            nelements/=5
+            nelements /= 5
             ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
@@ -497,13 +495,11 @@ class GeologicalModel:
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(series_builder, fold_frame, fold)
         if fold.fold_axis is None:
-            axis_wl = kwargs.get("axis_wavelength", None)
-            fold_axis_fitter = kwargs.get('fold_axis_function',_interpolate_fold_axis_rotation_angle)
-            fold_axis_fitter(series_builder, fold_frame, fold, result, axis_wl,**kwargs)
-        limb_wl = kwargs.get("limb_wl", None)
+            fold_axis_fitter = kwargs.get('fold_axis_function', _interpolate_fold_axis_rotation_angle)
+            fold_axis_fitter(series_builder, fold_frame, fold, result, **kwargs)
         # give option of passing own fold limb rotation function
-        fold_limb_fitter = kwargs.get("fold_limb_function",_interpolate_fold_limb_rotation_angle)
-        fold_limb_fitter(series_builder, fold_frame, fold, result, limb_wl,**kwargs)
+        fold_limb_fitter = kwargs.get("fold_limb_function", _interpolate_fold_limb_rotation_angle)
+        fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         self._add_faults(series_builder)
@@ -557,13 +553,11 @@ class GeologicalModel:
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(fold_frame_builder[0], fold_frame, fold)
         if fold.fold_axis is None:
-            axis_wl = kwargs.get("axis_wavelength", None)
             _interpolate_fold_axis_rotation_angle(fold_frame_builder[0],
                                                   fold_frame,
-                                                  fold, result, axis_wl,**kwargs)
-        limb_wl = kwargs.get("limb_wl", None)
+                                                  fold, result, **kwargs)
         _interpolate_fold_limb_rotation_angle(fold_frame_builder[0], fold_frame,
-                                              fold, result, limb_wl, **kwargs)
+                                              fold, result, **kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         for i in range(3):
@@ -673,7 +667,7 @@ class GeologicalModel:
         -------
 
         """
-        uc_feature = UnconformityFeature(feature,value)
+        uc_feature = UnconformityFeature(feature, value)
 
         for f in self.features:
             f.add_region(lambda pos: uc_feature.evaluate(pos))
@@ -712,25 +706,25 @@ class GeologicalModel:
             fault_frame_data['coord'] = 0
         vals = fault_frame_data['val']
         if len(np.unique(vals[~np.isnan(vals)])) == 1:
-            xyz = fault_frame_data[['X','Y','Z']].to_numpy()
-            p1 = xyz[0,:]#fault_frame_data.loc[0 ,['X','Y']]
-            p2 = xyz[-1,:]#fault_frame_data.loc[-1 ,['X','Y']]
+            xyz = fault_frame_data[['X', 'Y', 'Z']].to_numpy()
+            p1 = xyz[0, :]  # fault_frame_data.loc[0 ,['X','Y']]
+            p2 = xyz[-1, :]  # fault_frame_data.loc[-1 ,['X','Y']]
             # get a vector that goes from p1-p2 and normalise
             vector = p1 - p2
             length = np.linalg.norm(vector)
             vector /= length
             # now create the orthogonal vector
             # newvector = np.zeros(3)
-            length/=3
+            length /= 3
             # length/=2
             # print(fault_frame_data)
             mask = ~np.isnan(fault_frame_data['nx'])
-            vectors = fault_frame_data[mask][['nx','ny','nz']].to_numpy()
-            lengths = np.linalg.norm(vectors,axis=1)
-            vectors/=lengths[:,None]
-            fault_frame_data.loc[mask,['nx','ny','nz']] = vectors
+            vectors = fault_frame_data[mask][['nx', 'ny', 'nz']].to_numpy()
+            lengths = np.linalg.norm(vectors, axis=1)
+            vectors /= lengths[:, None]
+            fault_frame_data.loc[mask, ['nx', 'ny', 'nz']] = vectors
             if 'strike' in fault_frame_data.columns and 'dip' in fault_frame_data.columns:
-                fault_frame_data = fault_frame_data.drop(['dip','strike'],axis=1)
+                fault_frame_data = fault_frame_data.drop(['dip', 'strike'], axis=1)
         #     print(fault_frame_data)
         # if there is no slip direction data assume vertical
         if fault_frame_data[fault_frame_data['coord'] == 1].shape[0] == 0:
@@ -772,7 +766,7 @@ class GeologicalModel:
                 fault_frame_builder[i].interpolator.add_equality_constraints(
                     idc[mask], val[mask])
         # check if this fault overprint any existing faults exist in the stack
-        overprinted = kwargs.get('overprinted',None)
+        overprinted = kwargs.get('overprinted', None)
         for f in reversed(self.features):
             if overprinted is not None:
                 if f.type == 'fault' and f.name in overprinted:
