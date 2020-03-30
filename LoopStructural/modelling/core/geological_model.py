@@ -828,7 +828,8 @@ class GeologicalModel:
 
         Parameters
         ----------
-        nsteps
+        nsteps : tuple
+            number of cells in 
 
         Returns
         -------
@@ -841,7 +842,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        nsteps tuple
+        nsteps : tuple
             number of cells in x,y,z
 
         Returns
