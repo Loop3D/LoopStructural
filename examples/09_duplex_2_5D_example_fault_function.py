@@ -10,7 +10,7 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import \
 from LoopStructural.modelling.fault.fault_function import CubicFunction, \
     FaultDisplacement, Ones
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
-from LoopStructural.modelling.features.faulted_geological_feature import \
+from LoopStructural.core.features.faulted_geological_feature import \
     FaultedGeologicalFeature
 from LoopStructural.modelling.features.geological_feature import \
     GeologicalFeatureInterpolator

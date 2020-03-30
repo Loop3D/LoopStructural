@@ -4,14 +4,14 @@ import numpy as np
 
 from LoopStructural.interpolators.finite_difference_interpolator import \
     FiniteDifferenceInterpolator as FDI
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.core.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.features.faulted_geological_feature import \
     FaultedGeologicalFeature
 from LoopStructural.modelling.features.geological_feature import \
     GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.structural_frame import \
     StructuralFrameBuilder
-from LoopStructural.supports.structured_grid import StructuredGrid
+from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
 
 """

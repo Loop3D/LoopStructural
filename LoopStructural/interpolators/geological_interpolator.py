@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.modelling.core.geological_points import IPoint, GPoint, \
+from LoopStructural.core.core.geological_points import IPoint, GPoint, \
     TPoint
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from LoopStructural.cython.dsi_helper import fold_cg
+from LoopStructural.interpolators.cython import fold_cg
 
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator

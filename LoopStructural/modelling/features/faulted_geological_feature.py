@@ -4,7 +4,7 @@ import numpy as np
 
 from LoopStructural.modelling.features.geological_feature import \
     GeologicalFeature
-from LoopStructural.supports.scalar_field import ScalarField
+from LoopStructural.modelling.core.scalar_field import ScalarField
 
 logger = logging.getLogger(__name__)
 

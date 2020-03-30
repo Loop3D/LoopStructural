@@ -9,7 +9,7 @@ from LoopStructural.modelling.features.faulted_geological_feature import \
     FaultedGeologicalFeature
 from LoopStructural.modelling.features.geological_feature import \
     GeologicalFeatureInterpolator
-from LoopStructural.modelling.features.structural_frame import \
+from LoopStructural.core.features.structural_frame import \
     StructuralFrameBuilder
 from LoopStructural.supports.tet_mesh import TetMesh
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer

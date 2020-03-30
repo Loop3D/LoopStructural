@@ -1,12 +1,9 @@
-from LoopStructural.supports.structured_tetra import TetMesh
+from LoopStructural.interpolators.structured_tetra import TetMesh
 from LoopStructural.interpolators.piecewiselinear_interpolator import PiecewiseLinearInterpolator as PLI
 # from LoopStructural.supports.tet_mesh import TetMesh
-from LoopStructural.modelling.features.geological_feature_builder import GeologicalFeatureInterpolator
-from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+from LoopStructural.core.features.geological_feature_builder import GeologicalFeatureInterpolator
 
 import numpy as np
-import lavavu
-import matplotlib.pyplot as plt
 import pandas as pd
 import glob
 

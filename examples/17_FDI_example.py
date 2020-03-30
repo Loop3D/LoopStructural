@@ -6,7 +6,7 @@ from LoopStructural.interpolators.finite_difference_interpolator import \
     FiniteDifferenceInterpolator as FDI
 from LoopStructural.modelling.features.geological_feature import \
     GeologicalFeatureInterpolator
-from LoopStructural.supports.structured_grid import StructuredGrid
+from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
 
 # import pyvista

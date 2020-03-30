@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 from LoopStructural.modelling.core.geological_points import GPoint, IPoint, \
     TPoint
 from LoopStructural.modelling.features import GeologicalFeature
-from LoopStructural.supports.scalar_field import ScalarField
+from LoopStructural.modelling.core.scalar_field import ScalarField
 from LoopStructural.utils.helper import get_data_axis_aligned_bounding_box
 
 

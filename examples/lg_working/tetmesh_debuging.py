@@ -1,8 +1,5 @@
 import numpy as np
-from LoopStructural.supports.structured_tetra import TetMesh
-from LoopStructural.datasets import load_noddy_single_fold
-from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
-from LoopStructural.utils.helper import strike_dip_vector, plunge_and_plunge_dir_to_vector
+from LoopStructural.interpolators.structured_tetra import TetMesh
 
 mesh = TetMesh(nsteps=[5,5,5])
 tetra_index = np.arange(0,mesh.ntetra)

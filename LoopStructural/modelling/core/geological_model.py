@@ -23,8 +23,8 @@ from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
     fourier_series
 from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.svariogram import SVariogram
-from LoopStructural.supports.structured_grid import StructuredGrid
-from LoopStructural.supports.structured_tetra import TetMesh
+from LoopStructural.interpolators.structured_grid import StructuredGrid
+from LoopStructural.interpolators.structured_tetra import TetMesh
 
 logger = logging.getLogger(__name__)
 

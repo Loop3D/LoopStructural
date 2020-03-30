@@ -4,10 +4,10 @@ import numpy as np
 
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator as PLI
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
-from LoopStructural.modelling.features.faulted_geological_feature import \
+from LoopStructural.core.fault.fault_segment import FaultSegment
+from LoopStructural.core.features.faulted_geological_feature import \
     FaultedGeologicalFeature
-from LoopStructural.modelling.features.geological_feature import \
+from LoopStructural.core.features.geological_feature import \
     GeologicalFeatureInterpolator
 from LoopStructural.modelling.features.structural_frame import \
     StructuralFrameBuilder

@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.modelling.features.structural_frame import StructuralFrame
+from LoopStructural.core.features.structural_frame import StructuralFrame
 
 logger = logging.getLogger(__name__)
 
