@@ -159,16 +159,16 @@ class ScalarField:
         """
         self.support.properties[self.property_name] = values
 
-    def slice(self, isovalue, region):
-        """
-        Extract an isosurface from a scalar field
-        Parameters
-        ----------
-        isovalue
-        region
-
-        Returns
-        -------
-
-        """
-        return self.support.slice(self.property_name, isovalue, "everywhere")
+    # def slice(self, isovalue, region):
+    #     """
+    #     Extract an isosurface from a scalar field
+    #     Parameters
+    #     ----------
+    #     isovalue
+    #     region
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     return self.support.slice(self.property_name, isovalue, "everywhere")

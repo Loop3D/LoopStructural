@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class GeologicalFeature:
-    def __init__(self, name, support, builder=None, data=None, region=None, type=None, faults=[]):
+    def __init__(self, name, scalar_field, builder=None, data=None, region=None, type=None, faults=[]):
         """
         Geological feature is class that is used to represent a geometrical element in a geological
         model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
@@ -34,7 +34,7 @@ class GeologicalFeature:
         faults : list of faults that affect this feature
         """
         self.name = name
-        self.support = support
+        self.scalar_field = scalar_field
         self.ndim = 1
         self.data = data
         self.builder = builder
@@ -105,7 +105,7 @@ class GeologicalFeature:
         if self.faults_enabled:
             for f in self.faults:
                 evaluation_points = f.apply_to_points(evaluation_points)
-        v[mask] = self.support.evaluate_value(evaluation_points[mask, :])
+        v[mask] = self.scalar_field.evaluate_value(evaluation_points[mask, :])
         return v
 
     def evaluate_gradient(self, evaluation_points):
@@ -132,7 +132,7 @@ class GeologicalFeature:
         if self.faults_enabled:
             for f in self.faults:
                 evaluation_points = f.apply_to_points(evaluation_points)
-        v[mask, :] = self.support.evaluate_gradient(evaluation_points)
+        v[mask, :] = self.scalar_field.evaluate_gradient(evaluation_points)
 
         return v
 
@@ -144,7 +144,7 @@ class GeologicalFeature:
         -------
 
         """
-        return np.nanmean(self.support.get_node_values())
+        return np.nanmean(self.scalar_field.get_node_values())
 
     def min(self):
         """
@@ -153,7 +153,7 @@ class GeologicalFeature:
         -------
 
         """
-        return np.nanmin(self.support.get_node_values())
+        return np.nanmin(self.scalar_field.get_node_values())
 
     def max(self):
         """
@@ -163,7 +163,7 @@ class GeologicalFeature:
         -------
 
         """
-        return np.nanmax(self.support.get_node_values())
+        return np.nanmax(self.scalar_field.get_node_values())
 
     def update(self):
         """
@@ -179,9 +179,9 @@ class GeologicalFeature:
         # the nodes and actually just uses the interpolator values this
         # would be
         # much better.
-        self.support.interpolator.up_to_date = False
-        self.support.interpolator.update()
-        self.support.update_property(self.support.interpolator.c)
+        self.scalar_field.interpolator.up_to_date = False
+        self.scalar_field.interpolator.update()
+        self.scalar_field.update_property(self.scalar_field.interpolator.c)
 
     def get_interpolator(self):
         """
@@ -191,7 +191,7 @@ class GeologicalFeature:
         -------
         GeologicalInterpolator
         """
-        return self.support.interpolator
+        return self.scalar_field.interpolator
 
     def get_node_values(self):
         """
@@ -203,4 +203,4 @@ class GeologicalFeature:
         -------
         numpy array of values
         """
-        return self.support.get_node_values()
+        return self.scalar_field.get_node_values()

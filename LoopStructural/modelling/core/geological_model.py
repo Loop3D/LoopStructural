@@ -11,6 +11,7 @@ from LoopStructural.interpolators.finite_difference_interpolator import \
     FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator as PLI
+from LoopStructural.interpolators.sufe_wrapper import SurfeRBFInterpolator as Surfe
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.features import \
     GeologicalFeatureInterpolator
@@ -367,6 +368,8 @@ class GeologicalModel:
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
+        if interpolatortype == 'Surfe' or interpolatortype == 'surfe':
+            return Surfe()
         logger.warning("No interpolator")
         return interpolator
 
@@ -829,7 +832,7 @@ class GeologicalModel:
         Parameters
         ----------
         nsteps : tuple
-            number of cells in 
+            number of cells in
 
         Returns
         -------
