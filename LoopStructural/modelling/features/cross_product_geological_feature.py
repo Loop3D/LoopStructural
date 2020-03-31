@@ -20,7 +20,7 @@ class CrossProductGeologicalFeature(GeologicalFeature):
         geological_feature_a: first feature
         geological_feature_b: second feature
         """
-        super().__init__(name, geological_feature_a.support)
+        super().__init__(name, None)
         self.geological_feature_a = geological_feature_a
         self.geological_feature_b = geological_feature_b
 

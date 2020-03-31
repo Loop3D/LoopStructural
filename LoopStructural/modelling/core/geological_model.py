@@ -11,7 +11,7 @@ from LoopStructural.interpolators.finite_difference_interpolator import \
     FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator as PLI
-from LoopStructural.interpolators.sufe_wrapper import SurfeRBFInterpolator as Surfe
+from LoopStructural.interpolators.surfe_wrapper import SurfeRBFInterpolator as Surfe
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.features import \
     GeologicalFeatureInterpolator
@@ -414,7 +414,7 @@ class GeologicalModel:
         self._add_feature(series_feature)
         result = {}
         result['feature'] = series_feature
-        result['support'] = series_feature.get_interpolator().support
+        # result['support'] = series_feature.get_interpolator().support
         return result
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
@@ -456,7 +456,7 @@ class GeologicalModel:
         fold_frame.type = 'structuralframe'
         self._add_feature(fold_frame)
         result['feature'] = fold_frame
-        result['support'] = fold_frame[0].get_interpolator().support
+        # result['support'] = fold_frame[0].get_interpolator().support
 
         return result
 
@@ -517,7 +517,7 @@ class GeologicalModel:
         self._add_feature(series_feature)
         result['feature'] = series_feature
         result['fold'] = fold
-        result['support'] = series_feature.get_interpolator().support
+        # result['support'] = series_feature.get_interpolator().support
 
         return result
 
@@ -585,7 +585,7 @@ class GeologicalModel:
         self._add_feature(fold_frame)
         result['feature'] = fold_frame
         result['fold'] = fold
-        result['support'] = fold_frame[0].get_interpolator().support
+        # result['support'] = fold_frame[0].get_interpolator().support
 
         return result
 

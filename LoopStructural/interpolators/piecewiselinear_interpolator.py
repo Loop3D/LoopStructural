@@ -303,6 +303,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                                   B[outside], idc[outside, :])
+
+
         # nodes = self.support.nodes[self.support.get_elements()[elements]]
         # vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
         # vol = np.abs(np.linalg.det(vecs)) / 6

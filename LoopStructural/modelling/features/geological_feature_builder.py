@@ -1,5 +1,5 @@
-import logging
 import copy
+import logging
 
 import numpy as np
 
@@ -8,12 +8,11 @@ logger = logging.getLogger(__name__)
 from LoopStructural.modelling.core.geological_points import GPoint, IPoint, \
     TPoint
 from LoopStructural.modelling.features import GeologicalFeature
-from LoopStructural.modelling.core.scalar_field import ScalarField
 from LoopStructural.utils.helper import get_data_axis_aligned_bounding_box
 
 
 class GeologicalFeatureInterpolator:
-    def __init__(self, interpolator, name = 'Feature', region = None, **kwargs):
+    def __init__(self, interpolator, name='Feature', region=None, **kwargs):
         """
         A builder for a GeologicalFeature will link data to the interpolator
         and run the interpolation
@@ -180,7 +179,7 @@ class GeologicalFeatureInterpolator:
         self.data.append(GPoint(pos, val))
         # self.interpolator.add_data(self.data[-1])
 
-    def add_strike_and_dip(self, pos, s, d, polarity=1, weight =1.):
+    def add_strike_and_dip(self, pos, s, d, polarity=1, weight=1.):
         """
 
         Parameters
@@ -194,7 +193,7 @@ class GeologicalFeatureInterpolator:
 
         """
         self.data.append(GPoint.from_strike_and_dip(pos, s, d, polarity))
-        self.data[0].weight=weight
+        self.data[0].weight = weight
         # self.interpolator.add_data(self.data[-1])
 
     def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, polarity=1):
@@ -262,7 +261,7 @@ class GeologicalFeatureInterpolator:
 
         """
         # first move the data for the fault
-        logger.info("Adding %i faults to %s"%(len(self.faults),self.name))
+        logger.info("Adding %i faults to %s" % (len(self.faults), self.name))
         data = copy.deepcopy(self.data)
         # convert data locations to numpy array and then update
         locations = self.get_data_locations()
@@ -270,8 +269,8 @@ class GeologicalFeatureInterpolator:
             locations = f.apply_to_points(locations)
         i = 0
         for d in data:
-            d.pos = locations[i,:]
-            i+=1
+            d.pos = locations[i, :]
+            i += 1
 
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
@@ -309,14 +308,14 @@ class GeologicalFeatureInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((len(self.data),4))#array
+        points = np.zeros((len(self.data), 4))  # array
         c = 0
         for d in self.data:
             if d.type == 'IPoint':
-                points[c,:3] = d.pos
-                points[c,4] = d.val
-                c+=1
-        return points[:c,:]
+                points[c, :3] = d.pos
+                points[c, 4] = d.val
+                c += 1
+        return points[:c, :]
 
     def get_gradient_constraints(self):
         """
@@ -367,20 +366,20 @@ class GeologicalFeatureInterpolator:
         return points[:c, :]
 
     def get_data_locations(self):
-        points = np.zeros((len(self.data),3))  # array
+        points = np.zeros((len(self.data), 3))  # array
         c = 0
         for d in self.data:
-                points[c, :] = d.pos
-                c += 1
+            points[c, :] = d.pos
+            c += 1
         return points[:c, :]
 
-    def update_data_locations(self,locations):
+    def update_data_locations(self, locations):
         i = 0
         for d in self.data:
-            d.pos = locations[i,:]
-            i+=1
+            d.pos = locations[i, :]
+            i += 1
 
-    def build(self, fold = None, fold_weights = None, data_region = None, **kwargs):
+    def build(self, fold=None, fold_weights=None, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
 
@@ -408,7 +407,7 @@ class GeologicalFeatureInterpolator:
         # moving this to init because it needs to be done before constraints
         # are added?
         if fold is not None:
-            logger.info("Adding fold to %s"%self.name)
+            logger.info("Adding fold to %s" % self.name)
             self.interpolator.fold = fold
             # if we have fold weights use those, otherwise just use default
             if fold_weights is None:
@@ -421,9 +420,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
         return GeologicalFeature(self.name,
-
-                                 ScalarField.from_interpolator(
-                                     self.interpolator),
+                                 self.interpolator,
                                  builder=self, data=self.data,
                                  region=self.region,
                                  faults=self.faults

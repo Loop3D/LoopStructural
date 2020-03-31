@@ -422,6 +422,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]
         # check solution is not nan
+        self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
             logger.warning("Solver not run, no scalar field")
         # if solution is all 0, probably didn't work
@@ -446,3 +447,29 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if not self.up_to_date:
             self.setup_interpolator()
             return self._solve(self.solver)
+
+    def evaluate_value(self, evaluation_points):
+        evaluation_points = np.array(evaluation_points)
+        evaluated = np.zeros(evaluation_points.shape[0])
+        mask = np.any(evaluation_points == np.nan, axis=1)
+
+        if evaluation_points[~mask, :].shape[0] > 0:
+            evaluated[~mask] = self.support.evaluate_value(
+                evaluation_points[~mask], self.propertyname)
+        return evaluated
+
+    def evaluate_gradient(self, evaluation_points):
+        """
+        Evaluate the gradient of the scalar field at the evaluation points
+        Parameters
+        ----------
+        evaluation_points
+
+        Returns
+        -------
+
+        """
+        if evaluation_points.shape[0] > 0:
+            return self.support.evaluate_gradient(evaluation_points,
+                                                  self.propertyname)
+        return np.zeros((0, 3))

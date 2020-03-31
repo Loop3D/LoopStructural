@@ -79,3 +79,13 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
             self.surfe.SetGlobalAnisotropy(global_anisotropy)
     def update(self):
         return self.surfe.InterpolantComputed()
+
+    def evaluate_value(self, evaluation_points):
+        evaluation_points = np.array(evaluation_points)
+        evaluated = np.zeros(evaluation_points.shape[0])
+        mask = np.any(evaluation_points == np.nan, axis=1)
+
+        if evaluation_points[~mask, :].shape[0] > 0:
+            evaluated[~mask] = self.surfe.EvaluateInterpolantAtPoints(
+                evaluation_points[~mask])
+        return evaluated
