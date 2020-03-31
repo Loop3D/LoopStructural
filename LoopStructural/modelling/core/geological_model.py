@@ -11,7 +11,13 @@ from LoopStructural.interpolators.finite_difference_interpolator import \
     FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator as PLI
-from LoopStructural.interpolators.surfe_wrapper import SurfeRBFInterpolator as Surfe
+try:
+    from LoopStructural.interpolators.surfe_wrapper import SurfeRBFInterpolator as Surfe
+    surfe = True
+
+except ImportError:
+    surfe=False
+
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.features import \
     GeologicalFeatureInterpolator
@@ -28,7 +34,8 @@ from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
 
 logger = logging.getLogger(__name__)
-
+if not surfe:
+    logger.warning("Cannot import Surfe")
 
 def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl=None, **kwargs):
     """
@@ -368,7 +375,8 @@ class GeologicalModel:
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
-        if interpolatortype == 'Surfe' or interpolatortype == 'surfe':
+        if interpolatortype == 'Surfe' or interpolatortype == 'surfe' and surfe:
+            logger.info("Using surfe interpolator")
             return Surfe()
         logger.warning("No interpolator")
         return interpolator
