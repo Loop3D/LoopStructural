@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.core.core.geological_points import IPoint, GPoint, \
+from LoopStructural.modelling.core.geological_points import IPoint, GPoint, \
     TPoint
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,10 @@ class GeologicalInterpolator:
     def __str__(self):
         
         return self.__str
-    
+
+    def set_region(self,**kwargs):
+        pass
+
     def set_property_name(self, name):
         """
         Set the name of the interpolated property
@@ -259,3 +262,6 @@ class GeologicalInterpolator:
         """
         self._solve(**kwargs)
         self.up_to_date = True
+
+    def update(self):
+        return False

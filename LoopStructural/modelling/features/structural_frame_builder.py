@@ -4,12 +4,12 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-from LoopStructural.core.features.cross_product_geological_feature \
+from LoopStructural.modelling.features.cross_product_geological_feature \
     import \
     CrossProductGeologicalFeature
-from LoopStructural.core.features import \
+from LoopStructural.modelling.features import \
     GeologicalFeatureInterpolator
-from LoopStructural.core.features import StructuralFrame
+from LoopStructural.modelling.features import StructuralFrame
 
 
 class StructuralFrameBuilder:

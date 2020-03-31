@@ -1,5 +1,5 @@
 import numpy as np
-from LoopStructural.interpolators.cython import cg
+from LoopStructural.interpolators.cython.dsi_helper import cg
 
 class TetMesh:
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):

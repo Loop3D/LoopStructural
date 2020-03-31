@@ -1,4 +1,4 @@
-from .faulted_geological_feature import FaultedGeologicalFeature
+# from .faulted_geological_feature import FaultedGeologicalFeature
 from .geological_feature import GeologicalFeature
 from .geological_feature_builder import GeologicalFeatureInterpolator
 from .region_feature import RegionFeature
