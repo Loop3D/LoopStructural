@@ -46,17 +46,17 @@ jobs:
       run: |
         pip install pytest
         pytest
-#     - name: Add built wheel to the repository # This is the step name that will be displayed in your runs
-#       uses: EndBug/add-and-commit@v2 # You can change this to use a specific version
-#       with: # See more info about inputs below
-#         author_name: Lachlan Grose
-#         author_email: lachlan.grose@monash.edu
-#         message: "Adding wheel"
-# #         path: ""
-#         pattern: "*.whl"
-#         force: true
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+    - name: Add built wheel to the repository # This is the step name that will be displayed in your runs
+      uses: EndBug/add-and-commit@v2 # You can change this to use a specific version
+      with: # See more info about inputs below
+        author_name: Lachlan Grose
+        author_email: lachlan.grose@monash.edu
+        message: "Adding wheel"
+#         path: ""
+        pattern: "*.whl"
+        force: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
     - uses: AButler/upload-release-assets@v2.0
       with:
             files: '*.whl'
