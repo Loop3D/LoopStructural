@@ -56,9 +56,8 @@ jobs:
 #         force: true
 #       env:
 #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
-    - name: Add built wheel to the repository # This is the step name that will be displayed in your runs
-      uses: softprops/action-gh-release@v1 # You can change this to use a specific version
-      with: # See more info about inputs below
-        files: "*.whl" 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+    - uses: AButler/upload-release-assets@v2.0
+      with:
+            files: '*.whl'
+            repo-token: ${{ secrets.GITHUB_TOKEN }}
+
