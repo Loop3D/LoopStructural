@@ -1,4 +1,5 @@
 # LoopStructural
+![Windows build](https://github.com/Loop3D/LoopStructural/workflows/Windows%20build/badge.svg)
 Loop3D Geological Forward Modeling Engine.
 
 * Python/cython implementation of a piecewise linear interpolation (Discrete Smooth Interpolator in Gocad) 
