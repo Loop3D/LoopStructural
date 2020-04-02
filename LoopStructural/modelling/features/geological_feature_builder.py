@@ -251,7 +251,7 @@ class GeologicalFeatureInterpolator:
             w=w
         )
 
-    def add_data_to_interpolator(self, constrained=False):
+    def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
@@ -286,7 +286,7 @@ class GeologicalFeatureInterpolator:
                 vals.append(d.val)
         if len(np.unique(vals)) > 1:
             constrained = True
-        if not constrained:
+        if not constrained or force_constrained:
             for d in data:
                 if d.type == "GPoint":
                     d.norm = True
@@ -402,7 +402,7 @@ class GeologicalFeatureInterpolator:
             bb, region = get_data_axis_aligned_bounding_box(xyz, data_region)
             self.interpolator.set_region(region=region)
         if not self.data_added:
-            self.add_data_to_interpolator()
+            self.add_data_to_interpolator(**kwargs)
 
         # moving this to init because it needs to be done before constraints
         # are added?

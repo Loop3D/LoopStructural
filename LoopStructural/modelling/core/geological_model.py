@@ -376,8 +376,9 @@ class GeologicalModel:
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
         if interpolatortype == 'Surfe' or interpolatortype == 'surfe' and surfe:
+            method = kwargs.get('method','horizons')
             logger.info("Using surfe interpolator")
-            return Surfe()
+            return Surfe(method)
         logger.warning("No interpolator")
         return interpolator
 
@@ -422,7 +423,6 @@ class GeologicalModel:
         self._add_feature(series_feature)
         result = {}
         result['feature'] = series_feature
-        # result['support'] = series_feature.get_interpolator().support
         return result
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):

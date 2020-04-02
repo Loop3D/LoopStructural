@@ -16,8 +16,10 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         GeologicalInterpolator.__init__(self)
         self.surfe = None
         if method == 'single_surface':
+            logger.info("Using single surface interpolator")
             self.surfe = surfepy.Surfe_API(1)
         if method == 'Laujaunie':
+            logger.info("Using Laujaunie method")
             self.surfe = surfepy.Surfe_API(2)
         if method == 'horizons':
             logger.info("Using surfe horizon")
@@ -26,13 +28,14 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     def add_gradient_ctr_pts(self):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
+            logger.info("Adding ")
             strike_vector, dip_vector = get_vectors(points[:, 3:6])
 
             strike_vector = np.hstack([points[:, :3], strike_vector.T])
             dip_vector = np.hstack([points[:, :3], dip_vector.T])
             self.surfe.SetTangentConstraints(strike_vector)
             self.surfe.SetTangentConstraints(dip_vector)
-        pass
+
 
     def add_norm_ctr_pts(self):
         points = self.get_norm_constraints()
@@ -72,7 +75,10 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
             logger.info("Using greedy algorithm: inferface %f and angular %f" %
                         (greedy[0], greedy[1]))
             self.surfe.SetRegressionSmoothin(True, greedy[0], greedy[1])
-
+        poly_order = kwargs.get('poly_order',None)
+        if poly_order:
+            logger.info("Setting poly order to %i"%poly_order)
+            self.surfe.SetPolynomialOrder(poly_order)
         global_anisotropy = kwargs.get("anisotropy", False)
         if global_anisotropy:
             logger.info("Using global anisotropy")
