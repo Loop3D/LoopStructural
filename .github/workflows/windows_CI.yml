@@ -56,8 +56,18 @@ jobs:
         pattern: "*.whl"
         force: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
-    - uses: AButler/upload-release-assets@v2.0
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+    - name: Create release
+      uses: actions/create-release@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with: 
+        tag_name: ${{ github.ref }} 
+        release_name: Release ${{ github.ref }}
+        draft: true
+        prerelease: true
+    - name: Upload wheel
+      uses: AButler/upload-release-assets@v2.0
       with:
             files: '*.whl'
             repo-token: ${{ secrets.GITHUB_TOKEN }}
