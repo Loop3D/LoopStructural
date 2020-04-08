@@ -8,15 +8,27 @@ on:
     tags: 'v*'
 
 jobs:
-  build:
-
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checking formatting of code
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  
+  windows-build:
     runs-on: windows-latest
-
+    strategy:
+      matrix:
+        python: ['3.6','3.7','3.8']
     steps:
     - uses: actions/checkout@v2
     - uses: goanpeca/action-setup-conda@v1
       with:
-        python-version: 3.7
+        python-version: ${{ matrix.python }} 
         #miniconda-version: 'latest'
         activate-environment: loop    
     - name: Installing dependencies
@@ -33,42 +45,88 @@ jobs:
         conda info
         conda list
         dir
-    - name: Checking formatting of code
-      shell: bash -l {0}
-      run: |
-        pip install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
     - name: Running tests
       shell: bash -l {0}
       run: |
         pip install pytest
         pytest
-    - name: Add built wheel to the repository # This is the step name that will be displayed in your runs
-      uses: EndBug/add-and-commit@v2 # You can change this to use a specific version
-      with: # See more info about inputs below
-        author_name: Lachlan Grose
-        author_email: lachlan.grose@monash.edu
-        message: "Adding wheel"
-#         path: ""
-        pattern: "*.whl"
-        force: true
-      env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
-    - name: Create release
-      uses: actions/create-release@latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with: 
-        tag_name: ${{ github.ref }} 
-        release_name: Release ${{ github.ref }}
-        draft: true
-        prerelease: true
-    - name: Upload wheel
-      uses: AButler/upload-release-assets@v2.0
+    - name: zip artifacts
+      run: |
+        Compress-archive dist/*.whl build.zip
+      shell: pwsh      
+    - name: upload artifacts
+      uses: actions/upload-artifact@v1
       with:
-            files: '*.whl'
-            repo-token: ${{ secrets.GITHUB_TOKEN }}
+        name: 'win_${{ matrix.python }}'
+        path: build.zip
+  
+#   ubuntu-build:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         python: ['3.6','3.7','3.8']
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: goanpeca/action-setup-conda@v1
+#         with:
+#           python-version: ${{ matrix.python }} 
+#           #miniconda-version: 'latest'
+#           activate-environment: loop    
+#       - name: Installing dependencies
+#         run: |
+#           pip install -r requirements.txt
+#           conda info
+#           conda list
+#       - name: Building Loop wheel and installing
+#         run: |
+#           python setup.py bdist_wheel
+#           python setup.py install build_ext --inplace
+#           conda info
+#           conda list
+#           dir
 
+#       - name: Running tests
+#         run: |
+#           pip install pytest
+#           pytest
+#       - name: compress wheel
+#         run: |
+#           zip -r build.zip dist/*.whl
+#       - name: upload artifacts
+#         uses: actions/upload-artifact@v1
+#         with:
+#           name: 'linux_${{ matrix.python }}'
+#           path: build.zip
+        
+  uploadrelease:
+    needs: windows-build #, ubuntu-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact 3.6
+        uses: actions/download-artifact@v1
+        with:
+          name: "win_3.6"
+      - name: Download artifact 3.7
+        uses: actions/download-artifact@v1
+        with:
+          name: "win_3.7"
+      - name: Download artifact 3.8
+        uses: actions/download-artifact@v1
+        with:
+          name: "win_3.8"
+      - name: Unzip
+        run: |
+          unzip -o 3.6/build.zip
+          unzip -o 3.7/build.zip
+          unzip -o 3.8/build.zip
+      - name: Development build pre-release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with: 
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            build/*.so
+          id: "automatic_releases"  
