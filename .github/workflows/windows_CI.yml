@@ -61,43 +61,43 @@ jobs:
         name: 'win_${{ matrix.python }}'
         path: build.zip
   
-#   ubuntu-build:
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         python: ['3.6','3.7','3.8']
-#     steps:
-#       - uses: actions/checkout@v2
-#       - uses: goanpeca/action-setup-conda@v1
-#         with:
-#           python-version: ${{ matrix.python }} 
-#           #miniconda-version: 'latest'
-#           activate-environment: loop    
-#       - name: Installing dependencies
-#         run: |
-#           pip install -r requirements.txt
-#           conda info
-#           conda list
-#       - name: Building Loop wheel and installing
-#         run: |
-#           python setup.py bdist_wheel
-#           python setup.py install build_ext --inplace
-#           conda info
-#           conda list
-#           dir
+  ubuntu-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.6','3.7','3.8']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goanpeca/action-setup-conda@v1
+        with:
+          python-version: ${{ matrix.python }} 
+          #miniconda-version: 'latest'
+          activate-environment: loop    
+      - name: Installing dependencies
+        run: |
+          pip install -r requirements.txt
+          conda info
+          conda list
+      - name: Building Loop wheel and installing
+        run: |
+          python setup.py bdist_wheel
+          python setup.py install build_ext --inplace
+          conda info
+          conda list
+          dir
 
-#       - name: Running tests
-#         run: |
-#           pip install pytest
-#           pytest
-#       - name: compress wheel
-#         run: |
-#           zip -r build.zip dist/*.whl
-#       - name: upload artifacts
-#         uses: actions/upload-artifact@v1
-#         with:
-#           name: 'linux_${{ matrix.python }}'
-#           path: build.zip
+      - name: Running tests
+        run: |
+          pip install pytest
+          pytest
+      - name: compress wheel
+        run: |
+          zip -r build.zip dist/*.whl
+      - name: upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: 'linux_${{ matrix.python }}'
+          path: build.zip
         
   uploadrelease:
     needs: windows-build #, ubuntu-build
@@ -111,15 +111,17 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: "win_3.7"
-      - name: Download artifact 3.8
-        uses: actions/download-artifact@v1
-        with:
-          name: "win_3.8"
+#       - name: Download artifact 3.8
+#         uses: actions/download-artifact@v1
+#         with:
+#           name: "win_3.8"
       - name: Unzip
         run: |
-          unzip -o 3.6/build.zip
-          unzip -o 3.7/build.zip
-          unzip -o 3.8/build.zip
+          unzip -o linux_3.6/build.zip
+          unzip -o linux_3.7/build.zip
+          unzip -o linux_3.8/build.zip
+          unzip -o win_3.7/build.zip
+          unzip -o win_3.6/build.zip
       - name: Development build pre-release
         uses: "marvinpinto/action-automatic-releases@latest"
         with: 
