@@ -96,7 +96,6 @@ jobs:
         
   uploadrelease:
     needs: windows-build #, ubuntu-build
-    needs: ubuntu-build
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact 3.6
