@@ -117,6 +117,14 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: "win_3.7"
+      - name: Download artifact 3.6
+        uses: actions/download-artifact@v1
+        with:
+          name: "linux_3.6"
+      - name: Download artifact 3.7
+        uses: actions/download-artifact@v1
+        with:
+          name: "linux_3.7"
 #       - name: Download artifact 3.8
 #         uses: actions/download-artifact@v1
 #         with:
