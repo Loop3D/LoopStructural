@@ -96,7 +96,6 @@ jobs:
       - name: build wheel
         run: | 
           python setup.py bdist_wheel
-          - name: zip artifacts
       - name: compress zip
         run: |
           zip dist/*.whl build.zip
