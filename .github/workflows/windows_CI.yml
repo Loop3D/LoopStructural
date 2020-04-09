@@ -93,7 +93,18 @@ jobs:
         run: |
           pip install pytest
           pytest
-        
+      - name: build wheel
+        run: | 
+          python setup.py bdist_wheel
+          - name: zip artifacts
+      - name: compress zip
+        run: |
+          zip dist/*.whl build.zip
+      - name: upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: 'linux_${{ matrix.python }}'
+          path: build.zip
   uploadrelease:
     needs: windows-build #, ubuntu-build
     runs-on: ubuntu-latest
