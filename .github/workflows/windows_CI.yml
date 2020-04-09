@@ -99,7 +99,7 @@ jobs:
           python setup.py bdist_wheel
       - name: compress zip
         run: |
-          zip -r build.zip dist/*.whl
+          zip -r -j build.zip dist/*.whl
       - name: upload artifacts
         uses: actions/upload-artifact@v1
         with:
