@@ -2,8 +2,9 @@ cython
 scikit-learn
 scikit-image
 scipy
-lavavu
 numpy
 matplotlib
 setuptools
 pandas
+lavavu
+
