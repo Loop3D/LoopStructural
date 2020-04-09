@@ -76,6 +76,7 @@ jobs:
           activate-environment: loop    
       - name: Installing dependencies
         run: |
+          python --version
           pip install -r requirements.txt
           conda info
           conda list
