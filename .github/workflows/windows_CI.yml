@@ -68,41 +68,35 @@ jobs:
       matrix:
         python: ['3.6','3.7']
     steps:
-      - uses: actions/checkout@v2
-      - uses: goanpeca/action-setup-conda@v1
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v1
         with:
-          python-version: ${{ matrix.python }} 
-          #miniconda-version: 'latest'
-          activate-environment: loop    
-      - name: Installing dependencies
+          python-version: ${{ matrix.python }}
+      - name: Install dependencies
         run: |
-          python3 --version
-          pip3 install -r requirements.txt
-          conda info
-          conda list
-      - name: Building Loop wheel and installing
+          sudo apt-get install pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc
+          python -m pip install --upgrade pip
+          pip install pybind11
+          pip install -r requirements.txt
+      - name: Build library
         run: |
-          python3 setup.py bdist_wheel
-          python3 setup.py install build_ext --inplace
-          conda info
-          conda list
-          dir
-
-      - name: Running tests
+          python setup.py install build_ext --inplace
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Test with pytest
         run: |
           pip install pytest
           pytest
-      - name: compress wheel
-        run: |
-          zip -r build.zip dist/*.whl
-      - name: upload artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: 'linux_${{ matrix.python }}'
-          path: build.zip
         
   uploadrelease:
     needs: windows-build #, ubuntu-build
+    needs: ubuntu-build
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact 3.6
