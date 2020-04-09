@@ -34,6 +34,7 @@ jobs:
     - name: Installing dependencies
       shell: bash -l {0}
       run: |
+        python --version
         pip install -r requirements.txt
         conda info
         conda list
