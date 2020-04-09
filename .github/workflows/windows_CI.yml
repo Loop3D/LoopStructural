@@ -95,7 +95,8 @@ jobs:
           pytest
       - name: build wheel
         run: | 
-           python setup.py bdist_wheel
+          pip install wheel
+          python setup.py bdist_wheel
       - name: compress zip
         run: |
           zip dist/*.whl build.zip
