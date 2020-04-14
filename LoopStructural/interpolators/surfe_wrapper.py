@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class SurfeRBFInterpolator(GeologicalInterpolator):
-    def __init__(self, method='horizons'):
+    def __init__(self, method='single_surface'):
         GeologicalInterpolator.__init__(self)
         self.surfe = None
         if method == 'single_surface':

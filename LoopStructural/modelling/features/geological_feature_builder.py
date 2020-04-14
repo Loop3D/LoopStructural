@@ -319,6 +319,7 @@ class GeologicalFeatureInterpolator:
 
     def get_gradient_constraints(self):
         """
+        Get the gradient direction constraints
 
         Returns
         -------
@@ -351,6 +352,7 @@ class GeologicalFeatureInterpolator:
 
     def get_norm_constraints(self):
         """
+        Get the gradient norm constraints
 
         Returns
         -------
@@ -366,6 +368,13 @@ class GeologicalFeatureInterpolator:
         return points[:c, :]
 
     def get_data_locations(self):
+        """
+        Get only the location for all data points
+
+        Returns
+        -------
+
+        """
         points = np.zeros((len(self.data), 3))  # array
         c = 0
         for d in self.data:
