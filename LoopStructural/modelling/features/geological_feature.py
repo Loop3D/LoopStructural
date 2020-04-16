@@ -136,6 +136,23 @@ class GeologicalFeature:
 
         return v
 
+    def evaluate_gradient_misfit(self):
+        grad = self.interpolator.get_gradient_constraints()
+        norm = self.interpolator.get_norm_constraints()
+        dot = []
+        print(grad.shape)
+        print(norm.shape)
+        if grad.shape[0] > 0:
+            model_grad = self.evaluate_gradient(grad[:,:3])
+            dot.append(np.einsum('ij,ij->i',model_grad,grad[:,:3:6]).tolist())
+
+        if norm.shape[0] > 0:
+            print(norm[:,:3])
+            model_norm = self.evaluate_gradient(norm[:, :3])
+            print(model_norm)
+            dot.append(np.einsum('ij,ij->i', model_norm, norm[:,:3:6]))
+
+        return np.array(dot)
     def mean(self):
         """
         Calculate average of the support values

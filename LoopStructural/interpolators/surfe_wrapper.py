@@ -83,6 +83,11 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         if global_anisotropy:
             logger.info("Using global anisotropy")
             self.surfe.SetGlobalAnisotropy(global_anisotropy)
+        radius = kwargs.get("radius",False)
+        if radius:
+            logger.info("Setting RBF radius to %f"%radius)
+            self.surfe.SetRBFShapeParameter(radius)
+
     def update(self):
         return self.surfe.InterpolantComputed()
 
@@ -93,5 +98,13 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
 
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.surfe.EvaluateInterpolantAtPoints(
+                evaluation_points[~mask])
+        return evaluated
+    def evaluate_gradient(self, evaluation_points):
+        evaluation_points = np.array(evaluation_points)
+        evaluated = np.zeros(evaluation_points.shape)
+        mask = np.any(evaluation_points == np.nan, axis=1)
+        if evaluation_points[~mask, :].shape[0] > 0:
+            evaluated[~mask,:] = self.surfe.EvaluateVectorInterpolantAtPoints(
                 evaluation_points[~mask])
         return evaluated
