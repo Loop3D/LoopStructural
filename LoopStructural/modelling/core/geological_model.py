@@ -244,6 +244,7 @@ class GeologicalModel:
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info("Adding %s to model at location %i" % (feature.name, len(self.features)))
+        feature.set_model(self)
 
     def set_model_data(self, data):
         """

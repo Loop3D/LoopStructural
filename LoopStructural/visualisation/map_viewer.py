@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class MapView:
-    def __init__(self, model = None, bounding_box=None, nsteps=None, **kwargs):
+    def __init__(self, model = None, bounding_box=None, nsteps=None, ax=None, **kwargs):
         """
 
         Parameters
@@ -28,7 +28,9 @@ class MapView:
         self.xx, self.yy = np.meshgrid(x, y, indexing='ij')
         self.xx = self.xx.flatten()
         self.yy = self.yy.flatten()
-        self.fig, self.ax = plt.subplots(1, figsize=(10, 10))
+        self.ax = ax
+        if self.ax is None:
+            fig, self.ax = plt.subplots(1, figsize=(10, 10))
         self.ax.set_aspect('equal', adjustable='box')
 
     def add_data(self, feature, val=True, grad=True, **kwargs):
@@ -44,16 +46,16 @@ class MapView:
         """
 
         ori_data = []
-        gradient_data = feature.support.interpolator.get_gradient_constraints()
+        gradient_data = feature.interpolator.get_gradient_constraints()
         if gradient_data.shape[0] > 0:
             ori_data.append(gradient_data)
-        norm_data = feature.support.interpolator.get_norm_constraints()
+        norm_data = feature.interpolator.get_norm_constraints()
         if norm_data.shape[0] > 0:
             ori_data.append(norm_data)
         cmap = kwargs.pop('cmap','rainbow')
         # if single colour then specify kwarg, otherwise use point value
         if val:
-            value_data = feature.support.interpolator.get_value_constraints()
+            value_data = feature.interpolator.get_value_constraints()
             point_colour = kwargs.pop('point_colour',None)
             if point_colour is None:
                 self.ax.scatter(value_data[:, 0], value_data[:, 1], c=value_data[:,3],

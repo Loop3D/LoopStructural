@@ -208,8 +208,8 @@ class LavaVuModelViewer:
                 cmap = lavavu.cubehelix(100)
                 if 'cmap' in kwargs:
                     cmap = kwargs['cmap']
-                vmin = kwargs.get('vmin', painter.min())
-                vmax = kwargs.get('vmax', painter.max())
+                vmin = kwargs.get('vmin', min_property_val)
+                vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
 
     def add_scalar_field(self, geological_feature, **kwargs):

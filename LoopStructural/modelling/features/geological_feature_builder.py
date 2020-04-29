@@ -295,6 +295,7 @@ class GeologicalFeatureInterpolator:
                     constrained = True
         if not constrained:
             logger.error("Not enough constraints for scalar field add more")
+        # self.interpolator.reset()
         for d in data:
             self.interpolator.add_data(d)
 
