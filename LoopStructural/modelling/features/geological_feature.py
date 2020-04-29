@@ -45,15 +45,28 @@ class GeologicalFeature:
         self.faults_enabled = True
         if region is None:
             self.region = 'everywhere'
-
+        self.model = None
     def __str__(self):
         return self.name
 
+    def set_model(self, model):
+        self.model = model
+
     def toggle_faults(self):
+        """
+        Turn the fault off for a feature
+        This function is only really used for debugging or creating methods
+        explanation figures
+
+        Returns
+        -------
+
+        """
         self.faults_enabled = ~self.faults_enabled
 
     def add_region(self, region):
         """
+        Adds a region where the geological feature is active to the model.
 
         Parameters
         ----------
@@ -83,13 +96,18 @@ class GeologicalFeature:
 
     def evaluate_value(self, evaluation_points):
         """
+        Evaluate the scalar field value of the geological feature at the locations
+        specified
 
         Parameters
         ----------
-        evaluation_points
+        evaluation_points : numpy array
+            location to evaluate the scalar value
 
         Returns
         -------
+        values : numpy array
+            numpy array containing evaluated values
 
         """
 
@@ -161,7 +179,9 @@ class GeologicalFeature:
         -------
 
         """
-        return 0
+        if self.model is None:
+            return 0
+        return np.mean(self.evaluate_value(self.model.regular_grid((10,10,10))))
         # return np.nanmean(self.scalar_field.get_node_values())
 
     def min(self):
@@ -171,7 +191,10 @@ class GeologicalFeature:
         -------
 
         """
-        return 0
+        if self.model is None:
+            return 0
+        return np.min(
+            self.evaluate_value(self.model.regular_grid((10, 10, 10))))
         #       return np.nanmin(self.scalar_field.get_node_values())
 
     def max(self):
@@ -182,7 +205,10 @@ class GeologicalFeature:
         -------
 
         """
-        return 0
+        if self.model is None:
+            return 0
+        return np.max(
+            self.evaluate_value(self.model.regular_grid((10, 10, 10))))
         #return np.nanmax(self.scalar_field.get_node_values())
 
     def update(self):

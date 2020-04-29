@@ -337,6 +337,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         cgargs = {}
         cgargs['tol'] = 1e-12
+        cgargs['atol'] = 0
         if 'maxiter' in kwargs:
             logger.info("Using %i maximum iterations"%kwargs['maxiter'])
             cgargs['maxiter'] = kwargs['maxiter']

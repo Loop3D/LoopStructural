@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from sklearn.decomposition import pca
+from sklearn.decomposition   import pca
 
 logger = logging.getLogger(__name__)
 

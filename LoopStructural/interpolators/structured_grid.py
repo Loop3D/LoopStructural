@@ -1,7 +1,6 @@
 import logging
 
 import numpy as np
-from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 logger = logging.getLogger(__name__)
 

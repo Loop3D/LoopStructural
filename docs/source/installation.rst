@@ -28,7 +28,10 @@ Windows
 --------
 Using anaconda
 ~~~~~~~~~~~~~~
-To install LoopStructural using windows
+*User environment*
+
+*Developer environment*
+
 
 Installing WSL
 ~~~~~~~~~~~~~~
@@ -84,7 +87,7 @@ Download `MobaXterm`<https://mobaxterm.mobatek.net/download.html>
 
 
 Installing LoopStructural
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Before you install LoopStructural the ubuntu package manager should be updated and the installed packages should be upgraded.
 
@@ -225,7 +228,7 @@ You can now start using LoopStructural.
 Try working through one of the examples/tutorials found in the notebooks directory.
 
 Upgrading LoopStructural
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you have already installed LoopStructural and want to upgrade to the most recent version.
 
@@ -241,7 +244,7 @@ Using the WSL change to the LoopStructural directory and run the makefile
 This will not install the requirements.txt and only call the setup.py file for LoopStructural.
 
 Running LoopStructural
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 To use the model viewing capabilities of LavaVu you need to use MobaXterm or another ssh/terminal client with x forwarding capabilities.
 To run the included examples in LoopStructural you can simply run
 

@@ -27,6 +27,7 @@ def find_peaks_and_troughs(x, y):
         return False
     pairsx = []
     pairsy = []
+    # #TODO numpyize
     for i in range(0, len(x)):
         if i < 1:
             pairsx.append(x[i])
@@ -110,7 +111,7 @@ class SVariogram():
                 np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
             self.lags = np.arange(step / 2., nstep * step, step)
             logger.info("Using average minimum nearest neighbour distance "
-                        "as lag distance size %f and using %i lags"%(step,nstep))
+                        "as lag distance size {} and using {} lags".format(step,nstep))
         tol = self.lags[1] - self.lags[0]
         self.variogram = np.zeros(self.lags.shape)
         self.variogram[:] = np.nan
