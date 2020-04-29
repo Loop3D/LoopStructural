@@ -27,6 +27,7 @@ def find_peaks_and_troughs(x, y):
         return False
     pairsx = []
     pairsy = []
+    # #TODO numpyize
     for i in range(0, len(x)):
         if i < 1:
             pairsx.append(x[i])

@@ -19,6 +19,10 @@ class FoldFrame(StructuralFrame):
         features
         """
         super().__init__(name, features)
+        self.model = None
+
+    def set_model(self, model):
+        self.model = model
 
     def calculate_fold_axis_rotation(self, feature_builder):
         """

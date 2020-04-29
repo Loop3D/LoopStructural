@@ -1,6 +1,5 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
-from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
 
 import pandas as pd
 
