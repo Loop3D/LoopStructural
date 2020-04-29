@@ -265,3 +265,20 @@ class GeologicalInterpolator:
 
     def update(self):
         return False
+
+    def reset(self):
+        """
+        Removes all of the data from an interpolator
+
+        Returns
+        -------
+
+        """
+        self.n_g = 0
+        self.n_i = 0
+        self.n_n = 0
+        self.n_t = 0
+        self.p_g = []
+        self.p_i = []
+        self.p_n = []
+        self.p_t = []
