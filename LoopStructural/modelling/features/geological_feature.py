@@ -171,6 +171,11 @@ class GeologicalFeature:
             dot.append(np.einsum('ij,ij->i', model_norm, norm[:,:3:6]))
 
         return np.array(dot)
+
+    def evaluate_value_misfit(self):
+        locations = self.interpolator.get_value_constraints()
+        return locations[:,3] - self.evaluate_value(locations[:,:3])
+
     def mean(self):
         """
         Calculate average of the support values

@@ -829,7 +829,7 @@ class GeologicalModel:
         Returns
         -------
         """
-
+        points = points.copy()
         points[:, :] -= self.origin
         points /= self.scale_factor
         return points
