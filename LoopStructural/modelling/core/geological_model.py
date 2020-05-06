@@ -18,6 +18,7 @@ try:
 except ImportError:
     surfe=False
 
+from LoopStructural.utils.helper import all_heading
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.features import \
     GeologicalFeatureInterpolator
@@ -193,7 +194,7 @@ class GeologicalModel:
     of the model between 0 and 1.
     """
 
-    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40)):
+    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40),reuse_supports=False):
         """
         Parameters
         ----------
@@ -224,6 +225,8 @@ class GeologicalModel:
             self.scale_factor = np.max(lengths)
 
         self.bounding_box /= self.scale_factor
+        self.support = {}
+        self.reuse_supports = reuse_supports
 
     def _add_feature(self, feature):
         """
@@ -281,6 +284,9 @@ class GeologicalModel:
         self.data['X'] /= self.scale_factor
         self.data['Y'] /= self.scale_factor
         self.data['Z'] /= self.scale_factor
+        for h in all_heading():
+            if h not in self.data:
+                self.data[h] = np.nan
 
     def extend_model_data(self, newdata):
         """
@@ -340,8 +346,11 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
-                           step_vector=step_vector)
+            mesh_id = 'mesh_{}'.format(nelements)
+            mesh = self.support.get(mesh_id,TetMesh(origin=bb[0, :], nsteps=nsteps,
+                           step_vector=step_vector))
+            if mesh_id not in self.support:
+                self.support[mesh_id] = mesh
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using PLI" % (mesh.ntetra))
 
@@ -356,8 +365,11 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,
-                                  step_vector=step_vector)
+            grid_id = 'grid_{}'.format(nelements)
+            grid = self.support.get(grid_id,StructuredGrid(origin=bb[0, :], nsteps=nsteps,
+                                  step_vector=step_vector))
+            if grid_id not in self.support:
+                self.support[grid_id] = grid
             logger.info("Creating regular grid with %i elements \n"
                         "for modelling using FDI" % grid.n_elements)
             return FDI(grid)
@@ -371,8 +383,8 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
-                           step_vector=step_vector)
+            mesh = kwargs.get('mesh',TetMesh(origin=bb[0, :], nsteps=nsteps,
+                           step_vector=step_vector))
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])

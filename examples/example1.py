@@ -17,10 +17,23 @@ from LoopStructural.visualisation import LavaVuModelViewer
 
 from LoopStructural.datasets import load_claudius #demo data
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import glob
 import numpy as np
 import logging
 logging.getLogger().setLevel(logging.INFO)
-data, bb = load_claudius()#claudius.get_data()
-model = GeologicalModel(bb[0,:],bb[1,:])
+data, bb = load_claudius()
+model = GeologicalModel(bb[0, :], bb[1, :])
+model.set_model_data(data)
+# print(data['type'])
+s0 = model.create_and_add_foliation('strati',
+                                    interpolatortype='PLI',
+                                    nelements=1000,
+                                    solver='cg',
+                                    damp=False)
+print(len(s0['feature'].get_interpolator().row))
+newrows = s0['feature'].get_interpolator().remove_constraints_from_least_squares(name='regularisation')
+print(newrows.shape)
+plt.plot(np.unique(newrows))
+plt.show()

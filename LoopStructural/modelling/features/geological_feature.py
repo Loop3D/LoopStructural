@@ -174,7 +174,9 @@ class GeologicalFeature:
 
     def evaluate_value_misfit(self):
         locations = self.interpolator.get_value_constraints()
-        return locations[:,3] - self.evaluate_value(locations[:,:3])
+        diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
+        diff/=(self.max()-self.min())
+        return diff
 
     def mean(self):
         """

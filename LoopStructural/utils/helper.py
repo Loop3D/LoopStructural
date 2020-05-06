@@ -196,3 +196,25 @@ def normal_vector_to_strike_and_dip(normal_vector):
                                                         0]))  # atan2(v2[1],v2[0])*rad2deg;
 
     return np.array([strike, dip]).T
+
+def xyz_names():
+    return ['X','Y','Z']
+
+def normal_vec_names():
+    return ['nx','ny','nz']
+
+def tangent_vec_names():
+    return ['tx','ty','tz']
+
+def gradient_vec_names():
+    return ['gx','gy','gz']
+
+def weight_name():
+    return ['w']
+
+def val_name():
+    return ['val']
+
+def all_heading():
+    return xyz_names()+normal_vec_names()+tangent_vec_names()+\
+           gradient_vec_names()+weight_name()+val_name()

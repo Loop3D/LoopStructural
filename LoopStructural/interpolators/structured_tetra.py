@@ -40,7 +40,7 @@ class TetMesh:
         self.properties = {}
         self.property_gradients = {}
         self.n_elements = self.ntetra
-
+        self.cg = None
     def barycentre(self, elements = None):
         """
         Return the barycentres of all tetrahedrons or of specified tetras using
@@ -199,18 +199,20 @@ class TetMesh:
         return vertices_return, c_return, tetra_return, inside
 
     def get_constant_gradient(self, region='everywhere'):
-        elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
-        region = region.astype('int64')
+        if self.cg is None:
+            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+            region = region.astype('int64')
 
-        neighbours = self.get_neighbours()
-        elements = self.get_elements()
-        idc, c, ncons = cg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
-                           region.astype('int64'))
+            neighbours = self.get_neighbours()
+            elements = self.get_elements()
+            idc, c, ncons = cg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
+                               region.astype('int64'))
 
-        idc = np.array(idc[:ncons, :])
-        c = np.array(c[:ncons, :])
-        B = np.zeros(c.shape[0])
-        return c, idc, B
+            idc = np.array(idc[:ncons, :])
+            c = np.array(c[:ncons, :])
+            B = np.zeros(c.shape[0])
+            self.cg = (c,idc,B)
+        return self.cg[0], self.cg[1], self.cg[2]
 
     def get_elements(self):
         """
