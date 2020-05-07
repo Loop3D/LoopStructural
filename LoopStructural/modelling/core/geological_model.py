@@ -154,7 +154,7 @@ def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, resu
     """
     far, fad = fold_frame.calculate_fold_axis_rotation(
         series_builder)
-
+    print(fad,far)
     axis_svariogram = SVariogram(fad, far)
     axis_svariogram.calc_semivariogram(**kwargs)
     result['axis_svariogram'] = axis_svariogram
@@ -287,7 +287,8 @@ class GeologicalModel:
         for h in all_heading():
             if h not in self.data:
                 self.data[h] = np.nan
-
+            if h is 'w':
+                self.data[h] = 1.
     def extend_model_data(self, newdata):
         """
         Extends the data frame

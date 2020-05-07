@@ -95,31 +95,38 @@ class GeologicalFeatureInterpolator:
         for f in self.faults:
             data.loc[:,xyz_names()] = f.apply_to_points(
                 self.get_data_locations())
-
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
         # we need at least 2 different value points or a single norm
         # constraint. If there are not enough
         # try converting grad to norms, if still not enough send user an error
         if constrained:
-            mask = np.all(~np.isnan(data[:, gradient_vec_names()]))
-            data.loc[mask, gradient_vec_names()] = data.loc[mask,
-                                                        normal_vec_names()]
-            data.loc[mask, normal_vec_names()] = np.nan
+            # Change normals to gradients
+            mask = np.all(~np.isnan(data.loc[:, normal_vec_names()]),axis=1)
+            if mask.shape[0] > 0:
+                data.loc[mask, gradient_vec_names()] = data.loc[mask,
+                                                            normal_vec_names()].to_numpy()
+                data.loc[mask, normal_vec_names()] = np.nan
         if self.get_norm_constraints().shape[0] > 0:
             constrained = True
 
-
         if np.unique(self.get_value_constraints()[:,3]).shape[0]>0:
             constrained = True
+
         if not constrained or force_constrained:
             # change gradient constraints to normal vector constraints
-            mask =np.all(~np.isnan(data[:, gradient_vec_names()]))
-            data.loc[mask, normal_vec_names()] = data.loc[mask,
-                                                        gradient_vec_names()]
-            data.loc[mask, gradient_vec_names()] = np.nan
-            logger.debug(
-                "Setting gradient points to norm constraints")
+            mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()]), axis=1)
+            if mask.shape[0] > 0:
+
+                data.loc[mask, normal_vec_names()] = data.loc[mask,
+                                                            gradient_vec_names()].to_numpy()
+                data.loc[mask, gradient_vec_names()] = np.nan
+                logger.info(
+                    "Setting gradient points to norm constraints")
+                constrained = True
+                mask = np.all(
+                    ~np.isnan(data.loc[:, normal_vec_names()].to_numpy()),
+                    axis=1)
 
         if not constrained:
             logger.error("Not enough constraints for scalar field add more")
@@ -130,7 +137,7 @@ class GeologicalFeatureInterpolator:
             value_data = data.loc[mask[:,0],xyz_names()+val_name()+weight_name()].to_numpy()
             self.interpolator.set_value_constraints(value_data)
 
-        mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()].to_numpy()),axis=1)
+        mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()].to_numpy()), axis=1)
         if mask.shape[0]>0:
             gradient_data = data.loc[
             mask, xyz_names() + gradient_vec_names() + weight_name()].to_numpy()
@@ -170,9 +177,15 @@ class GeologicalFeatureInterpolator:
         -------
         numpy array
         """
-        header = xyz_names() + gradient_vec_names() + weight_name()
-        mask = np.all(~np.isnan(self.data.loc[:, gradient_vec_names()].to_numpy()), axis=1)
-        return self.data.loc[mask, header]
+        mask = np.all(
+            ~np.isnan(self.data.loc[:, gradient_vec_names()].to_numpy()),
+            axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[
+                mask, xyz_names() + gradient_vec_names() + weight_name(
+                )].to_numpy()
+        else:
+            return np.zeros(0, 7)
 
     def get_tangent_constraints(self):
         """
@@ -193,9 +206,24 @@ class GeologicalFeatureInterpolator:
         -------
         numpy array
         """
-        header = xyz_names() + normal_vec_names() + weight_name()
-        mask = np.all(~np.isnan(self.data.loc[:, normal_vec_names()].to_numpy()), axis=1)
-        return self.data.loc[mask, header]
+        mask = np.all(~np.isnan(self.data.loc[:, normal_vec_names()].to_numpy()),
+                      axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[
+                mask, xyz_names() + normal_vec_names() + weight_name(
+
+                )].to_numpy()
+        else:
+            return np.zeros(0,7)
+        #     self.interpolator.set_normal_constraints(normal_data)
+        # normal_data = self.data.loc[
+        #     mask, xyz_names() + normal_vec_names() + weight_name()].to_numpy()
+        # self.interpolator.set_normal_constraints(normal_data)
+        #
+        # header = xyz_names() + normal_vec_names() + weight_name()
+        # mask = np.all(~np.isnan(self.data.loc[:, normal_vec_names()].to_numpy()), axis=1)
+        # print('norm',self.data.loc[mask, header])
+        # return self.data.loc[mask, header]
 
     def get_data_locations(self):
         """

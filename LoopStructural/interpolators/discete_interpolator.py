@@ -443,6 +443,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         damp = True
         if 'damp' in kwargs:
             damp = kwargs['damp']
+        if solver == 'lu':
+            logger.info("Forcing matrix damping for LU")
+            damp = True
         if solver == 'lsqr':
             A, B =  self.build_matrix(False)
         else:
