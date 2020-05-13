@@ -57,13 +57,52 @@ class FaultSegment:
         """
         return self.faultframe[item]
 
-    def set_model(self,model):
+    def set_model(self, model):
+        """
+        Link a geological model to the feature
+
+        Parameters
+        ----------
+        model - GeologicalModel
+
+        Returns
+        -------
+
+        """
         self.model = model
 
+    def set_displacement(self, displacement, scale = True):
+        """
+        Set the fault displacement to a new value
+
+        Parameters
+        ----------
+        displacement - double
+        scale - boolean
+
+        Returns
+        -------
+
+        """
+        if scale and self.model is not None:
+            self.displacement = displacement / self.model.scale_factor
+        elif not scale:
+                self.displacement = displacement
+        else:
+            logger.warning("Displacement not updated")
+
     def toggle_faults(self):
+        """
+        Toggle faults that affect this fault segment
+
+        Returns
+        -------
+
+        """
         self.faults_enabled = ~self.faults_enabled
         for i in range(3):
             self.faultframe[i].toggle_faults()
+
     def add_region(self, region):
         """
 
@@ -218,33 +257,3 @@ class FaultSegment:
             newp[mask, :] += g
         return newp
 
-    def apply_to_data(self, data):
-        """
-        Unfault the data in the list provided
-
-        Parameters
-        ----------
-        data - list containing Points
-
-        Returns
-        -------
-
-        """
-        logger.info("Applying fault")
-        steps = self.steps
-        # TODO make this numpy arrays
-        if data is None:
-            return
-        for d in data:
-            hw = self.faultframe.features[0].evaluate_value(
-                np.array([d.pos])) > 0
-            for i in range(steps):
-                g = self.faultframe.features[1].evaluate_gradient(
-                    np.array([d.pos]))
-                length = np.linalg.norm(g, axis=1)
-                g[np.logical_and(~np.isnan(length), length > 0), :] /= length[
-                    np.logical_and(~np.isnan(length), length > 0), None]
-                if self.faultfunction is None and hw:
-                    g *= (1. / steps) * 1. * self.displacement
-                    g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
-                    d.pos = d.pos + g[0]

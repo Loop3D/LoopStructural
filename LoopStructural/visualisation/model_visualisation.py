@@ -359,9 +359,9 @@ class LavaVuModelViewer:
             add_grad = kwargs['grad']
         if 'value' in kwargs:
             add_value = kwargs['value']
-        grad = feature.interpolator.get_gradient_constraints()
-        norm = feature.interpolator.get_norm_constraints()
-        value = feature.interpolator.get_value_constraints()
+        grad = feature.builder.get_gradient_constraints()
+        norm = feature.builder.get_norm_constraints()
+        value = feature.builder.get_value_constraints()
         if grad.shape[0] > 0 and add_grad:
             self.add_vector_data(grad[:, :3], grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
