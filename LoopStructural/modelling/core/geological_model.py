@@ -397,6 +397,8 @@ class GeologicalModel:
         if fold.fold_axis is None:
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 series_builder)
+            result['axis_rotation']
+            result['axis_direction']
             fold_axis_rotation = FoldRotationAngle(far, fad)
             a_wl = kwargs.get("axis_wl", None)
             if 'axis_function' in kwargs:
@@ -408,6 +410,8 @@ class GeologicalModel:
         # give option of passing own fold limb rotation function
         flr, fld = fold_frame.calculate_fold_limb_rotation(
             series_builder)
+        result['foliation'] = fld
+        result['limb_rotation'] = flr
         fold_limb_rotation = FoldRotationAngle(flr, fld)
         l_wl = kwargs.get("limb_wl", None)
         if 'limb_function' in kwargs:
@@ -470,12 +474,32 @@ class GeologicalModel:
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(fold_frame_builder[0], fold_frame, fold)
+
+
         if fold.fold_axis is None:
-            _interpolate_fold_axis_rotation_angle(fold_frame_builder[0],
-                                                  fold_frame,
-                                                  fold, result, **kwargs)
-        _interpolate_fold_limb_rotation_angle(fold_frame_builder[0], fold_frame,
-                                              fold, result, **kwargs)
+            far, fad = fold_frame.calculate_fold_axis_rotation(
+                fold_frame_builder[0])
+            fold_axis_rotation = FoldRotationAngle(far, fad)
+            a_wl = kwargs.get("axis_wl", None)
+            if 'axis_function' in kwargs:
+                # allow predefined function to be used
+                fold_axis_rotation.set_function(kwargs['axis_function'])
+            else:
+                fold_axis_rotation.fit_fourier_series(wl=a_wl)
+            fold.fold_axis_rotation = fold_axis_rotation
+        # give option of passing own fold limb rotation function
+        flr, fld = fold_frame.calculate_fold_limb_rotation(
+            fold_frame_builder[0])
+        fold_limb_rotation = FoldRotationAngle(flr, fld)
+        l_wl = kwargs.get("limb_wl", None)
+        if 'limb_function' in kwargs:
+            # allow for predefined functions to be used
+            fold_limb_rotation.set_function(kwargs['limb_function'])
+        else:
+            fold_limb_rotation.fit_fourier_series(wl=l_wl)
+        fold.fold_limb_rotation = fold_limb_rotation
+        # fold_limb_fitter = kwargs.get("fold_limb_function", _interpolate_fold_limb_rotation_angle)
+        # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         for i in range(3):

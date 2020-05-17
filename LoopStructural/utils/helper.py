@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from sklearn.decomposition   import pca
+from sklearn.decomposition import PCA
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ def get_data_axis_aligned_bounding_box(xyz, buffer):
 
 def get_data_bounding_box(xyz, buffer):
     # find the aligned coordinates box using pca
-    modelpca = pca.PCA(n_components=3)
+    modelpca = PCA(n_components=3)
     modelpca.fit(xyz)
     # transform the data to this new coordinate then find extents
     transformed_xyz = modelpca.transform(xyz)
