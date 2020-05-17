@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class MapView:
-    def __init__(self, model = None, bounding_box=None, nsteps=None, ax=None, **kwargs):
+    def __init__(self, model = None, bounding_box=None, nsteps=None, ax = None, **kwargs):
         """
 
         Parameters
@@ -31,6 +31,7 @@ class MapView:
         self.ax = ax
         if self.ax is None:
             fig, self.ax = plt.subplots(1, figsize=(10, 10))
+
         self.ax.set_aspect('equal', adjustable='box')
 
     def add_data(self, feature, val=True, grad=True, **kwargs):
@@ -62,7 +63,7 @@ class MapView:
                             vmin=feature.min(), vmax=feature.max(),cmap=cmap)
             if point_colour is not None:
                 self.ax.scatter(value_data[:, 0], value_data[:, 1], c=point_colour)
-        # points = strati.support.interpolator.get_gradient_control()
+        # points = strati.interpolator.get_gradient_control()
         if grad:
             symb_colour = kwargs.pop('symb_colour','black')
             gradient_data = np.hstack(ori_data)

@@ -191,8 +191,9 @@ class LavaVuModelViewer:
             except ValueError:
                 logger.warning("no surface to mesh, skipping")
                 continue
-            name = geological_feature.name + '_iso_%f' % isovalue
+            name = geological_feature.name
             name = kwargs.get('name', name)
+            name += '_iso_%f' % isovalue
             surf = self.lv.triangles(name)
             surf.vertices(verts)
             surf.indices(faces)
@@ -202,7 +203,10 @@ class LavaVuModelViewer:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
                 surfaceval = np.zeros(verts.shape[0])
-                surfaceval[:] = painter.evaluate_value(verts)  # isovalue
+                surfaceval[:] = painter.evaluate_value(verts)
+                if painter.name is geological_feature.name:
+                    logger.info("Setting surface value to %f"%isovalue)
+                    surfaceval[:] = isovalue
                 surf.values(surfaceval, painter.name)
                 surf["colourby"] = painter.name
                 cmap = lavavu.cubehelix(100)
@@ -355,9 +359,9 @@ class LavaVuModelViewer:
             add_grad = kwargs['grad']
         if 'value' in kwargs:
             add_value = kwargs['value']
-        grad = feature.interpolator.get_gradient_constraints()
-        norm = feature.interpolator.get_norm_constraints()
-        value = feature.interpolator.get_value_constraints()
+        grad = feature.builder.get_gradient_constraints()
+        norm = feature.builder.get_norm_constraints()
+        value = feature.builder.get_value_constraints()
         if grad.shape[0] > 0 and add_grad:
             self.add_vector_data(grad[:, :3], grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)

@@ -105,7 +105,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         # w/=A.shape[0]
         self.add_constraints_to_least_squares(A[outside, :] * w,
-                                              B[outside] * w, idc[outside, :])
+                                              B[outside] * w, idc[outside, :],
+                                              name='regularisation')
         return
 
     def add_gradient_ctr_pts(self, w=1.0):
@@ -152,12 +153,14 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :] * w,
-                                                  B[outside], idc[outside, :])
+                                                  B[outside], idc[outside, :],
+                                                  name = 'gradient')
             A = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
             A *= vol[:, None]
 
             self.add_constraints_to_least_squares(A[outside, :] * w,
-                                          B[outside], idc[outside, :])
+                                          B[outside], idc[outside, :],
+                                                  name='gradient')
             
     def add_norm_ctr_pts(self, w=1.0):
         """
@@ -214,7 +217,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(d_t[inside,:,:][outside, :, :] * w,
                                                   points[inside,:][outside, 3:6] * w *
                                                   vol[outside, None],
-                                                  idc[outside])
+                                                  idc[outside],
+                                                  name='norm')
 
     def add_tangent_ctr_pts(self, w=1.0):
         """
@@ -262,7 +266,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside,:] * w,
                                                   points[inside,:][outside, 3] * w * vol[outside],
-                                                  idc[outside, :])
+                                                  idc[outside, :], name='value')
 
     def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
                                            B=0):

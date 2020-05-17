@@ -196,7 +196,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
-            strike_vector, dip_vector = get_vectors(points[inside, 3:])
+            strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
 
 

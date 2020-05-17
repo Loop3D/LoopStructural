@@ -2,11 +2,12 @@ import copy
 import logging
 
 import numpy as np
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-from LoopStructural.modelling.core.geological_points import GPoint, IPoint, \
-    TPoint
+from LoopStructural.utils.helper import xyz_names, val_name, normal_vec_names, \
+    weight_name, gradient_vec_names, tangent_vec_names
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import get_data_axis_aligned_bounding_box
 
@@ -32,8 +33,9 @@ class GeologicalFeatureInterpolator:
             self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
         else:
             self.region = region
-        self.data = []
-        self.data_original = []
+        header = xyz_names()+val_name()+gradient_vec_names()+\
+                 normal_vec_names()+tangent_vec_names()+weight_name()
+        self.data = pd.DataFrame(columns=header)
         self.faults = []
         self.data_added = False
         self.interpolator.set_region(region=self.region)
@@ -68,181 +70,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        if 'X' not in data_frame.columns or 'Y' not in data_frame.columns or \
-                'Z' not in data_frame.columns:
-            logger.error("No location in data frame")
-            return
-        for i, r in data_frame.iterrows():
-
-            if np.isnan(r['X']) or np.isnan(r['X']) or np.isnan(r['X']):
-                continue
-            pos = r[['X', 'Y', 'Z']]
-            if 'val' in data_frame.columns and ~np.isnan(r['val']):
-                self.add_point(pos, r['val'])
-            if 'strike' in data_frame.columns and 'dip' in \
-                    data_frame.columns and \
-                    ~np.isnan(r['strike']) and ~np.isnan(r['dip']):
-                polarity = 1
-                if 'polarity' in data_frame.columns and ~np.isnan(
-                        r['polarity']):
-                    polarity = r['polarity']
-                self.add_strike_and_dip(pos, r['strike'], r['dip'],
-                                        polarity=polarity)
-            if 'azimuth' in data_frame.columns and 'dip' in \
-                    data_frame.columns and \
-                    ~np.isnan(r['azimuth']) and ~np.isnan(r['dip']):
-                polarity = 1
-                if 'polarity' in data_frame.columns and ~np.isnan(
-                        r['polarity']):
-                    polarity = r['polarity']
-                self.add_plunge_and_plunge_dir(pos, r['dip'], r['azimuth'],
-                                               polarity=polarity)
-
-            if 'nx' in data_frame.columns and 'ny' in data_frame.columns and \
-                    'nz' in data_frame.columns and \
-                    ~np.isnan(r['nx']) and ~np.isnan(r['ny']) and ~np.isnan(
-                r['nz']):
-                self.add_planar_constraint(r[['X', 'Y', 'Z']],
-                                           r[['nx', 'ny', 'nz']])
-
-    def add_data(self, pos, strike=None, dip_dir=None, dip=None, dir=None,
-                 val=None, plunge=None, plunge_dir=None, polarity=None):
-        """
-        Generic function to add data to a geological feature.
-
-        Parameters
-        ----------
-        pos - required numpy array for position
-        strike - optional strike
-        dip_dir - optional dip_dir
-        dip - optional
-        dir - numpy array for vector
-        val - value of constraint
-        polarity - polarity of vector
-        plunge - plunge value
-        plunge_dir - plunge direction
-
-
-        Returns
-        -------
-
-        """
-        pass
-
-    def add_strike_dip_and_value(self, pos, strike, dip, val, polarity=1):
-        """
-
-        Parameters
-        ----------
-        pos
-        strike
-        dip
-        val
-
-        Returns
-        -------
-
-        """
-        self.data.append(
-            GPoint.from_strike_and_dip(pos, strike, dip, polarity))
-        # self.interpolator.add_data(self.data[-1])
-        self.data.append(IPoint(pos, val))
-        # self.interpolator.add_data(self.data[-1])
-
-    def add_point(self, pos, val):
-        """
-
-        Parameters
-        ----------
-        pos
-        val
-
-        Returns
-        -------
-
-        """
-        self.data.append(IPoint(pos, val))
-        # self.interpolator.add_data(self.data[-1])
-
-    def add_planar_constraint(self, pos, val):
-        """
-
-        Parameters
-        ----------
-        pos -
-        val
-
-        Returns
-        -------
-
-        """
-        self.data.append(GPoint(pos, val))
-        # self.interpolator.add_data(self.data[-1])
-
-    def add_strike_and_dip(self, pos, s, d, polarity=1, weight=1.):
-        """
-
-        Parameters
-        ----------
-        pos
-        s
-        d
-
-        Returns
-        -------
-
-        """
-        self.data.append(GPoint.from_strike_and_dip(pos, s, d, polarity))
-        self.data[0].weight = weight
-        # self.interpolator.add_data(self.data[-1])
-
-    def add_plunge_and_plunge_dir(self, pos, plunge, plunge_dir, polarity=1):
-        """
-
-        Parameters
-        ----------
-        pos
-        plunge
-        plunge_dir
-
-        Returns
-        -------
-
-        """
-        self.data.append(
-            GPoint.from_plunge_plunge_dir(pos, plunge, plunge_dir, polarity))
-        # self.interpolator.add_data(self.data[-1])
-
-    def add_tangent_constraint(self, pos, val):
-        """
-
-        Parameters
-        ----------
-        pos
-        val
-
-        Returns
-        -------
-
-        """
-        self.data.append(TPoint(pos, val))
-        # self.interpolator.add_data(self.data[-1])
-
-    def add_tangent_constraint_angle(self, pos, s, d):
-        """
-
-        Parameters
-        ----------
-        pos
-        s
-        d
-
-        Returns
-        -------
-
-        """
-        self.data.append(TPoint(pos, s, d))
-        # self.interpolator.add_data(self.data[-1])
+        self.data = data_frame.copy()
 
     def add_orthogonal_feature(self, feature, w=1., region=None):
         self.interpolator.add_gradient_orthogonal_constraint(
@@ -251,7 +79,7 @@ class GeologicalFeatureInterpolator:
             w=w
         )
 
-    def add_data_to_interpolator(self, constrained=False):
+    def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
@@ -262,42 +90,70 @@ class GeologicalFeatureInterpolator:
         """
         # first move the data for the fault
         logger.info("Adding %i faults to %s" % (len(self.faults), self.name))
-        data = copy.deepcopy(self.data)
+        data = self.data.copy()
         # convert data locations to numpy array and then update
-        locations = self.get_data_locations()
         for f in self.faults:
-            locations = f.apply_to_points(locations)
-        i = 0
-        for d in data:
-            d.pos = locations[i, :]
-            i += 1
-
+            data.loc[:,xyz_names()] = f.apply_to_points(
+                self.get_data_locations())
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
         # we need at least 2 different value points or a single norm
         # constraint. If there are not enough
         # try converting grad to norms, if still not enough send user an error
-        vals = []
-        for d in data:
-            if d.type == "GPoint" and d.norm == True:
-                constrained = True
-                break
-            if d.type == 'IPoint':
-                vals.append(d.val)
-        if len(np.unique(vals)) > 1:
+        if constrained:
+            # Change normals to gradients
+            mask = np.all(~np.isnan(data.loc[:, normal_vec_names()]),axis=1)
+            if mask.shape[0] > 0:
+                data.loc[mask, gradient_vec_names()] = data.loc[mask,
+                                                            normal_vec_names()].to_numpy()
+                data.loc[mask, normal_vec_names()] = np.nan
+        if self.get_norm_constraints().shape[0] > 0:
             constrained = True
-        if not constrained:
-            for d in data:
-                if d.type == "GPoint":
-                    d.norm = True
-                    logger.debug(
-                        "Setting gradient points to norm constraints")
-                    constrained = True
+
+        if np.unique(self.get_value_constraints()[:,3]).shape[0]>0:
+            constrained = True
+
+        if not constrained or force_constrained:
+            # change gradient constraints to normal vector constraints
+            mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()]), axis=1)
+            if mask.shape[0] > 0:
+
+                data.loc[mask, normal_vec_names()] = data.loc[mask,
+                                                            gradient_vec_names()].to_numpy()
+                data.loc[mask, gradient_vec_names()] = np.nan
+                logger.info(
+                    "Setting gradient points to norm constraints")
+                constrained = True
+                mask = np.all(
+                    ~np.isnan(data.loc[:, normal_vec_names()].to_numpy()),
+                    axis=1)
+
         if not constrained:
             logger.error("Not enough constraints for scalar field add more")
         # self.interpolator.reset()
-        for d in data:
-            self.interpolator.add_data(d)
+        mask = ~np.isnan(data.loc[:,val_name()].to_numpy())
+
+        if mask.shape[0]>0:
+            value_data = data.loc[mask[:,0],xyz_names()+val_name()+weight_name()].to_numpy()
+            self.interpolator.set_value_constraints(value_data)
+
+        mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()].to_numpy()), axis=1)
+        if mask.shape[0]>0:
+            gradient_data = data.loc[
+            mask, xyz_names() + gradient_vec_names() + weight_name()].to_numpy()
+            self.interpolator.set_gradient_constraints(gradient_data)
+
+        mask = np.all(~np.isnan(data.loc[:, normal_vec_names()].to_numpy()), axis=1)
+        if mask.shape[0]>0:
+            normal_data = data.loc[
+                mask, xyz_names() + normal_vec_names() + weight_name()].to_numpy()
+            self.interpolator.set_normal_constraints(normal_data)
+
+        mask = np.all(~np.isnan(data.loc[:, tangent_vec_names()].to_numpy()), axis=1)
+        if mask.shape[0]>0:
+            tangent_data = data.loc[
+                mask, xyz_names() + tangent_vec_names() + weight_name()].to_numpy()
+            self.interpolator.set_tangent_constraints(tangent_data)
 
         self.data_added = True
 
@@ -309,30 +165,27 @@ class GeologicalFeatureInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((len(self.data), 4))  # array
-        c = 0
-        for d in self.data:
-            if d.type == 'IPoint':
-                points[c, :3] = d.pos
-                points[c, 4] = d.val
-                c += 1
-        return points[:c, :]
+        header = xyz_names()+val_name()+weight_name()
+        mask = ~np.isnan(self.data.loc[:,val_name()].to_numpy())
+        return self.data.loc[mask[:,0],header].to_numpy()
 
     def get_gradient_constraints(self):
         """
+        Get the gradient direction constraints
 
         Returns
         -------
         numpy array
         """
-        points = np.zeros((len(self.data), 6))  # array
-        c = 0
-        for d in self.data:
-            if d.type == 'GPoint':
-                points[c, :3] = d.pos
-                points[c, 3:] = d.vec
-                c += 1
-        return points[:c, :]
+        mask = np.all(
+            ~np.isnan(self.data.loc[:, gradient_vec_names()].to_numpy()),
+            axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[
+                mask, xyz_names() + gradient_vec_names() + weight_name(
+                )].to_numpy()
+        else:
+            return np.zeros(0, 7)
 
     def get_tangent_constraints(self):
         """
@@ -341,44 +194,38 @@ class GeologicalFeatureInterpolator:
         -------
         numpy array
         """
-        points = np.zeros((len(self.data), 6))  # array
-        c = 0
-        for d in self.data:
-            if d.type == 'TPoint':
-                points[c, :3] = d.pos
-                points[c, 3:] = d.vec
-                c += 1
-        return points[:c, :]
+        header = xyz_names() + tangent_vec_names() + weight_name()
+        mask = np.all(~np.isnan(self.data.loc[:, tangent_vec_names()].to_numpy()), axis=1)
+        return self.data.loc[mask, header]
 
     def get_norm_constraints(self):
         """
+        Get the gradient norm constraints
 
         Returns
         -------
         numpy array
         """
-        points = np.zeros((len(self.data), 6))  # array
-        c = 0
-        for d in self.data:
-            if d.type == 'NPoint':
-                points[c, :3] = d.pos
-                points[c, 3:] = d.vec
-                c += 1
-        return points[:c, :]
+        mask = np.all(~np.isnan(self.data.loc[:, normal_vec_names()].to_numpy()),
+                      axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[
+                mask, xyz_names() + normal_vec_names() + weight_name(
+
+                )].to_numpy()
+        else:
+            return np.zeros(0,7)
+
 
     def get_data_locations(self):
-        points = np.zeros((len(self.data), 3))  # array
-        c = 0
-        for d in self.data:
-            points[c, :] = d.pos
-            c += 1
-        return points[:c, :]
+        """
+        Get only the location for all data points
 
-    def update_data_locations(self, locations):
-        i = 0
-        for d in self.data:
-            d.pos = locations[i, :]
-            i += 1
+        Returns
+        -------
+
+        """
+        return self.data.loc[:, xyz_names()].to_numpy()
 
     def build(self, fold=None, fold_weights=None, data_region=None, **kwargs):
         """
@@ -403,7 +250,7 @@ class GeologicalFeatureInterpolator:
             bb, region = get_data_axis_aligned_bounding_box(xyz, data_region)
             self.interpolator.set_region(region=region)
         if not self.data_added:
-            self.add_data_to_interpolator()
+            self.add_data_to_interpolator(**kwargs)
 
         # moving this to init because it needs to be done before constraints
         # are added?

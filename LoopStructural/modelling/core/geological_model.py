@@ -18,6 +18,7 @@ try:
 except ImportError:
     surfe=False
 
+from LoopStructural.utils.helper import all_heading, gradient_vec_names, strike_dip_vector
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.features import \
     GeologicalFeatureInterpolator
@@ -28,6 +29,7 @@ from LoopStructural.modelling.features import UnconformityFeature
 from LoopStructural.modelling.fold.fold import FoldEvent
 from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
     fourier_series
+from LoopStructural.modelling.fold import FoldRotationAngle
 from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.interpolators.structured_grid import StructuredGrid
@@ -36,80 +38,6 @@ from LoopStructural.interpolators.structured_tetra import TetMesh
 logger = logging.getLogger(__name__)
 if not surfe:
     logger.warning("Cannot import Surfe")
-
-def _interpolate_fold_limb_rotation_angle(series_builder, fold_frame, fold, result, limb_wl=None, **kwargs):
-    """
-    Wrapper for fitting fold limb rotation angle from data using a fourier series.
-
-    Parameters
-    ----------
-    series_builder : GeologicalFeatureInterpolator
-        foliation builder
-    fold_frame : FoldFrame
-        fold frame for calculating rotation angles from
-    fold : FoldEvent
-        fold event to add fold rotation angle to
-    result : dict
-        container to save the results in
-    limb_wl : double
-        wavelength guess, if none then uses s=variogram to pick wavelength
-
-    Kwargs
-    ------
-    lag : double
-        lag distance for s-variogram
-    nlags : int
-        number of lag (steps) for s-variogram
-
-    Returns
-    -------
-
-    """
-    flr, s = fold_frame.calculate_fold_limb_rotation(series_builder)  # ,
-    # axis=fold.get_fold_axis_orientation)
-    result['limb_rotation'] = flr
-    result['foliation'] = s
-    limb_svariogram = SVariogram(s, flr)
-    limb_svariogram.calc_semivariogram(**kwargs)
-    result['limb_svariogram'] = limb_svariogram
-    if limb_wl is None:
-        limb_wl = limb_svariogram.find_wavelengths(**kwargs)
-        # for now only consider single fold wavelength
-        limb_wl = limb_wl[0]
-    guess = np.zeros(4)
-    guess[3] = limb_wl  # np.max(limb_wl)
-    logger.info('Guess: %f %f %f %f' % (guess[0], guess[1], guess[2], guess[3]))
-    if len(flr) < len(guess):
-        logger.warning("Not enough data to fit curve")
-        fold.fold_limb_rotation = lambda x: 0
-    else:
-        mask = np.logical_or(~np.isnan(s), ~np.isnan(flr))
-        logger.info("There are %i nans for the fold limb rotation angle and "
-                    "%i observations" % (np.sum(~mask), np.sum(mask)))
-        if np.sum(mask) < 4:
-            logger.error("Not enough data points to fit Fourier series setting fold rotation angle"
-                         "to 0")
-            fold.fold_limb_rotation = lambda x: np.zeros(x.shape)
-            return
-        try:
-            popt, pcov = curve_fit(fourier_series,
-                                   s[np.logical_or(~np.isnan(s), ~np.isnan(flr))],
-                                   np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s), ~np.isnan(flr))])),
-                                   guess)
-        except RuntimeError:
-            try:
-                logger.info("Running curve fit without initial guess")
-                popt, pcov = curve_fit(fourier_series,
-                                       s[np.logical_or(~np.isnan(s), ~np.isnan(flr))],
-                                       np.tan(np.deg2rad(flr[np.logical_or(~np.isnan(s), ~np.isnan(flr))])))
-            except RuntimeError:
-                popt = guess
-                logger.error("Could not fit curve to S-Plot, check the wavelength")
-        logger.info('Fitted: %f %f %f %f' % (popt[0], popt[1], popt[2], popt[3]))
-        fold.fold_limb_rotation = lambda x: np.rad2deg(
-            np.arctan(
-                fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
-
 
 def _calculate_average_intersection(series_builder, fold_frame, fold, **kwargs):
     """
@@ -128,64 +56,6 @@ def _calculate_average_intersection(series_builder, fold_frame, fold, **kwargs):
         series_builder)
     fold.fold_axis = np.mean(l2, axis=0)
 
-
-def _interpolate_fold_axis_rotation_angle(series_builder, fold_frame, fold, result, axis_wl=None, **kwargs):
-    """
-
-    Parameters
-    ----------
-    series_builder
-    fold_frame
-    fold
-    result
-    axis_wl
-
-    Kwargs
-    ------
-    lag : double
-        lag distance for s-variogram
-    nlags : int
-        number of lag (steps) for s-variogram
-
-    Returns
-    -------
-
-    """
-    far, fad = fold_frame.calculate_fold_axis_rotation(
-        series_builder)
-
-    axis_svariogram = SVariogram(fad, far)
-    axis_svariogram.calc_semivariogram(**kwargs)
-    result['axis_svariogram'] = axis_svariogram
-
-    if axis_wl is None:
-        axis_wl = axis_svariogram.find_wavelengths(**kwargs)[0]
-    guess = np.zeros(4)
-    guess[3] = axis_wl
-    if len(far) < len(guess):
-        logger.warning("Not enough data to fit curve")
-        fold.fold_axis_rotation = lambda x: -1
-    else:
-        try:
-            popt, pcov = curve_fit(fourier_series, fad,
-                                   np.tan(np.deg2rad(far)), guess)
-        except RuntimeError:
-            logger.info("Curve fit failed with intial guess, trying without guess")
-            try:
-                popt, pcov = curve_fit(fourier_series, fad,
-                                       np.tan(np.deg2rad(far)))
-            except RuntimeError:
-                logger.error("Could not fit fourier series")
-                popt = guess
-        logger.info('Fitted: %f %f %f %f' % (popt[0], popt[1], popt[2], popt[3]))
-        fold.fold_axis_rotation = lambda x: np.rad2deg(
-            np.arctan(
-                fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
-    result['axis_direction'] = fad
-    result['axis_rotation'] = far
-    result['axis_svario'] = axis_svariogram
-
-
 class GeologicalModel:
     """
     A geological model is the recipe for building a 3D model and includes
@@ -193,7 +63,7 @@ class GeologicalModel:
     of the model between 0 and 1.
     """
 
-    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40)):
+    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40),reuse_supports=False):
         """
         Parameters
         ----------
@@ -224,6 +94,8 @@ class GeologicalModel:
             self.scale_factor = np.max(lengths)
 
         self.bounding_box /= self.scale_factor
+        self.support = {}
+        self.reuse_supports = reuse_supports
 
     def _add_feature(self, feature):
         """
@@ -282,6 +154,16 @@ class GeologicalModel:
         self.data['Y'] /= self.scale_factor
         self.data['Z'] /= self.scale_factor
 
+        for h in all_heading():
+            if h not in self.data:
+                self.data[h] = np.nan
+            if h == 'w':
+                self.data[h] = 1.
+        if 'strike' in self.data and 'dip' in self.data:
+            mask = np.all(~np.isnan(self.data.loc[:,['strike','dip']]),axis=1)
+            self.data.loc[mask,gradient_vec_names()] = strike_dip_vector(self.data.loc[mask,'strike'],self.data.loc[mask,'dip'])
+            self.data.drop(['strike','dip'],axis=1,inplace=True)
+        #     self.data.loc
     def extend_model_data(self, newdata):
         """
         Extends the data frame
@@ -340,8 +222,11 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
-                           step_vector=step_vector)
+            mesh_id = 'mesh_{}'.format(nelements)
+            mesh = self.support.get(mesh_id,TetMesh(origin=bb[0, :], nsteps=nsteps,
+                           step_vector=step_vector))
+            if mesh_id not in self.support:
+                self.support[mesh_id] = mesh
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using PLI" % (mesh.ntetra))
 
@@ -356,8 +241,11 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,
-                                  step_vector=step_vector)
+            grid_id = 'grid_{}'.format(nelements)
+            grid = self.support.get(grid_id,StructuredGrid(origin=bb[0, :], nsteps=nsteps,
+                                  step_vector=step_vector))
+            if grid_id not in self.support:
+                self.support[grid_id] = grid
             logger.info("Creating regular grid with %i elements \n"
                         "for modelling using FDI" % grid.n_elements)
             return FDI(grid)
@@ -371,14 +259,15 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            mesh = TetMesh(origin=bb[0, :], nsteps=nsteps,
-                           step_vector=step_vector)
+            mesh = kwargs.get('mesh',TetMesh(origin=bb[0, :], nsteps=nsteps,
+                           step_vector=step_vector))
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
         if interpolatortype == 'Surfe' or interpolatortype == 'surfe' and surfe:
+            method = kwargs.get('method','horizons')
             logger.info("Using surfe interpolator")
-            return Surfe()
+            return Surfe(method)
         logger.warning("No interpolator")
         return interpolator
 
@@ -423,7 +312,6 @@ class GeologicalModel:
         self._add_feature(series_feature)
         result = {}
         result['feature'] = series_feature
-        # result['support'] = series_feature.get_interpolator().support
         return result
 
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
@@ -507,11 +395,33 @@ class GeologicalModel:
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(series_builder, fold_frame, fold)
         if fold.fold_axis is None:
-            fold_axis_fitter = kwargs.get('fold_axis_function', _interpolate_fold_axis_rotation_angle)
-            fold_axis_fitter(series_builder, fold_frame, fold, result, **kwargs)
+            far, fad = fold_frame.calculate_fold_axis_rotation(
+                series_builder)
+            result['axis_rotation']
+            result['axis_direction']
+            fold_axis_rotation = FoldRotationAngle(far, fad)
+            a_wl = kwargs.get("axis_wl", None)
+            if 'axis_function' in kwargs:
+                # allow predefined function to be used
+                fold_axis_rotation.set_function(kwargs['axis_function'])
+            else:
+                fold_axis_rotation.fit_fourier_series(wl=a_wl)
+            fold.fold_axis_rotation = fold_axis_rotation
         # give option of passing own fold limb rotation function
-        fold_limb_fitter = kwargs.get("fold_limb_function", _interpolate_fold_limb_rotation_angle)
-        fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
+        flr, fld = fold_frame.calculate_fold_limb_rotation(
+            series_builder)
+        result['foliation'] = fld
+        result['limb_rotation'] = flr
+        fold_limb_rotation = FoldRotationAngle(flr, fld)
+        l_wl = kwargs.get("limb_wl", None)
+        if 'limb_function' in kwargs:
+            # allow for predefined functions to be used
+            fold_limb_rotation.set_function(kwargs['limb_function'])
+        else:
+            fold_limb_rotation.fit_fourier_series(wl=l_wl)
+        fold.fold_limb_rotation = fold_limb_rotation
+        # fold_limb_fitter = kwargs.get("fold_limb_function", _interpolate_fold_limb_rotation_angle)
+        # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         self._add_faults(series_builder)
@@ -564,12 +474,32 @@ class GeologicalModel:
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(fold_frame_builder[0], fold_frame, fold)
+
+
         if fold.fold_axis is None:
-            _interpolate_fold_axis_rotation_angle(fold_frame_builder[0],
-                                                  fold_frame,
-                                                  fold, result, **kwargs)
-        _interpolate_fold_limb_rotation_angle(fold_frame_builder[0], fold_frame,
-                                              fold, result, **kwargs)
+            far, fad = fold_frame.calculate_fold_axis_rotation(
+                fold_frame_builder[0])
+            fold_axis_rotation = FoldRotationAngle(far, fad)
+            a_wl = kwargs.get("axis_wl", None)
+            if 'axis_function' in kwargs:
+                # allow predefined function to be used
+                fold_axis_rotation.set_function(kwargs['axis_function'])
+            else:
+                fold_axis_rotation.fit_fourier_series(wl=a_wl)
+            fold.fold_axis_rotation = fold_axis_rotation
+        # give option of passing own fold limb rotation function
+        flr, fld = fold_frame.calculate_fold_limb_rotation(
+            fold_frame_builder[0])
+        fold_limb_rotation = FoldRotationAngle(flr, fld)
+        l_wl = kwargs.get("limb_wl", None)
+        if 'limb_function' in kwargs:
+            # allow for predefined functions to be used
+            fold_limb_rotation.set_function(kwargs['limb_function'])
+        else:
+            fold_limb_rotation.fit_fourier_series(wl=l_wl)
+        fold.fold_limb_rotation = fold_limb_rotation
+        # fold_limb_fitter = kwargs.get("fold_limb_function", _interpolate_fold_limb_rotation_angle)
+        # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', None)
 
         for i in range(3):
@@ -829,7 +759,7 @@ class GeologicalModel:
         Returns
         -------
         """
-
+        points = points.copy()
         points[:, :] -= self.origin
         points /= self.scale_factor
         return points
