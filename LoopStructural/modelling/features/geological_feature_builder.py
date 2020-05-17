@@ -215,15 +215,7 @@ class GeologicalFeatureInterpolator:
                 )].to_numpy()
         else:
             return np.zeros(0,7)
-        #     self.interpolator.set_normal_constraints(normal_data)
-        # normal_data = self.data.loc[
-        #     mask, xyz_names() + normal_vec_names() + weight_name()].to_numpy()
-        # self.interpolator.set_normal_constraints(normal_data)
-        #
-        # header = xyz_names() + normal_vec_names() + weight_name()
-        # mask = np.all(~np.isnan(self.data.loc[:, normal_vec_names()].to_numpy()), axis=1)
-        # print('norm',self.data.loc[mask, header])
-        # return self.data.loc[mask, header]
+
 
     def get_data_locations(self):
         """
@@ -234,13 +226,6 @@ class GeologicalFeatureInterpolator:
 
         """
         return self.data.loc[:, xyz_names()].to_numpy()
-
-    def update_data_locations(self, locations):
-        print('tried to use update data locations')
-        i = 0
-        for d in self.data:
-            d.pos = locations[i, :]
-            i += 1
 
     def build(self, fold=None, fold_weights=None, data_region=None, **kwargs):
         """

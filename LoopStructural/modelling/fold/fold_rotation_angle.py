@@ -18,7 +18,7 @@ class FoldRotationAngle:
         self.svario = None
         if svario:
             self.svario = SVariogram(self.fold_frame_coordinate, self.rotation_angle)
-
+        self.fitted_params = None
     def fit_fourier_series(self, wl = None, lags = None, nlag = None, lag = None):
         if self.svario is None:
             self.svario = SVariogram(self.fold_frame_coordinate,
@@ -68,7 +68,7 @@ class FoldRotationAngle:
             self.fold_rotation_function = lambda x: np.rad2deg(
                 np.arctan(
                     fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
-
+            self.fitted_params = popt
     def __call__(self, fold_frame_coordinate):
         return self.fold_rotation_function(fold_frame_coordinate)
 

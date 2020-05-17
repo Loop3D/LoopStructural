@@ -395,8 +395,6 @@ class GeologicalModel:
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(series_builder, fold_frame, fold)
         if fold.fold_axis is None:
-            fold_axis_fitter = kwargs.get('fold_axis_function', _interpolate_fold_axis_rotation_angle)
-            fold_axis_fitter(series_builder, fold_frame, fold, result, **kwargs)
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 series_builder)
             fold_axis_rotation = FoldRotationAngle(far, fad)
