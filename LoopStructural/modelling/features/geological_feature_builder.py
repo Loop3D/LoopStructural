@@ -110,7 +110,7 @@ class GeologicalFeatureInterpolator:
         if self.get_norm_constraints().shape[0] > 0:
             constrained = True
 
-        if np.unique(self.get_value_constraints()[:,3]).shape[0]>0:
+        if np.unique(self.get_value_constraints()[:,3]).shape[0]>1:
             constrained = True
 
         if not constrained or force_constrained:

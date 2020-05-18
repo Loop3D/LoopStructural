@@ -397,8 +397,8 @@ class GeologicalModel:
         if fold.fold_axis is None:
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 series_builder)
-            result['axis_rotation']
-            result['axis_direction']
+            result['axis_rotation'] = far
+            result['axis_direction'] = fad
             fold_axis_rotation = FoldRotationAngle(far, fad)
             a_wl = kwargs.get("axis_wl", None)
             if 'axis_function' in kwargs:
