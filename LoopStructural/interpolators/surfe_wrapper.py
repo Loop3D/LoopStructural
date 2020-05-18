@@ -1,9 +1,9 @@
-import sys
+import sys, os
 
 from LoopStructural.utils.helper import get_vectors
 from .geological_interpolator import GeologicalInterpolator
 
-sys.path.append('/home/lgrose/dev/cpp/surfe/')
+# sys.path.append(os.environment['SURFE'])
 import surfepy
 import logging
 import numpy as np

@@ -1,5 +1,5 @@
 class UnconformityFeature:
-    def __init__(self,feature,value):
+    def __init__(self, feature, value):
         """
 
         Parameters
@@ -10,6 +10,11 @@ class UnconformityFeature:
         self.feature = feature
         self.value = value
         self.type = 'unconformity'
+        self.name = '{}_unconformity'.format(feature.name)
+
+    def set_model(self, model):
+        self.model = model
+
     def evaluate(self,pos):
         """
 
@@ -23,7 +28,7 @@ class UnconformityFeature:
         boolean
             true if above the unconformity, false if below
         """
-        return self.feature.evaluate_value(pos) > self.value
+        return self.feature.evaluate_value(pos) < self.value
 
     def evaluate_value(self,pos):
         """
@@ -37,7 +42,7 @@ class UnconformityFeature:
         -------
 
         """
-        self.feature.evaluate_value(pos)
+        return self.feature.evaluate_value(pos)
 
     def evaluate_gradient(self,pos):
         """
@@ -51,5 +56,5 @@ class UnconformityFeature:
         -------
 
         """
-        self.feature.evaluate_gradient(pos)
+        return self.feature.evaluate_gradient(pos)
 
