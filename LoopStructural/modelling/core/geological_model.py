@@ -319,11 +319,7 @@ class GeologicalModel:
         series_feature = series_builder.build(**kwargs)
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
-        for f in reversed(self.features):
-            if f.type == 'unconformity':
-                series_feature.add_region(
-                    lambda pos: f.evaluate(pos))
-                break
+        self._add_unconformity_above(series_feature)
         self._add_feature(series_feature)
         result = {}
         result['feature'] = series_feature
@@ -361,10 +357,8 @@ class GeologicalModel:
                 break
 
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
-        for f in reversed(self.features):
-            if f.type == 'unconformity':
-                fold_frame.add_region(lambda pos: f.evaluate_value(pos) <= 0)
-                break
+        for i in range(3):
+            self._add_unconformity_above(fold_frame[i])
         fold_frame.type = 'structuralframe'
         self._add_feature(fold_frame)
         result['feature'] = fold_frame
@@ -570,6 +564,30 @@ class GeologicalModel:
     def _add_unconformity_above(self, feature):
         """
 
+        Adds a region to the feature to prevent the value from being
+        interpolated where the unconformities exists above e.g.
+        if there is another feature above and the unconformity is at 0
+        then the features added below (after) will only be visible where the
+        uncomformity is <0
+
+        Parameters
+        ----------
+        feature - GeologicalFeature
+
+        Returns
+        -------
+
+        """
+        for f in reversed(self.features):
+            if f.type == 'unconformity':
+                feature.add_region(lambda pos: f.evaluate(pos))
+                break
+
+    def _add_unconformity_below(self, feature):
+        """
+        Adds a region to the features that represents the
+        unconformity so it is not evaluated below the unconformity
+
         Parameters
         ----------
         feature
@@ -578,11 +596,14 @@ class GeologicalModel:
         -------
 
         """
-        for f in reversed(self.features):
-            if f.type == 'unconformity':
-                print(f.value)
-                feature.add_region(lambda pos: f.evaluate(pos))
-                break
+        for f in self.features:
+            if f.type == 'series' and feature.feature.name != f.name:
+                f.add_region(lambda pos: ~feature.evaluate(pos))
+        # for f in reversed(self.features):
+        #     if f.type == 'unconformity':
+        #         feature.add_region(lambda pos: f.evaluate(pos))
+        #         break
+        #feature.add_region(lambda pos: ~uc.evaluate(pos))
 
     def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
         """
@@ -639,12 +660,40 @@ class GeologicalModel:
 
         # see if any unconformities are above this feature if so add region
         self._add_unconformity_above(uc_feature)
-
+        # self._add_unconformity_below(feature)#, uc_feature)
         self._add_feature(uc_feature)
+
         result = {}
         result['feature'] = uc_feature
         return result
+    def add_onlap_unconformity(self, feature, value):
+        """
+        Use an existing feature to add an unconformity to the model.
 
+        Parameters
+        ----------
+        feature : GeologicalFeature
+            existing geological feature
+        value : float
+            scalar value of isosurface that represents
+
+        Returns
+        -------
+
+        """
+        uc_feature = UnconformityFeature(feature, value)
+
+        # for f in self.features:
+        #     f.add_region(lambda pos: uc_feature.evaluate(pos))
+
+        # see if any unconformities are above this feature if so add region
+        # self._add_unconformity_above(uc_feature)
+        self._add_unconformity_below(uc_feature)#, uc_feature)
+        self._add_feature(uc_feature)
+
+        result = {}
+        result['feature'] = uc_feature
+        return result
     def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
         """
         Parameters
