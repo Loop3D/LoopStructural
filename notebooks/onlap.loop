@@ -1,0 +1,4 @@
+bounding_box : [ 548800. 7816600.  -11010.  552500. 7822000.   -8400.] 	
+feature_type : foliation 	type : strati2 	interpolatortype : PLI 	nelements : 10000.0 	solver : pyamg 	
+feature_type : foliation 	type : strati 	interpolatortype : PLI 	nelements : 10000.0 	solver : pyamg 	
+feature_type : onlap_unconformity 	type : strati 	
