@@ -1,5 +1,9 @@
+import logging
+
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import cg
+
+logger = logging.getLogger(__name__)
 
 class TetMesh:
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):
@@ -41,6 +45,7 @@ class TetMesh:
         self.property_gradients = {}
         self.n_elements = self.ntetra
         self.cg = None
+
     def barycentre(self, elements = None):
         """
         Return the barycentres of all tetrahedrons or of specified tetras using
@@ -198,8 +203,21 @@ class TetMesh:
         tetra_return[inside,:] = tetras[mask,:]
         return vertices_return, c_return, tetra_return, inside
 
-    def get_constant_gradient(self, region='everywhere'):
+    def get_constant_gradient(self, region):
+        """
+        Get the constant gradient for the specified nodes
+
+        Parameters
+        ----------
+        region : np.array(dtype=bool)
+            mask of nodes to calculate cg for
+
+        Returns
+        -------
+
+        """
         if self.cg is None:
+            logger.info("Running constant gradient")
             elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
             region = region.astype('int64')
 
@@ -241,7 +259,6 @@ class TetMesh:
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
 
         return tetras.reshape((tetras.shape[0]*tetras.shape[1],tetras.shape[2]))
-
 
     def get_element_gradients(self, elements = None):
         """
@@ -593,12 +610,9 @@ class TetMesh:
 
             global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
-            global_neighbour_idx = (neigh_cell[:, :, 0] + neigh_cell[:, :, 1] * \
-                                    self.n_cell_x + neigh_cell[:, :,
-                                                    2] * self.n_cell_x * self.n_cell_y) * 5 + mask[
-                                                                                              :,
-                                                                                              3]
-
+            global_neighbour_idx = (neigh_cell[:, :, 0] + neigh_cell[:, :, 1] *
+                                    self.n_cell_x + neigh_cell[:, :, 2] *
+                                    self.n_cell_x * self.n_cell_y) * 5 + mask[:, 3]
 
             global_neighbour_idx[~inside] = -1
             neighbours[logic, 1:] = global_neighbour_idx

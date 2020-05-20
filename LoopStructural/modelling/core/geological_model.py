@@ -38,6 +38,7 @@ from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.utils.exceptions import LoopBaseException
 
 logger = logging.getLogger(__name__)
 if not surfe:
@@ -104,6 +105,10 @@ class GeologicalModel:
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
+        self.parameters = {'features': [], 'model': {'bounding_box': self.origin.tolist() + self.maximum.tolist(),
+                                                     'rescale': rescale,
+                                                     'nsteps': nsteps,
+                                                     'reuse_supports': reuse_supports}}
 
     def _add_feature(self, feature):
         """
@@ -124,7 +129,7 @@ class GeologicalModel:
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info("Adding %s to model at location %i" % (
-            feature.name, len(self.features)))
+                feature.name, len(self.features)))
         feature.set_model(self)
 
     def set_model_data(self, data):
@@ -195,6 +200,18 @@ class GeologicalModel:
         data_temp['Y'] /= self.scale_factor
         data_temp['Z'] /= self.scale_factor
         self.data.concat([self.data, data_temp], sort=True)
+
+    def create_from_feature_list(self, features):
+        for f in features:
+            featuretype = f.pop('featuretype', None)
+            if featuretype is None:
+                raise LoopBaseException
+            if featuretype == 'strati':
+                self.create_and_add_foliation(f)
+            if featuretype == 'fault':
+                self.create_and_add_fault(f)
+            if featuretype == 'folded_strati':
+                self.create_and_add_folded_foliation(f)
 
     def get_interpolator(self, interpolatortype='PLI', nelements=5e5,
                          buffer=0.2, **kwargs):
@@ -298,7 +315,7 @@ class GeologicalModel:
         -------
         results dict
         """
-
+        self.parameters['features'].append({'feature_type': 'foliation', 'type': series_surface_data, **kwargs})
         interpolator = self.get_interpolator(**kwargs)
         series_builder = GeologicalFeatureInterpolator(interpolator,
                                                        name=series_surface_data,
@@ -337,6 +354,7 @@ class GeologicalModel:
         Returns
         -------
         """
+        self.parameters['features'].append({'feature_type': 'fold_frame', 'type': foldframe_data, **kwargs})
         result = {}
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
@@ -383,7 +401,8 @@ class GeologicalModel:
         -------
         dict
         """
-
+        self.parameters['features'].append(
+            {'feature_type': 'fold_foliation', 'type': foliation_data, 'fold_frame': fold_frame, **kwargs})
         result = {}
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
@@ -468,6 +487,8 @@ class GeologicalModel:
         -------
 
         """
+        self.parameters['features'].append(
+            {'feature_type': 'folded_fold_frame', 'type': fold_frame_data, 'fold_frame': fold_frame, **kwargs})
         result = {}
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
@@ -603,7 +624,7 @@ class GeologicalModel:
         #     if f.type == 'unconformity':
         #         feature.add_region(lambda pos: f.evaluate(pos))
         #         break
-        #feature.add_region(lambda pos: ~uc.evaluate(pos))
+        # feature.add_region(lambda pos: ~uc.evaluate(pos))
 
     def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
         """
@@ -615,6 +636,7 @@ class GeologicalModel:
         Returns
         -------
         """
+        # self.parameters['features'].append({'feature_type':'unconformity','type':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
         unconformity_feature_builder = GeologicalFeatureInterpolator(
             interpolator, name=unconformity_surface_data)
@@ -653,6 +675,7 @@ class GeologicalModel:
         -------
 
         """
+        self.parameters['features'].append({'feature_type': 'unconformity', 'feature': feature, 'value': value})
         uc_feature = UnconformityFeature(feature, value)
 
         # for f in self.features:
@@ -666,6 +689,7 @@ class GeologicalModel:
         result = {}
         result['feature'] = uc_feature
         return result
+
     def add_onlap_unconformity(self, feature, value):
         """
         Use an existing feature to add an unconformity to the model.
@@ -681,6 +705,8 @@ class GeologicalModel:
         -------
 
         """
+        self.parameters['features'].append({'feature_type': 'onlap', 'feature': feature, 'value': value})
+
         uc_feature = UnconformityFeature(feature, value)
 
         # for f in self.features:
@@ -688,12 +714,13 @@ class GeologicalModel:
 
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(uc_feature)
-        self._add_unconformity_below(uc_feature)#, uc_feature)
+        self._add_unconformity_below(uc_feature)  # , uc_feature)
         self._add_feature(uc_feature)
 
         result = {}
         result['feature'] = uc_feature
         return result
+
     def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
         """
         Parameters
@@ -707,6 +734,9 @@ class GeologicalModel:
         -------
         dictionary
         """
+        self.parameters['features'].append(
+            {'feature_type': 'fault', 'type': fault_surface_data, 'displacement': displacement, **kwargs})
+
         result = {}
         displacement_scaled = displacement / self.scale_factor
         # create fault frame

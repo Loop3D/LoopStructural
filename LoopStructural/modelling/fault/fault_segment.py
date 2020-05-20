@@ -1,7 +1,7 @@
 import logging
 
 from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
-
+from LoopStructural.modelling.fault.fault_function import BaseFault
 logger = logging.getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
@@ -35,6 +35,8 @@ class FaultSegment:
         self.name = kwargs.get('name', self.faultframe.name)
         self.displacement = displacement
         self.faultfunction = faultfunction
+        if faultfunction == 'BaseFault':
+            self.faultfunction = BaseFault.fault_displacement
         self.steps = steps
         self.regions = []
         self.faults_enabled = True

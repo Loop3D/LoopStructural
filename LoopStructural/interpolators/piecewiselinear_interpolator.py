@@ -220,19 +220,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                                   idc[outside],
                                                   name='norm')
 
-    def add_tangent_ctr_pts(self, w=1.0):
-        """
-
-        Parameters
-        ----------
-        w
-
-        Returns
-        -------
-
-        """
-        return
-
     def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
         """
         Adds value constraints to the least squares system
@@ -309,18 +296,3 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                                   B[outside], idc[outside, :])
 
 
-        # nodes = self.support.nodes[self.support.get_elements()[elements]]
-        # vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
-        # vol = np.abs(np.linalg.det(vecs)) / 6
-        # d_t = self.support.get_element_gradients(elements)
-        # dot_p = np.einsum('ij,ij->i', normals, normals)[:, None]
-        # mask = np.abs(dot_p) > 0
-        # normals[mask[:, 0], :] = normals[mask[:, 0], :] / dot_p[mask][:, None]
-        # magnitude = np.einsum('ij,ij->i', normals, normals)
-        # normals[magnitude > 0] = normals[magnitude > 0] / magnitude[
-        #     magnitude > 0, None]
-        # A = np.einsum('ij,ijk->ik', normals, d_t)
-        # A *= vol[:, None]
-        # idc = self.support.get_elements()[elements]
-        # B = np.zeros(len(elements))
-        # self.add_constraints_to_least_squares(A * w, B, idc)

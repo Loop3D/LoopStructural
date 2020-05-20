@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 from LoopStructural.utils.helper import xyz_names, val_name, normal_vec_names, \
     weight_name, gradient_vec_names, tangent_vec_names
 from LoopStructural.modelling.features import GeologicalFeature
-from LoopStructural.utils.helper import get_data_axis_aligned_bounding_box
+from LoopStructural.utils.helper import get_data_bounding_box_map as get_data_bounding_box
 
 
 class GeologicalFeatureInterpolator:
@@ -247,7 +247,7 @@ class GeologicalFeatureInterpolator:
 
         if data_region is not None:
             xyz = self.get_data_locations()
-            bb, region = get_data_axis_aligned_bounding_box(xyz, data_region)
+            bb, region = get_data_bounding_box(xyz, data_region)
             self.interpolator.set_region(region=region)
         if not self.data_added:
             self.add_data_to_interpolator(**kwargs)

@@ -37,7 +37,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'dz': 1.,
                                       'cpw': 1.,
                                       'gpw': 1.,
-                                      'npw': 1.}
+                                      'npw': 1.,
+                                      'tpw': 1.}
 
         self.vol = grid.step_vector[0] * grid.step_vector[1] * \
                    grid.step_vector[2]
@@ -119,6 +120,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             np.sqrt(self.vol) * self.interpolation_weights['gpw'])
         self.add_vaue_constraint(
             np.sqrt(self.vol) * self.interpolation_weights['cpw'])
+        self.add_tangent_constraint(
+            np.sqrt(self.vol) * self.interpolation_weights['tpw']
+        )
 
     def copy(self):
         """
@@ -284,7 +288,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
-            A = np.einsum('ij,ijk->ik', vector, T)
+            A = np.einsum('ij,ijk->ik', vector[inside,:3], T)
 
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :])

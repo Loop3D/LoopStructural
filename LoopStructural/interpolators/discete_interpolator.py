@@ -236,6 +236,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += idc[outside].shape[0]
 
+    def add_tangent_ctr_pts(self, w=1.0):
+        """
+
+        Parameters
+        ----------
+        w
+
+        Returns
+        -------
+
+        """
+        points = self.get_tangent_constraints()
+        if points.shape[0] > 1:
+            self.add_gradient_orthogonal_constraint(points[:,:3],points[:,3:6],w)
+
     def build_matrix(self, square=True, damp=True):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy
