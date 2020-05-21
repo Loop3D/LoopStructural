@@ -31,11 +31,8 @@ from LoopStructural.modelling.features import \
     StructuralFrameBuilder
 from LoopStructural.modelling.features import UnconformityFeature
 from LoopStructural.modelling.fold.fold import FoldEvent
-from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
-    fourier_series
 from LoopStructural.modelling.fold import FoldRotationAngle
 from LoopStructural.modelling.fold.foldframe import FoldFrame
-from LoopStructural.modelling.fold.svariogram import SVariogram
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
 from LoopStructural.utils.exceptions import LoopBaseException
@@ -105,6 +102,7 @@ class GeologicalModel:
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
+        self.stratigraphic_column = None
         self.parameters = {'features': [], 'model': {'bounding_box': self.origin.tolist() + self.maximum.tolist(),
                                                      'rescale': rescale,
                                                      'nsteps': nsteps,
@@ -200,6 +198,24 @@ class GeologicalModel:
         data_temp['Y'] /= self.scale_factor
         data_temp['Z'] /= self.scale_factor
         self.data.concat([self.data, data_temp], sort=True)
+
+    def set_stratigraphic_column(self, stratigraphic_column):
+        """
+        Adds a stratigraphic column to the model
+
+        Parameters
+        ----------
+        stratigraphic_column : dictionary
+
+        Returns
+        -------
+
+        Notes
+        -----
+        stratigraphic_column is a nested dictionary with the format {'group':{'series1': {'min':0., 'max':10.,'id':0} } }
+
+        """
+        self.stratigraphic_column = stratigraphic_column
 
     def create_from_feature_list(self, features):
         for f in features:
@@ -909,3 +925,18 @@ class GeologicalModel:
         locs = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         np.random.shuffle(locs)
         return locs
+
+    def evaluate_model(self, xyz):
+        strat_id = np.zeros(xyz.shape[0],dtype=int)
+        for group in self.stratigraphic_column.keys():
+            feature_id = self.feature_name_index.get(group, -1)
+            if feature_id >= 0:
+                feature = self.features[feature_id]
+                vals = feature.evaluate_value(xyz)
+                for series in self.stratigraphic_column[group].values():
+                    strat_id[np.logical_and(vals < series.get('max',feature.max()), vals > series.get('min',feature.min()))] = series['id']
+            if feature_id == -1:
+                logger.error('Model does not contain {}'.format(group))
+        return strat_id
+
+

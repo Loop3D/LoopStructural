@@ -120,7 +120,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             np.sqrt(self.vol) * self.interpolation_weights['gpw'])
         self.add_vaue_constraint(
             np.sqrt(self.vol) * self.interpolation_weights['cpw'])
-        self.add_tangent_constraint(
+        self.add_tangent_ctr_pts(
             np.sqrt(self.vol) * self.interpolation_weights['tpw']
         )
 

@@ -157,6 +157,55 @@ def create_surface(bounding_box, nstep):
     tri = np.vstack([corner_gi[:, :3], corner_gi[:, 1:]])
     return tri, xx.flatten(), yy.flatten()
 
+def create_box(bounding_box, nsteps):
+    tri, xx, yy = create_surface(bounding_box[0:2, :], nsteps[0:2])
+
+    zz = np.zeros(xx.shape)
+    zz[:] = bounding_box[1, 2]
+
+    tri = np.vstack([tri, tri + np.max(tri) + 1])
+    xx = np.hstack([xx, xx])
+    yy = np.hstack([yy, yy])
+
+    z = np.zeros(zz.shape)
+    z[:] = bounding_box[0, 2]
+    zz = np.hstack([zz, z])
+    # y faces
+    t, x, z = create_surface(bounding_box[:, [0, 2]], nsteps[[0, 2]])
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+
+    y = np.zeros(x.shape)
+    y[:] = bounding_box[0, 1]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+    y[:] = bounding_box[1, 1]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    # x faces
+    t, y, z = create_surface(bounding_box[:, [1, 2]], nsteps[[1, 2]])
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+    x = np.zeros(y.shape)
+    x[:] = bounding_box[0, 0]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+    x[:] = bounding_box[1, 0]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    points = np.zeros((len(xx), 3))  #
+    points[:, 0] = xx
+    points[:, 1] = yy
+    points[:, 2] = zz
+    return points, tri
 
 def get_vectors(normal):
     strikedip = normal_vector_to_strike_and_dip(normal)
