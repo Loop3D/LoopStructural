@@ -255,7 +255,7 @@ class FaultSegment:
                 d[mask2] = self.faultfunction(gx[mask2], gy[mask2], gz[mask2])
             d *= self.displacement
             # normalise when length is >0
-            g_mag = np.linalg.norm(g[mask], axis=1)
+            g_mag = np.linalg.norm(g[mask2], axis=1)
             g[g_mag > 0.] /= g_mag[g_mag > 0, None]
             # multiply displacement vector by the displacement magnitude for
             # step
