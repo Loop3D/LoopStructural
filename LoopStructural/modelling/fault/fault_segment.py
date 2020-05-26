@@ -217,12 +217,15 @@ class FaultSegment:
             gz = gz_future.result()
 
         d = np.zeros(gx.shape)
-        d[np.isnan(gx)] = 0
+        mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
+        mask = np.logical_and(mask,~np.isnan(gz))
+        d[~mask] = 0
         # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-        d[gx > 0] = 1.
-        d[gx < 0] = 0.
+        d[mask][gx[mask] > 0] = 1.
+        d[mask][gx[mask] < 0] = 0.
+        # d[gx < 0] = 0.
         if self.faultfunction is not None:
-            d = self.faultfunction(gx, gy, gz)
+            d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
         mask = np.abs(d) > 0.
         d *= self.displacement
         # calculate the fault frame for the evaluation points
@@ -240,16 +243,19 @@ class FaultSegment:
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
-
             d = np.zeros(gx.shape)
-            d[np.isnan(gx)] = 0
-            d[gx > 0] = 1.
-            d[gx < 0] = 0.
+            mask2 = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
+            mask2 = np.logical_and(mask2, ~np.isnan(gz))
+            d[~mask2] = 0
+            # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
+            d[mask2][gx[mask2] > 0] = 1.
+            d[mask2][gx[mask2] < 0] = 0.
+            # d[gx < 0] = 0.
             if self.faultfunction is not None:
-                d = self.faultfunction(gx, gy, gz)
+                d[mask2] = self.faultfunction(gx[mask2], gy[mask2], gz[mask2])
             d *= self.displacement
             # normalise when length is >0
-            g_mag = np.linalg.norm(g, axis=1)
+            g_mag = np.linalg.norm(g[mask], axis=1)
             g[g_mag > 0.] /= g_mag[g_mag > 0, None]
             # multiply displacement vector by the displacement magnitude for
             # step
