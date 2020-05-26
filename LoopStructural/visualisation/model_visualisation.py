@@ -319,6 +319,7 @@ class LavaVuModelViewer:
         name = feature.name
         add_grad = True
         add_value = True
+        add_tang = True
         if 'name' in kwargs:
             name = kwargs['name']
             del kwargs['name']
@@ -326,9 +327,12 @@ class LavaVuModelViewer:
             add_grad = kwargs['grad']
         if 'value' in kwargs:
             add_value = kwargs['value']
+        if 'tang' in kwargs:
+            add_tang = kwargs['tang']
         grad = feature.builder.get_gradient_constraints()
         norm = feature.builder.get_norm_constraints()
         value = feature.builder.get_value_constraints()
+        tang = feature.builder.get_tangent_constraints()
         if grad.shape[0] > 0 and add_grad:
             self.add_vector_data(grad[:, :3], grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
@@ -340,6 +344,10 @@ class LavaVuModelViewer:
             kwargs['range'] = [feature.min(), feature.max()]
             self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp",
                                 **kwargs)
+        if tang.shape[0] > 0 and add_tang:
+            self.add_vector_data(tang[:, :3], tang[:, 3:6], name + "_tang_cp",
+                                 **kwargs)
+
 
     def add_points(self, points, name, **kwargs):
         """

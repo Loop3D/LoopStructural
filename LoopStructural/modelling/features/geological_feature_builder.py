@@ -194,9 +194,15 @@ class GeologicalFeatureInterpolator:
         -------
         numpy array
         """
-        header = xyz_names() + tangent_vec_names() + weight_name()
-        mask = np.all(~np.isnan(self.data.loc[:, tangent_vec_names()].to_numpy()), axis=1)
-        return self.data.loc[mask, header]
+        mask = np.all(
+            ~np.isnan(self.data.loc[:, tangent_vec_names()].to_numpy()),
+            axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[
+                mask, xyz_names() + tangent_vec_names() + weight_name(
+                )].to_numpy()
+        else:
+            return np.zeros(0, 7)
 
     def get_norm_constraints(self):
         """
