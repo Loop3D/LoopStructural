@@ -3,12 +3,18 @@ import sys, os
 from LoopStructural.utils.helper import get_vectors
 from .geological_interpolator import GeologicalInterpolator
 
-# sys.path.append(os.environment['SURFE'])
-import surfepy
 import logging
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+if 'SURFE' in os.environ:
+    sys.path.append(os.environ['SURFE'])
+if 'SURFE' not in os.environ:
+    logger.error("Please add SURFE to your environment variables to specify the location \n "
+                 "of the SURFE binaries")
+import surfepy
+
 
 
 class SurfeRBFInterpolator(GeologicalInterpolator):
