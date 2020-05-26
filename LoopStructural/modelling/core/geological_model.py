@@ -212,7 +212,12 @@ class GeologicalModel:
 
         Notes
         -----
-        stratigraphic_column is a nested dictionary with the format {'group':{'series1': {'min':0., 'max':10.,'id':0} } }
+        stratigraphic_column is a nested dictionary with the format
+        {'group':
+                {'series1':
+                            {'min':0., 'max':10.,'id':0}
+                }
+        }
 
         """
         self.stratigraphic_column = stratigraphic_column
@@ -342,11 +347,7 @@ class GeologicalModel:
             logger.warning("No data for %s, skipping" % series_surface_data)
             return
         series_builder.add_data_from_data_frame(series_data)
-        for f in reversed(self.features):
-            if f.type == 'fault':
-                series_builder.add_fault(f)
-            if f.type == 'unconformity':
-                break
+        self._add_faults(series_builder)
 
         # build feature
         series_feature = series_builder.build(**kwargs)
@@ -381,14 +382,9 @@ class GeologicalModel:
         # add data
         fold_frame_data = self.data[self.data['type'] == foldframe_data]
         fold_frame_builder.add_data_from_data_frame(fold_frame_data)
-        for f in reversed(self.features):
-            if f.type == 'fault':
-                fold_frame_builder[0].add_fault(f)
-                fold_frame_builder[1].add_fault(f)
-                fold_frame_builder[2].add_fault(f)
-
-            if f.type == 'unconformity':
-                break
+        self._add_faults(fold_frame_builder[0])
+        self._add_faults(fold_frame_builder[1])
+        self._add_faults(fold_frame_builder[2])
 
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
         for i in range(3):
@@ -560,14 +556,9 @@ class GeologicalModel:
         # build feature
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
-        for f in reversed(self.features):
-            if f.type == 'fault':
-                fold_frame_builder[0].add_fault(f)
-                fold_frame_builder[1].add_fault(f)
-                fold_frame_builder[2].add_fault(f)
-
-            if f.type == 'unconformity':
-                break
+        self._add_faults(fold_frame_builder[0])
+        self._add_faults(fold_frame_builder[1])
+        self._add_faults(fold_frame_builder[2])
         fold_frame = fold_frame_builder.build(**kwargs, frame=FoldFrame)
         fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region
@@ -581,7 +572,7 @@ class GeologicalModel:
 
         return result
 
-    def _add_faults(self, feature_builder):
+    def _add_faults(self, feature_builder, features=None):
         """
 
         Parameters
@@ -592,11 +583,13 @@ class GeologicalModel:
         -------
 
         """
-        for f in reversed(self.features):
+        if features is None:
+            features = self.features
+        for f in reversed(features):
             if f.type == 'fault':
                 feature_builder.add_fault(f)
-            if f.type == 'unconformity':
-                break
+            # if f.type == 'unconformity':
+            #     break
 
     def _add_unconformity_above(self, feature):
         """
@@ -832,15 +825,10 @@ class GeologicalModel:
                 fault_frame_builder[i].interpolator.add_equality_constraints(
                     idc[mask], val[mask])
         # check if this fault overprint any existing faults exist in the stack
-        overprinted = kwargs.get('overprinted', None)
-        for f in reversed(self.features):
-            if overprinted is not None:
-                if f.type == 'fault' and f.name in overprinted:
-                    fault_frame_builder[0].add_fault(f)
-                    fault_frame_builder[1].add_fault(f)
-                    fault_frame_builder[2].add_fault(f)
-            if f.type == 'unconformity':
-                break
+        overprinted = kwargs.get('overprinted', [])
+        self._add_faults(fault_frame_builder[0],overprinted)
+        self._add_faults(fault_frame_builder[1],overprinted)
+        self._add_faults(fault_frame_builder[2],overprinted)
 
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:

@@ -12,6 +12,9 @@ class UnconformityFeature:
         self.type = 'unconformity'
         self.name = '{}_unconformity'.format(feature.name)
 
+    def add_region(self, region):
+        # self.feature.add_region(region)
+        pass
     def set_model(self, model):
         self.model = model
 
