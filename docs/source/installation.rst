@@ -187,7 +187,7 @@ Make sure the LoopStructural environment is activated to run this command.
 
     LoopStructural
     cd ~
-    git clone --recursive http://git.tiker.net/trees/meshpy.git
+    git clone --recursive https://git.tiker.net/trees/meshpy.git
     cd meshpy
     python setup.py install
 
@@ -202,7 +202,7 @@ This should run the following commands:
 
 .. code-block::
 
-    . ${LoopStructural_ENV}/bin/activate  &&
+    . ${LOOP_ENV}/bin/activate  &&
     pip3 install -r requirements.txt &&
     python3 setup.py install build_ext --inplace;
 
@@ -273,16 +273,29 @@ You can then navigate to localhost:8888 or the port specified.
 Linux
 -----
 
-LoopStructural can be easily installed using a Makefile once a few things are set up. Firstly, you need to add an environment variable to your system. LoopStructural_ENV, this can be done by adding `export LoopStructural_VENV=$YOUR_PATH_TO_VIRTUAL_ENVIRONMENT` to the `.bashrc` file. Make sure the path is updated to a directory in your system where you want to save the python virtual environment. It could be for example where you clone this repository and a subfolder called venv or LoopStructural.
+LoopStructural can be easily installed using a Makefile once a few things are set up. Firstly, you need to add an environment variable to your system. LOOP_ENV, this can be done by adding `export LOOP_ENV=$YOUR_PATH_TO_VIRTUAL_ENVIRONMENT` to the `.bashrc` file. Make sure the path is updated to a directory in your system where you want to save the python virtual environment. It could be for example where you clone this repository and a subfolder called venv or LoopStructural.
 
-Once you have the environment variable you can run the command `make dependencies` which will install the required dependencies for LoopStructural:
+Once you have the environment variable you can run the command `make dependencies` (or `make dependencies.fc` for Fedora) which will install the required dependencies for LoopStructural:
 
-Required dependencies
+Required dependencies for Ubuntu
+* python3
+* python3-venv
 * pybind11-dev
 * mesa-common-dev
 * mesa-utils
-* libgl1mesa-dev
-`sudo apt-get install pybind11-dev mesa-common-dev mesa-utils libl1mesa-dev`
+* libgl1-mesa-dev
+* gcc
+* g++
+`sudo apt-get install python3 python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++`
+
+Required dependencies for Fedora
+* python3
+* python3-devel
+* pybind11-devel
+* mesa-libGL-devel
+* gcc
+* g++
+`sudo dnf install python3 python3-devel pybind11-devel mesa-libGL-devel gcc g++`
 
 Once these are installed you can run `make venv` to create a new python virtual environment in the location you specified. If a python environment already exists then this will be used.
 
