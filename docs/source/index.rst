@@ -17,7 +17,7 @@ generalised radial basis functions provided by Surfe.
    issues
    theory
    API
+   auto_examples/index
 
 .. automodule:: LoopStructural
 
-.. include:: auto_examples/index.rst
