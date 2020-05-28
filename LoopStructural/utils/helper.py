@@ -1,87 +1,133 @@
 import logging
 
 import numpy as np
-from sklearn.decomposition import pca
+from sklearn.decomposition import PCA
 
 logger = logging.getLogger(__name__)
 
+
 def get_data_axis_aligned_bounding_box(xyz, buffer):
-    minx = np.min(xyz[:,0])
-    maxx = np.max(xyz[:,0])
-    miny = np.min(xyz[:,1])
-    maxy = np.max(xyz[:,1])
-    minz = np.min(xyz[:,2])
-    maxz = np.max(xyz[:,2])
+    minx = np.min(xyz[:, 0])
+    maxx = np.max(xyz[:, 0])
+    miny = np.min(xyz[:, 1])
+    maxy = np.max(xyz[:, 1])
+    minz = np.min(xyz[:, 2])
+    maxz = np.max(xyz[:, 2])
 
-    xlen = maxx-minx
-    ylen = maxy-miny
-    zlen = maxz-minz
-    length = np.max([xlen,ylen,zlen])
-    minx-=length*buffer
-    maxx+=length*buffer
+    xlen = maxx - minx
+    ylen = maxy - miny
+    zlen = maxz - minz
+    length = np.max([xlen, ylen, zlen])
+    minx -= length * buffer
+    maxx += length * buffer
 
-    miny-=length*buffer
-    maxy+=length*buffer
+    miny -= length * buffer
+    maxy += length * buffer
 
-    minz-=length*buffer
-    maxz+=length*buffer
+    minz -= length * buffer
+    maxz += length * buffer
 
-    bb = np.array([[minx,miny,minz],
-                   [maxx,maxy,maxz]
+    bb = np.array([[minx, miny, minz],
+                   [maxx, maxy, maxz]
                    ])
+
     def region(xyz):
         # print(xyz)
         # print(bb)
         b = np.ones(xyz.shape[0]).astype(bool)
-        b = np.logical_and(b,xyz[:,0]>minx)
-        b = np.logical_and(b,xyz[:,0]<maxx)
-        b = np.logical_and(b,xyz[:,1]>miny)
-        b = np.logical_and(b,xyz[:,1]<maxy)
+        b = np.logical_and(b, xyz[:, 0] > minx)
+        b = np.logical_and(b, xyz[:, 0] < maxx)
+        b = np.logical_and(b, xyz[:, 1] > miny)
+        b = np.logical_and(b, xyz[:, 1] < maxy)
         # b = np.logical_and(b,xyz[:,2]>minz)
         # b = np.logical_and(b,xyz[:,2]<maxz)
         return b
+
     return bb, region
 
-def get_data_bounding_box(xyz, buffer):
+def get_data_bounding_box_map(xyz, buffer):
     # find the aligned coordinates box using pca
-    modelpca = pca.PCA(n_components=3)
+    modelpca = PCA(n_components=3)
     modelpca.fit(xyz)
     # transform the data to this new coordinate then find extents
     transformed_xyz = modelpca.transform(xyz)
-    minx = np.min(xyz[:,0])
-    maxx = np.max(xyz[:,0])
-    miny = np.min(xyz[:,1])
-    maxy = np.max(xyz[:,1])
-    minz = np.min(xyz[:,2])
-    maxz = np.max(xyz[:,2])
+    minx = np.min(xyz[:, 0])
+    maxx = np.max(xyz[:, 0])
+    miny = np.min(xyz[:, 1])
+    maxy = np.max(xyz[:, 1])
+    minz = np.min(xyz[:, 2])
+    maxz = np.max(xyz[:, 2])
 
-    xlen = maxx-minx
-    ylen = maxy-miny
-    zlen = maxz-minz
+    xlen = maxx - minx
+    ylen = maxy - miny
+    zlen = maxz - minz
+    length = np.max([xlen, ylen, zlen])
+    minx -= buffer
+    maxx += buffer
 
-    minx-=xlen*buffer
-    maxx+=xlen*buffer
+    miny -= buffer
+    maxy += buffer
 
-    miny-=ylen*buffer
-    maxy+=ylen*buffer
+    minz -= buffer
+    maxz += buffer
 
-    minz-=zlen*buffer
-    maxz+=zlen*buffer
-
-    bb = np.array([[minx,miny,minz],
-                   [maxx,maxy,maxz]
+    bb = np.array([[minx, miny, minz],
+                   [maxx, maxy, maxz]
                    ])
 
     def region(xyz):
         b = np.ones(xyz.shape[0]).astype(bool)
-        b = np.logical_and(b,xyz[:,0]>minx)
-        b = np.logical_and(b,xyz[:,0]<maxx)
-        b = np.logical_and(b,xyz[:,1]>miny)
-        b = np.logical_and(b,xyz[:,1]<maxy)
-        b = np.logical_and(b,xyz[:,2]>minz)
-        b = np.logical_and(b,xyz[:,2]<maxz)
+        b = np.logical_and(b, xyz[:, 0] > minx)
+        b = np.logical_and(b, xyz[:, 0] < maxx)
+        b = np.logical_and(b, xyz[:, 1] > miny)
+        b = np.logical_and(b, xyz[:, 1] < maxy)
+
         return b
+
     return bb, region
+def get_data_bounding_box(xyz, buffer):
+    # find the aligned coordinates box using pca
+    modelpca = PCA(n_components=3)
+    modelpca.fit(xyz)
+    # transform the data to this new coordinate then find extents
+    transformed_xyz = modelpca.transform(xyz)
+    minx = np.min(xyz[:, 0])
+    maxx = np.max(xyz[:, 0])
+    miny = np.min(xyz[:, 1])
+    maxy = np.max(xyz[:, 1])
+    minz = np.min(xyz[:, 2])
+    maxz = np.max(xyz[:, 2])
+
+    xlen = maxx - minx
+    ylen = maxy - miny
+    zlen = maxz - minz
+    length = np.max([xlen,ylen,zlen])
+    minx -= length * buffer
+    maxx += length * buffer
+
+    miny -= length * buffer
+    maxy += length * buffer
+
+    minz -= length * buffer
+    maxz += length * buffer
+
+    bb = np.array([[minx, miny, minz],
+                   [maxx, maxy, maxz]
+                   ])
+
+    def region(xyz):
+        b = np.ones(xyz.shape[0]).astype(bool)
+        b = np.logical_and(b, xyz[:, 0] > minx)
+        b = np.logical_and(b, xyz[:, 0] < maxx)
+        b = np.logical_and(b, xyz[:, 1] > miny)
+        b = np.logical_and(b, xyz[:, 1] < maxy)
+        b = np.logical_and(b, xyz[:, 2] > minz)
+        b = np.logical_and(b, xyz[:, 2] < maxz)
+        return b
+
+    return bb, region
+
+
 def plunge_and_plunge_dir_to_vector(plunge, plunge_dir):
     plunge = np.deg2rad(plunge)
     plunge_dir = np.deg2rad(plunge_dir)
@@ -111,11 +157,60 @@ def create_surface(bounding_box, nstep):
     tri = np.vstack([corner_gi[:, :3], corner_gi[:, 1:]])
     return tri, xx.flatten(), yy.flatten()
 
+def create_box(bounding_box, nsteps):
+    tri, xx, yy = create_surface(bounding_box[0:2, :], nsteps[0:2])
+
+    zz = np.zeros(xx.shape)
+    zz[:] = bounding_box[1, 2]
+
+    tri = np.vstack([tri, tri + np.max(tri) + 1])
+    xx = np.hstack([xx, xx])
+    yy = np.hstack([yy, yy])
+
+    z = np.zeros(zz.shape)
+    z[:] = bounding_box[0, 2]
+    zz = np.hstack([zz, z])
+    # y faces
+    t, x, z = create_surface(bounding_box[:, [0, 2]], nsteps[[0, 2]])
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+
+    y = np.zeros(x.shape)
+    y[:] = bounding_box[0, 1]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+    y[:] = bounding_box[1, 1]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    # x faces
+    t, y, z = create_surface(bounding_box[:, [1, 2]], nsteps[[1, 2]])
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+    x = np.zeros(y.shape)
+    x[:] = bounding_box[0, 0]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    tri = np.vstack([tri, t + np.max(tri) + 1])
+    x[:] = bounding_box[1, 0]
+    xx = np.hstack([xx, x])
+    zz = np.hstack([zz, z])
+    yy = np.hstack([yy, y])
+
+    points = np.zeros((len(xx), 3))  #
+    points[:, 0] = xx
+    points[:, 1] = yy
+    points[:, 2] = zz
+    return points, tri
 
 def get_vectors(normal):
     strikedip = normal_vector_to_strike_and_dip(normal)
     strike_vec = get_strike_vector(strikedip[:, 0])
-    dip_vec = np.cross(strike_vec,normal,axisa=0,axisb=1).T#(strikedip[:, 0], strikedip[:, 1])
+    dip_vec = np.cross(strike_vec, normal, axisa=0, axisb=1).T  # (strikedip[:, 0], strikedip[:, 1])
     return strike_vec, dip_vec
 
 
@@ -193,6 +288,35 @@ def normal_vector_to_strike_and_dip(normal_vector):
     normal_vector /= np.linalg.norm(normal_vector, axis=1)[:, None]
     dip = np.rad2deg(np.arccos(normal_vector[:, 2]))
     strike = -np.rad2deg(np.arctan2(normal_vector[:, 1], normal_vector[:,
-                                                        0]))  # atan2(v2[1],v2[0])*rad2deg;
+                                                         0]))  # atan2(v2[1],v2[0])*rad2deg;
 
     return np.array([strike, dip]).T
+
+
+def xyz_names():
+    return ['X', 'Y', 'Z']
+
+
+def normal_vec_names():
+    return ['nx', 'ny', 'nz']
+
+
+def tangent_vec_names():
+    return ['tx', 'ty', 'tz']
+
+
+def gradient_vec_names():
+    return ['gx', 'gy', 'gz']
+
+
+def weight_name():
+    return ['w']
+
+
+def val_name():
+    return ['val']
+
+
+def all_heading():
+    return xyz_names() + normal_vec_names() + tangent_vec_names() + \
+           gradient_vec_names() + weight_name() + val_name()

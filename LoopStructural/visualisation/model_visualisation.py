@@ -5,7 +5,7 @@ import numpy as np
 from lavavu.vutils import is_notebook
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 
-from LoopStructural.utils.helper import create_surface, get_vectors
+from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,7 @@ class LavaVuModelViewer:
             logger.error("Plot area has not been defined.")
         self.bounding_box = np.array(self.bounding_box)
         self.nsteps = np.array(self.nsteps)
+        self.model = model
         # prerotate to a nice view
         # self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
 
@@ -191,8 +192,9 @@ class LavaVuModelViewer:
             except ValueError:
                 logger.warning("no surface to mesh, skipping")
                 continue
-            name = geological_feature.name + '_iso_%f' % isovalue
+            name = geological_feature.name
             name = kwargs.get('name', name)
+            name += '_iso_%f' % isovalue
             surf = self.lv.triangles(name)
             surf.vertices(verts)
             surf.indices(faces)
@@ -202,14 +204,17 @@ class LavaVuModelViewer:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
                 surfaceval = np.zeros(verts.shape[0])
-                surfaceval[:] = painter.evaluate_value(verts)  # isovalue
+                surfaceval[:] = painter.evaluate_value(verts)
+                if painter.name is geological_feature.name:
+                    logger.info("Setting surface value to %f"%isovalue)
+                    surfaceval[:] = isovalue
                 surf.values(surfaceval, painter.name)
                 surf["colourby"] = painter.name
                 cmap = lavavu.cubehelix(100)
                 if 'cmap' in kwargs:
                     cmap = kwargs['cmap']
-                vmin = kwargs.get('vmin', painter.min())
-                vmax = kwargs.get('vmax', painter.max())
+                vmin = kwargs.get('vmin', min_property_val)
+                vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
 
     def add_scalar_field(self, geological_feature, **kwargs):
@@ -227,59 +232,7 @@ class LavaVuModelViewer:
 
         """
         name = kwargs.get('name', geological_feature.name + '_scalar_field')
-        cmap = lavavu.cubehelix(100)
-        if 'cmap' in kwargs:
-            cmap = kwargs['cmap']
-            if isinstance(cmap, str):
-                cmap = lavavu.matplotlib_colourmap(cmap)
-
-        tri, xx, yy = create_surface(self.bounding_box[0:2, :], self.nsteps[0:2])
-
-        zz = np.zeros(xx.shape)
-        zz[:] = self.bounding_box[1, 2]
-
-        tri = np.vstack([tri, tri + np.max(tri) + 1])
-        xx = np.hstack([xx, xx])
-        yy = np.hstack([yy, yy])
-
-        z = np.zeros(zz.shape)
-        z[:] = self.bounding_box[0, 2]
-        zz = np.hstack([zz, z])
-        # y faces
-        t, x, z = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
-        tri = np.vstack([tri, t + np.max(tri) + 1])
-
-        y = np.zeros(x.shape)
-        y[:] = self.bounding_box[0, 1]
-        xx = np.hstack([xx, x])
-        zz = np.hstack([zz, z])
-        yy = np.hstack([yy, y])
-
-        tri = np.vstack([tri, t + np.max(tri) + 1])
-        y[:] = self.bounding_box[1, 1]
-        xx = np.hstack([xx, x])
-        zz = np.hstack([zz, z])
-        yy = np.hstack([yy, y])
-
-        # x faces
-        t, y, z = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
-        tri = np.vstack([tri, t + np.max(tri) + 1])
-        x = np.zeros(y.shape)
-        x[:] = self.bounding_box[0, 0]
-        xx = np.hstack([xx, x])
-        zz = np.hstack([zz, z])
-        yy = np.hstack([yy, y])
-
-        tri = np.vstack([tri, t + np.max(tri) + 1])
-        x[:] = self.bounding_box[1, 0]
-        xx = np.hstack([xx, x])
-        zz = np.hstack([zz, z])
-        yy = np.hstack([yy, y])
-
-        points = np.zeros((len(xx), 3))  #
-        points[:, 0] = xx
-        points[:, 1] = yy
-        points[:, 2] = zz
+        points, tri = create_box(self.bounding_box,self.nsteps)
 
         surf = self.lv.triangles(name)
         surf.vertices(points)
@@ -287,15 +240,33 @@ class LavaVuModelViewer:
         val =geological_feature.evaluate_value(points)
         surf.values(val, geological_feature.name)
         surf["colourby"] = geological_feature.name
-        cmap = lavavu.cubehelix(100)
-        if 'cmap' in kwargs:
-            cmap = kwargs['cmap']
+        cmap = kwargs.get('cmap',lavavu.cubehelix(100))
+
         logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
                                                                                geological_feature.min(),
                                                                                geological_feature.max()))
-        vmin = kwargs.get('vmin', np.nanmin(val)) #geological_feature.min())
-        vmax = kwargs.get('vmax', np.nanmax(val)) #geological_feature.max())
-        surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
+        vmin = kwargs.get('vmin', np.nanmin(val))
+        vmax = kwargs.get('vmax', np.nanmax(val))
+        surf.colourmap(cmap, range=(vmin, vmax))
+
+    def add_model(self, **kwargs):
+        name = kwargs.get('name', 'geological_model')
+        points, tri = create_box(self.bounding_box, self.nsteps)
+
+        surf = self.lv.triangles(name)
+        surf.vertices(points)
+        surf.indices(tri)
+        val = self.model.evaluate_model(points)
+        surf.values(val, 'model')
+        surf["colourby"] = 'model'
+        cmap = kwargs.get('cmap', lavavu.cubehelix(100))
+
+        # logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
+        #                                                                        geological_feature.min(),
+        #                                                                        geological_feature.max()))
+        vmin = kwargs.get('vmin', np.nanmin(val))
+        vmax = kwargs.get('vmax', np.nanmax(val))
+        surf.colourmap(cmap, range=(vmin, vmax))
 
     def add_vector_field(self, geological_feature, **kwargs):
         """
@@ -348,6 +319,7 @@ class LavaVuModelViewer:
         name = feature.name
         add_grad = True
         add_value = True
+        add_tang = True
         if 'name' in kwargs:
             name = kwargs['name']
             del kwargs['name']
@@ -355,9 +327,12 @@ class LavaVuModelViewer:
             add_grad = kwargs['grad']
         if 'value' in kwargs:
             add_value = kwargs['value']
-        grad = feature.interpolator.get_gradient_constraints()
-        norm = feature.interpolator.get_norm_constraints()
-        value = feature.interpolator.get_value_constraints()
+        if 'tang' in kwargs:
+            add_tang = kwargs['tang']
+        grad = feature.builder.get_gradient_constraints()
+        norm = feature.builder.get_norm_constraints()
+        value = feature.builder.get_value_constraints()
+        tang = feature.builder.get_tangent_constraints()
         if grad.shape[0] > 0 and add_grad:
             self.add_vector_data(grad[:, :3], grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
@@ -369,6 +344,10 @@ class LavaVuModelViewer:
             kwargs['range'] = [feature.min(), feature.max()]
             self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp",
                                 **kwargs)
+        if tang.shape[0] > 0 and add_tang:
+            self.add_vector_data(tang[:, :3], tang[:, 3:6], name + "_tang_cp",
+                                 **kwargs)
+
 
     def add_points(self, points, name, **kwargs):
         """

@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+	FROM python:3.7-slim
 
 LABEL maintainer="lachlan.grose@monash.edu"
 #This docker image has been adapted from the lavavu dockerfile

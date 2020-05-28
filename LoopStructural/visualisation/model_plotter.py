@@ -1,7 +1,9 @@
-# import pyvista as pv
+# import logging
 #
 #
-# class   ModelPlotter:
+# logger = logging.getLogger(__name__)
+#
+# class BaseModelPlotter:
 #     def __init__(self, model):
 #         """
 #

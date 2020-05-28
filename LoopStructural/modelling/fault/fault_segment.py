@@ -1,7 +1,7 @@
 import logging
 
 from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
-
+from LoopStructural.modelling.fault.fault_function import BaseFault
 logger = logging.getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
@@ -35,10 +35,13 @@ class FaultSegment:
         self.name = kwargs.get('name', self.faultframe.name)
         self.displacement = displacement
         self.faultfunction = faultfunction
+        if faultfunction == 'BaseFault':
+            self.faultfunction = BaseFault.fault_displacement
         self.steps = steps
         self.regions = []
         self.faults_enabled = True
         self.displacementfeature = None
+        self.model = None
         if self.faultframe is not None:
             self.displacementfeature = FaultDisplacementFeature(
                 self.faultframe, self.faultfunction, name = self.name)
@@ -55,10 +58,53 @@ class FaultSegment:
 
         """
         return self.faultframe[item]
+
+    def set_model(self, model):
+        """
+        Link a geological model to the feature
+
+        Parameters
+        ----------
+        model - GeologicalModel
+
+        Returns
+        -------
+
+        """
+        self.model = model
+
+    def set_displacement(self, displacement, scale = True):
+        """
+        Set the fault displacement to a new value
+
+        Parameters
+        ----------
+        displacement - double
+        scale - boolean
+
+        Returns
+        -------
+
+        """
+        if scale and self.model is not None:
+            self.displacement = displacement / self.model.scale_factor
+        elif not scale:
+                self.displacement = displacement
+        else:
+            logger.warning("Displacement not updated")
+
     def toggle_faults(self):
+        """
+        Toggle faults that affect this fault segment
+
+        Returns
+        -------
+
+        """
         self.faults_enabled = ~self.faults_enabled
         for i in range(3):
             self.faultframe[i].toggle_faults()
+
     def add_region(self, region):
         """
 
@@ -171,12 +217,15 @@ class FaultSegment:
             gz = gz_future.result()
 
         d = np.zeros(gx.shape)
-        d[np.isnan(gx)] = 0
+        mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
+        mask = np.logical_and(mask,~np.isnan(gz))
+        d[~mask] = 0
         # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-        d[gx > 0] = 1.
-        d[gx < 0] = 0.
+        d[mask][gx[mask] > 0] = 1.
+        d[mask][gx[mask] < 0] = 0.
+        # d[gx < 0] = 0.
         if self.faultfunction is not None:
-            d = self.faultfunction(gx, gy, gz)
+            d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
         mask = np.abs(d) > 0.
         d *= self.displacement
         # calculate the fault frame for the evaluation points
@@ -194,16 +243,21 @@ class FaultSegment:
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
-
             d = np.zeros(gx.shape)
-            d[np.isnan(gx)] = 0
-            d[gx > 0] = 1.
-            d[gx < 0] = 0.
+            mask2 = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
+            mask2 = np.logical_and(mask2, ~np.isnan(gz))
+            d[~mask2] = 0
+            # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
+            d[mask2][gx[mask2] > 0] = 1.
+            d[mask2][gx[mask2] < 0] = 0.
+            # d[gx < 0] = 0.
             if self.faultfunction is not None:
-                d = self.faultfunction(gx, gy, gz)
+                d[mask2] = self.faultfunction(gx[mask2], gy[mask2], gz[mask2])
             d *= self.displacement
             # normalise when length is >0
-            g_mag = np.linalg.norm(g, axis=1)
+            g_mag = np.zeros(g.shape[0])
+            g_mag[mask2] = np.linalg.norm(g[mask2], axis=1)
+            # g_mag = np.linalg.norm(g[mask2], axis=1)
             g[g_mag > 0.] /= g_mag[g_mag > 0, None]
             # multiply displacement vector by the displacement magnitude for
             # step
@@ -213,33 +267,3 @@ class FaultSegment:
             newp[mask, :] += g
         return newp
 
-    def apply_to_data(self, data):
-        """
-        Unfault the data in the list provided
-
-        Parameters
-        ----------
-        data - list containing Points
-
-        Returns
-        -------
-
-        """
-        logger.info("Applying fault")
-        steps = self.steps
-        # TODO make this numpy arrays
-        if data is None:
-            return
-        for d in data:
-            hw = self.faultframe.features[0].evaluate_value(
-                np.array([d.pos])) > 0
-            for i in range(steps):
-                g = self.faultframe.features[1].evaluate_gradient(
-                    np.array([d.pos]))
-                length = np.linalg.norm(g, axis=1)
-                g[np.logical_and(~np.isnan(length), length > 0), :] /= length[
-                    np.logical_and(~np.isnan(length), length > 0), None]
-                if self.faultfunction is None and hw:
-                    g *= (1. / steps) * 1. * self.displacement
-                    g[np.any(np.isnan(g), axis=1)] = np.zeros(3)
-                    d.pos = d.pos + g[0]

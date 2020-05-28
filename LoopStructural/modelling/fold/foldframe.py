@@ -19,6 +19,10 @@ class FoldFrame(StructuralFrame):
         features
         """
         super().__init__(name, features)
+        self.model = None
+
+    def set_model(self, model):
+        self.model = model
 
     def calculate_fold_axis_rotation(self, feature_builder):
         """
@@ -34,8 +38,8 @@ class FoldFrame(StructuralFrame):
         -------
 
         """
-        gpoints = feature_builder.interpolator.get_gradient_constraints()[:,:6]
-        npoints = feature_builder.interpolator.get_norm_constraints()[:,:6]
+        gpoints = feature_builder.get_gradient_constraints()[:,:6]
+        npoints = feature_builder.get_norm_constraints()[:,:6]
         points = []
         if gpoints.shape[0] > 0:
             points.append(gpoints)
@@ -46,8 +50,8 @@ class FoldFrame(StructuralFrame):
         points = np.vstack(points)
         # We need to ignore the fault when we are calculating the splot because it is done
         # in the restored space
-        self.features[0].faults_enabled = False
-        self.features[1].faults_enabled = False
+        # self.features[0].faults_enabled = False
+        # self.features[1].faults_enabled = False
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
         s1gyg = self.features[1].evaluate_gradient(points[:, :3])
@@ -56,8 +60,8 @@ class FoldFrame(StructuralFrame):
         l1 /= np.linalg.norm(l1, axis=1)[:, None]
         fad = self.features[1].evaluate_value(points[:, :3])
         # Turn the faults back on
-        self.features[0].faults_enabled = True
-        self.features[1].faults_enabled = True
+        # self.features[0].faults_enabled = True
+        # self.features[1].faults_enabled = True
 
         # project s0 onto axis plane B X A X B
         projected_l1 = np.cross(s1g, np.cross(l1, s1g, axisa=1, axisb=1),
@@ -97,6 +101,8 @@ class FoldFrame(StructuralFrame):
         fold_limb_rotation, coordinate_0
         """
         self.features[0].faults_enabled = False
+        self.features[1].faults_enabled = False
+
         gpoints = feature_builder.interpolator.get_gradient_constraints()[:,:6]
         npoints = feature_builder.interpolator.get_norm_constraints()[:,:6]
         points = []
@@ -108,6 +114,8 @@ class FoldFrame(StructuralFrame):
             logger.error("No points to calculate fold rotation angle")
             return np.array([0]), np.array([0])
         points = np.vstack(points)
+        # for f in feature_builder.faults:
+        #     points[:,:3] = f.apply_to_points(points[:,:3])
         # get the normals from the points array
         s0g = points[:, 3:]
 
@@ -118,6 +126,8 @@ class FoldFrame(StructuralFrame):
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
         s1 = self.features[0].evaluate_value(points[:, :3])
         self.features[0].faults_enabled = True
+        self.features[1].faults_enabled = True
+
         if axis is None:
             logger.info("Not using fold axis for fold limb rotation angle calculation")
             r2 = np.einsum('ij,ij->i', s1g, s0g)

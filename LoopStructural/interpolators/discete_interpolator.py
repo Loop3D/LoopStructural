@@ -43,6 +43,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
+        self.constraints = {}
 
     def set_property_name(self, propertyname):
         """
@@ -114,8 +115,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d = []
         self.eq_const_c_ = 0
         self.B = []
+        self.n_constraints = 0
 
-    def add_constraints_to_least_squares(self, A, B, idc):
+    def add_constraints_to_least_squares(self, A, B, idc, name='undefined'):
         """
         Adds constraints to the least squares system. Automatically works
         out the row
@@ -132,6 +134,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Returns
         -------
+        list of constraint ids
 
         """
         A = np.array(A)
@@ -144,8 +147,16 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if len(A.shape) > 2:
             nr = A.shape[0] * A.shape[1]
         rows = np.arange(0, nr).astype(int)
-        rows = np.tile(rows, (A.shape[-1], 1)).T
         rows += self.c_
+        constraint_ids = rows.copy()
+
+        if name in self.constraints:
+            self.constraints[name] = np.hstack([self.constraints[name],
+                                                constraint_ids])
+        if name not in self.constraints:
+            self.constraints[name] = constraint_ids
+        rows = np.tile(rows, (A.shape[-1], 1)).T
+
         self.c_ += nr
         if self.shape == 'rectangular':
             # don't add operator where it is = 0 to the sparse matrix!
@@ -158,6 +169,42 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.row.extend(rows[~mask].tolist())
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
+
+    def remove_constraints_from_least_squares(self, name='undefined',
+                                              constraint_ids=None):
+        """
+        Remove constraints from the least squares system using the constraint ids
+        which corresponds to the rows in the interpolation matrix.
+
+        Parameters
+        ----------
+        constraint_ids - numpy array int
+
+        Returns
+        -------
+
+        """
+
+        if constraint_ids is None:
+            constraint_ids = self.constraints[name]
+        print("Removing {} {} constraints from least squares".format(len(constraint_ids), name))
+        A = np.array(self.A)
+        B = np.array(self.B)
+        col = np.array(self.col)
+        row = np.array(self.row)
+        mask = np.any((row[:,None] == constraint_ids[None,:]) == True,
+                      axis=1)
+        # np.any((numbers[:, None] == np.array([0, 10, 30])[None, :]) == True,
+        #        axis=1)
+        bmask = np.ones(B.shape,dtype=bool)
+        bmask[constraint_ids] = 0
+        self.A = A[~mask].tolist()
+        self.B = B[bmask]
+        self.col = col[~mask].tolist()
+        rowmax = np.max(row[mask])
+        rowrange = rowmax-np.min(row[mask])
+        # row[np.logical_and(~mask,row>rowmax)] -= rowrange
+        return row[~mask]
 
     def add_equality_constraints(self, node_idx, values):
         """
@@ -188,6 +235,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_row.extend((np.arange(0, idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += idc[outside].shape[0]
+
+    def add_tangent_ctr_pts(self, w=1.0):
+        """
+
+        Parameters
+        ----------
+        w
+
+        Returns
+        -------
+
+        """
+        points = self.get_tangent_constraints()
+        if points.shape[0] > 1:
+            self.add_gradient_orthogonal_constraint(points[:,:3],points[:,3:6],w)
 
     def build_matrix(self, square=True, damp=True):
         """
@@ -337,6 +399,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         cgargs = {}
         cgargs['tol'] = 1e-12
+        cgargs['atol'] = 0
         if 'maxiter' in kwargs:
             logger.info("Using %i maximum iterations"%kwargs['maxiter'])
             cgargs['maxiter'] = kwargs['maxiter']
@@ -395,6 +458,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         damp = True
         if 'damp' in kwargs:
             damp = kwargs['damp']
+        if solver == 'lu':
+            logger.info("Forcing matrix damping for LU")
+            damp = True
         if solver == 'lsqr':
             A, B =  self.build_matrix(False)
         else:

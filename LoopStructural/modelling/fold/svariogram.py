@@ -27,6 +27,7 @@ def find_peaks_and_troughs(x, y):
         return False
     pairsx = []
     pairsy = []
+    # #TODO numpyize
     for i in range(0, len(x)):
         if i < 1:
             pairsx.append(x[i])
@@ -58,7 +59,7 @@ class SVariogram():
         self.lags = None
         self.variogram = None
 
-    def calc_semivariogram(self, **kwargs):
+    def calc_semivariogram(self, lag = None, nlag = None, lags = None):
         """
         Calculate a semi-variogram for the x and y data for this object.
         You can specify the lags as an array or specify the step size and
@@ -80,24 +81,26 @@ class SVariogram():
 
         """
         logger.info("Calculating S-Variogram")
-        if 'lag' in kwargs:
-            step = kwargs['lag']
+        if lag is not None:
+            step = lag
             logger.info("Using lag: %f kwarg for S-variogram"%step)
 
-        if 'nlag' in kwargs:
-            nstep = kwargs['nlag']
+        if nlag is not None:
+            nstep = nlag
             logger.info("Using nlag %i kwarg for s-variogram"%nstep)
 
             self.lags = np.arange(step / 2., nstep * step, step)
-        if 'nlag' not in kwargs and 'lag' in kwargs:
+
+        if nlag is None and lag is not None:
             nstep = int(
                 np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
             logger.info("Using lag kwarg but calculating nlag as %i for s-variogram"%nstep)
 
             self.lags = np.arange(step / 2., nstep * step, step)
 
-        if 'lags' in kwargs:
-            self.lags = kwargs['lags']
+        if lags is not None:
+            self.lags = lags
+
         if self.lags is None:
             # time to guess the step size
             # find the average distance between elements in the input data
@@ -110,7 +113,7 @@ class SVariogram():
                 np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
             self.lags = np.arange(step / 2., nstep * step, step)
             logger.info("Using average minimum nearest neighbour distance "
-                        "as lag distance size %f and using %i lags"%(step,nstep))
+                        "as lag distance size {} and using {} lags".format(step,nstep))
         tol = self.lags[1] - self.lags[0]
         self.variogram = np.zeros(self.lags.shape)
         self.variogram[:] = np.nan

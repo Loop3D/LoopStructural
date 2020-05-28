@@ -1,14 +1,20 @@
-import sys
+import sys, os
 
 from LoopStructural.utils.helper import get_vectors
 from .geological_interpolator import GeologicalInterpolator
 
-sys.path.append('/home/lgrose/dev/cpp/surfe/')
-import surfepy
 import logging
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+if 'SURFE' in os.environ:
+    sys.path.append(os.environ['SURFE'])
+if 'SURFE' not in os.environ:
+    logger.error("Please add SURFE to your environment variables to specify the location \n "
+                 "of the SURFE binaries")
+import surfepy
+
 
 
 class SurfeRBFInterpolator(GeologicalInterpolator):
@@ -83,6 +89,11 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         if global_anisotropy:
             logger.info("Using global anisotropy")
             self.surfe.SetGlobalAnisotropy(global_anisotropy)
+        radius = kwargs.get("radius",False)
+        if radius:
+            logger.info("Setting RBF radius to %f"%radius)
+            self.surfe.SetRBFShapeParameter(radius)
+
     def update(self):
         return self.surfe.InterpolantComputed()
 
@@ -93,5 +104,13 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
 
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.surfe.EvaluateInterpolantAtPoints(
+                evaluation_points[~mask])
+        return evaluated
+    def evaluate_gradient(self, evaluation_points):
+        evaluation_points = np.array(evaluation_points)
+        evaluated = np.zeros(evaluation_points.shape)
+        mask = np.any(evaluation_points == np.nan, axis=1)
+        if evaluation_points[~mask, :].shape[0] > 0:
+            evaluated[~mask,:] = self.surfe.EvaluateVectorInterpolantAtPoints(
                 evaluation_points[~mask])
         return evaluated

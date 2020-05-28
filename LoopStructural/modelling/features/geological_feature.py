@@ -45,15 +45,28 @@ class GeologicalFeature:
         self.faults_enabled = True
         if region is None:
             self.region = 'everywhere'
-
+        self.model = None
     def __str__(self):
         return self.name
 
+    def set_model(self, model):
+        self.model = model
+
     def toggle_faults(self):
+        """
+        Turn the fault off for a feature
+        This function is only really used for debugging or creating methods
+        explanation figures
+
+        Returns
+        -------
+
+        """
         self.faults_enabled = ~self.faults_enabled
 
     def add_region(self, region):
         """
+        Adds a region where the geological feature is active to the model.
 
         Parameters
         ----------
@@ -83,13 +96,18 @@ class GeologicalFeature:
 
     def evaluate_value(self, evaluation_points):
         """
+        Evaluate the scalar field value of the geological feature at the locations
+        specified
 
         Parameters
         ----------
-        evaluation_points
+        evaluation_points : numpy array
+            location to evaluate the scalar value
 
         Returns
         -------
+        values : numpy array
+            numpy array containing evaluated values
 
         """
 
@@ -136,6 +154,30 @@ class GeologicalFeature:
 
         return v
 
+    def evaluate_gradient_misfit(self):
+        grad = self.interpolator.get_gradient_constraints()
+        norm = self.interpolator.get_norm_constraints()
+        dot = []
+        print(grad.shape)
+        print(norm.shape)
+        if grad.shape[0] > 0:
+            model_grad = self.evaluate_gradient(grad[:,:3])
+            dot.append(np.einsum('ij,ij->i',model_grad,grad[:,:3:6]).tolist())
+
+        if norm.shape[0] > 0:
+            print(norm[:,:3])
+            model_norm = self.evaluate_gradient(norm[:, :3])
+            print(model_norm)
+            dot.append(np.einsum('ij,ij->i', model_norm, norm[:,:3:6]))
+
+        return np.array(dot)
+
+    def evaluate_value_misfit(self):
+        locations = self.interpolator.get_value_constraints()
+        diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
+        diff/=(self.max()-self.min())
+        return diff
+
     def mean(self):
         """
         Calculate average of the support values
@@ -144,7 +186,9 @@ class GeologicalFeature:
         -------
 
         """
-        return 0
+        if self.model is None:
+            return 0
+        return np.mean(self.evaluate_value(self.model.regular_grid((10,10,10))))
         # return np.nanmean(self.scalar_field.get_node_values())
 
     def min(self):
@@ -154,7 +198,10 @@ class GeologicalFeature:
         -------
 
         """
-        return 0
+        if self.model is None:
+            return 0
+        return np.nanmin(
+            self.evaluate_value(self.model.regular_grid((10, 10, 10))))
         #       return np.nanmin(self.scalar_field.get_node_values())
 
     def max(self):
@@ -165,7 +212,10 @@ class GeologicalFeature:
         -------
 
         """
-        return 0
+        if self.model is None:
+            return 0
+        return np.nanmax(
+            self.evaluate_value(self.model.regular_grid((10, 10, 10))))
         #return np.nanmax(self.scalar_field.get_node_values())
 
     def update(self):
