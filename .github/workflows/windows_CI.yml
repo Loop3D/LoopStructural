@@ -137,9 +137,9 @@ jobs:
           unzip -o win_3.6/build.zip -d build
           unzip -o win_3.7/build.zip -d build
           unzip -o win_3.8/build.zip -d build
-          unzip -o linux_3.6/build.zip
-          unzip -o linux_3.7/build.zip
-          unzip -o linux_3.8/build.zip
+          unzip -o linux_3.6/build.zip -d build
+          unzip -o linux_3.7/build.zip -d build
+          unzip -o linux_3.8/build.zip -d build
           ls
       - name: Development build pre-release
         uses: "marvinpinto/action-automatic-releases@latest"
