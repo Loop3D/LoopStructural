@@ -19,7 +19,7 @@ jobs:
 #           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
 #           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
   
-  windows-build:
+  build-windows:
     runs-on: windows-latest
     strategy:
       matrix:
@@ -105,7 +105,7 @@ jobs:
           name: 'linux_${{ matrix.python }}'
           path: build.zip
   uploadrelease:
-    needs: windows-build #, ubuntu-build
+    needs: build-windows #ubuntu-build
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact 3.6
@@ -120,11 +120,11 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: "win_3.8"
-      - name: Download artifact 3.6
+      - name: Download artifact linux 3.6
         uses: actions/download-artifact@v1
         with:
           name: "linux_3.6"
-      - name: Download artifact 3.7
+      - name: Download artifact linux 3.7
         uses: actions/download-artifact@v1
         with:
           name: "linux_3.7"
@@ -134,10 +134,13 @@ jobs:
           name: "linux_3.8"
       - name: Unzip
         run: |
+          unzip -o win_3.6/build.zip -d build
+          unzip -o win_3.7/build.zip -d build
+          unzip -o win_3.8/build.zip -d build
           unzip -o linux_3.6/build.zip
           unzip -o linux_3.7/build.zip
-          unzip -o win_3.7/build.zip
-          unzip -o win_3.6/build.zip
+          unzip -o linux_3.8/build.zip
+          ls
       - name: Development build pre-release
         uses: "marvinpinto/action-automatic-releases@latest"
         with: 
@@ -148,3 +151,4 @@ jobs:
           files: |
             build/*
           id: "automatic_releases"  
+ 
