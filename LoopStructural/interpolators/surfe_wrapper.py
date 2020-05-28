@@ -18,6 +18,9 @@ import surfepy
 
 
 class SurfeRBFInterpolator(GeologicalInterpolator):
+    """
+
+    """
     def __init__(self, method='single_surface'):
         GeologicalInterpolator.__init__(self)
         self.surfe = None

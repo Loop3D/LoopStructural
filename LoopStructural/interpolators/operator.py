@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class Operator(object):
+    """
+
+    """
     z = np.zeros((3, 3))
     Dx_mask = np.array([z, [
         [0.0, 0.0, 0.0],

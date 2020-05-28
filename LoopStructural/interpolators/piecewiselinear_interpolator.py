@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.interpolators.discete_interpolator import \
+from LoopStructural.interpolators.discrete_interpolator import \
     DiscreteInterpolator
 from LoopStructural.utils.helper import get_vectors
 
@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
+    """
 
+    """
     def __init__(self, mesh):
         """
         Piecewise Linear Interpolator

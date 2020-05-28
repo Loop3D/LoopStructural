@@ -1,3 +1,6 @@
+"""
+
+"""
 import logging
 
 import numpy as np
@@ -6,6 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class ScalarField:
+    """
+
+    """
     def __init__(self, support, property_name):
         """
          A scalar field is a distance from a reference location/horizon

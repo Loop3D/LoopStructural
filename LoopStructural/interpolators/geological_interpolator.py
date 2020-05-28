@@ -6,7 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class GeologicalInterpolator:
+    """
 
+    """
     def __init__(self):
         """
         This class is the base class for a geological interpolator and contains all of the

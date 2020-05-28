@@ -7,6 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 class MapView:
+    """
+
+    """
     def __init__(self, model = None, bounding_box=None, nsteps=None, ax = None, **kwargs):
         """
 

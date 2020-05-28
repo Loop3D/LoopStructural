@@ -1,3 +1,8 @@
+"""
+A wrapper for lavavu
+
+"""
+
 import logging
 
 import lavavu
@@ -9,8 +14,10 @@ from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 logger = logging.getLogger(__name__)
 
-
 class LavaVuModelViewer:
+    """
+    Short description
+    """
     def __init__(self, model=None, bounding_box=None, nsteps=None, **kwargs):
         """
 

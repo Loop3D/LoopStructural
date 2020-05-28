@@ -6,6 +6,9 @@ from LoopStructural.interpolators.cython.dsi_helper import cg
 logger = logging.getLogger(__name__)
 
 class TetMesh:
+    """
+
+    """
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):
         self.origin = np.array(origin)
         self.step_vector = np.array(step_vector)

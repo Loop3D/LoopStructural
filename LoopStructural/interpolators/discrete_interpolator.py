@@ -11,7 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 class DiscreteInterpolator(GeologicalInterpolator):
+    """
 
+    """
     def __init__(self, support):
         """
         Base class for a discrete interpolator e.g. piecewise linear or finite difference which is

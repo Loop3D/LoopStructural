@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class StructuredGrid:
+    """
+
+    """
     def __init__(self,
                  origin=np.zeros(3),
                  nsteps=np.array([10, 10, 10]),
