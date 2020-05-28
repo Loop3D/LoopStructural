@@ -6,7 +6,7 @@
 
 # -- Path setup --------------------------------------------------------------
 
-# If extensions (or modules to document with autodoc) are in another directory,
+# If extensions (or _modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
@@ -86,3 +86,28 @@ html_theme_options = {
 }
 
 add_module_names = False
+
+# -- Sphinx Gallery Options
+from sphinx_gallery.sorting import FileNameSortKey
+
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    "examples_dirs": ["../../examples"],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["examples"],
+    # Patter to search for example files
+    "filename_pattern": r"\.py",
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    # Sort gallery example by file name instead of number of lines (default)
+    "within_subsection_order": FileNameSortKey,
+    # directory where function granular galleries are stored
+    "backreferences_dir": None,
+    # Modules for which function level galleries are created.  In
+    "doc_module": "gempy",
+    "image_scrapers": (#'pyvista',
+                       'matplotlib'),
+    'first_notebook_cell': ("%matplotlib inline\n"
+                            "from pyvista import set_plot_theme\n"
+                            "set_plot_theme('document')"),
+}
