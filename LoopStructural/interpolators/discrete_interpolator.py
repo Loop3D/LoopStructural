@@ -180,7 +180,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        constraint_ids - numpy array int
+        constraint_ids : np.array(dtype=int)
+            id of constraints to remove
 
         Returns
         -------
@@ -243,7 +244,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        w
+        w : double
+
 
         Returns
         -------
@@ -312,7 +314,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        A - square sparse matrix
+        A : scipy square sparse matrix
         B : numpy vector
 
         Returns
@@ -364,9 +366,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        A - scipy.sparse.matrix
+        A : scipy.sparse.matrix
             square sparse matrix
-        B - numpy array
+        B : numpy array
             RHS of equation
 
         Returns
@@ -531,7 +533,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Evaluate the gradient of the scalar field at the evaluation points
         Parameters
         ----------
-        evaluation_points
+        evaluation_points : np.array
+            xyz locations to evaluate the gradient
 
         Returns
         -------

@@ -73,7 +73,10 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 # Sphinx gallery examples
+from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
 sphinx_gallery_conf = {
      'examples_dirs': '../../examples',   # path to your example scripts
-     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+     'gallery_dirs': 'auto_examples', # path to where to save gallery generated output
+    'image_scrapers': ('matplotlib',LoopScraper())
 }
+

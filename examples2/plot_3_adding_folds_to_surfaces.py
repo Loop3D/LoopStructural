@@ -28,8 +28,7 @@ import numpy as np
 from scipy.interpolate import Rbf
 import matplotlib.pyplot as plt
 
-from __future__ import print_function
-from ipywidgets import interact, interactive, fixed, interact_manual
+
 import ipywidgets as widgets
 
 

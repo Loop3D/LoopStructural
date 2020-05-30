@@ -54,18 +54,59 @@ class GeologicalInterpolator:
         self.propertyname = name
 
     def set_value_constraints(self, points):
+        """
+
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
+
         self.data['value'] = points
         self.n_i = points.shape[0]
 
     def set_gradient_constraints(self, points):
+        """
+
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
         self.n_g = points.shape[0]
         self.data['gradient'] = points
 
     def set_normal_constraints(self, points):
+        """
+
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
         self.n_n = points.shape[0]
         self.data['normal'] = points
 
     def set_tangent_constraints(self, points):
+        """
+
+        Parameters
+        ----------
+        points
+
+        Returns
+        -------
+
+        """
         self.data['tangent'] = points
 
     def get_value_constraints(self):

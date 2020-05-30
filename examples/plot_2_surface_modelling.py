@@ -1,39 +1,39 @@
 """
 
-test
-====
+Implicit surface modelling
+==========================
+This tutorial will demonstrate how to create an implicit surface
+representation of surfaces from a combination of orientation and
+location observations.
+
+Implicit surface representation involves finding an unknown function
+where :math:`f(x,y,z)` matches observations of the surface geometry. We
+generate a scalar field where the scalar value is the distance away from
+a reference horizon. The reference horizon is arbritary and can either
+be:
+
+-  a single geological surface where the scalar field would represent
+   the signed distance away from this surface. (above the surface
+   positive and below negative)
+-  Where multiple conformable horizons are observed the same scalar
+   field can be used to represent these surfaces and the thickness of
+   the layers is used to determine the relative scalar value for each
+   surface
+
+This tutorial will demonstrate both of these approaches for modelling a
+number of horizons picked from seismic data sets, by following the next
+steps: 1. Creation of a geological model, which includes: \*
+Presentation and visualization of the data \* Addition of a geological
+feature, which in this case is the stratigraphy of the model. 2.
+Visualization of the scalar field.
+
 """
 
-
-######################################################################
-# Implicit surface modelling
-# ==========================
-# 
-# This tutorial will demonstrate how to create an implicit surface
-# representation of surfaces from a combination of orientation and
-# location observations.
-# 
-# Implicit surface representation involves finding an unknown function
-# where :math:`f(x,y,z)` matches observations of the surface geometry. We
-# generate a scalar field where the scalar value is the distance away from
-# a reference horizon. The reference horizon is arbritary and can either
-# be:
-# 
-# -  a single geological surface where the scalar field would represent
-#    the signed distance away from this surface. (above the surface
-#    positive and below negative)
-# -  Where multiple conformable horizons are observed the same scalar
-#    field can be used to represent these surfaces and the thickness of
-#    the layers is used to determine the relative scalar value for each
-#    surface
-# 
-# This tutorial will demonstrate both of these approaches for modelling a
-# number of horizons picked from seismic data sets, by following the next
-# steps: 1. Creation of a geological model, which includes: \*
-# Presentation and visualization of the data \* Addition of a geological
-# feature, which in this case is the stratigraphy of the model. 2.
-# Visualization of the scalar field.
-# 
+#########################################################################
+# Imports
+# ~~~~~~~
+# Import the required objects from LoopStructural for visualisation and
+# model building
 
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer 
@@ -86,12 +86,12 @@ model = GeologicalModel(bb[0,:],bb[1,:])
 
 data['type'].unique()
 
-viewer = LavaVuModelViewer()
+viewer = LavaVuModelViewer(background='white')
 viewer.add_value_data(data[~np.isnan(data['val'])][['X','Y','Z']],data[~np.isnan(data['val'])]['val'],name='value points')
 viewer.add_vector_data(data[~np.isnan(data['nx'])][['X','Y','Z']],
                        data[~np.isnan(data['nx'])][['nx','ny','nz']],name='orientation points')
-
-viewer.interactive()
+viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.display()
 
 
 ######################################################################
@@ -131,13 +131,13 @@ model.set_model_data(data)
 # 
 
 vals = [0,60,250,330,600]
+
 strat_column = {'strati':{}}
 for i in range(len(vals)-1):
     strat_column['strati']['unit_{}'.format(i)] = {'min':vals[i],'max':vals[i+1],'id':i}
     
 
 
-print(strat_column)
 
 model.set_stratigraphic_column(strat_column)
 
@@ -271,12 +271,9 @@ viewer.add_model()
 # Add the data addgrad/addvalue arguments are optional
 viewer.add_data(model.features[0],addgrad=True,addvalue=True, cmap='prism')
 viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
-viewer.interactive()# to add an interactive display
+viewer.display()# to add an interactive display
 
 
-np.unique(model.evaluate_model(model.regular_grid()))
 
-model.feature_name_index.get('strati')
 
-strat_column
 

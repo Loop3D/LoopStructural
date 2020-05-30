@@ -20,7 +20,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        grid
+        grid : StructuredGrid
         """
         self.shape = 'rectangular'
         DiscreteInterpolator.__init__(self, grid)
@@ -258,10 +258,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        elements : numpy array
-        normals : numpy array
+        elements : np.array
+        normals : np.array
         w : double
-        B : numpy array
+        B : np.array
 
         Returns
         -------

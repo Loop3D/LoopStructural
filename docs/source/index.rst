@@ -5,8 +5,11 @@
 
 LoopStructural
 ==============
-Loop structural is an open source 3D modelling library written by Lachlan Grose at Monash University. The library is
-the forward geological modelling engine for the loop and contains the classes and functions to manage the various
+Loop structural is an open source 3D modelling library as part of the Loop platform by Lachlan Grose at Monash
+University. The Loop platform is an open source 3D probabilistic geological and geophysical modelling platform,
+initiated by Geoscience Australia and the OneGeology consortium. The project is funded by Australian territory,
+State and Federal Geological Surveys, the Australian Research Council and the MinEx Collaborative Research Centre.
+The library is the forward geological modelling engine for the loop and contains the classes and functions to manage the various
 elements in a 3D geological model. Including stratigraphy, unconformities, fault and folds. LoopStructural contains
 three native interpolation algorithms that use a discrete implicit approach as well as a wrapper for using the
 generalised radial basis functions provided by Surfe.
@@ -14,8 +17,6 @@ generalised radial basis functions provided by Surfe.
 .. toctree::
    installation
    about
-   issues
-   theory
    API
    auto_examples/index
 
