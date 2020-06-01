@@ -80,3 +80,6 @@ sphinx_gallery_conf = {
     'image_scrapers': ('matplotlib',LoopScraper())
 }
 
+def setup(app):
+    app.add_stylesheet('custom.css')
+

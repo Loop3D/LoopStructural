@@ -1,18 +1,20 @@
 Install instructions
 ====================
-There are two ways of installing LoopStructural onto your system
-1. Using precompiled binary files for your relevant distribution
-2. Compiling LoopStructural from source
+There are three ways of installing LoopStructural onto your system
 
-Windows using conda
-~~~~~~~~~~~~~~~~~~~
+1. Using docker
+2. Using precompiled binary files for your relevant distribution
+3. Compiling LoopStructural from source
 
-Windows using linux subsystem
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. include:: _static/docker.rst
 
-Ubuntu Linux
-~~~~~~~~~~~~
+.. include:: _static/windows_install.rst
 
-Fedora Linux
-~~~~~~~~~~~~
+
+.. include:: _static/wls_install.rst
+
+
+.. include:: _static/ubuntu_install.rst
+
+
 

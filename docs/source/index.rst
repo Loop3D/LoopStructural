@@ -5,6 +5,7 @@
 
 LoopStructural
 ==============
+
 Loop structural is an open source 3D modelling library as part of the Loop platform by Lachlan Grose at Monash
 University. The Loop platform is an open source 3D probabilistic geological and geophysical modelling platform,
 initiated by Geoscience Australia and the OneGeology consortium. The project is funded by Australian territory,
