@@ -1,6 +1,6 @@
 """
-Multiple groups
-===============
+3. Multiple groups
+===================
 Creating a model with multiple geological features, dealing with unconformities.
 
 """

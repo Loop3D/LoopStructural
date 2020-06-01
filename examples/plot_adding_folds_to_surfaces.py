@@ -1,5 +1,5 @@
 """
-Modelling folds
+6. Modelling folds
 ===============
 
  This tutorial will show how Loop Structural improves the modelling of
@@ -128,7 +128,9 @@ viewer = LavaVuModelViewer()
 xyz = data[['X','Y','Z']]
 vector = strike_dip_vector(data['strike'],data['dip'])
 viewer.add_vector_data(xyz,vector,name='all_data')
-viewer.interactive()
+# Calculating the fold rotation angles
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+viewer.display()
 
 
 ######################################################################
@@ -157,21 +159,20 @@ viewer.interactive()
 # 
 # **The black arrows are the normal vector to the folded surface**
 # 
-
-@interact_manual(npoints=(1,200,10))
-def run(npoints):
-    model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
-    model.set_model_data(data[:npoints])
-    stratigraphy = model.create_and_add_foliation("s0",interpolatortype="PLI",nelements=5000,buffer=0.3,cgw=0.1)#.2)
-    viewer = LavaVuModelViewer(model,background="white")
-    # viewer.add_scalar_field(model.bounding_box,(38,55,30),
-    #                       'box',
-    #                      paint_with=stratigraphy,
-    #                      cmap='prism')
-    viewer.add_data(stratigraphy['feature'])
-    viewer.add_isosurface(stratigraphy['feature'],
-                         voxet=model.voxet())
-    viewer.interactive()
+npoints = 20
+model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
+model.set_model_data(data[:npoints])
+stratigraphy = model.create_and_add_foliation("s0",interpolatortype="PLI",nelements=5000,buffer=0.3,cgw=0.1)#.2)
+viewer = LavaVuModelViewer(model,background="white")
+# viewer.add_scalar_field(model.bounding_box,(38,55,30),
+#                       'box',
+#                      paint_with=stratigraphy,
+#                      cmap='prism')
+viewer.add_data(stratigraphy['feature'])
+viewer.add_isosurface(stratigraphy['feature'],
+                     voxet=model.voxet())
+viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.display()
 
 
 ######################################################################
@@ -214,97 +215,45 @@ def run(npoints):
 # shown in B and C.
 # 
 
-@interact_manual(npoints=(5,200,1))
-def run(npoints=10):
-    mdata = pd.concat([data[:npoints],data[data['type']=='s1']])
-    model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
-    model.set_model_data(mdata)
-    fold_frame = model.create_and_add_fold_frame('s1',
-                                                 interpolatortype='PLI',
-                                                 nelements=10000,buffer=0.5,
-                                                 solver='pyamg',
-                                                damp=True
-                                                )
-    stratigraphy = model.create_and_add_folded_foliation('s0',
-                                                   fold_frame['feature'],
-                                                    nelements=10000,
-                                                   fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
-    #                                                    limb_wl=1
-                                                         buffer=0.5
-                                                        )
-    viewer = LavaVuModelViewer(model,background="white")
-    # viewer.add_scalar_field(model.bounding_box,(38,55,30),
-    #                       'box',
-    #                      paint_with=stratigraphy,
-    #                      cmap='prism')
-    viewer.add_isosurface(fold_frame['feature'][0],
-                          colour='blue',
-    #                       isovalue=0.4,
-                          alpha=0.5)
-    viewer.add_data(stratigraphy['feature'])
-    viewer.add_isosurface(fold_frame['feature'][1],colour='green',alpha=0.5)
-    # viewer.add_vector_field(fold_frame['feature'][0],locations=fold_frame['feature'][0].get_interpolator().support.barycentre())
-    viewer.add_data(fold_frame['feature'][1])
+mdata = pd.concat([data[:npoints],data[data['type']=='s1']])
+model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
+model.set_model_data(mdata)
+fold_frame = model.create_and_add_fold_frame('s1',
+                                             interpolatortype='PLI',
+                                             nelements=10000,buffer=0.5,
+                                             solver='pyamg',
+                                            damp=True
+                                            )
+stratigraphy = model.create_and_add_folded_foliation('s0',
+                                               fold_frame['feature'],
+                                                nelements=10000,
+                                               fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
+#                                                    limb_wl=1
+                                                     buffer=0.5
+                                                    )
+viewer = LavaVuModelViewer(model,background="white")
+# viewer.add_scalar_field(model.bounding_box,(38,55,30),
+#                       'box',
+#                      paint_with=stratigraphy,
+#                      cmap='prism')
+viewer.add_isosurface(fold_frame['feature'][0],
+                      colour='blue',
+#                       isovalue=0.4,
+                      alpha=0.5)
+viewer.add_data(stratigraphy['feature'])
+viewer.add_isosurface(fold_frame['feature'][1],colour='green',alpha=0.5)
+# viewer.add_vector_field(fold_frame['feature'][0],locations=fold_frame['feature'][0].get_interpolator().support.barycentre())
+viewer.add_data(fold_frame['feature'][1])
 
-    # viewer.add_data(stratigraphy['feature'])
-    viewer.add_isosurface(stratigraphy['feature'])
-    viewer.interactive()
-    plt.plot(stratigraphy['foliation'],stratigraphy['limb_rotation'],'bo')
-    x = np.linspace(fold_frame['feature'][0].min(),fold_frame['feature'][1].max(),100)
-    plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
+# viewer.add_data(stratigraphy['feature'])
+viewer.add_isosurface(stratigraphy['feature'])
+viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.display()
 
+###########################################
+# Plotting the fold rotation angles
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-######################################################################
-# Now try changing the fold axis and see how this changes the S-Plot.
-# 
-
-@interact_manual(npoints=(5,200,1),plunge=(0,90,1),trend=(0,360,1))
-def run(npoints=10,plunge=45,trend=0):
-    axis = plunge_and_plunge_dir_to_vector(plunge,trend)   
-    mdata = pd.concat([data[:npoints],data[data['type']=='s1']])
-    model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
-    model.set_model_data(mdata)
-    fold_frame = model.create_and_add_fold_frame('s1',
-                                                 interpolatortype='PLI',
-                                                 nelements=10000,buffer=0.5,
-                                                 solver='pyamg',
-                                                damp=True
-                                                )
-    stratigraphy = model.create_and_add_folded_foliation('s0',
-                                                   fold_frame['feature'],
-                                                    nelements=10000,
-                                                   fold_axis=axis,#[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
-    #                                                    limb_wl=1
-                                                         solver='pyamg',
-                                                         buffer=0.5
-                                                        )
-    viewer = LavaVuModelViewer(model,background="white")
-    # viewer.add_scalar_field(model.bounding_box,(38,55,30),
-    #                       'box',
-    #                      paint_with=stratigraphy,
-    #                      cmap='prism')
-    viewer.add_isosurface(fold_frame['feature'][0],
-                          colour='blue',
-    #                       isovalue=0.4,
-                          alpha=0.5)
-    viewer.add_data(stratigraphy['feature'])
-    viewer.add_isosurface(fold_frame['feature'][1],colour='green',alpha=0.5)
-    # viewer.add_vector_field(fold_frame['feature'][0],locations=fold_frame['feature'][0].get_interpolator().support.barycentre())
-    viewer.add_data(fold_frame['feature'][1])
-    viewer.add_fold(stratigraphy['fold'],locations=model.regular_grid()[::30])
-    # viewer.add_data(stratigraphy['feature'])
-    viewer.add_isosurface(stratigraphy['feature'])
-    viewer.interactive()
-    plt.plot(stratigraphy['foliation'],stratigraphy['limb_rotation'],'bo')
-    x = np.linspace(fold_frame['feature'][0].min(),fold_frame['feature'][1].max(),100)
-    plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
-
-
-######################################################################
-# Evaluation
-# ~~~~~~~~~~
-# 
-# Do you think that a typical structural map and cross section has enough
-# data to be able to constrain the geometry of folds in 3D?
-# 
-
+plt.plot(stratigraphy['foliation'],stratigraphy['limb_rotation'],'bo')
+x = np.linspace(fold_frame['feature'][0].min(),fold_frame['feature'][1].max(),100)
+plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')

@@ -1,6 +1,6 @@
 """
-Using Stratigraphic Columns
-===========================
+5. Using Stratigraphic Columns
+===============================
 We will use the previous example Creating a model with multiple geological features, dealing with unconformities.
 
 """
