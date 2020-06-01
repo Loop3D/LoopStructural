@@ -273,11 +273,12 @@ You can then navigate to localhost:8888 or the port specified.
 Linux
 -----
 
-LoopStructural can be easily installed using a Makefile once a few things are set up. Firstly, you need to add an environment variable to your system. LOOP_ENV, this can be done by adding `export LOOP_ENV=$YOUR_PATH_TO_VIRTUAL_ENVIRONMENT` to the `.bashrc` file. Make sure the path is updated to a directory in your system where you want to save the python virtual environment. It could be for example where you clone this repository and a subfolder called venv or LoopStructural.
+LoopStructural can be easily installed using a Makefile once a few things are set up. Firstly, you need to add an environment variable to your system. LOOP_ENV, this can be done by adding ``export LOOP_ENV=$YOUR_PATH_TO_VIRTUAL_ENVIRONMENT`` to the ``.bashrc`` file. Make sure the path is updated to a directory in your system where you want to save the python virtual environment. It could be for example where you clone this repository and a subfolder called venv or LoopStructural.
 
-Once you have the environment variable you can run the command `make dependencies` (or `make dependencies.fc` for Fedora) which will install the required dependencies for LoopStructural:
+Once you have the environment variable you can run the command ``make dependencies`` (or ``make dependencies.fc`` for Fedora) which will install the required dependencies for LoopStructural:
 
 Required dependencies for Ubuntu
+
 * python3
 * python3-venv
 * pybind11-dev
@@ -286,22 +287,29 @@ Required dependencies for Ubuntu
 * libgl1-mesa-dev
 * gcc
 * g++
-`sudo apt-get install python3 python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++`
+
+.. code-block::
+
+	sudo apt-get install python3 python3-dev python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++
 
 Required dependencies for Fedora
+
 * python3
 * python3-devel
 * pybind11-devel
 * mesa-libGL-devel
 * gcc
 * g++
-`sudo dnf install python3 python3-devel pybind11-devel mesa-libGL-devel gcc g++`
 
-Once these are installed you can run `make venv` to create a new python virtual environment in the location you specified. If a python environment already exists then this will be used.
+.. code-block::
 
-`make all` will install the required python dependencies for LoopStructural and then install and build the library. It just executes the following command: `pip3 install -r requirements.txt && python3 setup.py install build_ext --inplace`
+	sudo dnf install python3 python3-devel pybind11-devel mesa-libGL-devel gcc g++
 
-If you want to use a jupyter notebook then you can launch a server by running `make notebook`, alternatively you can run `make notebookbuild` if you want to build the library before launching the server.
+Once these are installed you can run ``make venv`` to create a new python virtual environment in the location you specified. If a python environment already exists then this will be used.
 
-If you want to compile the example files into jupyter notebooks you can do this using the `p2j` package. This can be done by running `make compileexamples`
+Once the virtual environment is activated, ``make all`` will install the required python dependencies for LoopStructural and then install and build the library. It just executes the following command: ``pip3 install -r requirements.txt && python3 setup.py install build_ext --inplace``
+
+If you want to use a jupyter notebook then you can launch a server by running ``make notebook``, alternatively you can run ``make notebookbuild`` if you want to build the library before launching the server.
+
+If you want to compile the example files into jupyter notebooks you can do this using the ``p2j`` package. This can be done by running ``make compileexamples``
 
