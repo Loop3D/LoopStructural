@@ -5,6 +5,7 @@ LoopStructural API
 =======================
 
 .. autosummary::
+    :toctree:
 
 
     interpolators

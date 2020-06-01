@@ -7,7 +7,7 @@ Loop Structural
 ===============
 .. image:: images/image823.png
 
-Loop structural is an open source 3D modelling library providing access to numerous interpolation algorithms with a
+Loop structural is an open source 3D modelling library providing access to multiple interpolation schemes  with a
 high level and easy to use API for creating geological models. The library has been written for the Loop platform by
 Lachlan Grose at Monash University.
 
@@ -19,21 +19,40 @@ LoopStructural is the forward geological modelling engine for the loop and conta
 elements in a 3D geological model. Including stratigraphy, unconformities, fault and folds. LoopStructural contains
 three native interpolation algorithms:
 
-1. Piecewise-linear interpolation Frank 2007
-2. Discrete Fold Interpolator Laurent 2016
+1. Piecewise-linear interpolation :cite:`Frank2007`
+2. Discrete Fold Interpolator :cite:`Laurent2016,Grose2017,Grose2018,Grose2019`
 3. Finite Difference Interpolation
 
 and a wrapper for the generalised radial basis functions provided by Surfe.
+
+.. toctree::
+   :hidden:
+
+   self
+
 
 .. toctree::
    :caption: Getting Started
    :hidden:
 
    installation
-   index
-   API
    auto_examples/index
 
+.. toctree::
+   :caption: LoopStructural API
+   :hidden:
 
+   API
 .. automodule:: LoopStructural
 
+
+.. .. toctree::
+   :caption: Loop
+
+
+..   map2loop
+   geophysics
+   uncertainty
+
+.. bibliography:: references.bib
+   :style:
