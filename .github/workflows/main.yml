@@ -1,14 +1,11 @@
  
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Push to loopy
 
 on:
   push:
-    branches: [ loopy ]
-  pull_request:
-    branches: [ loopy ]
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
