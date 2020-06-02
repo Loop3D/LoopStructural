@@ -1,0 +1,26 @@
+ 
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches: [ loopy ]
+  pull_request:
+    branches: [ loopy ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+#     container: pandoc/latex
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pushes to another repository
+        uses: Loop3d/github-action-push-to-another-repository@master
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'LoopStructural'
+          destination-github-username: 'lachlangrose'
+          destination-repository-name: 'loopPy'
+          git-user-email: lachlan.grose@monash.edu
