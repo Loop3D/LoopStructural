@@ -20,4 +20,4 @@ jobs:
           source-directory: 'LoopStructural'
           destination-github-username: 'lachlangrose'
           destination-repository-name: 'loopPy'
-          git-user-email: lachlan.grose@monash.edu
+          user-email: lachlan.grose@monash.edu
