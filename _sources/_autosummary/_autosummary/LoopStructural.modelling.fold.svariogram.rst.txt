@@ -1,0 +1,10 @@
+LoopStructural.modelling.fold.svariogram
+========================================
+
+.. contents::
+    :local:
+
+.. automodule:: LoopStructural.modelling.fold.svariogram
+
+    Members
+    =======

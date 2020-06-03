@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LoopStructural.modelling.fault.fault_segment &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Install instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../issues.html">Bug tracking and reporting issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Theory behind LoopStructural</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">LoopStructural API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>LoopStructural.modelling.fault.fault_segment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/_autosummary/_autosummary/LoopStructural.modelling.fault.fault_segment.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-modelling-fault-fault-segment">
+<h1>LoopStructural.modelling.fault.fault_segment<a class="headerlink" href="#loopstructural-modelling-fault-fault-segment" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
+</ul>
+</div>
+<span class="target" id="module-LoopStructural.modelling.fault.fault_segment"></span><div class="section" id="members">
+<h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment">
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.modelling.fault.fault_segment.</code><code class="sig-name descname">FaultSegment</code><span class="sig-paren">(</span><em class="sig-param">faultframe</em>, <em class="sig-param">faultfunction=None</em>, <em class="sig-param">steps=3</em>, <em class="sig-param">displacement=1.0</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for representing a slip event of a fault</p>
+<p>A slip event of a fault</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>faultframe</strong> (<em>FaultFrame</em>) – the fault frame defining the faut geometry</p></li>
+<li><p><strong>faultfunction</strong> (<em>function/lambda function</em>) – optional displacement function for spatially variable fault displacement</p></li>
+<li><p><strong>steps</strong> (<em>int</em>) – how many integration steps for faults</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.add_region">
+<code class="sig-name descname">add_region</code><span class="sig-paren">(</span><em class="sig-param">region</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.add_region" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>region</strong> (<em>boolean function</em><em>(</em><em>x</em><em>,</em><em>y</em><em>,</em><em>z</em><em>)</em>) – A function that returns true if inside region, false if outside
+can be passed as a lambda function e.g.
+lambda pos : feature.evaluate_value(pos) &gt; 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.apply_to_points">
+<code class="sig-name descname">apply_to_points</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.apply_to_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unfault the array of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>- numpy array Nx3</strong> (<em>points</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param">locations</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate which side of fault</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>numpy array</strong> (<em>locations</em>) – location to evaluate</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>boolean array true if on hanging wall, false if on footwall</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.evaluate_gradient">
+<code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">locations</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the fault slip direction at the location</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>- numpy array Nx3</strong> (<em>locations</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.evaluate_value">
+<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">locations</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.evaluate_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value of the fault surface scalar field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>- numpy array</strong> (<em>locations</em>) – location to evaluate scalar field</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.set_displacement">
+<code class="sig-name descname">set_displacement</code><span class="sig-paren">(</span><em class="sig-param">displacement</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.set_displacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the fault displacement to a new value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- double</strong> (<em>displacement</em>) – </p></li>
+<li><p><strong>- boolean</strong> (<em>scale</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.set_model">
+<code class="sig-name descname">set_model</code><span class="sig-paren">(</span><em class="sig-param">model</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.set_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link a geological model to the feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>- GeologicalModel</strong> (<em>model</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fault.fault_segment.FaultSegment.toggle_faults">
+<code class="sig-name descname">toggle_faults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fault.fault_segment.FaultSegment.toggle_faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggle faults that affect this fault segment</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lachlan Grose
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

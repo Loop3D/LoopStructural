@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>test &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Modelling faults using structural frames" href="faults.html" />
+    <link rel="prev" title="Building an implicit surface" href="example1.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../issues.html">Bug tracking and reporting issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory behind LoopStructural</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example1.html">Building an implicit surface</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implicit-surface-modelling">Implicit surface modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geologicalmodel">GeologicalModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualising-results">Visualising results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faults.html">Modelling faults using structural frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refolded_folds.html">Refolded folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html">Faulted folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html#faulted-refolded-folds">Faulted refolded folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="folds.html">Modelling folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_faulted_folds.html">Probabilistic faulted folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_folds.html">Probabilistic folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_faults.html">Probabilistic faults</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+        
+      <li>test</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/auto_examples/surfacemodelling.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-surfacemodelling-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="test">
+<span id="sphx-glr-auto-examples-surfacemodelling-py"></span><h1>test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="implicit-surface-modelling">
+<h1>Implicit surface modelling<a class="headerlink" href="#implicit-surface-modelling" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will demonstrate how to create an implicit surface
+representation of surfaces from a combination of orientation and
+location observations.</p>
+<p>Implicit surface representation involves finding an unknown function
+where <span class="math notranslate nohighlight">\(f(x,y,z)\)</span> matches observations of the surface geometry. We
+generate a scalar field where the scalar value is the distance away from
+a reference horizon. The reference horizon is arbritary and can either
+be:</p>
+<ul class="simple">
+<li><p>a single geological surface where the scalar field would represent
+the signed distance away from this surface. (above the surface
+positive and below negative)</p></li>
+<li><p>Where multiple conformable horizons are observed the same scalar
+field can be used to represent these surfaces and the thickness of
+the layers is used to determine the relative scalar value for each
+surface</p></li>
+</ul>
+<p>This tutorial will demonstrate both of these approaches for modelling a
+number of horizons picked from seismic data sets, by following the next
+steps: 1. Creation of a geological model, which includes: *
+Presentation and visualization of the data * Addition of a geological
+feature, which in this case is the stratigraphy of the model. 2.
+Visualization of the scalar field.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <span class="n">GeologicalModel</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
+
+<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_claudius</span> <span class="c1">#demo data</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1"># %matplotlib inline</span>
+</pre></div>
+</div>
+<p>The data for this example can be imported from the example datasets
+module in loopstructural.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span>
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="geologicalmodel">
+<h2>GeologicalModel<a class="headerlink" href="#geologicalmodel" title="Permalink to this headline">¶</a></h2>
+<p>To create a <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> the origin (lower left) and max extent
+(upper right) of the model area need to be specified. In this example
+these are provided in the bb array.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+</pre></div>
+</div>
+<p>A pandas dataframe with appropriate columns can be used to link the data
+to the geological model. * <code class="docutils literal notranslate"><span class="pre">X</span></code> is the x coordinate * <code class="docutils literal notranslate"><span class="pre">Y</span></code> is the y
+coordinate * <code class="docutils literal notranslate"><span class="pre">Z</span></code> is the z coordinate * <code class="docutils literal notranslate"><span class="pre">type</span></code> is a name to link
+the data to a model object * <code class="docutils literal notranslate"><span class="pre">val</span></code> is the value of the scalar field
+which represents the distance from a reference horizon. It is comparable
+to the relative thickness * <code class="docutils literal notranslate"><span class="pre">nx</span></code> is the x component of the normal
+vector to the surface gradient * <code class="docutils literal notranslate"><span class="pre">ny</span></code> is the y component of the
+normal vector to the surface gradient * <code class="docutils literal notranslate"><span class="pre">nz</span></code> is the z component of
+the normal vector to the surface gradeint * <code class="docutils literal notranslate"><span class="pre">strike</span></code> is the strike
+angle * <code class="docutils literal notranslate"><span class="pre">dip</span></code> is the dip angle</p>
+<p>Having a look at the data for this example by looking at the top of the
+dataframe and then using a 3D plot</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_value_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">])][[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">]],</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">])][</span><span class="s1">&#39;val&#39;</span><span class="p">],</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;value points&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">])][[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">]],</span>
+                       <span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">])][[</span><span class="s1">&#39;nx&#39;</span><span class="p">,</span><span class="s1">&#39;ny&#39;</span><span class="p">,</span><span class="s1">&#39;nz&#39;</span><span class="p">]],</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;orientation points&#39;</span><span class="p">)</span>
+
+<span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The pandas dataframe can be linked to the <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> using
+<code class="docutils literal notranslate"><span class="pre">.set_model_data(dataframe</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> contains an ordered list of the different
+geological features within a model and how these features interact. This
+controls the topology of the different geological features in the model.
+Different geological features can be added to the geological model such
+as: * Foliations * Faults * Unconformities * Folded foliations *
+Structural Frames</p>
+<p>In this example we will only add a foliation using the function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where name is the name in the <code class="docutils literal notranslate"><span class="pre">type</span></code> field, other parameters we
+specified are the: * <code class="docutils literal notranslate"><span class="pre">interpolatortype</span></code> - we can either use a
+PiecewiseLinearInterpolator <code class="docutils literal notranslate"><span class="pre">PLI</span></code>, a FiniteDifferenceInterpolator
+<code class="docutils literal notranslate"><span class="pre">FDI</span></code> or a radial basis interpolator <code class="docutils literal notranslate"><span class="pre">surfe</span></code> * <code class="docutils literal notranslate"><span class="pre">nelements</span> <span class="pre">-</span> <span class="pre">int</span></code>
+is the how many elements are used to discretize the resulting solution
+* <code class="docutils literal notranslate"><span class="pre">buffer</span> <span class="pre">-</span> <span class="pre">float</span></code> buffer percentage around the model area *
+<code class="docutils literal notranslate"><span class="pre">solver</span></code> - the algorithm to solve the least squares problem e.g.
+<code class="docutils literal notranslate"><span class="pre">lu</span></code> for lower upper decomposition, <code class="docutils literal notranslate"><span class="pre">cg</span></code> for conjugate gradient,
+<code class="docutils literal notranslate"><span class="pre">pyamg</span></code> for an algorithmic multigrid solver * <code class="docutils literal notranslate"><span class="pre">damp</span> <span class="pre">-</span> <span class="pre">bool</span></code> -
+whether to add a small number to the diagonal of the interpolation
+matrix for discrete interpolators - this can help speed up the solver
+and makes the solution more stable for some interpolators</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">330</span><span class="p">,</span><span class="mi">600</span><span class="p">]</span>
+<span class="n">strat_column</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;strati&#39;</span><span class="p">:{}}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">strat_column</span><span class="p">[</span><span class="s1">&#39;strati&#39;</span><span class="p">][</span><span class="s1">&#39;unit_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s1">&#39;max&#39;</span><span class="p">:</span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">}</span>
+
+
+
+<span class="nb">print</span><span class="p">(</span><span class="n">strat_column</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">set_stratigraphic_column</span><span class="p">(</span><span class="n">strat_column</span><span class="p">)</span>
+
+<span class="n">strati</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s2">&quot;strati&quot;</span><span class="p">,</span>
+                                           <span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;FDI&quot;</span><span class="p">,</span> <span class="c1"># try changing this to &#39;PLI&#39;</span>
+                                           <span class="n">nelements</span><span class="o">=</span><span class="mf">1e4</span><span class="p">,</span> <span class="c1"># try changing between 1e3 and 5e4</span>
+                                           <span class="n">buffer</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                                           <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span><span class="p">,</span>
+                                           <span class="n">damp</span><span class="o">=</span><span class="kc">True</span>
+                                          <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="visualising-results">
+<h2>Visualising results<a class="headerlink" href="#visualising-results" title="Permalink to this headline">¶</a></h2>
+<p>The LavaVuModelViewer is an LoopStructural class that provides easy 3D
+plotting options for plotting data points and resulting implicit
+functions.</p>
+<p>The implicit function can be visualised by looking at isosurfaces of the
+scalar field.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where optional kwargs can be:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nslices</span></code> specifying the number of regularly spaced isosurfaces</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slices</span></code> a numpy array or list of isovalues to slice</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isovalue</span></code> an isovalue to slice</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">paint_with</span></code> the geological feature to colour the surface with</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmap</span></code> colour map for the colouring</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">normals</span></code> to plot the normal vectors to the surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> to give the surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">colour</span></code> the colour of the surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">voxet</span></code> dict with <code class="docutils literal notranslate"><span class="pre">bounding_box=boundary_points</span></code> and
+<code class="docutils literal notranslate"><span class="pre">nsteps</span> <span class="pre">=</span> <span class="pre">(nx,ny,nz)</span></code></p></li>
+<li><p>other kwargs for passing directly to lavavu</p></li>
+</ul>
+<p>Alternatively the scalarfields can be displayed on a rectangular cuboid.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">boundary_points</span><span class="p">,</span><span class="n">dimensions</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">boundary_points</span></code> is a numpy array
+<code class="docutils literal notranslate"><span class="pre">[[minx,miny,minz],[maxx,maxy,maxz]]</span></code> and <code class="docutils literal notranslate"><span class="pre">dimensions</span></code> corresponds
+to the number of samples along each axis.</p>
+<p>Other possible kwargs are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">paint_with</span></code> the geological feature to colour the box with</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">colour</span></code> a single colour to colour the surfaces with</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmap</span></code> colour map for the property</p></li>
+</ul>
+<p>The input data for the model can be visualised by calling either:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where both the point and vector data linked to the feature are added to
+the plot or by calling.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_data</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">vector</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">position</span></code> is an array or x,y,z coordinates and vector is a
+similarly sized array of <code class="docutils literal notranslate"><span class="pre">vectors</span></code>. These can be extracted from a
+geological feature by calling.
+<code class="docutils literal notranslate"><span class="pre">feature.support.interpolator.get_gradient_constraint()</span></code> which returns
+a Nx6 matrix of position and vectors.</p>
+<p>The value data can be plotted by calling.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_value_data</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">position</span></code> is an array or x,y,z coordinates and value is a
+similarly sized vector of values. These can be extracted from a
+geological feature by calling.
+<code class="docutils literal notranslate"><span class="pre">feature.support.interpolator.get_value_constraint()</span></code> which returns a
+Nx4 matrix of position and values.</p>
+<p>Other possible options for plotting are to * plot point locations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>plot a vector field using the gradient of a geological feature</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_field</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">locations</span></code> are an array of points to evaluate the gradient at,
+for example the barycentric coordinates. It is recommended to visualise
+the vectorfield at a lower resolution than the mesh otherwise it can be
+difficult to see the vectors. You can use numpy stepping along the
+array: <code class="docutils literal notranslate"><span class="pre">locations</span> <span class="pre">=</span> <span class="pre">mesh.barycentre[::20,:]</span></code> which will sample every
+20th sample in the numpy array.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+
+<span class="c1"># determine the number of unique surfaces in the model from</span>
+<span class="c1"># the input data and then calculate isosurfaces for this</span>
+<span class="n">unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">get_value_constraints</span><span class="p">()[:,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="n">slices</span><span class="o">=</span><span class="n">unique</span><span class="p">,</span>
+                       <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">,</span>
+                      <span class="n">paint_with</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="n">voxet</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">voxet</span><span class="p">())</span>
+
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                   <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
+                   <span class="n">value</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                   <span class="n">boundary_points</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">,</span>
+                   <span class="n">nsteps</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">]),</span>
+                  <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_model</span><span class="p">()</span>
+
+<span class="c1"># Add the data addgrad/addvalue arguments are optional</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">lv</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span><span class="c1"># to add an interactive display</span>
+
+
+<span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">()))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">feature_name_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;strati&#39;</span><span class="p">)</span>
+
+<span class="n">strat_column</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-surfacemodelling-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/bcb68c608c3b6e9ef047ab0d12e1edbc/surfacemodelling.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">surfacemodelling.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/52054f1cd659674e2c7275951111b0de/surfacemodelling.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">surfacemodelling.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="faults.html" class="btn btn-neutral float-right" title="Modelling faults using structural frames" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="example1.html" class="btn btn-neutral float-left" title="Building an implicit surface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lachlan Grose
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

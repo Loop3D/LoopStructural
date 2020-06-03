@@ -1,0 +1,10 @@
+LoopStructural.modelling.core
+=============================
+
+.. contents::
+    :local:
+
+.. automodule:: LoopStructural.modelling.core
+
+    Members
+    =======

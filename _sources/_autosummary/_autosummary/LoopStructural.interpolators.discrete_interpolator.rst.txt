@@ -1,0 +1,10 @@
+LoopStructural.interpolators.discrete_interpolator
+==================================================
+
+.. contents::
+    :local:
+
+.. automodule:: LoopStructural.interpolators.discrete_interpolator
+
+    Members
+    =======

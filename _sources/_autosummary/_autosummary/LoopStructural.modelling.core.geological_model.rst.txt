@@ -1,0 +1,10 @@
+LoopStructural.modelling.core.geological_model
+==============================================
+
+.. contents::
+    :local:
+
+.. automodule:: LoopStructural.modelling.core.geological_model
+
+    Members
+    =======

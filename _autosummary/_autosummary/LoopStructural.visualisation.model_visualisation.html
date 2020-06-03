@@ -1,0 +1,466 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LoopStructural.visualisation.model_visualisation &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Install instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../issues.html">Bug tracking and reporting issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Theory behind LoopStructural</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">LoopStructural API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Tutorials</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>LoopStructural.visualisation.model_visualisation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/_autosummary/_autosummary/LoopStructural.visualisation.model_visualisation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-visualisation-model-visualisation">
+<h1>LoopStructural.visualisation.model_visualisation<a class="headerlink" href="#loopstructural-visualisation-model-visualisation" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
+</ul>
+</div>
+<span class="target" id="module-LoopStructural.visualisation.model_visualisation"></span><p>A wrapper for lavavu</p>
+<div class="section" id="members">
+<h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer">
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.visualisation.model_visualisation.</code><code class="sig-name descname">LavaVuModelViewer</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">bounding_box=None</em>, <em class="sig-param">nsteps=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Short description</p>
+<p>A wrapper to plot LoopStructural object with lavavu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>lavavu viewer kwargs</em>) – </p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">lv Lavavu.Viewer object</code></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.objects">
+<code class="sig-name descname">objects</code><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.objects" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary of objects that have been plotted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_data">
+<code class="sig-name descname">add_data</code><span class="sig-paren">(</span><em class="sig-param">feature</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the data linked to the feature, can choose whether to plot all data types
+using value and grad kwargs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature</strong> – </p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_fold">
+<code class="sig-name descname">add_fold</code><span class="sig-paren">(</span><em class="sig-param">fold</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the vector components of the fold at the locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- fold object</strong> (<em>fold</em>) – </p></li>
+<li><p><strong>- numpy array of xyz</strong> (<em>locations</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface">
+<code class="sig-name descname">add_isosurface</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the surface of a geological feature if no kwargs are given plots the
+average surface and colours it red.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>geological_feature</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_points">
+<code class="sig-name descname">add_points</code><span class="sig-paren">(</span><em class="sig-param">points</em>, <em class="sig-param">name</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot points location in the lavavu viewer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<em>numpy array of the points locations</em>) – </p></li>
+<li><p><strong>name</strong> (<em>string name of the object for lavavu</em>) – </p></li>
+<li><p><strong>**kwargs</strong> (<em>lavavu points kwargs</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_scalar_field">
+<code class="sig-name descname">add_scalar_field</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_scalar_field" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>GeologicalFeature</strong> (<em>geological_feature</em>) – the geological feature to colour the scalar field by</p></li>
+<li><p><strong>kwargs</strong> – kwargs for lavavu</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_section">
+<code class="sig-name descname">add_section</code><span class="sig-paren">(</span><em class="sig-param">geological_feature=None</em>, <em class="sig-param">axis='x'</em>, <em class="sig-param">value=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a section/map thru the model and paint with a geological feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geological_feature</strong> (<em>Geological feature</em>) – The feature to paint the section with</p></li>
+<li><p><strong>axis</strong> (<em>string</em>) – which axis, x,y,z</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – Where to make the section</p></li>
+<li><p><strong>kwargs</strong> – additional kwargs passes to lavavu for colourmaps etc</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_value_data">
+<code class="sig-name descname">add_value_data</code><span class="sig-paren">(</span><em class="sig-param">position</em>, <em class="sig-param">value</em>, <em class="sig-param">name</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_value_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot points data with a value component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>numpy array N</em><em>,</em><em>3 for xyz locations</em>) – </p></li>
+<li><p><strong>value</strong> (<em>N array of values</em>) – </p></li>
+<li><p><strong>name</strong> (<em>string name of the object for lavavu</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>kwargs to pass to lavavu</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data">
+<code class="sig-name descname">add_vector_data</code><span class="sig-paren">(</span><em class="sig-param">position</em>, <em class="sig-param">vector</em>, <em class="sig-param">name</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot point data with a vector component into the lavavu viewer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>numpy array N</em><em>,</em><em>3 for xyz locations</em>) – </p></li>
+<li><p><strong>vector</strong> (<em>numpy array of vector N</em><em>,</em><em>3</em>) – </p></li>
+<li><p><strong>name</strong> (<em>string name for the object in lavavu</em>) – </p></li>
+<li><p><strong>to pass to lavavu</strong> (<em>kwargs</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_field">
+<code class="sig-name descname">add_vector_field</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the gradient of a geological feature at given locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geological_feature</strong> (<em>Geological Feature to evaluate gradient</em>) – </p></li>
+<li><p><strong>locations</strong> (<em>(</em><em>(</em><em>N</em><em>,</em><em>3</em><em>)</em><em>) </em><em>array of evaluation locations</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>kwargs for lavavu vector</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the lv object display function. Shows a static image of the viewer inline.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.image">
+<code class="sig-name descname">image</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the lv object image function to save the display state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – name of the image file to save</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.interactive">
+<code class="sig-name descname">interactive</code><span class="sig-paren">(</span><em class="sig-param">popout=False</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.interactive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the lavavu viewer as either a jupyter notebook
+inline interactive viewer or as a separate window</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotate">
+<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param">r</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate by a vector of rotation angles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>list/numpy array</em>) – a vector of rotations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotatex">
+<code class="sig-name descname">rotatex</code><span class="sig-paren">(</span><em class="sig-param">r</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotatex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the viewer in the x plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>double</em>) – degrees to rotate, can be +ve or -ve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotatey">
+<code class="sig-name descname">rotatey</code><span class="sig-paren">(</span><em class="sig-param">r</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotatey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the viewer in the Y plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>double</em>) – degrees to rotate, can be +ve or -ve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotatez">
+<code class="sig-name descname">rotatez</code><span class="sig-paren">(</span><em class="sig-param">r</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotatez" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the viewer in the z plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>double</em>) – degrees to rotate, can be +ve or -ve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">fname</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls lavavu.Viewer.image to save the viewer current state as an image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- file name string including relative path</strong> (<em>fname</em>) – </p></li>
+<li><p><strong>- optional kwargs to give to lavavu e.g. transparent</strong><strong>, </strong><strong>resolution</strong> (<em>kwargs</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.set_viewer_rotation">
+<code class="sig-name descname">set_viewer_rotation</code><span class="sig-paren">(</span><em class="sig-param">rotation</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.set_viewer_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the viewer rotation given a list of rotations x,y,z</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>numpy array of 3 rotation</strong> (<em>rotation</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lachlan Grose
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

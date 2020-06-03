@@ -1,0 +1,10 @@
+LoopStructural.modelling.fold.fold_rotation_angle_feature
+=========================================================
+
+.. contents::
+    :local:
+
+.. automodule:: LoopStructural.modelling.fold.fold_rotation_angle_feature
+
+    Members
+    =======

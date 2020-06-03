@@ -1,0 +1,10 @@
+LoopStructural.modelling.fault.fault_segment
+============================================
+
+.. contents::
+    :local:
+
+.. automodule:: LoopStructural.modelling.fault.fault_segment
+
+    Members
+    =======

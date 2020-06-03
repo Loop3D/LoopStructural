@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Modelling folds &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Probabilistic faulted folds" href="probabilistic_faulted_folds.html" />
+    <link rel="prev" title="Faulted folds" href="faulted_fold.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../issues.html">Bug tracking and reporting issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory behind LoopStructural</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example1.html">Building an implicit surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="surfacemodelling.html">test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="surfacemodelling.html#implicit-surface-modelling">Implicit surface modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faults.html">Modelling faults using structural frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refolded_folds.html">Refolded folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html">Faulted folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html#faulted-refolded-folds">Faulted refolded folds</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Modelling folds</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#imports">Imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#structural-geology-of-folds">Structural geology of folds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modelling-folded-surfaces-without-structural-geology">Modelling folded surfaces without structural geology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modelling-folded-surfaces-using-loop-structural">Modelling folded surfaces using loop structural</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#testing-data-density">Testing data density</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modelling-folds-using-structural-geology">Modelling folds using structural geology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#calculating-the-fold-rotation-angles">Calculating the fold rotation angles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#evaluation">Evaluation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_faulted_folds.html">Probabilistic faulted folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_folds.html">Probabilistic folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probabilistic_faults.html">Probabilistic faults</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+        
+      <li>Modelling folds</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/auto_examples/folds.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-folds-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="modelling-folds">
+<span id="sphx-glr-auto-examples-folds-py"></span><h1>Modelling folds<a class="headerlink" href="#modelling-folds" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>This tutorial will show how Loop Structural improves the modelling of
+folds by using an accurate parameterization of folds geometry. This will
+be done by: 1. Modelling folded surfaces without structural geology,
+i.e. using only data points and adjusting the scalar fields to those
+points. 2. Modelling folds using structural geology, which includes: *
+Description of local fold frame and rotation angles calculation *
+Construction of folded foliations using fold geostatistics inside the
+fold frame coordinate system</p>
+</div></blockquote>
+<div class="section" id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <span class="n">GeologicalModel</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_noddy_single_fold</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation.model_visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.utils.helper</span> <span class="kn">import</span> <span class="n">strike_dip_vector</span><span class="p">,</span> <span class="n">plunge_and_plunge_dir_to_vector</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">Rbf</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">interact</span><span class="p">,</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">fixed</span><span class="p">,</span> <span class="n">interact_manual</span>
+<span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">widgets</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="structural-geology-of-folds">
+<h2>Structural geology of folds<a class="headerlink" href="#structural-geology-of-folds" title="Permalink to this headline">¶</a></h2>
+<p>Folds are one of the most common features found in deformed rocks and
+are defined by the location of higher curvature. The geometry of the
+folded surface can be characterised by three geometrical elements:</p>
+<ol class="arabic simple">
+<li><p>the fold hinge is the point of maximum curvature along folded surface</p></li>
+<li><p>the axial surface is a surfaces that passes through all curvature
+points in all folded foliations</p></li>
+<li><p>the fold axis is the intersection of the folded foliation and the
+axial surface</p></li>
+</ol>
+<p>Modelling folded surfaces using standard implicit algorithms is
+challenging because the implicit modelling methods are generally trying
+to minimise the resulting curvature of the surface. To model folded
+surfaces the geologist will need to characterise the geometry of the
+folded surface in high detail.</p>
+</div>
+<div class="section" id="modelling-folded-surfaces-without-structural-geology">
+<h2>Modelling folded surfaces without structural geology<a class="headerlink" href="#modelling-folded-surfaces-without-structural-geology" title="Permalink to this headline">¶</a></h2>
+<p>In the following section we will attempt to model a synthetic fold shape
+that is defined by a sinusoidal folded surface. For simplicity we will
+consider the fold as cylindrical and therefore only consider the fold in
+a 2D plane. The data set has been sampled from a model generated using
+Noddy and represents a fold with a wavelength of ~10km and amplitude of
+~2km.</p>
+<p>The orientation of the structure has been sampled within the model
+volume (10km,7km,5km) at 500m intervals.</p>
+<p><strong>The aim of this exercise is to investigate how standard implicit
+modelling techniques are fundamentally limited when trying to model
+folded surfaces.</strong></p>
+<ol class="arabic simple">
+<li><p>Load data from sample datasets</p></li>
+<li><p>Visualise data</p></li>
+<li><p>Look at varying degrees of sampling e.g. 200 points, 100 points, 10
+points.</p></li>
+<li><p>Look at using data points ONLY from a map surface</p></li>
+</ol>
+<div class="section" id="modelling-folded-surfaces-using-loop-structural">
+<h3>Modelling folded surfaces using loop structural<a class="headerlink" href="#modelling-folded-surfaces-using-loop-structural" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the sample data</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">boundary_points</span> <span class="o">=</span> <span class="n">load_noddy_single_fold</span><span class="p">()</span>
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The input dataset was generated using Noddy by sampling the orientation
+of a structure on a regular grid. We have loaded it into a pandas
+DataFrame, this is basically an excel spreadsheet for python. Above are
+the first 5 rows of the dataset and as we can see it is regularly
+sampled with data points being sampled regularly along the <span class="math notranslate nohighlight">\(z\)</span>,
+<span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(x\)</span> axes. In order to avoid artefacts due to the
+sampling errors we will shuffle the data. We can do this using the
+<code class="docutils literal notranslate"><span class="pre">random</span></code> column in the DataFrame (ensuring everyone has the same
+data).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;random&#39;</span><span class="p">)</span> <span class="c1"># sort the data by a random int then we can select N random points</span>
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The data can be visualised using the lavavu 3d viewer - by first
+converting from strike and dip to normal vectors. Note that there are a
+lot of data points to display as the model volume was regularly sampled
+on a grid.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">()</span>
+<span class="n">xyz</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+<span class="n">vector</span> <span class="o">=</span> <span class="n">strike_dip_vector</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;strike&#39;</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_data</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span><span class="n">vector</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;all_data&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The data points are now randomly ordered and can now be subsampled by
+choosing the first N samples from the dataframe</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>returns the first 100 data points from the array</p>
+</div>
+<div class="section" id="testing-data-density">
+<h3>Testing data density<a class="headerlink" href="#testing-data-density" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use the toggle bar to change the amount of data used by the
+interpolation algorithm.</p></li>
+<li><p>How does the shape of the fold change as we remove data points?</p></li>
+<li><p>Now what happens if we only consider data from the map view?</p></li>
+</ul>
+<p><strong>HINT</strong> you can view the strike and dip data by unchecking the scalar
+field box.</p>
+<p><strong>The black arrows are the normal vector to the folded surface</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@interact_manual</span><span class="p">(</span><span class="n">npoints</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">npoints</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="n">npoints</span><span class="p">])</span>
+    <span class="n">stratigraphy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s2">&quot;s0&quot;</span><span class="p">,</span><span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;PLI&quot;</span><span class="p">,</span><span class="n">nelements</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span><span class="n">buffer</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="n">cgw</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span><span class="c1">#.2)</span>
+    <span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+    <span class="c1"># viewer.add_scalar_field(model.bounding_box,(38,55,30),</span>
+    <span class="c1">#                       &#39;box&#39;,</span>
+    <span class="c1">#                      paint_with=stratigraphy,</span>
+    <span class="c1">#                      cmap=&#39;prism&#39;)</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span>
+                         <span class="n">voxet</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">voxet</span><span class="p">())</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modelling-folds-using-structural-geology">
+<h3>Modelling folds using structural geology<a class="headerlink" href="#modelling-folds-using-structural-geology" title="Permalink to this headline">¶</a></h3>
+<p>The following section will describe how the fold axis, fold axial
+surface and fold vergence can be used to help constrain the shape of the
+folded surface. To do this we need to build a fold frame which is
+curvilinear coordinate system based around the fold axis and the fold
+axial surface.</p>
+<p>There are three coordinates to the fold frame: * coordinate 0 is the
+axial surface of the fold and is parallel to the axial foliation *
+coordinate 1 is the fold axis direction field and is orthogonal to the
+axial foliation * coordinate 2 is orthogonal to both the fold axis
+direction field and axial foliation and is roughly parallel to the
+extension direction of the fold</p>
+<p>Three direction vectors are defined by the normalised gradient of these
+fields: * <span class="math notranslate nohighlight">\(e_0\)</span> - red * <span class="math notranslate nohighlight">\(e_1\)</span> - green * <span class="math notranslate nohighlight">\(e_2\)</span> -
+blue</p>
+<p>The orientation of the folded foliation can be defined by rotating
+<span class="math notranslate nohighlight">\(e_1\)</span> around <span class="math notranslate nohighlight">\(e_0\)</span> by the fold axis rotation angle
+<span class="math notranslate nohighlight">\(\alpha_P\)</span> to give the orientation of the fold axis. The
+orientation of the folded foliation can then be defined by rotating the
+plane defined by the fold axis and <span class="math notranslate nohighlight">\(e_0\)</span> around the fold axis by
+the fold limb rotation angle <span class="math notranslate nohighlight">\(\alpha_L\)</span>.</p>
+</div>
+<div class="section" id="calculating-the-fold-rotation-angles">
+<h3>Calculating the fold rotation angles<a class="headerlink" href="#calculating-the-fold-rotation-angles" title="Permalink to this headline">¶</a></h3>
+<p>The rotation angles can be calculated for observations of the folded
+foliation and assocaited lineations. For example, the fold axis rotation
+angle is found by calculating the angle between the gradient of the fold
+axis direction field and the intersection lineations shown in A). The
+fold limb rotation angle is found by finding the the angle to rotate the
+folded foliation to be parallel to the plane of the axial foliation
+shown in B and C.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@interact_manual</span><span class="p">(</span><span class="n">npoints</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">npoints</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">mdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">data</span><span class="p">[:</span><span class="n">npoints</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;s1&#39;</span><span class="p">]])</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
+    <span class="n">fold_frame</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fold_frame</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span>
+                                                 <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                                 <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span><span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                                 <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span><span class="p">,</span>
+                                                <span class="n">damp</span><span class="o">=</span><span class="kc">True</span>
+                                                <span class="p">)</span>
+    <span class="n">stratigraphy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_folded_foliation</span><span class="p">(</span><span class="s1">&#39;s0&#39;</span><span class="p">,</span>
+                                                   <span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span>
+                                                    <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+                                                   <span class="n">fold_axis</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">6.51626577e-06</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.00013645e-01</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.66017526e-01</span><span class="p">],</span>
+    <span class="c1">#                                                    limb_wl=1</span>
+                                                         <span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span>
+                                                        <span class="p">)</span>
+    <span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+    <span class="c1"># viewer.add_scalar_field(model.bounding_box,(38,55,30),</span>
+    <span class="c1">#                       &#39;box&#39;,</span>
+    <span class="c1">#                      paint_with=stratigraphy,</span>
+    <span class="c1">#                      cmap=&#39;prism&#39;)</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="n">colour</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+    <span class="c1">#                       isovalue=0.4,</span>
+                          <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">colour</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="c1"># viewer.add_vector_field(fold_frame[&#39;feature&#39;][0],locations=fold_frame[&#39;feature&#39;][0].get_interpolator().support.barycentre())</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># viewer.add_data(stratigraphy[&#39;feature&#39;])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;foliation&#39;</span><span class="p">],</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;limb_rotation&#39;</span><span class="p">],</span><span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;fold&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fold_limb_rotation</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="s1">&#39;r--&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now try changing the fold axis and see how this changes the S-Plot.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@interact_manual</span><span class="p">(</span><span class="n">npoints</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">plunge</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">90</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">trend</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">360</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">npoints</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">plunge</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span><span class="n">trend</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">plunge_and_plunge_dir_to_vector</span><span class="p">(</span><span class="n">plunge</span><span class="p">,</span><span class="n">trend</span><span class="p">)</span>
+    <span class="n">mdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">data</span><span class="p">[:</span><span class="n">npoints</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;s1&#39;</span><span class="p">]])</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
+    <span class="n">fold_frame</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fold_frame</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span>
+                                                 <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                                 <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span><span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                                 <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span><span class="p">,</span>
+                                                <span class="n">damp</span><span class="o">=</span><span class="kc">True</span>
+                                                <span class="p">)</span>
+    <span class="n">stratigraphy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_folded_foliation</span><span class="p">(</span><span class="s1">&#39;s0&#39;</span><span class="p">,</span>
+                                                   <span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span>
+                                                    <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+                                                   <span class="n">fold_axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span><span class="c1">#[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],</span>
+    <span class="c1">#                                                    limb_wl=1</span>
+                                                         <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span><span class="p">,</span>
+                                                         <span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span>
+                                                        <span class="p">)</span>
+    <span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+    <span class="c1"># viewer.add_scalar_field(model.bounding_box,(38,55,30),</span>
+    <span class="c1">#                       &#39;box&#39;,</span>
+    <span class="c1">#                      paint_with=stratigraphy,</span>
+    <span class="c1">#                      cmap=&#39;prism&#39;)</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="n">colour</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+    <span class="c1">#                       isovalue=0.4,</span>
+                          <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">colour</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="c1"># viewer.add_vector_field(fold_frame[&#39;feature&#39;][0],locations=fold_frame[&#39;feature&#39;][0].get_interpolator().support.barycentre())</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_fold</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;fold&#39;</span><span class="p">],</span><span class="n">locations</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">()[::</span><span class="mi">30</span><span class="p">])</span>
+    <span class="c1"># viewer.add_data(stratigraphy[&#39;feature&#39;])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;foliation&#39;</span><span class="p">],</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;limb_rotation&#39;</span><span class="p">],</span><span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">fold_frame</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">stratigraphy</span><span class="p">[</span><span class="s1">&#39;fold&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fold_limb_rotation</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="s1">&#39;r--&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="evaluation">
+<h3>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h3>
+<p>Do you think that a typical structural map and cross section has enough
+data to be able to constrain the geometry of folds in 3D?</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-folds-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/f48b3b3b9560fc4da10652a6f71260cc/folds.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">folds.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/b54c2f608dab19b576e4bdfb62188658/folds.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">folds.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="probabilistic_faulted_folds.html" class="btn btn-neutral float-right" title="Probabilistic faulted folds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="faulted_fold.html" class="btn btn-neutral float-left" title="Faulted folds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lachlan Grose
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
