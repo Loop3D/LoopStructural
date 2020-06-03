@@ -31,7 +31,7 @@ import pandas as pd
 # print rcParams
 rcParams['font.size'] = 15
 # determine path of repository to set paths corretly below
-repo_path = os.path.realpath('../..')
+repo_path = os.path.realpath('../../..')
 sys.path.append(repo_path)
 import pynoddy.history
 import logging

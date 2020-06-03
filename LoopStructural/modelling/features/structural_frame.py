@@ -32,6 +32,10 @@ class StructuralFrame:
         """
         return self.features[item]
 
+    def add_region(self, region):
+        for i in range(3):
+            self.features[i].add_region(region)
+
     def get_feature(self, i):
         """
         Return the ith feature

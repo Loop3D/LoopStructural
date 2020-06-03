@@ -17,7 +17,8 @@ import logging
 from logging.config import dictConfig
 
 from .modelling.core.geological_model import GeologicalModel
-
+from .visualisation.model_visualisation import LavaVuModelViewer
+from .visualisation.map_viewer import MapView
 # logging_config = dict(
 #     version=1,
 #     formatters={

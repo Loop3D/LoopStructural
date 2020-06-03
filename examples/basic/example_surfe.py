@@ -1,3 +1,7 @@
+"""
+Using surfe
+===========
+"""
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
 

@@ -76,10 +76,15 @@ html_static_path = ['_static']
 
 # Sphinx gallery examples
 from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
+from sphinx_gallery.sorting import ExampleTitleSortKey
 sphinx_gallery_conf = {
-     'examples_dirs': '../../examples',   # path to your example scripts
-     'gallery_dirs': 'auto_examples', # path to where to save gallery generated output
-    'image_scrapers': ('matplotlib',LoopScraper())
+     'examples_dirs': ['../../examples/'],
+
+     'gallery_dirs': ['auto_examples/']
+                        , # path to where to save gallery generated output
+    'image_scrapers': ('matplotlib',LoopScraper()),
+    'within_subsection_order': ExampleTitleSortKey,
+    'reference_url' : {'LoopStructural' : None}
 }
 
 def setup(app):

@@ -10,11 +10,6 @@ from LoopStructural.datasets import load_intrusion
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
-# %matplotlib inline
-
-from __future__ import print_function
-from ipywidgets import interact, interactive, fixed, interact_manual
-import ipywidgets as widgets
 
 data, bb = load_intrusion()
 
@@ -76,38 +71,9 @@ xyz = model.data[model.data['type']=='strati'][['X','Y','Z']].to_numpy()
 xyz = xyz[fault['feature'].evaluate(xyz),:]
 viewer.add_vector_field(fault['feature'], locations= xyz)
 viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
-viewer.interactive()
+viewer.display()
 
 
-######################################################################
-# Use the slider to determine the appropriate displacement to “unfault”
-# the points
-# 
-
-@interact_manual(displacement=(-1000,1000,100))
-def run(displacement):
-    model = GeologicalModel(bb[0,:],bb[1,:])
-    model.set_model_data(data)
-    fault = model.create_and_add_fault('fault',
-                                       displacement,
-                                       nelements=2000,
-                                       steps=4,
-                                       interpolatortype='PLI',
-                                      buffer=0.3)
-    viewer = LavaVuModelViewer(model)
-    viewer.add_isosurface(fault['feature'],
-                          isovalue=0
-    #                       slices=[0,1]#nslices=10
-                         )
-    xyz = model.data[model.data['type']=='strati'][['X','Y','Z']].to_numpy()
-    xyz = fault['feature'].apply_to_points(xyz)
-    viewer.add_points(xyz,name='faulted')
-    viewer.interactive()
-
-
-######################################################################
-# Add the displacement to the variable below
-# 
 
 displacement = 400#INSERT YOUR DISPLACEMENT NUMBER HERE BEFORE #
 
@@ -131,5 +97,5 @@ viewer.add_isosurface(fault['feature'],isovalue=0
 #                       slices=[0,1]#nslices=10
                      )
 viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
-viewer.interactive()
+viewer.display()
 
