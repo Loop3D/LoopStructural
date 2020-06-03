@@ -34,12 +34,15 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.interpolators.structured_tetra" href="LoopStructural.interpolators.structured_tetra.html" />
+    <link rel="prev" title="LoopStructural.interpolators.finite_difference_interpolator" href="LoopStructural.interpolators.finite_difference_interpolator.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,12 +87,38 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../issues.html">Bug tracking and reporting issues</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory behind LoopStructural</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-submodules">Interpolation Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html">LoopStructural.interpolators.geological_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.html">LoopStructural.interpolators.discrete_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.piecewiselinear_interpolator.html">LoopStructural.interpolators.piecewiselinear_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_fold_interpolator.html">LoopStructural.interpolators.discrete_fold_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.interpolators.surfe_wrapper</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#members">Members</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-support-submodules">Interpolation Support Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#members">Members</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -134,6 +163,10 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
+        
+          <li><a href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a> &raquo;</li>
         
       <li>LoopStructural.interpolators.surfe_wrapper</li>
     
@@ -217,11 +250,51 @@ by using any of these functions. This will enable interpolators to be interchang
 </dd></dl>
 
 <dl class="method">
+<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_gradient_constraints">
+<code class="sig-name descname">set_gradient_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_gradient_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_normal_constraints">
+<code class="sig-name descname">set_normal_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_normal_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_property_name">
 <code class="sig-name descname">set_property_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_property_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the name of the interpolated property
 :param name: name of the property to be saved on a mesh
 :type name: string</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_tangent_constraints">
+<code class="sig-name descname">set_tangent_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_tangent_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_value_constraints">
+<code class="sig-name descname">set_value_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_value_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -246,6 +319,15 @@ by using any of these functions. This will enable interpolators to be interchang
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="LoopStructural.interpolators.structured_tetra.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.structured_tetra" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="LoopStructural.interpolators.finite_difference_interpolator.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.finite_difference_interpolator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -278,7 +360,18 @@ by using any of these functions. This will enable interpolators to be interchang
   
   
     
-   
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
 
 </body>
 </html>

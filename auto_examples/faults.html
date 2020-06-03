@@ -34,14 +34,13 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Refolded folds" href="refolded_folds.html" />
-    <link rel="prev" title="test" href="surfacemodelling.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,29 +84,23 @@
               
             
             
-              <ul class="current">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../issues.html">Bug tracking and reporting issues</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory behind LoopStructural</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="example1.html">Building an implicit surface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="surfacemodelling.html">test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="surfacemodelling.html#implicit-surface-modelling">Implicit surface modelling</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Modelling faults using structural frames</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Modelling faults using structural frames</a></li>
 </ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="refolded_folds.html">Refolded folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html">Faulted folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html#faulted-refolded-folds">Faulted refolded folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="folds.html">Modelling folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="probabilistic_faulted_folds.html">Probabilistic faulted folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="probabilistic_folds.html">Probabilistic folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="probabilistic_faults.html">Probabilistic faults</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -152,8 +145,6 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="index.html">Tutorials</a> &raquo;</li>
         
       <li>Modelling faults using structural frames</li>
     
@@ -315,15 +306,6 @@ the points</p>
           </div>
           <footer>
   
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="refolded_folds.html" class="btn btn-neutral float-right" title="Refolded folds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="surfacemodelling.html" class="btn btn-neutral float-left" title="test" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
 
   <hr/>
 
@@ -355,7 +337,18 @@ the points</p>
   
   
     
-   
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
 
 </body>
 </html>

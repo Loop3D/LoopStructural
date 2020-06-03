@@ -34,6 +34,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
@@ -84,12 +85,22 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Install instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../issues.html">Bug tracking and reporting issues</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Theory behind LoopStructural</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../API.html">LoopStructural API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">LoopStructural API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -203,7 +214,18 @@
   
   
     
-   
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
 
 </body>
 </html>

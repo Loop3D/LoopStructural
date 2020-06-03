@@ -34,12 +34,15 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.interpolators.finite_difference_interpolator" href="LoopStructural.interpolators.finite_difference_interpolator.html" />
+    <link rel="prev" title="LoopStructural.interpolators.piecewiselinear_interpolator" href="LoopStructural.interpolators.piecewiselinear_interpolator.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,12 +87,38 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../issues.html">Bug tracking and reporting issues</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory behind LoopStructural</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-submodules">Interpolation Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html">LoopStructural.interpolators.geological_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.html">LoopStructural.interpolators.discrete_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.piecewiselinear_interpolator.html">LoopStructural.interpolators.piecewiselinear_interpolator</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.interpolators.discrete_fold_interpolator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#members">Members</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.surfe_wrapper.html">LoopStructural.interpolators.surfe_wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-support-submodules">Interpolation Support Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#members">Members</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -134,6 +163,10 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
+        
+          <li><a href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a> &raquo;</li>
         
       <li>LoopStructural.interpolators.discrete_fold_interpolator</li>
     
@@ -232,8 +265,8 @@ LINUX ONLY!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>- scipy.sparse.matrix</strong> (<em>A</em>) – square sparse matrix</p></li>
-<li><p><strong>- numpy array</strong> (<em>B</em>) – RHS of equation</p></li>
+<li><p><strong>A</strong> (<em>scipy.sparse.matrix</em>) – square sparse matrix</p></li>
+<li><p><strong>B</strong> (<em>numpy array</em>) – RHS of equation</p></li>
 </ul>
 </dd>
 </dl>
@@ -260,7 +293,7 @@ LINUX ONLY!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>- square sparse matrix</strong> (<em>A</em>) – </p></li>
+<li><p><strong>A</strong> (<em>scipy square sparse matrix</em>) – </p></li>
 <li><p><strong>B</strong> (<em>numpy vector</em>) – </p></li>
 </ul>
 </dd>
@@ -413,7 +446,7 @@ match with the value constraints added to the implicit system.</p>
 <code class="sig-name descname">add_tangent_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_tangent_ctr_pts" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>w</strong> – </p>
+<dd class="field-odd"><p><strong>w</strong> (<em>double</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -438,7 +471,8 @@ using lagrange modifiers if necessary</p>
 <dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.evaluate_gradient">
 <code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the gradient of the scalar field at the evaluation points
-:param evaluation_points:</p>
+:param evaluation_points: xyz locations to evaluate the gradient
+:type evaluation_points: np.array</p>
 </dd></dl>
 
 <dl class="method">
@@ -506,7 +540,7 @@ copies data from the PLI to the DFI</p>
 which corresponds to the rows in the interpolation matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- numpy array int</strong> (<em>constraint_ids</em>) – </p>
+<dd class="field-odd"><p><strong>constraint_ids</strong> (<em>np.array</em><em>(</em><em>dtype=int</em><em>)</em>) – id of constraints to remove</p>
 </dd>
 </dl>
 </dd></dl>
@@ -518,12 +552,32 @@ which corresponds to the rows in the interpolation matrix.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_gradient_constraints">
+<code class="sig-name descname">set_gradient_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_gradient_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_interpolation_weights">
 <code class="sig-name descname">set_interpolation_weights</code><span class="sig-paren">(</span><em class="sig-param">weights</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_interpolation_weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the interpolation weights dictionary</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>- dictionary</strong> (<em>weights</em>) – Entry of new weights to assign to self.interpolation_weights</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_normal_constraints">
+<code class="sig-name descname">set_normal_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_normal_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -547,6 +601,26 @@ save the property on the support</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>- function</strong><strong>(</strong><strong>position</strong><strong>)</strong> (<em>region</em>) – return true when in region, false when out</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_tangent_constraints">
+<code class="sig-name descname">set_tangent_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_tangent_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_value_constraints">
+<code class="sig-name descname">set_value_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.set_value_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -598,6 +672,15 @@ return False</p>
           </div>
           <footer>
   
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="LoopStructural.interpolators.finite_difference_interpolator.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.finite_difference_interpolator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="LoopStructural.interpolators.piecewiselinear_interpolator.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.piecewiselinear_interpolator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
 
   <hr/>
 
@@ -629,7 +712,18 @@ return False</p>
   
   
     
-   
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
 
 </body>
 </html>

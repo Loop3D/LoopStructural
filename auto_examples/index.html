@@ -34,14 +34,15 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Building an implicit surface" href="example1.html" />
-    <link rel="prev" title="LoopStructural API" href="../API.html" /> 
+    <link rel="next" title="1. Preparing input datasets" href="plot_1_data_prepration.html" />
+    <link rel="prev" title="Install instructions" href="../installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,26 +86,31 @@
               
             
             
-              <ul class="current">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../issues.html">Bug tracking and reporting issues</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory behind LoopStructural</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="example1.html">Building an implicit surface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="surfacemodelling.html">test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="surfacemodelling.html#implicit-surface-modelling">Implicit surface modelling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faults.html">Modelling faults using structural frames</a></li>
-<li class="toctree-l2"><a class="reference internal" href="refolded_folds.html">Refolded folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html">Faulted folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faulted_fold.html#faulted-refolded-folds">Faulted refolded folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="folds.html">Modelling folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="probabilistic_faulted_folds.html">Probabilistic faulted folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="probabilistic_folds.html">Probabilistic folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="probabilistic_faults.html">Probabilistic faults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_1_data_prepration.html">1. Preparing input datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_comparing_interpolators.html">7. Comparing interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_3_multiple_groups.html">3. Multiple groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">5. Using Stratigraphic Columns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_2_surface_modelling.html">2. Implicit surface modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_adding_folds_to_surfaces.html">6. Modelling folds</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -171,57 +177,39 @@
             
   <div class="section" id="tutorials">
 <span id="sphx-glr-auto-examples"></span><h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where $f(x,y,z)$ matches o..."><div class="figure align-default" id="id1">
-<img alt="../_images/sphx_glr_example1_thumb.png" src="../_images/sphx_glr_example1_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="example1.html#sphx-glr-auto-examples-example1-py"><span class="std std-ref">Building an implicit surface</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="1. Preparing input datasets"><div class="figure align-default" id="id1">
+<img alt="../_images/sphx_glr_plot_1_data_prepration_thumb.png" src="../_images/sphx_glr_plot_1_data_prepration_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_1_data_prepration.html#sphx-glr-auto-examples-plot-1-data-prepration-py"><span class="std std-ref">1. Preparing input datasets</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="test"><div class="figure align-default" id="id2">
-<img alt="../_images/sphx_glr_surfacemodelling_thumb.png" src="../_images/sphx_glr_surfacemodelling_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="surfacemodelling.html#sphx-glr-auto-examples-surfacemodelling-py"><span class="std std-ref">test</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="7. Comparing interpolators"><div class="figure align-default" id="id2">
+<img alt="../_images/sphx_glr_plot_comparing_interpolators_thumb.png" src="../_images/sphx_glr_plot_comparing_interpolators_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_comparing_interpolators.html#sphx-glr-auto-examples-plot-comparing-interpolators-py"><span class="std std-ref">7. Comparing interpolators</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Modelling faults using structural frames"><div class="figure align-default" id="id3">
-<img alt="../_images/sphx_glr_faults_thumb.png" src="../_images/sphx_glr_faults_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="faults.html#sphx-glr-auto-examples-faults-py"><span class="std std-ref">Modelling faults using structural frames</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="3. Multiple groups"><div class="figure align-default" id="id3">
+<img alt="../_images/sphx_glr_plot_3_multiple_groups_thumb.png" src="../_images/sphx_glr_plot_3_multiple_groups_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_3_multiple_groups.html#sphx-glr-auto-examples-plot-3-multiple-groups-py"><span class="std std-ref">3. Multiple groups</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip=" "><div class="figure align-default" id="id4">
-<img alt="../_images/sphx_glr_refolded_folds_thumb.png" src="../_images/sphx_glr_refolded_folds_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="refolded_folds.html#sphx-glr-auto-examples-refolded-folds-py"><span class="std std-ref">Refolded folds</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="5. Using Stratigraphic Columns"><div class="figure align-default" id="id4">
+<img alt="../_images/sphx_glr_plot_4_using_stratigraphic_column_thumb.png" src="../_images/sphx_glr_plot_4_using_stratigraphic_column_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_4_using_stratigraphic_column.html#sphx-glr-auto-examples-plot-4-using-stratigraphic-column-py"><span class="std std-ref">5. Using Stratigraphic Columns</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Faulted folds"><div class="figure align-default" id="id5">
-<img alt="../_images/sphx_glr_faulted_fold_thumb.png" src="../_images/sphx_glr_faulted_fold_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="faulted_fold.html#sphx-glr-auto-examples-faulted-fold-py"><span class="std std-ref">Faulted folds</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches obs..."><div class="figure align-default" id="id5">
+<img alt="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" src="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_2_surface_modelling.html#sphx-glr-auto-examples-plot-2-surface-modelling-py"><span class="std std-ref">2. Implicit surface modelling</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
 <div class="sphx-glr-thumbcontainer" tooltip=" This tutorial will show how Loop Structural improves the modelling of  folds by using an accur..."><div class="figure align-default" id="id6">
-<img alt="../_images/sphx_glr_folds_thumb.png" src="../_images/sphx_glr_folds_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="folds.html#sphx-glr-auto-examples-folds-py"><span class="std std-ref">Modelling folds</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Probabilistic faulted folds"><div class="figure align-default" id="id7">
-<img alt="../_images/sphx_glr_probabilistic_faulted_folds_thumb.png" src="../_images/sphx_glr_probabilistic_faulted_folds_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="probabilistic_faulted_folds.html#sphx-glr-auto-examples-probabilistic-faulted-folds-py"><span class="std std-ref">Probabilistic faulted folds</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Probabilistic folds"><div class="figure align-default" id="id8">
-<img alt="../_images/sphx_glr_probabilistic_folds_thumb.png" src="../_images/sphx_glr_probabilistic_folds_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="probabilistic_folds.html#sphx-glr-auto-examples-probabilistic-folds-py"><span class="std std-ref">Probabilistic folds</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Probabilistic faults"><div class="figure align-default" id="id9">
-<img alt="../_images/sphx_glr_probabilistic_faults_thumb.png" src="../_images/sphx_glr_probabilistic_faults_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="probabilistic_faults.html#sphx-glr-auto-examples-probabilistic-faults-py"><span class="std std-ref">Probabilistic faults</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<img alt="../_images/sphx_glr_plot_adding_folds_to_surfaces_thumb.png" src="../_images/sphx_glr_plot_adding_folds_to_surfaces_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_adding_folds_to_surfaces.html#sphx-glr-auto-examples-plot-adding-folds-to-surfaces-py"><span class="std std-ref">6. Modelling folds</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -244,10 +232,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example1.html" class="btn btn-neutral float-right" title="Building an implicit surface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="plot_1_data_prepration.html" class="btn btn-neutral float-right" title="1. Preparing input datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../API.html" class="btn btn-neutral float-left" title="LoopStructural API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../installation.html" class="btn btn-neutral float-left" title="Install instructions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -282,7 +270,18 @@
   
   
     
-   
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
 
 </body>
 </html>

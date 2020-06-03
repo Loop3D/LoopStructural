@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>LoopStructural &mdash; LoopStructural 0.1 documentation</title>
+  <title>Loop Structural &mdash; LoopStructural 0.1 documentation</title>
   
 
   
@@ -34,6 +34,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="_static/gallery-dataframe.css" type="text/css" />
@@ -84,13 +85,23 @@
               
             
             
-              <ul>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Install instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="issues.html">Bug tracking and reporting issues</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory behind LoopStructural</a></li>
-<li class="toctree-l1"><a class="reference internal" href="API.html">LoopStructural API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="API.html">LoopStructural API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -136,7 +147,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>LoopStructural</li>
+      <li>Loop Structural</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -155,37 +166,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="loopstructural">
-<h1>LoopStructural<a class="headerlink" href="#loopstructural" title="Permalink to this headline">¶</a></h1>
-<p>Loop structural is an open source 3D modelling library written by Lachlan Grose at Monash University. The library is
-the forward geological modelling engine for the loop and contains the classes and functions to manage the various
+  <div class="section" id="loop-structural">
+<h1>Loop Structural<a class="headerlink" href="#loop-structural" title="Permalink to this headline">¶</a></h1>
+<img alt="_images/image823.png" src="_images/image823.png" />
+<p>Loop structural is an open source 3D modelling library providing access to multiple interpolation schemes  with a
+high level and easy to use API for creating geological models. The library has been written for the Loop platform by
+Lachlan Grose at Monash University.</p>
+<p>Loop is an open source 3D probabilistic geological and geophysical modelling platform,
+initiated by Geoscience Australia and the OneGeology consortium. The project is funded by Australian territory,
+State and Federal Geological Surveys, the Australian Research Council and the MinEx Collaborative Research Centre.</p>
+<p>LoopStructural is the forward geological modelling engine for the loop and contains the classes and functions to manage the various
 elements in a 3D geological model. Including stratigraphy, unconformities, fault and folds. LoopStructural contains
-three native interpolation algorithms that use a discrete implicit approach as well as a wrapper for using the
-generalised radial basis functions provided by Surfe.</p>
+three native interpolation algorithms:</p>
+<ol class="arabic simple">
+<li><p>Piecewise-linear interpolation <span class="bibtex" id="id1">[Frank2007]</span></p></li>
+<li><p>Discrete Fold Interpolator <span class="bibtex" id="id2">[Laurent2016]</span><span class="bibtex" id="id3">[Grose2017]</span><span class="bibtex" id="id4">[Grose2018]</span><span class="bibtex" id="id5">[Grose2019]</span></p></li>
+<li><p>Finite Difference Interpolation</p></li>
+</ol>
+<p>and a wrapper for the generalised radial basis functions provided by Surfe.</p>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Install instructions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#windows-using-conda">Windows using conda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#windows-using-linux-subsystem">Windows using linux subsystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#ubuntu-linux">Ubuntu Linux</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#fedora-linux">Fedora Linux</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="issues.html">Bug tracking and reporting issues</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory behind LoopStructural</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#loop-philosophy">Loop Philosophy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#implicit-modelling">Implicit modelling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#fold-modelling">Fold modelling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#faults">Faults</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#papers">Papers</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="API.html">LoopStructural API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Tutorials</a><ul>
-</ul>
-</li>
-</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
 </div>
 <span class="target" id="module-LoopStructural"></span><div class="section" id="loopstructural-api">
 <h2>LoopStructural API<a class="headerlink" href="#loopstructural-api" title="Permalink to this headline">¶</a></h2>
@@ -210,6 +213,7 @@ generalised radial basis functions provided by Surfe.</p>
 </tbody>
 </table>
 </div>
+<p id="bibtex-bibliography-index-0"></p>
 </div>
 
 
@@ -256,7 +260,18 @@ generalised radial basis functions provided by Surfe.</p>
   
   
     
-   
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
 
 </body>
 </html>

@@ -10,13 +10,13 @@ Tutorials
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where $f(x,y,z)$ matches o...">
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Preparing input datasets">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_example1_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
 
-     :ref:`sphx_glr_auto_examples_example1.py`
+     :ref:`sphx_glr_auto_examples_plot_1_data_prepration.py`
 
 .. raw:: html
 
@@ -26,17 +26,17 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/example1
+   /auto_examples/plot_1_data_prepration
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="test">
+    <div class="sphx-glr-thumbcontainer" tooltip="7. Comparing interpolators">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_surfacemodelling_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_comparing_interpolators_thumb.png
 
-     :ref:`sphx_glr_auto_examples_surfacemodelling.py`
+     :ref:`sphx_glr_auto_examples_plot_comparing_interpolators.py`
 
 .. raw:: html
 
@@ -46,17 +46,17 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/surfacemodelling
+   /auto_examples/plot_comparing_interpolators
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Modelling faults using structural frames">
+    <div class="sphx-glr-thumbcontainer" tooltip="3. Multiple groups">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_faults_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
 
-     :ref:`sphx_glr_auto_examples_faults.py`
+     :ref:`sphx_glr_auto_examples_plot_3_multiple_groups.py`
 
 .. raw:: html
 
@@ -66,17 +66,17 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/faults
+   /auto_examples/plot_3_multiple_groups
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip=" ">
+    <div class="sphx-glr-thumbcontainer" tooltip="5. Using Stratigraphic Columns">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_refolded_folds_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
 
-     :ref:`sphx_glr_auto_examples_refolded_folds.py`
+     :ref:`sphx_glr_auto_examples_plot_4_using_stratigraphic_column.py`
 
 .. raw:: html
 
@@ -86,17 +86,17 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/refolded_folds
+   /auto_examples/plot_4_using_stratigraphic_column
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Faulted folds">
+    <div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches obs...">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_faulted_fold_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
 
-     :ref:`sphx_glr_auto_examples_faulted_fold.py`
+     :ref:`sphx_glr_auto_examples_plot_2_surface_modelling.py`
 
 .. raw:: html
 
@@ -106,7 +106,7 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/faulted_fold
+   /auto_examples/plot_2_surface_modelling
 
 .. raw:: html
 
@@ -114,29 +114,9 @@ Tutorials
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_folds_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
 
-     :ref:`sphx_glr_auto_examples_folds.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/folds
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Probabilistic faulted folds">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_probabilistic_faulted_folds_thumb.png
-
-     :ref:`sphx_glr_auto_examples_probabilistic_faulted_folds.py`
+     :ref:`sphx_glr_auto_examples_plot_adding_folds_to_surfaces.py`
 
 .. raw:: html
 
@@ -146,47 +126,7 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/probabilistic_faulted_folds
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Probabilistic folds">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_probabilistic_folds_thumb.png
-
-     :ref:`sphx_glr_auto_examples_probabilistic_folds.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/probabilistic_folds
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Probabilistic faults">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_probabilistic_faults_thumb.png
-
-     :ref:`sphx_glr_auto_examples_probabilistic_faults.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/probabilistic_faults
+   /auto_examples/plot_adding_folds_to_surfaces
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
