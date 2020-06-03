@@ -5,7 +5,7 @@
 
 Loop Structural
 ===============
-.. image:: images/image823.png
+.. image:: ./images/image823.png
 
 Loop structural is an open source 3D modelling library providing access to multiple interpolation schemes  with a
 high level and easy to use API for creating geological models. The library has been written for the Loop platform by
