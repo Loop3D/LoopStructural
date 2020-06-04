@@ -359,7 +359,9 @@ def weight_name():
 def val_name():
     return ['val']
 
+def coord_name():
+    return ['coord']
 
 def all_heading():
     return xyz_names() + normal_vec_names() + tangent_vec_names() + \
-           gradient_vec_names() + weight_name() + val_name()
+           gradient_vec_names() + weight_name() + val_name() + coord_name()

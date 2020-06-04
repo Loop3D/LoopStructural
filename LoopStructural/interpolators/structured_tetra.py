@@ -20,14 +20,6 @@ class TetMesh:
         self.n_cells = self.n_cell_x * self.n_cell_y * self.n_cell_z
         self.n_nodes = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
 
-        max = self.origin + self.nsteps_cells * self.step_vector
-        x = np.linspace(origin[0], max[0], nsteps[0])
-        y = np.linspace(origin[1], max[1], nsteps[1])
-        z = np.linspace(origin[2], max[2], nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        self.nodes = np.array([xx.flatten(order='F'), yy.flatten(order='F'),
-                               zz.flatten(order='F')]).T
-
         self.tetra_mask_even = np.array([
             [7,1,2,4],
             [6,2,4,7],
@@ -48,6 +40,24 @@ class TetMesh:
         self.property_gradients = {}
         self.n_elements = self.ntetra
         self.cg = None
+
+    @property
+    def nodes(self):
+        """
+        Gets the nodes of the mesh as a property rather than using a function, accessible as a property! Python magic!
+
+        Returns
+        -------
+        nodes : np.array((N,3))
+            Fortran ordered
+        """
+        max = self.origin + self.nsteps_cells * self.step_vector
+        x = np.linspace(self.origin[0], max[0], self.nsteps[0])
+        y = np.linspace(self.origin[1], max[1], self.nsteps[1])
+        z = np.linspace(self.origin[2], max[2], self.nsteps[2])
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        return np.array([xx.flatten(order='F'), yy.flatten(order='F'),
+                               zz.flatten(order='F')]).T
 
     def barycentre(self, elements = None):
         """

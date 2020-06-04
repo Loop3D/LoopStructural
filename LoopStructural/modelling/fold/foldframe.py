@@ -100,8 +100,8 @@ class FoldFrame(StructuralFrame):
         -------
         fold_limb_rotation, coordinate_0
         """
-        self.features[0].faults_enabled = False
-        self.features[1].faults_enabled = False
+        # self.features[0].faults_enabled = False
+        # self.features[1].faults_enabled = False
 
         gpoints = feature_builder.interpolator.get_gradient_constraints()[:,:6]
         npoints = feature_builder.interpolator.get_norm_constraints()[:,:6]
@@ -125,8 +125,8 @@ class FoldFrame(StructuralFrame):
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
         s1 = self.features[0].evaluate_value(points[:, :3])
-        self.features[0].faults_enabled = True
-        self.features[1].faults_enabled = True
+        # self.features[0].faults_enabled = True
+        # self.features[1].faults_enabled = True
 
         if axis is None:
             logger.info("Not using fold axis for fold limb rotation angle calculation")

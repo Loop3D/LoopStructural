@@ -2,7 +2,6 @@ import logging
 
 import numpy as np
 import pandas as pd
-from scipy.optimize import curve_fit
 
 from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
@@ -356,6 +355,7 @@ class GeologicalModel:
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
+        self._add_feature(series_feature)
         result = {}
         result['feature'] = series_feature
         return result
@@ -478,7 +478,7 @@ class GeologicalModel:
         result['feature'] = series_feature
         result['fold'] = fold
         # result['support'] = series_feature.get_interpolator().support
-
+        self._add_feature(series_feature)
         return result
 
     def create_and_add_folded_fold_frame(self, fold_frame_data,
