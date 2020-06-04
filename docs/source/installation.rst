@@ -16,6 +16,3 @@ three ways of installing LoopStructural onto your system:
 .. include:: _static/wls_install.rst
 
 .. include:: _static/ubuntu_install.rst
-
-
-

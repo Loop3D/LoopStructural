@@ -1,4 +1,4 @@
-name: Windows build
+name: Continuous integration and deployment
 
 on:
   push:
@@ -19,17 +19,16 @@ jobs:
 #           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
 #           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
   
-  windows-build:
+  build-windows:
     runs-on: windows-latest
     strategy:
       matrix:
-        python: ['3.6','3.7','3.8']# 3.8 has issue with jupyter on windows,'3.8']
+        python: ['3.6','3.7','3.8']
     steps:
     - uses: actions/checkout@v2
     - uses: goanpeca/action-setup-conda@v1
       with:
         python-version: ${{ matrix.python }} 
-        #miniconda-version: 'latest'
         activate-environment: loop    
     - name: Installing dependencies
       shell: bash -l {0}
@@ -66,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.6','3.7']
+        python: ['3.6','3.7','3.8']
     steps:
       - uses: actions/checkout@v1
       - name: Set up Python ${{ matrix.python }}
@@ -106,7 +105,7 @@ jobs:
           name: 'linux_${{ matrix.python }}'
           path: build.zip
   uploadrelease:
-    needs: windows-build #, ubuntu-build
+    needs: build-windows #ubuntu-build
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact 3.6
@@ -117,24 +116,31 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: "win_3.7"
-      - name: Download artifact 3.6
+      - name: Download artifact 3.8
+        uses: actions/download-artifact@v1
+        with:
+          name: "win_3.8"
+      - name: Download artifact linux 3.6
         uses: actions/download-artifact@v1
         with:
           name: "linux_3.6"
-      - name: Download artifact 3.7
+      - name: Download artifact linux 3.7
         uses: actions/download-artifact@v1
         with:
           name: "linux_3.7"
-#       - name: Download artifact 3.8
-#         uses: actions/download-artifact@v1
-#         with:
-#           name: "win_3.8"
+      - name: Download artifact 3.8
+        uses: actions/download-artifact@v1
+        with:
+          name: "linux_3.8"
       - name: Unzip
         run: |
-          unzip -o linux_3.6/build.zip
-          unzip -o linux_3.7/build.zip
-          unzip -o win_3.7/build.zip
-          unzip -o win_3.6/build.zip
+          unzip -o win_3.6/build.zip -d build
+          unzip -o win_3.7/build.zip -d build
+          unzip -o win_3.8/build.zip -d build
+          unzip -o linux_3.6/build.zip -d build
+          unzip -o linux_3.7/build.zip -d build
+          unzip -o linux_3.8/build.zip -d build
+          ls
       - name: Development build pre-release
         uses: "marvinpinto/action-automatic-releases@latest"
         with: 
@@ -143,5 +149,6 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            build/*.so
+            build/*
           id: "automatic_releases"  
+ 
