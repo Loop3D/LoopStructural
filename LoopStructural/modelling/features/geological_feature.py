@@ -15,10 +15,12 @@ class GeologicalFeature:
         Parameters
         ----------
         name: string
-        support
-        builder
-        data
-        region
+        interpolator : GeologicalInterpolator
+        builder : GeologicalFeatureBuilder
+        data :
+        region :
+        type :
+        faults :
 
         Attributes
         ----------
@@ -155,24 +157,32 @@ class GeologicalFeature:
         return v
 
     def evaluate_gradient_misfit(self):
+        """
+
+        Returns
+        -------
+
+        """
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
         dot = []
-        print(grad.shape)
-        print(norm.shape)
         if grad.shape[0] > 0:
             model_grad = self.evaluate_gradient(grad[:,:3])
             dot.append(np.einsum('ij,ij->i',model_grad,grad[:,:3:6]).tolist())
 
         if norm.shape[0] > 0:
-            print(norm[:,:3])
             model_norm = self.evaluate_gradient(norm[:, :3])
-            print(model_norm)
             dot.append(np.einsum('ij,ij->i', model_norm, norm[:,:3:6]))
 
         return np.array(dot)
 
     def evaluate_value_misfit(self):
+        """
+
+        Returns
+        -------
+
+        """
         locations = self.interpolator.get_value_constraints()
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
         diff/=(self.max()-self.min())
@@ -200,7 +210,7 @@ class GeologicalFeature:
         """
         if self.model is None:
             return 0
-        return np.min(
+        return np.nanmin(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
         #       return np.nanmin(self.scalar_field.get_node_values())
 
@@ -214,7 +224,7 @@ class GeologicalFeature:
         """
         if self.model is None:
             return 0
-        return np.max(
+        return np.nanmax(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
         #return np.nanmax(self.scalar_field.get_node_values())
 
@@ -245,15 +255,4 @@ class GeologicalFeature:
         """
         return self.interpolator
 
-    # def get_node_values(self):
-    #     """
-    #     Get the node values of the support used to build this interpolator
-    #     if the
-    #     interpolator is a discrete interpolator
-    #
-    #     Returns
-    #     -------
-    #     numpy array of values
-    #     """
-    #     # if interpolator.type =
-    #     return self.scalar_field.get_node_values()
+

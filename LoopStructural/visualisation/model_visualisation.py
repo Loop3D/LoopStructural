@@ -1,3 +1,8 @@
+"""
+A wrapper for lavavu
+
+"""
+
 import logging
 
 import lavavu
@@ -8,9 +13,23 @@ from skimage.measure import marching_cubes_lewiner as marching_cubes
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 logger = logging.getLogger(__name__)
+# adapted/copied from pyvista for sphinx scraper
+_OPEN_VIEWERS = {}
 
-
+def close_all():
+    _OPEN_VIEWERS.clear()
+    return True
+    # for key, v in _OPEN_VIEWERS.items():
+    #     if not v._closed:
+    #         v.close()
+    #     v.deep_clean()
+    # _OPEN_VIEWERS.clear()
+    # return True
+##
 class LavaVuModelViewer:
+    """
+    Short description
+    """
     def __init__(self, model=None, bounding_box=None, nsteps=None, **kwargs):
         """
 
@@ -25,7 +44,10 @@ class LavaVuModelViewer:
         lv Lavavu.Viewer object
         objects : dictionary of objects that have been plotted
         """
-
+        # copied from pyvista
+        self._id_name = "{}-{}".format(str(hex(id(self))), len(_OPEN_VIEWERS))
+        _OPEN_VIEWERS[self._id_name] = self
+        #
         self.lv = lavavu.Viewer(**kwargs)
         self.lv['orthographic'] = True
         self.objects = {}
@@ -42,6 +64,11 @@ class LavaVuModelViewer:
         self.model = model
         # prerotate to a nice view
         # self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
+    def close(self):
+        pass
+
+    def deep_clean(self):
+        pass
 
     def add_section(self, geological_feature=None, axis='x', value=None, **kwargs):
         """

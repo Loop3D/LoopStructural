@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class StructuredGrid:
+    """
+
+    """
     def __init__(self,
                  origin=np.zeros(3),
                  nsteps=np.array([10, 10, 10]),
@@ -39,17 +42,21 @@ class StructuredGrid:
         # calculate the node positions using numpy (this should probably not
         # be stored as it defeats
         # the purpose of a structured grid
-        max = self.origin + self.nsteps_cells * self.step_vector
-        x = np.linspace(origin[0], max[0], nsteps[0])
-        y = np.linspace(origin[1], max[1], nsteps[1])
-        z = np.linspace(origin[2], max[2], nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        self.nodes = np.array([xx.flatten(order='F'), yy.flatten(order='F'),
-                               zz.flatten(order='F')]).T
+
         # self.barycentre = self.cell_centres(np.arange(self.n_elements))
 
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
+
+    @property
+    def nodes(self):
+        max = self.origin + self.nsteps_cells * self.step_vector
+        x = np.linspace(self.origin[0], max[0], self.nsteps[0])
+        y = np.linspace(self.origin[1], max[1], self.nsteps[1])
+        z = np.linspace(self.origin[2], max[2], self.nsteps[2])
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        return np.array([xx.flatten(order='F'), yy.flatten(order='F'),
+                               zz.flatten(order='F')]).T
 
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))

@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class FoldEvent:
+    """
+
+    """
     def __init__(self, foldframe, fold_axis_rotation=None, fold_limb_rotation=None, fold_axis=None, name='Fold'):
         """
         A fold event describes the geometry of the fold using a fold frame

@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class CubicFunction:
+    """
+
+    """
     def __init__(self):
         """
         Class to represent a cubic function
@@ -52,6 +55,9 @@ class CubicFunction:
 
 
 class Composite():
+    """
+
+    """
     def __init__(self, positive, negative):
         self.positive = positive
         self.negative = negative
@@ -65,6 +71,9 @@ class Composite():
 
 
 class Ones:
+    """
+
+    """
     def __init__(self):
         pass
 
@@ -74,6 +83,9 @@ class Ones:
 
 
 class Zeros:
+    """
+
+    """
     def __init__(self):
         pass
 
@@ -83,6 +95,9 @@ class Zeros:
 
 
 class FaultDisplacement:
+    """
+
+    """
     def __init__(self, hw=None, fw=None, gx=None, gy=None, gz=None, **kwargs):
         self.gx = gx
         if hw is not None and fw is not None:
@@ -134,6 +149,9 @@ class FaultDisplacement:
 
 
 class BaseFault(object):
+    """
+
+    """
     hw = CubicFunction()
     hw.add_cstr(0, 1)
     hw.add_grad(0, 0)

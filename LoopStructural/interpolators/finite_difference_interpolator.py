@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from LoopStructural.utils.helper import get_vectors
-from .discete_interpolator import DiscreteInterpolator
+from .discrete_interpolator import DiscreteInterpolator
 from .operator import Operator
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
     """
-    Finite Difference Interpolator
+
     """
 
     def __init__(self, grid):
@@ -20,7 +20,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        grid
+        grid : StructuredGrid
         """
         self.shape = 'rectangular'
         DiscreteInterpolator.__init__(self, grid)
@@ -149,7 +149,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points = self.get_value_constraints()
         # check that we have added some points
         if points.shape[0] > 0:
-
             node_idx, inside = self.support.position_to_cell_corners(
                 points[:, :3])
             # print(points[inside,:].shape)
@@ -203,7 +202,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
 
-
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
             A = np.einsum('ij,ijk->ik', dip_vector.T, T)
@@ -234,7 +232,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
-            idc[inside,:] = gi[node_idx[inside,:]]
+            idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             # calculate unit vector for node gradients
@@ -260,10 +258,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        elements : numpy array
-        normals : numpy array
+        elements : np.array
+        normals : np.array
         w : double
-        B : numpy array
+        B : np.array
 
         Returns
         -------
@@ -288,12 +286,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
-            A = np.einsum('ij,ijk->ik', vector[inside,:3], T)
+            A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
 
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
-
-
 
     def add_regularisation(self, operator, w=0.1):
         """

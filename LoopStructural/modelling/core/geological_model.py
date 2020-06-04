@@ -2,7 +2,6 @@ import logging
 
 import numpy as np
 import pandas as pd
-from scipy.optimize import curve_fit
 
 from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
@@ -128,6 +127,8 @@ class GeologicalModel:
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info("Adding %s to model at location %i" % (
                 feature.name, len(self.features)))
+        self._add_domain_fault_above(feature)
+        self._add_unconformity_above(feature)
         feature.set_model(self)
 
     def set_model_data(self, data):
@@ -353,7 +354,7 @@ class GeologicalModel:
         series_feature = series_builder.build(**kwargs)
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
-        self._add_unconformity_above(series_feature)
+        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
         self._add_feature(series_feature)
         result = {}
         result['feature'] = series_feature
@@ -387,8 +388,8 @@ class GeologicalModel:
         self._add_faults(fold_frame_builder[2])
 
         fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
-        for i in range(3):
-            self._add_unconformity_above(fold_frame[i])
+        # for i in range(3):
+        #     self._add_unconformity_above(fold_frame[i])
         fold_frame.type = 'structuralframe'
         self._add_feature(fold_frame)
         result['feature'] = fold_frame
@@ -473,13 +474,11 @@ class GeologicalModel:
         series_feature = series_builder.build(**kwargs)
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
-        self._add_unconformity_above(series_feature)
-
-        self._add_feature(series_feature)
+        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
         result['feature'] = series_feature
         result['fold'] = fold
         # result['support'] = series_feature.get_interpolator().support
-
+        self._add_feature(series_feature)
         return result
 
     def create_and_add_folded_fold_frame(self, fold_frame_data,
@@ -562,8 +561,8 @@ class GeologicalModel:
         fold_frame = fold_frame_builder.build(**kwargs, frame=FoldFrame)
         fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region
-        for i in range(3):
-            self._add_unconformity_above(fold_frame[i])
+        # for i in range(3):
+        #     self._add_unconformity_above(fold_frame[i])
 
         self._add_feature(fold_frame)
         result['feature'] = fold_frame
@@ -590,6 +589,44 @@ class GeologicalModel:
                 feature_builder.add_fault(f)
             # if f.type == 'unconformity':
             #     break
+    def _add_domain_fault_above(self, feature):
+        """
+        Looks through the feature list and adds any domain faults to the feature. The domain fault masks everything
+        where the fault scalar field is < 0 as being active when added to feature.
+
+        Parameters
+        ----------
+        feature : GeologicalFeatureInterpolator
+            the feature being added to the model where domain faults should be added
+
+        Returns
+        -------
+
+        """
+        for f in reversed(self.features):
+            if f.type == 'domain_fault':
+                feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
+                break
+
+    def _add_domain_fault_below(self, domain_fault):
+        """
+        Looks through the feature list and adds any the domain_fault to the features that already exist in the stack
+        until an unconformity is reached. domain faults to the feature. The domain fault masks everything
+        where the fault scalar field is < 0 as being active when added to feature.
+
+        Parameters
+        ----------
+        feature : GeologicalFeatureInterpolator
+            the feature being added to the model where domain faults should be added
+
+        Returns
+        -------
+
+        """
+        for f in reversed(self.features):
+            f.add_region(lambda pos: domain_fault.evaluate_value(pos) > 0)
+            if f.type == 'unconformity':
+                break
 
     def _add_unconformity_above(self, feature):
         """
@@ -691,7 +728,7 @@ class GeologicalModel:
         #     f.add_region(lambda pos: uc_feature.evaluate(pos))
 
         # see if any unconformities are above this feature if so add region
-        self._add_unconformity_above(uc_feature)
+        # self._add_unconformity_above(uc_feature)
         # self._add_unconformity_below(feature)#, uc_feature)
         self._add_feature(uc_feature)
 
@@ -729,6 +766,40 @@ class GeologicalModel:
         result = {}
         result['feature'] = uc_feature
         return result
+
+    def create_and_add_domain_fault(self, fault_surface_data, **kwargs):
+        """
+        Parameters
+        ----------
+        fault_surface_data : string
+            name of the domain fault data in the data frame
+
+        Returns
+        -------
+        """
+        # self.parameters['features'].append({'feature_type':'unconformity','type':unconformity_surface_data,**kwargs})
+        interpolator = self.get_interpolator(**kwargs)
+        domain_fault_feature_builder = GeologicalFeatureInterpolator(
+            interpolator, name=fault_surface_data)
+        # add data
+        unconformity_data = self.data[
+            self.data['type'] == fault_surface_data]
+
+        domain_fault_feature_builder.add_data_from_data_frame(
+            unconformity_data)
+        # look through existing features if there is a fault before an
+        # unconformity
+        # then add to the feature, once we get to an unconformity stop
+        self._add_faults(domain_fault_feature_builder)
+
+        # build feature
+        domain_fault = domain_fault_feature_builder.build(**kwargs)
+        domain_fault.type = 'domain_fault'
+        # uc_feature = UnconformityFeature(uc_feature_base,0)
+        # iterate over existing features and add the unconformity as a
+        # region so the feature is only
+        # evaluated where the unconformity is positive
+        return self.add_unconformity(domain_fault, 0)
 
     def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
         """

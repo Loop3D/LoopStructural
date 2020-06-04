@@ -7,6 +7,17 @@ logger = logging.getLogger(__name__)
 
 
 def get_data_axis_aligned_bounding_box(xyz, buffer):
+    """
+
+    Parameters
+    ----------
+    xyz
+    buffer
+
+    Returns
+    -------
+
+    """
     minx = np.min(xyz[:, 0])
     maxx = np.max(xyz[:, 0])
     miny = np.min(xyz[:, 1])
@@ -32,6 +43,16 @@ def get_data_axis_aligned_bounding_box(xyz, buffer):
                    ])
 
     def region(xyz):
+        """
+
+        Parameters
+        ----------
+        xyz
+
+        Returns
+        -------
+
+        """
         # print(xyz)
         # print(bb)
         b = np.ones(xyz.shape[0]).astype(bool)
@@ -46,6 +67,17 @@ def get_data_axis_aligned_bounding_box(xyz, buffer):
     return bb, region
 
 def get_data_bounding_box_map(xyz, buffer):
+    """
+
+    Parameters
+    ----------
+    xyz
+    buffer
+
+    Returns
+    -------
+
+    """
     # find the aligned coordinates box using pca
     modelpca = PCA(n_components=3)
     modelpca.fit(xyz)
@@ -86,6 +118,17 @@ def get_data_bounding_box_map(xyz, buffer):
 
     return bb, region
 def get_data_bounding_box(xyz, buffer):
+    """
+
+    Parameters
+    ----------
+    xyz
+    buffer
+
+    Returns
+    -------
+
+    """
     # find the aligned coordinates box using pca
     modelpca = PCA(n_components=3)
     modelpca.fit(xyz)
@@ -316,7 +359,9 @@ def weight_name():
 def val_name():
     return ['val']
 
+def coord_name():
+    return ['coord']
 
 def all_heading():
     return xyz_names() + normal_vec_names() + tangent_vec_names() + \
-           gradient_vec_names() + weight_name() + val_name()
+           gradient_vec_names() + weight_name() + val_name() + coord_name()

@@ -7,11 +7,29 @@ logger = logging.getLogger(__name__)
 
 class RotationAnglePlotter:
     def __init__(self):
+        """
+
+        """
         self.fig, self.ax = plt.subplots(2, 2, figsize=(15, 15))
         self.ax[0][0].set_ylim(-90, 90)
         self.ax[1][0].set_ylim(-90, 90)
 
     def plot(self, x, y, ix, iy, symb):
+        """
+
+        Parameters
+        ----------
+        x : np.array
+            vector of x
+        y
+        ix
+        iy
+        symb
+
+        Returns
+        -------
+
+        """
         self.ax[iy][ix].plot(x, y, symb)
 
     def add_fold_limb_data(self, rotation, fold_frame):

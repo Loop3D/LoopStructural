@@ -4,6 +4,9 @@ logger = logging.getLogger(__name__)
 
 
 class FaultDisplacementFeature:
+    """
+
+    """
     def __init__(self, fault_frame, displacement, name = 'fault_displacement'):
         """
         Geological feature representing the fault displacement

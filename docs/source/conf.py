@@ -2,7 +2,7 @@
 #
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Path setup --------------------------------------------------------------
 
@@ -12,33 +12,46 @@
 #
 import os
 import sys
-import guzzle_sphinx_theme
-
-
-
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../../'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'LoopStructural'
-copyright = '2019, Lachlan Grose'
+copyright = '2020, Lachlan Grose'
 author = 'Lachlan Grose'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'
-autoclass_content = 'both'
 
 
 # -- General configuration ---------------------------------------------------
+autoclass_content = "both"  # include both class docstring and __init__
+autodoc_default_flags = [
+        # Make sure that any autodoc declarations show the right members
+        "members",
+        "inherited-members",
+        "private-members",
+        "show-inheritance",
+]
+autosummary_generate = True  # Make _autosummary files and include them
+napoleon_numpy_docstring = True #False  # Force consistency, leave only Google
+napoleon_use_rtype = False  # More legible
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.todo', 
-        'sphinx.ext.viewcode', 
-        'sphinx.ext.autodoc', 
-        'sphinx.ext.napoleon'] 
+extensions = [
+        # Need the autodoc and autosummary packages to generate our docs.
+        'sphinx.ext.autodoc',
+        'sphinx.ext.autosummary',
+        # The Napoleon extension allows for nicer argument formatting.
+        'sphinx.ext.napoleon',
+        # add sphinx gallery
+        'sphinx_gallery.gen_gallery',
+        # citations
+        'sphinxcontrib.bibtex'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -54,35 +67,26 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'classic'
+html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-napoleon_google_docstring = False
-napoleon_numpy_docstring = True
-napoleon_include_init_with_doc = False
-napoleon_include_private_with_doc = False
-napoleon_include_special_with_doc = True
-napoleon_use_admonition_for_examples = False
-napoleon_use_admonition_for_notes = False
-napoleon_use_admonition_for_references = False
-napoleon_use_ivar = False
-napoleon_use_param = True
-napoleon_use_rtype = True
+# Sphinx gallery examples
+from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
+from sphinx_gallery.sorting import ExampleTitleSortKey
+sphinx_gallery_conf = {
+     'examples_dirs': ['../../examples/'],
 
-html_theme_path = guzzle_sphinx_theme.html_theme_path()
-html_theme = 'guzzle_sphinx_theme'
-
-# Register the theme as an extension to generate a sitemap.xml
-extensions.append("guzzle_sphinx_theme")
-
-# Guzzle theme options (see theme.conf for more information)
-html_theme_options = {
-    # Set the name of the project to appear in the sidebar
-    "project_nav_name": "Project Name",
+     'gallery_dirs': ['auto_examples/']
+                        , # path to where to save gallery generated output
+    'image_scrapers': ('matplotlib',LoopScraper()),
+    'within_subsection_order': ExampleTitleSortKey,
+    'reference_url' : {'LoopStructural' : None}
 }
 
-add_module_names = False
+def setup(app):
+    app.add_stylesheet('custom.css')
+

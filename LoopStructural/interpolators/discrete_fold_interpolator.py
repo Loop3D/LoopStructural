@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
+    """
+
+    """
     def __init__(self, support, fold):
         """
         A piecewise linear interpolator that can also use fold constraints defined in Laurent et al., 2016

@@ -11,7 +11,18 @@ logger = logging.getLogger(__name__)
 
 
 class FoldRotationAngle:
+    """
+
+    """
     def __init__(self, rotation_angle, fold_frame_coordinate, svario=False):
+        """
+
+        Parameters
+        ----------
+        rotation_angle
+        fold_frame_coordinate
+        svario
+        """
         self.rotation_angle = rotation_angle
         self.fold_frame_coordinate = fold_frame_coordinate
         self.fold_rotation_function = None
@@ -19,7 +30,21 @@ class FoldRotationAngle:
         if svario:
             self.svario = SVariogram(self.fold_frame_coordinate, self.rotation_angle)
         self.fitted_params = None
+
     def fit_fourier_series(self, wl = None, lags = None, nlag = None, lag = None):
+        """
+
+        Parameters
+        ----------
+        wl
+        lags
+        nlag
+        lag
+
+        Returns
+        -------
+
+        """
         if self.svario is None:
             self.svario = SVariogram(self.fold_frame_coordinate,
                                      self.rotation_angle)
@@ -69,12 +94,39 @@ class FoldRotationAngle:
                 np.arctan(
                     fourier_series(x, popt[0], popt[1], popt[2], popt[3])))
             self.fitted_params = popt
+
     def __call__(self, fold_frame_coordinate):
+        """
+
+        Parameters
+        ----------
+        fold_frame_coordinate
+
+        Returns
+        -------
+
+        """
         return self.fold_rotation_function(fold_frame_coordinate)
 
     def calculate_misfit(self):
+        """
+
+        Returns
+        -------
+
+        """
         return np.tan(np.deg2rad(self.rotation_angle)) - np.tan(np.deg2rad(
             self.__call__(self.fold_frame_coordinate)))
 
     def set_function(self, function):
+        """
+
+        Parameters
+        ----------
+        function
+
+        Returns
+        -------
+
+        """
         self. fold_rotation_function = function
