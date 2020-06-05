@@ -28,20 +28,21 @@ def close_all():
 ##
 class LavaVuModelViewer:
     """
-    Short description
+    A wrapper to plot LoopStructural object with lavavu
+
+    Attributes
+    ----------
+    lv Lavavu.Viewer object
     """
     def __init__(self, model=None, bounding_box=None, nsteps=None, **kwargs):
         """
 
-        A wrapper to plot LoopStructural object with lavavu
 
         Parameters
         ----------
         **kwargs : lavavu viewer kwargs
 
-        Attributes
-        ----------
-        lv Lavavu.Viewer object
+
         objects : dictionary of objects that have been plotted
         """
         # copied from pyvista

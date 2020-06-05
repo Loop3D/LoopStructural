@@ -6,34 +6,40 @@ logger = logging.getLogger(__name__)
 
 
 class GeologicalFeature:
+    """
+    Geological feature is class that is used to represent a geometrical element in a geological
+    model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
+    which
+
+    Attributes
+    ----------
+    name : string
+        should be a unique name for the geological feature
+    support : a ScalarField
+        holds the property values for the feature and links to the
+        support geometry
+    data : list
+        list containing geological data
+    region : list of boolean functions defining whether the feature is
+        active
+    faults : list of faults that affect this feature
+    interpolator : GeologicalInterpolator
+        the interpolator used to build this feature
+
+    """
     def __init__(self, name, interpolator, builder=None, data=None, region=None, type=None, faults=[]):
         """
-        Geological feature is class that is used to represent a geometrical element in a geological
-        model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
-        which
-
         Parameters
         ----------
         name: string
         interpolator : GeologicalInterpolator
-        builder : GeologicalFeatureBuilder
+        builder : GeologicalFeatureInterpolator
         data :
-        region :
+        region : list
+            boolean lambda functions returning where the feature can be evaluated
         type :
-        faults :
+        faults : list
 
-        Attributes
-        ----------
-        name : string
-            should be a unique name for the geological feature
-        support : a ScalarField
-            holds the property values for the feature and links to the
-            support geometry
-        data : list
-            list containing geological data
-        region : list of boolean functions defining whether the feature is
-            active
-        faults : list of faults that affect this feature
         """
         self.name = name
         self.interpolator = interpolator
@@ -48,6 +54,7 @@ class GeologicalFeature:
         if region is None:
             self.region = 'everywhere'
         self.model = None
+
     def __str__(self):
         return self.name
 
@@ -73,7 +80,7 @@ class GeologicalFeature:
         Parameters
         ----------
         region : boolean function(x,y,z)
-                - returns true if inside region, false if outside
+                returns true if inside region, false if outside
                 can be passed as a lambda function e.g.
                 lambda pos : feature.evaluate_value(pos) > 0
 
@@ -88,7 +95,8 @@ class GeologicalFeature:
 
         Parameters
         ----------
-        builder
+        builder : GeologicalFeatureInterpolator
+            the builder associated with this feature
 
         Returns
         -------
@@ -161,7 +169,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        misfit : np.array(N,dtype=double)
+            dot product between interpolated gradient and constraints
         """
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
@@ -181,7 +190,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        misfit : np.array(N,dtype=double)
+            difference between interpolated scalar field and value constraints
         """
         locations = self.interpolator.get_value_constraints()
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
@@ -194,6 +204,8 @@ class GeologicalFeature:
 
         Returns
         -------
+        mean : double
+            average value of the feature evaluated on a (10,10,10) grid in model area
 
         """
         if self.model is None:
@@ -206,7 +218,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        min : double
+            min value of the feature evaluated on a (10,10,10) grid in model area
         """
         if self.model is None:
             return 0
@@ -220,7 +233,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        max : double
+            max value of the feature evaluated on a (10,10,10) grid in model area
         """
         if self.model is None:
             return 0
@@ -251,7 +265,7 @@ class GeologicalFeature:
 
         Returns
         -------
-        GeologicalInterpolator
+        interpolator : GeologicalInterpolator
         """
         return self.interpolator
 

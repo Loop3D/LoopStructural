@@ -1,3 +1,6 @@
+"""
+Wrapper for using surfepy
+"""
 import sys, os
 
 from LoopStructural.utils.helper import get_vectors

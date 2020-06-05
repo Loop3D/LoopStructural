@@ -1,3 +1,6 @@
+"""
+Discrete interpolator base for least squares
+"""
 import logging
 
 import numpy as np

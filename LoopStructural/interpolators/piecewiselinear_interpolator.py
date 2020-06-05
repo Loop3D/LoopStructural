@@ -1,3 +1,6 @@
+"""
+Piecewise linear interpolator
+"""
 import logging
 
 import numpy as np
@@ -33,7 +36,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.support = mesh
 
         self.interpolation_weights = {'cgw': 0.1, 'cpw': 1., 'npw': 1.,
-                                      'gpw': 1., 'tpw': 1.}
+                                      'gpw': 1., 'tpw': 1., 'ipw': 1.}
         self.__str = 'Piecewise Linear Interpolator with %i unknowns. \n' % \
                      self.nx
 
@@ -80,7 +83,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_norm_ctr_pts(self.interpolation_weights['npw'])
         self.add_ctr_pts(self.interpolation_weights['cpw'])
         self.add_tangent_ctr_pts(self.interpolation_weights['tpw'])
-
+        self.add_interface_ctr_pts(self.interpolation_weights['ipw'])
     def add_constant_gradient(self, w=0.1):
         """
         Add the constant gradient regularisation to the system
@@ -256,6 +259,50 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(A[outside,:] * w,
                                                   points[inside,:][outside, 3] * w * vol[outside],
                                                   idc[outside, :], name='value')
+
+    def add_interface_ctr_pts(self, w=1.0):  # for now weight all value points the same
+        """
+        Adds a constraint that defines all points with the same 'id' to be the same value
+        Sets all P1-P2 = 0 for all pairs of points
+
+        Parameters
+        ----------
+        w : double
+            weight
+
+        Returns
+        -------
+
+        """
+
+        # get elements for points
+        points = self.get_interface_constraints()
+        if points.shape[0] > 1:
+            vertices, c, tetras, inside = self.support.get_tetra_for_location(points[:,:3])
+            # calculate volume of tetras
+            vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
+            vol = np.abs(np.linalg.det(vecs)) / 6
+            A = c[inside]
+            A *= vol[:,None]
+            idc = tetras[inside,:]
+            for id in np.unique(points[np.logical_and(~np.isnan(points[:,4]),inside),4]):
+                mask = points[inside,4] == id
+                interface_A = A[None,mask,:] - A[mask,None,:]
+                interface_A = interface_A.reshape((mask.shape[0]*mask.shape[0],A.shape[1]))
+                interface_idc = idc[mask,:]
+
+                # now map the index from global to region create array size of mesh
+                # initialise as np.nan, then map points inside region to 0->nx
+                gi = np.zeros(self.support.n_nodes).astype(int)
+                gi[:] = -1
+
+                gi[self.region] = np.arange(0, self.nx)
+                interface_idc = gi[interface_idc]
+                interface_idc = np.tile(interface_idc,(mask.shape[0],1)).reshape(interface_A.shape)#flatten()
+                outside = ~np.any(interface_idc == -1, axis=1)
+                self.add_constraints_to_least_squares(interface_A[outside,:] * w,
+                                                      np.zeros(interface_A[outside,:].shape[0]),
+                                                      interface_idc[outside, :], name='value')
 
     def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
                                            B=0):

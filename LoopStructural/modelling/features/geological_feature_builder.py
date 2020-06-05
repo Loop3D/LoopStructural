@@ -7,20 +7,25 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 from LoopStructural.utils.helper import xyz_names, val_name, normal_vec_names, \
-    weight_name, gradient_vec_names, tangent_vec_names
+    weight_name, gradient_vec_names, tangent_vec_names, interface_name
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import get_data_bounding_box_map as get_data_bounding_box
 
 
 class GeologicalFeatureInterpolator:
+    """
+    A builder for a GeologicalFeature will link data to the interpolator
+    and run the interpolation
+
+    """
     def __init__(self, interpolator, name='Feature', region=None, **kwargs):
         """
-        A builder for a GeologicalFeature will link data to the interpolator
-        and run the interpolation
+        Constructor for a GeologicalFeatureInterpolator
 
         Parameters
         ----------
-        interpolator - a GeologicalInterpolator
+        interpolator : GeologicalInterpolator
+            An empty GeologicalInterpolator
         region : lambda function
             defining whether the location (xyz) should be included in the
         kwargs - name of the feature, region to interpolate the feature
@@ -49,7 +54,7 @@ class GeologicalFeatureInterpolator:
 
         Parameters
         ----------
-        fault FaultSegment
+        fault : FaultSegment
             A faultsegment to add to the geological feature
 
         Returns
@@ -64,7 +69,8 @@ class GeologicalFeatureInterpolator:
 
         Parameters
         ----------
-        data_frame - pandas data frame
+        data_frame : pd.DataFrame
+            a dataframe containing the data to be added
 
         Returns
         -------
@@ -73,6 +79,22 @@ class GeologicalFeatureInterpolator:
         self.data = data_frame.copy()
 
     def add_orthogonal_feature(self, feature, w=1., region=None):
+        """
+        Add a constraint to the interpolator so that the gradient of an exisitng feature is orthogonal
+        to the feature being built. E.g. dot product between gradients should be = 0
+
+        Parameters
+        ----------
+        feature : GeologicalFeature
+            feature which we want to be orthogonal to
+        w :  double
+            how much to weight in least squares sense
+        region : unused
+
+        Returns
+        -------
+
+        """
         self.interpolator.add_gradient_orthogonal_constraint(
             self.interpolator.support.barycentre(),
             feature.evaluate_gradient(self.interpolator.support.barycentre()),
@@ -83,6 +105,11 @@ class GeologicalFeatureInterpolator:
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
+
+        Parameters
+        -----------
+        constrained : boolean
+        force_constrained : boolean
 
         Returns
         -------
@@ -133,27 +160,38 @@ class GeologicalFeatureInterpolator:
         # self.interpolator.reset()
         mask = ~np.isnan(data.loc[:,val_name()].to_numpy())
 
+        # add value constraints
         if mask.shape[0]>0:
             value_data = data.loc[mask[:,0],xyz_names()+val_name()+weight_name()].to_numpy()
             self.interpolator.set_value_constraints(value_data)
 
+        # add gradient constraints
         mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()].to_numpy()), axis=1)
         if mask.shape[0]>0:
             gradient_data = data.loc[
             mask, xyz_names() + gradient_vec_names() + weight_name()].to_numpy()
             self.interpolator.set_gradient_constraints(gradient_data)
 
+        # add normal vector data
         mask = np.all(~np.isnan(data.loc[:, normal_vec_names()].to_numpy()), axis=1)
         if mask.shape[0]>0:
             normal_data = data.loc[
                 mask, xyz_names() + normal_vec_names() + weight_name()].to_numpy()
             self.interpolator.set_normal_constraints(normal_data)
 
+        # add tangent data
         mask = np.all(~np.isnan(data.loc[:, tangent_vec_names()].to_numpy()), axis=1)
         if mask.shape[0]>0:
             tangent_data = data.loc[
                 mask, xyz_names() + tangent_vec_names() + weight_name()].to_numpy()
             self.interpolator.set_tangent_constraints(tangent_data)
+
+        # add interface constraints
+        mask = np.all(~np.isnan(data.loc[:, interface_name()].to_numpy()), axis=1)
+        if mask.shape[0] > 0:
+            interface_data = data.loc[
+                mask, xyz_names() + interface_name() + weight_name()].to_numpy()
+            self.interpolator.set_interface_constraints(interface_data)
 
         self.data_added = True
 
@@ -163,7 +201,7 @@ class GeologicalFeatureInterpolator:
 
         Returns
         -------
-        numpy array
+        np.array((N,4),dtype=double)
         """
         header = xyz_names()+val_name()+weight_name()
         mask = ~np.isnan(self.data.loc[:,val_name()].to_numpy())

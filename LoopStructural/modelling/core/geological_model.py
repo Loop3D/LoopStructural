@@ -1,3 +1,6 @@
+"""
+Main entry point for creating a geological model
+"""
 import logging
 
 import numpy as np
@@ -62,9 +65,27 @@ def _calculate_average_intersection(series_builder, fold_frame, fold,
 
 class GeologicalModel:
     """
-    A geological model is the recipe for building a 3D model and includes
-    the rescaling
-    of the model between 0 and 1.
+    A geological model is the recipe for building a 3D model and  can include
+    the rescaling of the model between 0 and 1.
+
+    Attributes
+    ----------
+    features : list
+        Contains all features youngest to oldest
+    feature_name_index : dict
+        maps feature name to the list index of the features
+    data : pandas dataframe
+        the dataframe used for building the geological model
+    nsteps : tuple/np.array(3,dtype=int)
+        the number of steps x,y,z to evaluate the model
+    origin : tuple/np.array(3,dtype=doubles)
+        the origin of the model box
+    parameters : dict
+        a dictionary tracking the parameters used to build the model
+    scale_factor : double
+        the scale factor used to rescale the model
+
+
     """
 
     def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40),
@@ -78,6 +99,8 @@ class GeologicalModel:
             specifying the maximum extent of the model
         rescale : bool
             whether to rescale the model to between 0/1
+
+
 
         """
         self.features = []
@@ -335,7 +358,7 @@ class GeologicalModel:
 
         Returns
         -------
-        results dict
+        results : dict
         """
         self.parameters['features'].append({'feature_type': 'foliation', 'type': series_surface_data, **kwargs})
         interpolator = self.get_interpolator(**kwargs)
@@ -404,7 +427,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        foliation_data : string
+        foliation_data : str
             unique string in type column of data frame
         fold_frame :  FoldFrame
         kwargs
@@ -412,7 +435,8 @@ class GeologicalModel:
 
         Returns
         -------
-        dict
+        results : dict
+
         """
         self.parameters['features'].append(
             {'feature_type': 'fold_foliation', 'type': foliation_data, 'fold_frame': fold_frame, **kwargs})
@@ -496,7 +520,7 @@ class GeologicalModel:
 
         Returns
         -------
-
+        results : dict
         """
         self.parameters['features'].append(
             {'feature_type': 'folded_fold_frame', 'type': fold_frame_data, 'fold_frame': fold_frame, **kwargs})
@@ -576,7 +600,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature_builder
+        feature_builder : GeologicalFeatureInterpolator/StructuralFrameBuilder
 
         Returns
         -------
@@ -812,7 +836,7 @@ class GeologicalModel:
 
         Returns
         -------
-        dictionary
+        results : dict
         """
         self.parameters['features'].append(
             {'feature_type': 'fault', 'type': fault_surface_data, 'displacement': displacement, **kwargs})
@@ -897,9 +921,12 @@ class GeologicalModel:
                     idc[mask], val[mask])
         # check if this fault overprint any existing faults exist in the stack
         overprinted = kwargs.get('overprinted', [])
-        self._add_faults(fault_frame_builder[0],overprinted)
-        self._add_faults(fault_frame_builder[1],overprinted)
-        self._add_faults(fault_frame_builder[2],overprinted)
+        overprinted_faults = []
+        for o in overprinted:
+            overprinted_faults.append(self.features[self.feature_name_index[o]])
+        self._add_faults(fault_frame_builder[0],overprinted_faults)
+        self._add_faults(fault_frame_builder[1],overprinted_faults)
+        self._add_faults(fault_frame_builder[2],overprinted_faults)
 
         fault_frame = fault_frame_builder.build(**kwargs)
         if 'abut' in kwargs:
@@ -918,32 +945,44 @@ class GeologicalModel:
 
         return result
 
-    def rescale(self, points):
+    def rescale(self, points, inplace=False):
         """
         Convert from model scale to real world scale - in the future this
         should also do transformations?
 
         Parameters
         ----------
-        points
+        points : np.array((N,3),dtype=double)
+        inplace : boolean
+            whether to return a modified copy or modify the original array
 
         Returns
         -------
+        points : np.array((N,3),dtype=double)
+
         """
+        if inplace == False:
+            points = points.copy()
         points *= self.scale_factor
         points += self.origin
         return points
 
-    def scale(self, points):
+    def scale(self, points, inplace=True):
         """
         Parameters
         ----------
-        points
+        points : np.array((N,3),dtype=double)
+        inplace : boolean
+            whether to return a modified copy or modify the original array
 
         Returns
         -------
+        points : np.array((N,3),dtype=double)
+
         """
-        points = points.copy()
+        if inplace==False:
+            points = points.copy()
+
         points[:, :] -= self.origin
         points /= self.scale_factor
         return points
@@ -959,6 +998,7 @@ class GeologicalModel:
 
         Returns
         -------
+        voxet : dict
         """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
 
@@ -973,6 +1013,8 @@ class GeologicalModel:
 
         Returns
         -------
+        corners : np.array((nsteps[0]*nsteps[1]*nsteps[2],3))
+            shuffled array of corners
         """
         x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
                         nsteps[0])
@@ -986,6 +1028,18 @@ class GeologicalModel:
         return locs
 
     def evaluate_model(self, xyz):
+        """
+
+        Parameters
+        ----------
+        xyz : np.array((N,3))
+            location to evaluate the points
+
+        Returns
+        -------
+        strat_id : np.array((N,1),dtype=int)
+            vector of the stratigraphic id from the strat column for the locations
+        """
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
             feature_id = self.feature_name_index.get(group, -1)
