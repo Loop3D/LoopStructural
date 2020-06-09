@@ -134,6 +134,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         requires at least two other
         value constraints OR a norm constraint for the interpolant to solve.
         """
+
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
             vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:,:3])
@@ -288,7 +289,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             for id in np.unique(points[np.logical_and(~np.isnan(points[:,4]),inside),4]):
                 mask = points[inside,4] == id
                 interface_A = A[None,mask,:] - A[mask,None,:]
-                interface_A = interface_A.reshape((mask.shape[0]*mask.shape[0],A.shape[1]))
+                interface_A = np.sum(interface_A,axis=0)
+                # interface_A = interface_A.reshape((mask.shape[0]*mask.shape[0],A.shape[1]))
                 interface_idc = idc[mask,:]
 
                 # now map the index from global to region create array size of mesh
