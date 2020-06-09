@@ -1,0 +1,551 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Probabilistic faults &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="6. Modelling folds" href="../fold/plot_adding_folds_to_surfaces.html" />
+    <link rel="prev" title="Modelling faults using structural frames" href="plot_faulted_intrusion.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#basics">Basics</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#modelling-faults">Modelling Faults</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plot_faulted_intrusion.html">Modelling faults using structural frames</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Probabilistic faults</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#imports">Imports</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-folds">Modelling Folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#creating-models-using-map2loop">Creating models using map2loop</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">LoopStructural API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.utils.html">LoopStructural.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Examples</a> &raquo;</li>
+        
+      <li>Probabilistic faults</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/auto_examples/fault/probabilistic_faults.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-fault-probabilistic-faults-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="probabilistic-faults">
+<span id="sphx-glr-auto-examples-fault-probabilistic-faults-py"></span><h1>Probabilistic faults<a class="headerlink" href="#probabilistic-faults" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <span class="n">GeologicalModel</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_intrusion</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="c1"># %matplotlib inline</span>
+<span class="c1"># %load_ext snakeviz</span>
+
+<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_intrusion</span><span class="p">()</span>
+
+<span class="n">fault_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;fault&#39;</span><span class="p">]</span>
+
+<span class="n">fault_data</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">fault_data</span><span class="p">)</span>
+<span class="n">fault</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span><span class="p">(</span><span class="s1">&#39;fault&#39;</span><span class="p">,</span>
+                                   <span class="o">-</span><span class="mi">600</span><span class="p">,</span>
+                                   <span class="n">nelements</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                                   <span class="n">steps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                                   <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                  <span class="n">buffer</span><span class="o">=</span><span class="mf">0.3</span>
+                                  <span class="p">)</span>
+
+
+<span class="n">bedding_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">40</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">bedding_val</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*=</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">bedding_val</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*=</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">bedding_val</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">=-</span><span class="mi">600</span>
+<span class="n">bedding_val</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">bedding_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">bedding_val</span><span class="p">,</span><span class="n">bedding_val</span><span class="p">])</span>
+<span class="n">bedding_val</span><span class="p">[</span><span class="mi">40</span><span class="p">:,</span><span class="mi">2</span><span class="p">]</span><span class="o">-=-</span><span class="mi">500</span>
+<span class="n">bedding_val</span><span class="p">[</span><span class="mi">40</span><span class="p">:,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="c1"># print(bedding_val)</span>
+<span class="c1"># print(fault[&#39;feature&#39;].evaluate(model.scale(bedding_val)))</span>
+<span class="n">bedding_val</span><span class="p">[:,:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">fault</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply_to_points</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">bedding_val</span><span class="p">[:,:</span><span class="mi">3</span><span class="p">])))</span>
+
+<span class="c1"># print(bedding_val)</span>
+
+<span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">bedding_val</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="s1">&#39;val&#39;</span><span class="p">])</span>
+<span class="n">new_data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;strati&#39;</span>
+<span class="c1"># new_data[&#39;val&#39;] = 0</span>
+
+<span class="c1"># normal_vec = pd.DataFrame([[9000,10,10,0,0,1]],columns=[&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;,&#39;nx&#39;,&#39;ny&#39;,&#39;nz&#39;])</span>
+<span class="c1"># normal_vec[&#39;type&#39;] = &#39;strati&#39;</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">fault_data</span><span class="p">,</span><span class="n">new_data</span><span class="p">],</span><span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">data</span>
+
+<span class="n">bb</span>
+</pre></div>
+</div>
+<p>for i in range(10):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">fault</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span><span class="p">(</span><span class="s1">&#39;fault&#39;</span><span class="p">,</span>
+                                   <span class="mi">600</span><span class="p">,</span>
+                                   <span class="n">nelements</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                                   <span class="n">steps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                                   <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                  <span class="n">buffer</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                                   <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span>
+                                  <span class="p">)</span>
+<span class="n">strati</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s1">&#39;strati&#39;</span><span class="p">,</span>
+                                        <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+                                        <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                        <span class="n">cgw</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                                        <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span><span class="p">,</span>
+                                        <span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span>
+                                       <span class="p">)</span>
+
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span><span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">fault</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span><span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># viewer.add_scalar_field(fault[&#39;feature&#39;].displacementfeature)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_field</span><span class="p">(</span><span class="n">fault</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">locations</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">()[::</span><span class="mi">100</span><span class="p">,:])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">])</span>
+<span class="c1"># viewer.add_points(strati[&#39;feature&#39;].get_interpolator()[:,:3],pts)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span><span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">fault</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span><span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># viewer.add_scalar_field(fault[&#39;feature&#39;].displacementfeature)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_field</span><span class="p">(</span><span class="n">fault</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">locations</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">()[::</span><span class="mi">100</span><span class="p">,:])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_interpolator</span><span class="p">()</span><span class="o">.</span><span class="n">get_value_constraints</span><span class="p">()[:,:</span><span class="mi">3</span><span class="p">],</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;pts&#39;</span><span class="p">,</span><span class="n">pointsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span><span class="n">reuse_supports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">displacement</span> <span class="o">=</span> <span class="o">-</span><span class="mi">700</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="mf">0.019632680341601372</span><span class="p">,</span> <span class="mf">88.20027923583984</span><span class="p">,</span> <span class="o">-</span><span class="mf">89.94925689697266</span><span class="p">])</span><span class="c1">#lv.rotatex(90)</span>
+
+<span class="n">fault</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span><span class="p">(</span><span class="s1">&#39;fault&#39;</span><span class="p">,</span>
+                                   <span class="n">displacement</span><span class="p">,</span>
+                                   <span class="n">nelements</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                                   <span class="n">steps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                                   <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                  <span class="n">buffer</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                                   <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;lu&#39;</span>
+                                  <span class="p">)</span>
+<span class="n">dist</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">displacement</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span><span class="o">-</span><span class="mi">500</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">1000</span><span class="p">]:</span>
+<span class="c1">#     print(&quot;displacement: {}&quot;.format(displacement))</span>
+    <span class="n">fault</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_displacement</span><span class="p">(</span><span class="n">displacement</span><span class="p">)</span>
+<span class="c1">#     print(&#39;one&#39;)</span>
+    <span class="n">strati</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s1">&#39;strati&#39;</span><span class="p">,</span>
+                                            <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+                                            <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                            <span class="n">cgw</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                                            <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;lu&#39;</span><span class="p">,</span>
+                                            <span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span>
+                                           <span class="p">)</span>
+
+<span class="c1">#     print(&#39;two&#39;)</span>
+<span class="c1">#     plt.figure()</span>
+<span class="c1">#     print(np.sum(np.abs(strati[&#39;feature&#39;].evaluate_value_misfit())))</span>
+
+<span class="c1"># #     strati[&#39;feature&#39;].faults_enabled = False#toggle_faults()</span>
+<span class="c1">#     viewer.add_isosurface(strati[&#39;feature&#39;],slices=[-1,0])</span>
+<span class="c1">#     viewer.add_isosurface(fault[&#39;feature&#39;][0],isovalue=0)</span>
+<span class="c1">#     viewer.add_data(strati[&#39;feature&#39;])</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_interpolator</span><span class="p">()</span><span class="o">.</span><span class="n">get_value_constraints</span><span class="p">()[:,:</span><span class="mi">3</span><span class="p">],</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;points_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">displacement</span><span class="p">)</span>
+                      <span class="p">,</span><span class="n">pointsize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1">#     #viewer.lv.rotatey(90)</span>
+    <span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+
+<span class="c1"># viewer = LavaVuModelViewer(model)</span>
+<span class="c1"># viewer.add_isosurface(strati[&#39;feature&#39;],isovalue=0)</span>
+<span class="c1"># viewer.add_isosurface(fault[&#39;feature&#39;][0],isovalue=0)</span>
+<span class="c1"># viewer.add_data(strati[&#39;feature&#39;])</span>
+<span class="c1"># viewer.rotate([0.019632680341601372, 88.20027923583984, -89.94925689697266])#lv.rotatex(90)</span>
+<span class="c1"># #viewer.lv.rotatey(90)</span>
+<span class="c1"># viewer.display()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span><span class="o">-</span><span class="mi">500</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span><span class="n">dist</span><span class="p">,</span><span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+
+<span class="c1"># viewer.lv[&#39;xyzrotate&#39;]</span>
+
+<span class="k">def</span> <span class="nf">planeFit</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    p, n = planeFit(points)</span>
+
+<span class="sd">    Given an array, points, of shape (d,...)</span>
+<span class="sd">    representing points in d-dimensional space,</span>
+<span class="sd">    fit an d-dimensional plane to the points.</span>
+<span class="sd">    Return a point, p, on the plane (the point-cloud centroid),</span>
+<span class="sd">    and the normal, n.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">svd</span>
+    <span class="c1">#points = points.T</span>
+    <span class="c1">#print(&#39;p&#39;,points.shape)</span>
+<span class="c1">#     points = np.reshape(points, (np.shape(points)[0], -1)) # Collapse trialing dimensions</span>
+    <span class="k">assert</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;There are only </span><span class="si">{}</span><span class="s2"> points in </span><span class="si">{}</span><span class="s2"> dimensions.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ctr</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">points</span> <span class="o">-</span> <span class="n">ctr</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="c1"># Could also use np.cov(x) here.</span>
+    <span class="n">U</span><span class="p">,</span><span class="n">S</span><span class="p">,</span><span class="n">V</span> <span class="o">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">normal</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">normal</span><span class="o">*</span><span class="n">ctr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">normal</span><span class="p">,[</span><span class="n">d</span><span class="p">]])</span>
+
+<span class="k">def</span> <span class="nf">planeDistance</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">planeFit</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">points</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">z</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+
+
+<span class="kn">import</span> <span class="nn">emcee</span>
+
+<span class="k">def</span> <span class="nf">log_prior</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">displacement</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">theta</span>
+<span class="c1">#     mu = 0</span>
+    <span class="k">if</span> <span class="n">sigma</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">if</span> <span class="n">mu</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">prob</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">sigma</span><span class="p">))</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">displacement</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+<span class="c1">#     print()</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">sigma</span><span class="p">))</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">displacement</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">dill</span> <span class="k">as</span> <span class="nn">pickle</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span><span class="n">reuse_supports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">fault</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span><span class="p">(</span><span class="s1">&#39;fault&#39;</span><span class="p">,</span>
+                                   <span class="mi">0</span><span class="p">,</span>
+                                   <span class="n">nelements</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                                   <span class="n">steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                   <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                  <span class="n">buffer</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                                   <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span>
+                                  <span class="p">)</span>
+<span class="k">def</span> <span class="nf">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">displacement</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">theta</span>
+<span class="c1">#     print(&quot;displacement: {}&quot;.format(displacement))</span>
+    <span class="n">fault</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_displacement</span><span class="p">(</span><span class="n">displacement</span><span class="p">)</span>
+
+    <span class="c1">#strati[&#39;feature&#39;].get_interpolator().data_added = False</span>
+    <span class="n">strati</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s1">&#39;strati&#39;</span><span class="p">,</span>
+                                            <span class="n">nelements</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                                            <span class="n">interpolatortype</span><span class="o">=</span><span class="s1">&#39;PLI&#39;</span><span class="p">,</span>
+                                            <span class="n">cgw</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                                            <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;fake&#39;</span><span class="p">,</span>
+                                            <span class="n">buffer</span><span class="o">=</span><span class="mi">1</span>
+                                           <span class="p">)</span>
+    <span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">add_data_to_interpolator</span><span class="p">()</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_interpolator</span><span class="p">()</span><span class="o">.</span><span class="n">get_value_constraints</span><span class="p">()[:,:</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">unique_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">unique_values</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_values</span><span class="p">):</span>
+        <span class="n">distance</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">planeDistance</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">points</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">u</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+
+<span class="c1">#     plt.hist(strati[&#39;feature&#39;].evaluate_value_misfit())</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span><span class="c1">#strati[&#39;feature&#39;].interpolator.get_value_constraints()[:,:3].shape[0]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+    <span class="n">log_like</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">distance</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c1">#data_added = False</span>
+
+<span class="c1">#     sigma2 = 3</span>
+<span class="c1">#     log_like = -(n/2)*np.log(2*np.pi) - (n/2)*np.log(sigma2)</span>
+<span class="c1">#     log_like-= (1/(2*sigma2))*np.sum(np.abs(strati[&#39;feature&#39;].evaluate_value_misfit())**2)</span>
+
+<span class="c1">#     sigma2 = strati[&#39;feature&#39;].evaluate_value(strati[&#39;feature&#39;].interpolator.get_value_constraints()[:,:3]) ** 2</span>
+<span class="c1">#     log_like = -0.5 * np.sum((strati[&#39;feature&#39;].evaluate_value_misfit()) ** 2 / sigma2 + np.log(sigma2))</span>
+<span class="c1">#     print(&quot;log likelihood {}&quot;.format(log_like))</span>
+<span class="c1">#     print(&quot;missfit {}&quot;.format(np.sum(strati[&#39;feature&#39;].evaluate_value_misfit())))</span>
+    <span class="k">if</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">log_like</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+<span class="c1">#     pickle.dump(model,open(&quot;models/model2_sigma_{}_mu_{}_displacement_{}.pkl&quot;.format(sigma,mu,displacement),&quot;wb&quot;))</span>
+    <span class="k">return</span> <span class="n">log_like</span>
+
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">600</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">600</span><span class="p">]:</span>
+    <span class="n">log_likelihood</span><span class="p">((</span><span class="n">d</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">log_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">lp</span> <span class="o">=</span> <span class="n">log_prior</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">ll</span> <span class="o">=</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lp</span> <span class="o">+</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">emcee</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">600</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1e3</span><span class="p">,</span><span class="mf">1e2</span><span class="p">,</span><span class="mf">1e2</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">pos</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pos</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:])</span>
+<span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">shape</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">nwalkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_probability</span><span class="p">)</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">flat_samples</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">discard</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">flat_samples</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="kn">import</span> <span class="nn">corner</span>
+<span class="n">flat_samples</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">corner</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span>
+    <span class="n">flat_samples</span>
+<span class="p">);</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">chain</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span>
+
+<span class="n">chain</span><span class="o">.</span><span class="n">shape</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chain</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chain</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-fault-probabilistic-faults-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/8756908e1867a3064163ea93ba3b511c/probabilistic_faults.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">probabilistic_faults.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/71e89fac8e0e136b53cf510b1aacfc93/probabilistic_faults.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">probabilistic_faults.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../fold/plot_adding_folds_to_surfaces.html" class="btn btn-neutral float-right" title="6. Modelling folds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plot_faulted_intrusion.html" class="btn btn-neutral float-left" title="Modelling faults using structural frames" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lachlan Grose
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

@@ -40,9 +40,7 @@
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6. Modelling folds" href="plot_adding_folds_to_surfaces.html" />
-    <link rel="prev" title="5. Using Stratigraphic Columns" href="plot_4_using_stratigraphic_column.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,22 +88,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Getting Started</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="plot_1_data_prepration.html">1. Preparing input datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_comparing_interpolators.html">7. Comparing interpolators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_3_multiple_groups.html">3. Multiple groups</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">5. Using Stratigraphic Columns</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Implicit surface modelling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#imports">Imports</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#geologicalmodel">GeologicalModel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#visualising-results">Visualising results</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="plot_adding_folds_to_surfaces.html">6. Modelling folds</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -161,8 +146,6 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="index.html">Tutorials</a> &raquo;</li>
-        
       <li>2. Implicit surface modelling</li>
     
     
@@ -215,7 +198,7 @@ Visualization of the scalar field.</p>
 <h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
 <p>Import the required objects from LoopStructural for visualisation and
 model building</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <span class="n">GeologicalModel</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
 <span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
 
 <span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_claudius</span> <span class="c1">#demo data</span>
@@ -243,7 +226,7 @@ module in loopstructural.</p>
 <p>To create a <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> the origin (lower left) and max extent
 (upper right) of the model area need to be specified. In this example
 these are provided in the bb array.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
 </pre></div>
 </div>
 <p>A pandas dataframe with appropriate columns can be used to link the data
@@ -268,14 +251,14 @@ dataframe and then using a 3D plot</p>
 <span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_2_surface_modelling_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_surface_modelling_001.png" />
+<img alt="../_images/sphx_glr_plot_2_surface_modelling_0011.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_surface_modelling_0011.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Plot area has not been defined.
 </pre></div>
 </div>
 <p>The pandas dataframe can be linked to the <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> using
 <code class="docutils literal notranslate"><span class="pre">.set_model_data(dataframe</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span></a><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> contains an ordered list of the different
@@ -285,7 +268,7 @@ Different geological features can be added to the geological model such
 as: * Foliations * Faults * Unconformities * Folded foliations *
 Structural Frames</p>
 <p>In this example we will only add a foliation using the function</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where name is the name in the <code class="docutils literal notranslate"><span class="pre">type</span></code> field, other parameters we
@@ -309,9 +292,9 @@ and makes the solution more stable for some interpolators</p>
 
 
 
-<span class="n">model</span><span class="o">.</span><span class="n">set_stratigraphic_column</span><span class="p">(</span><span class="n">strat_column</span><span class="p">)</span>
+<a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.set_stratigraphic_column" title="LoopStructural.modelling.core.geological_model.GeologicalModel.set_stratigraphic_column" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_stratigraphic_column</span></a><span class="p">(</span><span class="n">strat_column</span><span class="p">)</span>
 
-<span class="n">strati</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s2">&quot;strati&quot;</span><span class="p">,</span>
+<span class="n">strati</span> <span class="o">=</span> <a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span><span class="s2">&quot;strati&quot;</span><span class="p">,</span>
                                            <span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;FDI&quot;</span><span class="p">,</span> <span class="c1"># try changing this to &#39;PLI&#39;</span>
                                            <span class="n">nelements</span><span class="o">=</span><span class="mf">1e4</span><span class="p">,</span> <span class="c1"># try changing between 1e3 and 5e4</span>
                                            <span class="n">buffer</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
@@ -398,34 +381,34 @@ the vectorfield at a lower resolution than the mesh otherwise it can be
 difficult to see the vectors. You can use numpy stepping along the
 array: <code class="docutils literal notranslate"><span class="pre">locations</span> <span class="pre">=</span> <span class="pre">mesh.barycentre[::20,:]</span></code> which will sample every
 20th sample in the numpy array.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
 
 <span class="c1"># determine the number of unique surfaces in the model from</span>
 <span class="c1"># the input data and then calculate isosurfaces for this</span>
 <span class="n">unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">get_value_constraints</span><span class="p">()[:,</span><span class="mi">3</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                        <span class="n">slices</span><span class="o">=</span><span class="n">unique</span><span class="p">,</span>
                        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">,</span>
-                      <span class="n">paint_with</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                     <span class="n">voxet</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">voxet</span><span class="p">())</span>
+                      <span class="n">paint_with</span><span class="o">=</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="n">voxet</span><span class="o">=</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" title="LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">voxet</span></a><span class="p">())</span>
 
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                    <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
                    <span class="n">value</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
-                   <span class="n">boundary_points</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">,</span>
+                   <span class="n">boundary_points</span><span class="o">=</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">bounding_box</span><span class="p">,</span>
                    <span class="n">nsteps</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">]),</span>
                   <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                      <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">add_model</span><span class="p">()</span>
 
 <span class="c1"># Add the data addgrad/addvalue arguments are optional</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><a href="../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">lv</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="c1"># to add an interactive display</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_2_surface_modelling_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_surface_modelling_002.png" />
+<img alt="../_images/sphx_glr_plot_2_surface_modelling_0021.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_surface_modelling_0021.png" />
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.975 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-2-surface-modelling-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -444,15 +427,6 @@ array: <code class="docutils literal notranslate"><span class="pre">locations</s
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="plot_adding_folds_to_surfaces.html" class="btn btn-neutral float-right" title="6. Modelling folds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="plot_4_using_stratigraphic_column.html" class="btn btn-neutral float-left" title="5. Using Stratigraphic Columns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

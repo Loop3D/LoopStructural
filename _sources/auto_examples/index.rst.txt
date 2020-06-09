@@ -4,19 +4,30 @@
 
 .. _sphx_glr_auto_examples:
 
-Tutorials
-=========
+Examples
+========
+
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_auto_examples_basic:
+
+Basics
+---------
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="1. Preparing input datasets">
+    <div class="sphx-glr-thumbcontainer" tooltip="1. Getting started">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
+ .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
 
-     :ref:`sphx_glr_auto_examples_plot_1_data_prepration.py`
+     :ref:`sphx_glr_auto_examples_basic_plot_1_data_prepration.py`
 
 .. raw:: html
 
@@ -26,67 +37,7 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_1_data_prepration
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="7. Comparing interpolators">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_comparing_interpolators_thumb.png
-
-     :ref:`sphx_glr_auto_examples_plot_comparing_interpolators.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_comparing_interpolators
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="3. Multiple groups">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
-
-     :ref:`sphx_glr_auto_examples_plot_3_multiple_groups.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_3_multiple_groups
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="5. Using Stratigraphic Columns">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
-
-     :ref:`sphx_glr_auto_examples_plot_4_using_stratigraphic_column.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_4_using_stratigraphic_column
+   /auto_examples/basic/plot_1_data_prepration
 
 .. raw:: html
 
@@ -94,9 +45,9 @@ Tutorials
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
+ .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
 
-     :ref:`sphx_glr_auto_examples_plot_2_surface_modelling.py`
+     :ref:`sphx_glr_auto_examples_basic_plot_2_surface_modelling.py`
 
 .. raw:: html
 
@@ -106,7 +57,149 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_2_surface_modelling
+   /auto_examples/basic/plot_2_surface_modelling
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3. Multiple groups">
+
+.. only:: html
+
+ .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
+
+     :ref:`sphx_glr_auto_examples_basic_plot_3_multiple_groups.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/basic/plot_3_multiple_groups
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="5. Using Stratigraphic Columns">
+
+.. only:: html
+
+ .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
+
+     :ref:`sphx_glr_auto_examples_basic_plot_4_using_stratigraphic_column.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/basic/plot_4_using_stratigraphic_column
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="7. Comparing interpolators">
+
+.. only:: html
+
+ .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_comparing_interpolators_thumb.png
+
+     :ref:`sphx_glr_auto_examples_basic_plot_comparing_interpolators.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/basic/plot_comparing_interpolators
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Using surfe">
+
+.. only:: html
+
+ .. figure:: /auto_examples/basic/images/thumb/sphx_glr_example_surfe_thumb.png
+
+     :ref:`sphx_glr_auto_examples_basic_example_surfe.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/basic/example_surfe
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_auto_examples_fault:
+
+Modelling Faults
+-----------------
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Modelling faults using structural frames">
+
+.. only:: html
+
+ .. figure:: /auto_examples/fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
+
+     :ref:`sphx_glr_auto_examples_fault_plot_faulted_intrusion.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/fault/plot_faulted_intrusion
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Probabilistic faults">
+
+.. only:: html
+
+ .. figure:: /auto_examples/fault/images/thumb/sphx_glr_probabilistic_faults_thumb.png
+
+     :ref:`sphx_glr_auto_examples_fault_probabilistic_faults.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/fault/probabilistic_faults
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_auto_examples_fold:
+
+Modelling Folds
+----------------
+
 
 .. raw:: html
 
@@ -114,9 +207,9 @@ Tutorials
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
+ .. figure:: /auto_examples/fold/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
 
-     :ref:`sphx_glr_auto_examples_plot_adding_folds_to_surfaces.py`
+     :ref:`sphx_glr_auto_examples_fold_plot_adding_folds_to_surfaces.py`
 
 .. raw:: html
 
@@ -126,7 +219,98 @@ Tutorials
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_adding_folds_to_surfaces
+   /auto_examples/fold/plot_adding_folds_to_surfaces
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Faulted folds">
+
+.. only:: html
+
+ .. figure:: /auto_examples/fold/images/thumb/sphx_glr_faulted_fold_thumb.png
+
+     :ref:`sphx_glr_auto_examples_fold_faulted_fold.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/fold/faulted_fold
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Probabilistic folds">
+
+.. only:: html
+
+ .. figure:: /auto_examples/fold/images/thumb/sphx_glr_probabilistic_folds_thumb.png
+
+     :ref:`sphx_glr_auto_examples_fold_probabilistic_folds.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/fold/probabilistic_folds
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip=" ">
+
+.. only:: html
+
+ .. figure:: /auto_examples/fold/images/thumb/sphx_glr_refolded_folds_thumb.png
+
+     :ref:`sphx_glr_auto_examples_fold_refolded_folds.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/fold/refolded_folds
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_auto_examples_map2loop:
+
+Creating models using map2loop
+------------------------------
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Mt Bruce">
+
+.. only:: html
+
+ .. figure:: /auto_examples/map2loop/images/thumb/sphx_glr_plot_mt_bruce_thumb.png
+
+     :ref:`sphx_glr_auto_examples_map2loop_plot_mt_bruce.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/map2loop/plot_mt_bruce
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

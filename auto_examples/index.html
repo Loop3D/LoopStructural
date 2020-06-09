@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorials &mdash; LoopStructural 0.1 documentation</title>
+  <title>Examples &mdash; LoopStructural 0.1 documentation</title>
   
 
   
@@ -41,8 +41,8 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Preparing input datasets" href="plot_1_data_prepration.html" />
-    <link rel="prev" title="Install instructions" href="../installation.html" /> 
+    <link rel="next" title="1. Getting started" href="basic/plot_1_data_prepration.html" />
+    <link rel="prev" title="Installation" href="../installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,14 +91,34 @@
 </ul>
 <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Install instructions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plot_1_data_prepration.html">1. Preparing input datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_comparing_interpolators.html">7. Comparing interpolators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_3_multiple_groups.html">3. Multiple groups</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">5. Using Stratigraphic Columns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_2_surface_modelling.html">2. Implicit surface modelling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_adding_folds_to_surfaces.html">6. Modelling folds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basics">Basics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="basic/plot_1_data_prepration.html">1. Getting started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic/plot_2_surface_modelling.html">2. Implicit surface modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic/plot_3_multiple_groups.html">3. Multiple groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic/plot_4_using_stratigraphic_column.html">5. Using Stratigraphic Columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic/plot_comparing_interpolators.html">7. Comparing interpolators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic/example_surfe.html">Using surfe</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#modelling-faults">Modelling Faults</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fault/plot_faulted_intrusion.html">Modelling faults using structural frames</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fault/probabilistic_faults.html">Probabilistic faults</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#modelling-folds">Modelling Folds</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fold/plot_adding_folds_to_surfaces.html">6. Modelling folds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fold/faulted_fold.html">Faulted folds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fold/faulted_fold.html#faulted-refolded-folds">Faulted refolded folds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fold/probabilistic_folds.html">Probabilistic folds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fold/refolded_folds.html">Refolded folds</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-models-using-map2loop">Creating models using map2loop</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="map2loop/plot_mt_bruce.html">Mt Bruce</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -156,7 +176,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Tutorials</li>
+      <li>Examples</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -175,41 +195,94 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tutorials">
-<span id="sphx-glr-auto-examples"></span><h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="1. Preparing input datasets"><div class="figure align-default" id="id1">
+  <div class="section" id="examples">
+<span id="sphx-glr-auto-examples"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="sphx-glr-clear"></div><div class="section" id="basics">
+<span id="sphx-glr-auto-examples-basic"></span><h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="1. Getting started"><div class="figure align-default" id="id1">
 <img alt="../_images/sphx_glr_plot_1_data_prepration_thumb.png" src="../_images/sphx_glr_plot_1_data_prepration_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_1_data_prepration.html#sphx-glr-auto-examples-plot-1-data-prepration-py"><span class="std std-ref">1. Preparing input datasets</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="basic/plot_1_data_prepration.html#sphx-glr-auto-examples-basic-plot-1-data-prepration-py"><span class="std std-ref">1. Getting started</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="7. Comparing interpolators"><div class="figure align-default" id="id2">
-<img alt="../_images/sphx_glr_plot_comparing_interpolators_thumb.png" src="../_images/sphx_glr_plot_comparing_interpolators_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_comparing_interpolators.html#sphx-glr-auto-examples-plot-comparing-interpolators-py"><span class="std std-ref">7. Comparing interpolators</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches obs..."><div class="figure align-default" id="id2">
+<img alt="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" src="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="basic/plot_2_surface_modelling.html#sphx-glr-auto-examples-basic-plot-2-surface-modelling-py"><span class="std std-ref">2. Implicit surface modelling</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
 <div class="sphx-glr-thumbcontainer" tooltip="3. Multiple groups"><div class="figure align-default" id="id3">
 <img alt="../_images/sphx_glr_plot_3_multiple_groups_thumb.png" src="../_images/sphx_glr_plot_3_multiple_groups_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_3_multiple_groups.html#sphx-glr-auto-examples-plot-3-multiple-groups-py"><span class="std std-ref">3. Multiple groups</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="basic/plot_3_multiple_groups.html#sphx-glr-auto-examples-basic-plot-3-multiple-groups-py"><span class="std std-ref">3. Multiple groups</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
 <div class="sphx-glr-thumbcontainer" tooltip="5. Using Stratigraphic Columns"><div class="figure align-default" id="id4">
 <img alt="../_images/sphx_glr_plot_4_using_stratigraphic_column_thumb.png" src="../_images/sphx_glr_plot_4_using_stratigraphic_column_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_4_using_stratigraphic_column.html#sphx-glr-auto-examples-plot-4-using-stratigraphic-column-py"><span class="std std-ref">5. Using Stratigraphic Columns</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="basic/plot_4_using_stratigraphic_column.html#sphx-glr-auto-examples-basic-plot-4-using-stratigraphic-column-py"><span class="std std-ref">5. Using Stratigraphic Columns</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches obs..."><div class="figure align-default" id="id5">
-<img alt="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" src="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_2_surface_modelling.html#sphx-glr-auto-examples-plot-2-surface-modelling-py"><span class="std std-ref">2. Implicit surface modelling</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="7. Comparing interpolators"><div class="figure align-default" id="id5">
+<img alt="../_images/sphx_glr_plot_comparing_interpolators_thumb.png" src="../_images/sphx_glr_plot_comparing_interpolators_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="basic/plot_comparing_interpolators.html#sphx-glr-auto-examples-basic-plot-comparing-interpolators-py"><span class="std std-ref">7. Comparing interpolators</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip=" This tutorial will show how Loop Structural improves the modelling of  folds by using an accur..."><div class="figure align-default" id="id6">
+<div class="sphx-glr-thumbcontainer" tooltip="Using surfe"><div class="figure align-default" id="id6">
+<img alt="../_images/sphx_glr_example_surfe_thumb.png" src="../_images/sphx_glr_example_surfe_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="basic/example_surfe.html#sphx-glr-auto-examples-basic-example-surfe-py"><span class="std std-ref">Using surfe</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-clear"></div></div>
+<div class="section" id="modelling-faults">
+<span id="sphx-glr-auto-examples-fault"></span><h2>Modelling Faults<a class="headerlink" href="#modelling-faults" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Modelling faults using structural frames"><div class="figure align-default" id="id7">
+<img alt="../_images/sphx_glr_plot_faulted_intrusion_thumb.png" src="../_images/sphx_glr_plot_faulted_intrusion_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="fault/plot_faulted_intrusion.html#sphx-glr-auto-examples-fault-plot-faulted-intrusion-py"><span class="std std-ref">Modelling faults using structural frames</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Probabilistic faults"><div class="figure align-default" id="id8">
+<img alt="../_images/sphx_glr_probabilistic_faults_thumb.png" src="../_images/sphx_glr_probabilistic_faults_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="fault/probabilistic_faults.html#sphx-glr-auto-examples-fault-probabilistic-faults-py"><span class="std std-ref">Probabilistic faults</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-clear"></div></div>
+<div class="section" id="modelling-folds">
+<span id="sphx-glr-auto-examples-fold"></span><h2>Modelling Folds<a class="headerlink" href="#modelling-folds" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip=" This tutorial will show how Loop Structural improves the modelling of  folds by using an accur..."><div class="figure align-default" id="id9">
 <img alt="../_images/sphx_glr_plot_adding_folds_to_surfaces_thumb.png" src="../_images/sphx_glr_plot_adding_folds_to_surfaces_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_adding_folds_to_surfaces.html#sphx-glr-auto-examples-plot-adding-folds-to-surfaces-py"><span class="std std-ref">6. Modelling folds</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="fold/plot_adding_folds_to_surfaces.html#sphx-glr-auto-examples-fold-plot-adding-folds-to-surfaces-py"><span class="std std-ref">6. Modelling folds</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Faulted folds"><div class="figure align-default" id="id10">
+<img alt="../_images/sphx_glr_faulted_fold_thumb.png" src="../_images/sphx_glr_faulted_fold_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="fold/faulted_fold.html#sphx-glr-auto-examples-fold-faulted-fold-py"><span class="std std-ref">Faulted folds</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Probabilistic folds"><div class="figure align-default" id="id11">
+<img alt="../_images/sphx_glr_probabilistic_folds_thumb.png" src="../_images/sphx_glr_probabilistic_folds_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="fold/probabilistic_folds.html#sphx-glr-auto-examples-fold-probabilistic-folds-py"><span class="std std-ref">Probabilistic folds</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip=" "><div class="figure align-default" id="id12">
+<img alt="../_images/sphx_glr_refolded_folds_thumb.png" src="../_images/sphx_glr_refolded_folds_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="fold/refolded_folds.html#sphx-glr-auto-examples-fold-refolded-folds-py"><span class="std std-ref">Refolded folds</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-clear"></div></div>
+<div class="section" id="creating-models-using-map2loop">
+<span id="sphx-glr-auto-examples-map2loop"></span><h2>Creating models using map2loop<a class="headerlink" href="#creating-models-using-map2loop" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Mt Bruce"><div class="figure align-default" id="id13">
+<img alt="../_images/sphx_glr_plot_mt_bruce_thumb.png" src="../_images/sphx_glr_plot_mt_bruce_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="map2loop/plot_mt_bruce.html#sphx-glr-auto-examples-map2loop-plot-mt-bruce-py"><span class="std std-ref">Mt Bruce</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -223,6 +296,7 @@
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
+</div>
 
 
            </div>
@@ -232,10 +306,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="plot_1_data_prepration.html" class="btn btn-neutral float-right" title="1. Preparing input datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="basic/plot_1_data_prepration.html" class="btn btn-neutral float-right" title="1. Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../installation.html" class="btn btn-neutral float-left" title="Install instructions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

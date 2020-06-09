@@ -6,7 +6,7 @@ Docker
     .. container:: header
 
         **Installing Docker**
-    Follow the installation instructions for docker here.
+    Follow the installation instructions for docker `here <https://docs.docker.com/engine/install/>`_.
 
 .. container:: toggle
 
