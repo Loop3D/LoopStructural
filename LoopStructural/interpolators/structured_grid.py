@@ -70,12 +70,37 @@ class StructuredGrid:
         print('Max extent: %f %f %f' % (max[0], max[1], max[2]))
 
     def update_property(self, propertyname, values):
+        """[summary]
+
+        [extended_summary]
+
+        Parameters
+        ----------
+        propertyname : [type]
+            [description]
+        values : [type]
+            [description]
+        """
         if values.shape[0] == self.n_nodes:
             self.properties[propertyname] = values
         if values.shape[0] == self.n_elements:
             self.cell_properties[propertyname] = values
 
     def cell_centres(self, global_index):
+        """[summary]
+
+        [extended_summary]
+
+        Parameters
+        ----------
+        global_index : [type]
+            [description]
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
         ix, iy, iz = self.global_index_to_cell_index(global_index)
         x = self.origin[None, 0] + self.step_vector[None, 0] * .5 + \
             self.step_vector[None, 0] * ix
@@ -86,6 +111,20 @@ class StructuredGrid:
         return np.array([x, y, z]).T
 
     def position_to_cell_index(self, pos):
+        """[summary]
+
+        [extended_summary]
+
+        Parameters
+        ----------
+        pos : [type]
+            [description]
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
 
         pos = self.check_position(pos)
 
@@ -108,6 +147,20 @@ class StructuredGrid:
         return inside
 
     def check_position(self, pos):
+        """[summary]
+
+        [extended_summary]
+
+        Parameters
+        ----------
+        pos : [type]
+            [description]
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
 
         if len(pos.shape) == 1:
             pos = np.array([pos])

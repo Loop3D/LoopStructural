@@ -117,7 +117,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         defined by w
         Parameters
         ----------
-        w - either numpy array of length number of
+        w : either numpy array of length number of
 
         Returns
         -------

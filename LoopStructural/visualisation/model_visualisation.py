@@ -68,6 +68,10 @@ class LavaVuModelViewer:
         pass
 
     def deep_clean(self):
+        """[summary]
+
+        [extended_summary]
+        """
         pass
 
     def add_section(self, geological_feature=None, axis='x', value=None, **kwargs):
