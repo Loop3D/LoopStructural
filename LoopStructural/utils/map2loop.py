@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def process_map2loop(m2l_directory):
+def process_map2loop(m2l_directory, flags={}):
     """
     Extracts relevant information from map2loop outputs
 
@@ -11,7 +11,8 @@ def process_map2loop(m2l_directory):
         absolute path to a directory containing map2loop outputs
     Returns
     -------
-
+    m2l_data : dict
+        a dictionary containing the extracted and collated data
     """
     tangents = pd.read_csv(m2l_directory + '/tmp/raw_contacts.csv')
     groups = pd.read_csv(m2l_directory + '/tmp/all_sorts.csv', index_col=0)
@@ -23,7 +24,20 @@ def process_map2loop(m2l_directory):
     fault_locations = pd.read_csv(m2l_directory + '/output/faults.csv')
     fault_fault_relations = pd.read_csv(m2l_directory + '/output/fault-fault-relationships.csv')
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
+    supergroups = {}
+    sgi = 0
+    with open(m2l_directory + '/tmp/super_groups.csv') as f:
+        for l in f:
+             for g in l.split(','):
+                g = g.replace('-','_').replace(' ','_')
+                if g.find('\n') > 0:
+                    g = g[:g.find('\n')]
+                supergroups[g] = 'supergroup_{}'.format(sgi)
+                if g == '\n':
+                    sgi += 1
+                    break
 
+    bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
 
     # process tangent data to be tx, ty, tz
     tangents['tz'] = 0
@@ -51,10 +65,10 @@ def process_map2loop(m2l_directory):
     unit_id = 0
 
     for i in groups['group number'].unique():
-        g = groups.loc[groups['group number'] == i, 'group'].iloc[0]
-        stratigraphic_column[g] = {}
-
-        val = 0
+        g = supergroups[groups.loc[groups['group number'] == i, 'group'].iloc[0]]
+        if g not in stratigraphic_column:
+            stratigraphic_column[g] = {}
+            val = 0
         #         print(groups.loc[groups['group number']==i,'code'])
         for c in groups.loc[groups['group number'] == i, 'code'][::-1]:
             # roups.loc[groups['group number']==i
@@ -74,9 +88,23 @@ def process_map2loop(m2l_directory):
     for g in groups['group'].unique():
         val = 0
         for c in groups.loc[groups['group'] == g, 'code']:
-            contact_orientations.loc[contact_orientations['formation'] == c, 'type'] = g
-            contacts.loc[contacts['formation'] == c, 'type'] = g
-
+            contact_orientations.loc[contact_orientations['formation'] == c, 'type'] = supergroups[g]
+            contacts.loc[contacts['formation'] == c, 'type'] = supergroups[g]
+    displacements['dip_dir'] = np.nan
+    for fname in fault_orientations['formation'].unique():
+        displacements.loc[displacements['fname'] == fname, 'dip_dir'] = np.mean(
+            fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'])
+    max_displacement = {}
+    for f in displacements['fname'].unique():
+        displacements_numpy = displacements.loc[
+            displacements['fname'] == f, ['vertical_displacement', 'downthrow_dir', 'dip_dir']].to_numpy()
+        index = np.argmax(np.abs(displacements_numpy[:, 0]), )
+        max_displacement[f] = displacements_numpy[
+            index, 0]
+        if displacements_numpy[index, 1] - displacements_numpy[index, 2] > 90:
+            fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'] = displacements_numpy[
+                index, 1]
+        # .loc[displacements['fname'] == f,'vertical_displacement'].max()
     fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
     fault_orientations['gx'] = np.nan
     fault_orientations['gy'] = np.nan
@@ -89,12 +117,7 @@ def process_map2loop(m2l_directory):
     fault_locations['val'] = 0
     fault_locations['type'] = fault_locations['formation']
 
-    max_displacement = {}
-    for f in displacements['fname'].unique():
-        displacements_numpy = displacements.loc[displacements['fname'] == f, 'vertical_displacement'].to_numpy()
-        index = np.argmax(np.abs(displacements_numpy))
-        max_displacement[f] = displacements_numpy[
-            index]  # .loc[displacements['fname'] == f,'vertical_displacement'].max()
+
     data = pd.concat([tangents, contact_orientations, contacts, fault_orientations, fault_locations])
     data.reset_index()
 
@@ -102,4 +125,5 @@ def process_map2loop(m2l_directory):
             'groups': groups,
             'max_displacement': max_displacement,
             'fault_fault': fault_fault_relations,
-            'stratigraphic_column': stratigraphic_column}
+            'stratigraphic_column': stratigraphic_column,
+            'bounding_box':bb}

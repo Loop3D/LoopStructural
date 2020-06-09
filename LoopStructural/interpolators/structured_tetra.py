@@ -137,7 +137,8 @@ class TetMesh:
 
         Parameters
         ----------
-        pos - numpy array
+        pos : np.array
+
 
 
         Returns

@@ -446,8 +446,10 @@ class LavaVuModelViewer:
         p.vertices(position)
         p.values(value, "v")
         p["colourby"] = "v"
-        if 'range' in kwargs:
-            p.colourmap(cmap, range=kwargs['range'])
+
+        if 'vmin' in kwargs and 'vmax' in kwargs:
+            logger.info('vmin {} and vmax {}'.format(kwargs['vmin'],kwargs['vmax']))
+            p.colourmap(cmap, range=(kwargs['vmin'],kwargs['vmax']))
         else:
             p.colourmap(cmap)
 

@@ -5,12 +5,6 @@ Linux
 
     .. container:: header
 
-        **Installing a precompiled version**
-
-.. container:: toggle
-
-    .. container:: header
-
         **Development environment**
 
 

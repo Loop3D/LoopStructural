@@ -172,6 +172,8 @@ class GeologicalModel:
                 self.data[h] = np.nan
             if h == 'w':
                 self.data[h] = 1.
+            if h == 'coord':
+                self.data[h] = 0
         if 'strike' in self.data and 'dip' in self.data:
             mask = np.all(~np.isnan(self.data.loc[:, ['strike', 'dip']]),
                           axis=1)
