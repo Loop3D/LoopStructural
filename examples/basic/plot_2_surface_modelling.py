@@ -42,7 +42,6 @@ from LoopStructural.datasets import load_claudius #demo data
 import pandas as pd
 import glob
 import numpy as np
-# %matplotlib inline
 
 
 ######################################################################

@@ -1,4 +1,4 @@
-Install instructions
+Installation
 ====================
 LoopStructural is supported and tested on Python 3.6+ and can be installed on Linux, Windows and Mac. There are
 three ways of installing LoopStructural onto your system:

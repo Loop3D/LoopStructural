@@ -69,6 +69,10 @@ class LavaVuModelViewer:
         pass
 
     def deep_clean(self):
+        """[summary]
+
+        [extended_summary]
+        """
         pass
 
     def add_section(self, geological_feature=None, axis='x', value=None, **kwargs):
@@ -447,8 +451,10 @@ class LavaVuModelViewer:
         p.vertices(position)
         p.values(value, "v")
         p["colourby"] = "v"
-        if 'range' in kwargs:
-            p.colourmap(cmap, range=kwargs['range'])
+
+        if 'vmin' in kwargs and 'vmax' in kwargs:
+            logger.info('vmin {} and vmax {}'.format(kwargs['vmin'],kwargs['vmax']))
+            p.colourmap(cmap, range=(kwargs['vmin'],kwargs['vmax']))
         else:
             p.colourmap(cmap)
 

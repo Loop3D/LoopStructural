@@ -119,3 +119,14 @@ fme_lg/*
 *.c
 .vscode/settings.json
 *.pkl
+docs/source/LoopStructural.interpolators.rst
+docs/source/LoopStructural.modelling.rst
+docs/source/LoopStructural.utils.rst
+docs/source/LoopStructural.visualisation.rst
+docs/source/_autosummary/*
+docs/source/auto_examples/*
+examples/basic/*.png
+examples/fold/*.png
+examples/fault/*.png
+examples/basic/*.png
+docs/source/test/*
