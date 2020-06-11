@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 def process_map2loop(m2l_directory, flags={}):
     """
@@ -131,6 +134,26 @@ def process_map2loop(m2l_directory, flags={}):
             'bounding_box':bb}
 
 def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_params=None):
+    """[summary]
+
+    [extended_summary]
+
+    Parameters
+    ----------
+    m2l_data : dict
+        [description]
+    skip_faults : bool, optional
+        [description], by default False
+    fault_params : dict, optional
+        [description], by default None
+    foliation_params : dict, optional
+        [description], by default None
+
+    Returns
+    -------
+    [type]
+        [description]
+    """
     from LoopStructural import GeologicalModel
 
 
@@ -155,9 +178,9 @@ def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_pa
                 overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
                 for i in overprint_id:
                     overprints.append(i)
-                print('Adding fault overprints {}'.format(f))
+                logger.info('Adding fault overprints {}'.format(f))
             except:
-                print('No entry for %s in fault_fault_relations' % f)
+                logger.info('No entry for %s in fault_fault_relations' % f)
         #     continue
             faults.append(model.create_and_add_fault(f,
                                                     -m2l_data['max_displacement'][f],
