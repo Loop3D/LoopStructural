@@ -962,7 +962,8 @@ class GeologicalModel:
         """
         Parameters
         ----------
-        points
+        points : np.array((N,3),dtype=float)
+            points to 
 
         Returns
         -------
@@ -986,7 +987,7 @@ class GeologicalModel:
         """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
 
-    def regular_grid(self, nsteps=(50, 50, 25)):
+    def regular_grid(self, nsteps=(50, 50, 25), shuffle = True):
         """
         Return a regular grid within the model bounding box
 
@@ -997,6 +998,8 @@ class GeologicalModel:
 
         Returns
         -------
+        xyz : np.array((N,3),dtype=float)
+            locations of points in regular grid
         """
         x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
                         nsteps[0])
@@ -1006,10 +1009,40 @@ class GeologicalModel:
                         nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         locs = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        np.random.shuffle(locs)
+        if shuffle:
+            np.random.shuffle(locs)
         return locs
 
     def evaluate_model(self, xyz):
+        """Evaluate the stratigraphic id at each location
+        
+
+        Parameters
+        ----------
+        xyz : np.array((N,3),dtype=float)
+            locations
+
+        Returns
+        -------
+        stratigraphic_id : np.array(N,dtype=int)
+            the stratigraphic index for locations
+        
+        Examples
+        --------
+        Evaluate on a voxet
+        >>>  x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
+                        nsteps[0])
+        >>> y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1],
+                        nsteps[1])
+        >>> z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2],
+                        nsteps[2])
+        >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        >>> model.evaluate_model(xyz)
+
+        Evaluate on points defined by regular grid function
+        >>> model.evaluate_model(model.regular_grid())
+        """
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
             feature_id = self.feature_name_index.get(group, -1)

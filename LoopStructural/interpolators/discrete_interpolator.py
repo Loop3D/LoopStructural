@@ -86,7 +86,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.region_map[self.region] = np.array(
             range(0, len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
-
+        self.interpolation_weights = {}
+        
     def set_interpolation_weights(self, weights):
         """
         Set the interpolation weights dictionary
