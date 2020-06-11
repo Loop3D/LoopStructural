@@ -162,14 +162,7 @@ def build_model(m2l_data,fault_params = None, foliation_params=None):
         faults.append(model.create_and_add_fault(f,
                                                  -m2l_data['max_displacement'][f],
                                                  faultfunction='BaseFault',
-                                                 **fault_params
-                                                 interpolatortype='FDI',
-                                                 nelements=1e4,
-                                                 data_region=.1,
-                                                 solver='pyamg',
-                                                 overprints=overprints,
-                                                 cpw=10,
-                                                 npw=10
+                                                 **fault_params,
                                                  )
                       )
 
@@ -178,11 +171,7 @@ def build_model(m2l_data,fault_params = None, foliation_params=None):
     for i in m2l_data['groups']['group number'].unique():
         g = m2l_data['groups'].loc[m2l_data['groups']['group number'] == i, 'group'].unique()[0]
         group_features.append(model.create_and_add_foliation(g,
-                                                             interpolatortype="PLI",  # which interpolator to use
-                                                             nelements=1e5,  # how many tetras/voxels
-                                                             buffer=0.5,  # how much to extend nterpolation around box
-                                                             solver='pyamg',
-                                                             damp=True))
+                                                            **foliation_params))
         # if the group was successfully added (not null) then lets add the base (0 to be unconformity)
         if group_features[-1]:
             model.add_unconformity(group_features[-1]['feature'], 0)
