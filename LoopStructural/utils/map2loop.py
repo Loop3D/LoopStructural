@@ -130,7 +130,7 @@ def process_map2loop(m2l_directory, flags={}):
             'stratigraphic_column': stratigraphic_column,
             'bounding_box':bb}
 
-def build_model(m2l_data,fault_params = None, foliation_params=None):
+def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_params=None):
     from LoopStructural import GeologicalModel
 
 
@@ -144,27 +144,28 @@ def build_model(m2l_data,fault_params = None, foliation_params=None):
 
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
     model.set_model_data(m2l_data['data'])
-
-    faults = []
-    for f in m2l_data['max_displacement'].keys():
-        if model.data[model.data['type'] == f].shape[0] == 0:
-            continue
-        fault_id = f
-        overprints = []
-        try:
-            overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
-            for i in overprint_id:
-                overprints.append(i)
-            print('Adding fault overprints {}'.format(f))
-        except:
-            print('No entry for %s in fault_fault_relations' % f)
-    #     continue
-        faults.append(model.create_and_add_fault(f,
-                                                 -m2l_data['max_displacement'][f],
-                                                 faultfunction='BaseFault',
-                                                 **fault_params,
-                                                 )
-                      )
+    if not skip_faults:
+        faults = []
+        for f in m2l_data['max_displacement'].keys():
+            if model.data[model.data['type'] == f].shape[0] == 0:
+                continue
+            fault_id = f
+            overprints = []
+            try:
+                overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
+                for i in overprint_id:
+                    overprints.append(i)
+                print('Adding fault overprints {}'.format(f))
+            except:
+                print('No entry for %s in fault_fault_relations' % f)
+        #     continue
+            faults.append(model.create_and_add_fault(f,
+                                                    -m2l_data['max_displacement'][f],
+                                                    faultfunction='BaseFault',
+                                                    overprints=overprints,
+                                                    **fault_params,
+                                                    )
+                        )
 
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
@@ -173,7 +174,7 @@ def build_model(m2l_data,fault_params = None, foliation_params=None):
         group_features.append(model.create_and_add_foliation(g,
                                                             **foliation_params))
         # if the group was successfully added (not null) then lets add the base (0 to be unconformity)
-        if group_features[-1]:
-            model.add_unconformity(group_features[-1]['feature'], 0)
+        # if group_features[-1]:
+        #     model.add_unconformity(group_features[-1]['feature'], 0)
     model.set_stratigraphic_column(m2l_data['stratigraphic_column'])
     return model

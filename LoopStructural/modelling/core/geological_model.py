@@ -108,10 +108,26 @@ class GeologicalModel:
                                                      'reuse_supports': reuse_supports}}
 
     @classmethod
-    def from_map2loop_directory(cls, m2l_directory):
+    def from_map2loop_directory(cls, m2l_directory,**kwargs):
+        """Alternate constructor for a geological model using m2l output
+
+        Uses the information saved in the map2loop files to build a geological model.
+        You can specify kwargs for building foliation using foliation_params and for 
+        faults using fault_params. skip_faults is a flag that allows for the faults to be skipped.
+
+        Parameters
+        ----------
+        m2l_directory : string
+            path to map2loop directory
+
+        Returns
+        -------
+        (GeologicalModel, dict)
+            the created geological model and a dictionary of the map2loop data
+        """
         from LoopStructural.utils import process_map2loop, build_model
         m2l_data = process_map2loop(m2l_directory)
-        return build_model(m2l_data), m2l_data
+        return build_model(m2l_data,**kwargs), m2l_data
 
     def _add_feature(self, feature):
         """
