@@ -1,0 +1,3 @@
+[submodule "LoopStructuralNotebooks"]
+	path = notebooks
+	url = git@github.com:Loop3D/LoopStructuralNotebooks.git

@@ -232,7 +232,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        w
+        w : double
+            weight
 
         Returns
         -------
@@ -286,11 +287,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             A = c[inside]
             A *= vol[:,None]
             idc = tetras[inside,:]
-            for id in np.unique(points[np.logical_and(~np.isnan(points[:,4]),inside),4]):
-                mask = points[inside,4] == id
+            for id in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
+                mask = points[inside,3] == id
                 interface_A = A[None,mask,:] - A[mask,None,:]
                 interface_A = np.sum(interface_A,axis=0)
-                # interface_A = interface_A.reshape((mask.shape[0]*mask.shape[0],A.shape[1]))
+                # interface_A = interface_A.reshape((interface_A.shape[0]*interface_A.shape[0],A.shape[1]))
                 interface_idc = idc[mask,:]
 
                 # now map the index from global to region create array size of mesh
@@ -300,7 +301,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
                 gi[self.region] = np.arange(0, self.nx)
                 interface_idc = gi[interface_idc]
-                interface_idc = np.tile(interface_idc,(mask.shape[0],1)).reshape(interface_A.shape)#flatten()
+                # interface_idc = np.tile(interface_idc,(interface_idc.shape[0],1)).reshape(interface_A.shape)#flatten()
                 outside = ~np.any(interface_idc == -1, axis=1)
                 self.add_constraints_to_least_squares(interface_A[outside,:] * w,
                                                       np.zeros(interface_A[outside,:].shape[0]),

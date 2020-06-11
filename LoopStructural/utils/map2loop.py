@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import os
 def process_map2loop(m2l_directory, flags={}):
     """
     Extracts relevant information from map2loop outputs
@@ -26,18 +26,25 @@ def process_map2loop(m2l_directory, flags={}):
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
     supergroups = {}
     sgi = 0
-    with open(m2l_directory + '/tmp/super_groups.csv') as f:
-        for l in f:
-             for g in l.split(','):
-                g = g.replace('-','_').replace(' ','_')
-                if g.find('\n') > 0:
-                    g = g[:g.find('\n')]
-                supergroups[g] = 'supergroup_{}'.format(sgi)
-                if g == '\n':
-                    sgi += 1
-                    break
-
-    bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
+    if os.path.isfile(m2l_directory + '/tmp/super_groups.csv'):
+        with open(m2l_directory + '/tmp/super_groups.csv') as f:
+            for l in f:
+                for g in l.split(','):
+                    g = g.replace('-','_').replace(' ','_')
+                    if g.find('\n') > 0:
+                        g = g[:g.find('\n')]
+                    supergroups[g] = 'supergroup_{}'.format(sgi)
+                    if g == '\n':
+                        sgi += 1
+                        break
+    else:
+        for g in groups['group'].unique():
+            supergroups[g]=g
+    bb = None
+    try:
+        bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
+    except:
+        print("couldn't import bb")
 
     # process tangent data to be tx, ty, tz
     tangents['tz'] = 0
