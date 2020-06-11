@@ -26,7 +26,7 @@ def process_map2loop(m2l_directory, flags={}):
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
     supergroups = {}
     sgi = 0
-    with open(m2l_directory + '/tmp/super_groups.csv') as f:
+    with open(m2l_directory + '/tmp/super_groups.csv') as    f:
         for l in f:
              for g in l.split(','):
                 g = g.replace('-','_').replace(' ','_')
@@ -105,6 +105,8 @@ def process_map2loop(m2l_directory, flags={}):
             fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'] = displacements_numpy[
                 index, 1]
         # .loc[displacements['fname'] == f,'vertical_displacement'].max()
+    for g in groups['group'].unique():
+        groups.loc[groups['group']==g,'group'] = supergroups[g]
     fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
     fault_orientations['gx'] = np.nan
     fault_orientations['gy'] = np.nan
@@ -127,3 +129,62 @@ def process_map2loop(m2l_directory, flags={}):
             'fault_fault': fault_fault_relations,
             'stratigraphic_column': stratigraphic_column,
             'bounding_box':bb}
+
+def build_model(m2l_data,fault_params = None, foliation_params=None):
+    from LoopStructural import GeologicalModel
+
+
+    boundary_points = np.zeros((2, 3))
+    boundary_points[0, 0] = m2l_data['bounding_box']['minx']
+    boundary_points[0, 1] = m2l_data['bounding_box']['miny']
+    boundary_points[0, 2] = m2l_data['bounding_box']['lower']
+    boundary_points[1, 0] = m2l_data['bounding_box']['maxx']
+    boundary_points[1, 1] = m2l_data['bounding_box']['maxy']
+    boundary_points[1, 2] = m2l_data['bounding_box']['upper']
+
+    model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
+    model.set_model_data(m2l_data['data'])
+
+    faults = []
+    for f in m2l_data['max_displacement'].keys():
+        if model.data[model.data['type'] == f].shape[0] == 0:
+            continue
+        fault_id = f
+        overprints = []
+        try:
+            overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
+            for i in overprint_id:
+                overprints.append(i)
+            print('Adding fault overprints {}'.format(f))
+        except:
+            print('No entry for %s in fault_fault_relations' % f)
+    #     continue
+        faults.append(model.create_and_add_fault(f,
+                                                 -m2l_data['max_displacement'][f],
+                                                 faultfunction='BaseFault',
+                                                 **fault_params
+                                                 interpolatortype='FDI',
+                                                 nelements=1e4,
+                                                 data_region=.1,
+                                                 solver='pyamg',
+                                                 overprints=overprints,
+                                                 cpw=10,
+                                                 npw=10
+                                                 )
+                      )
+
+    ## loop through all of the groups and add them to the model in youngest to oldest.
+    group_features = []
+    for i in m2l_data['groups']['group number'].unique():
+        g = m2l_data['groups'].loc[m2l_data['groups']['group number'] == i, 'group'].unique()[0]
+        group_features.append(model.create_and_add_foliation(g,
+                                                             interpolatortype="PLI",  # which interpolator to use
+                                                             nelements=1e5,  # how many tetras/voxels
+                                                             buffer=0.5,  # how much to extend nterpolation around box
+                                                             solver='pyamg',
+                                                             damp=True))
+        # if the group was successfully added (not null) then lets add the base (0 to be unconformity)
+        if group_features[-1]:
+            model.add_unconformity(group_features[-1]['feature'], 0)
+    model.set_stratigraphic_column(m2l_data['stratigraphic_column'])
+    return model

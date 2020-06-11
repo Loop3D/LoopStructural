@@ -1,3 +1,6 @@
+"""
+Discrete interpolator base for least squares
+"""
 import logging
 
 import numpy as np
@@ -21,7 +24,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        support
+        support 
             A discrete mesh with, nodes, elements, etc
         """
         GeologicalInterpolator.__init__(self)

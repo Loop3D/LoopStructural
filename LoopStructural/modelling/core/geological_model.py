@@ -107,6 +107,12 @@ class GeologicalModel:
                                                      'nsteps': nsteps,
                                                      'reuse_supports': reuse_supports}}
 
+    @classmethod
+    def from_map2loop_directory(cls, m2l_directory):
+        from LoopStructural.utils import process_map2loop, build_model
+        m2l_data = process_map2loop(m2l_directory)
+        return build_model(m2l_data), m2l_data
+
     def _add_feature(self, feature):
         """
         Add a feature to the model stack
