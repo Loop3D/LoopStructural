@@ -32,8 +32,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.nx = len(self.support.nodes[self.region])
         self.support = mesh
 
-        self.interpolation_weights = {'cgw': 0.1, 'cpw': 1., 'npw': 1.,
-                                      'gpw': 1., 'tpw': 1.}
+        self.set_interpolation_weights({'cgw': 0.1, 'cpw': 1., 'npw': 1.,
+                                      'gpw': 1., 'tpw': 1.})
         self.__str = 'Piecewise Linear Interpolator with %i unknowns. \n' % \
                      self.nx
 

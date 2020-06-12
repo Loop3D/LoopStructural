@@ -36,6 +36,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # self.region_map[self.region] = np.array(range(0,
         # len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
+        self.shape = 'rectangular'
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
         self.c_ = 0
@@ -49,6 +50,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d = []
         self.eq_const_c_ = 0
         self.constraints = {}
+        self.interpolation_weights= {}
 
     def set_property_name(self, propertyname):
         """
@@ -86,7 +88,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.region_map[self.region] = np.array(
             range(0, len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
-        self.interpolation_weights = {}
         
     def set_interpolation_weights(self, weights):
         """

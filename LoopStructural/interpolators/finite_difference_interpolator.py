@@ -26,7 +26,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         DiscreteInterpolator.__init__(self, grid)
         # default weights for the interpolation matrix are 1 in x,y,z and
         # 1/
-        self.interpolation_weights = {'dxy': .7,
+        self.set_interpolation_weights({'dxy': .7,
                                       'dyz': .7,
                                       'dxz': .7,
                                       'dxx': 1.,
@@ -38,7 +38,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'cpw': 1.,
                                       'gpw': 1.,
                                       'npw': 1.,
-                                      'tpw': 1.}
+                                      'tpw': 1.})
 
         self.vol = grid.step_vector[0] * grid.step_vector[1] * \
                    grid.step_vector[2]
