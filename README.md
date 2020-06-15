@@ -9,7 +9,7 @@ Loop3D Geological Forward Modeling Engine.
 
 If you want to use LoopStructural the easiest way to get started is to use a docker container and a jupyter notebook environment.  
 
-[LoopStructural Documentation](loop3d.github.io/LoopStructural/)
+[LoopStructural Documentation](https://loop3d.github.io/LoopStructural/)
 
 ## Problems
 Any bugs/feature requests/comments send to lachlan.grose@monash.edu
