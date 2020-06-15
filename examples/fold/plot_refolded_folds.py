@@ -83,8 +83,8 @@ viewer.display()
 fig, ax = plt.subplots(1,2,figsize=(10,5))
 x = np.linspace(s2['feature'][0].min(),s2['feature'][0].max(),1000)
 ax[0].plot(x,s1['fold'].fold_limb_rotation(x))
-ax[0].plot(s1['foliation'],s1['limb_rotation'],'bo')
-ax[1].plot(s1['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
+ax[0].plot(s1['fold'].fold_limb_rotation.fold_frame_coordinate,s1['fold'].fold_limb_rotation.rotation_angle,'bo')
+# ax[1].plot(s1['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
 
 
 ######################################################################
@@ -115,7 +115,7 @@ viewer.display()
 fig, ax = plt.subplots(1,2,figsize=(10,5))
 x = np.linspace(s1['feature'][0].min(),s1['feature'][0].max(),1000)
 ax[0].plot(x,s0['fold'].fold_limb_rotation(x))
-ax[0].plot(s0['foliation'],s0['limb_rotation'],'bo')
+ax[0].plot(s0['fold'].fold_limb_rotation.fold_frame_coordinate,s0['fold'].fold_limb_rotation.rotation_angle,'bo')
 # ax[1].plot(s0['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
 
 viewer = LavaVuModelViewer(model)
