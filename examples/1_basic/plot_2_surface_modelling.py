@@ -1,7 +1,7 @@
 """
 
 1b. Implicit surface modelling
-==========================
+===============================
 This tutorial will demonstrate how to create an implicit surface
 representation of surfaces from a combination of orientation and
 location observations.

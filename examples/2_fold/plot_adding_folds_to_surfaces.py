@@ -118,22 +118,6 @@ data.head()
 
 
 ######################################################################
-# The data can be visualised using the lavavu 3d viewer - by first
-# converting from strike and dip to normal vectors. Note that there are a
-# lot of data points to display as the model volume was regularly sampled
-# on a grid.
-# 
-
-viewer = LavaVuModelViewer()
-xyz = data[['X','Y','Z']]
-vector = strike_dip_vector(data['strike'],data['dip'])
-viewer.add_vector_data(xyz,vector,name='all_data')
-# Calculating the fold rotation angles
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-viewer.display()
-
-
-######################################################################
 # The data points are now randomly ordered and can now be subsampled by
 # choosing the first N samples from the dataframe
 # 
@@ -214,7 +198,6 @@ viewer.display()
 # folded foliation to be parallel to the plane of the axial foliation
 # shown in B and C.
 # 
-
 mdata = pd.concat([data[:npoints],data[data['type']=='s1']])
 model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
 model.set_model_data(mdata)
@@ -241,9 +224,9 @@ viewer.add_isosurface(fold_frame['feature'][0],
 #                       isovalue=0.4,
                       alpha=0.5)
 viewer.add_data(stratigraphy['feature'])
-viewer.add_isosurface(fold_frame['feature'][1],colour='green',alpha=0.5)
+# viewer.add_isosurface(fold_frame['feature'][1],colour='green',alpha=0.5)
 # viewer.add_vector_field(fold_frame['feature'][0],locations=fold_frame['feature'][0].get_interpolator().support.barycentre())
-viewer.add_data(fold_frame['feature'][1])
+# viewer.add_data(fold_frame['feature'][1])
 
 # viewer.add_data(stratigraphy['feature'])
 viewer.add_isosurface(stratigraphy['feature'])
@@ -255,5 +238,5 @@ viewer.display()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 plt.plot(stratigraphy['foliation'],stratigraphy['limb_rotation'],'bo')
-x = np.linspace(fold_frame['feature'][0].min(),fold_frame['feature'][1].max(),100)
+x = np.linspace(fold_frame['feature'][0].min(),fold_frame['feature'][0].max(),100)
 plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
