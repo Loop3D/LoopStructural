@@ -7,7 +7,6 @@ Main API for creating a GeologicalModel
     :toctree: _autosummary
 
     core.geological_model
-    core.scalar_field
 
 Geological Features
 ===================
