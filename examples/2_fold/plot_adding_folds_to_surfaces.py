@@ -1,6 +1,6 @@
 """
-6. Modelling folds
-===============
+2a. Modelling folds
+====================
 
  This tutorial will show how Loop Structural improves the modelling of
  folds by using an accurate parameterization of folds geometry. This will

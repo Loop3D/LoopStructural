@@ -1,5 +1,5 @@
 """
-7. Comparing interpolators
+4a. Comparing interpolators
 ===========================
 This tutorial demonstrates how different interpolation algorithms can be compared and how the results can be visually
 inspected.
