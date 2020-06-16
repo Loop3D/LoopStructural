@@ -29,16 +29,22 @@ def process_map2loop(m2l_directory, flags={}):
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
     supergroups = {}
     sgi = 0
-    with open(m2l_directory + '/tmp/super_groups.csv') as    f:
-        for l in f:
-             for g in l.split(','):
-                g = g.replace('-','_').replace(' ','_')
-                if g.find('\n') > 0:
-                    g = g[:g.find('\n')]
-                supergroups[g] = 'supergroup_{}'.format(sgi)
-                if g == '\n':
-                    sgi += 1
-                    break
+    try:
+        with open(m2l_directory + '/tmp/super_groups.csv') as    f:
+            for l in f:
+                for g in l.split(','):
+                    g = g.replace('-','_').replace(' ','_')
+                    if g.find('\n') > 0:
+                        g = g[:g.find('\n')]
+                    supergroups[g] = 'supergroup_{}'.format(sgi)
+                    if g == '\n':
+                        sgi += 1
+                        break
+    except:
+        for g in groups['group'].unique():
+            supergroups[g] = g
+    
+    print(supergroups)
 
     bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
 
@@ -72,9 +78,8 @@ def process_map2loop(m2l_directory, flags={}):
         if g not in stratigraphic_column:
             stratigraphic_column[g] = {}
             val = 0
-        #         print(groups.loc[groups['group number']==i,'code'])
-        for c in groups.loc[groups['group number'] == i, 'code'][::-1]:
-            # roups.loc[groups['group number']==i
+
+        for c in groups.loc[groups['group number'] == i, 'code']:
             strat_val[c] = np.nan
             if c in thickness:
                 stratigraphic_column[g][c] = {'min': val, 'max': val + thickness[c], 'id': unit_id}
@@ -131,7 +136,8 @@ def process_map2loop(m2l_directory, flags={}):
             'max_displacement': max_displacement,
             'fault_fault': fault_fault_relations,
             'stratigraphic_column': stratigraphic_column,
-            'bounding_box':bb}
+            'bounding_box':bb,
+            'strat_va':strat_val}
 
 def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_params=None):
     """[summary]
