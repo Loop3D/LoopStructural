@@ -30,7 +30,7 @@ class LavaVuModelViewer:
     """
     Short description
     """
-    def __init__(self, model=None, bounding_box=None, nsteps=None, **kwargs):
+    def __init__(self, model=None, bounding_box=None, nsteps=None, vertical_exaggeration=1., **kwargs):
         """
 
         A wrapper to plot LoopStructural object with lavavu
@@ -50,6 +50,7 @@ class LavaVuModelViewer:
         #
         self.lv = lavavu.Viewer(**kwargs)
         self.lv['orthographic'] = True
+        self.lv.modelscale([1,1,vertical_exaggeration])
         self.objects = {}
         self.bounding_box = bounding_box
         self.nsteps = nsteps
@@ -147,20 +148,37 @@ class LavaVuModelViewer:
                 geological_feature.name, geological_feature.min(), geological_feature.max()))
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
 
-    def add_isosurface(self, geological_feature, **kwargs):
-        """
+    def add_isosurface(self, geological_feature, value = None, isovalue=None, paint_with=None, 
+                    slices=None, colour='red', nslices=None, cmap=None, **kwargs):
+        """ Plot the surface of a geological feature 
 
-        Plot the surface of a geological feature if no kwargs are given plots the
-        average surface and colours it red.
+        [extended_summary]
 
         Parameters
         ----------
-        geological_feature
+        geological_feature : GeologicalFeature
+            [description]
+        value : float, optional
+
+        isovalue : [type], optional
+            [description], by default None
+        paint_with : [type], optional
+            [description], by default None
+        slices : [type], optional
+            [description], by default None
+        colour : [type], optional
+            [description], by default None
+        nslices : [type], optional
+            [description], by default None
+        cmap : [type], optional
+            [description], by default None
 
         Returns
         -------
-
+        [type]
+            [description]
         """
+
         # update the feature to make sure its current
         if 'update' in kwargs:
             geological_feature.update()
@@ -178,29 +196,27 @@ class LavaVuModelViewer:
         min_property_val = np.nanmin(val)#geological_feature.min()
         max_property_val = np.nanmax(val)#geological_feature.max()
         # set default parameters
-        slices = [mean_property_val]
-        colour = 'red'
+        slices_ = [mean_property_val]
         painter = None
         voxet = None
         tris = None
         nodes = None
-        if 'voxet' in kwargs:
-            voxet = kwargs['voxet']
         # parse kwargs for parameters
-        if 'isovalue' in kwargs:
-            slices = [kwargs['isovalue']]
-        if 'slices' in kwargs:
-            slices = kwargs['slices']
-        if 'nslices' in kwargs:
+        if isovalue is not None:
+            slices_ = [isovalue]
+        if value is not None:
+            slices_ = [value]
+        if slices is not None:
+            slices_ = slices
+        if nslices is not None:
             var = max_property_val - min_property_val
             # buffer slices by 5%
-            slices = np.linspace(min_property_val + var * 0.05,
+            slices_ = np.linspace(min_property_val + var * 0.05,
                                  max_property_val - var * 0.05,
-                                 kwargs['nslices'])
-        if 'colour' in kwargs:
-            colour = kwargs['colour']
-        if 'paint_with' in kwargs:
-            painter = kwargs['paint_with']
+                                 nslices)
+
+        if paint_with is not None:
+            painter = paint_with
 
         region = kwargs.get('region', None)
 
@@ -208,7 +224,7 @@ class LavaVuModelViewer:
         if region is not None:
             val[~region(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
-        for isovalue in slices:
+        for isovalue in slices_:
             logger.info("Creating isosurface of %s at %f" % (geological_feature.name, isovalue))
 
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
@@ -240,10 +256,7 @@ class LavaVuModelViewer:
                     logger.info("Setting surface value to %f"%isovalue)
                     surfaceval[:] = isovalue
                 surf.values(surfaceval, painter.name)
-                surf["colourby"] = painter.name
-                cmap = lavavu.cubehelix(100)
-                if 'cmap' in kwargs:
-                    cmap = kwargs['cmap']
+                surf["colourby"] = painter.name               
                 vmin = kwargs.get('vmin', min_property_val)
                 vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
@@ -253,7 +266,7 @@ class LavaVuModelViewer:
 
         Parameters
         ----------
-        geological_feature GeologicalFeature
+        geological_feature : GeologicalFeature
             the geological feature to colour the scalar field by
         kwargs
             kwargs for lavavu
@@ -281,6 +294,19 @@ class LavaVuModelViewer:
         surf.colourmap(cmap, range=(vmin, vmax))
 
     def add_model(self, **kwargs):
+        """Add a block model painted by stratigraphic id to the viewer
+
+        Calls self.model.evaluate_model() for a cube surrounding the model.
+
+        Notes
+        ------
+        It is sensible to increase the viewer step sizes before running this function to
+        increase the resolution of the model as its not possible to interpolate a discrete
+        colourmap and this causes the model to look like a lego block.
+        You can update the model resolution by changing the attribute nsteps
+        >>> viewer.nsteps = np.array([100,100,100])
+
+        """
         name = kwargs.get('name', 'geological_model')
         points, tri = create_box(self.bounding_box, self.nsteps)
 
@@ -299,13 +325,26 @@ class LavaVuModelViewer:
         vmax = kwargs.get('vmax', np.nanmax(val))
         surf.colourmap(cmap, range=(vmin, vmax))
 
-    def add_model_surfaces(self, faults = True, **kwargs):
+    def add_model_surfaces(self, faults = True, cmap='tab20', **kwargs):
+        """Add surfaces for all of the interfaces in the model
+
+
+        Parameters
+        ----------
+        faults : bool, optional
+            whether to draw faults, by default True
+        cmap : string
+            matplotlib cmap
+        Notes
+        ------
+        Other parameters are passed to self.add_isosurface() 
+
+        """
         from matplotlib import cm
         n_units = 0 #count how many discrete colours
         for g in self.model.stratigraphic_column.keys():
             for u in self.model.stratigraphic_column[g].keys():
                 n_units+=1
-        cmap = kwargs.get('cmap','tab20')
         tab = cm.get_cmap(cmap,n_units)
         ci = 0
 
@@ -521,6 +560,18 @@ class LavaVuModelViewer:
             self.lv.control.Panel()
             self.lv.control.ObjectList()
             self.lv.interactive()
+
+    def set_zscale(self,zscale):
+        """ Set the vertical scale for lavavu
+
+        just a simple wrapper for lavavu modelscale([xscale,yscale,zscale])
+
+        Parameters
+        ----------
+        zscale : float
+            vertical scale
+        """
+        self.lv.modelscale([1,1,zscale])
 
     def set_viewer_rotation(self, rotation):
         """
