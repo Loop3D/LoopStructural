@@ -247,7 +247,7 @@ class LavaVuModelViewer:
                 vmin = kwargs.get('vmin', min_property_val)
                 vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
-
+        
     def add_scalar_field(self, geological_feature, **kwargs):
         """
 
@@ -298,6 +298,28 @@ class LavaVuModelViewer:
         vmin = kwargs.get('vmin', np.nanmin(val))
         vmax = kwargs.get('vmax', np.nanmax(val))
         surf.colourmap(cmap, range=(vmin, vmax))
+
+    def add_model_surfaces(self, faults = True, **kwargs):
+        from matplotlib import cm
+        n_units = 0 #count how many discrete colours
+        for g in self.model.stratigraphic_column.keys():
+            for u in self.model.stratigraphic_column[g].keys():
+                n_units+=1
+        cmap = kwargs.get('cmap','tab20')
+        tab = cm.get_cmap(cmap,n_units)
+        ci = 0
+
+        for g in self.model.stratigraphic_column.keys():
+            if g in self.model.feature_name_index:
+                feature = self.model.features[self.model.feature_name_index[g]]
+                for u, vals in self.model.stratigraphic_column[g].items():
+                    self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:])
+                    ci+=1
+        if faults:
+            for f in self.model.features:
+                if f.type == 'fault':
+                    self.add_isosurface(f,isovalue=0)
+
 
     def add_vector_field(self, geological_feature, **kwargs):
         """
