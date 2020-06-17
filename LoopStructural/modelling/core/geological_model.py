@@ -192,10 +192,10 @@ class GeologicalModel:
         for h in all_heading():
             if h not in self.data:
                 self.data[h] = np.nan
-            if h == 'w':
-                self.data[h] = 1.
-            if h == 'coord':
-                self.data[h] = 0
+                if h == 'w':
+                    self.data[h] = 1.
+                if h == 'coord':
+                    self.data[h] = 0
         if 'strike' in self.data and 'dip' in self.data:
             mask = np.all(~np.isnan(self.data.loc[:, ['strike', 'dip']]),
                           axis=1)
@@ -254,8 +254,8 @@ class GeologicalModel:
                 raise LoopBaseException
             if featuretype == 'strati':
                 self.create_and_add_foliation(f)
-            if featuretype == 'fault':
-                self.create_and_add_fault(f)
+            # if featuretype == 'fault':
+            #     self.create_and_add_fault(f)
             if featuretype == 'folded_strati':
                 self.create_and_add_folded_foliation(f)
 
@@ -886,6 +886,7 @@ class GeologicalModel:
             coord1['coord'] = 1
             fault_frame_data = pd.concat([fault_frame_data, coord1],
                                          sort=False)
+ 
         if fault_frame_data[fault_frame_data['coord'] == 2].shape[0] == 0:
             logger.info("Adding fault extent data as first and last point")
             ## first and last point of the line

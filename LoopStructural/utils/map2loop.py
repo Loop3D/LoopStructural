@@ -44,7 +44,6 @@ def process_map2loop(m2l_directory, flags={}):
         for g in groups['group'].unique():
             supergroups[g] = g
     
-    print(supergroups)
 
     bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
 
@@ -72,20 +71,20 @@ def process_map2loop(m2l_directory, flags={}):
     strat_val = {}
     stratigraphic_column = {}
     unit_id = 0
-
+    val = {}
     for i in groups['group number'].unique():
         g = supergroups[groups.loc[groups['group number'] == i, 'group'].iloc[0]]
         if g not in stratigraphic_column:
             stratigraphic_column[g] = {}
-            val = 0
+            val[g] = 0
 
         for c in groups.loc[groups['group number'] == i, 'code']:
             strat_val[c] = np.nan
             if c in thickness:
-                stratigraphic_column[g][c] = {'min': val, 'max': val + thickness[c], 'id': unit_id}
+                stratigraphic_column[g][c] = {'min': val[g], 'max': val[g] + thickness[c], 'id': unit_id}
                 unit_id += 1
-                strat_val[c] = val
-                val += thickness[c]
+                strat_val[c] = val[g]
+                val[g] += thickness[c]
     contacts['val'] = np.nan
     for o in strat_val:
         contacts.loc[contacts['formation'] == o, 'val'] = strat_val[o]
