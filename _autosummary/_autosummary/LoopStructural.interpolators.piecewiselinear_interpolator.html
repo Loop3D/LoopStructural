@@ -91,6 +91,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributors_guide.html">Contribute</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -177,7 +178,7 @@
 <dl class="class">
 <dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator">
 <em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.piecewiselinear_interpolator.</code><code class="sig-name descname">PiecewiseLinearInterpolator</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../test/_autosummary/LoopStructural.interpolators.discrete_interpolator.html#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.html#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator</span></code></a></p>
 <p>Piecewise Linear Interpolator
 Approximates scalar field by finding coefficients to a piecewise linear
 equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
@@ -354,7 +355,8 @@ the node values to be fixed using a lagrangian.</p>
 <code class="sig-name descname">add_gradient_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_gradient_ctr_pts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds gradient constraints to the least squares system with a weight
 defined by w
-:param w - either numpy array of length number of:</p>
+:param w:
+:type w: either numpy array of length number of</p>
 <p class="rubric">Notes</p>
 <p>Gradient constraints add a constraint that the gradient of the
 implicit function should

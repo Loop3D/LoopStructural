@@ -9,7 +9,7 @@
     .. _sphx_glr_auto_examples_basic_plot_4_using_stratigraphic_column.py:
 
 
-5. Using Stratigraphic Columns
+1d. Using Stratigraphic Columns
 ===============================
 We will use the previous example Creating a model with multiple geological features, dealing with unconformities.
 
@@ -108,9 +108,9 @@ for the `model.evaluate_model(xyz)` function to be called.
 
  .. code-block:: none
 
-    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:996: RuntimeWarning: invalid value encountered in less
+    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:1053: RuntimeWarning: invalid value encountered in less
       strat_id[np.logical_and(vals < series.get('max',feature.max()), vals > series.get('min',feature.min()))] = series['id']
-    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:996: RuntimeWarning: invalid value encountered in greater
+    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:1053: RuntimeWarning: invalid value encountered in greater
       strat_id[np.logical_and(vals < series.get('max',feature.max()), vals > series.get('min',feature.min()))] = series['id']
 
 
@@ -119,7 +119,7 @@ for the `model.evaluate_model(xyz)` function to be called.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.677 seconds)
+   **Total running time of the script:** ( 0 minutes  1.694 seconds)
 
 
 .. _sphx_glr_download_auto_examples_basic_plot_4_using_stratigraphic_column.py:

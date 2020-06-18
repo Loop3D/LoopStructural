@@ -10,7 +10,7 @@
 
 
 ============================
-1. Getting started
+1a. Getting started
 ============================
 This tutorial will demonstrate how to setup a basic geological model for using with LoopStructural.
 
@@ -154,7 +154,7 @@ for the interpolator to be able to find a solution.
               <th>0</th>
               <td>0.000000</td>
               <td>0.0</td>
-              <td>1.538030</td>
+              <td>1.015163</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -162,7 +162,7 @@ for the interpolator to be able to find a solution.
               <th>1</th>
               <td>1.111111</td>
               <td>0.0</td>
-              <td>1.153402</td>
+              <td>1.570252</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -170,7 +170,7 @@ for the interpolator to be able to find a solution.
               <th>2</th>
               <td>2.222222</td>
               <td>0.0</td>
-              <td>1.162183</td>
+              <td>1.929744</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -178,7 +178,7 @@ for the interpolator to be able to find a solution.
               <th>3</th>
               <td>3.333333</td>
               <td>0.0</td>
-              <td>1.303759</td>
+              <td>1.378182</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -186,7 +186,7 @@ for the interpolator to be able to find a solution.
               <th>4</th>
               <td>4.444444</td>
               <td>0.0</td>
-              <td>1.764921</td>
+              <td>1.986884</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -299,7 +299,7 @@ Geological feature can be evaluated:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 3 minutes  26.709 seconds)
+   **Total running time of the script:** ( 1 minutes  30.217 seconds)
 
 
 .. _sphx_glr_download_auto_examples_basic_plot_1_data_prepration.py:

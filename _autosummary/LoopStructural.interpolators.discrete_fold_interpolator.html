@@ -93,6 +93,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -199,7 +200,7 @@
 <dl class="class">
 <dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator">
 <em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.discrete_fold_interpolator.</code><code class="sig-name descname">DiscreteFoldInterpolator</code><span class="sig-paren">(</span><em class="sig-param">support</em>, <em class="sig-param">fold</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../test/_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.html#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" title="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.html#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" title="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator</span></code></a></p>
 <p>A piecewise linear interpolator that can also use fold constraints defined in Laurent et al., 2016</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -395,7 +396,8 @@ the node values to be fixed using a lagrangian.</p>
 <code class="sig-name descname">add_gradient_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_gradient_ctr_pts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds gradient constraints to the least squares system with a weight
 defined by w
-:param w - either numpy array of length number of:</p>
+:param w:
+:type w: either numpy array of length number of</p>
 <p class="rubric">Notes</p>
 <p>Gradient constraints add a constraint that the gradient of the
 implicit function should
@@ -483,8 +485,8 @@ copies data from the PLI to the DFI</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pli</strong> (<a class="reference internal" href="../test/_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.html#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" title="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator"><em>PiecewiseLinearInterpolator</em></a>) – existing interpolator</p></li>
-<li><p><strong>fold</strong> (<a class="reference internal" href="../test/_autosummary/LoopStructural.modelling.fold.fold.html#LoopStructural.modelling.fold.fold.FoldEvent" title="LoopStructural.modelling.fold.fold.FoldEvent"><em>FoldEvent</em></a>) – a fold event with a valid</p></li>
+<li><p><strong>pli</strong> (<a class="reference internal" href="_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.html#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" title="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator"><em>PiecewiseLinearInterpolator</em></a>) – existing interpolator</p></li>
+<li><p><strong>fold</strong> (<a class="reference internal" href="_autosummary/LoopStructural.modelling.fold.fold.html#LoopStructural.modelling.fold.fold.FoldEvent" title="LoopStructural.modelling.fold.fold.FoldEvent"><em>FoldEvent</em></a>) – a fold event with a valid</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -656,7 +658,7 @@ return False</p>
 <code class="sig-name descname">update_fold</code><span class="sig-paren">(</span><em class="sig-param">fold</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.update_fold" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fold</strong> (<a class="reference internal" href="../test/_autosummary/LoopStructural.modelling.fold.fold.html#LoopStructural.modelling.fold.fold.FoldEvent" title="LoopStructural.modelling.fold.fold.FoldEvent"><em>FoldEvent</em></a>) – a fold that contrains the geometry we are trying to add</p>
+<dd class="field-odd"><p><strong>fold</strong> (<a class="reference internal" href="_autosummary/LoopStructural.modelling.fold.fold.html#LoopStructural.modelling.fold.fold.FoldEvent" title="LoopStructural.modelling.fold.fold.FoldEvent"><em>FoldEvent</em></a>) – a fold that contrains the geometry we are trying to add</p>
 </dd>
 </dl>
 </dd></dl>

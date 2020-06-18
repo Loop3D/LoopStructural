@@ -91,6 +91,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributors_guide.html">Contribute</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -197,6 +198,21 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.cell_centres">
+<code class="sig-name descname">cell_centres</code><span class="sig-paren">(</span><em class="sig-param">global_index</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.cell_centres" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>global_index</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>[type]</em> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.cell_corner_indexes">
 <code class="sig-name descname">cell_corner_indexes</code><span class="sig-paren">(</span><em class="sig-param">x_cell_index</em>, <em class="sig-param">y_cell_index</em>, <em class="sig-param">z_cell_index</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.cell_corner_indexes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the indexes of the corners of a cell given its location xi,
@@ -208,6 +224,21 @@ yi, zi</p>
 <li><p><strong>y_cell_index</strong> – </p></li>
 <li><p><strong>z_cell_index</strong> – </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.check_position">
+<code class="sig-name descname">check_position</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.check_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>[type]</em> – [description]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -261,6 +292,21 @@ Trilinear interpolation dot corner values</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.position_to_cell_index">
+<code class="sig-name descname">position_to_cell_index</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.position_to_cell_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>[type]</em> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.position_to_dof_coefs">
 <code class="sig-name descname">position_to_dof_coefs</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.position_to_dof_coefs" title="Permalink to this definition">¶</a></dt>
 <dd><p>global posotion to interpolation coefficients
@@ -289,6 +335,21 @@ Trilinear interpolation dot corner values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><em>array of interpolation coefficients</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.update_property">
+<code class="sig-name descname">update_property</code><span class="sig-paren">(</span><em class="sig-param">propertyname</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.update_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>propertyname</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>values</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

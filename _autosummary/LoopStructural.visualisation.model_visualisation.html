@@ -93,6 +93,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -194,7 +195,7 @@
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.visualisation.model_visualisation.</code><code class="sig-name descname">LavaVuModelViewer</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">bounding_box=None</em>, <em class="sig-param">nsteps=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.visualisation.model_visualisation.</code><code class="sig-name descname">LavaVuModelViewer</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">bounding_box=None</em>, <em class="sig-param">nsteps=None</em>, <em class="sig-param">vertical_exaggeration=1.0</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Short description</p>
 <p>A wrapper to plot LoopStructural object with lavavu</p>
@@ -249,14 +250,55 @@ using value and grad kwargs</p>
 
 <dl class="method">
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface">
-<code class="sig-name descname">add_isosurface</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the surface of a geological feature if no kwargs are given plots the
-average surface and colours it red.</p>
+<code class="sig-name descname">add_isosurface</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">value=None</em>, <em class="sig-param">isovalue=None</em>, <em class="sig-param">paint_with=None</em>, <em class="sig-param">slices=None</em>, <em class="sig-param">colour='red'</em>, <em class="sig-param">nslices=None</em>, <em class="sig-param">cmap=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the surface of a geological feature</p>
+<p>[extended_summary]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>geological_feature</strong> – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geological_feature</strong> (<em>GeologicalFeature</em>) – [description]</p></li>
+<li><p><strong>value</strong> (<em>float</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>isovalue</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>paint_with</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>slices</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>colour</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>nslices</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>cmap</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>[type]</em> – [description]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_model">
+<code class="sig-name descname">add_model</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a block model painted by stratigraphic id to the viewer</p>
+<p>Calls self.model.evaluate_model() for a cube surrounding the model.</p>
+<p class="rubric">Notes</p>
+<p>It is sensible to increase the viewer step sizes before running this function to
+increase the resolution of the model as its not possible to interpolate a discrete
+colourmap and this causes the model to look like a lego block.
+You can update the model resolution by changing the attribute nsteps
+&gt;&gt;&gt; viewer.nsteps = np.array([100,100,100])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_model_surfaces">
+<code class="sig-name descname">add_model_surfaces</code><span class="sig-paren">(</span><em class="sig-param">faults=True</em>, <em class="sig-param">cmap='tab20'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_model_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add surfaces for all of the interfaces in the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>faults</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to draw faults, by default True</p></li>
+<li><p><strong>cmap</strong> (<em>string</em>) – matplotlib cmap</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Other parameters are passed to self.add_isosurface()</p>
 </dd></dl>
 
 <dl class="method">
@@ -280,7 +322,7 @@ average surface and colours it red.</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>GeologicalFeature</strong> (<em>geological_feature</em>) – the geological feature to colour the scalar field by</p></li>
+<li><p><strong>geological_feature</strong> (<em>GeologicalFeature</em>) – the geological feature to colour the scalar field by</p></li>
 <li><p><strong>kwargs</strong> – kwargs for lavavu</p></li>
 </ul>
 </dd>
@@ -348,6 +390,13 @@ average surface and colours it red.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.deep_clean">
+<code class="sig-name descname">deep_clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.deep_clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<p>[extended_summary]</p>
 </dd></dl>
 
 <dl class="method">
@@ -442,6 +491,18 @@ inline interactive viewer or as a separate window</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>numpy array of 3 rotation</strong> (<em>rotation</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.set_zscale">
+<code class="sig-name descname">set_zscale</code><span class="sig-paren">(</span><em class="sig-param">zscale</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.set_zscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the vertical scale for lavavu</p>
+<p>just a simple wrapper for lavavu modelscale([xscale,yscale,zscale])</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>zscale</strong> (<em>float</em>) – vertical scale</p>
 </dd>
 </dl>
 </dd></dl>

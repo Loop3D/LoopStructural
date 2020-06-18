@@ -91,6 +91,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributors_guide.html">Contribute</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -172,8 +173,123 @@
 <li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
 </ul>
 </div>
-<span class="target" id="module-LoopStructural.modelling.features.geological_feature_builder"></span><div class="section" id="members">
+<span class="target" id="module-LoopStructural.modelling.features.geological_feature_builder"></span><p>Feature builder</p>
+<div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator">
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.modelling.features.geological_feature_builder.</code><code class="sig-name descname">GeologicalFeatureInterpolator</code><span class="sig-paren">(</span><em class="sig-param">interpolator</em>, <em class="sig-param">name='Feature'</em>, <em class="sig-param">region=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>[summary]</p>
+<p>[extended_summary]</p>
+<p>A builder for a GeologicalFeature will link data to the interpolator
+and run the interpolation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- a GeologicalInterpolator</strong> (<em>interpolator</em>) – </p></li>
+<li><p><strong>region</strong> (<em>lambda function</em>) – defining whether the location (xyz) should be included in the</p></li>
+<li><p><strong>- name of the feature</strong><strong>, </strong><strong>region to interpolate the feature</strong> (<em>kwargs</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_data_from_data_frame">
+<code class="sig-name descname">add_data_from_data_frame</code><span class="sig-paren">(</span><em class="sig-param">data_frame</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_data_from_data_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract data from a pandas dataframe with columns for</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>- pandas data frame</strong> (<em>data_frame</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_data_to_interpolator">
+<code class="sig-name descname">add_data_to_interpolator</code><span class="sig-paren">(</span><em class="sig-param">constrained=False</em>, <em class="sig-param">force_constrained=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_data_to_interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates through the list of data and applies any faults active on the
+data in the order they are added</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_fault">
+<code class="sig-name descname">add_fault</code><span class="sig-paren">(</span><em class="sig-param">fault</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_fault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a fault to the geological feature builder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>FaultSegment</strong> (<em>fault</em>) – A faultsegment to add to the geological feature</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">fold=None</em>, <em class="sig-param">fold_weights=None</em>, <em class="sig-param">data_region=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the interpolation and builds the geological feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fold</strong> (<a class="reference internal" href="LoopStructural.modelling.fold.fold.html#LoopStructural.modelling.fold.fold.FoldEvent" title="LoopStructural.modelling.fold.fold.FoldEvent"><em>FoldEvent</em></a>) – </p></li>
+<li><p><strong>fold_weights</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>data_region</strong> (<em>double &lt;1</em>) – If not none adds a region around the data points to the interpolation
+with data_region as a buffer</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_data_locations">
+<code class="sig-name descname">get_data_locations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_data_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get only the location for all data points</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_gradient_constraints">
+<code class="sig-name descname">get_gradient_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_gradient_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the gradient direction constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_norm_constraints">
+<code class="sig-name descname">get_norm_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_norm_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the gradient norm constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_tangent_constraints">
+<code class="sig-name descname">get_tangent_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_tangent_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_value_constraints">
+<code class="sig-name descname">get_value_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.get_value_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value constraints for this geological feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 

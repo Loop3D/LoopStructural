@@ -13,21 +13,21 @@ Examples
 
 
 
-.. _sphx_glr_auto_examples_basic:
+.. _sphx_glr_auto_examples_1_basic:
 
-Basics
+1. Basics
 ---------
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="1. Getting started">
+    <div class="sphx-glr-thumbcontainer" tooltip="1a. Getting started">
 
 .. only:: html
 
- .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
 
-     :ref:`sphx_glr_auto_examples_basic_plot_1_data_prepration.py`
+     :ref:`sphx_glr_auto_examples_1_basic_plot_1_data_prepration.py`
 
 .. raw:: html
 
@@ -37,7 +37,7 @@ Basics
 .. toctree::
    :hidden:
 
-   /auto_examples/basic/plot_1_data_prepration
+   /auto_examples/1_basic/plot_1_data_prepration
 
 .. raw:: html
 
@@ -45,9 +45,9 @@ Basics
 
 .. only:: html
 
- .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
 
-     :ref:`sphx_glr_auto_examples_basic_plot_2_surface_modelling.py`
+     :ref:`sphx_glr_auto_examples_1_basic_plot_2_surface_modelling.py`
 
 .. raw:: html
 
@@ -57,17 +57,17 @@ Basics
 .. toctree::
    :hidden:
 
-   /auto_examples/basic/plot_2_surface_modelling
+   /auto_examples/1_basic/plot_2_surface_modelling
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="3. Multiple groups">
+    <div class="sphx-glr-thumbcontainer" tooltip="1c. Multiple groups">
 
 .. only:: html
 
- .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
 
-     :ref:`sphx_glr_auto_examples_basic_plot_3_multiple_groups.py`
+     :ref:`sphx_glr_auto_examples_1_basic_plot_3_multiple_groups.py`
 
 .. raw:: html
 
@@ -77,17 +77,17 @@ Basics
 .. toctree::
    :hidden:
 
-   /auto_examples/basic/plot_3_multiple_groups
+   /auto_examples/1_basic/plot_3_multiple_groups
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="5. Using Stratigraphic Columns">
+    <div class="sphx-glr-thumbcontainer" tooltip="1d. Using Stratigraphic Columns">
 
 .. only:: html
 
- .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
 
-     :ref:`sphx_glr_auto_examples_basic_plot_4_using_stratigraphic_column.py`
+     :ref:`sphx_glr_auto_examples_1_basic_plot_4_using_stratigraphic_column.py`
 
 .. raw:: html
 
@@ -97,17 +97,17 @@ Basics
 .. toctree::
    :hidden:
 
-   /auto_examples/basic/plot_4_using_stratigraphic_column
+   /auto_examples/1_basic/plot_4_using_stratigraphic_column
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="7. Comparing interpolators">
+    <div class="sphx-glr-thumbcontainer" tooltip="LoopStructural uses all of these logging levels to report the various aspects of the model buil...">
 
 .. only:: html
 
- .. figure:: /auto_examples/basic/images/thumb/sphx_glr_plot_comparing_interpolators_thumb.png
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_5_using_logging_thumb.png
 
-     :ref:`sphx_glr_auto_examples_basic_plot_comparing_interpolators.py`
+     :ref:`sphx_glr_auto_examples_1_basic_plot_5_using_logging.py`
 
 .. raw:: html
 
@@ -117,7 +117,7 @@ Basics
 .. toctree::
    :hidden:
 
-   /auto_examples/basic/plot_comparing_interpolators
+   /auto_examples/1_basic/plot_5_using_logging
 
 .. raw:: html
 
@@ -125,9 +125,9 @@ Basics
 
 .. only:: html
 
- .. figure:: /auto_examples/basic/images/thumb/sphx_glr_example_surfe_thumb.png
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_example_surfe_thumb.png
 
-     :ref:`sphx_glr_auto_examples_basic_example_surfe.py`
+     :ref:`sphx_glr_auto_examples_1_basic_example_surfe.py`
 
 .. raw:: html
 
@@ -137,68 +137,17 @@ Basics
 .. toctree::
    :hidden:
 
-   /auto_examples/basic/example_surfe
+   /auto_examples/1_basic/example_surfe
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
 
 
 
-.. _sphx_glr_auto_examples_fault:
+.. _sphx_glr_auto_examples_2_fold:
 
-Modelling Faults
------------------
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Modelling faults using structural frames">
-
-.. only:: html
-
- .. figure:: /auto_examples/fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
-
-     :ref:`sphx_glr_auto_examples_fault_plot_faulted_intrusion.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/fault/plot_faulted_intrusion
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Probabilistic faults">
-
-.. only:: html
-
- .. figure:: /auto_examples/fault/images/thumb/sphx_glr_probabilistic_faults_thumb.png
-
-     :ref:`sphx_glr_auto_examples_fault_probabilistic_faults.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/fault/probabilistic_faults
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. _sphx_glr_auto_examples_fold:
-
-Modelling Folds
-----------------
+2. Modelling Folds
+-------------------
 
 
 .. raw:: html
@@ -207,29 +156,9 @@ Modelling Folds
 
 .. only:: html
 
- .. figure:: /auto_examples/fold/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
+ .. figure:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
 
-     :ref:`sphx_glr_auto_examples_fold_plot_adding_folds_to_surfaces.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/fold/plot_adding_folds_to_surfaces
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Faulted folds">
-
-.. only:: html
-
- .. figure:: /auto_examples/fold/images/thumb/sphx_glr_faulted_fold_thumb.png
-
-     :ref:`sphx_glr_auto_examples_fold_faulted_fold.py`
+     :ref:`sphx_glr_auto_examples_2_fold_plot_adding_folds_to_surfaces.py`
 
 .. raw:: html
 
@@ -239,27 +168,7 @@ Modelling Folds
 .. toctree::
    :hidden:
 
-   /auto_examples/fold/faulted_fold
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Probabilistic folds">
-
-.. only:: html
-
- .. figure:: /auto_examples/fold/images/thumb/sphx_glr_probabilistic_folds_thumb.png
-
-     :ref:`sphx_glr_auto_examples_fold_probabilistic_folds.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/fold/probabilistic_folds
+   /auto_examples/2_fold/plot_adding_folds_to_surfaces
 
 .. raw:: html
 
@@ -267,9 +176,9 @@ Modelling Folds
 
 .. only:: html
 
- .. figure:: /auto_examples/fold/images/thumb/sphx_glr_refolded_folds_thumb.png
+ .. figure:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_refolded_folds_thumb.png
 
-     :ref:`sphx_glr_auto_examples_fold_refolded_folds.py`
+     :ref:`sphx_glr_auto_examples_2_fold_plot_refolded_folds.py`
 
 .. raw:: html
 
@@ -279,7 +188,69 @@ Modelling Folds
 .. toctree::
    :hidden:
 
-   /auto_examples/fold/refolded_folds
+   /auto_examples/2_fold/plot_refolded_folds
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_auto_examples_3_fault:
+
+3. Modelling Faults
+--------------------
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3a. Modelling faults using structural frames">
+
+.. only:: html
+
+ .. figure:: /auto_examples/3_fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
+
+     :ref:`sphx_glr_auto_examples_3_fault_plot_faulted_intrusion.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/3_fault/plot_faulted_intrusion
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_auto_examples_4_advanced:
+
+4. Advanced
+-------------
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="4a. Comparing interpolators">
+
+.. only:: html
+
+ .. figure:: /auto_examples/4_advanced/images/thumb/sphx_glr_plot_comparing_interpolators_thumb.png
+
+     :ref:`sphx_glr_auto_examples_4_advanced_plot_comparing_interpolators.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/4_advanced/plot_comparing_interpolators
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
