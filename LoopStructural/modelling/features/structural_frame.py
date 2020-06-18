@@ -1,9 +1,16 @@
+"""
+Structural frames
+"""
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class StructuralFrame:
+    """[summary]
+
+    [extended_summary]
+    """
     def __init__(self, name, features):
         """
         Structural frame is a curvilinear coordinate system defined by

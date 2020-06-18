@@ -1,3 +1,5 @@
+"""
+"""
 import logging
 
 import numpy as np
@@ -9,6 +11,15 @@ logger = logging.getLogger(__name__)
 
 
 class CrossProductGeologicalFeature(GeologicalFeature):
+    """[summary]
+
+    [extended_summary]
+
+    Parameters
+    ----------
+    GeologicalFeature : [type]
+        [description]
+    """
     def __init__(self, name, geological_feature_a, geological_feature_b):
         """
         Create a geological feature for a vector field using the cross

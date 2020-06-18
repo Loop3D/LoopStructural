@@ -10,7 +10,6 @@ Main API for creating a GeologicalModel
 
 Geological Features
 ===================
-
 .. autosummary::
     :toctree: _autosummary
 
@@ -23,7 +22,6 @@ Geological Features
 
 Folding classes
 ===============
-
 .. autosummary::
     :toctree: _autosummary
 

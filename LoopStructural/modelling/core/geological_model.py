@@ -215,6 +215,7 @@ class GeologicalModel:
         Returns
         -------
         """
+        logger.warning("Extend data is untested and may have unexpected consequences")
         data_temp = newdata.copy()
         data_temp['X'] -= self.origin[0]
         data_temp['Y'] -= self.origin[1]
@@ -1031,7 +1032,8 @@ class GeologicalModel:
         Examples
         --------
         Evaluate on a voxet
-        >>>  x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
+
+        >>> x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
                         nsteps[0])
         >>> y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1],
                         nsteps[1])
@@ -1042,7 +1044,21 @@ class GeologicalModel:
         >>> model.evaluate_model(xyz)
 
         Evaluate on points defined by regular grid function
+    
         >>> model.evaluate_model(model.regular_grid())
+
+
+        Evaluate on a map
+        
+        >>> x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
+                        nsteps[0])
+        >>> y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1],
+                        nsteps[1])
+        >>> xx, yy = np.meshgrid(x, y, indexing='ij')
+        >>> zz = np.zeros_like(yy)
+        >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        >>> model.evaluate_model(xyz)
+        
         """
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
