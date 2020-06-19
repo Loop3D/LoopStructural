@@ -250,25 +250,25 @@ viewer = LavaVuModelViewer(model,background="white")
 
 # determine the number of unique surfaces in the model from 
 # the input data and then calculate isosurfaces for this
-unique = np.unique(strati['feature'].interpolator.get_value_constraints()[:,3])
-viewer.add_isosurface(strati['feature'],
+unique = np.unique(strati.interpolator.get_value_constraints()[:,3])
+viewer.add_isosurface(strati,
                        slices=unique,  
                        cmap='prism',
-                      paint_with=strati['feature'],
+                      paint_with=strati,
                      voxet=model.voxet())
 
-viewer.add_section(strati['feature'],
+viewer.add_section(strati,
                    axis='x',
                    value=0.,
                    boundary_points=model.bounding_box, 
                    nsteps=np.array([30,30,30]),
                   cmap='prism')
-viewer.add_scalar_field(strati['feature'],
+viewer.add_scalar_field(strati,
                      cmap='prism')
 viewer.add_model()
 
 # Add the data addgrad/addvalue arguments are optional
-viewer.add_data(strati['feature'],addgrad=True,addvalue=True, cmap='prism')
+viewer.add_data(strati,addgrad=True,addvalue=True, cmap='prism')
 viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()# to add an interactive display
 

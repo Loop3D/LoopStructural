@@ -41,8 +41,8 @@ bedding_val = np.vstack([bedding_val,bedding_val])
 bedding_val[40:,2]-=-500
 bedding_val[40:,3]= -1
 # print(bedding_val)
-# print(fault['feature'].evaluate(model.scale(bedding_val)))
-bedding_val[:,:3] = model.rescale(fault['feature'].apply_to_points(model.scale(bedding_val[:,:3])))
+# print(fault.evaluate(model.scale(bedding_val)))
+bedding_val[:,:3] = model.rescale(fault.apply_to_points(model.scale(bedding_val[:,:3])))
 
 # print(bedding_val)
 
@@ -118,9 +118,9 @@ fault = model.create_and_add_fault('fault',
 def log_likelihood(theta):
     displacement, sigma2 = theta
 #     print("displacement: {}".format(displacement))
-    fault['feature'].set_displacement(displacement)
+    fault.set_displacement(displacement)
 
-    #strati['feature'].get_interpolator().data_added = False
+    #strati.get_interpolator().data_added = False
     strati = model.create_and_add_foliation('strati',
                                             nelements=2000,
                                             interpolatortype='PLI',
@@ -128,27 +128,27 @@ def log_likelihood(theta):
                                             solver='fake',
                                             buffer=1
                                            )
-    strati['feature'].builder.add_data_to_interpolator()
-    points = strati['feature'].get_interpolator().get_value_constraints()[:,:4]
+    strati.builder.add_data_to_interpolator()
+    points = strati.get_interpolator().get_value_constraints()[:,:4]
     unique_values = np.unique(points[:,3])
     distance = np.zeros_like(unique_values).astype(float)
     for i, u in enumerate(unique_values):
         distance[i] = planeDistance(points[points[:,3] == u,:3].T)
     
 #     print(np.sum(distance*model.scale_factor))    
-#     plt.hist(strati['feature'].evaluate_value_misfit())
-    n = len(distance)#strati['feature'].interpolator.get_value_constraints()[:,:3].shape[0]
+#     plt.hist(strati.evaluate_value_misfit())
+    n = len(distance)#strati.interpolator.get_value_constraints()[:,:3].shape[0]
     log_like = -0.5 * np.sum(np.log(2 * np.pi * sigma2 ** 2) + (0 - model.scale_factor*distance) ** 2 / sigma2 ** 2)
     #data_added = False
 
 #     sigma2 = 3
 #     log_like = -(n/2)*np.log(2*np.pi) - (n/2)*np.log(sigma2)
-#     log_like-= (1/(2*sigma2))*np.sum(np.abs(strati['feature'].evaluate_value_misfit())**2)
+#     log_like-= (1/(2*sigma2))*np.sum(np.abs(strati.evaluate_value_misfit())**2)
     
-#     sigma2 = strati['feature'].evaluate_value(strati['feature'].interpolator.get_value_constraints()[:,:3]) ** 2 
-#     log_like = -0.5 * np.sum((strati['feature'].evaluate_value_misfit()) ** 2 / sigma2 + np.log(sigma2))
+#     sigma2 = strati.evaluate_value(strati.interpolator.get_value_constraints()[:,:3]) ** 2 
+#     log_like = -0.5 * np.sum((strati.evaluate_value_misfit()) ** 2 / sigma2 + np.log(sigma2))
 #     print("log likelihood {}".format(log_like))
-#     print("missfit {}".format(np.sum(strati['feature'].evaluate_value_misfit())))
+#     print("missfit {}".format(np.sum(strati.evaluate_value_misfit())))
     if ~np.isfinite(log_like):
         return -np.inf
 #     pickle.dump(model,open("models/model2_sigma_{}_mu_{}_displacement_{}.pkl".format(sigma,mu,displacement),"wb"))

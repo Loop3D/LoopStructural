@@ -29,7 +29,7 @@ strati2 = model.create_and_add_foliation('strati2',
                                nelements=1e4,
                                solver='pyamg'
                               )
-uc = model.add_unconformity(strati2['feature'],1)
+uc = model.add_unconformity(strati2,1)
 
 strati = model.create_and_add_foliation('strati',
                               interpolatortype='PLI',

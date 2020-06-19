@@ -27,9 +27,9 @@ for interpolator in ['PLI','FDI']:#,'Surfe']:
 
 viewer = LavaVuModelViewer(model)
 for name, result in results.items():
-    viewer.add_isosurface(result['feature'],
+    viewer.add_isosurface(result,
                           slices=[0,-60,-250,-330],
-                         paint_with=result['feature'],
+                         paint_with=result,
                           name=name)
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
