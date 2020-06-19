@@ -15,7 +15,8 @@ LoopStructural API
 """
 import logging
 from logging.config import dictConfig
-
+import tempfile
+from pathlib import Path
 from .modelling.core.geological_model import GeologicalModel
 from .visualisation.model_visualisation import LavaVuModelViewer
 from .visualisation.map_viewer import MapView
@@ -60,5 +61,9 @@ def log_to_console(level='warning'):
         # add the handler to the root logger
         logging.getLogger().addHandler(console)
 
-log_to_file('/tmp/default-loop-structural-logfile.log')
+#set up logging
+tempfile.mkdtemp()
+if tempfile.tempdir:
+    temp_file = tempfile.tempdir+Path('/default-loop-structural-logfile.log')
+    log_to_file(temp_file)
 log_to_console()
