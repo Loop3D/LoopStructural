@@ -62,8 +62,8 @@ def log_to_console(level='warning'):
         logging.getLogger().addHandler(console)
 
 #set up logging
-tempfile.mkdtemp()
-if tempfile.tempdir:
-    temp_file = tempfile.tempdir+Path('/default-loop-structural-logfile.log')
-    log_to_file(temp_file)
+# temp_file = tempfile.mkdtemp()
+# if temp_file:
+#     # temp_file = tempfile.tempdir+Path('/default-loop-structural-logfile.log')
+#     log_to_file(temp_file)
 log_to_console()
