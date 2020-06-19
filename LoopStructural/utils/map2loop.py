@@ -105,7 +105,9 @@ def process_map2loop(m2l_directory, flags={}):
     for f in displacements['fname'].unique():
         displacements_numpy = displacements.loc[
             displacements['fname'] == f, ['vertical_displacement', 'downthrow_dir', 'dip_dir']].to_numpy()
-        index = np.argmax(np.abs(displacements_numpy[:, 0]), )
+        # index = np.argmax(np.abs(displacements_numpy[:, 0]), )
+        index = np.argsort(np.abs(displacements_numpy[:, 0]))[len(np.abs(displacements_numpy[:, 0]))//2]
+
         max_displacement[f] = displacements_numpy[
             index, 0]
         if displacements_numpy[index, 1] - displacements_numpy[index, 2] > 90:
