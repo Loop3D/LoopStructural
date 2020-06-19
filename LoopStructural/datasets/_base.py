@@ -1,33 +1,33 @@
 from os.path import dirname, join
-
+from pathlib import Path
 import numpy as np
 import pandas as pd
 
 
 def load_claudius():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, 'data/claudius.pkl'))
-    bb = np.loadtxt(join(module_path, "data/claudiusbb.txt"))
+    data = pd.read_pickle(join(module_path, Path('data/claudius.pkl')))
+    bb = np.loadtxt(join(module_path, Path("data/claudiusbb.txt")))
     return data, bb
 
 
 def load_noddy_single_fold():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, 'data/onefolddata.pkl'))
-    bb = np.loadtxt(join(module_path, 'data/onefoldbb.txt'))
+    data = pd.read_pickle(join(module_path, Path('data/onefolddata.pkl')))
+    bb = np.loadtxt(join(module_path, Path('data/onefoldbb.txt')))
     return data, bb
 
 
 def load_laurent2016():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, 'data/refolded_fold.pkl'))
-    bb = np.loadtxt(join(module_path, 'data/refolded_bb.txt'))
+    data = pd.read_pickle(join(module_path, Path('data/refolded_fold.pkl')))
+    bb = np.loadtxt(join(module_path, Path('data/refolded_bb.txt')))
     return data, bb
 
 def load_duplex():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, 'data/duplex.pkl'))
-    bb = np.loadtxt(join(module_path, 'data/duplexbb.txt'))
+    data = pd.read_pickle(join(module_path, Path('data/duplex.pkl')))
+    bb = np.loadtxt(join(module_path, Path('data/duplexbb.txt')))
     return data, bb
 
 def load_grose2017():
@@ -44,12 +44,12 @@ def load_grose2019():
 
 def load_intrusion():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path,'data/intrusion.pkl'))
-    bb = np.loadtxt(join(module_path,'data/intrusionbb.txt'))
+    data = pd.read_pickle(join(module_path,Path('data/intrusion.pkl')))
+    bb = np.loadtxt(join(module_path,Path('data/intrusionbb.txt')))
     return data, bb
 def load_unconformity():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path,'data/unconformity.pkl'))
+    data = pd.read_pickle(join(module_path,Path('data/unconformity.pkl')))
     bb = np.array([[0,0,0],
                    [4,6,4]]
                   )
