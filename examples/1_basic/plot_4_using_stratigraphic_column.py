@@ -17,7 +17,7 @@ data = data.reset_index()
 data.loc[:,'val']*=-1
 data.loc[:,['nx','ny','nz']]*=-1
 
-data.loc[792,'type'] = 'strati2'
+data.loc[792,'feature_name'] = 'strati2'
 data.loc[792,['nx','ny','nz']] = [0,0,1]
 data.loc[792,'val'] = 0
 

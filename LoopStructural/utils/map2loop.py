@@ -89,14 +89,14 @@ def process_map2loop(m2l_directory, flags={}):
     for o in strat_val:
         contacts.loc[contacts['formation'] == o, 'val'] = strat_val[o]
 
-    tangents['type'] = tangents['group']
-    contact_orientations['type'] = None
-    contacts['type'] = None
+    tangents['feature_name'] = tangents['group']
+    contact_orientations['feature_name'] = None
+    contacts['feature_name'] = None
     for g in groups['group'].unique():
         val = 0
         for c in groups.loc[groups['group'] == g, 'code']:
-            contact_orientations.loc[contact_orientations['formation'] == c, 'type'] = supergroups[g]
-            contacts.loc[contacts['formation'] == c, 'type'] = supergroups[g]
+            contact_orientations.loc[contact_orientations['formation'] == c, 'feature_name'] = supergroups[g]
+            contacts.loc[contacts['formation'] == c, 'feature_name'] = supergroups[g]
     displacements['dip_dir'] = np.nan
     for fname in fault_orientations['formation'].unique():
         displacements.loc[displacements['fname'] == fname, 'dip_dir'] = np.mean(
@@ -123,10 +123,10 @@ def process_map2loop(m2l_directory, flags={}):
 
     fault_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(fault_orientations['strike'], fault_orientations['dip'])
     fault_orientations.drop(['strike', 'DipDirection', 'dip', 'DipPolarity'], inplace=True, axis=1)
-    fault_orientations['type'] = fault_orientations['formation']
+    fault_orientations['feature_name'] = fault_orientations['formation']
 
     fault_locations['val'] = 0
-    fault_locations['type'] = fault_locations['formation']
+    fault_locations['feature_name'] = fault_locations['formation']
 
 
     data = pd.concat([tangents, contact_orientations, contacts, fault_orientations, fault_locations])
@@ -177,7 +177,7 @@ def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_pa
     if not skip_faults:
         faults = []
         for f in m2l_data['max_displacement'].keys():
-            if model.data[model.data['type'] == f].shape[0] == 0:
+            if model.data[model.data['feature_name'] == f].shape[0] == 0:
                 continue
             fault_id = f
             overprints = []

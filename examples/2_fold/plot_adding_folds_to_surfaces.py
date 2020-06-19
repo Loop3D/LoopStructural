@@ -198,7 +198,7 @@ viewer.display()
 # folded foliation to be parallel to the plane of the axial foliation
 # shown in B and C.
 # 
-mdata = pd.concat([data[:npoints],data[data['type']=='s1']])
+mdata = pd.concat([data[:npoints],data[data['feature_name']=='s1']])
 model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
 model.set_model_data(mdata)
 fold_frame = model.create_and_add_fold_frame('s1',

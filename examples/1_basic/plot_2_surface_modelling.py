@@ -83,7 +83,7 @@ model = GeologicalModel(bb[0,:],bb[1,:])
 # dataframe and then using a 3D plot
 # 
 
-data['type'].unique()
+data['feature_name'].unique()
 
 viewer = LavaVuModelViewer(background='white')
 viewer.add_value_data(data[~np.isnan(data['val'])][['X','Y','Z']],data[~np.isnan(data['val'])]['val'],name='value points')

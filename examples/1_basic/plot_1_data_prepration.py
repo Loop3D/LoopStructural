@@ -92,7 +92,7 @@ surface_2 = np.array([xx.flatten(),yy.flatten(),zz.flatten(),val.flatten()]).T
 import pandas as pd
 
 data = pd.DataFrame(np.vstack([surface_1,surface_2]),columns=['X','Y','Z','val'])
-data['type'] = 'conformable'
+data['feature_name'] = 'conformable'
 data.head()
 
 ###############################################################################################

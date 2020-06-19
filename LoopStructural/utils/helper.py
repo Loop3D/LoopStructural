@@ -362,6 +362,9 @@ def val_name():
 def coord_name():
     return ['coord']
 
+def feature_name():
+    return ['feature_name']
+
 def all_heading():
     return xyz_names() + normal_vec_names() + tangent_vec_names() + \
-           gradient_vec_names() + weight_name() + val_name() + coord_name()
+           gradient_vec_names() + weight_name() + val_name() + coord_name() + feature_name()

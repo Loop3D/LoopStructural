@@ -67,10 +67,10 @@ viewer.add_isosurface(fault['feature'],
                       isovalue=0
 #                       slices=[0,1]#nslices=10
                      )
-xyz = model.data[model.data['type']=='strati'][['X','Y','Z']].to_numpy()
+xyz = model.data[model.data['feature_name']=='strati'][['X','Y','Z']].to_numpy()
 xyz = xyz[fault['feature'].evaluate(xyz),:]
 viewer.add_vector_field(fault['feature'], locations= xyz)
-viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
+viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
 viewer.display()
 
 
@@ -96,6 +96,6 @@ viewer.add_data(strati['feature'])
 viewer.add_isosurface(fault['feature'],isovalue=0
 #                       slices=[0,1]#nslices=10
                      )
-viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
+viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
 viewer.display()
 

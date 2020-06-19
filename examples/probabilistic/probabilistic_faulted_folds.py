@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 data, bb = load_intrusion()
 
-fault_data = data[data['type']=='fault']
+fault_data = data[data['feature_name']=='fault']
 
 fault_data
 
@@ -47,11 +47,11 @@ bedding_val[:,:3] = model.rescale(fault['feature'].apply_to_points(model.scale(b
 # print(bedding_val)
 
 new_data = pd.DataFrame(bedding_val,columns=['X','Y','Z','val'])
-new_data['type'] = 'strati'
+new_data['feature_name'] = 'strati'
 # new_data['val'] = 0
 
 # normal_vec = pd.DataFrame([[9000,10,10,0,0,1]],columns=['X','Y','Z','nx','ny','nz'])
-# normal_vec['type'] = 'strati'
+# normal_vec['feature_name'] = 'strati'
 
 data = pd.concat([fault_data,new_data],sort=False)
 data
