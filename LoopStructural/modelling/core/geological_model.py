@@ -190,7 +190,7 @@ class GeologicalModel:
         self.data['Z'] /= self.scale_factor
         if 'type' in self.data:
             logger.warning("'type' is being replaced with 'feature_name' \n")
-            self.data.rename(columns={'type':'feature_name'})
+            self.data.rename(columns={'type':'feature_name'},inplace=True)
         for h in all_heading():
             if h not in self.data:
                 self.data[h] = np.nan

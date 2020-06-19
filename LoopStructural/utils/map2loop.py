@@ -205,6 +205,6 @@ def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_pa
                                                             **foliation_params))
         # if the group was successfully added (not null) then lets add the base (0 to be unconformity)
         # if group_features[-1]:
-        #     model.add_unconformity(group_features[-1]['feature'], 0)
+        #     model.add_unconformity(group_features[-1], 0)
     model.set_stratigraphic_column(m2l_data['stratigraphic_column'])
     return model
