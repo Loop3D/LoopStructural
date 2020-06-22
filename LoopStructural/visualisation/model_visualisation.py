@@ -313,7 +313,7 @@ class LavaVuModelViewer:
         surf = self.lv.triangles(name)
         surf.vertices(points)
         surf.indices(tri)
-        val = self.model.evaluate_model(points)
+        val = self.model.evaluate_model(points,rescale=False)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
         cmap = kwargs.get('cmap', lavavu.cubehelix(100))
