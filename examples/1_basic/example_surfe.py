@@ -1,6 +1,17 @@
 """
-Using surfe
-===========
+1f. Radial Basis Interpolation Using Surfe
+==========================================
+Surfe is a C++ library written by Michael Hillier from the Geological Survey of Canada.
+The library can be found on `<https://github.com/MichaelHillier/surfe>`_
+
+Python wrappers allow for the library to be used from within a python interface. 
+There are two ways of installing surfe:
+1. Follow the CMake instructions on the surfe repository to build the code from source. 
+2. Download the precompiled library from the github releases `<https://github.com/MichaelHillier/surfe/releases>`_
+
+Once you have the correct file for your system you will need to add an environment variable
+to windows :code:`SURFE`
+
 """
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer

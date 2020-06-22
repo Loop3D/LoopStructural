@@ -343,7 +343,7 @@ class GeologicalModel:
             return DFI(mesh, kwargs['fold'])
         if interpolatortype == 'Surfe' or interpolatortype == 'surfe' and \
                 surfe:
-            method = kwargs.get('method', 'horizons')
+            method = kwargs.get('method', 'single_surface')
             logger.info("Using surfe interpolator")
             return Surfe(method)
         logger.warning("No interpolator")
