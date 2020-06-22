@@ -1074,6 +1074,19 @@ class GeologicalModel:
         return strat_id
 
     def get_feature_by_name(self, feature_name):
+        """Returns a feature from the mode given a name
+
+
+        Parameters
+        ----------
+        feature_name : string
+            the name of the feature
+
+        Returns
+        -------
+        feature : GeologicalFeature
+            the geological feature with the specified name, or none if no feature
+        """
         feature_index = self.feature_name_index.get(feature_name,-1)
         if feature_index >0:
             return self.features[feature_index]
@@ -1081,6 +1094,23 @@ class GeologicalModel:
             return None
 
     def evaluate_feature_value(self, feature_name, xyz, scale=True):
+        """Evaluate the scalar value of the geological feature given the name at locations
+        xyz
+
+        Parameters
+        ----------
+        feature_name : string
+            name of the feature
+        xyz : np.array((N,3))
+            locations to evaluate
+        scale : bool, optional
+            whether to scale real world points into model scale, by default True
+
+        Returns
+        -------
+        np.array((N))
+            vector of scalar values
+        """
         feature  = self.get_feature_by_name(feature_name)
         if feature:
             if scale:
@@ -1090,6 +1120,22 @@ class GeologicalModel:
             return np.zeros(xyz.shape[0])
 
     def evaluate_feature_gradient(self, feature_name, xyz, scale=True):
+        """Evaluate the gradient of the geological feature at a location
+
+        Parameters
+        ----------
+        feature_name : string
+            name of the geological feature 
+        xyz : np.array((N,3))
+            locations to evaluate
+        scale : bool, optional
+            whether to scale real world points into model scale, by default True
+
+        Returns
+        -------
+        results : np.array((N,3))
+            gradient of the scalar field at the locations specified
+        """
         feature  = self.get_feature_by_name(feature_name)
         if feature:
             if scale:
