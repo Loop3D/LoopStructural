@@ -6,7 +6,7 @@
 """
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
 from LoopStructural.datasets import load_laurent2016
 import numpy as np
 import pandas as pd
@@ -79,11 +79,13 @@ viewer.display()
 # S2/S1 S-Plots 
 # ~~~~~~~~~~~~~
 #
-
-fig, ax = plt.subplots(1,2,figsize=(10,5))
-x = np.linspace(s2[0].min(),s2[0].max(),1000)
-ax[0].plot(x,s1['fold'].fold_limb_rotation(x))
-ax[0].plot(s1['fold'].fold_limb_rotation.fold_frame_coordinate,s1['fold'].fold_limb_rotation.rotation_angle,'bo')
+s2_s1_splot = RotationAnglePlotter(s1)
+s2_s1_splot.add_fold_limb_data()
+s2_s1_splot.add_fold_limb_curve()  
+# fig, ax = plt.subplots(1,2,figsize=(10,5))
+# x = np.linspace(s2[0].min(),s2[0].max(),1000)
+# ax[0].plot(x,s1['fold'].fold_limb_rotation(x))
+# ax[0].plot(s1['fold'].fold_limb_rotation.fold_frame_coordinate,s1['fold'].fold_limb_rotation.rotation_angle,'bo')
 # ax[1].plot(s1['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
 
 
@@ -111,11 +113,14 @@ viewer.display()
 # S1/S0 S-Plots 
 # ~~~~~~~~~~~~~
 #
+s1_s0_splot = RotationAnglePlotter(s0)
+s1_s0_splot.add_fold_limb_data()
+s1_s0_splot.add_fold_limb_curve()
 
-fig, ax = plt.subplots(1,2,figsize=(10,5))
-x = np.linspace(s1[0].min(),s1[0].max(),1000)
-ax[0].plot(x,s0['fold'].fold_limb_rotation(x))
-ax[0].plot(s0['fold'].fold_limb_rotation.fold_frame_coordinate,s0['fold'].fold_limb_rotation.rotation_angle,'bo')
+# fig, ax = plt.subplots(1,2,figsize=(10,5))
+# x = np.linspace(s1[0].min(),s1[0].max(),1000)
+# ax[0].plot(x,s0['fold'].fold_limb_rotation(x))
+# ax[0].plot(s0['fold'].fold_limb_rotation.fold_frame_coordinate,s0['fold'].fold_limb_rotation.rotation_angle,'bo')
 # ax[1].plot(s0['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
 
 viewer = LavaVuModelViewer(model)

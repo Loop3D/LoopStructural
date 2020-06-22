@@ -21,7 +21,7 @@
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
-from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
 from LoopStructural.utils.helper import strike_dip_vector, plunge_and_plunge_dir_to_vector
 import pandas as pd
 import numpy as np
@@ -236,7 +236,9 @@ viewer.display()
 ###########################################
 # Plotting the fold rotation angles
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-plt.plot(stratigraphy.fold_['foliation'],stratigraphy['limb_rotation'],'bo')
-x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
-plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
+rotation_plots = RotationAnglePlotter(stratigraphy)
+rotation_plots.add_fold_limb_data()
+# plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy['limb_rotation'],'bo')
+# x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
+# plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
+rotation_plots.fig.show()
