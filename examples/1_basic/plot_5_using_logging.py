@@ -24,11 +24,19 @@ Lets have a look at the logging from the Claudius model.
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer 
 from LoopStructural.datasets import load_claudius #demo data 
-
+from LoopStructural import log_to_file
 import pandas as pd
 import numpy as np
 
+##################################################################################################
+# Specify a log file
+# ~~~~~~~~~~~~~~~~~~~~
 
+log_to_file('logging_demo_log.log')
+
+##################################################################################################
+# Create model
+# ~~~~~~~~~~~~~~~~~~~~
 data, bb = load_claudius()
 model = GeologicalModel(bb[0,:],bb[1,:])
 model.set_model_data(data)
@@ -47,7 +55,7 @@ strati = model.create_and_add_foliation("strati",
                                           )
 viewer = LavaVuModelViewer(model,background="white")
 viewer.add_model_surfaces()
-viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 #################################################################################################
 # Looking at the log file
@@ -57,7 +65,7 @@ viewer.display()
 # an operation is not occuring as you would expect.
 
 from itertools import islice
-with open('/tmp/default-loop-structural-logfile.log') as inf:
+with open('logging_demo_log.log') as inf:
     for line in islice(inf, 0, 11):
         print(line)
 
