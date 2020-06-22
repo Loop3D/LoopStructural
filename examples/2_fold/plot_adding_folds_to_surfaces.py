@@ -237,6 +237,6 @@ viewer.display()
 # Plotting the fold rotation angles
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-plt.plot(stratigraphy['foliation'],stratigraphy['limb_rotation'],'bo')
+plt.plot(stratigraphy.fold_['foliation'],stratigraphy['limb_rotation'],'bo')
 x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
 plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')

@@ -70,7 +70,7 @@ model = GeologicalModel(bb[0,:],bb[1,:])
 ######################################################################
 # A pandas dataframe with appropriate columns can be used to link the data
 # to the geological model. \* ``X`` is the x coordinate \* ``Y`` is the y
-# coordinate \* ``Z`` is the z coordinate \* ``type`` is a name to link
+# coordinate \* ``Z`` is the z coordinate \* ``feature_name`` is a name to link
 # the data to a model object \* ``val`` is the value of the scalar field
 # which represents the distance from a reference horizon. It is comparable
 # to the relative thickness \* ``nx`` is the x component of the normal
@@ -115,7 +115,7 @@ model.set_model_data(data)
 # 
 #    model.create_and_add_foliation(name)
 # 
-# where name is the name in the ``type`` field, other parameters we
+# where name is the name in the ``feature_name`` field, other parameters we
 # specified are the: \* ``interpolatortype`` - we can either use a
 # PiecewiseLinearInterpolator ``PLI``, a FiniteDifferenceInterpolator
 # ``FDI`` or a radial basis interpolator ``surfe`` \* ``nelements - int``

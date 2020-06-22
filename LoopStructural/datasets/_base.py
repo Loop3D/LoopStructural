@@ -6,27 +6,27 @@ import pandas as pd
 
 def load_claudius():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, Path('data/claudius.pkl')))
+    data = pd.read_csv(join(module_path, Path('data/claudius.csv')))
     bb = np.loadtxt(join(module_path, Path("data/claudiusbb.txt")))
     return data, bb
 
 
 def load_noddy_single_fold():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, Path('data/onefolddata.pkl')))
+    data = pd.read_csv(join(module_path, Path('data/onefolddata.csv')))
     bb = np.loadtxt(join(module_path, Path('data/onefoldbb.txt')))
     return data, bb
 
 
 def load_laurent2016():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, Path('data/refolded_fold.pkl')))
+    data = pd.read_csv(join(module_path, Path('data/refolded_fold.csv')))
     bb = np.loadtxt(join(module_path, Path('data/refolded_bb.txt')))
     return data, bb
 
 def load_duplex():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path, Path('data/duplex.pkl')))
+    data = pd.read_csv(join(module_path, Path('data/duplex.csv')))
     bb = np.loadtxt(join(module_path, Path('data/duplexbb.txt')))
     return data, bb
 
@@ -44,12 +44,12 @@ def load_grose2019():
 
 def load_intrusion():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path,Path('data/intrusion.pkl')))
+    data = pd.read_csv(join(module_path,Path('data/intrusion.csv')))
     bb = np.loadtxt(join(module_path,Path('data/intrusionbb.txt')))
     return data, bb
 def load_unconformity():
     module_path = dirname(__file__)
-    data = pd.read_pickle(join(module_path,Path('data/unconformity.pkl')))
+    data = pd.read_csv(join(module_path,Path('data/unconformity.csv')))
     bb = np.array([[0,0,0],
                    [4,6,4]]
                   )

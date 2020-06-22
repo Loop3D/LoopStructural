@@ -12,4 +12,5 @@ setup(
 	ext_modules=cythonize("LoopStructural/interpolators/cython/*.pyx",compiler_directives={"language_level": "3"}),
 	include_dirs=[numpy.get_include()],
 	include_package_data=True,
+	package_data={'LoopStructural':['datasets/data/*.csv','datasets/data/*.txt']},
 	)
