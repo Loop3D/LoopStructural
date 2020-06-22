@@ -1,3 +1,6 @@
+"""
+Feature builder
+"""
 import copy
 import logging
 
@@ -13,6 +16,10 @@ from LoopStructural.utils.helper import get_data_bounding_box_map as get_data_bo
 
 
 class GeologicalFeatureInterpolator:
+    """[summary]
+
+    [extended_summary]
+    """
     def __init__(self, interpolator, name='Feature', region=None, **kwargs):
         """
         A builder for a GeologicalFeature will link data to the interpolator

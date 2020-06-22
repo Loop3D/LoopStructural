@@ -39,12 +39,12 @@ strati = model.create_and_add_foliation("strati",
                                            interpolatortype="surfe",
                                         method='single_surface'
                                         )
-print(strati['feature'].evaluate_value(model.regular_grid((10,10,10))))
+print(strati.evaluate_value(model.regular_grid((10,10,10))))
 viewer = LavaVuModelViewer(model,background="white")
 
 # determine the number of unique surfaces in the model from
 # the input data and then calculate isosurfaces for this
-unique = np.unique(strati['feature'].interpolator.get_value_constraints()[:,3])
+unique = np.unique(strati.interpolator.get_value_constraints()[:,3])
 viewer.add_isosurface(model.features[0],
                        slices=unique,
                        cmap='prism',

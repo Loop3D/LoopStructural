@@ -1,3 +1,7 @@
+"""
+structural frame builder
+"""
+
 import logging
 
 import numpy as np
@@ -13,6 +17,10 @@ from LoopStructural.modelling.features import StructuralFrame
 
 
 class StructuralFrameBuilder:
+    """[summary]
+
+    [extended_summary]
+    """
     def __init__(self, interpolator=None, interpolators=None, **kwargs):
         """
         Class for building a structural frame - has functions to set up the

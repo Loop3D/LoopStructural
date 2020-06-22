@@ -1,4 +1,6 @@
 class RegionFeature:
+    """
+    """
     def __init__(self, function):
         """
         Create a GeologicalFeature to represent a region in a model

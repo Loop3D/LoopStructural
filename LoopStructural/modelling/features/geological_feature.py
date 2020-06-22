@@ -1,3 +1,6 @@
+"""
+Geological features
+"""
 import logging
 
 import numpy as np
@@ -6,34 +9,39 @@ logger = logging.getLogger(__name__)
 
 
 class GeologicalFeature:
+    """
+    Geological feature is class that is used to represent a geometrical element in a geological
+    model. For example foliations, fault planes, fold rotation angles etc. 
+    
+    Attributes
+    ----------
+    name : string
+        should be a unique name for the geological feature
+    support : a ScalarField
+        holds the property values for the feature and links to the
+        support geometry
+    data : list
+        list containing geological data
+    region : list 
+        list of boolean functions defining whether the feature is
+        active
+    faults : list 
+        list of FaultSegments that affect this feature
+    """
     def __init__(self, name, interpolator, builder=None, data=None, region=None, type=None, faults=[]):
-        """
-        Geological feature is class that is used to represent a geometrical element in a geological
-        model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
-        which
+        """Default constructor for geological feature
 
         Parameters
         ----------
         name: string
         interpolator : GeologicalInterpolator
         builder : GeologicalFeatureBuilder
-        data :
+        data : 
         region :
         type :
         faults :
 
-        Attributes
-        ----------
-        name : string
-            should be a unique name for the geological feature
-        support : a ScalarField
-            holds the property values for the feature and links to the
-            support geometry
-        data : list
-            list containing geological data
-        region : list of boolean functions defining whether the feature is
-            active
-        faults : list of faults that affect this feature
+        
         """
         self.name = name
         self.interpolator = interpolator

@@ -92,7 +92,7 @@ surface_2 = np.array([xx.flatten(),yy.flatten(),zz.flatten(),val.flatten()]).T
 import pandas as pd
 
 data = pd.DataFrame(np.vstack([surface_1,surface_2]),columns=['X','Y','Z','val'])
-data['type'] = 'conformable'
+data['feature_name'] = 'conformable'
 data.head()
 
 ###############################################################################################
@@ -135,7 +135,7 @@ yy, zz = np.meshgrid(y,z)
 xx = np.zeros_like(yy)
 xx[:] = 5
 
-vals = conformable_feature['feature'].evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
+vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
 fig, ax = plt.subplots(1,2,figsize=(20,10))
 ax[0].contourf(vals.reshape((100,100)))
 ax[0].contour(vals.reshape((100,100)),[0,1])
@@ -148,7 +148,7 @@ xx, zz = np.meshgrid(x,z)
 yy = np.zeros_like(xx)
 yy[:] = 5
 
-vals = conformable_feature['feature'].evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
+vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
 ax[1].contourf(vals.reshape((100,100)))
 ax[1].contour(vals.reshape((100,100)),[0,1])
 
