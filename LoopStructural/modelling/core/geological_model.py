@@ -893,8 +893,9 @@ class GeologicalModel:
             value_data = fault_frame_data[fault_frame_data['val'] == 0]
             coord2 = value_data.iloc[[0, len(value_data) - 1]]
             coord2 = coord2.reset_index(drop=True)
-            coord2.loc[0, 'val'] = -1
-            coord2.loc[1, 'val'] = 1
+            c2_scale = kwargs.get('length_scale',1.)
+            coord2.loc[0, 'val'] = -1/c2_scale
+            coord2.loc[1, 'val'] = 1/c2_scale
             coord2['coord'] = 2
             fault_frame_data = pd.concat([fault_frame_data, coord2],
                                          sort=False)
