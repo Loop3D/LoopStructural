@@ -284,5 +284,6 @@ class GeologicalFeatureInterpolator:
                                  self.interpolator,
                                  builder=self, data=self.data,
                                  region=self.region,
-                                 faults=self.faults
+                                 faults=self.faults,
+                                 fold = fold
                                  )

@@ -11,7 +11,7 @@ class StructuralFrame:
 
     [extended_summary]
     """
-    def __init__(self, name, features):
+    def __init__(self, name, features, fold=None):
         """
         Structural frame is a curvilinear coordinate system defined by
         structural
@@ -25,7 +25,7 @@ class StructuralFrame:
         self.name = name
         self.features = features
         self.data = None
-
+        self.fold = fold
     def __getitem__(self, item):
         """
 

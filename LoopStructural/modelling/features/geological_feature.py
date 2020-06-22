@@ -28,7 +28,8 @@ class GeologicalFeature:
     faults : list 
         list of FaultSegments that affect this feature
     """
-    def __init__(self, name, interpolator, builder=None, data=None, region=None, type=None, faults=[]):
+    def __init__(self, name, interpolator, builder=None, data=None, region=None, type=None, 
+                faults=[], fold = None):
         """Default constructor for geological feature
 
         Parameters
@@ -53,11 +54,23 @@ class GeologicalFeature:
         self.type = type
         self.faults = faults
         self.faults_enabled = True
+        self.fold=fold
+        self._attributes = {}
+        self._attributes['feature'] = self
+        self._attributes['builder'] = self.builder
+        self._attributes['faults'] = self.faults
         if region is None:
             self.region = 'everywhere'
         self.model = None
+
     def __str__(self):
         return self.name
+
+    def __getitem__(self,key):
+        return self._attributes[key]
+
+    def __setitem__(self, key, item):
+        self._attributes[key] = item
 
     def set_model(self, model):
         self.model = model
