@@ -65,9 +65,9 @@ viewer.display()
 # an operation is not occuring as you would expect.
 
 from itertools import islice
-with open('logging_demo_log.log') as inf:
-    for line in islice(inf, 0, 11):
-        print(line)
+# with open('logging_demo_log.log') as inf:
+#     for line in islice(inf, 0, 11):
+#         print(line)
 
 
 #################################################################################################
