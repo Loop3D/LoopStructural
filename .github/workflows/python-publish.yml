@@ -27,7 +27,7 @@ jobs:
         python-versions: 'cp36-cp36m cp37-cp37m'
         build-requirements: 'cython numpy scipy scikit-learn'
         system-packages: ''
-        package-path: ''
+        package-path: 'LoopStructural'
         pip-wheel-args: ''
     - name: Publish wheels to PyPI
       env:
