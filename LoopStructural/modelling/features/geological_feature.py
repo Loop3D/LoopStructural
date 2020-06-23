@@ -220,7 +220,6 @@ class GeologicalFeature:
         if self.model is None:
             return 0
         return np.mean(self.evaluate_value(self.model.regular_grid((10,10,10))))
-        # return np.nanmean(self.scalar_field.get_node_values())
 
     def min(self):
         """
@@ -233,7 +232,6 @@ class GeologicalFeature:
             return 0
         return np.nanmin(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-        #       return np.nanmin(self.scalar_field.get_node_values())
 
     def max(self):
         """
@@ -247,7 +245,6 @@ class GeologicalFeature:
             return 0
         return np.nanmax(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-        #return np.nanmax(self.scalar_field.get_node_values())
 
     def update(self):
         """

@@ -66,7 +66,6 @@ class GeologicalModel:
     the rescaling
     of the model between 0 and 1.
     """
-
     def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40),
                  reuse_supports=False):
         """
