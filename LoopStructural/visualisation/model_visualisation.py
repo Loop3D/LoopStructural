@@ -28,11 +28,12 @@ def close_all():
 ##
 class LavaVuModelViewer:
     """
+
     Short description
+
     """
     def __init__(self, model=None, bounding_box=None, nsteps=None, vertical_exaggeration=1., **kwargs):
         """
-
         A wrapper to plot LoopStructural object with lavavu
 
         Parameters
