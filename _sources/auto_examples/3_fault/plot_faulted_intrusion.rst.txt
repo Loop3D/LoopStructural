@@ -80,7 +80,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7f8e3a8f6a20>
+    <matplotlib.contour.QuadContourSet object at 0x7f1bed6e95c0>
 
 
 
@@ -106,15 +106,15 @@ fault frame and an expected displacement model.
                                       buffer=0.3)
 
     viewer = LavaVuModelViewer(model)
-    viewer.add_isosurface(fault['feature'],
+    viewer.add_isosurface(fault,
                          voxet=model.voxet(),
                           isovalue=0
     #                       slices=[0,1]#nslices=10
                          )
-    xyz = model.data[model.data['type']=='strati'][['X','Y','Z']].to_numpy()
-    xyz = xyz[fault['feature'].evaluate(xyz),:]
-    viewer.add_vector_field(fault['feature'], locations= xyz)
-    viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
+    xyz = model.data[model.data['feature_name']=='strati'][['X','Y','Z']].to_numpy()
+    xyz = xyz[fault.evaluate(xyz),:]
+    viewer.add_vector_field(fault, locations= xyz)
+    viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
     viewer.display()
 
 
@@ -132,15 +132,15 @@ fault frame and an expected displacement model.
     strati = model.create_and_add_foliation('strati',nelements=30000,interpolatortype='PLI',cgw=0.03)
 
     viewer = LavaVuModelViewer(model)
-    viewer.add_isosurface(strati['feature'],
+    viewer.add_isosurface(strati,
                          voxet=model.voxet(),
                          isovalue=0)
     # viewer.add_data(model.features[0][0])
-    viewer.add_data(strati['feature'])
-    viewer.add_isosurface(fault['feature'],isovalue=0
+    viewer.add_data(strati)
+    viewer.add_isosurface(fault,isovalue=0
     #                       slices=[0,1]#nslices=10
                          )
-    viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
+    viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
     viewer.display()
 
 
@@ -166,7 +166,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.653 seconds)
+   **Total running time of the script:** ( 0 minutes  23.458 seconds)
 
 
 .. _sphx_glr_download_auto_examples_3_fault_plot_faulted_intrusion.py:

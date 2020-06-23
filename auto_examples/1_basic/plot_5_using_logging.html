@@ -41,7 +41,7 @@
     <link rel="author" title="About these documents" href="../../about.html" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Using surfe" href="example_surfe.html" />
+    <link rel="next" title="1f. Radial Basis Interpolation Using Surfe" href="example_surfe.html" />
     <link rel="prev" title="1d. Using Stratigraphic Columns" href="plot_4_using_stratigraphic_column.html" /> 
 </head>
 
@@ -99,11 +99,13 @@
 <li class="toctree-l3"><a class="reference internal" href="plot_3_multiple_groups.html">1c. Multiple groups</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">1e. Using logging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#specify-a-log-file">Specify a log file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-model">Create model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#looking-at-the-log-file">Looking at the log file</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#logging-to-console">Logging to console</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">Using surfe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-folds">2. Modelling Folds</a></li>
@@ -213,12 +215,20 @@ All messages except for debug are recorded to a file <code class="code docutils 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
 <span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
 <span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_claudius</span> <span class="c1">#demo data</span>
-
+<span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <span class="n">log_to_file</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-
-<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="specify-a-log-file">
+<h2>Specify a log file<a class="headerlink" href="#specify-a-log-file" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_to_file</span><span class="p">(</span><span class="s1">&#39;logging_demo_log.log&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-model">
+<h2>Create model<a class="headerlink" href="#create-model" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span>
 <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
 <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span></a><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
@@ -236,14 +246,11 @@ All messages except for debug are recorded to a file <code class="code docutils 
                                           <span class="p">)</span>
 <span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">add_model_surfaces</span><span class="p">()</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">lv</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_plot_5_using_logging_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_5_using_logging_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>LavaVu Run error: FBO creation failed, can&#39;t continue
-</pre></div>
 </div>
 <div class="section" id="looking-at-the-log-file">
 <h2>Looking at the log file<a class="headerlink" href="#looking-at-the-log-file" title="Permalink to this headline">¶</a></h2>
@@ -251,33 +258,9 @@ All messages except for debug are recorded to a file <code class="code docutils 
 Most operations in loopstructural are recorded and this will allow you to identify whether
 an operation is not occuring as you would expect.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/default-loop-structural-logfile.log&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">inf</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">islice</span><span class="p">(</span><span class="n">inf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>06-18 14:56 LoopStructural.modelling.core.geological_model INFO     Creating regular grid with 18876 elements
-
-for modelling using FDI
-
-06-18 14:56 LoopStructural.modelling.features.geological_feature_builder INFO     Adding 0 faults to strati
-
-06-18 14:56 LoopStructural.interpolators.discrete_interpolator INFO     Interpolation matrix is 121898 x 21114
-
-06-18 14:56 LoopStructural.interpolators.discrete_interpolator INFO     Adding eps to matrix diagonal
-
-06-18 14:56 LoopStructural.interpolators.discrete_interpolator INFO     Solving with pyamg solve
-
-06-18 14:56 LoopStructural.modelling.core.geological_model INFO     Adding strati to model at location 1
-
-06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 60.000000
-
-06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 250.000000
-
-06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 330.000000
-
-06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 600.000000
+<span class="c1"># with open(&#39;logging_demo_log.log&#39;) as inf:</span>
+<span class="c1">#     for line in islice(inf, 0, 11):</span>
+<span class="c1">#         print(line)</span>
 </pre></div>
 </div>
 </div>
@@ -320,11 +303,7 @@ for modelling using FDI
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_plot_5_using_logging_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_5_using_logging_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>LavaVu Run error: FBO creation failed, can&#39;t continue
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.370 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.534 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-5-using-logging-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/9b855b748d7aad74240b53af656bbee1/plot_5_using_logging.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_5_using_logging.py</span></code></a></p>
@@ -345,7 +324,7 @@ for modelling using FDI
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example_surfe.html" class="btn btn-neutral float-right" title="Using surfe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example_surfe.html" class="btn btn-neutral float-right" title="1f. Radial Basis Interpolation Using Surfe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="plot_4_using_stratigraphic_column.html" class="btn btn-neutral float-left" title="1d. Using Stratigraphic Columns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

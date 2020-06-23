@@ -121,7 +121,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Using surfe">
+    <div class="sphx-glr-thumbcontainer" tooltip="Python wrappers allow for the library to be used from within a python interface.  There are two...">
 
 .. only:: html
 

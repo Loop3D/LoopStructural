@@ -104,7 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="plot_3_multiple_groups.html">1c. Multiple groups</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_5_using_logging.html">1e. Using logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">Using surfe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-folds">2. Modelling Folds</a></li>
@@ -255,7 +255,7 @@ these are provided in the bb array.</p>
 </div>
 <p>A pandas dataframe with appropriate columns can be used to link the data
 to the geological model. * <code class="docutils literal notranslate"><span class="pre">X</span></code> is the x coordinate * <code class="docutils literal notranslate"><span class="pre">Y</span></code> is the y
-coordinate * <code class="docutils literal notranslate"><span class="pre">Z</span></code> is the z coordinate * <code class="docutils literal notranslate"><span class="pre">type</span></code> is a name to link
+coordinate * <code class="docutils literal notranslate"><span class="pre">Z</span></code> is the z coordinate * <code class="docutils literal notranslate"><span class="pre">feature_name</span></code> is a name to link
 the data to a model object * <code class="docutils literal notranslate"><span class="pre">val</span></code> is the value of the scalar field
 which represents the distance from a reference horizon. It is comparable
 to the relative thickness * <code class="docutils literal notranslate"><span class="pre">nx</span></code> is the x component of the normal
@@ -265,7 +265,7 @@ the normal vector to the surface gradeint * <code class="docutils literal notran
 angle * <code class="docutils literal notranslate"><span class="pre">dip</span></code> is the dip angle</p>
 <p>Having a look at the data for this example by looking at the top of the
 dataframe and then using a 3D plot</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 
 <span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">add_value_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">])][[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">]],</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">])][</span><span class="s1">&#39;val&#39;</span><span class="p">],</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;value points&#39;</span><span class="p">)</span>
@@ -276,10 +276,6 @@ dataframe and then using a 3D plot</p>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_plot_2_surface_modelling_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_2_surface_modelling_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Plot area has not been defined.
-</pre></div>
-</div>
 <p>The pandas dataframe can be linked to the <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> using
 <code class="docutils literal notranslate"><span class="pre">.set_model_data(dataframe</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span></a><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -295,7 +291,7 @@ Structural Frames</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where name is the name in the <code class="docutils literal notranslate"><span class="pre">type</span></code> field, other parameters we
+<p>where name is the name in the <code class="docutils literal notranslate"><span class="pre">feature_name</span></code> field, other parameters we
 specified are the: * <code class="docutils literal notranslate"><span class="pre">interpolatortype</span></code> - we can either use a
 PiecewiseLinearInterpolator <code class="docutils literal notranslate"><span class="pre">PLI</span></code>, a FiniteDifferenceInterpolator
 <code class="docutils literal notranslate"><span class="pre">FDI</span></code> or a radial basis interpolator <code class="docutils literal notranslate"><span class="pre">surfe</span></code> * <code class="docutils literal notranslate"><span class="pre">nelements</span> <span class="pre">-</span> <span class="pre">int</span></code>
@@ -409,31 +405,31 @@ array: <code class="docutils literal notranslate"><span class="pre">locations</s
 
 <span class="c1"># determine the number of unique surfaces in the model from</span>
 <span class="c1"># the input data and then calculate isosurfaces for this</span>
-<span class="n">unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">get_value_constraints</span><span class="p">()[:,</span><span class="mi">3</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span>
+<span class="n">unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.interpolators.discrete_interpolator.html#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints" class="sphx-glr-backref-module-LoopStructural-interpolators-discrete_interpolator sphx-glr-backref-type-py-method"><span class="n">strati</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">get_value_constraints</span></a><span class="p">()[:,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
                        <span class="n">slices</span><span class="o">=</span><span class="n">unique</span><span class="p">,</span>
                        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">,</span>
-                      <span class="n">paint_with</span><span class="o">=</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span>
+                      <span class="n">paint_with</span><span class="o">=</span><span class="n">strati</span><span class="p">,</span>
                      <span class="n">voxet</span><span class="o">=</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" title="LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">voxet</span></a><span class="p">())</span>
 
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
                    <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
                    <span class="n">value</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
                    <span class="n">boundary_points</span><span class="o">=</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">bounding_box</span><span class="p">,</span>
                    <span class="n">nsteps</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">]),</span>
                   <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
                      <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">add_model</span><span class="p">()</span>
 
 <span class="c1"># Add the data addgrad/addvalue arguments are optional</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">strati</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">],</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">lv</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="c1"># to add an interactive display</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_plot_2_surface_modelling_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_2_surface_modelling_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.077 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.483 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-2-surface-modelling-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/312667b0d3ee8fdf0f6f8e13c1523331/plot_2_surface_modelling.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_2_surface_modelling.py</span></code></a></p>

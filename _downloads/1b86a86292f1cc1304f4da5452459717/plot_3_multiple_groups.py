@@ -17,7 +17,7 @@ data = data.reset_index()
 data.loc[:,'val']*=-1
 data.loc[:,['nx','ny','nz']]*=-1
 
-data.loc[792,'type'] = 'strati2'
+data.loc[792,'feature_name'] = 'strati2'
 data.loc[792,['nx','ny','nz']] = [0,0,1]
 data.loc[792,'val'] = 0
 
@@ -29,7 +29,7 @@ strati2 = model.create_and_add_foliation('strati2',
                                nelements=1e4,
                                solver='pyamg'
                               )
-uc = model.add_unconformity(strati2['feature'],1)
+uc = model.add_unconformity(strati2,1)
 
 strati = model.create_and_add_foliation('strati',
                               interpolatortype='PLI',
@@ -38,12 +38,12 @@ strati = model.create_and_add_foliation('strati',
                               )
 
 viewer = LavaVuModelViewer(model)
-viewer.add_isosurface(strati2['feature'],
+viewer.add_isosurface(strati2,
 #                       nslices=5
                       slices=[2,1.5,1],
                      )
-viewer.add_isosurface(strati['feature'],
+viewer.add_isosurface(strati,
                       slices=[0,-60,-250,-330],
-                     paint_with=strati['feature'])
+                     paint_with=strati)
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()

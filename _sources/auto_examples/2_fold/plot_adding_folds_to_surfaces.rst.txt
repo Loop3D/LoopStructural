@@ -32,7 +32,7 @@ Imports
 
     from LoopStructural import GeologicalModel
     from LoopStructural.datasets import load_noddy_single_fold
-    from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+    from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
     from LoopStructural.utils.helper import strike_dip_vector, plunge_and_plunge_dir_to_vector
     import pandas as pd
     import numpy as np
@@ -138,19 +138,21 @@ Modelling folded surfaces using loop structural
           <thead>
             <tr style="text-align: right;">
               <th></th>
+              <th>Unnamed: 0</th>
               <th>X</th>
               <th>Y</th>
               <th>Z</th>
               <th>dip</th>
               <th>strike</th>
-              <th>type</th>
+              <th>feature_name</th>
               <th>coord</th>
               <th>random</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <th>972</th>
+              <th>0</th>
+              <td>972</td>
               <td>500.0</td>
               <td>500.0</td>
               <td>5500.0</td>
@@ -161,7 +163,8 @@ Modelling folded surfaces using loop structural
               <td>0.126657</td>
             </tr>
             <tr>
-              <th>976</th>
+              <th>1</th>
+              <td>976</td>
               <td>500.0</td>
               <td>500.0</td>
               <td>6000.0</td>
@@ -172,7 +175,8 @@ Modelling folded surfaces using loop structural
               <td>0.376144</td>
             </tr>
             <tr>
-              <th>980</th>
+              <th>2</th>
+              <td>980</td>
               <td>500.0</td>
               <td>500.0</td>
               <td>6500.0</td>
@@ -183,7 +187,8 @@ Modelling folded surfaces using loop structural
               <td>0.731684</td>
             </tr>
             <tr>
-              <th>984</th>
+              <th>3</th>
+              <td>984</td>
               <td>500.0</td>
               <td>500.0</td>
               <td>7000.0</td>
@@ -194,7 +199,8 @@ Modelling folded surfaces using loop structural
               <td>0.479522</td>
             </tr>
             <tr>
-              <th>988</th>
+              <th>4</th>
+              <td>988</td>
               <td>500.0</td>
               <td>500.0</td>
               <td>7500.0</td>
@@ -256,19 +262,21 @@ data).
           <thead>
             <tr style="text-align: right;">
               <th></th>
+              <th>Unnamed: 0</th>
               <th>X</th>
               <th>Y</th>
               <th>Z</th>
               <th>dip</th>
               <th>strike</th>
-              <th>type</th>
+              <th>feature_name</th>
               <th>coord</th>
               <th>random</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <th>11272</th>
+              <th>1909</th>
+              <td>11272</td>
               <td>2000.0</td>
               <td>6000.0</td>
               <td>6000.0</td>
@@ -279,7 +287,8 @@ data).
               <td>0.000340</td>
             </tr>
             <tr>
-              <th>1120</th>
+              <th>31</th>
+              <td>1120</td>
               <td>2000.0</td>
               <td>500.0</td>
               <td>7500.0</td>
@@ -290,7 +299,8 @@ data).
               <td>0.003175</td>
             </tr>
             <tr>
-              <th>11356</th>
+              <th>1926</th>
+              <td>11356</td>
               <td>3000.0</td>
               <td>6000.0</td>
               <td>5500.0</td>
@@ -301,7 +311,8 @@ data).
               <td>0.004159</td>
             </tr>
             <tr>
-              <th>7724</th>
+              <th>1256</th>
+              <td>7724</td>
               <td>3500.0</td>
               <td>4000.0</td>
               <td>8000.0</td>
@@ -312,7 +323,8 @@ data).
               <td>0.004213</td>
             </tr>
             <tr>
-              <th>5608</th>
+              <th>859</th>
+              <td>5608</td>
               <td>500.0</td>
               <td>3000.0</td>
               <td>7500.0</td>
@@ -364,8 +376,8 @@ field box.
     #                       'box',
     #                      paint_with=stratigraphy,
     #                      cmap='prism')
-    viewer.add_data(stratigraphy['feature'])
-    viewer.add_isosurface(stratigraphy['feature'],
+    viewer.add_data(stratigraphy)
+    viewer.add_isosurface(stratigraphy,
                          voxet=model.voxet())
     viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
     viewer.display()
@@ -423,7 +435,7 @@ shown in B and C.
 
 .. code-block:: default
 
-    mdata = pd.concat([data[:npoints],data[data['type']=='s1']])
+    mdata = pd.concat([data[:npoints],data[data['feature_name']=='s1']])
     model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
     model.set_model_data(mdata)
     fold_frame = model.create_and_add_fold_frame('s1',
@@ -433,7 +445,7 @@ shown in B and C.
                                                 damp=True
                                                 )
     stratigraphy = model.create_and_add_folded_foliation('s0',
-                                                   fold_frame['feature'],
+                                                   fold_frame,
                                                     nelements=10000,
                                                    fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
     #                                                    limb_wl=1
@@ -444,17 +456,17 @@ shown in B and C.
     #                       'box',
     #                      paint_with=stratigraphy,
     #                      cmap='prism')
-    viewer.add_isosurface(fold_frame['feature'][0],
+    viewer.add_isosurface(fold_frame[0],
                           colour='blue',
     #                       isovalue=0.4,
                           alpha=0.5)
-    viewer.add_data(stratigraphy['feature'])
-    # viewer.add_isosurface(fold_frame['feature'][1],colour='green',alpha=0.5)
-    # viewer.add_vector_field(fold_frame['feature'][0],locations=fold_frame['feature'][0].get_interpolator().support.barycentre())
-    # viewer.add_data(fold_frame['feature'][1])
+    viewer.add_data(stratigraphy)
+    # viewer.add_isosurface(fold_frame[1],colour='green',alpha=0.5)
+    # viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre())
+    # viewer.add_data(fold_frame[1])
 
-    # viewer.add_data(stratigraphy['feature'])
-    viewer.add_isosurface(stratigraphy['feature'])
+    # viewer.add_data(stratigraphy)
+    viewer.add_isosurface(stratigraphy)
     viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
     viewer.display()
 
@@ -465,17 +477,6 @@ shown in B and C.
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Not enough constraints for structural frame coordinate 1, 
-    Add some more and try again.
-    Not enough constraints for fold frame coordinate 1, 
-    Add some more and try again.
-
 
 
 
@@ -485,11 +486,12 @@ Plotting the fold rotation angles
 
 .. code-block:: default
 
-
-    plt.plot(stratigraphy['foliation'],stratigraphy['limb_rotation'],'bo')
-    x = np.linspace(fold_frame['feature'][0].min(),fold_frame['feature'][0].max(),100)
-    plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
-
+    rotation_plots = RotationAnglePlotter(stratigraphy)
+    rotation_plots.add_fold_limb_data()
+    # plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy['limb_rotation'],'bo')
+    # x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
+    # plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
+    rotation_plots.fig.show()
 
 
 .. image:: /auto_examples/2_fold/images/sphx_glr_plot_adding_folds_to_surfaces_003.png
@@ -502,15 +504,16 @@ Plotting the fold rotation angles
 
  .. code-block:: none
 
+    /home/lgrose/dev/python/LoopStructural/examples/2_fold/plot_adding_folds_to_surfaces.py:244: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+      rotation_plots.fig.show()
 
-    [<matplotlib.lines.Line2D object at 0x7f5ae20a43c8>]
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.728 seconds)
+   **Total running time of the script:** ( 0 minutes  16.573 seconds)
 
 
 .. _sphx_glr_download_auto_examples_2_fold_plot_adding_folds_to_surfaces.py:

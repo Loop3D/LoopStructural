@@ -62,15 +62,15 @@ fault = model.create_and_add_fault('fault',
                                   buffer=0.3)
 
 viewer = LavaVuModelViewer(model)
-viewer.add_isosurface(fault['feature'],
+viewer.add_isosurface(fault,
                      voxet=model.voxet(),
                       isovalue=0
 #                       slices=[0,1]#nslices=10
                      )
-xyz = model.data[model.data['type']=='strati'][['X','Y','Z']].to_numpy()
-xyz = xyz[fault['feature'].evaluate(xyz),:]
-viewer.add_vector_field(fault['feature'], locations= xyz)
-viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
+xyz = model.data[model.data['feature_name']=='strati'][['X','Y','Z']].to_numpy()
+xyz = xyz[fault.evaluate(xyz),:]
+viewer.add_vector_field(fault, locations= xyz)
+viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
 viewer.display()
 
 
@@ -88,14 +88,14 @@ fault = model.create_and_add_fault('fault',
 strati = model.create_and_add_foliation('strati',nelements=30000,interpolatortype='PLI',cgw=0.03)
 
 viewer = LavaVuModelViewer(model)
-viewer.add_isosurface(strati['feature'],
+viewer.add_isosurface(strati,
                      voxet=model.voxet(),
                      isovalue=0)
 # viewer.add_data(model.features[0][0])
-viewer.add_data(strati['feature'])
-viewer.add_isosurface(fault['feature'],isovalue=0
+viewer.add_data(strati)
+viewer.add_isosurface(fault,isovalue=0
 #                       slices=[0,1]#nslices=10
                      )
-viewer.add_points(model.data[model.data['type']=='strati'][['X','Y','Z']],name='prefault')
+viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
 viewer.display()
 

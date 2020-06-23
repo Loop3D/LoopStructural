@@ -70,7 +70,7 @@ model = GeologicalModel(bb[0,:],bb[1,:])
 ######################################################################
 # A pandas dataframe with appropriate columns can be used to link the data
 # to the geological model. \* ``X`` is the x coordinate \* ``Y`` is the y
-# coordinate \* ``Z`` is the z coordinate \* ``type`` is a name to link
+# coordinate \* ``Z`` is the z coordinate \* ``feature_name`` is a name to link
 # the data to a model object \* ``val`` is the value of the scalar field
 # which represents the distance from a reference horizon. It is comparable
 # to the relative thickness \* ``nx`` is the x component of the normal
@@ -83,7 +83,7 @@ model = GeologicalModel(bb[0,:],bb[1,:])
 # dataframe and then using a 3D plot
 # 
 
-data['type'].unique()
+data['feature_name'].unique()
 
 viewer = LavaVuModelViewer(background='white')
 viewer.add_value_data(data[~np.isnan(data['val'])][['X','Y','Z']],data[~np.isnan(data['val'])]['val'],name='value points')
@@ -115,7 +115,7 @@ model.set_model_data(data)
 # 
 #    model.create_and_add_foliation(name)
 # 
-# where name is the name in the ``type`` field, other parameters we
+# where name is the name in the ``feature_name`` field, other parameters we
 # specified are the: \* ``interpolatortype`` - we can either use a
 # PiecewiseLinearInterpolator ``PLI``, a FiniteDifferenceInterpolator
 # ``FDI`` or a radial basis interpolator ``surfe`` \* ``nelements - int``
@@ -250,25 +250,25 @@ viewer = LavaVuModelViewer(model,background="white")
 
 # determine the number of unique surfaces in the model from 
 # the input data and then calculate isosurfaces for this
-unique = np.unique(strati['feature'].interpolator.get_value_constraints()[:,3])
-viewer.add_isosurface(strati['feature'],
+unique = np.unique(strati.interpolator.get_value_constraints()[:,3])
+viewer.add_isosurface(strati,
                        slices=unique,  
                        cmap='prism',
-                      paint_with=strati['feature'],
+                      paint_with=strati,
                      voxet=model.voxet())
 
-viewer.add_section(strati['feature'],
+viewer.add_section(strati,
                    axis='x',
                    value=0.,
                    boundary_points=model.bounding_box, 
                    nsteps=np.array([30,30,30]),
                   cmap='prism')
-viewer.add_scalar_field(strati['feature'],
+viewer.add_scalar_field(strati,
                      cmap='prism')
 viewer.add_model()
 
 # Add the data addgrad/addvalue arguments are optional
-viewer.add_data(strati['feature'],addgrad=True,addvalue=True, cmap='prism')
+viewer.add_data(strati,addgrad=True,addvalue=True, cmap='prism')
 viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()# to add an interactive display
 

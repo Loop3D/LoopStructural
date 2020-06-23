@@ -21,7 +21,7 @@
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
-from LoopStructural.visualisation.model_visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
 from LoopStructural.utils.helper import strike_dip_vector, plunge_and_plunge_dir_to_vector
 import pandas as pd
 import numpy as np
@@ -152,8 +152,8 @@ viewer = LavaVuModelViewer(model,background="white")
 #                       'box',
 #                      paint_with=stratigraphy,
 #                      cmap='prism')
-viewer.add_data(stratigraphy['feature'])
-viewer.add_isosurface(stratigraphy['feature'],
+viewer.add_data(stratigraphy)
+viewer.add_isosurface(stratigraphy,
                      voxet=model.voxet())
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
@@ -198,7 +198,7 @@ viewer.display()
 # folded foliation to be parallel to the plane of the axial foliation
 # shown in B and C.
 # 
-mdata = pd.concat([data[:npoints],data[data['type']=='s1']])
+mdata = pd.concat([data[:npoints],data[data['feature_name']=='s1']])
 model = GeologicalModel(boundary_points[0,:],boundary_points[1,:])
 model.set_model_data(mdata)
 fold_frame = model.create_and_add_fold_frame('s1',
@@ -208,7 +208,7 @@ fold_frame = model.create_and_add_fold_frame('s1',
                                             damp=True
                                             )
 stratigraphy = model.create_and_add_folded_foliation('s0',
-                                               fold_frame['feature'],
+                                               fold_frame,
                                                 nelements=10000,
                                                fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
 #                                                    limb_wl=1
@@ -219,24 +219,26 @@ viewer = LavaVuModelViewer(model,background="white")
 #                       'box',
 #                      paint_with=stratigraphy,
 #                      cmap='prism')
-viewer.add_isosurface(fold_frame['feature'][0],
+viewer.add_isosurface(fold_frame[0],
                       colour='blue',
 #                       isovalue=0.4,
                       alpha=0.5)
-viewer.add_data(stratigraphy['feature'])
-# viewer.add_isosurface(fold_frame['feature'][1],colour='green',alpha=0.5)
-# viewer.add_vector_field(fold_frame['feature'][0],locations=fold_frame['feature'][0].get_interpolator().support.barycentre())
-# viewer.add_data(fold_frame['feature'][1])
+viewer.add_data(stratigraphy)
+# viewer.add_isosurface(fold_frame[1],colour='green',alpha=0.5)
+# viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre())
+# viewer.add_data(fold_frame[1])
 
-# viewer.add_data(stratigraphy['feature'])
-viewer.add_isosurface(stratigraphy['feature'])
+# viewer.add_data(stratigraphy)
+viewer.add_isosurface(stratigraphy)
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 
 ###########################################
 # Plotting the fold rotation angles
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-plt.plot(stratigraphy['foliation'],stratigraphy['limb_rotation'],'bo')
-x = np.linspace(fold_frame['feature'][0].min(),fold_frame['feature'][0].max(),100)
-plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
+rotation_plots = RotationAnglePlotter(stratigraphy)
+rotation_plots.add_fold_limb_data()
+# plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy['limb_rotation'],'bo')
+# x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
+# plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
+rotation_plots.fig.show()

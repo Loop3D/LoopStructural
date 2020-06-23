@@ -17,7 +17,7 @@ data = data.reset_index()
 data.loc[:,'val']*=-1
 data.loc[:,['nx','ny','nz']]*=-1
 
-data.loc[792,'type'] = 'strati2'
+data.loc[792,'feature_name'] = 'strati2'
 data.loc[792,['nx','ny','nz']] = [0,0,1]
 data.loc[792,'val'] = 0
 
@@ -29,7 +29,7 @@ strati2 = model.create_and_add_foliation('strati2',
                                nelements=1e4,
                                solver='pyamg'
                               )
-uc = model.add_unconformity(strati2['feature'],1)
+uc = model.add_unconformity(strati2,1)
 
 strati = model.create_and_add_foliation('strati',
                               interpolatortype='PLI',

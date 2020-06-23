@@ -6,7 +6,7 @@
 """
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
 from LoopStructural.datasets import load_laurent2016
 import numpy as np
 import pandas as pd
@@ -22,10 +22,10 @@ data, bb = load_laurent2016()
 
 data.head()
 
-newdata = pd.DataFrame([[5923.504395,4748.135254,3588.621094,'s2',1.0]],columns=['X','Y','Z','type','val'])
+newdata = pd.DataFrame([[5923.504395,4748.135254,3588.621094,'s2',1.0]],columns=['X','Y','Z','feature_name','val'])
 data = pd.concat([data,newdata],sort=False)
-data[np.logical_and(data['type'] == 's2',np.isnan(data['nx']))]
-data.loc[np.logical_and(data['type'] == 's0',~np.isnan(data['val'])),'type'] = 's01'
+data[np.logical_and(data['feature_name'] == 's2',np.isnan(data['nx']))]
+data.loc[np.logical_and(data['feature_name'] == 's0',~np.isnan(data['val'])),'feature_name'] = 's01'
 
 
 rotation = [-69.11979675292969, 15.704944610595703, 6.00014591217041]
@@ -44,11 +44,11 @@ s2 = model.create_and_add_fold_frame('s2',
                                     solver='lu',
                                     damp=True)
 viewer = LavaVuModelViewer(model)
-viewer.add_scalar_field(s2['feature'][0],
+viewer.add_scalar_field(s2[0],
                        cmap='prism')
-viewer.add_isosurface(s2['feature'][0],
+viewer.add_isosurface(s2[0],
                      slices=[0,1])
-viewer.add_data(s2['feature'][0])
+viewer.add_data(s2[0])
 viewer.rotate(rotation)
 viewer.display()
 
@@ -70,7 +70,7 @@ s1 = model.create_and_add_folded_fold_frame('s1',
 
 
 viewer = LavaVuModelViewer(model)
-viewer.add_scalar_field(s1['feature'][0],
+viewer.add_scalar_field(s1[0],
                        cmap='prism')
 viewer.rotate([-69.11979675292969, 15.704944610595703, 6.00014591217041])
 viewer.display()
@@ -79,11 +79,13 @@ viewer.display()
 # S2/S1 S-Plots 
 # ~~~~~~~~~~~~~
 #
-
-fig, ax = plt.subplots(1,2,figsize=(10,5))
-x = np.linspace(s2['feature'][0].min(),s2['feature'][0].max(),1000)
-ax[0].plot(x,s1['fold'].fold_limb_rotation(x))
-ax[0].plot(s1['fold'].fold_limb_rotation.fold_frame_coordinate,s1['fold'].fold_limb_rotation.rotation_angle,'bo')
+s2_s1_splot = RotationAnglePlotter(s1)
+s2_s1_splot.add_fold_limb_data()
+s2_s1_splot.add_fold_limb_curve()  
+# fig, ax = plt.subplots(1,2,figsize=(10,5))
+# x = np.linspace(s2[0].min(),s2[0].max(),1000)
+# ax[0].plot(x,s1['fold'].fold_limb_rotation(x))
+# ax[0].plot(s1['fold'].fold_limb_rotation.fold_frame_coordinate,s1['fold'].fold_limb_rotation.rotation_angle,'bo')
 # ax[1].plot(s1['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
 
 
@@ -102,7 +104,7 @@ s0 = model.create_and_add_folded_foliation('s0',
                                            )
 
 viewer = LavaVuModelViewer(model)
-viewer.add_scalar_field(s0['feature'],
+viewer.add_scalar_field(s0,
                        cmap='tab20')
 viewer.rotate([-69.11979675292969, 15.704944610595703, 6.00014591217041])
 viewer.display()
@@ -111,16 +113,19 @@ viewer.display()
 # S1/S0 S-Plots 
 # ~~~~~~~~~~~~~
 #
+s1_s0_splot = RotationAnglePlotter(s0)
+s1_s0_splot.add_fold_limb_data()
+s1_s0_splot.add_fold_limb_curve()
 
-fig, ax = plt.subplots(1,2,figsize=(10,5))
-x = np.linspace(s1['feature'][0].min(),s1['feature'][0].max(),1000)
-ax[0].plot(x,s0['fold'].fold_limb_rotation(x))
-ax[0].plot(s0['fold'].fold_limb_rotation.fold_frame_coordinate,s0['fold'].fold_limb_rotation.rotation_angle,'bo')
+# fig, ax = plt.subplots(1,2,figsize=(10,5))
+# x = np.linspace(s1[0].min(),s1[0].max(),1000)
+# ax[0].plot(x,s0['fold'].fold_limb_rotation(x))
+# ax[0].plot(s0['fold'].fold_limb_rotation.fold_frame_coordinate,s0['fold'].fold_limb_rotation.rotation_angle,'bo')
 # ax[1].plot(s0['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
 
 viewer = LavaVuModelViewer(model)
-viewer.add_isosurface(s0['feature'],nslices=10,paint_with=s0['feature'],cmap='tab20')
-# viewer.add_data(s0['feature'])
+viewer.add_isosurface(s0,nslices=10,paint_with=s0,cmap='tab20')
+# viewer.add_data(s0)
 # viewer.add_fold(s0['fold'],locations=s0['support'].barycentre()[::80])
 viewer.rotate([-69.11979675292969, 15.704944610595703, 6.00014591217041])
 viewer.display()

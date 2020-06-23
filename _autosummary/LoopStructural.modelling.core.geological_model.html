@@ -294,6 +294,9 @@ unconformity so it is not evaluated below the unconformity</p>
 <li><p><strong>value</strong> (<em>float</em>) – scalar value of isosurface that represents</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>unconformity_feature</strong> (<em>GeologicalFeature</em>) – the created unconformity</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -308,6 +311,9 @@ unconformity so it is not evaluated below the unconformity</p>
 <li><p><strong>value</strong> (<em>float</em>) – scalar value of isosurface that represents</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>unconformity</strong> (<em>GeologicalFeature</em>) – unconformity feature</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -317,6 +323,9 @@ unconformity so it is not evaluated below the unconformity</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>fault_surface_data</strong> (<em>string</em>) – name of the domain fault data in the data frame</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>domain_Fault</strong> (<em>GeologicalFeature</em>) – the created domain fault</p>
 </dd>
 </dl>
 </dd></dl>
@@ -333,7 +342,7 @@ unconformity so it is not evaluated below the unconformity</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>dictionary</em></p>
+<dd class="field-even"><p><strong>fault</strong> (<em>FaultSegment</em>) – created fault</p>
 </dd>
 </dl>
 </dd></dl>
@@ -344,9 +353,12 @@ unconformity so it is not evaluated below the unconformity</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>foldframe_data</strong> (<em>string</em>) – unique string in type column</p></li>
+<li><p><strong>foldframe_data</strong> (<em>string</em>) – unique string in feature_name column</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fold_frame</strong> (<em>FoldFrame</em>) – the created fold frame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -362,6 +374,9 @@ unconformity so it is not evaluated below the unconformity</p>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fold_frame</strong> (<em>FoldFrame</em>) – created fold frame</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -373,12 +388,12 @@ unconformity so it is not evaluated below the unconformity</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>foliation_data</strong> (<em>string</em>) – unique string in type column of data frame</p></li>
-<li><p><strong>fold_frame</strong> (<em>FoldFrame</em>) – </p></li>
+<li><p><strong>fold_frame</strong> (<a class="reference internal" href="_autosummary/LoopStructural.modelling.fold.foldframe.html#LoopStructural.modelling.fold.foldframe.FoldFrame" title="LoopStructural.modelling.fold.foldframe.FoldFrame"><em>FoldFrame</em></a>) – </p></li>
 <li><p><strong>kwargs</strong> – additional kwargs to be passed through to other functions</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>dict</em></p>
+<dd class="field-even"><p><strong>feature</strong> (<em>GeologicalFeature</em>) – created geological feature</p>
 </dd>
 </dl>
 </dd></dl>
@@ -389,12 +404,12 @@ unconformity so it is not evaluated below the unconformity</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>series_surface_data</strong> (<em>string</em>) – corresponding to the type in the data</p></li>
+<li><p><strong>series_surface_data</strong> (<em>string</em>) – corresponding to the feature_name in the data</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>results dict</em></p>
+<dd class="field-even"><p><strong>feature</strong> (<em>GeologicalFeature</em>) – the created geological feature</p>
 </dd>
 </dl>
 </dd></dl>
@@ -410,12 +425,52 @@ unconformity so it is not evaluated below the unconformity</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.evaluate_feature_gradient">
+<code class="sig-name descname">evaluate_feature_gradient</code><span class="sig-paren">(</span><em class="sig-param">feature_name</em>, <em class="sig-param">xyz</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.evaluate_feature_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the gradient of the geological feature at a location</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_name</strong> (<em>string</em>) – name of the geological feature</p></li>
+<li><p><strong>xyz</strong> (<em>np.array</em><em>(</em><em>(</em><em>N</em><em>,</em><em>3</em><em>)</em><em>)</em>) – locations to evaluate</p></li>
+<li><p><strong>scale</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to scale real world points into model scale, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>results</strong> (<em>np.array((N,3))</em>) – gradient of the scalar field at the locations specified</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.evaluate_feature_value">
+<code class="sig-name descname">evaluate_feature_value</code><span class="sig-paren">(</span><em class="sig-param">feature_name</em>, <em class="sig-param">xyz</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.evaluate_feature_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the scalar value of the geological feature given the name at locations
+xyz</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_name</strong> (<em>string</em>) – name of the feature</p></li>
+<li><p><strong>xyz</strong> (<em>np.array</em><em>(</em><em>(</em><em>N</em><em>,</em><em>3</em><em>)</em><em>)</em>) – locations to evaluate</p></li>
+<li><p><strong>scale</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to scale real world points into model scale, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array((N))</em> – vector of scalar values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.evaluate_model">
-<code class="sig-name descname">evaluate_model</code><span class="sig-paren">(</span><em class="sig-param">xyz</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.evaluate_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate_model</code><span class="sig-paren">(</span><em class="sig-param">xyz</em>, <em class="sig-param">rescale=True</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.evaluate_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the stratigraphic id at each location</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>xyz</strong> (<em>np.array</em><em>(</em><em>(</em><em>N</em><em>,</em><em>3</em><em>)</em><em>,</em><em>dtype=float</em><em>)</em>) – locations</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xyz</strong> (<em>np.array</em><em>(</em><em>(</em><em>N</em><em>,</em><em>3</em><em>)</em><em>,</em><em>dtype=float</em><em>)</em>) – locations</p></li>
+<li><p><strong>rescale</strong> (<em>bool</em>) – whether to rescale the model</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>stratigraphic_id</strong> (<em>np.array(N,dtype=int)</em>) – the stratigraphic index for locations</p>
@@ -475,6 +530,20 @@ faults using fault_params. skip_faults is a flag that allows for the faults to b
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>(GeologicalModel, dict)</em> – the created geological model and a dictionary of the map2loop data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.get_feature_by_name">
+<code class="sig-name descname">get_feature_by_name</code><span class="sig-paren">(</span><em class="sig-param">feature_name</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.get_feature_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a feature from the mode given a name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>feature_name</strong> (<em>string</em>) – the name of the feature</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>feature</strong> (<em>GeologicalFeature</em>) – the geological feature with the specified name, or none if no feature</p>
 </dd>
 </dl>
 </dd></dl>

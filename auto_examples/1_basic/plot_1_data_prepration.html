@@ -108,7 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="plot_3_multiple_groups.html">1c. Multiple groups</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_5_using_logging.html">1e. Using logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">Using surfe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-folds">2. Modelling Folds</a></li>
@@ -272,14 +272,14 @@ interpolators</p>
 <li><p><code class="code docutils literal notranslate"><span class="pre">tx,ty,tz</span></code> represent the components of a vector which should be orthogonal to the interpolated function</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">gx,gy,gz</span></code> represent a constraint where the interpolated scalar field is parallel to this vector</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">nx,ny,nz</span></code> represent a constraint which set the partial derivatives of the function.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">type</span></code> assigns which geologicalfeature the observations control</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">feature_name</span></code> assigns which geologicalfeature the observations control</p></li>
 </ul>
 <p><strong>Note</strong> for the interpolator to solve there needs to be two unique values or a norm constraint
 for the interpolator to be able to find a solution.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">surface_1</span><span class="p">,</span><span class="n">surface_2</span><span class="p">]),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="s1">&#39;val&#39;</span><span class="p">])</span>
-<span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;conformable&#39;</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;feature_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;conformable&#39;</span>
 <span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -305,7 +305,7 @@ for the interpolator to be able to find a solution.</p>
       <th>Y</th>
       <th>Z</th>
       <th>val</th>
-      <th>type</th>
+      <th>feature_name</th>
     </tr>
   </thead>
   <tbody>
@@ -313,7 +313,7 @@ for the interpolator to be able to find a solution.</p>
       <th>0</th>
       <td>0.000000</td>
       <td>0.0</td>
-      <td>1.707541</td>
+      <td>1.284036</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -321,7 +321,7 @@ for the interpolator to be able to find a solution.</p>
       <th>1</th>
       <td>1.111111</td>
       <td>0.0</td>
-      <td>1.797553</td>
+      <td>1.181864</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -329,7 +329,7 @@ for the interpolator to be able to find a solution.</p>
       <th>2</th>
       <td>2.222222</td>
       <td>0.0</td>
-      <td>1.238265</td>
+      <td>1.479333</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -337,7 +337,7 @@ for the interpolator to be able to find a solution.</p>
       <th>3</th>
       <td>3.333333</td>
       <td>0.0</td>
-      <td>1.950460</td>
+      <td>1.413222</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -345,7 +345,7 @@ for the interpolator to be able to find a solution.</p>
       <th>4</th>
       <td>4.444444</td>
       <td>0.0</td>
-      <td>1.002397</td>
+      <td>1.660709</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -390,7 +390,7 @@ This returns a To build a scalar field representing the</p>
 <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span>
 <span class="n">xx</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="n">vals</span> <span class="o">=</span> <span class="n">conformable_feature</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.scale" title="LoopStructural.modelling.core.geological_model.GeologicalModel.scale" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">scale</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="n">conformable_feature</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.scale" title="LoopStructural.modelling.core.geological_model.GeologicalModel.scale" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">scale</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)))</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
@@ -403,7 +403,7 @@ This returns a To build a scalar field representing the</p>
 <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
 <span class="n">yy</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="n">vals</span> <span class="o">=</span> <span class="n">conformable_feature</span><span class="p">[</span><span class="s1">&#39;feature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.scale" title="LoopStructural.modelling.core.geological_model.GeologicalModel.scale" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">scale</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="n">conformable_feature</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.scale" title="LoopStructural.modelling.core.geological_model.GeologicalModel.scale" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">scale</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)))</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 
@@ -416,7 +416,7 @@ This returns a To build a scalar field representing the</p>
   plt.show()
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  38.760 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  39.615 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-1-data-prepration-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cf292dac4af30976a15aed25f7ce78f5/plot_1_data_prepration.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_1_data_prepration.py</span></code></a></p>

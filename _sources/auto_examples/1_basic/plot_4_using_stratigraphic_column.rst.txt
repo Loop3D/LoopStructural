@@ -30,7 +30,7 @@ We will use the previous example Creating a model with multiple geological featu
     data.loc[:,'val']*=-1
     data.loc[:,['nx','ny','nz']]*=-1
 
-    data.loc[792,'type'] = 'strati2'
+    data.loc[792,'feature_name'] = 'strati2'
     data.loc[792,['nx','ny','nz']] = [0,0,1]
     data.loc[792,'val'] = 0
 
@@ -42,7 +42,7 @@ We will use the previous example Creating a model with multiple geological featu
                                    nelements=1e4,
                                    solver='pyamg'
                                   )
-    uc = model.add_unconformity(strati2['feature'],1)
+    uc = model.add_unconformity(strati2,1)
 
     strati = model.create_and_add_foliation('strati',
                                   interpolatortype='PLI',
@@ -108,9 +108,9 @@ for the `model.evaluate_model(xyz)` function to be called.
 
  .. code-block:: none
 
-    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:1053: RuntimeWarning: invalid value encountered in less
+    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:1071: RuntimeWarning: invalid value encountered in less
       strat_id[np.logical_and(vals < series.get('max',feature.max()), vals > series.get('min',feature.min()))] = series['id']
-    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:1053: RuntimeWarning: invalid value encountered in greater
+    /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/core/geological_model.py:1071: RuntimeWarning: invalid value encountered in greater
       strat_id[np.logical_and(vals < series.get('max',feature.max()), vals > series.get('min',feature.min()))] = series['id']
 
 
@@ -119,7 +119,7 @@ for the `model.evaluate_model(xyz)` function to be called.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.881 seconds)
+   **Total running time of the script:** ( 0 minutes  1.755 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_4_using_stratigraphic_column.py:

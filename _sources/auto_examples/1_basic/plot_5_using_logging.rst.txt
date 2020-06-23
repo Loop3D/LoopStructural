@@ -37,10 +37,38 @@ Lets have a look at the logging from the Claudius model.
     from LoopStructural import GeologicalModel
     from LoopStructural.visualisation import LavaVuModelViewer 
     from LoopStructural.datasets import load_claudius #demo data 
-
+    from LoopStructural import log_to_file
     import pandas as pd
     import numpy as np
 
+
+
+
+
+
+
+
+Specify a log file
+~~~~~~~~~~~~~~~~~~~~
+
+
+.. code-block:: default
+
+
+    log_to_file('logging_demo_log.log')
+
+
+
+
+
+
+
+
+Create model
+~~~~~~~~~~~~~~~~~~~~
+
+
+.. code-block:: default
 
     data, bb = load_claudius()
     model = GeologicalModel(bb[0,:],bb[1,:])
@@ -60,22 +88,13 @@ Lets have a look at the logging from the Claudius model.
                                               )
     viewer = LavaVuModelViewer(model,background="white")
     viewer.add_model_surfaces()
-    viewer.lv.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+    viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
     viewer.display()
 
 
 
 .. image:: /auto_examples/1_basic/images/sphx_glr_plot_5_using_logging_001.png
     :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    LavaVu Run error: FBO creation failed, can't continue
 
 
 
@@ -92,42 +111,13 @@ an operation is not occuring as you would expect.
 
 
     from itertools import islice
-    with open('/tmp/default-loop-structural-logfile.log') as inf:
-        for line in islice(inf, 0, 11):
-            print(line)
+    # with open('logging_demo_log.log') as inf:
+    #     for line in islice(inf, 0, 11):
+    #         print(line)
 
 
 
 
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    06-18 14:56 LoopStructural.modelling.core.geological_model INFO     Creating regular grid with 18876 elements 
-
-    for modelling using FDI
-
-    06-18 14:56 LoopStructural.modelling.features.geological_feature_builder INFO     Adding 0 faults to strati
-
-    06-18 14:56 LoopStructural.interpolators.discrete_interpolator INFO     Interpolation matrix is 121898 x 21114
-
-    06-18 14:56 LoopStructural.interpolators.discrete_interpolator INFO     Adding eps to matrix diagonal
-
-    06-18 14:56 LoopStructural.interpolators.discrete_interpolator INFO     Solving with pyamg solve
-
-    06-18 14:56 LoopStructural.modelling.core.geological_model INFO     Adding strati to model at location 1
-
-    06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 60.000000
-
-    06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 250.000000
-
-    06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 330.000000
-
-    06-18 14:56 LoopStructural.visualisation.model_visualisation INFO     Creating isosurface of strati at 600.000000
 
 
 
@@ -180,22 +170,13 @@ It is also possible to change the logging level for the console log.
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    LavaVu Run error: FBO creation failed, can't continue
-
-
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  12.370 seconds)
+   **Total running time of the script:** ( 0 minutes  10.534 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_5_using_logging.py:

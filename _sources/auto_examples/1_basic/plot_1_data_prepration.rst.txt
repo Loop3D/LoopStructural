@@ -101,7 +101,7 @@ interpolators
 * :code:`tx,ty,tz` represent the components of a vector which should be orthogonal to the interpolated function
 * :code:`gx,gy,gz` represent a constraint where the interpolated scalar field is parallel to this vector
 * :code:`nx,ny,nz` represent a constraint which set the partial derivatives of the function.
-* :code:`type` assigns which geologicalfeature the observations control
+* :code:`feature_name` assigns which geologicalfeature the observations control
 **Note** for the interpolator to solve there needs to be two unique values or a norm constraint
 for the interpolator to be able to find a solution.
 
@@ -112,7 +112,7 @@ for the interpolator to be able to find a solution.
     import pandas as pd
 
     data = pd.DataFrame(np.vstack([surface_1,surface_2]),columns=['X','Y','Z','val'])
-    data['type'] = 'conformable'
+    data['feature_name'] = 'conformable'
     data.head()
 
 
@@ -146,7 +146,7 @@ for the interpolator to be able to find a solution.
               <th>Y</th>
               <th>Z</th>
               <th>val</th>
-              <th>type</th>
+              <th>feature_name</th>
             </tr>
           </thead>
           <tbody>
@@ -154,7 +154,7 @@ for the interpolator to be able to find a solution.
               <th>0</th>
               <td>0.000000</td>
               <td>0.0</td>
-              <td>1.707541</td>
+              <td>1.284036</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -162,7 +162,7 @@ for the interpolator to be able to find a solution.
               <th>1</th>
               <td>1.111111</td>
               <td>0.0</td>
-              <td>1.797553</td>
+              <td>1.181864</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -170,7 +170,7 @@ for the interpolator to be able to find a solution.
               <th>2</th>
               <td>2.222222</td>
               <td>0.0</td>
-              <td>1.238265</td>
+              <td>1.479333</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -178,7 +178,7 @@ for the interpolator to be able to find a solution.
               <th>3</th>
               <td>3.333333</td>
               <td>0.0</td>
-              <td>1.950460</td>
+              <td>1.413222</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -186,7 +186,7 @@ for the interpolator to be able to find a solution.
               <th>4</th>
               <td>4.444444</td>
               <td>0.0</td>
-              <td>1.002397</td>
+              <td>1.660709</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -259,7 +259,7 @@ Geological feature can be evaluated:
     xx = np.zeros_like(yy)
     xx[:] = 5
 
-    vals = conformable_feature['feature'].evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
+    vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
     fig, ax = plt.subplots(1,2,figsize=(20,10))
     ax[0].contourf(vals.reshape((100,100)))
     ax[0].contour(vals.reshape((100,100)),[0,1])
@@ -272,7 +272,7 @@ Geological feature can be evaluated:
     yy = np.zeros_like(xx)
     yy[:] = 5
 
-    vals = conformable_feature['feature'].evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
+    vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
     ax[1].contourf(vals.reshape((100,100)))
     ax[1].contour(vals.reshape((100,100)),[0,1])
 
@@ -299,7 +299,7 @@ Geological feature can be evaluated:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  38.760 seconds)
+   **Total running time of the script:** ( 1 minutes  39.615 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_1_data_prepration.py:
