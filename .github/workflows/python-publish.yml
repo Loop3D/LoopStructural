@@ -1,33 +1,37 @@
-# This workflows will upload a Python Package using Twine when a release is created
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
-
-name: Upload Python Package
+name: Python package build and publish
 
 on:
   push:
-    branches: 
-      - master
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v1
       with:
-        python-version: '3.x'
+        python-version: 3.8
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
         python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-    - name: Build and publish
+        pip install twine flake8
+    - name: Lint with flake8 for syntax errors
+      run: |
+        pip install flake8
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Build manylinux Python wheels
+      uses: RalfG/python-wheels-manylinux-build@v0.2.2-manylinux2010_x86_64
+      with:
+        python-versions: 'cp36-cp36m cp37-cp37m'
+        build-requirements: 'cython numpy scipy scikit-learn'
+        system-packages: ''
+        package-path: ''
+        pip-wheel-args: ''
+    - name: Publish wheels to PyPI
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        python setup.py sdist bdist_wheel
-        twine upload dist/*
+        twine upload wheelhouse/*-manylinux*.whl
