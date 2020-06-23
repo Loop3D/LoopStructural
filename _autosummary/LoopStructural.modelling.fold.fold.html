@@ -25,7 +25,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -198,6 +198,61 @@
 </div>
 <span class="target" id="module-LoopStructural.modelling.fold.fold"></span><div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="LoopStructural.modelling.fold.fold.FoldEvent">
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.modelling.fold.fold.</code><code class="sig-name descname">FoldEvent</code><span class="sig-paren">(</span><em class="sig-param">foldframe</em>, <em class="sig-param">fold_axis_rotation=None</em>, <em class="sig-param">fold_limb_rotation=None</em>, <em class="sig-param">fold_axis=None</em>, <em class="sig-param">name='Fold'</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.fold.FoldEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A fold event describes the geometry of the fold using a fold frame
+and two geometrical descriptors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>the fold frame object</strong> (<em>foldframe</em>) – </p></li>
+<li><p><strong>function for the fold axis rotation angle</strong> (<em>fold_axis_rotation</em>) – </p></li>
+<li><p><strong>function for the fold limb rotation angle</strong> (<em>fold_limb_rotation</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="LoopStructural.modelling.fold.fold.FoldEvent.get_deformed_orientation">
+<code class="sig-name descname">get_deformed_orientation</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.fold.FoldEvent.get_deformed_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the normal to the folded foliation at locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>- np.array</strong> (<em>points</em>) – location Nx3 array of x,y,z locations to evaluate fold</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fold.fold.FoldEvent.get_fold_axis_orientation">
+<code class="sig-name descname">get_fold_axis_orientation</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.fold.FoldEvent.get_fold_axis_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the fold axis orientation for evaluation points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>locations to calculate fold axis numpy array Nx3</strong> (<em>points</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fold.fold.FoldEvent.rot_mat">
+<code class="sig-name descname">rot_mat</code><span class="sig-paren">(</span><em class="sig-param">axis</em>, <em class="sig-param">angle</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.fold.FoldEvent.rot_mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rotation matrix for axis and angle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Nx3 vector for axis</strong> (<em>axis</em>) – </p></li>
+<li><p><strong>N array for angle in degrees</strong> (<em>angle</em>) – </p></li>
+<li><p><strong>3</strong><strong>,</strong><strong>3</strong><strong>,</strong><strong>N rotation matrix</strong> (<em>Returns</em>) – </p></li>
+<li><p><strong>-------</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 

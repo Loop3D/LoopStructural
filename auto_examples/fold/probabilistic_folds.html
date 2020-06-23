@@ -25,7 +25,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -175,10 +175,10 @@
 <div class="section" id="imports">
 <h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#import the Forward Modelling Engine modules - LoopStructural</span>
-<span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="k">import</span> <span class="n">GeologicalModel</span>
-<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="k">import</span> <span class="n">load_noddy_single_fold</span>
-<span class="kn">from</span> <span class="nn">LoopStructural.visualisation.model_visualisation</span> <span class="k">import</span> <span class="n">LavaVuModelViewer</span>
-<span class="kn">from</span> <span class="nn">LoopStructural.utils.helper</span> <span class="k">import</span> <span class="n">strike_dip_vector</span><span class="p">,</span> <span class="n">plunge_and_plunge_dir_to_vector</span>
+<span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <span class="n">GeologicalModel</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_noddy_single_fold</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation.model_visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.utils.helper</span> <span class="kn">import</span> <span class="n">strike_dip_vector</span><span class="p">,</span> <span class="n">plunge_and_plunge_dir_to_vector</span>
 <span class="c1"># from LoopStructural.visualisation.rotation_angle_plotter import RotationAnglePlotter</span>
 <span class="c1"># import other libraries</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -273,7 +273,7 @@ on a grid.</p>
 </div>
 <div class="section" id="define-the-fixed-parts-of-the-model">
 <h3>Define the fixed parts of the model<a class="headerlink" href="#define-the-fixed-parts-of-the-model" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural.modelling.fold</span> <span class="k">import</span> <span class="n">fourier_series</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural.modelling.fold</span> <span class="kn">import</span> <span class="n">fourier_series</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
 <span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
 <span class="n">fold_frame</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fold_frame</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">,</span>
@@ -346,7 +346,7 @@ before.</p>
     <span class="n">ll</span> <span class="o">=</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">lp</span> <span class="o">+</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">minimize</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
 <span class="n">nll</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span> <span class="p">:</span> <span class="o">-</span><span class="n">log_likelihood</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 <span class="n">initial</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.0001</span><span class="p">]</span>
 <span class="n">soln</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">nll</span><span class="p">,</span> <span class="n">initial</span><span class="p">)</span>
