@@ -25,7 +25,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -211,9 +211,9 @@ to the notebooks within the notebooks directory will NOT be saved on
 your local versions.</p>
 <p>If you want to use your own data with the docker container you will need
 to link your local directory (this can be anywhere) with the docker container.
-To do this add <code class="code docutils literal notranslate"><span class="pre">-v</span> <span class="pre">LOCALDIRPATH:/home/joyvan/shared_volume</span></code> to the docker command
-so it becomes <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">-p</span> <span class="pre">8888:8888</span> <span class="pre">-v</span> <span class="pre">LOCALDIRPATH:/home/joyvan/shared_volume</span></code>.
-<code class="code docutils literal notranslate"><span class="pre">LOCALDIRPATH</span></code> is the full path to the directory you want to share.</p>
+To do this add <code class="code docutils literal notranslate"><span class="pre">-v</span> <span class="pre">LOCALDIRPATH:/home/jovyan/shared_volume</span></code> to the docker command
+so it becomes <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">-p</span> <span class="pre">8888:8888</span> <span class="pre">-v</span> <span class="pre">LOCALDIRPATH:/home/jovyan/shared_volume</span> <span class="pre">loop</span></code>.
+<code class="code docutils literal notranslate"><span class="pre">LOCALDIRPATH</span></code> is the relative or full path to the directory you want to share.</p>
 </div>
 </div>
 <div class="section" id="windows-using-conda">
@@ -227,14 +227,14 @@ the relevant version of LoopStructural for your distribution and python version.
 for Windows 64 bit using python 3.6 you would download the package <a class="reference external" href="https://github.com/Loop3D/LoopStructural/releases/download/latest/LoopStructural-0.0.0-cp36-cp36m-win_amd64.whl">LoopStructural-0.0.0-cp36-cp36m-win_amd64.whl</a>.</p>
 <p>LoopStructural can then be installed into your python environment by running the command within your chosen python virtual environment.
 .. code-block:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">LoopStructural</span><span class="o">-</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">cp36</span><span class="o">-</span><span class="n">cp36m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">LoopStructural</span><span class="o">-</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">cp36</span><span class="o">-</span><span class="n">cp36m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
 </pre></div>
 </div>
 </div>
 <div class="toggle docutils container">
 <div class="header docutils container">
-<p>If you want to install LoopStructural from source to be able to modify the code you will need to have a working C++ compiler.
-<strong>Installing a development environment</strong></p>
+<p>If you want to install LoopStructural from source to be able to modify the code you will need to have a working C++ compiler.</p>
 </div>
 </div>
 </div>
@@ -346,15 +346,6 @@ This means that the LoopStructural folder will appear in the home directory of y
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">LoopStructural</span>
 </pre></div>
 </div>
-<p>Now install meshpy using the meshpy.sh script which automates cloning the repository and running the setup.py file.
-Make sure the LoopStructural environment is activated to run this command.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LoopStructural</span>
-<span class="n">cd</span> <span class="o">~</span>
-<span class="n">git</span> <span class="n">clone</span> <span class="o">--</span><span class="n">recursive</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">git</span><span class="o">.</span><span class="n">tiker</span><span class="o">.</span><span class="n">net</span><span class="o">/</span><span class="n">trees</span><span class="o">/</span><span class="n">meshpy</span><span class="o">.</span><span class="n">git</span>
-<span class="n">cd</span> <span class="n">meshpy</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
-</pre></div>
-</div>
 <p>You can now install LoopStructural using the makefile.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="nb">all</span>
 </pre></div>
@@ -386,6 +377,7 @@ Try working through one of the examples/tutorials found in the notebooks directo
 <p>First pull the most recent version from github.</p>
 <p>Using the WSL change to the LoopStructural directory and run the makefile</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">LoopStructural</span>
+<span class="n">pip</span> <span class="n">uninstall</span> <span class="n">LoopStructural</span>
 <span class="n">make</span> <span class="n">build</span>
 </pre></div>
 </div>

@@ -12,7 +12,7 @@ Windows using conda
 
     LoopStructural can then be installed into your python environment by running the command within your chosen python virtual environment.
     .. code-block::
-
+        pip install -r requirements.txt
         pip install LoopStructural-0.0.0-cp36-cp36m-win_amd64.whl
 
 .. container:: toggle
@@ -20,5 +20,6 @@ Windows using conda
     .. container:: header
 
         If you want to install LoopStructural from source to be able to modify the code you will need to have a working C++ compiler.
-        **Installing a development environment**
+
+     
 

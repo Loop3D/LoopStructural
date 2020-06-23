@@ -25,7 +25,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -175,121 +175,6 @@
 </div>
 <span class="target" id="module-LoopStructural.interpolators.surfe_wrapper"></span><div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.surfe_wrapper.</code><code class="sig-name descname">SurfeRBFInterpolator</code><span class="sig-paren">(</span><em class="sig-param">method='single_surface'</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator</span></code></a></p>
-<p>This class is the base class for a geological interpolator and contains all of the
-main interface functions. Any class that is inheriting from this should be callable
-by using any of these functions. This will enable interpolators to be interchanged.</p>
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_gradient_constraints">
-<code class="sig-name descname">get_gradient_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_gradient_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_norm_constraints">
-<code class="sig-name descname">get_norm_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_norm_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_tangent_constraints">
-<code class="sig-name descname">get_tangent_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_tangent_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_value_constraints">
-<code class="sig-name descname">get_value_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.get_value_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes all of the data from an interpolator</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_gradient_constraints">
-<code class="sig-name descname">set_gradient_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_gradient_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_normal_constraints">
-<code class="sig-name descname">set_normal_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_normal_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_property_name">
-<code class="sig-name descname">set_property_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_property_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the name of the interpolated property
-:param name: name of the property to be saved on a mesh
-:type name: string</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_tangent_constraints">
-<code class="sig-name descname">set_tangent_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_tangent_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_value_constraints">
-<code class="sig-name descname">set_value_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.set_value_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.setup_interpolator">
-<code class="sig-name descname">setup_interpolator</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.setup_interpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs all of the required setting up stuff</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.solve_system">
-<code class="sig-name descname">solve_system</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.surfe_wrapper.SurfeRBFInterpolator.solve_system" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solves the interpolation equations</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 

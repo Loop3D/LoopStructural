@@ -156,17 +156,6 @@ Windows using linux subsystem
         cd LoopStructural
 
 
-    Now install meshpy using the meshpy.sh script which automates cloning the repository and running the setup.py file.
-    Make sure the LoopStructural environment is activated to run this command.
-
-    .. code-block::
-
-        LoopStructural
-        cd ~
-        git clone --recursive https://git.tiker.net/trees/meshpy.git
-        cd meshpy
-        python setup.py install
-
 
     You can now install LoopStructural using the makefile.
 
@@ -218,6 +207,7 @@ Windows using linux subsystem
     .. code-block::
 
         cd LoopStructural
+        pip uninstall LoopStructural
         make build
 
     This will not install the requirements.txt and only call the setup.py file for LoopStructural.

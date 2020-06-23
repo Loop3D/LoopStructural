@@ -10,7 +10,7 @@ Within the GeologicalModel, different elements in the model are represented by G
 GeologicalModel 
 ~~~~~~~~~~~~~~~
 * Manages the order of the geological features
-* Creates geological features
+* Creates geological features, addings 
 * Rescales data/region
 * Relates geological features - e.g. faults are added to stratigraphy
 
