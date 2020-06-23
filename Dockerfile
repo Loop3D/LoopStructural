@@ -97,8 +97,8 @@ RUN cd ~ && \
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/xvfbrun.sh"]
 USER root
 RUN rm -r ${HOME}/*
-#COPY ../SGTSG_2019/notebooks ${HOME}
 RUN mkdir shared_volume
+RUN ls -l
 #COPY 
 USER ${NB_USER}
 # launch notebook
