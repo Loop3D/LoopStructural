@@ -203,8 +203,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
 
             B = np.zeros(points[inside, :].shape[0])
-            self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
-            A = np.einsum('ij,ijk->ik', dip_vector.T, T)
+            # self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
+            A += np.einsum('ij,ijk->ik', dip_vector.T, T)
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :])
 
     def add_norm_constraint(self, w=1.):

@@ -154,12 +154,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = gi[tetras]
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
-            self.add_constraints_to_least_squares(A[outside, :] * w,
-                                                  B[outside], idc[outside, :],
-                                                  name = 'gradient')
-            A = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
-            A *= vol[:, None]
-
+            # self.add_constraints_to_least_squares(A[outside, :] * w,
+            #                                       B[outside], idc[outside, :],
+            #                                       name = 'gradient')
+            A2 = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
+            A2 *= vol[:, None]
+            A+=A2
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                           B[outside], idc[outside, :],
                                                   name='gradient')
