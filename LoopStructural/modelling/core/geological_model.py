@@ -262,7 +262,7 @@ class GeologicalModel:
             if featuretype == 'folded_strati':
                 self.create_and_add_folded_foliation(f)
 
-    def get_interpolator(self, interpolatortype='PLI', nelements=5e5,
+    def get_interpolator(self, interpolatortype='PLI', nelements=1e5,
                          buffer=0.2, **kwargs):
         """
         Returns an interpolator given the arguments, also constructs a
