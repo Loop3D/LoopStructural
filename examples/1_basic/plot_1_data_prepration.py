@@ -123,6 +123,14 @@ conformable_feature = model.create_and_add_foliation('conformable')
 # Geological feature can be evaluated:
 # * for the scalar field value at a location
 # * for the gradient of the scalar field at a location
+# To evaluate a model feature (scalar value or gradient) use the:
+# :code:`model.evaluate_feature_value(feature_name, locations)` or 
+# :code:`model.evaluate_feature_gradient(feature_name, locations)`
+# Where the feature_name is the string naming the feature and locations is a numpy array of 
+# xyz coordinates.
+# 
+# In the following example we will use matplotlib to visualise these results however, the
+# next tutorial will show how to use the lavavu visualisation model.  
 
 
 import matplotlib.pyplot as plt
@@ -135,10 +143,10 @@ yy, zz = np.meshgrid(y,z)
 xx = np.zeros_like(yy)
 xx[:] = 5
 
-vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
+vals = model.evaluate_feature_value('conformable',np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
 fig, ax = plt.subplots(1,2,figsize=(20,10))
-ax[0].contourf(vals.reshape((100,100)))
-ax[0].contour(vals.reshape((100,100)),[0,1])
+ax[0].contourf(vals.reshape((100,100)),extent=(0,10,0,10))
+ax[0].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
 
 # Y section
 x = np.linspace(0,10,100)
@@ -148,8 +156,8 @@ xx, zz = np.meshgrid(x,z)
 yy = np.zeros_like(xx)
 yy[:] = 5
 
-vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
-ax[1].contourf(vals.reshape((100,100)))
-ax[1].contour(vals.reshape((100,100)),[0,1])
+vals = model.evaluate_feature_value('conformable',np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
+ax[1].contourf(vals.reshape((100,100)),extent=(0,10,0,10))
+ax[1].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
 
 plt.show()
