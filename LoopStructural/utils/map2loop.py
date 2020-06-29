@@ -43,6 +43,8 @@ def process_map2loop(m2l_directory, flags={}):
     except:
         for g in groups['group'].unique():
             supergroups[g] = g
+    supergroups.pop('\n')
+
     
 
     bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
@@ -85,6 +87,23 @@ def process_map2loop(m2l_directory, flags={}):
                 unit_id += 1
                 strat_val[c] = val[g]
                 val[g] += thickness[c]
+    group_name = None
+    for g, i in stratigraphic_column.items():
+        if len(i) ==0:
+            for gr, sg in supergroups.items():
+                if sg == g:
+                    group_name = gr
+                    break
+            try:
+                if group_name is None:
+                    continue
+                c=groups.loc[groups['group']==group_name,'code'].to_numpy()[0]
+                strat_val[c] = 0
+                stratigraphic_column[g] = {c:{'min':0,'max':9999,'id':unit_id}}
+                unit_id+=1
+                group_name = None
+            except:
+                print('Couldnt process {}'.format(g))
     contacts['val'] = np.nan
     for o in strat_val:
         contacts.loc[contacts['formation'] == o, 'val'] = strat_val[o]
@@ -140,7 +159,7 @@ def process_map2loop(m2l_directory, flags={}):
             'bounding_box':bb,
             'strat_va':strat_val}
 
-def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_params=None):
+def build_model(m2l_data, skip_faults = False, unconformities=True, fault_params = None, foliation_params=None):
     """[summary]
 
     [extended_summary]
@@ -199,12 +218,12 @@ def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_pa
 
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
-    for i in m2l_data['groups']['group number'].unique():
+    for i in np.sort(m2l_data['groups']['group number'].unique()):
         g = m2l_data['groups'].loc[m2l_data['groups']['group number'] == i, 'group'].unique()[0]
         group_features.append(model.create_and_add_foliation(g,
                                                             **foliation_params))
         # if the group was successfully added (not null) then lets add the base (0 to be unconformity)
-        # if group_features[-1]:
-        #     model.add_unconformity(group_features[-1], 0)
+        if group_features[-1] and unconformities:
+            model.add_unconformity(group_features[-1], 0)
     model.set_stratigraphic_column(m2l_data['stratigraphic_column'])
     return model

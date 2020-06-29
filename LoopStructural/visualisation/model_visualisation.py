@@ -149,8 +149,9 @@ class LavaVuModelViewer:
                 geological_feature.name, geological_feature.min(), geological_feature.max()))
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
 
-    def add_isosurface(self, geological_feature, value = None, isovalue=None, paint_with=None, 
-                    slices=None, colour='red', nslices=None, cmap=None, **kwargs):
+    def add_isosurface(self, geological_feature, value = None, isovalue=None,
+                     paint_with=None, slices=None, colour='red', nslices=None, 
+                     cmap=None, **kwargs):
         """ Plot the surface of a geological feature 
 
         [extended_summary]
