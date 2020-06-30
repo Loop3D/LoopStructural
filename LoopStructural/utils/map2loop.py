@@ -159,7 +159,7 @@ def process_map2loop(m2l_directory, flags={}):
             'bounding_box':bb,
             'strat_va':strat_val}
 
-def build_model(m2l_data, skip_faults = False, unconformities=True, fault_params = None, foliation_params=None):
+def build_model(m2l_data, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None):
     """[summary]
 
     [extended_summary]
