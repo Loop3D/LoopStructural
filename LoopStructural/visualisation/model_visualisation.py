@@ -151,7 +151,7 @@ class LavaVuModelViewer:
 
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
-                     cmap=None, **kwargs):
+                     cmap=None, filename=None, **kwargs):
         """ Plot the surface of a geological feature 
 
         [extended_summary]
@@ -174,6 +174,8 @@ class LavaVuModelViewer:
             [description], by default None
         cmap : [type], optional
             [description], by default None
+        filename: string, optional
+            filename for exporting 
 
         Returns
         -------
@@ -189,7 +191,7 @@ class LavaVuModelViewer:
         # do isosurfacing of support using marching tetras/cubes
         x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
         y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
-        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2])
+        z = np.linspace(self.bounding_box[0, 2], self.bounding_box[1, 2], self.nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         val = geological_feature.evaluate_value(points)
@@ -241,9 +243,20 @@ class LavaVuModelViewer:
             except ValueError:
                 logger.warning("no surface to mesh, skipping")
                 continue
+            
+
             name = geological_feature.name
             name = kwargs.get('name', name)
             name += '_iso_%f' % isovalue
+            if filename is not None:
+                try:
+                    import meshio
+                except ImportError:
+                    logger.error("Could not save surfaces, meshio is not installed")
+                meshio.write_points_cells(filename.format(name),
+                self.model.rescale(verts),
+                [("triangle", faces)]
+                )
             surf = self.lv.triangles(name)
             surf.vertices(verts)
             surf.indices(faces)
@@ -354,12 +367,12 @@ class LavaVuModelViewer:
             if g in self.model.feature_name_index:
                 feature = self.model.features[self.model.feature_name_index[g]]
                 for u, vals in self.model.stratigraphic_column[g].items():
-                    self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:])
+                    self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:],**kwargs)
                     ci+=1
         if faults:
             for f in self.model.features:
                 if f.type == 'fault':
-                    self.add_isosurface(f,isovalue=0)
+                    self.add_isosurface(f,isovalue=0,**kwargs)
 
 
     def add_vector_field(self, geological_feature, **kwargs):
