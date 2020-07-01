@@ -5,7 +5,7 @@ on:
     types: [created]
 
 jobs:
-  deploy:
+  flake8:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -16,12 +16,25 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install twine flake8
+        pip install flake8
     - name: Lint with flake8 for syntax errors
       run: |
         pip install flake8
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  manylinux:
+    runs-on: ubuntu-latest
+    needs: flake8
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install twine 
     - name: Build manylinux Python wheels
       uses: RalfG/python-wheels-manylinux-build@v0.2.2-manylinux2010_x86_64
       with:
@@ -36,3 +49,37 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         twine upload wheelhouse/*-manylinux*.whl
+        
+  build-windows:
+    runs-on: windows-latest
+    needs: flake8
+    strategy:
+      matrix:
+        python: ['3.6','3.7','3.8']
+    steps:
+    - uses: actions/checkout@v2
+    - uses: goanpeca/action-setup-conda@v1
+      with:
+        python-version: ${{ matrix.python }} 
+        activate-environment: loop    
+    - name: Installing dependencies
+      shell: bash -l {0}
+      run: |
+        python --version
+        pip install -r requirements.txt
+        conda info
+        conda list
+    - name: Building Loop wheel and installing
+      shell: bash -l {0}
+      run: |
+        python setup.py bdist_wheel
+        python setup.py bdist
+    - name: Publish wheels to PyPI
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      shell: bash -l {0}
+      run : |
+        pip install twine
+        twine upload dist/*
+        
