@@ -128,6 +128,31 @@ class GeologicalModel:
         m2l_data = process_map2loop(m2l_directory)
         return build_model(m2l_data,**kwargs), m2l_data
 
+    @classmethod
+    def from_file(cls, file):
+        try:
+            import dill as pickle
+        except ImportError:
+            logger.error("Cannot import from file, dill not installed")
+            return None
+        model = pickle.load(open(file,'rb'))
+        if type(model) == GeologicalModel:
+            return model
+        else:
+            logger.error('{} does not contain a geological model'.format(file))
+            return None
+
+    def to_file(self, file):
+        try:
+            import dill as pickle
+        except ImportError:
+            logger.error("Cannot write to file, dill not installed")
+            return
+        try:
+            pickle.dump(self,open(file,'wb'))
+        except pickle.PicklingError:
+            logger.error('Error saving file')
+
     def _add_feature(self, feature):
         """
         Add a feature to the model stack
