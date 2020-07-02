@@ -20,7 +20,7 @@ def process_map2loop(m2l_directory, flags={}):
     tangents = pd.read_csv(m2l_directory + '/tmp/raw_contacts.csv')
     groups = pd.read_csv(m2l_directory + '/tmp/all_sorts.csv', index_col=0)
     contact_orientations = pd.read_csv(m2l_directory + '/output/orientations.csv')
-    formation_thickness = pd.read_csv(m2l_directory + '/output/formation_thicknesses.csv')
+    # formation_thickness = pd.read_csv)
     contacts = pd.read_csv(m2l_directory + '/output/contacts4.csv')
     displacements = pd.read_csv(m2l_directory + '/output/fault_displacements3.csv')
     fault_orientations = pd.read_csv(m2l_directory + '/output/fault_orientations.csv')
@@ -64,15 +64,26 @@ def process_map2loop(m2l_directory, flags={}):
     contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
 
     # calculate scalar field values
+    i = 0
     thickness = {}
-    for f in formation_thickness['formation'].unique():
-        thickness[f] = np.mean(formation_thickness[formation_thickness['formation'] == f]['thickness'])
+    with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
+        for l in file:
+            if i>1:
+                linesplit = l.split(',')
+                thickness[linesplit[0]] = float(linesplit[1])
+    #             print(l.split(',')[1])
+            i+=1
+    # with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
+
+    # thickness = {}
+    # for f in formation_thickness['formation'].unique():
+    #     thickness[f] = formation_thickness[formation_thickness['formation'] == f]['thickness'])
 
     strat_val = {}
     stratigraphic_column = {}
     unit_id = 0
     val = {}
-    for i in groups['group number'].unique()[::-1]:
+    for i in groups['group number'].unique():
         g = supergroups[groups.loc[groups['group number'] == i, 'group'].iloc[0]]
         if g not in stratigraphic_column:
             stratigraphic_column[g] = {}
