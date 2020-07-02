@@ -128,6 +128,31 @@ class GeologicalModel:
         m2l_data = process_map2loop(m2l_directory)
         return build_model(m2l_data,**kwargs), m2l_data
 
+    @classmethod
+    def from_file(cls, file):
+        try:
+            import dill as pickle
+        except ImportError:
+            logger.error("Cannot import from file, dill not installed")
+            return None
+        model = pickle.load(open(file,'rb'))
+        if type(model) == GeologicalModel:
+            return model
+        else:
+            logger.error('{} does not contain a geological model'.format(file))
+            return None
+
+    def to_file(self, file):
+        try:
+            import dill as pickle
+        except ImportError:
+            logger.error("Cannot write to file, dill not installed")
+            return
+        try:
+            pickle.dump(self,open(file,'wb'))
+        except pickle.PicklingError:
+            logger.error('Error saving file')
+
     def _add_feature(self, feature):
         """
         Add a feature to the model stack
@@ -265,7 +290,7 @@ class GeologicalModel:
             if featuretype == 'folded_strati':
                 self.create_and_add_folded_foliation(f)
 
-    def get_interpolator(self, interpolatortype='PLI', nelements=5e5,
+    def get_interpolator(self, interpolatortype='PLI', nelements=1e5,
                          buffer=0.2, **kwargs):
         """
         Returns an interpolator given the arguments, also constructs a
@@ -630,6 +655,8 @@ class GeologicalModel:
 
         """
         for f in reversed(self.features):
+            if f.name == feature.name:
+                continue
             if f.type == 'domain_fault':
                 feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
                 break
@@ -650,6 +677,8 @@ class GeologicalModel:
 
         """
         for f in reversed(self.features):
+            if f.name == domain_fault.name:
+                continue
             f.add_region(lambda pos: domain_fault.evaluate_value(pos) > 0)
             if f.type == 'unconformity':
                 break
@@ -826,11 +855,14 @@ class GeologicalModel:
         # build feature
         domain_fault = domain_fault_feature_builder.build(**kwargs)
         domain_fault.type = 'domain_fault'
+        self._add_feature(domain_fault)
+        self._add_domain_fault_below(domain_fault)
+
         # uc_feature = UnconformityFeature(uc_feature_base,0)
         # iterate over existing features and add the unconformity as a
         # region so the feature is only
         # evaluated where the unconformity is positive
-        return self.add_unconformity(domain_fault, 0)
+        return domain_fault
 
     def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
         """
@@ -996,7 +1028,7 @@ class GeologicalModel:
         """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
 
-    def regular_grid(self, nsteps=(50, 50, 25), shuffle = True):
+    def regular_grid(self, nsteps=(50, 50, 25), shuffle = True, rescale=True):
         """
         Return a regular grid within the model bounding box
 
@@ -1020,6 +1052,8 @@ class GeologicalModel:
         locs = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         if shuffle:
             np.random.shuffle(locs)
+        if rescale:
+            locs = self.rescale(locs)
         return locs
 
     def evaluate_model(self, xyz, rescale=True):
