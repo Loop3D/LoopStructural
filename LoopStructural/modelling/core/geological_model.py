@@ -205,7 +205,10 @@ class GeologicalModel:
                 self.data.loc[mask, 'strike'], self.data.loc[mask, 'dip'])
             self.data.drop(['strike', 'dip'], axis=1, inplace=True)
         #     self.data.loc
-
+        # if 'nx' in self.data and 'ny' in self.data and 'nz' in self.data:
+        #     mask = np.all(~np.isnan(self.data.loc[:, ['nx', 'ny','nz']]),
+        #                   axis=1)
+        #     self.data.loc[mask,['nx', 'ny','nz']] /= self.scale_factor
     def extend_model_data(self, newdata):
         """
         Extends the data frame
@@ -289,16 +292,21 @@ class GeologicalModel:
         # add a buffer to the interpolation domain, this is necessary for
         # faults but also generally a good
         # idea to avoid boundary problems
+        # buffer = bb[1, :]
+        buffer = (bb[1,:]-bb[0,:])*buffer
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
+        box_vol = (bb[1, 0]-bb[0, 0]) * (bb[1, 1]-bb[0, 1]) * (bb[1, 2]-bb[0, 2])
         if interpolatortype == "PLI":
             nelements /= 5
-            ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
+            ele_vol = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
             step_vector[:] = ele_vol ** (1. / 3.)
+            # step_vector /= np.array([1,1,2])
             # number of steps is the length of the box / step vector
-            nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            print(nsteps)
             # create a structured grid using the origin and number of steps
             mesh_id = 'mesh_{}'.format(nelements)
             mesh = self.support.get(mesh_id,
@@ -313,12 +321,12 @@ class GeologicalModel:
 
         if interpolatortype == 'FDI':
             # find the volume of one element
-            ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
+            ele_vol = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
             step_vector[:] = ele_vol ** (1. / 3.)
             # number of steps is the length of the box / step vector
-            nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
             grid_id = 'grid_{}'.format(nelements)
             grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
@@ -332,12 +340,12 @@ class GeologicalModel:
 
         if interpolatortype == "DFI":  # "fold" in kwargs:
             nelements /= 5
-            ele_vol = bb[1, 0] * bb[1, 1] * bb[1, 2] / nelements
+            ele_vol = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
             step_vector[:] = ele_vol ** (1. / 3.)
             # number of steps is the length of the box / step vector
-            nsteps = ((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
             mesh = kwargs.get('mesh', TetMesh(origin=bb[0, :], nsteps=nsteps,
                                               step_vector=step_vector))

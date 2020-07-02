@@ -56,10 +56,10 @@ def process_map2loop(m2l_directory, flags={}):
     # convert azimuth and dip to gx, gy, gz
     from LoopStructural.utils.helper import strike_dip_vector
     contact_orientations['strike'] = contact_orientations['azimuth'] - 90
-    contact_orientations['gx'] = np.nan
-    contact_orientations['gy'] = np.nan
-    contact_orientations['gz'] = np.nan
-    contact_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(contact_orientations['strike'],
+    contact_orientations['nx'] = np.nan
+    contact_orientations['ny'] = np.nan
+    contact_orientations['nz'] = np.nan
+    contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
                                                                  contact_orientations['dip'])
     contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
 
@@ -72,7 +72,7 @@ def process_map2loop(m2l_directory, flags={}):
     stratigraphic_column = {}
     unit_id = 0
     val = {}
-    for i in groups['group number'].unique():
+    for i in groups['group number'].unique()[::-1]:
         g = supergroups[groups.loc[groups['group number'] == i, 'group'].iloc[0]]
         if g not in stratigraphic_column:
             stratigraphic_column[g] = {}
@@ -140,7 +140,7 @@ def process_map2loop(m2l_directory, flags={}):
             'bounding_box':bb,
             'strat_va':strat_val}
 
-def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_params=None):
+def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_params=None, rescale=True):
     """[summary]
 
     [extended_summary]
@@ -172,7 +172,7 @@ def build_model(m2l_data, skip_faults = False, fault_params = None, foliation_pa
     boundary_points[1, 1] = m2l_data['bounding_box']['maxy']
     boundary_points[1, 2] = m2l_data['bounding_box']['upper']
 
-    model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
+    model = GeologicalModel(boundary_points[0, :], boundary_points[1, :], rescale=rescale)
     model.set_model_data(m2l_data['data'])
     if not skip_faults:
         faults = []
