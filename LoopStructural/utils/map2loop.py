@@ -43,8 +43,10 @@ def process_map2loop(m2l_directory, flags={}):
     except:
         for g in groups['group'].unique():
             supergroups[g] = g
-    supergroups.pop('\n')
-
+    try:
+        supergroups.pop('\n')
+    except KeyError:
+        pass
     
 
     bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
@@ -170,7 +172,7 @@ def process_map2loop(m2l_directory, flags={}):
             'bounding_box':bb,
             'strat_va':strat_val}
 
-def build_model(m2l_data, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None):
+def build_model(m2l_data, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True):
     """[summary]
 
     [extended_summary]
