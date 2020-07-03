@@ -191,7 +191,7 @@ class LavaVuModelViewer:
         # do isosurfacing of support using marching tetras/cubes
         x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
         y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
-        z = np.linspace(self.bounding_box[0, 2], self.bounding_box[1, 2], self.nsteps[2])
+        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         val = geological_feature.evaluate_value(points)
@@ -576,6 +576,7 @@ class LavaVuModelViewer:
             self.lv.control.ObjectList()
             self.lv.interactive()
 
+
     def set_zscale(self,zscale):
         """ Set the vertical scale for lavavu
 
@@ -702,3 +703,25 @@ class LavaVuModelViewer:
 
         """
         self.lv.rotate(r)
+
+    @property
+    def rotation(self):
+        """Accessor for the viewer rotation
+        Returns
+        -------
+        list
+            x,y,z rotations
+        """
+        return self.lv['xyzrotate']
+    
+    @rotation.setter
+    def rotation(self,xyz):
+        """Set the rotation of the viewer
+
+        Parameters
+        ----------
+        xyz : list like
+            x y z rotations
+        """
+        self.lv.rotation(xyz)
+
