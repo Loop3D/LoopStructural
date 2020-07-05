@@ -58,25 +58,33 @@ def process_map2loop(m2l_directory, flags={}):
     tangents.drop(['angle', 'lsx', 'lsy'], inplace=True, axis=1)
 
     # convert azimuth and dip to gx, gy, gz
+    
+
+    # calculate scalar field values
+    i = 0
+    thickness = {}
+    max_thickness = 0
+    with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
+        for l in file:
+            if i>1:
+                linesplit = l.split(',')
+                thickness[linesplit[0]] = float(linesplit[1])
+                # normalise the thicknesses
+                if float(linesplit[1]) > max_thickness:
+                    max_thickness=float(linesplit[1])
+    #             print(l.split(',')[1])
+            i+=1
+    # for k in thickness.keys():
+    #     thickness[k] /= max_thickness
+
     from LoopStructural.utils.helper import strike_dip_vector
     contact_orientations['strike'] = contact_orientations['azimuth'] - 90
     contact_orientations['nx'] = np.nan
     contact_orientations['ny'] = np.nan
     contact_orientations['nz'] = np.nan
     contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
-                                                                 contact_orientations['dip'])
+                                                                 contact_orientations['dip'])*max_thickness 
     contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
-
-    # calculate scalar field values
-    i = 0
-    thickness = {}
-    with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
-        for l in file:
-            if i>1:
-                linesplit = l.split(',')
-                thickness[linesplit[0]] = float(linesplit[1])
-    #             print(l.split(',')[1])
-            i+=1
     # with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
 
     # thickness = {}
@@ -96,10 +104,10 @@ def process_map2loop(m2l_directory, flags={}):
         for c in groups.loc[groups['group number'] == i, 'code']:
             strat_val[c] = np.nan
             if c in thickness:
-                stratigraphic_column[g][c] = {'min': val[g], 'max': val[g] + thickness[c], 'id': unit_id}
+                stratigraphic_column[g][c] = {'max': val[g], 'min': val[g] - thickness[c], 'id': unit_id}
                 unit_id += 1
                 strat_val[c] = val[g]
-                val[g] += thickness[c]
+                val[g] -= thickness[c]
     group_name = None
     for g, i in stratigraphic_column.items():
         if len(i) ==0:
@@ -205,6 +213,7 @@ def build_model(m2l_data, skip_faults = False, unconformities=False, fault_param
     boundary_points[1, 2] = m2l_data['bounding_box']['upper']
 
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :], rescale=rescale)
+    # m2l_data['data']['val'] /= model.scale_factor
     model.set_model_data(m2l_data['data'])
     if not skip_faults:
         faults = []

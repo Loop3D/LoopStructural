@@ -331,7 +331,6 @@ class GeologicalModel:
             # step_vector /= np.array([1,1,2])
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
-            print(nsteps)
             # create a structured grid using the origin and number of steps
             mesh_id = 'mesh_{}'.format(nelements)
             mesh = self.support.get(mesh_id,
@@ -1028,7 +1027,7 @@ class GeologicalModel:
         """
         return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
 
-    def regular_grid(self, nsteps=(50, 50, 25), shuffle = True, rescale=True):
+    def regular_grid(self, nsteps=(50, 50, 25), shuffle = True, rescale=False):
         """
         Return a regular grid within the model bounding box
 

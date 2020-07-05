@@ -74,6 +74,8 @@ class LavaVuModelViewer:
 
         [extended_summary]
         """
+        self.lv.clear()
+        self.lv.cleardata()
         pass
 
     def add_section(self, geological_feature=None, axis='x', value=None, **kwargs):
@@ -521,7 +523,7 @@ class LavaVuModelViewer:
         if "pointsize" not in kwargs:
             kwargs["pointsize"] = 4
         # set the colour map to diverge unless user decides otherwise
-        cmap = kwargs.get('cmap', "diverge")
+        cmap = kwargs.get('cmap', "spot")
         p = self.lv.points(name, **kwargs)
         p.vertices(position)
         p.values(value, "v")
@@ -618,7 +620,7 @@ class LavaVuModelViewer:
         """
         self.lv.image(fname, **kwargs)
 
-    def display(self):
+    def display(self, fname=None, **kwargs):
         """
         Calls the lv object display function. Shows a static image of the viewer inline.
 
@@ -626,6 +628,9 @@ class LavaVuModelViewer:
         -------
 
         """
+        if fname:
+            self.lv.image(fname, **kwargs)
+            
         self.lv.display()
 
     def image(self, name, **kwargs):
