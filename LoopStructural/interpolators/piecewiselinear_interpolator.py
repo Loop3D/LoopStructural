@@ -154,12 +154,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             idc = gi[tetras]
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
-            # self.add_constraints_to_least_squares(A[outside, :] * w,
-            #                                       B[outside], idc[outside, :],
-            #                                       name = 'gradient')
-            A2 = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
-            A2 *= vol[:, None]
-            A+=A2
+            self.add_constraints_to_least_squares(A[outside, :] * w,
+                                                  B[outside], idc[outside, :],
+                                                  name = 'gradient')
+            A = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
+            A *= vol[:, None]
+            # A+=A2
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                           B[outside], idc[outside, :],
                                                   name='gradient')
@@ -192,8 +192,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # e, inside = self.support.elements_for_array(points[:, :3])
             # nodes = self.support.nodes[self.support.elements[e]]
             vol = np.zeros(element_gradients.shape[0])
-            vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
-            vol[inside] = np.abs(np.linalg.det(vecs))  # / 6
+            vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
+            vol = np.abs(np.linalg.det(vecs))  # / 6
             # d_t = self.support.get_elements_gradients(e)
             norm = np.zeros((element_gradients.shape[0],element_gradients.shape[1]))
             norm[inside,:] = np.linalg.norm(element_gradients[inside,:,:], axis=2)
@@ -201,10 +201,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
             d_t = element_gradients
             d_t[inside,:,:] *= vol[inside, None, None]
-            # w*=10^11
-
             # add in the element gradient matrix into the inte
-            idc = np.tile(tetras[inside,:], (3, 1, 1))
+            idc = np.tile(tetras[:,:], (3, 1, 1))
             idc = idc.swapaxes(0,1)
             # idc = self.support.elements[e]
             gi = np.zeros(self.support.n_nodes).astype(int)
@@ -216,8 +214,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = outside[:, 0]
             w /= 3
 
-            self.add_constraints_to_least_squares(d_t[inside,:,:][outside, :, :] * w,
-                                                  points[inside,:][outside, 3:6] * w *
+            self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
+                                                  points[outside, 3:6] * w *
                                                   vol[outside, None],
                                                   idc[outside],
                                                   name='norm')
