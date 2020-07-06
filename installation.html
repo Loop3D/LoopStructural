@@ -180,7 +180,7 @@
 three ways of installing LoopStructural onto your system:</p>
 <ol class="arabic simple">
 <li><p>Using docker (best approach for remote services such as AWS)</p></li>
-<li><p>Using precompiled binary files for your relevant distribution</p></li>
+<li><p>Installing from pip</p></li>
 <li><p>Compiling LoopStructural from source</p></li>
 </ol>
 <div class="section" id="docker">
@@ -222,19 +222,16 @@ so it becomes <code class="code docutils literal notranslate"><span class="pre">
 <div class="header docutils container">
 <p><strong>Installing a precompiled version</strong></p>
 </div>
-<p>LoopStructural is compiled and uploaded onto the releases page on the LoopStructural github. You need to install
-the relevant version of LoopStructural for your distribution and python version. For example to install LoopStructural
-for Windows 64 bit using python 3.6 you would download the package <a class="reference external" href="https://github.com/Loop3D/LoopStructural/releases/download/latest/LoopStructural-0.0.0-cp36-cp36m-win_amd64.whl">LoopStructural-0.0.0-cp36-cp36m-win_amd64.whl</a>.</p>
 <p>LoopStructural can then be installed into your python environment by running the command within your chosen python virtual environment.
 .. code-block:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">LoopStructural</span><span class="o">-</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">cp36</span><span class="o">-</span><span class="n">cp36m</span><span class="o">-</span><span class="n">win_amd64</span><span class="o">.</span><span class="n">whl</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">LoopStructural</span>
 </pre></div>
 </div>
 </div>
 <div class="toggle docutils container">
 <div class="header docutils container">
-<p>If you want to install LoopStructural from source to be able to modify the code you will need to have a working C++ compiler.</p>
+<p>If you want to install LoopStructural from source to be able to modify the code you will need to have a working C++ compiler.
+This is best done using anaconda</p>
 </div>
 </div>
 </div>
