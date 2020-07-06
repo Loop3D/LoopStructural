@@ -154,7 +154,7 @@ for the interpolator to be able to find a solution.
               <th>0</th>
               <td>0.000000</td>
               <td>0.0</td>
-              <td>1.284036</td>
+              <td>1.738015</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -162,7 +162,7 @@ for the interpolator to be able to find a solution.
               <th>1</th>
               <td>1.111111</td>
               <td>0.0</td>
-              <td>1.181864</td>
+              <td>1.832272</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -170,7 +170,7 @@ for the interpolator to be able to find a solution.
               <th>2</th>
               <td>2.222222</td>
               <td>0.0</td>
-              <td>1.479333</td>
+              <td>1.824432</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -178,7 +178,7 @@ for the interpolator to be able to find a solution.
               <th>3</th>
               <td>3.333333</td>
               <td>0.0</td>
-              <td>1.413222</td>
+              <td>1.609915</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -186,7 +186,7 @@ for the interpolator to be able to find a solution.
               <th>4</th>
               <td>4.444444</td>
               <td>0.0</td>
-              <td>1.660709</td>
+              <td>1.952359</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -243,6 +243,14 @@ Visualising a 2-D section
 Geological feature can be evaluated:
 * for the scalar field value at a location
 * for the gradient of the scalar field at a location
+To evaluate a model feature (scalar value or gradient) use the:
+:code:`model.evaluate_feature_value(feature_name, locations)` or 
+:code:`model.evaluate_feature_gradient(feature_name, locations)`
+Where the feature_name is the string naming the feature and locations is a numpy array of 
+xyz coordinates.
+
+In the following example we will use matplotlib to visualise these results however, the
+next tutorial will show how to use the lavavu visualisation model.  
 
 
 .. code-block:: default
@@ -259,10 +267,10 @@ Geological feature can be evaluated:
     xx = np.zeros_like(yy)
     xx[:] = 5
 
-    vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
+    vals = model.evaluate_feature_value('conformable',np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
     fig, ax = plt.subplots(1,2,figsize=(20,10))
-    ax[0].contourf(vals.reshape((100,100)))
-    ax[0].contour(vals.reshape((100,100)),[0,1])
+    ax[0].contourf(vals.reshape((100,100)),extent=(0,10,0,10))
+    ax[0].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
 
     # Y section
     x = np.linspace(0,10,100)
@@ -272,9 +280,9 @@ Geological feature can be evaluated:
     yy = np.zeros_like(xx)
     yy[:] = 5
 
-    vals = conformable_feature.evaluate_value(model.scale(np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T))
-    ax[1].contourf(vals.reshape((100,100)))
-    ax[1].contour(vals.reshape((100,100)),[0,1])
+    vals = model.evaluate_feature_value('conformable',np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
+    ax[1].contourf(vals.reshape((100,100)),extent=(0,10,0,10))
+    ax[1].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
 
     plt.show()
 
@@ -290,7 +298,11 @@ Geological feature can be evaluated:
 
  .. code-block:: none
 
-    /home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:155: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+    /home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:149: UserWarning: No contour levels were found within the data range.
+      ax[0].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
+    /home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:161: UserWarning: No contour levels were found within the data range.
+      ax[1].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
+    /home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:163: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
 
@@ -299,7 +311,7 @@ Geological feature can be evaluated:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  39.615 seconds)
+   **Total running time of the script:** ( 0 minutes  13.376 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_1_data_prepration.py:

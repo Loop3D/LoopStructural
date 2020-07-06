@@ -98,10 +98,10 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">1b. Implicit surface modelling</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#imports">Imports</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#geologicalmodel">GeologicalModel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#visualising-results">Visualising results</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="plot_3_multiple_groups.html">1c. Multiple groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_3_model_visualisation.html">1c. Visualising models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_5_using_logging.html">1e. Using logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
@@ -321,115 +321,28 @@ and makes the solution more stable for some interpolators</p>
                                            <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;pyamg&#39;</span><span class="p">,</span>
                                            <span class="n">damp</span><span class="o">=</span><span class="kc">True</span>
                                           <span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="visualising-results">
-<h2>Visualising results<a class="headerlink" href="#visualising-results" title="Permalink to this headline">¶</a></h2>
-<p>The LavaVuModelViewer is an LoopStructural class that provides easy 3D
-plotting options for plotting data points and resulting implicit
-functions.</p>
-<p>The implicit function can be visualised by looking at isosurfaces of the
-scalar field.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">()</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Where optional kwargs can be:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">nslices</span></code> specifying the number of regularly spaced isosurfaces</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">slices</span></code> a numpy array or list of isovalues to slice</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">isovalue</span></code> an isovalue to slice</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">paint_with</span></code> the geological feature to colour the surface with</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmap</span></code> colour map for the colouring</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">normals</span></code> to plot the normal vectors to the surface</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> to give the surface</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">colour</span></code> the colour of the surface</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">voxet</span></code> dict with <code class="docutils literal notranslate"><span class="pre">bounding_box=boundary_points</span></code> and
-<code class="docutils literal notranslate"><span class="pre">nsteps</span> <span class="pre">=</span> <span class="pre">(nx,ny,nz)</span></code></p></li>
-<li><p>other kwargs for passing directly to lavavu</p></li>
-</ul>
-<p>Alternatively the scalarfields can be displayed on a rectangular cuboid.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">boundary_points</span><span class="p">,</span><span class="n">dimensions</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">boundary_points</span></code> is a numpy array
-<code class="docutils literal notranslate"><span class="pre">[[minx,miny,minz],[maxx,maxy,maxz]]</span></code> and <code class="docutils literal notranslate"><span class="pre">dimensions</span></code> corresponds
-to the number of samples along each axis.</p>
-<p>Other possible kwargs are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">paint_with</span></code> the geological feature to colour the box with</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">colour</span></code> a single colour to colour the surfaces with</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmap</span></code> colour map for the property</p></li>
-</ul>
-<p>The input data for the model can be visualised by calling either:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Where both the point and vector data linked to the feature are added to
-the plot or by calling.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_data</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">vector</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">position</span></code> is an array or x,y,z coordinates and vector is a
-similarly sized array of <code class="docutils literal notranslate"><span class="pre">vectors</span></code>. These can be extracted from a
-geological feature by calling.
-<code class="docutils literal notranslate"><span class="pre">feature.support.interpolator.get_gradient_constraint()</span></code> which returns
-a Nx6 matrix of position and vectors.</p>
-<p>The value data can be plotted by calling.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_value_data</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">position</span></code> is an array or x,y,z coordinates and value is a
-similarly sized vector of values. These can be extracted from a
-geological feature by calling.
-<code class="docutils literal notranslate"><span class="pre">feature.support.interpolator.get_value_constraint()</span></code> which returns a
-Nx4 matrix of position and values.</p>
-<p>Other possible options for plotting are to * plot point locations.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>plot a vector field using the gradient of a geological feature</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_field</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">locations</span></code> are an array of points to evaluate the gradient at,
-for example the barycentric coordinates. It is recommended to visualise
-the vectorfield at a lower resolution than the mesh otherwise it can be
-difficult to see the vectors. You can use numpy stepping along the
-array: <code class="docutils literal notranslate"><span class="pre">locations</span> <span class="pre">=</span> <span class="pre">mesh.barycentre[::20,:]</span></code> which will sample every
-20th sample in the numpy array.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
 
-<span class="c1"># determine the number of unique surfaces in the model from</span>
-<span class="c1"># the input data and then calculate isosurfaces for this</span>
-<span class="n">unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.interpolators.discrete_interpolator.html#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints" class="sphx-glr-backref-module-LoopStructural-interpolators-discrete_interpolator sphx-glr-backref-type-py-method"><span class="n">strati</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">get_value_constraints</span></a><span class="p">()[:,</span><span class="mi">3</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
-                       <span class="n">slices</span><span class="o">=</span><span class="n">unique</span><span class="p">,</span>
-                       <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">,</span>
-                      <span class="n">paint_with</span><span class="o">=</span><span class="n">strati</span><span class="p">,</span>
-                     <span class="n">voxet</span><span class="o">=</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" title="LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">voxet</span></a><span class="p">())</span>
-
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
-                   <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
-                   <span class="n">value</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
-                   <span class="n">boundary_points</span><span class="o">=</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">bounding_box</span><span class="p">,</span>
-                   <span class="n">nsteps</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">]),</span>
-                  <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
-                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_model_surfaces</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">add_model</span><span class="p">()</span>
-
-<span class="c1"># Add the data addgrad/addvalue arguments are optional</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">lv</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="c1"># to add an interactive display</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_plot_2_surface_modelling_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_2_surface_modelling_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.483 seconds)</p>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../../_images/sphx_glr_plot_2_surface_modelling_002.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_plot_2_surface_modelling_002.png" />
+</li>
+<li><img alt="../../_images/sphx_glr_plot_2_surface_modelling_003.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_plot_2_surface_modelling_003.png" />
+</li>
+</ul>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>LavaVu Run error: FBO creation failed, can&#39;t continue
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.982 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-2-surface-modelling-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/312667b0d3ee8fdf0f6f8e13c1523331/plot_2_surface_modelling.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_2_surface_modelling.py</span></code></a></p>

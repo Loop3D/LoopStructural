@@ -81,6 +81,26 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment....">
+
+.. only:: html
+
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_model_visualisation_thumb.png
+
+     :ref:`sphx_glr_auto_examples_1_basic_plot_3_model_visualisation.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/1_basic/plot_3_model_visualisation
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="1d. Using Stratigraphic Columns">
 
 .. only:: html

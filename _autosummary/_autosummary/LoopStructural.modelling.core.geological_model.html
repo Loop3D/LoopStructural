@@ -531,7 +531,7 @@ faults using fault_params. skip_faults is a flag that allows for the faults to b
 
 <dl class="method">
 <dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.get_interpolator">
-<code class="sig-name descname">get_interpolator</code><span class="sig-paren">(</span><em class="sig-param">interpolatortype='PLI'</em>, <em class="sig-param">nelements=500000.0</em>, <em class="sig-param">buffer=0.2</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.get_interpolator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_interpolator</code><span class="sig-paren">(</span><em class="sig-param">interpolatortype='PLI'</em>, <em class="sig-param">nelements=100000.0</em>, <em class="sig-param">buffer=0.2</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.get_interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an interpolator given the arguments, also constructs a
 support for a discrete interpolator</p>
 <dl class="field-list simple">
@@ -549,7 +549,7 @@ support for a discrete interpolator</p>
 
 <dl class="method">
 <dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.regular_grid">
-<code class="sig-name descname">regular_grid</code><span class="sig-paren">(</span><em class="sig-param">nsteps=(50</em>, <em class="sig-param">50</em>, <em class="sig-param">25)</em>, <em class="sig-param">shuffle=True</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.regular_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">regular_grid</code><span class="sig-paren">(</span><em class="sig-param">nsteps=(50</em>, <em class="sig-param">50</em>, <em class="sig-param">25)</em>, <em class="sig-param">shuffle=True</em>, <em class="sig-param">rescale=False</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.regular_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a regular grid within the model bounding box</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

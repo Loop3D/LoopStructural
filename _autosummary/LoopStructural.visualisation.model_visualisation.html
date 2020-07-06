@@ -251,7 +251,7 @@ using value and grad kwargs</p>
 
 <dl class="method">
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface">
-<code class="sig-name descname">add_isosurface</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">value=None</em>, <em class="sig-param">isovalue=None</em>, <em class="sig-param">paint_with=None</em>, <em class="sig-param">slices=None</em>, <em class="sig-param">colour='red'</em>, <em class="sig-param">nslices=None</em>, <em class="sig-param">cmap=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_isosurface</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">value=None</em>, <em class="sig-param">isovalue=None</em>, <em class="sig-param">paint_with=None</em>, <em class="sig-param">slices=None</em>, <em class="sig-param">colour='red'</em>, <em class="sig-param">nslices=None</em>, <em class="sig-param">cmap=None</em>, <em class="sig-param">filename=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_isosurface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the surface of a geological feature</p>
 <p>[extended_summary]</p>
 <dl class="field-list simple">
@@ -265,6 +265,7 @@ using value and grad kwargs</p>
 <li><p><strong>colour</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
 <li><p><strong>nslices</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
 <li><p><strong>cmap</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>filename</strong> (<em>string</em><em>, </em><em>optional</em>) – filename for exporting</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -402,7 +403,7 @@ You can update the model resolution by changing the attribute nsteps
 
 <dl class="method">
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.display">
-<code class="sig-name descname">display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">fname=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls the lv object display function. Shows a static image of the viewer inline.</p>
 </dd></dl>
 
@@ -469,6 +470,13 @@ inline interactive viewer or as a separate window</p>
 <dd class="field-odd"><p><strong>r</strong> (<em>double</em>) – degrees to rotate, can be +ve or -ve</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotation">
+<em class="property">property </em><code class="sig-name descname">rotation</code><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the viewer rotation
+:returns: <em>list</em> – x,y,z rotations</p>
 </dd></dl>
 
 <dl class="method">

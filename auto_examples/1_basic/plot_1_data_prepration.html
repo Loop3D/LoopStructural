@@ -106,6 +106,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="plot_2_surface_modelling.html">1b. Implicit surface modelling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_3_multiple_groups.html">1c. Multiple groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_3_model_visualisation.html">1c. Visualising models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plot_5_using_logging.html">1e. Using logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
@@ -313,7 +314,7 @@ for the interpolator to be able to find a solution.</p>
       <th>0</th>
       <td>0.000000</td>
       <td>0.0</td>
-      <td>1.284036</td>
+      <td>1.738015</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -321,7 +322,7 @@ for the interpolator to be able to find a solution.</p>
       <th>1</th>
       <td>1.111111</td>
       <td>0.0</td>
-      <td>1.181864</td>
+      <td>1.832272</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -329,7 +330,7 @@ for the interpolator to be able to find a solution.</p>
       <th>2</th>
       <td>2.222222</td>
       <td>0.0</td>
-      <td>1.479333</td>
+      <td>1.824432</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -337,7 +338,7 @@ for the interpolator to be able to find a solution.</p>
       <th>3</th>
       <td>3.333333</td>
       <td>0.0</td>
-      <td>1.413222</td>
+      <td>1.609915</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -345,7 +346,7 @@ for the interpolator to be able to find a solution.</p>
       <th>4</th>
       <td>4.444444</td>
       <td>0.0</td>
-      <td>1.660709</td>
+      <td>1.952359</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -379,7 +380,14 @@ This returns a To build a scalar field representing the</p>
 <h2>Visualising a 2-D section<a class="headerlink" href="#visualising-a-2-d-section" title="Permalink to this headline">¶</a></h2>
 <p>Geological feature can be evaluated:
 * for the scalar field value at a location
-* for the gradient of the scalar field at a location</p>
+* for the gradient of the scalar field at a location
+To evaluate a model feature (scalar value or gradient) use the:
+<code class="code docutils literal notranslate"><span class="pre">model.evaluate_feature_value(feature_name,</span> <span class="pre">locations)</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">model.evaluate_feature_gradient(feature_name,</span> <span class="pre">locations)</span></code>
+Where the feature_name is the string naming the feature and locations is a numpy array of
+xyz coordinates.</p>
+<p>In the following example we will use matplotlib to visualise these results however, the
+next tutorial will show how to use the lavavu visualisation model.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="c1"># X section</span>
@@ -390,10 +398,10 @@ This returns a To build a scalar field representing the</p>
 <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span>
 <span class="n">xx</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="n">vals</span> <span class="o">=</span> <span class="n">conformable_feature</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.scale" title="LoopStructural.modelling.core.geological_model.GeologicalModel.scale" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">scale</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+<span class="n">vals</span> <span class="o">=</span> <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">evaluate_feature_value</span><span class="p">(</span><span class="s1">&#39;conformable&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),</span><span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="c1"># Y section</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
@@ -403,20 +411,24 @@ This returns a To build a scalar field representing the</p>
 <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
 <span class="n">yy</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="n">vals</span> <span class="o">=</span> <span class="n">conformable_feature</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.scale" title="LoopStructural.modelling.core.geological_model.GeologicalModel.scale" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">scale</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">vals</span> <span class="o">=</span> <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">evaluate_feature_value</span><span class="p">(</span><span class="s1">&#39;conformable&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">zz</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),</span><span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)),[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_plot_1_data_prepration_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_1_data_prepration_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:155: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:149: UserWarning: No contour levels were found within the data range.
+  ax[0].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
+/home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:161: UserWarning: No contour levels were found within the data range.
+  ax[1].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
+/home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:163: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
   plt.show()
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  39.615 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.376 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-1-data-prepration-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cf292dac4af30976a15aed25f7ce78f5/plot_1_data_prepration.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_1_data_prepration.py</span></code></a></p>

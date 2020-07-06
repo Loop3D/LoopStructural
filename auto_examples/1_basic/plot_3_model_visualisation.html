@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>1c. Visualising models &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="1d. Using Stratigraphic Columns" href="plot_4_using_stratigraphic_column.html" />
+    <link rel="prev" title="1c. Multiple groups" href="plot_3_multiple_groups.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#basics">1. Basics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plot_1_data_prepration.html">1a. Getting started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_2_surface_modelling.html">1b. Implicit surface modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_3_multiple_groups.html">1c. Multiple groups</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">1c. Visualising models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#imports">Imports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-the-model">Build the model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#visualising-results">Visualising results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_5_using_logging.html">1e. Using logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-folds">2. Modelling Folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-faults">3. Modelling Faults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#advanced">4. Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#creating-models-using-map2loop">Creating models using map2loop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributors_guide.html">Contribute</a></li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">LoopStructural API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.utils.html">LoopStructural.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Examples</a> &raquo;</li>
+        
+      <li>1c. Visualising models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/auto_examples/1_basic/plot_3_model_visualisation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-1-basic-plot-3-model-visualisation-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="c-visualising-models">
+<span id="sphx-glr-auto-examples-1-basic-plot-3-model-visualisation-py"></span><h1>1c. Visualising models<a class="headerlink" href="#c-visualising-models" title="Permalink to this headline">¶</a></h1>
+<p>The following tutorial will demonstrate how to use the Loop structural visualisation module.
+This module provides a wrapper for the lavavu model that is written by
+Owen Kaluza.</p>
+<p>Lavavu allows for interactive visualisation of 3D models within a jupyter
+notebook environment.</p>
+<div class="section" id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
+<p>Import the required objects from LoopStructural for visualisation and
+model building</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
+
+<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_claudius</span> <span class="c1">#demo data</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="build-the-model">
+<h2>Build the model<a class="headerlink" href="#build-the-model" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span>
+<a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+<a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span></a><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">strati</span> <span class="o">=</span> <a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span><span class="s2">&quot;strati&quot;</span><span class="p">)</span>
+<span class="n">strat_column</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;strati&#39;</span><span class="p">:{}}</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">330</span><span class="p">,</span><span class="mi">600</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">strat_column</span><span class="p">[</span><span class="s1">&#39;strati&#39;</span><span class="p">][</span><span class="s1">&#39;unit_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s1">&#39;max&#39;</span><span class="p">:</span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">}</span>
+<a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.set_stratigraphic_column" title="LoopStructural.modelling.core.geological_model.GeologicalModel.set_stratigraphic_column" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_stratigraphic_column</span></a><span class="p">(</span><span class="n">strat_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="visualising-results">
+<h2>Visualising results<a class="headerlink" href="#visualising-results" title="Permalink to this headline">¶</a></h2>
+<p>The LavaVuModelViewer is an LoopStructural class that provides easy 3D
+plotting options for plotting data points and resulting implicit
+functions.</p>
+<p>The implicit function can be visualised by looking at isosurfaces of the
+scalar field.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where optional kwargs can be:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nslices</span></code> specifying the number of regularly spaced isosurfaces</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slices</span></code> a numpy array or list of isovalues to slice</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isovalue</span></code> an isovalue to slice</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">paint_with</span></code> the geological feature to colour the surface with</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmap</span></code> colour map for the colouring</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">normals</span></code> to plot the normal vectors to the surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> to give the surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">colour</span></code> the colour of the surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">voxet</span></code> dict with <code class="docutils literal notranslate"><span class="pre">bounding_box=boundary_points</span></code> and
+<code class="docutils literal notranslate"><span class="pre">nsteps</span> <span class="pre">=</span> <span class="pre">(nx,ny,nz)</span></code></p></li>
+<li><p>other kwargs for passing directly to lavavu</p></li>
+</ul>
+<p>Alternatively the scalarfields can be displayed on a rectangular cuboid.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">boundary_points</span><span class="p">,</span><span class="n">dimensions</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">boundary_points</span></code> is a numpy array
+<code class="docutils literal notranslate"><span class="pre">[[minx,miny,minz],[maxx,maxy,maxz]]</span></code> and <code class="docutils literal notranslate"><span class="pre">dimensions</span></code> corresponds
+to the number of samples along each axis.</p>
+<p>Other possible kwargs are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">paint_with</span></code> the geological feature to colour the box with</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">colour</span></code> a single colour to colour the surfaces with</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmap</span></code> colour map for the property</p></li>
+</ul>
+<p>The input data for the model can be visualised by calling either:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where both the point and vector data linked to the feature are added to
+the plot or by calling.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_data</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">vector</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">position</span></code> is an array or x,y,z coordinates and vector is a
+similarly sized array of <code class="docutils literal notranslate"><span class="pre">vectors</span></code>. These can be extracted from a
+geological feature by calling.
+<code class="docutils literal notranslate"><span class="pre">feature.support.interpolator.get_gradient_constraint()</span></code> which returns
+a Nx6 matrix of position and vectors.</p>
+<p>The value data can be plotted by calling.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_value_data</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">position</span></code> is an array or x,y,z coordinates and value is a
+similarly sized vector of values. These can be extracted from a
+geological feature by calling.
+<code class="docutils literal notranslate"><span class="pre">feature.support.interpolator.get_value_constraint()</span></code> which returns a
+Nx4 matrix of position and values.</p>
+<p>Other possible options for plotting are to * plot point locations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>plot a vector field using the gradient of a geological feature</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_field</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">locations</span></code> are an array of points to evaluate the gradient at,
+for example the barycentric coordinates. It is recommended to visualise
+the vectorfield at a lower resolution than the mesh otherwise it can be
+difficult to see the vectors. You can use numpy stepping along the
+array: <code class="docutils literal notranslate"><span class="pre">locations</span> <span class="pre">=</span> <span class="pre">mesh.barycentre[::20,:]</span></code> which will sample every
+20th sample in the numpy array.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+
+<span class="c1"># determine the number of unique surfaces in the model from</span>
+<span class="c1"># the input data and then calculate isosurfaces for this</span>
+<span class="n">unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><a href="../../test/_autosummary/LoopStructural.interpolators.discrete_interpolator.html#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints" class="sphx-glr-backref-module-LoopStructural-interpolators-discrete_interpolator sphx-glr-backref-type-py-method"><span class="n">strati</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">get_value_constraints</span></a><span class="p">()[:,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
+                       <span class="n">slices</span><span class="o">=</span><span class="n">unique</span><span class="p">,</span>
+                       <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">,</span>
+                      <span class="n">paint_with</span><span class="o">=</span><span class="n">strati</span><span class="p">,</span>
+                     <span class="n">voxet</span><span class="o">=</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" title="LoopStructural.modelling.core.geological_model.GeologicalModel.voxet" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">voxet</span></a><span class="p">())</span>
+
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
+                   <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
+                   <span class="n">value</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                   <span class="n">boundary_points</span><span class="o">=</span><a href="../../test/_autosummary/LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">bounding_box</span><span class="p">,</span>
+                   <span class="n">nsteps</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">]),</span>
+                  <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span>
+                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_model</span><span class="p">()</span>
+
+<span class="c1"># Add the data addgrad/addvalue arguments are optional</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span><span class="n">addgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">addvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;prism&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">lv</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">85.18760681152344</span><span class="p">,</span> <span class="mf">42.93233871459961</span><span class="p">,</span> <span class="mf">0.8641873002052307</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="c1"># to add an interactive display</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_plot_3_model_visualisation_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_3_model_visualisation_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>LavaVu Run error: FBO creation failed, can&#39;t continue
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.850 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-3-model-visualisation-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/1b389af4ce7f15efda1b50248625018a/plot_3_model_visualisation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_3_model_visualisation.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/4d8708183190e1d4d668b5279677c384/plot_3_model_visualisation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_3_model_visualisation.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_4_using_stratigraphic_column.html" class="btn btn-neutral float-right" title="1d. Using Stratigraphic Columns" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plot_3_multiple_groups.html" class="btn btn-neutral float-left" title="1c. Multiple groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lachlan Grose
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>
