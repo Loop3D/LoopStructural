@@ -22,7 +22,12 @@ setup(
 	install_requires=[
 	'Cython',
 	'numpy',
-	'pandas'
+	'pandas',
+	'scipy',
+	'matplotlib',
+	'lavavu',
+	'scikit-image',
+	'scikit-learn'
 	],
 	version=get_version("LoopStructural/__init__.py"),
     packages=find_packages(),
