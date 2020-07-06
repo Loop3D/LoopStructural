@@ -186,12 +186,15 @@ class GeologicalFeature:
         """
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
+
         dot = []
         if grad.shape[0] > 0:
+            grad /=np.linalg.norm(grad,axis=1)[:,None]
             model_grad = self.evaluate_gradient(grad[:,:3])
             dot.append(np.einsum('ij,ij->i',model_grad,grad[:,:3:6]).tolist())
 
         if norm.shape[0] > 0:
+            norm /=np.linalg.norm(norm,axis=1)[:,None]
             model_norm = self.evaluate_gradient(norm[:, :3])
             dot.append(np.einsum('ij,ij->i', model_norm, norm[:,:3:6]))
 

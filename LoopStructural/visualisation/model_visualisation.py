@@ -74,6 +74,8 @@ class LavaVuModelViewer:
 
         [extended_summary]
         """
+        self.lv.clear()
+        self.lv.cleardata()
         pass
 
     def add_section(self, geological_feature=None, axis='x', value=None, **kwargs):
@@ -521,7 +523,7 @@ class LavaVuModelViewer:
         if "pointsize" not in kwargs:
             kwargs["pointsize"] = 4
         # set the colour map to diverge unless user decides otherwise
-        cmap = kwargs.get('cmap', "diverge")
+        cmap = kwargs.get('cmap', "spot")
         p = self.lv.points(name, **kwargs)
         p.vertices(position)
         p.values(value, "v")
@@ -576,6 +578,7 @@ class LavaVuModelViewer:
             self.lv.control.ObjectList()
             self.lv.interactive()
 
+
     def set_zscale(self,zscale):
         """ Set the vertical scale for lavavu
 
@@ -617,7 +620,7 @@ class LavaVuModelViewer:
         """
         self.lv.image(fname, **kwargs)
 
-    def display(self):
+    def display(self, fname=None, **kwargs):
         """
         Calls the lv object display function. Shows a static image of the viewer inline.
 
@@ -625,6 +628,9 @@ class LavaVuModelViewer:
         -------
 
         """
+        if fname:
+            self.lv.image(fname, **kwargs)
+            
         self.lv.display()
 
     def image(self, name, **kwargs):
@@ -702,3 +708,25 @@ class LavaVuModelViewer:
 
         """
         self.lv.rotate(r)
+
+    @property
+    def rotation(self):
+        """Accessor for the viewer rotation
+        Returns
+        -------
+        list
+            x,y,z rotations
+        """
+        return self.lv['xyzrotate']
+    
+    @rotation.setter
+    def rotation(self,xyz):
+        """Set the rotation of the viewer
+
+        Parameters
+        ----------
+        xyz : list like
+            x y z rotations
+        """
+        self.lv.rotation(xyz)
+
