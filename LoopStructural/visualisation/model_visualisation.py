@@ -648,6 +648,16 @@ class LavaVuModelViewer:
 
         """
         self.lv.image(name)
+    
+    def image_array(self, **kwargs):
+        """Return the current viewer image image data as a numpy array
+
+        Returns
+        -------
+        image : np.array
+            image as a numpy array
+        """
+        return self.lv.rawimage(**kwargs).data
 
     def rotatex(self, r):
         """
@@ -730,3 +740,78 @@ class LavaVuModelViewer:
         """
         self.lv.rotation(xyz)
 
+    @property
+    def border(self):
+        """The width of the border around the model area
+
+        Returns
+        -------
+        border : double
+            [description]
+        """
+        return self.lv['border']
+    
+    @border.setter
+    def border(self, border):
+        """Setter for the border
+
+        Parameters
+        ----------
+        border : double
+            set the thickness of the border around objects
+        """
+        self.lv['border'] = border
+
+    def clear(self):
+        """Remove all objects from the viewer
+        """
+        self.lv.clear()
+    
+    @property
+    def xmin(self):
+        return self.lv['xmin']
+    
+    @xmin.setter
+    def xmin(self, xmin):
+        self.lv['xmin'] = xmin
+
+    @property
+    def xmax(self):
+        return self.lv['xmax']
+    
+    @xmax.setter
+    def xmax(self, xmax):
+        self.lv['xmax'] = xmax
+
+    @property
+    def ymin(self):
+        return self.lv['ymin']
+    
+    @ymin.setter
+    def ymin(self, ymin):
+        self.lv['ymin'] = ymin
+
+    @property
+    def ymax(self):
+        return self.lv['ymax']
+    
+    @ymax.setter
+    def ymax(self, ymax):
+        self.lv['ymax'] = ymax
+    
+    @property
+    def zmin(self):
+        return self.lv['zmax']
+
+    @zmin.setter
+    def zmin(self, zmin):
+        self.lv['zmin'] = zmin
+
+    @property
+    def zmax(self):
+        return self.lv['zmax']
+    
+    @zmax.setter
+    def zmax(self, zmax):
+        self.lv['zmax'] = zmax
+            
