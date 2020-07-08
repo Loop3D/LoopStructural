@@ -63,12 +63,24 @@ class LavaVuModelViewer:
             logger.error("Plot area has not been defined.")
         self.bounding_box = np.array(self.bounding_box)
         self.nsteps = np.array(self.nsteps)
-        self.model = model
+        self._model = model
         # prerotate to a nice view
         # self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
     def close(self):
         pass
-
+    
+    @property
+    def model(self):
+        return self._model
+    
+    @model.setter
+    def model(self, model):
+        if model is not None:
+            self.bounding_box = model.bounding_box
+            self.nsteps = model.nsteps
+            self._model = model
+            logger.debug("Using bounding box from model")
+            
     def deep_clean(self):
         """[summary]
 
