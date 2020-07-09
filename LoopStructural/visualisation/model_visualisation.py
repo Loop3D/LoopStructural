@@ -80,7 +80,7 @@ class LavaVuModelViewer:
             self.nsteps = model.nsteps
             self._model = model
             logger.debug("Using bounding box from model")
-            
+
     def deep_clean(self):
         """[summary]
 
@@ -165,7 +165,7 @@ class LavaVuModelViewer:
 
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
-                     cmap=None, filename=None, **kwargs):
+                     cmap=None, filename=None, names=None, colours=None,**kwargs):
         """ Plot the surface of a geological feature 
 
         [extended_summary]
@@ -189,7 +189,11 @@ class LavaVuModelViewer:
         cmap : [type], optional
             [description], by default None
         filename: string, optional
-            filename for exporting 
+            filename for exporting
+        names: list, optional
+            list of names same length as slices
+        colours: list, optional
+            list of colours same length as slices
 
         Returns
         -------
@@ -242,7 +246,7 @@ class LavaVuModelViewer:
         if region is not None:
             val[~region(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
-        for isovalue in slices_:
+        for i, isovalue in enumerate(slices_):
             logger.info("Creating isosurface of %s at %f" % (geological_feature.name, isovalue))
 
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
@@ -258,10 +262,14 @@ class LavaVuModelViewer:
                 logger.warning("no surface to mesh, skipping")
                 continue
             
-
+            
             name = geological_feature.name
             name = kwargs.get('name', name)
             name += '_iso_%f' % isovalue
+            if names is not None and len(names) == len(slices_):
+                name = names[i]
+            if colours is not None and len(colours) == len(slices_):
+                colour=colours[i]
             if filename is not None:
                 svalues = None
                 # svalues[:] = np.nan
@@ -385,14 +393,40 @@ class LavaVuModelViewer:
         for g in self.model.stratigraphic_column.keys():
             if g in self.model.feature_name_index:
                 feature = self.model.features[self.model.feature_name_index[g]]
+                names = []
+                values = []
+                colours = []
                 for u, vals in self.model.stratigraphic_column[g].items():
-                    self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:],**kwargs)
+                    names.append(u)
+                    values.append(vals['max'])
+                    colours.append(tab.colors[ci,:])
                     ci+=1
+                self.add_isosurface(feature, slices=values,names=names,colours=colours,**kwargs)
+
         if faults:
             for f in self.model.features:
                 if f.type == 'fault':
                     self.add_isosurface(f,isovalue=0,**kwargs)
 
+    # def add_model_data(self, cmap='tab20',**kwargs):
+    #     from matplotlib import cm
+    #     n_units = 0 #count how many discrete colours
+    #     for g in self.model.stratigraphic_column.keys():
+    #         for u in self.model.stratigraphic_column[g].keys():
+    #             n_units+=1
+    #     tab = cm.get_cmap(cmap,n_units)
+    #     ci = 0
+
+    #     for g in self.model.stratigraphic_column.keys():
+    #         if g in self.model.feature_name_index:
+    #             feature = self.model.features[self.model.feature_name_index[g]]
+    #             for u, vals in self.model.stratigraphic_column[g].items():
+    #                 self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:],**kwargs)
+    #                 ci+=1
+    #     if faults:
+    #         for f in self.model.features:
+    #             if f.type == 'fault':
+    #                 self.add_isosurface(f,isovalue=0,**kwargs)
 
     def add_vector_field(self, geological_feature, **kwargs):
         """
