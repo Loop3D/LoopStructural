@@ -12,14 +12,14 @@ class TetMesh:
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):
         self.origin = np.array(origin)
         self.step_vector = np.array(step_vector)
-        self.nsteps = np.array(nsteps)
+        self.nsteps = np.array(nsteps)+1
         self.nsteps_cells = self.nsteps - 1
         self.n_cell_x = self.nsteps[0] - 1
         self.n_cell_y = self.nsteps[1] - 1
         self.n_cell_z = self.nsteps[2] - 1
         self.n_cells = self.n_cell_x * self.n_cell_y * self.n_cell_z
         self.n_nodes = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
-
+        self.maximum = origin+self.nsteps*self.step_vector
         self.tetra_mask_even = np.array([
             [7,1,2,4],
             [6,2,4,7],
@@ -102,6 +102,7 @@ class TetMesh:
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_tetra_for_location(pos)
+        self.properties[prop].shape
         values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
         return values
 
@@ -190,13 +191,15 @@ class TetMesh:
 
         inside = np.any(mask,axis=1)
         # get cell corners
-        xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
+        print(np.max(c_xi),np.max(c_yi),np.max(c_zi))
 
+        xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
+        print(np.max(xi),np.max(yi),np.max(zi))
         #create mask to see which cells are even
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # create global node index list
         gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
-
+        print(np.min(gi),np.max(gi))
         # container for tetras
         tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
 
@@ -378,9 +381,9 @@ class TetMesh:
         # check whether point is inside box
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= pos[:, i] < self.origin[None, i] + \
-                      self.step_vector[None, i] * self.nsteps_cells[None, i]
+            inside = np.logical_and(inside, pos[:, i] >= self.origin[None, i])
+            inside = np.logical_and(inside,pos[:, i] <= self.origin[None, i] + \
+                      self.step_vector[None, i] * self.nsteps[None, i])
         return inside
 
     def global_node_indicies(self, indexes):
