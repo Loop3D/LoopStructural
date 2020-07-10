@@ -76,8 +76,8 @@ class LavaVuModelViewer:
     @model.setter
     def model(self, model):
         if model is not None:
-            self.bounding_box = model.bounding_box
-            self.nsteps = model.nsteps
+            self.bounding_box = np.array(model.bounding_box)
+            self.nsteps = np.array(model.nsteps)
             self._model = model
             logger.debug("Using bounding box from model")
 
@@ -629,7 +629,26 @@ class LavaVuModelViewer:
             self.lv.control.ObjectList()
             self.lv.interactive()
 
+    def add_support_box(self,geological_feature, paint=False, **kwargs):
+        name = kwargs.get('name', geological_feature.name + '_support')
+        box = np.vstack([geological_feature.interpolator.support.origin,geological_feature.interpolator.support.maximum])
+        points, tri = create_box(box,self.nsteps)
 
+        surf = self.lv.triangles(name)
+        surf.vertices(points)
+        surf.indices(tri)
+        if paint:
+            val =geological_feature.evaluate_value(points)
+            surf.values(val, geological_feature.name)
+            surf["colourby"] = geological_feature.name
+            cmap = kwargs.get('cmap',lavavu.cubehelix(100))
+
+            logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
+                                                                                geological_feature.min(),
+                                                                                geological_feature.max()))
+            vmin = kwargs.get('vmin', np.nanmin(val))
+            vmax = kwargs.get('vmax', np.nanmax(val))
+            surf.colourmap(cmap, range=(vmin, vmax))
     def set_zscale(self,zscale):
         """ Set the vertical scale for lavavu
 
