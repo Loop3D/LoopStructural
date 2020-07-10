@@ -125,7 +125,8 @@ class GeologicalModel:
             the created geological model and a dictionary of the map2loop data
         """
         from LoopStructural.utils import process_map2loop, build_model
-        m2l_data = process_map2loop(m2l_directory)
+        m2lflags = kwargs.pop('m2lflags',{})
+        m2l_data = process_map2loop(m2l_directory,m2lflags)
         return build_model(m2l_data,**kwargs), m2l_data
 
     @classmethod
@@ -1129,7 +1130,7 @@ class GeologicalModel:
             the geological feature with the specified name, or none if no feature
         """
         feature_index = self.feature_name_index.get(feature_name,-1)
-        if feature_index >0:
+        if feature_index > -1:
             return self.features[feature_index]
         else:
             return None
