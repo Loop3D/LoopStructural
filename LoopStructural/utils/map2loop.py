@@ -23,7 +23,7 @@ def process_map2loop(m2l_directory, flags={}):
     groups = pd.read_csv(m2l_directory + '/tmp/all_sorts.csv', index_col=0)
     contact_orientations = pd.read_csv(m2l_directory + '/output/orientations_clean.csv')
     # formation_thickness = pd.read_csv)
-    contacts = pd.read_csv(m2l_directory + '/output/contacts4.csv')
+    contacts = pd.read_csv(m2l_directory + '/output/contacts_clean.csv')
     displacements = pd.read_csv(m2l_directory + '/output/fault_displacements3.csv')
     fault_orientations = pd.read_csv(m2l_directory + '/output/fault_orientations.csv')
     fault_locations = pd.read_csv(m2l_directory + '/output/faults.csv')

@@ -105,6 +105,7 @@ class GeologicalModel:
                                                      'rescale': rescale,
                                                      'nsteps': nsteps,
                                                      'reuse_supports': reuse_supports}}
+        
 
     @classmethod
     def from_map2loop_directory(cls, m2l_directory,**kwargs):

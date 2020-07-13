@@ -29,3 +29,6 @@ class RegionFeature:
 
     def name(self):
         return self.name
+
+# class VectorFeature:
+#     def __init__(self, function)
