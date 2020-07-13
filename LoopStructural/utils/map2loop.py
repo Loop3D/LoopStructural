@@ -17,11 +17,13 @@ def process_map2loop(m2l_directory, flags={}):
     m2l_data : dict
         a dictionary containing the extracted and collated data
     """
+    gradient = flags.get('gradient',False)
+    vector_scale = flags.get('vector_scale',None)
     tangents = pd.read_csv(m2l_directory + '/tmp/raw_contacts.csv')
     groups = pd.read_csv(m2l_directory + '/tmp/all_sorts.csv', index_col=0)
-    contact_orientations = pd.read_csv(m2l_directory + '/output/orientations.csv')
+    contact_orientations = pd.read_csv(m2l_directory + '/output/orientations_clean.csv')
     # formation_thickness = pd.read_csv)
-    contacts = pd.read_csv(m2l_directory + '/output/contacts4.csv')
+    contacts = pd.read_csv(m2l_directory + '/output/contacts_clean.csv')
     displacements = pd.read_csv(m2l_directory + '/output/fault_displacements3.csv')
     fault_orientations = pd.read_csv(m2l_directory + '/output/fault_orientations.csv')
     fault_locations = pd.read_csv(m2l_directory + '/output/faults.csv')
@@ -64,7 +66,8 @@ def process_map2loop(m2l_directory, flags={}):
     i = 0
     thickness = {}
     max_thickness = 0
-    with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
+    thickness_file = flags.get('thickness',m2l_directory + '/output/formation_summary_thicknesses.csv')
+    with open(thickness_file) as file:
         for l in file:
             if i>1:
                 linesplit = l.split(',')
@@ -76,14 +79,25 @@ def process_map2loop(m2l_directory, flags={}):
             i+=1
     # for k in thickness.keys():
     #     thickness[k] /= max_thickness
+    if vector_scale is None:
+        vector_scale = max_thickness
 
-    from LoopStructural.utils.helper import strike_dip_vector
-    contact_orientations['strike'] = contact_orientations['azimuth'] - 90
-    contact_orientations['nx'] = np.nan
-    contact_orientations['ny'] = np.nan
-    contact_orientations['nz'] = np.nan
-    contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
-                                                                 contact_orientations['dip'])*max_thickness 
+    if gradient:
+        from LoopStructural.utils.helper import strike_dip_vector
+        contact_orientations['strike'] = contact_orientations['azimuth'] - 90
+        contact_orientations['gx'] = np.nan
+        contact_orientations['gy'] = np.nan
+        contact_orientations['gz'] = np.nan
+        contact_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(contact_orientations['strike'],
+                                                                    contact_orientations['dip'])*max_thickness 
+    if not gradient:
+        from LoopStructural.utils.helper import strike_dip_vector
+        contact_orientations['strike'] = contact_orientations['azimuth'] - 90
+        contact_orientations['nx'] = np.nan
+        contact_orientations['ny'] = np.nan
+        contact_orientations['nz'] = np.nan
+        contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
+                                                                    contact_orientations['dip'])*vector_scale 
     contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
     # with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
 

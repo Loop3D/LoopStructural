@@ -20,22 +20,57 @@ class MapView:
         nsteps - number of cells
         kwargs
         """
-        self.bounding_box = bounding_box
-        self.nsteps = nsteps
+        self._bounding_box = bounding_box
+        self._nsteps = nsteps
+        self.xx = None
+        self.yy = None
+        if self._nsteps is not None and self._bounding_box is not None:
+            self._update_grid()
         if model is not None:
-            self.bounding_box = model.bounding_box
-            self.nsteps = model.nsteps
-
-        x = np.linspace(self.bounding_box[0,0], self.bounding_box[1,0], self.nsteps[0])
-        y = np.linspace(self.bounding_box[0,1], self.bounding_box[1,1], self.nsteps[1])
-        self.xx, self.yy = np.meshgrid(x, y, indexing='ij')
-        self.xx = self.xx.flatten()
-        self.yy = self.yy.flatten()
+            self._bounding_box = model.bounding_box
+            self._nsteps = model.nsteps
+            self._model = model
+            self._update_grid()
         self.ax = ax
         if self.ax is None:
             fig, self.ax = plt.subplots(1, figsize=(10, 10))
 
         self.ax.set_aspect('equal', adjustable='box')
+
+    @property
+    def model(self):
+        return self._model
+
+    @model.setter
+    def model(self,model):
+        if model is not None:
+            self.bounding_box = model.bounding_box
+            self.nsteps = model.nsteps
+            self._model = model
+            self._update_grid()
+    @property
+    def nsteps(self):
+        return self._nsteps
+    
+    @nsteps.setter
+    def nsteps(self,nsteps):
+        self._nsteps = nsteps
+        self._update_grid()
+        
+    @property
+    def bounding_box(self):
+        return self._bounding_box
+    @bounding_box.setter
+    def bounding_box(self,bounding_box):
+        self._bounding_box = bounding_box
+        self._update_grid()
+
+    def _update_grid(self):
+        x = np.linspace(self.bounding_box[0,0], self.bounding_box[1,0], self.nsteps[0])
+        y = np.linspace(self.bounding_box[0,1], self.bounding_box[1,1], self.nsteps[1])
+        self.xx, self.yy = np.meshgrid(x, y, indexing='ij')
+        self.xx = self.xx.flatten()
+        self.yy = self.yy.flatten()
 
     def add_data(self, feature, val=True, grad=True, **kwargs):
         """
@@ -50,16 +85,16 @@ class MapView:
         """
 
         ori_data = []
-        gradient_data = feature.interpolator.get_gradient_constraints()
+        gradient_data = feature.builder.get_gradient_constraints()
         if gradient_data.shape[0] > 0:
             ori_data.append(gradient_data)
-        norm_data = feature.interpolator.get_norm_constraints()
+        norm_data = feature.builder.get_norm_constraints()
         if norm_data.shape[0] > 0:
             ori_data.append(norm_data)
         cmap = kwargs.pop('cmap','rainbow')
         # if single colour then specify kwarg, otherwise use point value
         if val:
-            value_data = feature.interpolator.get_value_constraints()
+            value_data = feature.builder.get_value_constraints()
             point_colour = kwargs.pop('point_colour',None)
             if point_colour is None:
                 self.ax.scatter(value_data[:, 0], value_data[:, 1], c=value_data[:,3],
@@ -82,11 +117,10 @@ class MapView:
             p1 = gradient_data[:, [0, 1]]
             p2 = gradient_data[:, [0, 1]] + n
             self.ax.plot([p1[:, 0], p2[:, 0]], [p1[:, 1], p2[:, 1]], symb_colour)
-            # plt.gca().
-            # strike = normal_vector_to_strike_and_dip(gradient_data[:, 3:6])
-            # for i in range(len(strike)):
-            #     self.draw_strike(gradient_data[i, 0], gradient_data[i, 1],
-            #                      -strike[i, 0], **kwargs)
+            
+            dip = np.rad2deg(np.arccos(gradient_data[:,5])).astype(int)
+            for d, xy, v in zip(dip,gradient_data[:,:2],gradient_data[:,3:6]):
+                plt.annotate(d,xy,xytext=xy+v[:2]*.03,fontsize='small')
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """
@@ -108,6 +142,7 @@ class MapView:
                        extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                self.bounding_box[1,1]],
                        vmin=feature.min(), vmax=feature.max(),
+                       origin='lower',
                        **kwargs)
 
     def add_contour(self, feature, values, z=0):
@@ -120,3 +155,14 @@ class MapView:
                        )
 
         pass
+    
+    def add_model(self, z = 0,cmap='tab20'):
+        zz = np.zeros_like(self.xx)
+        zz[:] = z#self.bounding_box[1,2]
+        pts = np.vstack([self.xx.flatten(),self.yy.flatten(),zz.flatten()])
+        if self.model is None:
+            logger.error("Mapview needs a model assigned to plot model on map")
+            return 
+        vals = self.model.evaluate_model(pts.T)
+        plt.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+                                    self.bounding_box[1,1]],origin='lower',cmap=cmap)

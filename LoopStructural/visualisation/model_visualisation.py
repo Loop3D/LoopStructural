@@ -63,11 +63,23 @@ class LavaVuModelViewer:
             logger.error("Plot area has not been defined.")
         self.bounding_box = np.array(self.bounding_box)
         self.nsteps = np.array(self.nsteps)
-        self.model = model
+        self._model = model
         # prerotate to a nice view
         # self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
     def close(self):
         pass
+    
+    @property
+    def model(self):
+        return self._model
+    
+    @model.setter
+    def model(self, model):
+        if model is not None:
+            self.bounding_box = np.array(model.bounding_box)
+            self.nsteps = np.array(model.nsteps)
+            self._model = model
+            logger.debug("Using bounding box from model")
 
     def deep_clean(self):
         """[summary]
@@ -130,7 +142,7 @@ class LavaVuModelViewer:
         points[:, 2] = zz
 
         surf = self.lv.triangles(name)
-        surf.vertices(points)
+        surf.vertices(self.model.rescale(points))
         surf.indices(tri)
         logger.info("Adding %s section at %f" % (axis, value))
         if geological_feature is None:
@@ -153,7 +165,7 @@ class LavaVuModelViewer:
 
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
-                     cmap=None, filename=None, **kwargs):
+                     cmap=None, filename=None, names=None, colours=None,**kwargs):
         """ Plot the surface of a geological feature 
 
         [extended_summary]
@@ -177,7 +189,11 @@ class LavaVuModelViewer:
         cmap : [type], optional
             [description], by default None
         filename: string, optional
-            filename for exporting 
+            filename for exporting
+        names: list, optional
+            list of names same length as slices
+        colours: list, optional
+            list of colours same length as slices
 
         Returns
         -------
@@ -230,7 +246,7 @@ class LavaVuModelViewer:
         if region is not None:
             val[~region(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
-        for isovalue in slices_:
+        for i, isovalue in enumerate(slices_):
             logger.info("Creating isosurface of %s at %f" % (geological_feature.name, isovalue))
 
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
@@ -242,22 +258,40 @@ class LavaVuModelViewer:
                     isovalue,
                     spacing=step_vector)
                 verts += np.array([self.bounding_box[0, 0], self.bounding_box[0, 1], self.bounding_box[1, 2]])
+                self.model.rescale(verts),
+
             except ValueError:
                 logger.warning("no surface to mesh, skipping")
                 continue
             
-
             name = geological_feature.name
             name = kwargs.get('name', name)
             name += '_iso_%f' % isovalue
+            if names is not None and len(names) == len(slices_):
+                name = names[i]
+            if name in self.lv.objects:
+                ii = 0
+                newname = name+"_{}".format(ii)
+                while newname in self.lv.objects:
+                    ii+=1
+                    newname = name+"_{}".format(ii)
+                name  = newname
+                
+            if colours is not None and len(colours) == len(slices_):
+                colour=colours[i]
             if filename is not None:
+                svalues = None
+                # svalues[:] = np.nan
                 try:
                     import meshio
                 except ImportError:
                     logger.error("Could not save surfaces, meshio is not installed")
+                if painter is not None:
+                    svalues = painter.evaluate_value(verts)
                 meshio.write_points_cells(filename.format(name),
-                self.model.rescale(verts),
+                verts,
                 [("triangle", faces)]
+                
                 )
             surf = self.lv.triangles(name)
             surf.vertices(verts)
@@ -268,7 +302,7 @@ class LavaVuModelViewer:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
                 surfaceval = np.zeros(verts.shape[0])
-                surfaceval[:] = painter.evaluate_value(verts)
+                surfaceval[:] = painter.evaluate_value(self.model.scale(verts))
                 if painter.name is geological_feature.name:
                     logger.info("Setting surface value to %f"%isovalue)
                     surfaceval[:] = isovalue
@@ -296,9 +330,9 @@ class LavaVuModelViewer:
         points, tri = create_box(self.bounding_box,self.nsteps)
 
         surf = self.lv.triangles(name)
-        surf.vertices(points)
+        surf.vertices(self.model.rescale(points))
         surf.indices(tri)
-        val =geological_feature.evaluate_value(points)
+        val =geological_feature.evaluate_value(self.model.scale(points))
         surf.values(val, geological_feature.name)
         surf["colourby"] = geological_feature.name
         cmap = kwargs.get('cmap',lavavu.cubehelix(100))
@@ -328,12 +362,12 @@ class LavaVuModelViewer:
         points, tri = create_box(self.bounding_box, self.nsteps)
 
         surf = self.lv.triangles(name)
-        surf.vertices(points)
+        surf.vertices(self.model.rescale(points))
         surf.indices(tri)
-        val = self.model.evaluate_model(points,rescale=False)
+        val = self.model.evaluate_model(points,rescale=True)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
-        cmap = kwargs.get('cmap', lavavu.cubehelix(100))
+        cmap = kwargs.get('cmap', 'tab20')
 
         # logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
         #                                                                        geological_feature.min(),
@@ -368,14 +402,40 @@ class LavaVuModelViewer:
         for g in self.model.stratigraphic_column.keys():
             if g in self.model.feature_name_index:
                 feature = self.model.features[self.model.feature_name_index[g]]
+                names = []
+                values = []
+                colours = []
                 for u, vals in self.model.stratigraphic_column[g].items():
-                    self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:],**kwargs)
+                    names.append(u)
+                    values.append(vals['min'])
+                    colours.append(tab.colors[ci,:])
                     ci+=1
+                self.add_isosurface(feature, slices=values,names=names,colours=colours,**kwargs)
+
         if faults:
             for f in self.model.features:
                 if f.type == 'fault':
                     self.add_isosurface(f,isovalue=0,**kwargs)
 
+    # def add_model_data(self, cmap='tab20',**kwargs):
+    #     from matplotlib import cm
+    #     n_units = 0 #count how many discrete colours
+    #     for g in self.model.stratigraphic_column.keys():
+    #         for u in self.model.stratigraphic_column[g].keys():
+    #             n_units+=1
+    #     tab = cm.get_cmap(cmap,n_units)
+    #     ci = 0
+
+    #     for g in self.model.stratigraphic_column.keys():
+    #         if g in self.model.feature_name_index:
+    #             feature = self.model.features[self.model.feature_name_index[g]]
+    #             for u, vals in self.model.stratigraphic_column[g].items():
+    #                 self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:],**kwargs)
+    #                 ci+=1
+    #     if faults:
+    #         for f in self.model.features:
+    #             if f.type == 'fault':
+    #                 self.add_isosurface(f,isovalue=0,**kwargs)
 
     def add_vector_field(self, geological_feature, **kwargs):
         """
@@ -406,7 +466,7 @@ class LavaVuModelViewer:
         vector[mask, :] /= np.linalg.norm(vector[mask, :], axis=1)[:, None]
         vectorfield = self.lv.vectors(geological_feature.name + "_grad",
                                       **kwargs)
-        vectorfield.vertices(locations[mask, :])
+        vectorfield.vertices(self.model.rescale(locations[mask, :]))
         vectorfield.vectors(vector[mask, :])
         return
 
@@ -447,14 +507,14 @@ class LavaVuModelViewer:
                                  **kwargs)
 
         if norm.shape[0] > 0 and add_grad:
-            self.add_vector_data(norm[:, :3], norm[:, 3:6], name + "_norm_cp",
+            self.add_vector_data(self.model.rescale(norm[:, :3]), norm[:, 3:6], name + "_norm_cp",
                                  **kwargs)
         if value.shape[0] > 0 and add_value:
             kwargs['range'] = [feature.min(), feature.max()]
-            self.add_value_data(value[:, :3], value[:, 3], name + "_value_cp",
+            self.add_value_data(self.model.rescale(value[:, :3]), value[:, 3], name + "_value_cp",
                                 **kwargs)
         if tang.shape[0] > 0 and add_tang:
-            self.add_vector_data(tang[:, :3], tang[:, 3:6], name + "_tang_cp",
+            self.add_vector_data(self.model.rescale(tang[:, :3]), tang[:, 3:6], name + "_tang_cp",
                                  **kwargs)
 
 
@@ -556,6 +616,7 @@ class LavaVuModelViewer:
             xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
             locations = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         r2r, fold_axis, dgz = fold.get_deformed_orientation(locations)
+        self.model.rescale(locations)
         self.add_vector_data(locations, r2r, fold.name + '_direction', colour='red')
         self.add_vector_data(locations, fold_axis, fold.name + '_axis', colour='black')
         self.add_vector_data(locations, dgz, fold.name + '_norm', colour='green')
@@ -578,7 +639,26 @@ class LavaVuModelViewer:
             self.lv.control.ObjectList()
             self.lv.interactive()
 
+    def add_support_box(self,geological_feature, paint=False, **kwargs):
+        name = kwargs.get('name', geological_feature.name + '_support')
+        box = np.vstack([geological_feature.interpolator.support.origin,geological_feature.interpolator.support.maximum])
+        points, tri = create_box(box,self.nsteps)
 
+        surf = self.lv.triangles(name)
+        surf.vertices(self.model.rescale(points))
+        surf.indices(tri)
+        if paint:
+            val =geological_feature.evaluate_value(self.model.scale(points))
+            surf.values(val, geological_feature.name)
+            surf["colourby"] = geological_feature.name
+            cmap = kwargs.get('cmap',lavavu.cubehelix(100))
+
+            logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
+                                                                                geological_feature.min(),
+                                                                                geological_feature.max()))
+            vmin = kwargs.get('vmin', np.nanmin(val))
+            vmax = kwargs.get('vmax', np.nanmax(val))
+            surf.colourmap(cmap, range=(vmin, vmax))
     def set_zscale(self,zscale):
         """ Set the vertical scale for lavavu
 
@@ -648,6 +728,16 @@ class LavaVuModelViewer:
 
         """
         self.lv.image(name)
+    
+    def image_array(self, **kwargs):
+        """Return the current viewer image image data as a numpy array
+
+        Returns
+        -------
+        image : np.array
+            image as a numpy array
+        """
+        return self.lv.rawimage(**kwargs).data
 
     def rotatex(self, r):
         """
@@ -730,3 +820,78 @@ class LavaVuModelViewer:
         """
         self.lv.rotation(xyz)
 
+    @property
+    def border(self):
+        """The width of the border around the model area
+
+        Returns
+        -------
+        border : double
+            [description]
+        """
+        return self.lv['border']
+    
+    @border.setter
+    def border(self, border):
+        """Setter for the border
+
+        Parameters
+        ----------
+        border : double
+            set the thickness of the border around objects
+        """
+        self.lv['border'] = border
+
+    def clear(self):
+        """Remove all objects from the viewer
+        """
+        self.lv.clear()
+    
+    @property
+    def xmin(self):
+        return self.lv['xmin']
+    
+    @xmin.setter
+    def xmin(self, xmin):
+        self.lv['xmin'] = xmin
+
+    @property
+    def xmax(self):
+        return self.lv['xmax']
+    
+    @xmax.setter
+    def xmax(self, xmax):
+        self.lv['xmax'] = xmax
+
+    @property
+    def ymin(self):
+        return self.lv['ymin']
+    
+    @ymin.setter
+    def ymin(self, ymin):
+        self.lv['ymin'] = ymin
+
+    @property
+    def ymax(self):
+        return self.lv['ymax']
+    
+    @ymax.setter
+    def ymax(self, ymax):
+        self.lv['ymax'] = ymax
+    
+    @property
+    def zmin(self):
+        return self.lv['zmax']
+
+    @zmin.setter
+    def zmin(self, zmin):
+        self.lv['zmin'] = zmin
+
+    @property
+    def zmax(self):
+        return self.lv['zmax']
+    
+    @zmax.setter
+    def zmax(self, zmax):
+        self.lv['zmax'] = zmax
+            
