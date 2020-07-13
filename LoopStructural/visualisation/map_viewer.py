@@ -117,11 +117,10 @@ class MapView:
             p1 = gradient_data[:, [0, 1]]
             p2 = gradient_data[:, [0, 1]] + n
             self.ax.plot([p1[:, 0], p2[:, 0]], [p1[:, 1], p2[:, 1]], symb_colour)
-            # plt.gca().
-            # strike = normal_vector_to_strike_and_dip(gradient_data[:, 3:6])
-            # for i in range(len(strike)):
-            #     self.draw_strike(gradient_data[i, 0], gradient_data[i, 1],
-            #                      -strike[i, 0], **kwargs)
+            
+            dip = np.rad2deg(np.arccos(gradient_data[:,5])).astype(int)
+            for d, xy, v in zip(dip,gradient_data[:,:2],gradient_data[:,3:6]):
+                plt.annotate(d,xy,xytext=xy+v[:2]*.03,fontsize='small')
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """
