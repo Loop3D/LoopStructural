@@ -36,9 +36,8 @@ Visualization of the scalar field.
 # model building
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer 
-
-from LoopStructural.datasets import load_claudius #demo data 
+from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.datasets import load_claudius #demo data
 
 import pandas as pd
 import glob

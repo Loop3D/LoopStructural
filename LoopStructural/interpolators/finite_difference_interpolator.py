@@ -1,3 +1,6 @@
+"""
+FiniteDifference interpolator
+"""
 import logging
 
 import numpy as np

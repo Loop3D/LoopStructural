@@ -40,9 +40,7 @@ class LavaVuModelViewer:
         ----------
         **kwargs : lavavu viewer kwargs
 
-        Attributes
-        ----------
-        lv Lavavu.Viewer object
+
         objects : dictionary of objects that have been plotted
         """
         # copied from pyvista
@@ -258,7 +256,7 @@ class LavaVuModelViewer:
                     isovalue,
                     spacing=step_vector)
                 verts += np.array([self.bounding_box[0, 0], self.bounding_box[0, 1], self.bounding_box[1, 2]])
-                self.model.rescale(verts),
+                self.model.rescale(verts)
 
             except ValueError:
                 logger.warning("no surface to mesh, skipping")
@@ -364,7 +362,8 @@ class LavaVuModelViewer:
         surf = self.lv.triangles(name)
         surf.vertices(self.model.rescale(points))
         surf.indices(tri)
-        val = self.model.evaluate_model(points,rescale=True)
+        print(points)
+        val = self.model.evaluate_model(points,scale=True)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
         cmap = kwargs.get('cmap', 'tab20')
@@ -489,6 +488,7 @@ class LavaVuModelViewer:
         add_grad = True
         add_value = True
         add_tang = True
+        add_interface = True
         if 'name' in kwargs:
             name = kwargs['name']
             del kwargs['name']
@@ -498,12 +498,16 @@ class LavaVuModelViewer:
             add_value = kwargs['value']
         if 'tang' in kwargs:
             add_tang = kwargs['tang']
+        if 'interface' in kwargs:
+            add_interface = kwargs['interface']
         grad = feature.builder.get_gradient_constraints()
         norm = feature.builder.get_norm_constraints()
         value = feature.builder.get_value_constraints()
         tang = feature.builder.get_tangent_constraints()
+        interface = feature.builder.get_interface_constraints()
+
         if grad.shape[0] > 0 and add_grad:
-            self.add_vector_data(grad[:, :3], grad[:, 3:6], name + "_grad_cp",
+            self.add_vector_data(self.model.rescale(grad[:, :3]), grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
 
         if norm.shape[0] > 0 and add_grad:
@@ -516,7 +520,8 @@ class LavaVuModelViewer:
         if tang.shape[0] > 0 and add_tang:
             self.add_vector_data(self.model.rescale(tang[:, :3]), tang[:, 3:6], name + "_tang_cp",
                                  **kwargs)
-
+        if interface.shape[0] > 0 and add_interface:
+            self.add_points(self.model.rescale(interface[:,:3]), name + "_interface_cp")
 
     def add_points(self, points, name, **kwargs):
         """
