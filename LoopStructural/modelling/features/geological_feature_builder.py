@@ -262,6 +262,13 @@ class GeologicalFeatureInterpolator:
         else:
             return np.zeros(0,7)
 
+    def get_interface_constraints(self):
+        mask = np.all(~np.isnan(self.data.loc[:, interface_name()].to_numpy()), axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[
+                mask, xyz_names() + interface_name() + weight_name()].to_numpy()
+        else:
+            return np.zeros(0,5)
 
     def get_data_locations(self):
         """

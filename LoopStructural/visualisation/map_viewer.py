@@ -120,7 +120,7 @@ class MapView:
             
             dip = np.rad2deg(np.arccos(gradient_data[:,5])).astype(int)
             for d, xy, v in zip(dip,gradient_data[:,:2],gradient_data[:,3:6]):
-                plt.annotate(d,xy,xytext=xy+v[:2]*.03,fontsize='small')
+                self.ax.annotate(d,xy,xytext=xy+v[:2]*.03,fontsize='small')
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """
@@ -145,16 +145,15 @@ class MapView:
                        origin='lower',
                        **kwargs)
 
-    def add_contour(self, feature, values, z=0):
+    def add_contour(self, feature, values, z=0,**kwargs):
         zz = np.zeros(self.xx.shape)
         zz[:] = z
         v = feature.evaluate_value(np.array([self.xx, self.yy, zz]).T)
-        self.ax.contour(np.rot90(v.reshape(self.nsteps),1), levels=values,
-                       extent=[self.bounding_box[0, 0], self.bounding_box[1, 0], self.bounding_box[0, 1],
-                               self.bounding_box[1, 1]],
+        self.ax.contour(v.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+                                    self.bounding_box[1,1]],origin='lower',levels=values,**kwargs
                        )
 
-        pass
+        
     
     def add_model(self, z = 0,cmap='tab20'):
         zz = np.zeros_like(self.xx)
@@ -163,6 +162,6 @@ class MapView:
         if self.model is None:
             logger.error("Mapview needs a model assigned to plot model on map")
             return 
-        vals = self.model.evaluate_model(pts.T)
+        vals = self.model.evaluate_model(pts.T,scale=False)
         plt.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)

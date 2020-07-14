@@ -15,6 +15,7 @@ class RotationAnglePlotter:
         self.ax[0][0].set_ylim(-90, 90)
         self.ax[1][0].set_ylim(-90, 90)
         self.feature = feature
+
     def plot(self, x, y, ix, iy, symb):
         """
 
@@ -37,6 +38,7 @@ class RotationAnglePlotter:
         fold_frame = self.feature.fold.fold_limb_rotation.fold_frame_coordinate
         rotation = self.feature.fold.fold_limb_rotation.rotation_angle
         self.plot(fold_frame, rotation, 0, 1, symb,**kwargs)
+        
 
     def add_fold_limb_curve(self, symb='r-',**kwargs):
         x = np.linspace(self.feature.fold.foldframe[0].min(),self.feature.fold.foldframe[0].max(),100)

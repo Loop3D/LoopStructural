@@ -1010,7 +1010,7 @@ class GeologicalModel:
 
         return fault
 
-    def rescale(self, points, inplace=False):
+    def rescale(self, points, inplace=True):
         """
         Convert from model scale to real world scale - in the future this
         should also do transformations?
@@ -1094,7 +1094,7 @@ class GeologicalModel:
             locs = self.rescale(locs)
         return locs
 
-    def evaluate_model(self, xyz, rescale=True):
+    def evaluate_model(self, xyz, scale=True):
         """Evaluate the stratigraphic id at each location
         
 
@@ -1102,8 +1102,8 @@ class GeologicalModel:
         ----------
         xyz : np.array((N,3),dtype=float)
             locations
-        rescale : bool
-            whether to rescale the model
+        scale : bool
+            whether to rescale the xyz before evaluating model
 
         Returns
         -------
@@ -1141,6 +1141,8 @@ class GeologicalModel:
         >>> model.evaluate_model(xyz)
         
         """
+        if scale:
+            self.scale(xyz)
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
             feature_id = self.feature_name_index.get(group, -1)
