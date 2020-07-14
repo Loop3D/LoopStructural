@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class FoldFrame(StructuralFrame):
-    def __init__(self, name, features):
+    def __init__(self, name, features, fold=None):
         """
         A structural frame that can calculate the fold axis/limb rotation angle
         Same constructor arguments as parent StructuralFrame
@@ -18,7 +18,7 @@ class FoldFrame(StructuralFrame):
         name
         features
         """
-        super().__init__(name, features)
+        super().__init__(name, features, fold)
         self.model = None
 
     def set_model(self, model):

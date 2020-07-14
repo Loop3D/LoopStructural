@@ -1,3 +1,7 @@
+"""
+structural frame builder
+"""
+
 import logging
 
 import numpy as np
@@ -13,6 +17,10 @@ from LoopStructural.modelling.features import StructuralFrame
 
 
 class StructuralFrameBuilder:
+    """[summary]
+
+    [extended_summary]
+    """
     def __init__(self, interpolator=None, interpolators=None, **kwargs):
         """
         Class for building a structural frame - has functions to set up the
@@ -111,12 +119,13 @@ class StructuralFrameBuilder:
         gx_feature = None
         gy_feature = None
         gz_feature = None
-
+        fold = None
         if len(self.builders[0].data) > 0:
             logger.info("Building %s coordinate 0"%self.name)
             gx_feature = self.builders[0].build(regularisation=regularisation[
                                                     0], **kwargs)
             # remove fold from kwargs
+
             fold = kwargs.pop('fold', False)
         if gx_feature is None:
             logger.warning(
@@ -167,4 +176,4 @@ class StructuralFrameBuilder:
                     "Not enough constraints for fold frame coordinate 1, \n"
                     "Add some more and try again.")
         # use the frame argument to build a structural frame
-        return frame(self.name, [gx_feature, gy_feature, gz_feature])
+        return frame(self.name, [gx_feature, gy_feature, gz_feature],fold=fold)

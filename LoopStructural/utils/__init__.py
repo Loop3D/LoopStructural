@@ -11,4 +11,4 @@ Submodules
     utils
 
 """
-from .map2loop import process_map2loop
+from .map2loop import process_map2loop, build_model

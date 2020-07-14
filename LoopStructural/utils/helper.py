@@ -251,10 +251,14 @@ def create_box(bounding_box, nsteps):
     return points, tri
 
 def get_vectors(normal):
+    length =  np.linalg.norm(normal,axis=1)[:,None]
+    normal /= length#np.linalg.norm(normal,axis=1)[:,None]
     strikedip = normal_vector_to_strike_and_dip(normal)
     strike_vec = get_strike_vector(strikedip[:, 0])
+    strike_vec /= np.linalg.norm(strike_vec,axis=0)[None,:]
     dip_vec = np.cross(strike_vec, normal, axisa=0, axisb=1).T  # (strikedip[:, 0], strikedip[:, 1])
-    return strike_vec, dip_vec
+    dip_vec /= np.linalg.norm(dip_vec,axis=0)[None,:]
+    return strike_vec*length.T, dip_vec*length.T
 
 
 def get_strike_vector(strike):
@@ -365,7 +369,10 @@ def coord_name():
 def interface_name():
     return ['interface']
 
+
+def feature_name():
+    return ['feature_name']
+
 def all_heading():
     return xyz_names() + normal_vec_names() + tangent_vec_names() + \
-           gradient_vec_names() + weight_name() + val_name() + coord_name() +\
-            interface_name()
+           gradient_vec_names() + weight_name() + val_name() + coord_name() + feature_name() + interface_name()

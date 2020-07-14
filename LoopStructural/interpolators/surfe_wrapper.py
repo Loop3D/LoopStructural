@@ -58,10 +58,10 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
 
         points = self.get_value_constraints()
         if points.shape[0]> 0:
-            self.surfe.SetInterfaceConstraints(points[:,:4])
-        # for i in range(points.shape[0]):
-        #
-        #     self.surfe.AddInterfaceConstraint(points[i, 0], points[i, 1], points[i, 2], points[i, 3], )
+            # self.surfe.SetInterfaceConstraints(points[:,:4])
+            for i in range(points.shape[0]):
+            
+                self.surfe.AddInterfaceConstraint(points[i, 0], points[i, 1], points[i, 2], points[i, 3], )
 
     def add_tangent_ctr_pts(self):
         pass

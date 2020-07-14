@@ -215,18 +215,17 @@ class FaultSegment:
             gx = gx_future.result()
             gy = gy_future.result()
             gz = gz_future.result()
-
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
         mask = np.logical_and(mask,~np.isnan(gz))
         d[~mask] = 0
-        # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-        d[mask][gx[mask] > 0] = 1.
-        d[mask][gx[mask] < 0] = 0.
-        # d[gx < 0] = 0.
+        gx_mask = np.zeros_like(mask,dtype=bool)
+        gx_mask[mask] = gx[mask] > 0
+        d[gx_mask] = 1.
         if self.faultfunction is not None:
             d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
         mask = np.abs(d) > 0.
+
         d *= self.displacement
         # calculate the fault frame for the evaluation points
         for i in range(steps):
@@ -247,9 +246,11 @@ class FaultSegment:
             mask2 = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
             mask2 = np.logical_and(mask2, ~np.isnan(gz))
             d[~mask2] = 0
+            gx_mask2 = np.zeros_like(mask2,dtype=bool)
+            gx_mask2[mask2] = gx[mask2] > 0
             # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-            d[mask2][gx[mask2] > 0] = 1.
-            d[mask2][gx[mask2] < 0] = 0.
+            d[gx_mask2] = 1.
+            # d[mask2][gx[mask2] < 0] = 0.
             # d[gx < 0] = 0.
             if self.faultfunction is not None:
                 d[mask2] = self.faultfunction(gx[mask2], gy[mask2], gz[mask2])

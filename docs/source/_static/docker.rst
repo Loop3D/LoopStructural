@@ -35,6 +35,6 @@ Docker
 
     If you want to use your own data with the docker container you will need
     to link your local directory (this can be anywhere) with the docker container.
-    To do this add :code:`-v LOCALDIRPATH:/home/joyvan/shared_volume` to the docker command
-    so it becomes :code:`docker run -i -t -p 8888:8888 -v LOCALDIRPATH:/home/joyvan/shared_volume`.
-    :code:`LOCALDIRPATH` is the full path to the directory you want to share.
+    To do this add :code:`-v LOCALDIRPATH:/home/jovyan/shared_volume` to the docker command
+    so it becomes :code:`docker run -i -t -p 8888:8888 -v LOCALDIRPATH:/home/jovyan/shared_volume loop`.
+    :code:`LOCALDIRPATH` is the relative or full path to the directory you want to share.

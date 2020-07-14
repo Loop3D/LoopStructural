@@ -1,3 +1,6 @@
+"""
+Geological features
+"""
 import logging
 
 import numpy as np
@@ -8,9 +11,8 @@ logger = logging.getLogger(__name__)
 class GeologicalFeature:
     """
     Geological feature is class that is used to represent a geometrical element in a geological
-    model. For example foliations, fault planes, fold rotation angles etc. The feature has a support
-    which
-
+    model. For example foliations, fault planes, fold rotation angles etc. 
+    
     Attributes
     ----------
     name : string
@@ -20,26 +22,27 @@ class GeologicalFeature:
         support geometry
     data : list
         list containing geological data
-    region : list of boolean functions defining whether the feature is
+    region : list 
+        list of boolean functions defining whether the feature is
         active
-    faults : list of faults that affect this feature
-    interpolator : GeologicalInterpolator
-        the interpolator used to build this feature
-
+    faults : list 
+        list of FaultSegments that affect this feature
     """
-    def __init__(self, name, interpolator, builder=None, data=None, region=None, type=None, faults=[]):
-        """
+    def __init__(self, name, interpolator, builder=None, data=None, region=None, type=None, 
+                faults=[], fold = None):
+        """Default constructor for geological feature
+
         Parameters
         ----------
         name: string
         interpolator : GeologicalInterpolator
-        builder : GeologicalFeatureInterpolator
-        data :
-        region : list
-            boolean lambda functions returning where the feature can be evaluated
+        builder : GeologicalFeatureBuilder
+        data : 
+        region :
         type :
         faults : list
 
+        
         """
         self.name = name
         self.interpolator = interpolator
@@ -51,12 +54,23 @@ class GeologicalFeature:
         self.type = type
         self.faults = faults
         self.faults_enabled = True
+        self.fold=fold
+        self._attributes = {}
+        self._attributes['feature'] = self
+        self._attributes['builder'] = self.builder
+        self._attributes['faults'] = self.faults
         if region is None:
             self.region = 'everywhere'
         self.model = None
 
     def __str__(self):
         return self.name
+
+    def __getitem__(self,key):
+        return self._attributes[key]
+
+    def __setitem__(self, key, item):
+        self._attributes[key] = item
 
     def set_model(self, model):
         self.model = model
@@ -174,12 +188,15 @@ class GeologicalFeature:
         """
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
+
         dot = []
         if grad.shape[0] > 0:
+            grad /=np.linalg.norm(grad,axis=1)[:,None]
             model_grad = self.evaluate_gradient(grad[:,:3])
             dot.append(np.einsum('ij,ij->i',model_grad,grad[:,:3:6]).tolist())
 
         if norm.shape[0] > 0:
+            norm /=np.linalg.norm(norm,axis=1)[:,None]
             model_norm = self.evaluate_gradient(norm[:, :3])
             dot.append(np.einsum('ij,ij->i', model_norm, norm[:,:3:6]))
 
@@ -211,7 +228,6 @@ class GeologicalFeature:
         if self.model is None:
             return 0
         return np.mean(self.evaluate_value(self.model.regular_grid((10,10,10))))
-        # return np.nanmean(self.scalar_field.get_node_values())
 
     def min(self):
         """
@@ -225,7 +241,6 @@ class GeologicalFeature:
             return 0
         return np.nanmin(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-        #       return np.nanmin(self.scalar_field.get_node_values())
 
     def max(self):
         """
@@ -240,7 +255,6 @@ class GeologicalFeature:
             return 0
         return np.nanmax(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-        #return np.nanmax(self.scalar_field.get_node_values())
 
     def update(self):
         """

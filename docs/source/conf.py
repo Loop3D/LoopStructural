@@ -84,7 +84,8 @@ sphinx_gallery_conf = {
                         , # path to where to save gallery generated output
     'image_scrapers': ('matplotlib',LoopScraper()),
     'within_subsection_order': ExampleTitleSortKey,
-    'reference_url' : {'LoopStructural' : None}
+    'reference_url' : {'LoopStructural' : None},
+    
 }
 
 def setup(app):

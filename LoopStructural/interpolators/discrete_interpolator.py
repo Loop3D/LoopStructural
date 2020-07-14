@@ -24,7 +24,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        support
+        support 
             A discrete mesh with, nodes, elements, etc
         """
         GeologicalInterpolator.__init__(self)
@@ -36,6 +36,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # self.region_map[self.region] = np.array(range(0,
         # len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
+        self.shape = 'rectangular'
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
         self.c_ = 0
@@ -49,6 +50,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_d = []
         self.eq_const_c_ = 0
         self.constraints = {}
+        self.interpolation_weights= {}
 
     def set_property_name(self, propertyname):
         """
@@ -86,7 +88,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.region_map[self.region] = np.array(
             range(0, len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
-
+        
     def set_interpolation_weights(self, weights):
         """
         Set the interpolation weights dictionary
@@ -146,7 +148,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         B = np.array(B)
         idc = np.array(idc)
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
-            logger.warning("Constraints contain nan not adding constraints")
+            logger.warning("Constraints contain nan not adding constraints: {}".format(name))
             return
         nr = A.shape[0]
         if len(A.shape) > 2:

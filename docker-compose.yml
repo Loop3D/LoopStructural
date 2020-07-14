@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  structural:
+    build: ./
+    volumes:
+      - /home/lgrose/dev/python/LoopStructuralApplications/:/home/joyvan/shared_volume loop
+    ports:
+      - 9888:8888
+    

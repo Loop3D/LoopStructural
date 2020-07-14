@@ -37,6 +37,7 @@ and a wrapper for the generalised radial basis functions provided by Surfe.
 
    installation
    auto_examples/index
+   contributors_guide
 
 .. toctree::
    :caption: LoopStructural API
