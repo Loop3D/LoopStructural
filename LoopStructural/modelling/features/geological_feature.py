@@ -40,7 +40,7 @@ class GeologicalFeature:
         data : 
         region :
         type :
-        faults :
+        faults : list
 
         
         """
@@ -94,7 +94,7 @@ class GeologicalFeature:
         Parameters
         ----------
         region : boolean function(x,y,z)
-                - returns true if inside region, false if outside
+                returns true if inside region, false if outside
                 can be passed as a lambda function e.g.
                 lambda pos : feature.evaluate_value(pos) > 0
 
@@ -109,7 +109,8 @@ class GeologicalFeature:
 
         Parameters
         ----------
-        builder
+        builder : GeologicalFeatureInterpolator
+            the builder associated with this feature
 
         Returns
         -------
@@ -182,7 +183,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        misfit : np.array(N,dtype=double)
+            dot product between interpolated gradient and constraints
         """
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
@@ -205,7 +207,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        misfit : np.array(N,dtype=double)
+            difference between interpolated scalar field and value constraints
         """
         locations = self.interpolator.get_value_constraints()
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
@@ -218,6 +221,8 @@ class GeologicalFeature:
 
         Returns
         -------
+        mean : double
+            average value of the feature evaluated on a (10,10,10) grid in model area
 
         """
         if self.model is None:
@@ -229,7 +234,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        min : double
+            min value of the feature evaluated on a (10,10,10) grid in model area
         """
         if self.model is None:
             return 0
@@ -242,7 +248,8 @@ class GeologicalFeature:
 
         Returns
         -------
-
+        max : double
+            max value of the feature evaluated on a (10,10,10) grid in model area
         """
         if self.model is None:
             return 0
@@ -272,7 +279,7 @@ class GeologicalFeature:
 
         Returns
         -------
-        GeologicalInterpolator
+        interpolator : GeologicalInterpolator
         """
         return self.interpolator
 

@@ -1,3 +1,7 @@
+"""
+Cartesian grid for fold interpolator
+
+"""
 import logging
 
 import numpy as np

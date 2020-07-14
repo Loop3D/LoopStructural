@@ -1,3 +1,6 @@
+"""
+Base geological interpolator
+"""
 import logging
 
 import numpy as np
@@ -7,7 +10,10 @@ logger = logging.getLogger(__name__)
 
 class GeologicalInterpolator:
     """
-
+    Attributes
+    ----------
+    data : dict
+        a dictionary with np.arrays for gradient, value, normal, tangent data
     """
     def __init__(self):
         """
@@ -19,7 +25,8 @@ class GeologicalInterpolator:
         self.data = {'gradient': np.zeros((0,7)),
                      'value' : np.zeros((0,5)),
                      'normal': np.zeros((0,7)),
-                     'tangent': np.zeros((0,7))
+                     'tangent': np.zeros((0,7)),
+                     'interface' : np.zeros((0,5))
                      }
         self.n_g = 0
         self.n_i = 0
@@ -109,6 +116,9 @@ class GeologicalInterpolator:
         """
         self.data['tangent'] = points
 
+    def set_interface_constraints(self, points):
+        self.data['interface'] = points
+
     def get_value_constraints(self):
         """
 
@@ -147,6 +157,8 @@ class GeologicalInterpolator:
         """
         return self.data['normal']
 
+    def get_interface_constraints(self):
+        return self.data['interface']
     def setup_interpolator(self, **kwargs):
         """
         Runs all of the required setting up stuff

@@ -1,3 +1,6 @@
+"""
+Tetmesh based on cartesian grid for piecewise linear interpolation
+"""
 import logging
 
 import numpy as np
