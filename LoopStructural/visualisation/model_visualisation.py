@@ -79,7 +79,24 @@ class LavaVuModelViewer:
             self.bounding_box = np.array(model.bounding_box)
             self.nsteps = np.array(model.nsteps)
             self._model = model
+            self._nelements = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
             logger.debug("Using bounding box from model")
+    @property
+    def nelements(self):
+        return self._nelements
+    
+    @nelements.setter
+    def nelements(self, nelements):
+        box_vol = (self.bounding_box[1, 0]-self.bounding_box[0, 0]) * (self.bounding_box[1, 1]-self.bounding_box[0, 1]) * (self.bounding_box[1, 2]-self.bounding_box[0, 2])
+        ele_vol = box_vol / nelements
+        # calculate the step vector of a regular cube
+        step_vector = np.zeros(3)
+        step_vector[:] = ele_vol ** (1. / 3.)
+        # step_vector /= np.array([1,1,2])
+        # number of steps is the length of the box / step vector
+        nsteps = np.ceil((self.bounding_box[1, :] - self.bounding_box[0, :]) / step_vector).astype(int)
+        self.nsteps = nsteps
+        logger.info("Using grid with dimensions {} {} {}".format(nsteps[0],nsteps[1],nsteps[2]))
 
     def deep_clean(self):
         """[summary]
@@ -364,7 +381,7 @@ class LavaVuModelViewer:
         surf = self.lv.triangles(name)
         surf.vertices(self.model.rescale(points))
         surf.indices(tri)
-        val = self.model.evaluate_model(points,rescale=True)
+        val = self.model.evaluate_model(points,scale=True)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
         cmap = kwargs.get('cmap', 'tab20')

@@ -22,6 +22,7 @@ class MapView:
         """
         self._bounding_box = bounding_box
         self._nsteps = nsteps
+        self._nelements = nsteps[0]*nsteps[1]
         self.xx = None
         self.yy = None
         if self._nsteps is not None and self._bounding_box is not None:
