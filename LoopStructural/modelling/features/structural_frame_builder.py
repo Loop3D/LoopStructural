@@ -46,14 +46,14 @@ class StructuralFrameBuilder:
         # list of interpolators
         # self.interpolators = []
         # Create the interpolation objects by copying the template
-
         if interpolators is None:
-            interpolators = []
-            interpolators.append(interpolator)
-            interpolators.append(interpolator.copy())
-            interpolators.append(interpolator.copy())
-        if interpolators is None and interpolator is None:
-            raise BaseException
+            if interpolator is not None:
+                interpolators = []
+                interpolators.append(interpolator)
+                interpolators.append(interpolator.copy())
+                interpolators.append(interpolator.copy())
+            else:
+                raise BaseException("Missing interpolator")
         # self.builders
         self.builders.append(
             GeologicalFeatureInterpolator(interpolators[0],
@@ -132,7 +132,7 @@ class StructuralFrameBuilder:
                 "Not enough constraints for structural frame coordinate 0, \n"
                 "Add some more and try again.")
         # make sure that all of the coordinates are using the same region
-        if gx_feature.get_interpolator().region_function is not None:
+        if gx_feature is not None and gx_feature.get_interpolator().region_function is not None:
             self.builders[1].interpolator.set_region(gx_feature.get_interpolator().region_function)
             self.builders[2].interpolator.set_region(gx_feature.get_interpolator().region_function)
             if 'data_region' in kwargs:

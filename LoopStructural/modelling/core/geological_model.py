@@ -376,6 +376,9 @@ class GeologicalModel:
             step_vector[:] = ele_vol ** (1. / 3.)
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            if np.any(np.less(nsteps, 3)):
+                logger.error("Cannot create interpolator: number of steps is too small")
+                return interpolator
             # create a structured grid using the origin and number of steps
             grid_id = 'grid_{}'.format(nelements)
             grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
@@ -954,13 +957,14 @@ class GeologicalModel:
             logger.info("Adding fault extent data as first and last point")
             ## first and last point of the line
             value_data = fault_frame_data[fault_frame_data['val'] == 0]
-            coord2 = value_data.iloc[[0, len(value_data) - 1]]
-            coord2 = coord2.reset_index(drop=True)
-            c2_scale = kwargs.get('length_scale',1.)
-            coord2.loc[0, 'val'] = -1/c2_scale
-            coord2.loc[1, 'val'] = 1/c2_scale
-            coord2['coord'] = 2
-            fault_frame_data = pd.concat([fault_frame_data, coord2],
+            if not value_data.empty:
+                coord2 = value_data.iloc[[0, len(value_data) - 1]]
+                coord2 = coord2.reset_index(drop=True)
+                c2_scale = kwargs.get('length_scale',1.)
+                coord2.loc[0, 'val'] = -1/c2_scale
+                coord2.loc[1, 'val'] = 1/c2_scale
+                coord2['coord'] = 2
+                fault_frame_data = pd.concat([fault_frame_data, coord2],
                                          sort=False)
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # if there is no fault slip data then we could find the strike of
@@ -1224,4 +1228,4 @@ class GeologicalModel:
                 scaled_xyz = self.scale(xyz)
             return feature.evaluate_gradient(scaled_xyz)
         else:
-            return np.zeros(xyz.shape[0])    
+            return np.zeros(xyz.shape[0])
