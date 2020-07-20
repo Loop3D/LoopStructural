@@ -888,7 +888,7 @@ class GeologicalModel:
         # evaluated where the unconformity is positive
         return domain_fault
 
-    def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
+    def create_and_add_fault(self, fault_surface_data, displacement, renormalise=True, **kwargs):
         """
         Parameters
         ----------
@@ -917,7 +917,8 @@ class GeologicalModel:
         if 'coord' not in fault_frame_data:
             fault_frame_data['coord'] = 0
         vals = fault_frame_data['val']
-        if len(np.unique(vals[~np.isnan(vals)])) == 1:
+        if len(np.unique(vals[~np.isnan(vals)])) == 1 and renormalise:
+            print("Setting fault ellipsoid to 1/3 of fault length")
             xyz = fault_frame_data[['X', 'Y', 'Z']].to_numpy()
             p1 = xyz[0, :]  # fault_frame_data.loc[0 ,['X','Y']]
             p2 = xyz[-1, :]  # fault_frame_data.loc[-1 ,['X','Y']]
