@@ -70,7 +70,7 @@ def process_map2loop(m2l_directory, flags={}):
     thickness_file = flags.get('thickness',m2l_directory + '/output/formation_summary_thicknesses.csv')
     with open(thickness_file) as file:
         for l in file:
-            if i>1:
+            if i>=1:
                 linesplit = l.split(',')
                 thickness[linesplit[0]] = float(linesplit[1])
                 # normalise the thicknesses
@@ -121,7 +121,7 @@ def process_map2loop(m2l_directory, flags={}):
             if c in thickness:
                 stratigraphic_column[g][c] = {'max': val[g], 'min': val[g] - thickness[c], 'id': unit_id}
                 unit_id += 1
-                strat_val[c] = val[g]
+                strat_val[c] = val[g] - thickness[c]
                 val[g] -= thickness[c]
     group_name = None
     for g, i in stratigraphic_column.items():
