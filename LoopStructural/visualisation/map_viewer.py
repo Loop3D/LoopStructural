@@ -20,11 +20,11 @@ class MapView:
         nsteps - number of cells
         kwargs
         """
-        self._bounding_box = bounding_box
-        self._nsteps = nsteps
-        self._nelements = nsteps[0]*nsteps[1]
+        
         self.xx = None
         self.yy = None
+        self._bounding_box = bounding_box
+        self._nsteps = nsteps
         if self._nsteps is not None and self._bounding_box is not None:
             self._update_grid()
         if model is not None:
@@ -35,7 +35,6 @@ class MapView:
         self.ax = ax
         if self.ax is None:
             fig, self.ax = plt.subplots(1, figsize=(10, 10))
-
         self.ax.set_aspect('equal', adjustable='box')
 
     @property
@@ -164,5 +163,7 @@ class MapView:
             logger.error("Mapview needs a model assigned to plot model on map")
             return 
         vals = self.model.evaluate_model(pts.T,scale=False)
-        plt.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+        self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)
+                                
+    # def add_vector_field(self,)
