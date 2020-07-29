@@ -299,15 +299,13 @@ class LavaVuModelViewer:
                 # svalues[:] = np.nan
                 try:
                     import meshio
+                    meshio.write_points_cells(filename.format(name),
+                    verts,
+                    [("triangle", faces)]
+                    )
                 except ImportError:
                     logger.error("Could not save surfaces, meshio is not installed")
-                if painter is not None:
-                    svalues = painter.evaluate_value(verts)
-                meshio.write_points_cells(filename.format(name),
-                verts,
-                [("triangle", faces)]
-                
-                )
+
             surf = self.lv.triangles(name)
             surf.vertices(verts)
             surf.indices(faces)
