@@ -11,11 +11,6 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-if 'SURFE' in os.environ:
-    sys.path.append(os.environ['SURFE'])
-if 'SURFE' not in os.environ:
-    logger.error("Please add SURFE to your environment variables to specify the location \n "
-                 "of the SURFE binaries")
 import surfepy
 
 
