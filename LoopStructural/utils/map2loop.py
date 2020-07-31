@@ -97,7 +97,7 @@ def process_map2loop(m2l_directory, flags={}):
         contact_orientations['nx'] = np.nan
         contact_orientations['ny'] = np.nan
         contact_orientations['nz'] = np.nan
-        contact_orientations[['nx', 'ny', 'nz']] = -strike_dip_vector(contact_orientations['strike'],
+        contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
                                                                     contact_orientations['dip'])*vector_scale 
     contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
     # with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
