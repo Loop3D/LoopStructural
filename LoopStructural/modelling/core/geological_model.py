@@ -882,11 +882,11 @@ class GeologicalModel:
         self._add_feature(domain_fault)
         self._add_domain_fault_below(domain_fault)
 
-        # uc_feature = UnconformityFeature(uc_feature_base,0)
+        domain_fault_uc = UnconformityFeature(domain_fault,0)
         # iterate over existing features and add the unconformity as a
         # region so the feature is only
         # evaluated where the unconformity is positive
-        return domain_fault
+        return domain_fault_uc
 
     def create_and_add_fault(self, fault_surface_data, displacement, renormalise=True, **kwargs):
         """
