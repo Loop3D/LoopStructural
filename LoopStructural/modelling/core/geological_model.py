@@ -99,6 +99,26 @@ class GeologicalModel:
         rescale : bool
             whether to rescale the model to between 0/1
 
+        Examples
+        --------
+        Demo data
+        
+        >>> from LoopStructural.datasets import load_claudius
+        >>> from LoopStructural import GeologicalModel
+        
+        >>> data, bb = load_claudius()
+        
+        >>> model = GeologicalModel(bb[:,0],bb[:,1] 
+        >>> model.set_model_data(data)
+        >>> model.create_and_add_foliation('strati')
+        
+        >>> y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1],
+                        nsteps[1])
+        >>> z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2],
+                        nsteps[2])
+        >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        >>> model.evaluate_feature_value('strati',xyz,scale=False)
 
 
         """
