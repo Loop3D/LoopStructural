@@ -31,9 +31,7 @@ requirements:
 test:
   imports:
     - LoopStructural
-    - pytest
-  commands:
-    - pytest
+
 
 about:
   home: "https://github.com/Loop3D/LoopStructural"
