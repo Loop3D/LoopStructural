@@ -19,15 +19,19 @@ requirements:
     - cython
     - setuptools
   run:
-    - python
-    - map2model
+    - Cython
     - numpy
     - pandas
-    - geopandas
+    - scipy
     - matplotlib
+    - scikit-image
+    - scikit-learn
 test:
   imports:
-    - map2loop
+    - LoopStructural
+    - pytest
+  commands:
+    - pytest
 
 about:
   home: "https://github.com/Loop3D/LoopStructural"
