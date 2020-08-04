@@ -19,6 +19,7 @@ requirements:
     - python
     - cython
     - setuptools
+    - numpy
   run:
     - Cython
     - numpy
