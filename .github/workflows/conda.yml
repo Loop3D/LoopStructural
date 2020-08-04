@@ -1,0 +1,18 @@
+name: publish_conda
+
+on:
+  push:
+    branches:
+      - master
+      - lg_development
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish Loop Conda
+        uses: Loop3D/conda-publish-action@1.1
+        with:
+          subdir: "conda"
+          anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
+          platforms: "win osx linux"
