@@ -4,6 +4,8 @@ A wrapper for lavavu
 """
 
 import logging
+logger = logging.getLogger(__name__)
+
 try:
     import lavavu
     from lavavu.vutils import is_notebook
@@ -14,7 +16,6 @@ from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
-logger = logging.getLogger(__name__)
 # adapted/copied from pyvista for sphinx scraper
 _OPEN_VIEWERS = {}
 
@@ -46,6 +47,9 @@ class LavaVuModelViewer:
         objects : dictionary of objects that have been plotted
         """
         # copied from pyvista
+        if lavavu is None:
+            logger.error("Lavavu isn't installed: pip install lavavu")
+            return
         self._id_name = "{}-{}".format(str(hex(id(self))), len(_OPEN_VIEWERS))
         _OPEN_VIEWERS[self._id_name] = self
         #
