@@ -99,6 +99,26 @@ class GeologicalModel:
         rescale : bool
             whether to rescale the model to between 0/1
 
+        Examples
+        --------
+        Demo data
+        
+        >>> from LoopStructural.datasets import load_claudius
+        >>> from LoopStructural import GeologicalModel
+        
+        >>> data, bb = load_claudius()
+        
+        >>> model = GeologicalModel(bb[:,0],bb[:,1] 
+        >>> model.set_model_data(data)
+        >>> model.create_and_add_foliation('strati')
+        
+        >>> y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1],
+                        nsteps[1])
+        >>> z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2],
+                        nsteps[2])
+        >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        >>> model.evaluate_feature_value('strati',xyz,scale=False)
 
 
         """
@@ -155,6 +175,18 @@ class GeologicalModel:
 
     @classmethod
     def from_file(cls, file):
+        """Load a geological model from file
+
+        Parameters
+        ----------
+        file : string
+            path to the file
+
+        Returns
+        -------
+        GeologicalModel
+            the geological model object
+        """        
         try:
             import dill as pickle
         except ImportError:
@@ -168,10 +200,18 @@ class GeologicalModel:
             return None
 
     def to_file(self, file):
+        """Save a model to a pickle file requires dill
+
+        Parameters
+        ----------
+        file : string
+            path to file location
+        """        
         try:
             import dill as pickle
         except ImportError:
-            logger.error("Cannot write to file, dill not installed")
+            logger.error("Cannot write to file, dill not installed \n"
+                        "pip install dill")
             return
         try:
             pickle.dump(self,open(file,'wb'))
@@ -304,6 +344,18 @@ class GeologicalModel:
         self.stratigraphic_column = stratigraphic_column
 
     def create_from_feature_list(self, features):
+        """Initialises a model from a dictionary containing the features
+
+        Parameters
+        ----------
+        features : [type]
+            [description]
+
+        Raises
+        ------
+        LoopBaseException
+            [description]
+        """        
         for f in features:
             featuretype = f.pop('featuretype', None)
             if featuretype is None:
@@ -458,7 +510,6 @@ class GeologicalModel:
             the created fold frame
         """
         self.parameters['features'].append({'feature_type': 'fold_frame', 'feature_name': foldframe_data, **kwargs})
-        result = {}
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
@@ -566,8 +617,10 @@ class GeologicalModel:
         Parameters
         ----------
         fold_frame_data : string
+            name of the feature to be added
 
-        fold_frame : StructuralFrame
+        fold_frame : StructuralFrame, optional
+            the fold frame for the fold if not specified uses last feature added
 
         kwargs
 
@@ -647,12 +700,14 @@ class GeologicalModel:
         return fold_frame
 
     def _add_faults(self, feature_builder, features=None):
-        """
-
+        """Adds all existing faults to a geological feature builder 
+        
         Parameters
         ----------
         feature_builder : GeologicalFeatureInterpolator/StructuralFrameBuilder
-
+            The feature buider to add the faults to
+        features : list, optional
+            A specific list of features rather than all features in the model
         Returns
         -------
 
@@ -882,13 +937,13 @@ class GeologicalModel:
         self._add_feature(domain_fault)
         self._add_domain_fault_below(domain_fault)
 
-        # uc_feature = UnconformityFeature(uc_feature_base,0)
+        domain_fault_uc = UnconformityFeature(domain_fault,0)
         # iterate over existing features and add the unconformity as a
         # region so the feature is only
         # evaluated where the unconformity is positive
-        return domain_fault
+        return domain_fault_uc
 
-    def create_and_add_fault(self, fault_surface_data, displacement, **kwargs):
+    def create_and_add_fault(self, fault_surface_data, displacement, renormalise=True, **kwargs):
         """
         Parameters
         ----------
@@ -917,7 +972,8 @@ class GeologicalModel:
         if 'coord' not in fault_frame_data:
             fault_frame_data['coord'] = 0
         vals = fault_frame_data['val']
-        if len(np.unique(vals[~np.isnan(vals)])) == 1:
+        if len(np.unique(vals[~np.isnan(vals)])) == 1 and renormalise:
+            logger.info("Setting fault ellipsoid to 1/3 of fault length")
             xyz = fault_frame_data[['X', 'Y', 'Z']].to_numpy()
             p1 = xyz[0, :]  # fault_frame_data.loc[0 ,['X','Y']]
             p2 = xyz[-1, :]  # fault_frame_data.loc[-1 ,['X','Y']]
@@ -1033,12 +1089,15 @@ class GeologicalModel:
         return points
 
     def scale(self, points, inplace=True):
-        """
+        """ Take points in UTM coordinates and reproject
+        into scaled model space
+
         Parameters
         ----------
         points : np.array((N,3),dtype=float)
             points to 
-
+        inplace : bool, optional default = True
+            whether to copy the points array or update the passed array
         Returns
         -------
         points : np.array((N,3),dtype=double)
@@ -1051,20 +1110,6 @@ class GeologicalModel:
         points /= self.scale_factor
         return points
 
-    def voxet(self, nsteps=(50, 50, 25)):
-        """
-        Returns a voxet dict with the nsteps specified
-
-        Parameters
-        ----------
-        nsteps : tuple
-            number of cells in
-
-        Returns
-        -------
-        voxet : dict
-        """
-        return {'bounding_box': self.bounding_box, 'nsteps': nsteps}
 
     def regular_grid(self, nsteps=(50, 50, 25), shuffle = True, rescale=False):
         """
@@ -1089,6 +1134,7 @@ class GeologicalModel:
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         locs = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         if shuffle:
+            logger.info("Shuffling points")
             np.random.shuffle(locs)
         if rescale:
             locs = self.rescale(locs)
@@ -1114,11 +1160,11 @@ class GeologicalModel:
         --------
         Evaluate on a voxet
 
-        >>> x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
+        >>> x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0],
                         nsteps[0])
-        >>> y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1],
+        >>> y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1],
                         nsteps[1])
-        >>> z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2],
+        >>> z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2],
                         nsteps[2])
         >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
@@ -1168,6 +1214,9 @@ class GeologicalModel:
         -------
         feature : GeologicalFeature
             the geological feature with the specified name, or none if no feature
+
+        
+
         """
         feature_index = self.feature_name_index.get(feature_name,-1)
         if feature_index > -1:
@@ -1192,11 +1241,30 @@ class GeologicalModel:
         -------
         np.array((N))
             vector of scalar values
+
+        Examples
+        --------
+        Evaluate on a voxet using model boundaries
+
+        >>> x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0],
+                        nsteps[0])
+        >>> y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1],
+                        nsteps[1])
+        >>> z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2],
+                        nsteps[2])
+        >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        >>> model.evaluate_feature_vaue('feature',xyz,scale=False)
+
+        Evaluate on points in UTM coordinates 
+    
+        >>> model.evaluate_feature_vaue('feature',utm_xyz)
+        
         """
         feature  = self.get_feature_by_name(feature_name)
         if feature:
             if scale:
-                scaled_xyz = self.scale(xyz)
+                scaled_xyz = self.scale(xyz,inplace=False)
             return feature.evaluate_value(scaled_xyz)
         else:
             return np.zeros(xyz.shape[0])
@@ -1221,7 +1289,7 @@ class GeologicalModel:
         feature  = self.get_feature_by_name(feature_name)
         if feature:
             if scale:
-                scaled_xyz = self.scale(xyz)
+                scaled_xyz = self.scale(xyz, inplace = False)
             return feature.evaluate_gradient(scaled_xyz)
         else:
             return np.zeros(xyz.shape[0])    

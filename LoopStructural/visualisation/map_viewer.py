@@ -20,10 +20,12 @@ class MapView:
         nsteps - number of cells
         kwargs
         """
-        self._bounding_box = bounding_box
-        self._nsteps = nsteps
+        
         self.xx = None
         self.yy = None
+        
+        self._bounding_box = bounding_box
+        self._nsteps = nsteps
         if self._nsteps is not None and self._bounding_box is not None:
             self._update_grid()
         if model is not None:
@@ -34,9 +36,14 @@ class MapView:
         self.ax = ax
         if self.ax is None:
             fig, self.ax = plt.subplots(1, figsize=(10, 10))
-
         self.ax.set_aspect('equal', adjustable='box')
 
+        # set plot limits to model bounding box
+        self._xmin = self.bounding_box[0,0]
+        self._xmax = self.bounding_box[1,0]
+        self._ymin = self.bounding_box[0,1]
+        self._ymax = self.bounding_box[1,1]
+        self._update_plot_limits()
     @property
     def model(self):
         return self._model
@@ -48,6 +55,7 @@ class MapView:
             self.nsteps = model.nsteps
             self._model = model
             self._update_grid()
+
     @property
     def nsteps(self):
         return self._nsteps
@@ -65,6 +73,47 @@ class MapView:
         self._bounding_box = bounding_box
         self._update_grid()
 
+    @property
+    def xmin(self):
+        return self._xmin
+    
+    @xmin.setter
+    def xmin(self,xmin):
+        self._xmin = xmin
+        self._update_plot_limits()
+    
+    @property
+    def xmax(self):
+        return self._xmax
+    
+    @xmax.setter
+    def xmax(self,xmax):
+        self._xmax = xmax
+        self._update_plot_limits()
+
+    @property
+    def ymin(self):
+        return self._ymin
+    
+    @ymin.setter
+    def ymin(self,ymin):
+        self._ymin = ymin
+        self._update_plot_limits()
+
+    @property
+    def ymax(self):
+        return self._ymax
+    
+    @ymax.setter
+    def ymax(self,ymax):
+        self._ymax = ymax
+        self._update_plot_limits()
+
+    def _update_plot_limits(self):
+        self.ax.set_xlim([self._xmin,self._xmax])
+        self.ax.set_ylim([self._ymin,self._ymax])
+
+    
     def _update_grid(self):
         x = np.linspace(self.bounding_box[0,0], self.bounding_box[1,0], self.nsteps[0])
         y = np.linspace(self.bounding_box[0,1], self.bounding_box[1,1], self.nsteps[1])
@@ -163,5 +212,7 @@ class MapView:
             logger.error("Mapview needs a model assigned to plot model on map")
             return 
         vals = self.model.evaluate_model(pts.T,scale=False)
-        plt.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+        self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)
+                                
+    # def add_vector_field(self,)

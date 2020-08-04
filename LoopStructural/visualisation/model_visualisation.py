@@ -4,15 +4,18 @@ A wrapper for lavavu
 """
 
 import logging
+logger = logging.getLogger(__name__)
 
-import lavavu
+try:
+    import lavavu
+    from lavavu.vutils import is_notebook
+except ImportError:
+    logger.error("Please install lavavu: pip install lavavu")
 import numpy as np
-from lavavu.vutils import is_notebook
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
-logger = logging.getLogger(__name__)
 # adapted/copied from pyvista for sphinx scraper
 _OPEN_VIEWERS = {}
 
@@ -44,6 +47,9 @@ class LavaVuModelViewer:
         objects : dictionary of objects that have been plotted
         """
         # copied from pyvista
+        if lavavu is None:
+            logger.error("Lavavu isn't installed: pip install lavavu")
+            return
         self._id_name = "{}-{}".format(str(hex(id(self))), len(_OPEN_VIEWERS))
         _OPEN_VIEWERS[self._id_name] = self
         #
@@ -77,7 +83,24 @@ class LavaVuModelViewer:
             self.bounding_box = np.array(model.bounding_box)
             self.nsteps = np.array(model.nsteps)
             self._model = model
+            self._nelements = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
             logger.debug("Using bounding box from model")
+    @property
+    def nelements(self):
+        return self._nelements
+    
+    @nelements.setter
+    def nelements(self, nelements):
+        box_vol = (self.bounding_box[1, 0]-self.bounding_box[0, 0]) * (self.bounding_box[1, 1]-self.bounding_box[0, 1]) * (self.bounding_box[1, 2]-self.bounding_box[0, 2])
+        ele_vol = box_vol / nelements
+        # calculate the step vector of a regular cube
+        step_vector = np.zeros(3)
+        step_vector[:] = ele_vol ** (1. / 3.)
+        # step_vector /= np.array([1,1,2])
+        # number of steps is the length of the box / step vector
+        nsteps = np.ceil((self.bounding_box[1, :] - self.bounding_box[0, :]) / step_vector).astype(int)
+        self.nsteps = nsteps
+        logger.info("Using grid with dimensions {} {} {}".format(nsteps[0],nsteps[1],nsteps[2]))
 
     def deep_clean(self):
         """[summary]
@@ -282,15 +305,13 @@ class LavaVuModelViewer:
                 # svalues[:] = np.nan
                 try:
                     import meshio
+                    meshio.write_points_cells(filename.format(name),
+                    verts,
+                    [("triangle", faces)]
+                    )
                 except ImportError:
                     logger.error("Could not save surfaces, meshio is not installed")
-                if painter is not None:
-                    svalues = painter.evaluate_value(verts)
-                meshio.write_points_cells(filename.format(name),
-                verts,
-                [("triangle", faces)]
-                
-                )
+
             surf = self.lv.triangles(name)
             surf.vertices(verts)
             surf.indices(faces)
@@ -362,7 +383,6 @@ class LavaVuModelViewer:
         surf = self.lv.triangles(name)
         surf.vertices(self.model.rescale(points))
         surf.indices(tri)
-        print(points)
         val = self.model.evaluate_model(points,scale=True)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
