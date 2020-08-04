@@ -4,10 +4,12 @@ A wrapper for lavavu
 """
 
 import logging
-
-import lavavu
+try:
+    import lavavu
+    from lavavu.vutils import is_notebook
+except ImportError:
+    logger.error("Please install lavavu: pip install lavavu")
 import numpy as np
-from lavavu.vutils import is_notebook
 from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
