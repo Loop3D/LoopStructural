@@ -87,10 +87,25 @@ class LavaVuModelViewer:
             logger.debug("Using bounding box from model")
     @property
     def nelements(self):
+        """The number of elements to use for evaluating the isosurface
+
+        Returns
+        -------
+        nelements : int
+            number of elements to use for isosurfacing
+        """
         return self._nelements
     
     @nelements.setter
-    def nelements(self, nelements):
+    def nelements(self, nelements : int):
+        """Setter for nelements, automatically caculates the number of equally sized elements
+        to isosurface. Better than specifying step distance manually
+
+        Parameters
+        ----------
+        nelements : int
+            [description]
+        """        
         box_vol = (self.bounding_box[1, 0]-self.bounding_box[0, 0]) * (self.bounding_box[1, 1]-self.bounding_box[0, 1]) * (self.bounding_box[1, 2]-self.bounding_box[0, 2])
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
