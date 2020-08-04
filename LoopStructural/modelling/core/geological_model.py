@@ -510,7 +510,6 @@ class GeologicalModel:
             the created fold frame
         """
         self.parameters['features'].append({'feature_type': 'fold_frame', 'feature_name': foldframe_data, **kwargs})
-        result = {}
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #

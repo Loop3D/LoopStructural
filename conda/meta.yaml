@@ -1,0 +1,43 @@
+{% set name = "loopstructural" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  git_url: https://github.com/Loop3D/LoopStructural
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install ."
+
+requirements:
+  host:
+    - pip
+    - python
+    - cython
+    - setuptools
+  run:
+    - python
+    - map2model
+    - numpy
+    - pandas
+    - geopandas
+    - matplotlib
+test:
+  imports:
+    - map2loop
+
+about:
+  home: "https://github.com/Loop3D/LoopStructural"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Implicit 3D geological modelling library"
+  doc_url: "https://loop3d.github.io/LoopStructural/"
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - lachlangrose
