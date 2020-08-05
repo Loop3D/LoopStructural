@@ -115,6 +115,9 @@ class MapView:
 
     
     def _update_grid(self):
+        """Internal function to update the current grid when the bounding box
+        or number of steps changes
+        """        
         x = np.linspace(self.bounding_box[0,0], self.bounding_box[1,0], self.nsteps[0])
         y = np.linspace(self.bounding_box[0,1], self.bounding_box[1,1], self.nsteps[1])
         self.xx, self.yy = np.meshgrid(x, y, indexing='ij')
@@ -173,11 +176,14 @@ class MapView:
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """
-        Draw the
+        Plot the scalar field value on a map
+
         Parameters
         ----------
-        feature
-        z
+        feature : GeologicalFeature
+            which feature to plot on the map
+        z : double/np.array
+            height
         kwargs
 
         Returns
@@ -195,6 +201,17 @@ class MapView:
                        **kwargs)
 
     def add_contour(self, feature, values, z=0,**kwargs):
+        """Add an isoline of a scalar field to the map
+
+        Parameters
+        ----------
+        feature : GeologicalFeature
+            the feature to isosurface
+        values : list of values
+            [description]
+        z : double/np.array, optional
+            elevation of map, by default 0
+        """        
         zz = np.zeros(self.xx.shape)
         zz[:] = z
         v = feature.evaluate_value(np.array([self.xx, self.yy, zz]).T)
@@ -205,6 +222,15 @@ class MapView:
         
     
     def add_model(self, z = 0,cmap='tab20'):
+        """Plot the model onto a map
+
+        Parameters
+        ----------
+        z : int/numpy array, optional
+            height of the map surface (could also be a dem), by default 0
+        cmap : str/matplotlib colourmap, optional
+            specify a colour map, by default 'tab20'
+        """        
         zz = np.zeros_like(self.xx)
         zz[:] = z#self.bounding_box[1,2]
         pts = np.vstack([self.xx.flatten(),self.yy.flatten(),zz.flatten()])

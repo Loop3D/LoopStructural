@@ -16,7 +16,7 @@ def get_version(rel_path):
             return line.split(delim)[1]
     else:
         raise RuntimeError("Unable to find version string.")
-
+t
 setup(
 	name="LoopStructural",
 	install_requires=[
