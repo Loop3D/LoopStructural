@@ -21,7 +21,7 @@ def process_map2loop(m2l_directory, flags={}):
     gradient = flags.get('gradient',False)
     vector_scale = flags.get('vector_scale',None)
     tangents = pd.read_csv(m2l_directory + '/tmp/raw_contacts.csv')
-    groups = pd.read_csv(m2l_directory + '/tmp/all_sorts.csv', index_col=0)
+    groups = pd.read_csv(m2l_directory + '/tmp/all_sorts_clean.csv', index_col=0)
     contact_orientations = pd.read_csv(m2l_directory + '/output/orientations_clean.csv')
     # formation_thickness = pd.read_csv)
     contacts = pd.read_csv(m2l_directory + '/output/contacts_clean.csv')
@@ -116,10 +116,10 @@ def process_map2loop(m2l_directory, flags={}):
             stratigraphic_column[g] = {}
             val[g] = 0
 
-        for c in groups.loc[groups['group number'] == i, 'code']:
+        for c, colour in zip(groups.loc[groups['group number'] == i, 'code'],groups.loc[groups['group number'] == i, 'colour']):
             strat_val[c] = np.nan
             if c in thickness:
-                stratigraphic_column[g][c] = {'max': val[g], 'min': val[g] - thickness[c], 'id': unit_id}
+                stratigraphic_column[g][c] = {'max': val[g], 'min': val[g] - thickness[c], 'id': unit_id, 'colour':colour}
                 unit_id += 1
                 strat_val[c] = val[g] - thickness[c]
                 val[g] -= thickness[c]

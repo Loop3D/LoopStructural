@@ -207,8 +207,8 @@ class MapView:
         ----------
         feature : GeologicalFeature
             the feature to isosurface
-        values : list of values
-            [description]
+        values : list 
+            list of values to contour
         z : double/np.array, optional
             elevation of map, by default 0
         """        

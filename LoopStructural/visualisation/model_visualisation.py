@@ -378,10 +378,15 @@ class LavaVuModelViewer:
         vmax = kwargs.get('vmax', np.nanmax(val))
         surf.colourmap(cmap, range=(vmin, vmax))
 
-    def add_model(self, **kwargs):
+    def add_model(self, cmap = None, **kwargs):
         """Add a block model painted by stratigraphic id to the viewer
 
         Calls self.model.evaluate_model() for a cube surrounding the model.
+
+        Parameters
+        ----------
+        cmap : matplotlib cmap, optional
+            colourmap name or object from mpl
 
         Notes
         ------
@@ -392,6 +397,8 @@ class LavaVuModelViewer:
         >>> viewer.nsteps = np.array([100,100,100])
 
         """
+        import matplotlib.colors as colors
+
         name = kwargs.get('name', 'geological_model')
         points, tri = create_box(self.bounding_box, self.nsteps)
 
@@ -401,8 +408,22 @@ class LavaVuModelViewer:
         val = self.model.evaluate_model(points,scale=True)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
-        cmap = kwargs.get('cmap', 'tab20')
 
+        if cmap is None:
+            import matplotlib.colors as colors
+            colours = []
+            boundaries = []
+            data = []
+            for g in self.model.stratigraphic_column.keys():
+                for u, v  in self.model.stratigraphic_column[g].items():
+                    data.append((v['id'],v['colour']))
+                    colours.append(v['colour'])
+                    boundaries.append(v['id'])#print(u,v)
+            cmap = colors.ListedColormap(colours).colors
+        else:
+            cmap = cm.get_cmap(cmap,n_units)
+
+        
         # logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
         #                                                                        geological_feature.min(),
         #                                                                        geological_feature.max()))
@@ -410,7 +431,7 @@ class LavaVuModelViewer:
         vmax = kwargs.get('vmax', np.nanmax(val))
         surf.colourmap(cmap, range=(vmin, vmax))
 
-    def add_model_surfaces(self, faults = True, cmap='tab20', **kwargs):
+    def add_model_surfaces(self, faults = True, cmap=None, **kwargs):
         """Add surfaces for all of the interfaces in the model
 
 
@@ -426,13 +447,26 @@ class LavaVuModelViewer:
 
         """
         from matplotlib import cm
+        from matplotlib import colors
         n_units = 0 #count how many discrete colours
         for g in self.model.stratigraphic_column.keys():
             for u in self.model.stratigraphic_column[g].keys():
                 n_units+=1
-        tab = cm.get_cmap(cmap,n_units)
+        if cmap is None:
+            import matplotlib.colors as colors
+            colours = []
+            boundaries = []
+            data = []
+            for g in self.model.stratigraphic_column.keys():
+                for u, v  in self.model.stratigraphic_column[g].items():
+                    data.append((v['id'],v['colour']))
+                    colours.append(v['colour'])
+                    boundaries.append(v['id'])#print(u,v)
+            cmap = colors.ListedColormap(colours)
+        else:
+            cmap = cm.get_cmap(cmap,n_units)
         ci = 0
-
+        cmap_colours = colors.to_rgba_array(cmap.colors)
         for g in self.model.stratigraphic_column.keys():
             if g in self.model.feature_name_index:
                 feature = self.model.features[self.model.feature_name_index[g]]
@@ -442,7 +476,7 @@ class LavaVuModelViewer:
                 for u, vals in self.model.stratigraphic_column[g].items():
                     names.append(u)
                     values.append(vals['min'])
-                    colours.append(tab.colors[ci,:])
+                    colours.append(cmap_colours[ci,:])
                     ci+=1
                 self.add_isosurface(feature, slices=values,names=names,colours=colours,**kwargs)
 

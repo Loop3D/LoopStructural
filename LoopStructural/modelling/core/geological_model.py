@@ -320,14 +320,14 @@ class GeologicalModel:
         data_temp['Z'] /= self.scale_factor
         self.data.concat([self.data, data_temp], sort=True)
 
-    def set_stratigraphic_column(self, stratigraphic_column):
+    def set_stratigraphic_column(self, stratigraphic_column,cmap='tab20'):
         """
         Adds a stratigraphic column to the model
 
         Parameters
         ----------
         stratigraphic_column : dictionary
-
+        cmap : matplotlib.cmap
         Returns
         -------
 
@@ -336,11 +336,29 @@ class GeologicalModel:
         stratigraphic_column is a nested dictionary with the format
         {'group':
                 {'series1':
-                            {'min':0., 'max':10.,'id':0}
+                            {'min':0., 'max':10.,'id':0,'colour':}
                 }
         }
 
         """
+        # if the colour for a unit hasn't been specified we can just sample from 
+        # a colour map e.g. tab20
+        random_colour = True
+        n_units=0
+        for g in stratigraphic_column.keys():
+            for u in stratigraphic_column[g].keys():
+                if 'colour' in stratigraphic_column[g][u]:
+                    random_colour = False
+                    break
+                n_units+=1
+        if random_colour:
+            cmap = cm.get_cmap(cmap,n_units)
+            cmap_colours = cmap.colors
+            ci = 0
+            for g in stratigraphic_column.keys():
+                for u in stratigraphic_column[g].keys():
+                    stratigraphic_column[g][u]['colour'] = cmap_colours[ci,:]
+        
         self.stratigraphic_column = stratigraphic_column
 
     def create_from_feature_list(self, features):
