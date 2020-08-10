@@ -352,6 +352,7 @@ class GeologicalModel:
                     break
                 n_units+=1
         if random_colour:
+            from matplotlib.cm import cm
             cmap = cm.get_cmap(cmap,n_units)
             cmap_colours = cmap.colors
             ci = 0
@@ -573,7 +574,7 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
-        fold = FoldEvent(fold_frame)
+        fold = FoldEvent(fold_frame,name='Fold_{}'.format(foliation_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         series_builder = GeologicalFeatureInterpolator(
             interpolator=fold_interpolator,
@@ -653,7 +654,7 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
-        fold = FoldEvent(fold_frame)
+        fold = FoldEvent(fold_frame,name='Fold_{}'.format(fold_frame_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         frame_interpolator = self.get_interpolator(**kwargs)
         interpolators = [fold_interpolator, frame_interpolator,
