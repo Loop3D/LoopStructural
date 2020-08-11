@@ -421,8 +421,8 @@ class LavaVuModelViewer:
                     colours.append(v['colour'])
                     boundaries.append(v['id'])#print(u,v)
             cmap = colors.ListedColormap(colours).colors
-        else:
-            cmap = cm.get_cmap(cmap,n_units)
+        # else:
+            # cmap = cm.get_cmap(cmap,n_units)
 
         
         # logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
@@ -535,7 +535,7 @@ class LavaVuModelViewer:
         vector[mask, :] /= np.linalg.norm(vector[mask, :], axis=1)[:, None]
         vectorfield = self.lv.vectors(geological_feature.name + "_grad",
                                       **kwargs)
-        vectorfield.vertices(self.model.rescale(locations[mask, :]))
+        vectorfield.vertices(self.model.rescale(locations[mask, :],inplace=False))
         vectorfield.vectors(vector[mask, :])
         return
 
@@ -577,21 +577,21 @@ class LavaVuModelViewer:
         interface = feature.builder.get_interface_constraints()
 
         if grad.shape[0] > 0 and add_grad:
-            self.add_vector_data(self.model.rescale(grad[:, :3]), grad[:, 3:6], name + "_grad_cp",
+            self.add_vector_data(self.model.rescale(grad[:, :3],inplace=False), grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
 
         if norm.shape[0] > 0 and add_grad:
-            self.add_vector_data(self.model.rescale(norm[:, :3]), norm[:, 3:6], name + "_norm_cp",
+            self.add_vector_data(self.model.rescale(norm[:, :3],inplace=False), norm[:, 3:6], name + "_norm_cp",
                                  **kwargs)
         if value.shape[0] > 0 and add_value:
             kwargs['range'] = [feature.min(), feature.max()]
-            self.add_value_data(self.model.rescale(value[:, :3]), value[:, 3], name + "_value_cp",
+            self.add_value_data(self.model.rescale(value[:, :3],inplace=False), value[:, 3], name + "_value_cp",
                                 **kwargs)
         if tang.shape[0] > 0 and add_tang:
-            self.add_vector_data(self.model.rescale(tang[:, :3]), tang[:, 3:6], name + "_tang_cp",
+            self.add_vector_data(self.model.rescale(tang[:, :3],inplace=False), tang[:, 3:6], name + "_tang_cp",
                                  **kwargs)
         if interface.shape[0] > 0 and add_interface:
-            self.add_points(self.model.rescale(interface[:,:3]), name + "_interface_cp")
+            self.add_points(self.model.rescale(interface[:,:3],inplace=False), name + "_interface_cp")
 
     def add_points(self, points, name, **kwargs):
         """
@@ -691,7 +691,7 @@ class LavaVuModelViewer:
             xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
             locations = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         r2r, fold_axis, dgz = fold.get_deformed_orientation(locations)
-        self.model.rescale(locations)
+        locations = self.model.rescale(locations,inplace=False)
         self.add_vector_data(locations, r2r, fold.name + '_direction', colour='red')
         self.add_vector_data(locations, fold_axis, fold.name + '_axis', colour='black')
         self.add_vector_data(locations, dgz, fold.name + '_norm', colour='green')
