@@ -1282,6 +1282,7 @@ class GeologicalModel:
         """
         feature  = self.get_feature_by_name(feature_name)
         if feature:
+            scaled_xyz = xyz
             if scale:
                 scaled_xyz = self.scale(xyz,inplace=False)
             return feature.evaluate_value(scaled_xyz)
@@ -1307,6 +1308,7 @@ class GeologicalModel:
         """
         feature  = self.get_feature_by_name(feature_name)
         if feature:
+        scaled_xyz = xyz
             if scale:
                 scaled_xyz = self.scale(xyz, inplace = False)
             return feature.evaluate_gradient(scaled_xyz)
