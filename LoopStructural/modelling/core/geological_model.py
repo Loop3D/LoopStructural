@@ -378,7 +378,7 @@ class GeologicalModel:
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             if np.any(np.less(nsteps, 3)):
                 logger.error("Cannot create interpolator: number of steps is too small")
-                return interpolator
+                return None
             # create a structured grid using the origin and number of steps
             grid_id = 'grid_{}'.format(nelements)
             grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
