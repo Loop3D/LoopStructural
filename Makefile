@@ -5,7 +5,7 @@ build:
 
 # Ubuntu dependencies
 dependencies:
-	sudo apt-get update  && sudo apt-get install python3 python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++; 
+	sudo apt-get update  && sudo apt-get install python3 python3-dev python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++;
 
 # Fedora dependencies
 dependencies.fc:
