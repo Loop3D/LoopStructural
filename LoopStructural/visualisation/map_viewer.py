@@ -124,12 +124,20 @@ class MapView:
         self.xx = self.xx.flatten()
         self.yy = self.yy.flatten()
 
-    def add_data(self, feature, val=True, grad=True, **kwargs):
+    def add_data(self, feature, val=True, grad=True, dip=False,**kwargs):
         """
         Adds the data associated to the feature to the plot
         Parameters
         ----------
-        feature geological feature
+        feature : GeologicalFeature
+            the feature whose data you want to add
+        val : bool
+            whether to add value data
+        grad : bool
+            whether to add gradient data
+        dip : bool
+            whether to annotate the dip, default False
+
         kwargs are passed to matplotlib functions and draw strike
         Returns
         -------
@@ -169,10 +177,10 @@ class MapView:
             p1 = gradient_data[:, [0, 1]]
             p2 = gradient_data[:, [0, 1]] + n
             self.ax.plot([p1[:, 0], p2[:, 0]], [p1[:, 1], p2[:, 1]], symb_colour)
-            
-            dip = np.rad2deg(np.arccos(gradient_data[:,5])).astype(int)
-            for d, xy, v in zip(dip,gradient_data[:,:2],gradient_data[:,3:6]):
-                self.ax.annotate(d,xy,xytext=xy+v[:2]*.03,fontsize='small')
+            if dip:
+                dip_v = np.rad2deg(np.arccos(gradient_data[:,5])).astype(int)
+                for d, xy, v in zip(dip_v,gradient_data[:,:2],gradient_data[:,3:6]):
+                    self.ax.annotate(d,xy,xytext=xy+v[:2]*.03,fontsize='small')
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """

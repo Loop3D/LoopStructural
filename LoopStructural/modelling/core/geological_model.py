@@ -667,12 +667,16 @@ class GeologicalModel:
         ## add the data to the interpolator for the main foliation
         fold_frame_builder[0].add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
+            logger.info("Using cylindrical fold axis")
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
+            logger.info("Using average intersection lineation for \n"
+            "fold axis")
             _calculate_average_intersection(fold_frame_builder[0], fold_frame,
                                             fold)
 
         if fold.fold_axis is None:
+            logger.info("Fitting fold axis rotation angle")
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 fold_frame_builder[0])
             fold_axis_rotation = FoldRotationAngle(far, fad)
