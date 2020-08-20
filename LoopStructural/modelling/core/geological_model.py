@@ -1005,11 +1005,14 @@ class GeologicalModel:
             length /= 3
             # length/=2
             # print(fault_frame_data)
-            mask = ~np.isnan(fault_frame_data['nx'])
-            vectors = fault_frame_data[mask][['nx', 'ny', 'nz']].to_numpy()
+            mask = ~np.isnan(fault_frame_data['gx'])
+            vectors = fault_frame_data[mask][['gx', 'gy', 'gz']].to_numpy()
             lengths = np.linalg.norm(vectors, axis=1)
             vectors /= lengths[:, None]
-            fault_frame_data.loc[mask, ['nx', 'ny', 'nz']] = vectors
+            # added 20/08 rescale fault ellipsoid for m2l
+            vectors*=length
+            print(np.linalg.norm(vectors,axis=1))
+            fault_frame_data.loc[mask, ['gx', 'gy', 'gz']] = vectors
             if 'strike' in fault_frame_data.columns and 'dip' in \
                     fault_frame_data.columns:
                 fault_frame_data = fault_frame_data.drop(['dip', 'strike'],
