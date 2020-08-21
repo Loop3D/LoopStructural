@@ -1010,8 +1010,7 @@ class GeologicalModel:
             lengths = np.linalg.norm(vectors, axis=1)
             vectors /= lengths[:, None]
             # added 20/08 rescale fault ellipsoid for m2l
-            vectors*=length
-            print(np.linalg.norm(vectors,axis=1))
+            # vectors*=length
             fault_frame_data.loc[mask, ['gx', 'gy', 'gz']] = vectors
             if 'strike' in fault_frame_data.columns and 'dip' in \
                     fault_frame_data.columns:
