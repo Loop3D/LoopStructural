@@ -30,7 +30,7 @@ class MapView:
             self._update_grid()
         if model is not None:
             self._bounding_box = model.bounding_box
-            self._nsteps = model.nsteps
+            self._nsteps = model.nsteps[:2] #make sure self._nsteps is 2d
             self._model = model
             self._update_grid()
         self.ax = ax
@@ -62,6 +62,9 @@ class MapView:
     
     @nsteps.setter
     def nsteps(self,nsteps):
+        if len(nsteps) != 2:
+            logger.error("Can't update nsteps, needs to be 2D")
+            return
         self._nsteps = nsteps
         self._update_grid()
         
@@ -256,4 +259,4 @@ class MapView:
     def add_faults(self,**kwargs):
         for f in self.model.features:
             if f.type=='fault':
-                mapview.add_contour(f,0)
+                self.add_contour(f,0)
