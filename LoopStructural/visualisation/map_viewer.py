@@ -241,4 +241,19 @@ class MapView:
         self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)
                                 
-    # def add_vector_field(self,)
+    def add_fault_displacements(self,z = 0, cmap='rainbow'):
+        
+        zz = np.zeros_like(self.xx)
+        zz[:] = z#self.bounding_box[1,2]
+        pts = np.vstack([self.xx.flatten(),self.yy.flatten(),zz.flatten()])
+        if self.model is None:
+            logger.error("Mapview needs a model assigned to plot model on map")
+            return 
+        vals = self.model.evaluate_fault_displacements(pts.T,scale=False)
+        self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+                                    self.bounding_box[1,1]],origin='lower',cmap=cmap)
+
+    def add_faults(self,**kwargs):
+        for f in self.model.features:
+            if f.type=='fault':
+                mapview.add_contour(f,0)

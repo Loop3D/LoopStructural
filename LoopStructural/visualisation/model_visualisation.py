@@ -432,6 +432,40 @@ class LavaVuModelViewer:
         vmax = kwargs.get('vmax', np.nanmax(val))
         surf.colourmap(cmap, range=(vmin, vmax))
 
+    def add_fault_displacements(self, cmap = 'rainbow', **kwargs):
+        """Add a block model painted by the fault displacement magnitude
+
+        Calls fault.displacementfeature.evaluate_value(points) for all faults
+
+        Parameters
+        ----------
+        cmap : matplotlib cmap, optional
+            colourmap name or object from mpl
+
+        Notes
+        ------
+        It is sensible to increase the viewer step sizes before running this function to
+        increase the resolution of the model as its not possible to interpolate a discrete
+        colourmap and this causes the model to look like a lego block.
+        You can update the model resolution by changing the attribute nsteps
+        >>> viewer.nsteps = np.array([100,100,100])
+
+        """
+        
+        name = kwargs.get('name', 'fault_displacements')
+        points, tri = create_box(self.bounding_box, self.nsteps)
+
+        surf = self.lv.triangles(name)
+        surf.vertices(self.model.rescale(points))
+        surf.indices(tri)
+        vals = self.model.evaluate_fault_displacements(points)
+        surf.values(vals, 'displacement')
+        surf["colourby"] = 'displacement'
+
+        vmin = kwargs.get('vmin', np.nanmin(vals))
+        vmax = kwargs.get('vmax', np.nanmax(vals))
+        surf.colourmap(cmap, range=(vmin, vmax))
+
     def add_model_surfaces(self, faults = True, cmap=None, **kwargs):
         """Add surfaces for all of the interfaces in the model
 
@@ -462,7 +496,7 @@ class LavaVuModelViewer:
                 for u, v  in self.model.stratigraphic_column[g].items():
                     data.append((v['id'],v['colour']))
                     colours.append(v['colour'])
-                    boundaries.append(v['id'])#print(u,v)
+                    boundaries.append(v['id'])
             cmap = colors.ListedColormap(colours)
         else:
             cmap = cm.get_cmap(cmap,n_units)

@@ -1209,7 +1209,7 @@ class GeologicalModel:
         
         """
         if scale:
-            self.scale(xyz)
+            xyz = self.scale(xyz,inplace=False)
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
             feature_id = self.feature_name_index.get(group, -1)
@@ -1221,6 +1221,31 @@ class GeologicalModel:
             if feature_id == -1:
                 logger.error('Model does not contain {}'.format(group))
         return strat_id
+
+    def evaluate_fault_displacements(self,points,scale=True):
+        """Evaluate the fault displacement magnitude at each location
+        
+
+        Parameters
+        ----------
+        xyz : np.array((N,3),dtype=float)
+            locations
+        scale : bool
+            whether to rescale the xyz before evaluating model
+
+        Returns
+        -------
+        fault_displacement : np.array(N,dtype=float)
+            the fault displacement magnitude
+        """
+        if scale:
+            points = self.scale(points,inplace=False)
+        vals = np.zeros(points.shape[0])
+        for f in self.features:
+            if f.type == 'fault':
+                disp = f.displacementfeature.evaluate_value(points)
+                vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
+        return vals
 
     def get_feature_by_name(self, feature_name):
         """Returns a feature from the mode given a name
