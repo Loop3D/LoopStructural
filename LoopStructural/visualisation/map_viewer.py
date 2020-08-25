@@ -10,7 +10,7 @@ class MapView:
     """
 
     """
-    def __init__(self, model = None, bounding_box=None, nsteps=None, ax = None, **kwargs):
+    def __init__(self, model = None, bounding_box=np.zeros((2,2)), nsteps=None, ax = None, **kwargs):
         """
 
         Parameters
@@ -29,10 +29,8 @@ class MapView:
         if self._nsteps is not None and self._bounding_box is not None:
             self._update_grid()
         if model is not None:
-            self._bounding_box = model.bounding_box
-            self._nsteps = model.nsteps[:2] #make sure self._nsteps is 2d
-            self._model = model
-            self._update_grid()
+            #make sure self._nsteps is 2d
+            self.model = model
         self.ax = ax
         if self.ax is None:
             fig, self.ax = plt.subplots(1, figsize=(10, 10))
@@ -51,8 +49,9 @@ class MapView:
     @model.setter
     def model(self,model):
         if model is not None:
-            self.bounding_box = model.bounding_box
-            self.nsteps = model.nsteps
+            bb = np.array([model.origin[:2],model.maximum[:2]])
+            self.bounding_box = bb#model.bounding_box
+            self.nsteps = model.nsteps[:2]
             self._model = model
             self._update_grid()
 
@@ -120,7 +119,9 @@ class MapView:
     def _update_grid(self):
         """Internal function to update the current grid when the bounding box
         or number of steps changes
-        """        
+        """
+        if self.nsteps is None or self.bounding_box is None:
+            return        
         x = np.linspace(self.bounding_box[0,0], self.bounding_box[1,0], self.nsteps[0])
         y = np.linspace(self.bounding_box[0,1], self.bounding_box[1,1], self.nsteps[1])
         self.xx, self.yy = np.meshgrid(x, y, indexing='ij')
@@ -150,21 +151,23 @@ class MapView:
         # if single colour then specify kwarg, otherwise use point value
         if val:
             value_data = feature.builder.get_value_constraints()
+            self.model.rescale(value_data[:,:3])
             point_colour = kwargs.pop('point_colour',None)
             if point_colour is None:
                 self.ax.scatter(value_data[:, 0], value_data[:, 1], c=value_data[:,3],
                             vmin=feature.min(), vmax=feature.max(),cmap=cmap)
             if point_colour is not None:
                 self.ax.scatter(value_data[:, 0], value_data[:, 1], c=point_colour)
-        # points = strati.interpolator.get_gradient_control()
         if grad:
             symb_colour = kwargs.pop('symb_colour','black')
+            symb_scale=kwargs.pop('symb_scale',1.)
             gradient_data = np.hstack(ori_data)
+            self.model.rescale(gradient_data[:,:3])
             gradient_data[:, 3:5] /= np.linalg.norm(gradient_data[:, 3:5], axis=1)[:, None]
             t = gradient_data[:, [4, 3]] * np.array([1, -1]).T
             n = gradient_data[:, 3:5]
-            t *= 0.01
-            n *= 0.005
+            t *= symb_scale
+            n *= 0.5*symb_scale
             p1 = gradient_data[:, [0, 1]] - t
             p2 = gradient_data[:, [0, 1]] + t
             # plt.scatter(val[:,0],val[:,1],c='black')
@@ -195,7 +198,7 @@ class MapView:
         """
         zz = np.zeros(self.xx.shape)
         zz[:] = z
-        v = feature.evaluate_value(np.array([self.xx, self.yy, zz]).T)
+        v = feature.evaluate_value(self.model.scale(np.array([self.xx, self.yy, zz]).T,inplace=False))
         self.ax.imshow(v.reshape(self.nsteps).T,
                        extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                self.bounding_box[1,1]],
@@ -217,7 +220,7 @@ class MapView:
         """        
         zz = np.zeros(self.xx.shape)
         zz[:] = z
-        v = feature.evaluate_value(np.array([self.xx, self.yy, zz]).T)
+        v = feature.evaluate_value(self.model.scale(np.array([self.xx, self.yy, zz]).T,inplace=False))
         self.ax.contour(v.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',levels=values,**kwargs
                        )
@@ -240,7 +243,7 @@ class MapView:
         if self.model is None:
             logger.error("Mapview needs a model assigned to plot model on map")
             return 
-        vals = self.model.evaluate_model(pts.T,scale=False)
+        vals = self.model.evaluate_model(pts.T,scale=True)
         self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)
                                 
@@ -252,7 +255,7 @@ class MapView:
         if self.model is None:
             logger.error("Mapview needs a model assigned to plot model on map")
             return 
-        vals = self.model.evaluate_fault_displacements(pts.T,scale=False)
+        vals = self.model.evaluate_fault_displacements(pts.T,scale=True)
         self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)
 
