@@ -157,18 +157,20 @@ def process_map2loop(m2l_directory, flags={}):
         displacements.loc[displacements['fname'] == fname, 'dip_dir'] = np.mean(
             fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'])
     max_displacement = {}
+    downthrow_dir = {}
     for f in displacements['fname'].unique():
         displacements_numpy = displacements.loc[
-            displacements['fname'] == f, ['vertical_displacement', 'downthrow_dir', 'dip_dir']].to_numpy()
+            displacements['fname'] == f, ['vertical_displacement', 'downthrow_dir', 'dip_dir','X','Y']].to_numpy()
         # index = np.argmax(np.abs(displacements_numpy[:, 0]), )
         index = np.argsort(np.abs(displacements_numpy[:, 0]))[len(np.abs(displacements_numpy[:, 0]))//2]
-
+        
         max_displacement[f] = displacements_numpy[
             index, 0]
-        if displacements_numpy[index, 1] - displacements_numpy[index, 2] > 90:
-            fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'] = displacements_numpy[
-                index, 1]
-        # .loc[displacements['fname'] == f,'vertical_displacement'].max()
+        # print('downthro',displacements_numpy[index, 1])
+        downthrow_dir[f] = displacements_numpy[index,[1,3,4]]
+        if np.abs(displacements_numpy[index, 1] - displacements_numpy[index, 2]) > 90:
+            fault_orientations.loc[fault_orientations['formation'] == f, 'DipDirection'] -= 180#displacements_numpy[
+                # index, 1]
     for g in groups['group'].unique():
         groups.loc[groups['group']==g,'group'] = supergroups[g]
     fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
@@ -193,7 +195,8 @@ def process_map2loop(m2l_directory, flags={}):
             'fault_fault': fault_fault_relations,
             'stratigraphic_column': stratigraphic_column,
             'bounding_box':bb,
-            'strat_va':strat_val}
+            'strat_va':strat_val,
+            'downthrow_dir':downthrow_dir}
 
 def build_model(m2l_data, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
     """[summary]
