@@ -1245,7 +1245,7 @@ class GeologicalModel:
             if f.type == 'fault':
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
-        return vals
+        return vals*-self.scale_factor # convert from restoration magnutude to displacement
 
     def get_feature_by_name(self, feature_name):
         """Returns a feature from the mode given a name
