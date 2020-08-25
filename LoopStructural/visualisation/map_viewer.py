@@ -199,7 +199,7 @@ class MapView:
         zz = np.zeros(self.xx.shape)
         zz[:] = z
         v = feature.evaluate_value(self.model.scale(np.array([self.xx, self.yy, zz]).T,inplace=False))
-        self.ax.imshow(v.reshape(self.nsteps).T,
+        return self.ax.imshow(v.reshape(self.nsteps).T,
                        extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                self.bounding_box[1,1]],
                        vmin=feature.min(), vmax=feature.max(),
@@ -221,7 +221,7 @@ class MapView:
         zz = np.zeros(self.xx.shape)
         zz[:] = z
         v = feature.evaluate_value(self.model.scale(np.array([self.xx, self.yy, zz]).T,inplace=False))
-        self.ax.contour(v.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+        return self.ax.contour(v.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',levels=values,**kwargs
                        )
 
@@ -244,7 +244,7 @@ class MapView:
             logger.error("Mapview needs a model assigned to plot model on map")
             return 
         vals = self.model.evaluate_model(pts.T,scale=True)
-        self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+        return self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)
                                 
     def add_fault_displacements(self,z = 0, cmap='rainbow'):
@@ -256,7 +256,7 @@ class MapView:
             logger.error("Mapview needs a model assigned to plot model on map")
             return 
         vals = self.model.evaluate_fault_displacements(pts.T,scale=True)
-        self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
+        return self.ax.imshow(vals.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',cmap=cmap)
 
     def add_faults(self,**kwargs):
