@@ -30,6 +30,8 @@ def process_map2loop(m2l_directory, flags={}):
     fault_locations = pd.read_csv(m2l_directory + '/output/faults.csv')
     fault_fault_relations = pd.read_csv(m2l_directory + '/output/fault-fault-relationships.csv')
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
+    fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv')
+
     supergroups = {}
     sgi = 0
     try:
@@ -98,7 +100,7 @@ def process_map2loop(m2l_directory, flags={}):
         contact_orientations['ny'] = np.nan
         contact_orientations['nz'] = np.nan
         contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
-                                                                    contact_orientations['dip'])*vector_scale 
+                                                                    contact_orientations['dip'])*vector_scale *contact_orientations['polarity'].to_numpy()[:,None]
     contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
     # with open(m2l_directory + '/output/formation_summary_thicknesses.csv') as file:
 
@@ -158,7 +160,47 @@ def process_map2loop(m2l_directory, flags={}):
             fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'])
     max_displacement = {}
     downthrow_dir = {}
+    fault_locations['val'] = 0
+    fault_locations['coord'] = 0
+    fault_orientations['coord'] = 0
+    fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
+    fault_orientations['gx'] = np.nan
+    fault_orientations['gy'] = np.nan
+    fault_orientations['gz'] = np.nan
+
+    fault_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(fault_orientations['strike'], fault_orientations['dip'])
+
     for f in displacements['fname'].unique():
+        fault_centers = np.zeros(6)
+        normal_vector = np.zeros(3)
+        strike_vector = np.zeros(3)
+        slip_vector = np.zeros(3)
+
+        fault_edges = np.zeros((2,3))
+        fault_tips = np.zeros((2,3))
+        fault_depth = np.zeros((2,3))
+
+        # find the middle of the fault as the mean of the line, average dip direction and the influence distance
+        fault_centers[:3] = np.mean(fault_locations.loc[fault_locations['formation']==f,['X','Y','Z']],axis=0)
+        fault_centers[3] = np.mean(fault_orientations.loc[fault_orientations['formation']==f,['DipDirection']])
+        fault_centers[4] = fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance']
+        fault_centers[5] = fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius']
+        normal_vector[0] = np.sin(np.deg2rad(fault_centers[3]))
+        normal_vector[1] = np.cos(np.deg2rad(fault_centers[3]))
+        strike_vector[0] = normal_vector[1]
+        strike_vector[1] = -normal_vector[0]
+        slip_vector[2]=1
+        fault_edges[0,:] = fault_centers[:3]+normal_vector*fault_centers[4]
+        fault_edges[1,:] = fault_centers[:3]-normal_vector*fault_centers[4]
+        fault_tips[0,:] = fault_centers[:3]+strike_vector*fault_centers[5]
+        fault_tips[1,:] = fault_centers[:3]-strike_vector*fault_centers[5]
+        # fault_depth[0,:] = fault_centers[:3]+slip_vector*fault_centers[5]
+        # fault_depth[1,:] = fault_centers[:3]-slip_vector*fault_centers[5]
+        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
+        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
+        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
+        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
+        fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','gx','gy','gz','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f, strike_vector[0],strike_vector[1],strike_vector[2],2]
         displacements_numpy = displacements.loc[
             displacements['fname'] == f, ['vertical_displacement', 'downthrow_dir', 'dip_dir','X','Y']].to_numpy()
         # index = np.argmax(np.abs(displacements_numpy[:, 0]), )
@@ -171,20 +213,20 @@ def process_map2loop(m2l_directory, flags={}):
         if np.abs(displacements_numpy[index, 1] - displacements_numpy[index, 2]) > 90:
             fault_orientations.loc[fault_orientations['formation'] == f, 'DipDirection'] -= 180#displacements_numpy[
                 # index, 1]
+
+
     for g in groups['group'].unique():
         groups.loc[groups['group']==g,'group'] = supergroups[g]
-    fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
-    fault_orientations['gx'] = np.nan
-    fault_orientations['gy'] = np.nan
-    fault_orientations['gz'] = np.nan
+    # fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
+    # fault_orientations['gx'] = np.nan
+    # fault_orientations['gy'] = np.nan
+    # fault_orientations['gz'] = np.nan
 
-    fault_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(fault_orientations['strike'], fault_orientations['dip'])
     fault_orientations.drop(['strike', 'DipDirection', 'dip', 'DipPolarity'], inplace=True, axis=1)
     fault_orientations['feature_name'] = fault_orientations['formation']
-
-    fault_locations['val'] = 0
     fault_locations['feature_name'] = fault_locations['formation']
 
+    
 
     data = pd.concat([tangents, contact_orientations, contacts, fault_orientations, fault_locations])
     data.reset_index()
