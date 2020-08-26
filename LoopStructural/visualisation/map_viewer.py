@@ -227,7 +227,7 @@ class MapView:
 
         
     
-    def add_model(self, z = 0,cmap='tab20'):
+    def add_model(self, z = 0,cmap=None):
         """Plot the model onto a map
 
         Parameters
@@ -236,7 +236,19 @@ class MapView:
             height of the map surface (could also be a dem), by default 0
         cmap : str/matplotlib colourmap, optional
             specify a colour map, by default 'tab20'
-        """        
+        """  
+        if cmap is None:
+            import matplotlib.colors as colors
+            colours = []
+            boundaries = []
+            data = []
+            for g in self.model.stratigraphic_column.keys():
+                for u, v  in self.model.stratigraphic_column[g].items():
+                    data.append((v['id'],v['colour']))
+                    colours.append(v['colour'])
+                    boundaries.append(v['id'])#print(u,v)
+            cmap = colors.ListedColormap(colours)
+
         zz = np.zeros_like(self.xx)
         zz[:] = z#self.bounding_box[1,2]
         pts = np.vstack([self.xx.flatten(),self.yy.flatten(),zz.flatten()])
