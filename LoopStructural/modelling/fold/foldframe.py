@@ -114,22 +114,18 @@ class FoldFrame(StructuralFrame):
             logger.error("No points to calculate fold rotation angle")
             return np.array([0]), np.array([0])
         points = np.vstack(points)
-        print(points)
         # for f in feature_builder.faults:
         #     points[:,:3] = f.apply_to_points(points[:,:3])
         # get the normals from the points array
         s0g = points[:, 3:]
-        print(s0g)
 
         s0g/=np.linalg.norm(s0g,axis=1)[:,None]
         # calculate the gradient and value of the first coordinate of the
         # fold frame
         # for the locations and normalise
         s1g = self.features[0].evaluate_gradient(points[:, :3])
-        print(s1g)
         s1g /= np.linalg.norm(s1g, axis=1)[:, None]
         s1 = self.features[0].evaluate_value(points[:, :3])
-        print(s1)
         # self.features[0].faults_enabled = True
         # self.features[1].faults_enabled = True
 

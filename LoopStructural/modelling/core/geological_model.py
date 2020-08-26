@@ -1009,11 +1009,13 @@ class GeologicalModel:
             length /= 3
             # length/=2
             # print(fault_frame_data)
-            mask = ~np.isnan(fault_frame_data['nx'])
-            vectors = fault_frame_data[mask][['nx', 'ny', 'nz']].to_numpy()
+            mask = ~np.isnan(fault_frame_data['gx'])
+            vectors = fault_frame_data[mask][['gx', 'gy', 'gz']].to_numpy()
             lengths = np.linalg.norm(vectors, axis=1)
             vectors /= lengths[:, None]
-            fault_frame_data.loc[mask, ['nx', 'ny', 'nz']] = vectors
+            # added 20/08 rescale fault ellipsoid for m2l
+            # vectors*=length
+            fault_frame_data.loc[mask, ['gx', 'gy', 'gz']] = vectors
             if 'strike' in fault_frame_data.columns and 'dip' in \
                     fault_frame_data.columns:
                 fault_frame_data = fault_frame_data.drop(['dip', 'strike'],
@@ -1211,7 +1213,7 @@ class GeologicalModel:
         
         """
         if scale:
-            self.scale(xyz)
+            xyz = self.scale(xyz,inplace=False)
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
             feature_id = self.feature_name_index.get(group, -1)
@@ -1223,6 +1225,31 @@ class GeologicalModel:
             if feature_id == -1:
                 logger.error('Model does not contain {}'.format(group))
         return strat_id
+
+    def evaluate_fault_displacements(self,points,scale=True):
+        """Evaluate the fault displacement magnitude at each location
+        
+
+        Parameters
+        ----------
+        xyz : np.array((N,3),dtype=float)
+            locations
+        scale : bool
+            whether to rescale the xyz before evaluating model
+
+        Returns
+        -------
+        fault_displacement : np.array(N,dtype=float)
+            the fault displacement magnitude
+        """
+        if scale:
+            points = self.scale(points,inplace=False)
+        vals = np.zeros(points.shape[0])
+        for f in self.features:
+            if f.type == 'fault':
+                disp = f.displacementfeature.evaluate_value(points)
+                vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
+        return vals*-self.scale_factor # convert from restoration magnutude to displacement
 
     def get_feature_by_name(self, feature_name):
         """Returns a feature from the mode given a name
