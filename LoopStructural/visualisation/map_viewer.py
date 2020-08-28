@@ -128,7 +128,7 @@ class MapView:
         self.xx = self.xx.flatten()
         self.yy = self.yy.flatten()
 
-    def add_data(self, feature, val=True, grad=True, **kwargs):
+    def add_data(self, feature, val=True, grad=True, unfault=False, **kwargs):
         """
         Adds the data associated to the feature to the plot
         Parameters
@@ -139,19 +139,28 @@ class MapView:
         -------
 
         """
-
+        # logger.warning("Plotting restored data locations")
         ori_data = []
         gradient_data = feature.builder.get_gradient_constraints()
+        if unfault:
+            gradient_data = feature.interpolator.get_gradient_constraints()
+
         if gradient_data.shape[0] > 0:
             ori_data.append(gradient_data)
         norm_data = feature.builder.get_norm_constraints()
+        if unfault:
+            norm_data = feature.interpolator.get_norm_constraints()
+
         if norm_data.shape[0] > 0:
             ori_data.append(norm_data)
         cmap = kwargs.pop('cmap','rainbow')
         # if single colour then specify kwarg, otherwise use point value
         if val:
-            value_data = feature.builder.get_value_constraints()
-            self.model.rescale(value_data[:,:3])
+            value_data = np.copy(feature.builder.get_value_constraints())
+            if unfault:
+                value_data = np.copy(feature.interpolator.get_value_constraints())
+              
+            value_data[:,:3] = self.model.rescale(value_data[:,:3],inplace=False)
             point_colour = kwargs.pop('point_colour',None)
             if point_colour is None:
                 self.ax.scatter(value_data[:, 0], value_data[:, 1], c=value_data[:,3],
@@ -162,7 +171,7 @@ class MapView:
             symb_colour = kwargs.pop('symb_colour','black')
             symb_scale=kwargs.pop('symb_scale',1.)
             gradient_data = np.hstack(ori_data)
-            self.model.rescale(gradient_data[:,:3])
+            gradient_data[:,:3] = self.model.rescale(gradient_data[:,:3],inplace=False)
             gradient_data[:, 3:5] /= np.linalg.norm(gradient_data[:, 3:5], axis=1)[:, None]
             t = gradient_data[:, [4, 3]] * np.array([1, -1]).T
             n = gradient_data[:, 3:5]
@@ -206,7 +215,7 @@ class MapView:
                        origin='lower',
                        **kwargs)
 
-    def add_contour(self, feature, values, z=0,**kwargs):
+    def add_contour(self, feature, values, z=0, mask = None, **kwargs):
         """Add an isoline of a scalar field to the map
 
         Parameters
@@ -221,6 +230,9 @@ class MapView:
         zz = np.zeros(self.xx.shape)
         zz[:] = z
         v = feature.evaluate_value(self.model.scale(np.array([self.xx, self.yy, zz]).T,inplace=False))
+        if mask:
+            maskv = mask(self.model.scale(np.array([self.xx, self.yy, zz]).T,inplace=False))
+            v[~maskv] = np.nan
         return self.ax.contour(v.reshape(self.nsteps).T,extent=[self.bounding_box[0,0], self.bounding_box[1,0], self.bounding_box[0,1],
                                     self.bounding_box[1,1]],origin='lower',levels=values,**kwargs
                        )
@@ -274,4 +286,12 @@ class MapView:
     def add_faults(self,**kwargs):
         for f in self.model.features:
             if f.type=='fault':
-                self.add_contour(f,0)
+                # create a function to return true if displacement > 0
+                def mask(x):
+                    val = f.displacementfeature.evaluate_value(x)
+                    val[np.isnan(val)] = 0
+                    maskv = np.zeros(val.shape).astype(bool)
+                    maskv[np.abs(val) > 0.001] = 1
+                    return maskv
+                
+                self.add_contour(f,0,mask=mask)
