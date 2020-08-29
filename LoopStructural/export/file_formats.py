@@ -1,3 +1,6 @@
+"""
+Exported file formats
+"""
 from enum import Enum
 
 class FileFormat(Enum):
@@ -5,5 +8,5 @@ class FileFormat(Enum):
     """
     OBJ = 1
     VTK = 2
-    GZ = 3
-    GLTF = 4
+    GZ = 3 # Not supported yet
+    GLTF = 4 # Not supported yet
