@@ -518,7 +518,13 @@ class LavaVuModelViewer:
         if faults:
             for f in self.model.features:
                 if f.type == 'fault':
-                    self.add_isosurface(f,isovalue=0,**kwargs)
+                    def mask(x):
+                        val = f.displacementfeature.evaluate_value(x)
+                        val[np.isnan(val)] = 0
+                        maskv = np.zeros(val.shape).astype(bool)
+                        maskv[np.abs(val) > 0.001] = 1
+                        return maskv
+                    self.add_isosurface(f,isovalue=0,region=mask,**kwargs)
 
     # def add_model_data(self, cmap='tab20',**kwargs):
     #     from matplotlib import cm
