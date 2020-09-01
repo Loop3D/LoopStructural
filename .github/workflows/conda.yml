@@ -14,5 +14,5 @@ jobs:
         uses: Loop3D/conda-publish-action@1.4
         with:
           subdir: "conda"
-          anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
+          anacondatoken: ${{ secrets.CONDA }}
           platforms: "win osx linux"
