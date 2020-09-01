@@ -22,15 +22,16 @@ requirements:
     - numpy
   run:
     - Cython
+    - lavavu
     - numpy
     - pandas
     - scipy
     - matplotlib
     - scikit-image
-    - scikit-learn
-test:
-  imports:
-    - LoopStructural
+#     - scikit-learn
+# test:
+#   imports:
+#     - LoopStructural
 
 
 about:
