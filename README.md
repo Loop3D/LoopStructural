@@ -1,5 +1,5 @@
 # LoopStructural: Loop3D Geological Forward Modeling Engine.
-![3D model of Mt Bruce created with loopstructural](docs/source/images/image823.png)
+![3D model of Hamersley created using loopstructural](docs/source/images/image823.png)
 ![Continuous integration and deployment](https://github.com/Loop3D/LoopStructural/workflows/Continuous%20integration%20and%20deployment/badge.svg)
 ![Publish Docker Hub](https://github.com/Loop3D/LoopStructural/workflows/Publish%20Docker%20Hub/badge.svg)
 [![PyPI version](https://badge.fury.io/py/LoopStructural.svg)](https://badge.fury.io/py/LoopStructural)
