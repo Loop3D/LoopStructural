@@ -157,13 +157,21 @@ strati = model.create_and_add_foliation("strati",
                                            solver='pyamg',
                                            damp=True
                                           )
+######################################################################
+# Plot the surfaces
+# ------------------------------------
 
 viewer = LavaVuModelViewer(model)
-viewer.add_model_surfaces()
+viewer.add_model_surfaces(cmap='tab20')
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
+
+######################################################################
+# Plot block diagram
+# -------------------
+
 viewer = LavaVuModelViewer(model)
-viewer.add_model()
+viewer.add_model(cmap='tab20')
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 

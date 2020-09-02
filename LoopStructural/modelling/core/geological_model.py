@@ -352,7 +352,7 @@ class GeologicalModel:
                     break
                 n_units+=1
         if random_colour:
-            from matplotlib.cm import cm
+            import matplotlib.cm as cm
             cmap = cm.get_cmap(cmap,n_units)
             cmap_colours = cmap.colors
             ci = 0
