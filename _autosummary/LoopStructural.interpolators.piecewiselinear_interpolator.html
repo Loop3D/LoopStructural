@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,19 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -56,7 +57,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> LoopStructural
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> LoopStructural
           
 
           
@@ -79,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -125,6 +127,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -163,7 +166,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
         
@@ -195,429 +198,9 @@
 <li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
 </ul>
 </div>
-<span class="target" id="module-LoopStructural.interpolators.piecewiselinear_interpolator"></span><div class="section" id="members">
+<span class="target" id="module-LoopStructural.interpolators.piecewiselinear_interpolator"></span><p>Piecewise linear interpolator</p>
+<div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.piecewiselinear_interpolator.</code><code class="sig-name descname">PiecewiseLinearInterpolator</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_autosummary/LoopStructural.interpolators.discrete_interpolator.html#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator</span></code></a></p>
-<p>Piecewise Linear Interpolator
-Approximates scalar field by finding coefficients to a piecewise linear
-equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- TetMesh</strong> (<em>mesh</em>) – interpolation support</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._setup_interpolator">
-<code class="sig-name descname">_setup_interpolator</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._setup_interpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Searches through kwargs for any interpolation weights and updates
-the dictionary.
-Then adds the constraints to the linear system using the
-interpolation weights values
-:param kwargs -: interpolation weights</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve">
-<code class="sig-name descname">_solve</code><span class="sig-paren">(</span><em class="sig-param">solver='cg'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main entry point to run the solver and update the node value
-attribute for the
-discreteinterpolator class</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>solver</strong> (<em>string</em>) – solver e.g. cg, lu, chol, custom</p></li>
-<li><p><strong>kwargs</strong> – kwargs for solver e.g. maxiter, preconditioner etc, damping for</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>bool</em> – True if the interpolation is run</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_cg">
-<code class="sig-name descname">_solve_cg</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">precon=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_cg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call scipy conjugate gradient</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy.sparse.matrix</em>) – square sparse matrix</p></li>
-<li><p><strong>B</strong> (<em>numpy vector</em>) – </p></li>
-<li><p><strong>precon</strong> (<em>scipy.sparse.matrix</em>) – a preconditioner for the conjugate gradient system</p></li>
-<li><p><strong>kwargs</strong> – kwargs to pass to scipy solve e.g. atol, btol, callback etc</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_chol">
-<code class="sig-name descname">_solve_chol</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_chol" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call suitesparse cholmod through scikitsparse
-LINUX ONLY!</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy.sparse.matrix</em>) – square sparse matrix</p></li>
-<li><p><strong>B</strong> (<em>numpy array</em>) – RHS of equation</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_lsqr">
-<code class="sig-name descname">_solve_lsqr</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_lsqr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call scipy lsqr</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>rectangular sparse matrix</em>) – </p></li>
-<li><p><strong>B</strong> (<em>vector</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_lu">
-<code class="sig-name descname">_solve_lu</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_lu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call scipy LU decomoposition</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy square sparse matrix</em>) – </p></li>
-<li><p><strong>B</strong> (<em>numpy vector</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_pyamg">
-<code class="sig-name descname">_solve_pyamg</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator._solve_pyamg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solve least squares system using pyamg algorithmic multigrid solver</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy.sparse.matrix</em>) – </p></li>
-<li><p><strong>B</strong> (<em>numpy array</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_constant_gradient">
-<code class="sig-name descname">add_constant_gradient</code><span class="sig-paren">(</span><em class="sig-param">w=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_constant_gradient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add the constant gradient regularisation to the system</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>(</strong><strong>double</strong><strong>) </strong><strong>- weighting of the cg parameter</strong> (<em>w</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_constraints_to_least_squares">
-<code class="sig-name descname">add_constraints_to_least_squares</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">idc</em>, <em class="sig-param">name='undefined'</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_constraints_to_least_squares" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds constraints to the least squares system. Automatically works
-out the row
-index given the shape of the input arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>numpy array / list</em>) – RxC numpy array of constraints where C is number of columns,R rows</p></li>
-<li><p><strong>B</strong> (<em>numpy array /list</em>) – B values array length R</p></li>
-<li><p><strong>idc</strong> (<em>numpy array/list</em>) – RxC column index</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>list of constraint ids</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_ctr_pts">
-<code class="sig-name descname">add_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_ctr_pts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds value constraints to the least squares system</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>w</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_equality_constraints">
-<code class="sig-name descname">add_equality_constraints</code><span class="sig-paren">(</span><em class="sig-param">node_idx</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_equality_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds hard constraints to the least squares system. For now this just
-sets
-the node values to be fixed using a lagrangian.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_idx</strong> (<em>numpy array/list</em>) – int array of node indexes</p></li>
-<li><p><strong>values</strong> (<em>numpy array/list</em>) – array of node values</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_gradient_ctr_pts">
-<code class="sig-name descname">add_gradient_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_gradient_ctr_pts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds gradient constraints to the least squares system with a weight
-defined by w
-:param w:
-:type w: either numpy array of length number of</p>
-<p class="rubric">Notes</p>
-<p>Gradient constraints add a constraint that the gradient of the
-implicit function should
-be orthogonal to the strike vector and the dip vector defined by the
-normal.
-This does not control the direction of the gradient and therefore
-requires at least two other
-value constraints OR a norm constraint for the interpolant to solve.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_gradient_orthogonal_constraint">
-<code class="sig-name descname">add_gradient_orthogonal_constraint</code><span class="sig-paren">(</span><em class="sig-param">points</em>, <em class="sig-param">vector</em>, <em class="sig-param">w=1.0</em>, <em class="sig-param">B=0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_gradient_orthogonal_constraint" title="Permalink to this definition">¶</a></dt>
-<dd><p>constraints scalar field to be orthogonal to a given vector</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>position</strong> – </p></li>
-<li><p><strong>normals</strong> – </p></li>
-<li><p><strong>w</strong> – </p></li>
-<li><p><strong>B</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_norm_ctr_pts">
-<code class="sig-name descname">add_norm_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_norm_ctr_pts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extracts the norm vectors from the interpolators p_n list and adds
-these to the implicit
-system</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>w</strong> (<em>double</em>) – weighting of the norm constraints in a least squares system</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Controls the direction and magnitude of the norm of the scalar field
-gradient.
-This constraint can conflict with value constraints if the magnitude
-of the vector doesn’t
-match with the value constraints added to the implicit system.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_tangent_ctr_pts">
-<code class="sig-name descname">add_tangent_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.add_tangent_ctr_pts" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>w</strong> (<em>double</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.build_matrix">
-<code class="sig-name descname">build_matrix</code><span class="sig-paren">(</span><em class="sig-param">square=True</em>, <em class="sig-param">damp=True</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.build_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assemble constraints into interpolation matrix. Adds equaltiy
-constraints
-using lagrange modifiers if necessary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>damp</strong> (<em>bool</em>) – Flag whether damping should be added to the diagonal of the matrix</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>Interpolation matrix and B</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.evaluate_gradient">
-<code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate the gradient of the scalar field at the evaluation points
-:param evaluation_points: xyz locations to evaluate the gradient
-:type evaluation_points: np.array</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_gradient_constraints">
-<code class="sig-name descname">get_gradient_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_gradient_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_norm_constraints">
-<code class="sig-name descname">get_norm_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_norm_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_tangent_constraints">
-<code class="sig-name descname">get_tangent_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_tangent_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_value_constraints">
-<code class="sig-name descname">get_value_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.get_value_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.remove_constraints_from_least_squares">
-<code class="sig-name descname">remove_constraints_from_least_squares</code><span class="sig-paren">(</span><em class="sig-param">name='undefined'</em>, <em class="sig-param">constraint_ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.remove_constraints_from_least_squares" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove constraints from the least squares system using the constraint ids
-which corresponds to the rows in the interpolation matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>constraint_ids</strong> (<em>np.array</em><em>(</em><em>dtype=int</em><em>)</em>) – id of constraints to remove</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the interpolation constraints</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_gradient_constraints">
-<code class="sig-name descname">set_gradient_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_gradient_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_interpolation_weights">
-<code class="sig-name descname">set_interpolation_weights</code><span class="sig-paren">(</span><em class="sig-param">weights</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_interpolation_weights" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the interpolation weights dictionary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- dictionary</strong> (<em>weights</em>) – Entry of new weights to assign to self.interpolation_weights</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_normal_constraints">
-<code class="sig-name descname">set_normal_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_normal_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_property_name">
-<code class="sig-name descname">set_property_name</code><span class="sig-paren">(</span><em class="sig-param">propertyname</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_property_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the property name attribute, this is usually used to
-save the property on the support</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>propertyname</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_region">
-<code class="sig-name descname">set_region</code><span class="sig-paren">(</span><em class="sig-param">region=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_region" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the region of the support the interpolator is working on</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- function</strong><strong>(</strong><strong>position</strong><strong>)</strong> (<em>region</em>) – return true when in region, false when out</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_tangent_constraints">
-<code class="sig-name descname">set_tangent_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_tangent_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_value_constraints">
-<code class="sig-name descname">set_value_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.set_value_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.setup_interpolator">
-<code class="sig-name descname">setup_interpolator</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.setup_interpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs all of the required setting up stuff</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.solve_system">
-<code class="sig-name descname">solve_system</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.solve_system" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solves the interpolation equations</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the solver is up to date, if not rerun interpolation using
-the previously used solver. If the interpolation has not been run
-before it will
-return False</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>bool</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -641,11 +224,19 @@ return False</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Lachlan Grose
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -656,7 +247,6 @@ return False</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

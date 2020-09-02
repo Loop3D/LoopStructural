@@ -64,24 +64,17 @@ model.set_stratigraphic_column(strat_column)
 # -  ``normals`` to plot the normal vectors to the surface
 # -  ``name`` to give the surface
 # -  ``colour`` the colour of the surface
-# -  ``voxet`` dict with ``bounding_box=boundary_points`` and
-#    ``nsteps = (nx,ny,nz)``
 # -  other kwargs for passing directly to lavavu
 # 
-# Alternatively the scalarfields can be displayed on a rectangular cuboid.
+# Alternatively the scalar fields can be displayed on a rectangular cuboid.
 # 
 # .. code:: python
 # 
-#    viewer.add_scalar_field(boundary_points,dimensions,**kwargs)
+#    viewer.add_scalar_field(geological_feature)
 # 
-# Where ``boundary_points`` is a numpy array
-# ``[[minx,miny,minz],[maxx,maxy,maxz]]`` and ``dimensions`` corresponds
-# to the number of samples along each axis.
 # 
 # Other possible kwargs are:
 # 
-# -  ``paint_with`` the geological feature to colour the box with
-# -  ``colour`` a single colour to colour the surfaces with
 # -  ``cmap`` colour map for the property
 # 
 # The input data for the model can be visualised by calling either:
@@ -125,10 +118,10 @@ model.set_stratigraphic_column(strat_column)
 # 
 # .. code:: python
 # 
-#    viewer.add_vector_field(feature, locations, **kwargs)
+#    viewer.add_vector_field(feature, **kwargs)
 # 
-# Where ``locations`` are an array of points to evaluate the gradient at,
-# for example the barycentric coordinates. It is recommended to visualise
+# Where ``locations`` can be specified to control specific evaluation locations
+# It is recommended to visualise
 # the vectorfield at a lower resolution than the mesh otherwise it can be
 # difficult to see the vectors. You can use numpy stepping along the
 # array: ``locations = mesh.barycentre[::20,:]`` which will sample every
@@ -143,8 +136,7 @@ unique = np.unique(strati.interpolator.get_value_constraints()[:,3])
 viewer.add_isosurface(strati,
                        slices=unique,  
                        cmap='prism',
-                      paint_with=strati,
-                     voxet=model.voxet())
+                      paint_with=strati)
 
 viewer.add_section(strati,
                    axis='x',
@@ -154,7 +146,7 @@ viewer.add_section(strati,
                   cmap='prism')
 viewer.add_scalar_field(strati,
                      cmap='prism')
-viewer.add_model()
+viewer.add_model(cmap='tab20')
 
 # Add the data addgrad/addvalue arguments are optional
 viewer.add_data(strati,addgrad=True,addvalue=True, cmap='prism')

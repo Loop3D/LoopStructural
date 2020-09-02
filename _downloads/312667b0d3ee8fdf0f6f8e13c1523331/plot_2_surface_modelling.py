@@ -36,9 +36,8 @@ Visualization of the scalar field.
 # model building
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer 
-
-from LoopStructural.datasets import load_claudius #demo data 
+from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.datasets import load_claudius #demo data
 
 import pandas as pd
 import glob
@@ -69,15 +68,21 @@ model = GeologicalModel(bb[0,:],bb[1,:])
 
 ######################################################################
 # A pandas dataframe with appropriate columns can be used to link the data
-# to the geological model. \* ``X`` is the x coordinate \* ``Y`` is the y
-# coordinate \* ``Z`` is the z coordinate \* ``feature_name`` is a name to link
-# the data to a model object \* ``val`` is the value of the scalar field
-# which represents the distance from a reference horizon. It is comparable
-# to the relative thickness \* ``nx`` is the x component of the normal
-# vector to the surface gradient \* ``ny`` is the y component of the
-# normal vector to the surface gradient \* ``nz`` is the z component of
-# the normal vector to the surface gradeint \* ``strike`` is the strike
-# angle \* ``dip`` is the dip angle
+# to the geological model. 
+#
+# * ``X`` is the x coordinate 
+# * ``Y`` is the y # coordinate 
+# * ``Z`` is the z coordinate 
+# * ``feature_name`` is a name to link the data to a model object 
+# * ``val`` is the value of the scalar field which represents the 
+# distance from a reference horizon. It is comparable
+# to the relative thickness 
+#
+# * ``nx`` is the x component of the normal vector to the surface gradient 
+# * ``ny`` is the y component of the normal vector to the surface gradient 
+# * ``nz`` is the z component of the normal vector to the surface gradeint 
+# * ``strike`` is the strike angle 
+# * ``dip`` is the dip angle
 # 
 # Having a look at the data for this example by looking at the top of the
 # dataframe and then using a 3D plot
@@ -106,8 +111,12 @@ model.set_model_data(data)
 # geological features within a model and how these features interact. This
 # controls the topology of the different geological features in the model.
 # Different geological features can be added to the geological model such
-# as: \* Foliations \* Faults \* Unconformities \* Folded foliations \*
-# Structural Frames
+# as: 
+# * Foliations 
+# * Faults 
+# * Unconformities 
+# * Folded foliations 
+# *  Structural Frames
 # 
 # In this example we will only add a foliation using the function
 # 
@@ -116,15 +125,16 @@ model.set_model_data(data)
 #    model.create_and_add_foliation(name)
 # 
 # where name is the name in the ``feature_name`` field, other parameters we
-# specified are the: \* ``interpolatortype`` - we can either use a
+# specified are the: 
+# * ``interpolatortype`` - we can either use a
 # PiecewiseLinearInterpolator ``PLI``, a FiniteDifferenceInterpolator
-# ``FDI`` or a radial basis interpolator ``surfe`` \* ``nelements - int``
-# is the how many elements are used to discretize the resulting solution
-# \* ``buffer - float`` buffer percentage around the model area \*
-# ``solver`` - the algorithm to solve the least squares problem e.g.
+# ``FDI`` or a radial basis interpolator ``surfe`` 
+# * ``nelements - int`` is the how many elements are used to discretize the resulting solution
+# * ``buffer - float`` buffer percentage around the model area
+# * ``solver`` - the algorithm to solve the least squares problem e.g.
 # ``lu`` for lower upper decomposition, ``cg`` for conjugate gradient,
-# ``pyamg`` for an algorithmic multigrid solver \* ``damp - bool`` -
-# whether to add a small number to the diagonal of the interpolation
+# ``pyamg`` for an algorithmic multigrid solver 
+# * ``damp - bool`` - whether to add a small number to the diagonal of the interpolation
 # matrix for discrete interpolators - this can help speed up the solver
 # and makes the solution more stable for some interpolators
 # 
@@ -147,13 +157,21 @@ strati = model.create_and_add_foliation("strati",
                                            solver='pyamg',
                                            damp=True
                                           )
+######################################################################
+# Plot the surfaces
+# ------------------------------------
 
 viewer = LavaVuModelViewer(model)
-viewer.add_model_surfaces()
+viewer.add_model_surfaces(cmap='tab20')
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
+
+######################################################################
+# Plot block diagram
+# -------------------
+
 viewer = LavaVuModelViewer(model)
-viewer.add_model()
+viewer.add_model(cmap='tab20')
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 

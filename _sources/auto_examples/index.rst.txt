@@ -26,6 +26,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
+     :alt: 1a. Getting started
 
      :ref:`sphx_glr_auto_examples_1_basic_plot_1_data_prepration.py`
 
@@ -46,6 +47,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
+     :alt: 1b. Implicit surface modelling
 
      :ref:`sphx_glr_auto_examples_1_basic_plot_2_surface_modelling.py`
 
@@ -66,6 +68,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
+     :alt: 1c. Multiple groups
 
      :ref:`sphx_glr_auto_examples_1_basic_plot_3_multiple_groups.py`
 
@@ -86,6 +89,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_model_visualisation_thumb.png
+     :alt: 1c. Visualising models
 
      :ref:`sphx_glr_auto_examples_1_basic_plot_3_model_visualisation.py`
 
@@ -106,6 +110,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
+     :alt: 1d. Using Stratigraphic Columns
 
      :ref:`sphx_glr_auto_examples_1_basic_plot_4_using_stratigraphic_column.py`
 
@@ -126,6 +131,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_5_using_logging_thumb.png
+     :alt: 1e. Using logging
 
      :ref:`sphx_glr_auto_examples_1_basic_plot_5_using_logging.py`
 
@@ -146,6 +152,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_example_surfe_thumb.png
+     :alt: 1f. Radial Basis Interpolation Using Surfe
 
      :ref:`sphx_glr_auto_examples_1_basic_example_surfe.py`
 
@@ -177,6 +184,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
+     :alt: 2a. Modelling folds
 
      :ref:`sphx_glr_auto_examples_2_fold_plot_adding_folds_to_surfaces.py`
 
@@ -192,11 +200,12 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip=" ">
+    <div class="sphx-glr-thumbcontainer" tooltip="2b. Refolded folds">
 
 .. only:: html
 
  .. figure:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_refolded_folds_thumb.png
+     :alt: 2b. Refolded folds
 
      :ref:`sphx_glr_auto_examples_2_fold_plot_refolded_folds.py`
 
@@ -228,6 +237,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/3_fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
+     :alt: 3a. Modelling faults using structural frames
 
      :ref:`sphx_glr_auto_examples_3_fault_plot_faulted_intrusion.py`
 
@@ -259,6 +269,7 @@ Examples
 .. only:: html
 
  .. figure:: /auto_examples/4_advanced/images/thumb/sphx_glr_plot_comparing_interpolators_thumb.png
+     :alt: 4a. Comparing interpolators
 
      :ref:`sphx_glr_auto_examples_4_advanced_plot_comparing_interpolators.py`
 
@@ -289,9 +300,10 @@ Creating models using map2loop
 
 .. only:: html
 
- .. figure:: /auto_examples/map2loop/images/thumb/sphx_glr_plot_mt_bruce_thumb.png
+ .. figure:: /auto_examples/map2loop/images/thumb/sphx_glr_mt_bruce_thumb.png
+     :alt: Mt Bruce
 
-     :ref:`sphx_glr_auto_examples_map2loop_plot_mt_bruce.py`
+     :ref:`sphx_glr_auto_examples_map2loop_mt_bruce.py`
 
 .. raw:: html
 
@@ -301,7 +313,7 @@ Creating models using map2loop
 .. toctree::
    :hidden:
 
-   /auto_examples/map2loop/plot_mt_bruce
+   /auto_examples/map2loop/mt_bruce
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

@@ -13,7 +13,6 @@
 ========================================
 
 
-
 .. code-block:: default
 
 
@@ -70,6 +69,7 @@ representative of modelling an intrusion.
 
 
 .. image:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_001.png
+    :alt: plot faulted intrusion
     :class: sphx-glr-single-img
 
 
@@ -80,7 +80,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7f1bed6e95c0>
+    <matplotlib.contour.QuadContourSet object at 0x7fa8e72b3400>
 
 
 
@@ -152,12 +152,14 @@ fault frame and an expected displacement model.
     *
 
       .. image:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_002.png
-            :class: sphx-glr-multi-img
+          :alt: plot faulted intrusion
+          :class: sphx-glr-multi-img
 
     *
 
       .. image:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_003.png
-            :class: sphx-glr-multi-img
+          :alt: plot faulted intrusion
+          :class: sphx-glr-multi-img
 
 
 
@@ -166,7 +168,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  23.458 seconds)
+   **Total running time of the script:** ( 0 minutes  17.410 seconds)
 
 
 .. _sphx_glr_download_auto_examples_3_fault_plot_faulted_intrusion.py:

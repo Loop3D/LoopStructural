@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,19 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -56,7 +57,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> LoopStructural
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> LoopStructural
           
 
           
@@ -79,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -126,6 +128,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -164,7 +167,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
         
@@ -198,122 +201,6 @@
 </div>
 <span class="target" id="module-LoopStructural.modelling.fold.foldframe"></span><div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.modelling.fold.foldframe.</code><code class="sig-name descname">FoldFrame</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">fold=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_autosummary/LoopStructural.modelling.features.structural_frame.html#LoopStructural.modelling.features.structural_frame.StructuralFrame" title="LoopStructural.modelling.features.structural_frame.StructuralFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.structural_frame.StructuralFrame</span></code></a></p>
-<p>A structural frame that can calculate the fold axis/limb rotation angle
-Same constructor arguments as parent StructuralFrame</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – </p></li>
-<li><p><strong>features</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame.calculate_fold_axis_rotation">
-<code class="sig-name descname">calculate_fold_axis_rotation</code><span class="sig-paren">(</span><em class="sig-param">feature_builder</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame.calculate_fold_axis_rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the fold axis rotation angle by finding the angle between the
-intersection lineation and the gradient to the 1st coordinate of the
-fold frame
-:param feature_builder - GeologicalFeatureInterpolator:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>the builder for the geological feature that is folded</p></li>
-</ul>
-</div></blockquote>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame.calculate_fold_limb_rotation">
-<code class="sig-name descname">calculate_fold_limb_rotation</code><span class="sig-paren">(</span><em class="sig-param">feature_builder</em>, <em class="sig-param">axis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame.calculate_fold_limb_rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the fold limb rotation angle using the axis specified and
-the normals to the folded foliation
-:param feature_builder - GeologicalFeatureInterpolator: the feature interpolator for the folded feature that has the</p>
-<blockquote>
-<div><p>datapoints the fold limb rotation angle is
-going to be calculated for</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- GeologicalFeature</strong> (<em>axis</em>) – Optional. Fold axis feature that when queried for location
-returns the fold axis</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>fold_limb_rotation, coordinate_0</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame.calculate_intersection_lineation">
-<code class="sig-name descname">calculate_intersection_lineation</code><span class="sig-paren">(</span><em class="sig-param">feature_builder</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame.calculate_intersection_lineation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the intersection lineation by finding the cross product
-between the first fold frame
-coordinate and the vector representing the normal to the folded
-foliation
-:param feature_builder - GeologicalFeatureInterpolator: the feature builder that contains the data points that the</p>
-<blockquote>
-<div><p>intersection lineation is calculated for</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame.evaluate_gradient">
-<code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em>, <em class="sig-param">i=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate the gradient of the structural frame.
-Can optionally only evaluate the ith coordinate</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>evaluation_points</strong> – </p></li>
-<li><p><strong>i</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame.evaluate_value">
-<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em>, <em class="sig-param">i=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame.evaluate_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate the value of the structural frame for the points.
-Can optionally only evaluate one coordinate</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>evaluation_points</strong> – </p></li>
-<li><p><strong>i</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame.get_feature">
-<code class="sig-name descname">get_feature</code><span class="sig-paren">(</span><em class="sig-param">i</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame.get_feature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the ith feature</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>i</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.modelling.fold.foldframe.FoldFrame.set_data">
-<code class="sig-name descname">set_data</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.foldframe.FoldFrame.set_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Associate data with structural frame</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -337,11 +224,19 @@ Can optionally only evaluate one coordinate</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Lachlan Grose
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -352,7 +247,6 @@ Can optionally only evaluate one coordinate</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

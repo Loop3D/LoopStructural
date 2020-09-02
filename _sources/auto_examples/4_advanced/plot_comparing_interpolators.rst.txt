@@ -16,8 +16,8 @@ inspected.
 
 
 
-
 .. image:: /auto_examples/4_advanced/images/sphx_glr_plot_comparing_interpolators_001.png
+    :alt: plot comparing interpolators
     :class: sphx-glr-single-img
 
 
@@ -58,7 +58,7 @@ inspected.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.464 seconds)
+   **Total running time of the script:** ( 0 minutes  4.148 seconds)
 
 
 .. _sphx_glr_download_auto_examples_4_advanced_plot_comparing_interpolators.py:

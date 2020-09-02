@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,19 +34,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -56,7 +57,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> LoopStructural
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> LoopStructural
           
 
           
@@ -79,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -122,6 +124,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -160,7 +163,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
         
@@ -192,235 +195,9 @@
 <li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
 </ul>
 </div>
-<span class="target" id="module-LoopStructural.interpolators.structured_tetra"></span><div class="section" id="members">
+<span class="target" id="module-LoopStructural.interpolators.structured_tetra"></span><p>Tetmesh based on cartesian grid for piecewise linear interpolation</p>
+<div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.structured_tetra.</code><code class="sig-name descname">TetMesh</code><span class="sig-paren">(</span><em class="sig-param">origin=[0, 0, 0], nsteps=[10, 10, 10], step_vector=[1, 1, 1]</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.barycentre">
-<code class="sig-name descname">barycentre</code><span class="sig-paren">(</span><em class="sig-param">elements=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.barycentre" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the barycentres of all tetrahedrons or of specified tetras using
-global index</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- numpy array</strong> (<em>elements</em>) – global index</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.cell_corner_indexes">
-<code class="sig-name descname">cell_corner_indexes</code><span class="sig-paren">(</span><em class="sig-param">x_cell_index</em>, <em class="sig-param">y_cell_index</em>, <em class="sig-param">z_cell_index</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.cell_corner_indexes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the indexes of the corners of a cell given its location xi,
-yi, zi</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x_cell_index</strong> – </p></li>
-<li><p><strong>y_cell_index</strong> – </p></li>
-<li><p><strong>z_cell_index</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_gradient">
-<code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">pos</em>, <em class="sig-param">prop</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate the gradient of an interpolant at the locations</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>- numpy array</strong> (<em>pos</em>) – locations</p></li>
-<li><p><strong>- string</strong> (<em>prop</em>) – property to evaluate</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_value">
-<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">pos</em>, <em class="sig-param">prop</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate value of interpolant</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>- numpy array</strong> (<em>pos</em>) – locations</p></li>
-<li><p><strong>- string</strong> (<em>prop</em>) – property name</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_constant_gradient">
-<code class="sig-name descname">get_constant_gradient</code><span class="sig-paren">(</span><em class="sig-param">region</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_constant_gradient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the constant gradient for the specified nodes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>region</strong> (<em>np.array</em><em>(</em><em>dtype=bool</em><em>)</em>) – mask of nodes to calculate cg for</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_element_gradients">
-<code class="sig-name descname">get_element_gradients</code><span class="sig-paren">(</span><em class="sig-param">elements=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_element_gradients" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the gradients of all tetras</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>elements</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_elements">
-<code class="sig-name descname">get_elements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_elements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a numpy array of all of the elements in the mesh</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array elements</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_neighbours">
-<code class="sig-name descname">get_neighbours</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_neighbours" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function goes through all of the elements in the mesh and assembles a numpy array
-with the neighbours for each element</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_tetra_for_location">
-<code class="sig-name descname">get_tetra_for_location</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_tetra_for_location" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine the tetrahedron from a numpy array of points</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pos</strong> (<em>np.array</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_tetra_gradient_for_location">
-<code class="sig-name descname">get_tetra_gradient_for_location</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_tetra_gradient_for_location" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the gradient of the tetra for a location</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pos</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.global_cell_indicies">
-<code class="sig-name descname">global_cell_indicies</code><span class="sig-paren">(</span><em class="sig-param">indexes</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.global_cell_indicies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert from cell indexes to global cell index</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>indexes</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.global_index_to_cell_index">
-<code class="sig-name descname">global_index_to_cell_index</code><span class="sig-paren">(</span><em class="sig-param">global_index</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.global_index_to_cell_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert from global indexes to xi,yi,zi</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>global_index</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.global_index_to_node_index">
-<code class="sig-name descname">global_index_to_node_index</code><span class="sig-paren">(</span><em class="sig-param">global_index</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.global_index_to_node_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert from global indexes to xi,yi,zi</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>global_index</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.global_node_indicies">
-<code class="sig-name descname">global_node_indicies</code><span class="sig-paren">(</span><em class="sig-param">indexes</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.global_node_indicies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert from node indexes to global node index</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>indexes</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.inside">
-<code class="sig-name descname">inside</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.inside" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if a point is inside the structured grid</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pos</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.node_indexes_to_position">
-<code class="sig-name descname">node_indexes_to_position</code><span class="sig-paren">(</span><em class="sig-param">xindex</em>, <em class="sig-param">yindex</em>, <em class="sig-param">zindex</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.node_indexes_to_position" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the xyz position from the node coordinates</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>xindex</strong> – </p></li>
-<li><p><strong>yindex</strong> – </p></li>
-<li><p><strong>zindex</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.nodes">
-<em class="property">property </em><code class="sig-name descname">nodes</code><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the nodes of the mesh as a property rather than using a function, accessible as a property! Python magic!</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>nodes</strong> (<em>np.array((N,3))</em>) – Fortran ordered</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.position_to_cell_corners">
-<code class="sig-name descname">position_to_cell_corners</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.position_to_cell_corners" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the nodes that belong to a cell which contains a point</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pos</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.position_to_cell_index">
-<code class="sig-name descname">position_to_cell_index</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.position_to_cell_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find which cell a point is in</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pos</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -444,11 +221,19 @@ with the neighbours for each element</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Lachlan Grose
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -459,7 +244,6 @@ with the neighbours for each element</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

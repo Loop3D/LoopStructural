@@ -14,7 +14,6 @@
 ============================
 This tutorial will demonstrate how to setup a basic geological model for using with LoopStructural.
 
-
 Implicit surface modelling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LoopStructural uses implicit surface representation to build upper and lower surfaces for geological horizons.
@@ -33,7 +32,7 @@ are combined with a regularisation term to find the best resulting surface.
 There are two main interpolators that can be used:
 
 1. Piecewise Linear interpolator - which uses a regular tetrahedron mesh with P1 finite elements
-2. Finite difference interpolator - which uses
+2. Finite difference interpolator - which uses a regular Cartesian grid with cubic elements using trilinear interpolation
 
 Data types
 ~~~~~~~~~~
@@ -154,7 +153,7 @@ for the interpolator to be able to find a solution.
               <th>0</th>
               <td>0.000000</td>
               <td>0.0</td>
-              <td>1.738015</td>
+              <td>1.365424</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -162,7 +161,7 @@ for the interpolator to be able to find a solution.
               <th>1</th>
               <td>1.111111</td>
               <td>0.0</td>
-              <td>1.832272</td>
+              <td>1.206290</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -170,7 +169,7 @@ for the interpolator to be able to find a solution.
               <th>2</th>
               <td>2.222222</td>
               <td>0.0</td>
-              <td>1.824432</td>
+              <td>1.615205</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -178,7 +177,7 @@ for the interpolator to be able to find a solution.
               <th>3</th>
               <td>3.333333</td>
               <td>0.0</td>
-              <td>1.609915</td>
+              <td>1.796572</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -186,7 +185,7 @@ for the interpolator to be able to find a solution.
               <th>4</th>
               <td>4.444444</td>
               <td>0.0</td>
-              <td>1.952359</td>
+              <td>1.135191</td>
               <td>0.0</td>
               <td>conformable</td>
             </tr>
@@ -289,6 +288,7 @@ next tutorial will show how to use the lavavu visualisation model.
 
 
 .. image:: /auto_examples/1_basic/images/sphx_glr_plot_1_data_prepration_001.png
+    :alt: plot 1 data prepration
     :class: sphx-glr-single-img
 
 
@@ -298,10 +298,6 @@ next tutorial will show how to use the lavavu visualisation model.
 
  .. code-block:: none
 
-    /home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:149: UserWarning: No contour levels were found within the data range.
-      ax[0].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
-    /home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:161: UserWarning: No contour levels were found within the data range.
-      ax[1].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
     /home/lgrose/dev/python/LoopStructural/examples/1_basic/plot_1_data_prepration.py:163: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
@@ -311,7 +307,7 @@ next tutorial will show how to use the lavavu visualisation model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.376 seconds)
+   **Total running time of the script:** ( 0 minutes  5.326 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_1_data_prepration.py:

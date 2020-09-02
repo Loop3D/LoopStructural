@@ -15,8 +15,8 @@ Creating a model with multiple geological features, dealing with unconformities.
 
 
 
-
 .. image:: /auto_examples/1_basic/images/sphx_glr_plot_3_multiple_groups_001.png
+    :alt: plot 3 multiple groups
     :class: sphx-glr-single-img
 
 
@@ -26,7 +26,7 @@ Creating a model with multiple geological features, dealing with unconformities.
 
  .. code-block:: none
 
-    /home/lgrose/dev/python/LoopStructural/LoopStructural/interpolators/structured_tetra.py:189: RuntimeWarning: invalid value encountered in greater
+    /home/lgrose/dev/python/LoopStructural/LoopStructural/interpolators/structured_tetra.py:193: RuntimeWarning: invalid value encountered in greater
       mask = np.all(c > 0, axis=2)
     /home/lgrose/dev/python/LoopStructural/LoopStructural/modelling/features/unconformity_feature.py:40: RuntimeWarning: invalid value encountered in less
       return self.feature.evaluate_value(pos) < self.value
@@ -87,7 +87,7 @@ Creating a model with multiple geological features, dealing with unconformities.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.320 seconds)
+   **Total running time of the script:** ( 0 minutes  3.084 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_3_multiple_groups.py:

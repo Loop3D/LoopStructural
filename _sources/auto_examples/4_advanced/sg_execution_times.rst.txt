@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:05.464** total execution time for **auto_examples_4_advanced** files:
+**00:04.148** total execution time for **auto_examples_4_advanced** files:
 
 +----------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_4_advanced_plot_comparing_interpolators.py` (``plot_comparing_interpolators.py``) | 00:05.464 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_4_advanced_plot_comparing_interpolators.py` (``plot_comparing_interpolators.py``) | 00:04.148 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------------+-----------+--------+

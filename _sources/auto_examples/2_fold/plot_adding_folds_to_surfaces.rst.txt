@@ -21,7 +21,6 @@
  Construction of folded foliations using fold geostatistics inside the
  fold frame coordinate system
 
-
 Imports
 -------
 
@@ -387,6 +386,7 @@ field box.
 
 
 .. image:: /auto_examples/2_fold/images/sphx_glr_plot_adding_folds_to_surfaces_001.png
+    :alt: plot adding folds to surfaces
     :class: sphx-glr-single-img
 
 
@@ -474,6 +474,7 @@ shown in B and C.
 
 
 .. image:: /auto_examples/2_fold/images/sphx_glr_plot_adding_folds_to_surfaces_002.png
+    :alt: plot adding folds to surfaces
     :class: sphx-glr-single-img
 
 
@@ -495,6 +496,7 @@ Plotting the fold rotation angles
 
 
 .. image:: /auto_examples/2_fold/images/sphx_glr_plot_adding_folds_to_surfaces_003.png
+    :alt: plot adding folds to surfaces
     :class: sphx-glr-single-img
 
 
@@ -513,7 +515,7 @@ Plotting the fold rotation angles
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  16.573 seconds)
+   **Total running time of the script:** ( 0 minutes  9.576 seconds)
 
 
 .. _sphx_glr_download_auto_examples_2_fold_plot_adding_folds_to_surfaces.py:

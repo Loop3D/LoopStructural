@@ -9,7 +9,6 @@
     .. _sphx_glr_auto_examples_1_basic_plot_3_model_visualisation.py:
 
 
-
 1c. Visualising models
 ===============================
 The following tutorial will demonstrate how to use the Loop structural visualisation module. 
@@ -18,7 +17,6 @@ Owen Kaluza.
 
 Lavavu allows for interactive visualisation of 3D models within a jupyter
 notebook environment. 
-
 
 Imports
 ~~~~~~~
@@ -92,24 +90,17 @@ Where optional kwargs can be:
 -  ``normals`` to plot the normal vectors to the surface
 -  ``name`` to give the surface
 -  ``colour`` the colour of the surface
--  ``voxet`` dict with ``bounding_box=boundary_points`` and
-   ``nsteps = (nx,ny,nz)``
 -  other kwargs for passing directly to lavavu
 
-Alternatively the scalarfields can be displayed on a rectangular cuboid.
+Alternatively the scalar fields can be displayed on a rectangular cuboid.
 
 .. code:: python
 
-   viewer.add_scalar_field(boundary_points,dimensions,**kwargs)
+   viewer.add_scalar_field(geological_feature)
 
-Where ``boundary_points`` is a numpy array
-``[[minx,miny,minz],[maxx,maxy,maxz]]`` and ``dimensions`` corresponds
-to the number of samples along each axis.
 
 Other possible kwargs are:
 
--  ``paint_with`` the geological feature to colour the box with
--  ``colour`` a single colour to colour the surfaces with
 -  ``cmap`` colour map for the property
 
 The input data for the model can be visualised by calling either:
@@ -153,10 +144,10 @@ Other possible options for plotting are to \* plot point locations.
 
 .. code:: python
 
-   viewer.add_vector_field(feature, locations, **kwargs)
+   viewer.add_vector_field(feature, **kwargs)
 
-Where ``locations`` are an array of points to evaluate the gradient at,
-for example the barycentric coordinates. It is recommended to visualise
+Where ``locations`` can be specified to control specific evaluation locations
+It is recommended to visualise
 the vectorfield at a lower resolution than the mesh otherwise it can be
 difficult to see the vectors. You can use numpy stepping along the
 array: ``locations = mesh.barycentre[::20,:]`` which will sample every
@@ -175,8 +166,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
     viewer.add_isosurface(strati,
                            slices=unique,  
                            cmap='prism',
-                          paint_with=strati,
-                         voxet=model.voxet())
+                          paint_with=strati)
 
     viewer.add_section(strati,
                        axis='x',
@@ -186,7 +176,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
                       cmap='prism')
     viewer.add_scalar_field(strati,
                          cmap='prism')
-    viewer.add_model()
+    viewer.add_model(cmap='tab20')
 
     # Add the data addgrad/addvalue arguments are optional
     viewer.add_data(strati,addgrad=True,addvalue=True, cmap='prism')
@@ -195,16 +185,8 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
 
 .. image:: /auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
+    :alt: plot 3 model visualisation
     :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    LavaVu Run error: FBO creation failed, can't continue
 
 
 
@@ -213,7 +195,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.850 seconds)
+   **Total running time of the script:** ( 0 minutes  7.008 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_3_model_visualisation.py:

@@ -23,7 +23,10 @@ of the Mt Bruce area in the Hamersley. The dataset has been compiled into a pick
     import pandas as pd
     import numpy as np
     import pickle
+
+
     # m2l_data = pickle.load(open('mt_bruce.pkl','rb'))
+
 
 .. rst-class:: sphx-glr-timing
 

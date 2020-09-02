@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,22 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-dataframe.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -25,19 +34,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
-  <link rel="stylesheet" href="_static/gallery-binder.css" type="text/css" />
-  <link rel="stylesheet" href="_static/gallery-dataframe.css" type="text/css" />
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -56,7 +57,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> LoopStructural
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> LoopStructural
           
 
           
@@ -79,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -91,13 +93,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#docker">Docker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#windows-using-conda">Windows using conda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#windows-using-linux-subsystem">Windows using linux subsystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#linux">Linux</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors_guide.html">Contribute</a></li>
 </ul>
@@ -115,6 +111,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -153,7 +150,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Installation</li>
     
@@ -180,275 +177,13 @@
 three ways of installing LoopStructural onto your system:</p>
 <ol class="arabic simple">
 <li><p>Using docker (best approach for remote services such as AWS)</p></li>
+</ol>
+<ol class="arabic simple" start="2">
 <li><p>Installing from pip</p></li>
+</ol>
+<ol class="arabic simple" start="3">
 <li><p>Compiling LoopStructural from source</p></li>
 </ol>
-<div class="section" id="docker">
-<h2>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Installing Docker</strong></p>
-</div>
-<p>Follow the installation instructions for docker <a class="reference external" href="https://docs.docker.com/engine/install/">here</a>.</p>
-</div>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Building and running a docker image</strong></p>
-</div>
-<p>Using a github client (e.g. for windows Github Desktop)
-Clone this repository to your local drive and change
-directory to the location where you cloned it using
-<code class="code docutils literal notranslate"><span class="pre">cd</span> <span class="pre">${LOOPSTRUCTURAL_FOLDER}</span></code>. The docker
-container can be built by running the following command
-.. code-block::console</p>
-<blockquote>
-<div><p>docker build -t=loop .</p>
-</div></blockquote>
-<p>LoopStructural can be used by running</p>
-<p>This will start a jupyter notebook server running on <code class="code docutils literal notranslate"><span class="pre">localhost:8888</span></code>
-without password or certificate required. Be aware any changes made
-to the notebooks within the notebooks directory will NOT be saved on
-your local versions.</p>
-<p>If you want to use your own data with the docker container you will need
-to link your local directory (this can be anywhere) with the docker container.
-To do this add <code class="code docutils literal notranslate"><span class="pre">-v</span> <span class="pre">LOCALDIRPATH:/home/jovyan/shared_volume</span></code> to the docker command
-so it becomes <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">-p</span> <span class="pre">8888:8888</span> <span class="pre">-v</span> <span class="pre">LOCALDIRPATH:/home/jovyan/shared_volume</span> <span class="pre">loop</span></code>.
-<code class="code docutils literal notranslate"><span class="pre">LOCALDIRPATH</span></code> is the relative or full path to the directory you want to share.</p>
-</div>
-</div>
-<div class="section" id="windows-using-conda">
-<h2>Windows using conda<a class="headerlink" href="#windows-using-conda" title="Permalink to this headline">¶</a></h2>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Installing a precompiled version</strong></p>
-</div>
-<p>LoopStructural can then be installed into your python environment by running the command within your chosen python virtual environment.
-.. code-block:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">LoopStructural</span>
-</pre></div>
-</div>
-</div>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p>If you want to install LoopStructural from source to be able to modify the code you will need to have a working C++ compiler.
-This is best done using anaconda</p>
-</div>
-</div>
-</div>
-<div class="section" id="windows-using-linux-subsystem">
-<h2>Windows using linux subsystem<a class="headerlink" href="#windows-using-linux-subsystem" title="Permalink to this headline">¶</a></h2>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Installing WSL</strong></p>
-</div>
-<p>To setup the windows subsystem for linux you must have administrator rights on your computer.
-Open PowerShell as Administrator (right click and choose run as administrator) and run the following command:</p>
-<img alt="_images/powershell_enable_wls.png" src="_images/powershell_enable_wls.png" />
-<div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">Enable-WindowsOptionalFeature</span> <span class="n">-Online</span> <span class="n">-FeatureName</span> <span class="n">Microsoft-Windows-Subsystem-Linux</span>
-</pre></div>
-</div>
-<p>Once this command has been executed you may need to restart your computer.</p>
-<p>When the WSL has been enabled you can use the microsoft store to install a linux operating system.
-You can use any operating system you want however, this guide assumes you are using ubuntu 18.04 LTS.</p>
-<img alt="_images/ubuntu_microsoft_store.png" src="_images/ubuntu_microsoft_store.png" />
-<p>Once you have installed the operating system you will be asked to enter a unix username and password, these do not have
-to be the same as windows - but it is important that you remember them.</p>
-<p>You should then have access to the linux terminal. Which will look something like below:</p>
-<img alt="_images/wls_terminal.png" src="_images/wls_terminal.png" />
-</div>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Installing github for desktop</strong></p>
-</div>
-<p>Install a windows github client e.g.:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><cite>tortoiseGit</cite> &lt;<a class="reference external" href="https://desktop.github.com/">https://desktop.github.com/</a>&gt;</p></li>
-<li><p><cite>github dekstop</cite> &lt;<a class="reference external" href="https://desktop.github.com/">https://desktop.github.com/</a>&gt;</p></li>
-</ul>
-</div></blockquote>
-<p>Now clone the LoopStructural repository from the website by clicked clone and open in desktop.</p>
-<img alt="_images/githubwebsite_clone.png" src="_images/githubwebsite_clone.png" />
-<p>This will then ask you to input a directory for cloning the respository:</p>
-<img alt="_images/githubwindows_clone.png" src="_images/githubwindows_clone.png" />
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="p">{</span><span class="n">username</span><span class="p">}</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">Repositories</span><span class="o">/</span><span class="n">LoopStructural</span>
-</pre></div>
-</div>
-<p>MobaXterm is a terminal client with an X11 server it is best to use this to connect to WLS.
-Download <a href="#id1"><span class="problematic" id="id2">`</span></a>MobaXterm`&lt;<a class="reference external" href="https://mobaxterm.mobatek.net/download.html">https://mobaxterm.mobatek.net/download.html</a>&gt;</p>
-<img alt="_images/moba_xterm.png" src="_images/moba_xterm.png" />
-</div>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Installing LoopStructural</strong></p>
-</div>
-<p>Before you install LoopStructural the ubuntu package manager should be updated and the installed packages should be upgraded.</p>
-<p>Using the linux terminal type in the following commands.
-You can paste into the WLS terminal using</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">upgrade</span>
-</pre></div>
-</div>
-<p>The dependencies can then be installed:</p>
-<ul class="simple">
-<li><p>python3</p></li>
-<li><p>python3-dev</p></li>
-<li><p>python3-venv</p></li>
-<li><p>pybind11-dev</p></li>
-<li><p>mesa-common-dev</p></li>
-<li><p>mesa-utils</p></li>
-<li><p>libgl1-mesa-dev</p></li>
-<li><p>g++</p></li>
-<li><p>gcc</p></li>
-<li><p>make</p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>  <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">venv</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span> <span class="n">make</span> <span class="n">pybind11</span><span class="o">-</span><span class="n">dev</span> <span class="n">mesa</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">dev</span> <span class="n">mesa</span><span class="o">-</span><span class="n">utils</span> <span class="n">libgl1</span><span class="o">-</span><span class="n">mesa</span><span class="o">-</span><span class="n">dev</span> <span class="n">gcc</span> <span class="n">g</span><span class="o">++</span>
-</pre></div>
-</div>
-<p>It is then recommended to create a new python virtual environment for LoopStructural.</p>
-<p><cite>Python Virtual Environments: A primer</cite> &lt;<a class="reference external" href="https://realpython.com/python-virtual-environments-a-primer/">https://realpython.com/python-virtual-environments-a-primer/</a>&gt;</p>
-<p>You can create the virtual environment in any location on your computer.</p>
-<p>You can change to the directory where LoopStructural is located by using the following command.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">c</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="p">{</span><span class="n">username</span><span class="p">}</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">Repositories</span><span class="o">/</span><span class="n">LoopStructural</span>
-</pre></div>
-</div>
-<p>Remember to change the path to the directory where LoopStructural is located on your computer.</p>
-<p>You can then create a virtual environment using the following command.
-This creates a virtual environment called venv inside the LoopStructural repository.
-This folder is automatically ignored by git.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
-</pre></div>
-</div>
-<p>You can then create an environment variable for this location by editing your .bashrc file.
-Using VIM or your favourite text editor</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nano</span> <span class="o">~/.</span><span class="n">bashrc</span>
-</pre></div>
-</div>
-<p>Add a line to end end of the file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">LOOP_ENV</span><span class="o">=/</span><span class="n">mnt</span><span class="o">/</span><span class="n">c</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="p">{</span><span class="n">username</span><span class="p">}</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">Repository</span><span class="o">/</span><span class="n">LoopStructural</span><span class="o">/</span><span class="n">venv</span>
-<span class="n">alias</span> <span class="n">LoopStructural</span><span class="o">=</span><span class="s1">&#39;. $LOOP_ENV/bin/activate&#39;</span>
-</pre></div>
-</div>
-<p>The second line creates a command line command for switching to the LoopStructural virtual environment.</p>
-<img alt="_images/edit_bashrc.png" src="_images/edit_bashrc.png" />
-<p>For convenience you can symbolic link folders to the home directory for linux.
-This means that the LoopStructural folder will appear in the home directory of your linux user.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">c</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="p">{</span><span class="n">username</span><span class="p">}</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">Repository</span><span class="o">/</span><span class="n">LoopStructural</span> <span class="n">LoopStructural</span>
-</pre></div>
-</div>
-<p>Now change directory to the home folder for linux using the terminal</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~</span>
-</pre></div>
-</div>
-<p>Now change directory into LoopStructural</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">LoopStructural</span>
-</pre></div>
-</div>
-<p>You can now install LoopStructural using the makefile.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="nb">all</span>
-</pre></div>
-</div>
-<p>This should run the following commands:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>. ${LOOP_ENV}/bin/activate  &amp;&amp;
-pip3 install -r requirements.txt &amp;&amp;
-python3 setup.py install build_ext --inplace;
-</pre></div>
-</div>
-<p>A jupyter notebook server can be run from within the LoopStructural folder by running</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">notebook</span>
-</pre></div>
-</div>
-<img alt="_images/run_jupyter.png" src="_images/run_jupyter.png" />
-<p>You can then navigate to the jupyter notebook server using your browser.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">localhost</span><span class="p">:</span><span class="mi">8888</span>
-</pre></div>
-</div>
-<img alt="_images/jupyter_browser.png" src="_images/jupyter_browser.png" />
-<p>You can now start using LoopStructural.
-Try working through one of the examples/tutorials found in the notebooks directory.</p>
-</div>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Upgrading LoopStructural</strong></p>
-</div>
-<p>If you have already installed LoopStructural and want to upgrade to the most recent version.</p>
-<p>First pull the most recent version from github.</p>
-<p>Using the WSL change to the LoopStructural directory and run the makefile</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">LoopStructural</span>
-<span class="n">pip</span> <span class="n">uninstall</span> <span class="n">LoopStructural</span>
-<span class="n">make</span> <span class="n">build</span>
-</pre></div>
-</div>
-<p>This will not install the requirements.txt and only call the setup.py file for LoopStructural.</p>
-</div>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Running LoopStructural</strong></p>
-</div>
-<p>To use the model viewing capabilities of LavaVu you need to use MobaXterm or another ssh/terminal client with x forwarding capabilities.
-To run the included examples in LoopStructural you can simply run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">notebook</span>
-</pre></div>
-</div>
-<p>and then using your web browser navigate to localhost:8888 or whichever port the jupyter notebook server is on.</p>
-<p>If you want to run a jupyter notebook server from another directory you must first activate the LoopStructural python environment.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LoopStructural</span>
-</pre></div>
-</div>
-<p>You can then start a jupyter notebook server</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jupyter</span><span class="o">-</span><span class="n">notebook</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">browser</span>
-</pre></div>
-</div>
-<p>You can then navigate to localhost:8888 or the port specified.</p>
-</div>
-</div>
-<div class="section" id="linux">
-<h2>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<p><strong>Development environment</strong></p>
-</div>
-<p>LoopStructural can be easily installed using a Makefile once a few things are set up. Firstly, you need to add an
-environment variable to your system. <code class="code docutils literal notranslate"><span class="pre">LOOP_ENV</span></code>, this can be done by adding</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export LOOP_ENV=$YOUR_PATH_TO_VIRTUAL_ENVIRONMENT
-</pre></div>
-</div>
-<p>to your <code class="code docutils literal notranslate"><span class="pre">.bashrc</span></code> file.
-Make sure the path is updated to a directory in your system where you want to save the python virtual environment.
-It could be for example where you clone this repository and a subfolder called venv or LoopStructural.</p>
-<p>Once you have the environment variable you can run the command <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">dependencies</span></code> (or <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">dependencies.fc</span></code> for Fedora) which will install the required dependencies for LoopStructural:</p>
-<p>Required dependencies for Ubuntu
-* python3
-* python3-venv
-* pybind11-dev
-* mesa-common-dev
-* mesa-utils
-* libgl1-mesa-dev
-* gcc
-* g++</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">venv</span> <span class="n">pybind11</span><span class="o">-</span><span class="n">dev</span> <span class="n">mesa</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="n">dev</span> <span class="n">mesa</span><span class="o">-</span><span class="n">utils</span> <span class="n">libgl1</span><span class="o">-</span><span class="n">mesa</span><span class="o">-</span><span class="n">dev</span> <span class="n">gcc</span> <span class="n">g</span><span class="o">++</span>
-</pre></div>
-</div>
-<p>Required dependencies for Fedora
-* python3
-* python3-devel
-* pybind11-devel
-* mesa-libGL-devel
-* gcc
-* g++</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">devel</span> <span class="n">pybind11</span><span class="o">-</span><span class="n">devel</span> <span class="n">mesa</span><span class="o">-</span><span class="n">libGL</span><span class="o">-</span><span class="n">devel</span> <span class="n">gcc</span> <span class="n">g</span><span class="o">++</span>
-</pre></div>
-</div>
-<p>Once these are installed you can run <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">venv</span></code> to create a new python virtual environment in the location you
-specified. If a python environment already exists then this will be used.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">all</span></code> will install the required python dependencies for LoopStructural and then install and build the library.
-It just executes the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> <span class="o">&amp;&amp;</span> <span class="n">python3</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">inplace</span>
-</pre></div>
-</div>
-<p>If you want to use a jupyter notebook then you can launch a server by running <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">notebook</span></code>, alternatively you can
-run <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">notebookbuild</span></code> if you want to build the library before launching the server.</p>
-</div>
-</div>
 </div>
 
 
@@ -471,11 +206,19 @@ run <code class="code docutils literal notranslate"><span class="pre">make</span
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Lachlan Grose
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -486,7 +229,6 @@ run <code class="code docutils literal notranslate"><span class="pre">make</span
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
