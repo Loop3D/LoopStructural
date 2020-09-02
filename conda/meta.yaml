@@ -22,18 +22,17 @@ requirements:
     - numpy
   run:
     - Cython
+    - lavavu
     - numpy
     - pandas
     - scipy
     - matplotlib
     - scikit-image
-    - scikit-learn
-test:
-  imports:
-    - LoopStructural
-    - pytest
-  commands:
-    - pytest
+#     - scikit-learn
+# test:
+#   imports:
+#     - LoopStructural
+
 
 about:
   home: "https://github.com/Loop3D/LoopStructural"

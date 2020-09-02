@@ -320,14 +320,14 @@ class GeologicalModel:
         data_temp['Z'] /= self.scale_factor
         self.data.concat([self.data, data_temp], sort=True)
 
-    def set_stratigraphic_column(self, stratigraphic_column):
+    def set_stratigraphic_column(self, stratigraphic_column,cmap='tab20'):
         """
         Adds a stratigraphic column to the model
 
         Parameters
         ----------
         stratigraphic_column : dictionary
-
+        cmap : matplotlib.cmap
         Returns
         -------
 
@@ -336,11 +336,30 @@ class GeologicalModel:
         stratigraphic_column is a nested dictionary with the format
         {'group':
                 {'series1':
-                            {'min':0., 'max':10.,'id':0}
+                            {'min':0., 'max':10.,'id':0,'colour':}
                 }
         }
 
         """
+        # if the colour for a unit hasn't been specified we can just sample from 
+        # a colour map e.g. tab20
+        random_colour = True
+        n_units=0
+        for g in stratigraphic_column.keys():
+            for u in stratigraphic_column[g].keys():
+                if 'colour' in stratigraphic_column[g][u]:
+                    random_colour = False
+                    break
+                n_units+=1
+        if random_colour:
+            import matplotlib.cm as cm
+            cmap = cm.get_cmap(cmap,n_units)
+            cmap_colours = cmap.colors
+            ci = 0
+            for g in stratigraphic_column.keys():
+                for u in stratigraphic_column[g].keys():
+                    stratigraphic_column[g][u]['colour'] = cmap_colours[ci,:]
+        
         self.stratigraphic_column = stratigraphic_column
 
     def create_from_feature_list(self, features):
@@ -558,7 +577,7 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
-        fold = FoldEvent(fold_frame)
+        fold = FoldEvent(fold_frame,name='Fold_{}'.format(foliation_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         series_builder = GeologicalFeatureInterpolator(
             interpolator=fold_interpolator,
@@ -638,7 +657,7 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
-        fold = FoldEvent(fold_frame)
+        fold = FoldEvent(fold_frame,name='Fold_{}'.format(fold_frame_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         frame_interpolator = self.get_interpolator(**kwargs)
         interpolators = [fold_interpolator, frame_interpolator,
@@ -651,12 +670,16 @@ class GeologicalModel:
         ## add the data to the interpolator for the main foliation
         fold_frame_builder[0].add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
+            logger.info("Using cylindrical fold axis")
             fold.fold_axis = kwargs['fold_axis']
         if "av_fold_axis" in kwargs:
+            logger.info("Using average intersection lineation for \n"
+            "fold axis")
             _calculate_average_intersection(fold_frame_builder[0], fold_frame,
                                             fold)
 
         if fold.fold_axis is None:
+            logger.info("Fitting fold axis rotation angle")
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 fold_frame_builder[0])
             fold_axis_rotation = FoldRotationAngle(far, fad)
@@ -989,11 +1012,13 @@ class GeologicalModel:
             length /= 3
             # length/=2
             # print(fault_frame_data)
-            mask = ~np.isnan(fault_frame_data['nx'])
-            vectors = fault_frame_data[mask][['nx', 'ny', 'nz']].to_numpy()
+            mask = ~np.isnan(fault_frame_data['gx'])
+            vectors = fault_frame_data[mask][['gx', 'gy', 'gz']].to_numpy()
             lengths = np.linalg.norm(vectors, axis=1)
             vectors /= lengths[:, None]
-            fault_frame_data.loc[mask, ['nx', 'ny', 'nz']] = vectors
+            # added 20/08 rescale fault ellipsoid for m2l
+            # vectors*=length
+            fault_frame_data.loc[mask, ['gx', 'gy', 'gz']] = vectors
             if 'strike' in fault_frame_data.columns and 'dip' in \
                     fault_frame_data.columns:
                 fault_frame_data = fault_frame_data.drop(['dip', 'strike'],
@@ -1192,7 +1217,7 @@ class GeologicalModel:
         
         """
         if scale:
-            self.scale(xyz)
+            xyz = self.scale(xyz,inplace=False)
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
             feature_id = self.feature_name_index.get(group, -1)
@@ -1204,6 +1229,31 @@ class GeologicalModel:
             if feature_id == -1:
                 logger.error('Model does not contain {}'.format(group))
         return strat_id
+
+    def evaluate_fault_displacements(self,points,scale=True):
+        """Evaluate the fault displacement magnitude at each location
+        
+
+        Parameters
+        ----------
+        xyz : np.array((N,3),dtype=float)
+            locations
+        scale : bool
+            whether to rescale the xyz before evaluating model
+
+        Returns
+        -------
+        fault_displacement : np.array(N,dtype=float)
+            the fault displacement magnitude
+        """
+        if scale:
+            points = self.scale(points,inplace=False)
+        vals = np.zeros(points.shape[0])
+        for f in self.features:
+            if f.type == 'fault':
+                disp = f.displacementfeature.evaluate_value(points)
+                vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
+        return vals*-self.scale_factor # convert from restoration magnutude to displacement
 
     def get_feature_by_name(self, feature_name):
         """Returns a feature from the mode given a name
@@ -1267,6 +1317,7 @@ class GeologicalModel:
         """
         feature  = self.get_feature_by_name(feature_name)
         if feature:
+            scaled_xyz = xyz
             if scale:
                 scaled_xyz = self.scale(xyz,inplace=False)
             return feature.evaluate_value(scaled_xyz)
@@ -1292,6 +1343,7 @@ class GeologicalModel:
         """
         feature  = self.get_feature_by_name(feature_name)
         if feature:
+            scaled_xyz = xyz
             if scale:
                 scaled_xyz = self.scale(xyz, inplace = False)
             return feature.evaluate_gradient(scaled_xyz)

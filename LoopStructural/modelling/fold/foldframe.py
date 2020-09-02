@@ -119,6 +119,7 @@ class FoldFrame(StructuralFrame):
         # get the normals from the points array
         s0g = points[:, 3:]
 
+        s0g/=np.linalg.norm(s0g,axis=1)[:,None]
         # calculate the gradient and value of the first coordinate of the
         # fold frame
         # for the locations and normalise

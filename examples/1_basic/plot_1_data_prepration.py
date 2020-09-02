@@ -25,7 +25,7 @@ This tutorial will demonstrate how to setup a basic geological model for using w
 # There are two main interpolators that can be used:
 #
 # 1. Piecewise Linear interpolator - which uses a regular tetrahedron mesh with P1 finite elements
-# 2. Finite difference interpolator - which uses
+# 2. Finite difference interpolator - which uses a regular Cartesian grid with cubic elements using trilinear interpolation
 #
 # Data types
 # ~~~~~~~~~~

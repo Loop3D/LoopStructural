@@ -47,3 +47,14 @@ class Operator(object):
                           [0, 1, 0],  # third plane
                           [0, 0, 0]]]
                         )
+
+    #Hessian is 
+    # Dxx Dxy Dxz
+    # Dxy Dyy Dzy
+    # Dzx Dzy Dzz
+
+    #det of hessian
+    # Det_Hessian_operator = 
+    #             Dxx_mask.dot(Dyy_mask.dot(Dzz_mask)) - Dxx_mask.dot(Dyz_mask.dot(Dyz_mask) -
+    #             Dxy_mask.dot(Dxy_mask.dot(Dzz_mask)) - Dxy_mask.dot(Dxz_mask.dot(Dyz_mask)) +
+    #             Dxz_mask.dot(Dxy_mask.dot(Dyz_mask)) - Dxz_mask.dot(Dyy_mask.dot(Dxz_mask))
