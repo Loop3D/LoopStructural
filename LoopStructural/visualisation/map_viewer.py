@@ -128,7 +128,7 @@ class MapView:
         self.xx = self.xx.flatten()
         self.yy = self.yy.flatten()
 
-    def add_data(self, feature, val=True, grad=True, unfault=False, **kwargs):
+    def add_data(self, feature, val=True, grad=True, unfault=False, dip=True, **kwargs):
         """
         Adds the data associated to the feature to the plot
         Parameters
@@ -139,6 +139,8 @@ class MapView:
             whether to add value data
         grad : bool
             whether to add gradient data
+        unfault : bool
+            plot points in their restored location
         dip : bool
             whether to annotate the dip, default False
 
