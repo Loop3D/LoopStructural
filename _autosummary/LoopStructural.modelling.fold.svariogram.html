@@ -34,7 +34,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -201,6 +201,67 @@
 </div>
 <span class="target" id="module-LoopStructural.modelling.fold.svariogram"></span><div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="LoopStructural.modelling.fold.svariogram.SVariogram">
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.modelling.fold.svariogram.</code><code class="sig-name descname">SVariogram</code><span class="sig-paren">(</span><em class="sig-param">xdata</em>, <em class="sig-param">ydata</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.svariogram.SVariogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The SVariogram is an experimental semi-variogram.</p>
+<dl class="method">
+<dt id="LoopStructural.modelling.fold.svariogram.SVariogram.calc_semivariogram">
+<code class="sig-name descname">calc_semivariogram</code><span class="sig-paren">(</span><em class="sig-param">lag=None</em>, <em class="sig-param">nlag=None</em>, <em class="sig-param">lags=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.svariogram.SVariogram.calc_semivariogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a semi-variogram for the x and y data for this object.
+You can specify the lags as an array or specify the step size and
+number of steps.
+If neither are specified then the lags are created to be the average
+spacing of the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step</strong> (<em>float</em>) – lag distance for the s-variogram</p></li>
+<li><p><strong>nstep</strong> (<em>int</em>) – number of lags for the s-variogram</p></li>
+<li><p><strong>lags</strong> (<em>array</em>) – num</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.fold.svariogram.SVariogram.find_wavelengths">
+<code class="sig-name descname">find_wavelengths</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.svariogram.SVariogram.find_wavelengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Picks the wavelengths of the fold by finding the maximum and
+minimums of the s-variogram
+the fold wavelength is the first minimum but it is more reliable to
+use the first maximum
+as the estimate of the wavelength.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>object</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="LoopStructural.modelling.fold.svariogram.find_peaks_and_troughs">
+<code class="sig-prename descclassname">LoopStructural.modelling.fold.svariogram.</code><code class="sig-name descname">find_peaks_and_troughs</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.svariogram.find_peaks_and_troughs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>np.array</strong><strong> or </strong><strong>list</strong> (<em>y</em>) – x axis data for plot</p></li>
+<li><p><strong>np.array</strong><strong> or </strong><strong>list</strong> – y axis data for plot</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(np.array, np.array)</em></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Returns the loations of maxima/minima on the curve using finite
+difference forward/backwards
+finding the change in derivative</p>
+</dd></dl>
+
 </div>
 </div>
 

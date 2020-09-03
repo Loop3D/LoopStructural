@@ -34,7 +34,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -194,6 +194,66 @@
 </div>
 <span class="target" id="module-LoopStructural.utils.utils"></span><div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="LoopStructural.utils.utils.get_levels">
+<code class="sig-prename descclassname">LoopStructural.utils.utils.</code><code class="sig-name descname">get_levels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.utils.get_levels" title="Permalink to this definition">¶</a></dt>
+<dd><p>dict for converting to logger levels from string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>dict</em> – contains all strings with corresponding logging levels.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="LoopStructural.utils.utils.log_to_console">
+<code class="sig-prename descclassname">LoopStructural.utils.utils.</code><code class="sig-name descname">log_to_console</code><span class="sig-paren">(</span><em class="sig-param">level='warning'</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.utils.log_to_console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the level of logging to the console</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>level</strong> (<em>str</em><em>, </em><em>optional</em>) – ‘info’, ‘warning’, ‘error’, ‘debug’ mapped to logging levels, by default ‘info’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="LoopStructural.utils.utils.log_to_file">
+<code class="sig-prename descclassname">LoopStructural.utils.utils.</code><code class="sig-name descname">log_to_file</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">level='info'</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.utils.log_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the logging parameters for log file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – name of file or path to file</p></li>
+<li><p><strong>level</strong> (<em>str</em><em>, </em><em>optional</em>) – ‘info’, ‘warning’, ‘error’, ‘debug’ mapped to logging levels, by default ‘info’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="LoopStructural.utils.utils.read_voxet">
+<code class="sig-prename descclassname">LoopStructural.utils.utils.</code><code class="sig-name descname">read_voxet</code><span class="sig-paren">(</span><em class="sig-param">voxetname</em>, <em class="sig-param">propertyfile</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.utils.read_voxet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a gocad property file and the geometry information from the .vo file
+voxetname - is the path to the voxet file
+propertyfile is the path to the binary file
+Returns
+origin numpy array
+voxet_extent - is the length of each axis of the voxet
+N is the number of steps in the voxet
+array is the property values
+steps is the size of the step vector for the voxet</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="LoopStructural.utils.utils.write_property_to_gocad_voxet">
+<code class="sig-prename descclassname">LoopStructural.utils.utils.</code><code class="sig-name descname">write_property_to_gocad_voxet</code><span class="sig-paren">(</span><em class="sig-param">propertyfilename</em>, <em class="sig-param">propertyvalues</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.utils.write_property_to_gocad_voxet" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function writes a numpy array into the right format for a gocad
+voxet property file. This assumet there is a property already added to the .vo file,
+and is just updating the file.
+propertyfile - string giving the path to the file to write
+propertyvalues - numpy array nz,ny,nx ordering and in float format</p>
+</dd></dl>
+
 </div>
 </div>
 
