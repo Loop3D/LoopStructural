@@ -10,11 +10,10 @@ import logging
 import numpy as np
 
 logger = logging.getLogger(__name__)
-try:
-    import surfepy
 
-except:
-    logger.error("SurfEPy can't be imported")
+import surfepy
+
+
 
 class SurfeRBFInterpolator(GeologicalInterpolator):
     """
