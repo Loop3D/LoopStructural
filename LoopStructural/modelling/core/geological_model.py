@@ -1,6 +1,7 @@
 """
 Main entry point for creating a geological model
 """
+
 import logging
 
 import numpy as np
@@ -489,7 +490,11 @@ class GeologicalModel:
         ----------
         series_surface_data : string
             corresponding to the feature_name in the data
-        kwargs
+        
+        Keyword Arguments
+        -----------------
+        :py:meth:`LoopStructural.GeologicalModel.get_interpolator`
+        :py:meth:`LoopStructural.GeologicalFeatureInterpolator`
 
         Returns
         -------
