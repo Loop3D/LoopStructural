@@ -167,7 +167,7 @@ def process_map2loop(m2l_directory, flags={}):
     fault_orientations['gy'] = np.nan
     fault_orientations['gz'] = np.nan
 
-
+    stratigraphic_column['faults'] = {}
     for f in displacements['fname'].unique():
         fault_centers = np.zeros(6)
         normal_vector = np.zeros(3)
@@ -194,6 +194,11 @@ def process_map2loop(m2l_directory, flags={}):
         fault_centers[3] = np.mean(fault_orientations.loc[fault_orientations['formation']==f,['DipDirection']])
         fault_centers[4] = fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance']
         fault_centers[5] = fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius']
+        stratigraphic_column['faults'][f] = {'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'],
+                                            'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'],
+                                            'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius']}
+        if 'colour' in fault_dimensions.columns():
+            stratigraphic_column['faults'][f]['colour'] = fault_dimensions.loc[fault_dimensions['Fault']==f,'colour']
         normal_vector[0] = np.sin(np.deg2rad(fault_centers[3]))
         normal_vector[1] = np.cos(np.deg2rad(fault_centers[3]))
         strike_vector[0] = normal_vector[1]

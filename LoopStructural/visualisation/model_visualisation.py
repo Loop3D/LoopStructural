@@ -524,7 +524,9 @@ class LavaVuModelViewer:
                         maskv = np.zeros(val.shape).astype(bool)
                         maskv[np.abs(val) > 0.001] = 1
                         return maskv
-                    self.add_isosurface(f,isovalue=0,region=mask,**kwargs)
+                    if f in self.model.stratigrphic_column['faults']:
+                        fault_colour = self.model.stratigraphic_column['faults'].get('colour',None)
+                    self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour,**kwargs)
 
     # def add_model_data(self, cmap='tab20',**kwargs):
     #     from matplotlib import cm
