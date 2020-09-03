@@ -22,4 +22,4 @@ from .visualisation.map_viewer import MapView
 from .utils.utils import log_to_console, log_to_file
 
 log_to_console()
-__version__ = '1.0.4'
+__version__ = '0.0.1'
