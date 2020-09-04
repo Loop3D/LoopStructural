@@ -4,7 +4,8 @@
 ![Publish Docker Hub](https://github.com/Loop3D/LoopStructural/workflows/Publish%20Docker%20Hub/badge.svg)
 [![PyPI version](https://badge.fury.io/py/LoopStructural.svg)](https://badge.fury.io/py/LoopStructural)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Loop3D/LoopStructural/blob/master/LICENSE)
-[LoopStructural Documentation](https://loop3d.github.io/LoopStructural/)
+[![Documentation loop3d.github.io/LoopStructural/](https://img.shields.io/badge/docs-githubio-brightgreen)](https://loop3d.github.io/LoopStructural)
+
 
 LoopStructural is the 3D geological modelling library for Loop ([Loop3d.org](https://loop3d.org/)). The development of LoopStructural is lead by **Lachlan Grose** as an ARC (LP170100985) post-doc at Monash University. **Laurent Ailleres** and **Gautier Laurent** have made significant contributions to the conceptual design and integration of geological concepts into the geological modelling workflow. **Roy Thompspon** and **Yohan de Rose** have contributed to the implementation and integration of LoopStructural into the Loop workflow. 
 
