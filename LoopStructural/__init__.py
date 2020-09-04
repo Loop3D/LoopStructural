@@ -30,4 +30,4 @@ from .utils.utils import log_to_console, log_to_file
 #     # temp_file = tempfile.tempdir+Path('/default-loop-structural-logfile.log')
 #     log_to_file(temp_file)
 log_to_console()
-__version__ = '0.0.1'
+__version__ = '0.0.4'
