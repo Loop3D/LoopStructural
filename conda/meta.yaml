@@ -1,5 +1,5 @@
-{% set name = "loopstructural" %}
-{% set version = "1.0.4" %}
+{% set name = "test-struct" %}
+{% set version = "0.0.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,13 +7,15 @@ package:
 
 source:
   git_url: https://github.com/Loop3D/LoopStructural
-  git_tag: lg_development
+  # git_tag: lg_development
 
 build:
   number: 0
   script: "{{ PYTHON }} -m pip install ."
 
 requirements:
+  build: 
+    - {{ compiler('c') }}
   host:
     - pip
     - python
@@ -21,14 +23,14 @@ requirements:
     - setuptools
     - numpy
   run:
-    - Cython
+    - cython
     - lavavu
     - numpy
     - pandas
     - scipy
     - matplotlib
     - scikit-image
-#     - scikit-learn
+    - scikit-learn
 # test:
 #   imports:
 #     - LoopStructural

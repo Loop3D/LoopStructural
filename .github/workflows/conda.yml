@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - release/*
+      - conda 
 jobs:
   publish:
     runs-on: ubuntu-latest
