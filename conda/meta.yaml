@@ -1,5 +1,5 @@
 {% set name = "loopstructural" %}
-{% set version = "2.0.4" %}
+{% set version = "2.0.5" %}
 
 package:
   name: "{{ name|lower }}"
@@ -15,7 +15,7 @@ build:
 
 requirements:
   build: 
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
   host:
     - pip
     - python
