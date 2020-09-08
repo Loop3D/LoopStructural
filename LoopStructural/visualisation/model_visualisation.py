@@ -466,7 +466,7 @@ class LavaVuModelViewer:
         vmax = kwargs.get('vmax', np.nanmax(vals))
         surf.colourmap(cmap, range=(vmin, vmax))
 
-    def add_model_surfaces(self, faults = True, cmap=None, **kwargs):
+    def add_model_surfaces(self, faults = True, cmap=None, fault_colour='black',**kwargs):
         """Add surfaces for all of the interfaces in the model
 
 
@@ -487,12 +487,14 @@ class LavaVuModelViewer:
         for g in self.model.stratigraphic_column.keys():
             for u in self.model.stratigraphic_column[g].keys():
                 n_units+=1
-        if cmap is None:
-            import matplotlib.colors as colors
+        if cmap is None:            
             colours = []
             boundaries = []
             data = []
             for g in self.model.stratigraphic_column.keys():
+                if g == 'faults':
+                    # skip anything saved in faults here
+                    continue
                 for u, v  in self.model.stratigraphic_column[g].items():
                     data.append((v['id'],v['colour']))
                     colours.append(v['colour'])
@@ -524,9 +526,13 @@ class LavaVuModelViewer:
                         maskv = np.zeros(val.shape).astype(bool)
                         maskv[np.abs(val) > 0.001] = 1
                         return maskv
-                    if f in self.model.stratigrphic_column['faults']:
-                        fault_colour = self.model.stratigraphic_column['faults'].get('colour',None)
-                    self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour,**kwargs)
+                    if f.name in self.model.stratigraphic_column['faults']:
+                        fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',None)
+                        # print(fault_colour)
+                        # if fault_colour != None:
+                        #     fault_colour = colors.to_rgba(fault_colour[0])
+                        # print(fault_color)
+                    self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],**kwargs)
 
     # def add_model_data(self, cmap='tab20',**kwargs):
     #     from matplotlib import cm
