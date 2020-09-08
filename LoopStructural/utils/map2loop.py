@@ -197,7 +197,7 @@ def process_map2loop(m2l_directory, flags={}):
         stratigraphic_column['faults'][f] = {'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'],
                                             'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'],
                                             'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius']}
-        if 'colour' in fault_dimensions.columns():
+        if 'colour' in fault_dimensions.columns:
             stratigraphic_column['faults'][f]['colour'] = fault_dimensions.loc[fault_dimensions['Fault']==f,'colour']
         normal_vector[0] = np.sin(np.deg2rad(fault_centers[3]))
         normal_vector[1] = np.cos(np.deg2rad(fault_centers[3]))
