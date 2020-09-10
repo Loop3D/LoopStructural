@@ -1220,6 +1220,8 @@ class GeologicalModel:
             xyz = self.scale(xyz,inplace=False)
         strat_id = np.zeros(xyz.shape[0],dtype=int)
         for group in self.stratigraphic_column.keys():
+            if group == 'faults':
+                continue
             feature_id = self.feature_name_index.get(group, -1)
             if feature_id >= 0:
                 feature = self.features[feature_id]

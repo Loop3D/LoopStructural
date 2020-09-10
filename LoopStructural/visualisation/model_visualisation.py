@@ -416,6 +416,8 @@ class LavaVuModelViewer:
             boundaries = []
             data = []
             for g in self.model.stratigraphic_column.keys():
+                if g == 'faults':
+                    continue
                 for u, v  in self.model.stratigraphic_column[g].items():
                     data.append((v['id'],v['colour']))
                     colours.append(v['colour'])
@@ -527,7 +529,7 @@ class LavaVuModelViewer:
                         maskv[np.abs(val) > 0.001] = 1
                         return maskv
                     if f.name in self.model.stratigraphic_column['faults']:
-                        fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',None)
+                        fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',['red'])
                         # print(fault_colour)
                         # if fault_colour != None:
                         #     fault_colour = colors.to_rgba(fault_colour[0])
