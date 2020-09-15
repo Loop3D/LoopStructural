@@ -296,9 +296,10 @@ class LavaVuModelViewer:
                 verts += np.array([self.bounding_box[0, 0], self.bounding_box[0, 1], self.bounding_box[1, 2]])
                 self.model.rescale(verts)
 
-            except ValueError:
-                logger.warning("no surface to mesh, skipping")
+            except (ValueError, RuntimeError) as e:
+                logger.warning("Cannot isosurface {} at {}, skipping".format(geological_feature.name,isovalue))
                 continue
+
             
             name = geological_feature.name
             name = kwargs.get('name', name)

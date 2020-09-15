@@ -265,6 +265,8 @@ class MapView:
             boundaries = []
             data = []
             for g in self.model.stratigraphic_column.keys():
+                if g == 'faults':
+                    continue
                 for u, v  in self.model.stratigraphic_column[g].items():
                     data.append((v['id'],v['colour']))
                     colours.append(v['colour'])
