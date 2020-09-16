@@ -306,4 +306,4 @@ class MapView:
                     maskv[np.abs(val) > 0.001] = 1
                     return maskv
                 
-                self.add_contour(f,0,mask=mask)
+                self.add_contour(f,0,mask=mask,**kwargs)
