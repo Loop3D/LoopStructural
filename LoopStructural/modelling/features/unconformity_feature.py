@@ -17,7 +17,7 @@ class UnconformityFeature:
         self.value = value
         self.type = 'unconformity'
         self.name = '{}_unconformity'.format(feature.name)
-
+        self.builder = self.feature.builder
     def add_region(self, region):
         # self.feature.add_region(region)
         pass
@@ -67,3 +67,8 @@ class UnconformityFeature:
         """
         return self.feature.evaluate_gradient(pos)
 
+    def min(self):
+        return self.feature.min()
+    
+    def max(self):
+        return self.feature.max()
