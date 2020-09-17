@@ -501,7 +501,7 @@ class GeologicalModel:
         feature : GeologicalFeature
             the created geological feature
         """
-        if not self.check_initialisation():
+        if self.check_inialisation() == False:
             return False
         self.parameters['features'].append({'feature_type': 'foliation', 'feature_name': series_surface_data, **kwargs})
         interpolator = self.get_interpolator(**kwargs)
@@ -538,7 +538,7 @@ class GeologicalModel:
         fold_frame : FoldFrame
             the created fold frame
         """
-        if not self.check_initialisation():
+        if self.check_inialisation() == False:
             return False
         self.parameters['features'].append({'feature_type': 'fold_frame', 'feature_name': foldframe_data, **kwargs})
         # create fault frame
@@ -580,7 +580,7 @@ class GeologicalModel:
         feature : GeologicalFeature
             created geological feature
         """
-        if not self.check_initialisation():
+        if self.check_inialisation() == False:
             return False
         self.parameters['features'].append(
             {'feature_type': 'fold_foliation', 'feature_name': foliation_data, 'fold_frame': fold_frame, **kwargs})
@@ -662,7 +662,7 @@ class GeologicalModel:
         fold_frame : FoldFrame
             created fold frame
         """
-        if not self.check_initialisation():
+        if self.check_inialisation() == False:
             return False
         self.parameters['features'].append(
             {'feature_type': 'folded_fold_frame', 'feature_name': fold_frame_data, 'fold_frame': fold_frame, **kwargs})
