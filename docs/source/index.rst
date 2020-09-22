@@ -38,6 +38,18 @@ and a wrapper for the generalised radial basis functions provided by Surfe.
    installation
    auto_examples/index
    contributors_guide
+   about
+
+.. toctree::
+   :caption: User Guide:
+   :hidden:
+
+   user_guide/input_data
+   user_guide/geological_model
+   user_guide/interpolation_options
+   user_guide/fold_modelling
+   user_guide/fault_modelling
+   user_guide/visualisation
 
 .. toctree::
    :caption: LoopStructural API
