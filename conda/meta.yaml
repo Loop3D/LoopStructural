@@ -22,7 +22,6 @@ requirements:
     - numpy
   run:
     - Cython
-    - lavavu
     - numpy
     - pandas
     - scipy
