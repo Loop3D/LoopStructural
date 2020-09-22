@@ -265,6 +265,8 @@ class MapView:
             boundaries = []
             data = []
             for g in self.model.stratigraphic_column.keys():
+                if g == 'faults':
+                    continue
                 for u, v  in self.model.stratigraphic_column[g].items():
                     data.append((v['id'],v['colour']))
                     colours.append(v['colour'])
@@ -304,4 +306,4 @@ class MapView:
                     maskv[np.abs(val) > 0.001] = 1
                     return maskv
                 
-                self.add_contour(f,0,mask=mask)
+                self.add_contour(f,0,mask=mask,**kwargs)
