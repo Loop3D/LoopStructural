@@ -25,7 +25,7 @@ setup(
 	'pandas',
 	'scipy',
 	'matplotlib',
-	'lavavu',
+	# 'lavavu',
 	'scikit-image',
 	'scikit-learn'
 	],
