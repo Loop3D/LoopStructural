@@ -37,6 +37,7 @@ autodoc_default_flags = [
 autosummary_generate = True  # Make _autosummary files and include them
 napoleon_numpy_docstring = True #False  # Force consistency, leave only Google
 napoleon_use_rtype = False  # More legible
+autosummary_imported_members = True
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -48,9 +49,9 @@ extensions = [
         # The Napoleon extension allows for nicer argument formatting.
         'sphinx.ext.napoleon',
         # add sphinx gallery
-        'sphinx_gallery.gen_gallery',
+        'sphinx_gallery.gen_gallery'
         # citations
-        'sphinxcontrib.bibtex'
+
 ]
 
 # Add any paths that contain templates here, relative to this directory.

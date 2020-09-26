@@ -22,7 +22,9 @@ Linux
     Once you have the environment variable you can run the command :code:`make dependencies` (or :code:`make dependencies.fc` for Fedora) which will install the required dependencies for LoopStructural:
 
     Required dependencies for Ubuntu
+
     * python3
+    * python3-dev
     * python3-venv
     * pybind11-dev
     * mesa-common-dev
@@ -33,9 +35,10 @@ Linux
 
     .. code-block::
 
-        sudo apt-get install python3 python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++
+        sudo apt-get install python3 python3-dev python3-venv pybind11-dev mesa-common-dev mesa-utils libgl1-mesa-dev gcc g++
 
     Required dependencies for Fedora
+
     * python3
     * python3-devel
     * pybind11-devel

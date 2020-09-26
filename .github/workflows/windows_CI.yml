@@ -1,11 +1,6 @@
-name: Continuous integration and deployment
+name: Run tests and try to build wheel
 
-on:
-  push:
-    branches:
-      - master
-      - release/*
-    tags: 'v*'
+on: ['push','pull_request']
 
 jobs:
   flake8:
@@ -57,24 +52,13 @@ jobs:
       run: |
         python setup.py bdist_wheel
         python setup.py install build_ext --inplace
-        conda info
-        conda list
-        dir
     
     - name: Running tests
       shell: bash -l {0}
       run: |
         pip install pytest
         pytest
-    - name: zip artifacts
-      run: |
-        Compress-archive dist/*.whl build.zip
-      shell: pwsh      
-    - name: upload artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: 'win_${{ matrix.python }}'
-        path: build.zip
+
   
   ubuntu-build:
     runs-on: ubuntu-latest
@@ -101,63 +85,4 @@ jobs:
         run: |
           pip install pytest
           pytest
-      - name: build wheel
-        run: | 
-          pip install wheel
-          python setup.py bdist_wheel
-      - name: compress zip
-        run: |
-          zip -r -j build.zip dist/*.whl
-      - name: upload artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: 'linux_${{ matrix.python }}'
-          path: build.zip
-  uploadrelease:
-    needs: build-windows #ubuntu-build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact 3.6
-        uses: actions/download-artifact@v1
-        with:
-          name: "win_3.6"
-      - name: Download artifact 3.7
-        uses: actions/download-artifact@v1
-        with:
-          name: "win_3.7"
-      - name: Download artifact 3.8
-        uses: actions/download-artifact@v1
-        with:
-          name: "win_3.8"
-      - name: Download artifact linux 3.6
-        uses: actions/download-artifact@v1
-        with:
-          name: "linux_3.6"
-      - name: Download artifact linux 3.7
-        uses: actions/download-artifact@v1
-        with:
-          name: "linux_3.7"
-      - name: Download artifact 3.8
-        uses: actions/download-artifact@v1
-        with:
-          name: "linux_3.8"
-      - name: Unzip
-        run: |
-          unzip -o win_3.6/build.zip -d build
-          unzip -o win_3.7/build.zip -d build
-          unzip -o win_3.8/build.zip -d build
-          unzip -o linux_3.6/build.zip -d build
-          unzip -o linux_3.7/build.zip -d build
-          unzip -o linux_3.8/build.zip -d build
-          ls
-      - name: Development build pre-release
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with: 
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
-          files: |
-            build/*
-          id: "automatic_releases"  
  

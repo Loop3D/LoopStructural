@@ -1,8 +1,7 @@
 name: Publish Docker Hub
-on: 
-  push:
-    branches: 
-      - master
+on:
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -12,7 +11,7 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: lachlangrose/loopstructural
+        name: loop3d/loopstructural
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
         dockerfile: Dockerfile

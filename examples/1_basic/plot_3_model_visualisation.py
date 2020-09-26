@@ -64,8 +64,6 @@ model.set_stratigraphic_column(strat_column)
 # -  ``normals`` to plot the normal vectors to the surface
 # -  ``name`` to give the surface
 # -  ``colour`` the colour of the surface
-# -  ``voxet`` dict with ``bounding_box=boundary_points`` and
-#    ``nsteps = (nx,ny,nz)``
 # -  other kwargs for passing directly to lavavu
 # 
 # Alternatively the scalar fields can be displayed on a rectangular cuboid.
@@ -138,8 +136,7 @@ unique = np.unique(strati.interpolator.get_value_constraints()[:,3])
 viewer.add_isosurface(strati,
                        slices=unique,  
                        cmap='prism',
-                      paint_with=strati,
-                     voxet=model.voxet())
+                      paint_with=strati)
 
 viewer.add_section(strati,
                    axis='x',
@@ -149,7 +146,7 @@ viewer.add_section(strati,
                   cmap='prism')
 viewer.add_scalar_field(strati,
                      cmap='prism')
-viewer.add_model()
+viewer.add_model(cmap='tab20')
 
 # Add the data addgrad/addvalue arguments are optional
 viewer.add_data(strati,addgrad=True,addvalue=True, cmap='prism')

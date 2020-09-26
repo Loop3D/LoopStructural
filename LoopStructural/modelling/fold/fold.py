@@ -80,7 +80,7 @@ class FoldEvent:
         # dgz = self.foldframe.features[2].evaluate_gradient(points)
         dgz /= np.linalg.norm(dgz, axis=1)[:, None]
 
-        R2 = self.rot_mat(-fold_axis, self.fold_limb_rotation(gx))
+        R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))
         fold_direction = np.einsum('ijk,ki->kj', R2, dgx)
         fold_direction /= np.sum(fold_direction, axis=1)[:, None]
         # calculate dot product between fold_direction and axis
