@@ -22,7 +22,7 @@ def write_cubeface(model, file_name, data_label, nsteps, file_format):
     model : GeologicalModel object
         Geological model to export
     file_name : string
-        Name of file that model is exported to, including path
+        Name of file that model is exported to, including path, but without the file extension
     data_label : string
         A data label to insert into export file
     nsteps : np.array([num-x-steps, num-y-steps, num-z-steps])
@@ -51,7 +51,7 @@ def write_vol(model, file_name, data_label, nsteps, file_format):
     model : GeologicalModel object
         Geological model to export
     file_name : string
-        Name of file that model is exported to, including path
+        Name of file that model is exported to, including path, but without the file extension
     data_label : string
         A data label to insert into export file
     nsteps : np.array([num-x-steps, num-y-steps, num-z-steps])
@@ -80,7 +80,7 @@ def _write_cubeface_evtk(model, file_name, data_label, nsteps, real_coords=True)
     model : GeologicalModel object
         Geological model to export
     file_name : string
-        Name of file that model is exported to, including path
+        Name of file that model is exported to, including path, but without the file extension
     data_label : string
         A data label to insert into export file
     nsteps : np.array([num-x-steps, num-y-steps, num-z-steps])
@@ -134,7 +134,7 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
     model : GeologicalModel object
         Geological model to export
     file_name : string
-        Name of file that model is exported to, including path
+        Name of file that model is exported to, including path, but without the file extension
     data_label : string
         A data label to insert into export file
     nsteps : np.array([num-x-steps, num-y-steps, num-z-steps])

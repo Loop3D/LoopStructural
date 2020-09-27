@@ -6,5 +6,6 @@ numpy
 matplotlib
 setuptools
 pandas
+pyevtk
 
 
