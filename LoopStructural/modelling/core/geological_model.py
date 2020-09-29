@@ -199,6 +199,16 @@ class GeologicalModel:
             logger.error('{} does not contain a geological model'.format(file))
             return None
 
+    def __getitem__(self, feature_name):
+        """Accessor for feature in features using feature_name_index
+
+        Parameters
+        ----------
+        feature_name : string
+            name of the feature to return
+        """
+        return self.get_feature_by_name(feature_name)
+    
     def check_inialisation(self):
         if self.data is None:
             logger.error("Data not associated with GeologicalModel. Run set_data")
