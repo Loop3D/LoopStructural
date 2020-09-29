@@ -17,7 +17,6 @@ class StructuredGrid:
                  origin=np.zeros(3),
                  nsteps=np.array([10, 10, 10]),
                  step_vector=np.ones(3),
-                 maximum=None
                  ):
         """
 
@@ -26,7 +25,6 @@ class StructuredGrid:
         origin - 3d list or numpy array
         nsteps - 3d list or numpy array of ints
         step_vector - 3d list or numpy array of int
-        maximum
         """
 
         self.nsteps = np.array(nsteps)
@@ -54,6 +52,7 @@ class StructuredGrid:
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
 
+
     @property
     def nodes(self):
         max = self.origin + self.nsteps_cells * self.step_vector
@@ -66,6 +65,10 @@ class StructuredGrid:
 
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))
+
+    # @property
+    # def barycentre(self):
+    #     return self.cell_centres(np.arange(self.n_elements))
 
     def print_geometry(self):
         print('Origin: %f %f %f' % (
@@ -403,8 +406,8 @@ class StructuredGrid:
         T[inside, 1, :] *= self.properties[property_name][idc[inside, :]]
         T[inside, 2, :] *= self.properties[property_name][idc[inside, :]]
         return np.array(
-            [np.sum(T[:, 0, :], axis=1) / 8, np.sum(T[:, 1, :], axis=1) / 8,
-             np.sum(T[:, 2, :], axis=1) / 8]).T
+            [np.sum(T[:, 0, :], axis=1), np.sum(T[:, 1, :], axis=1) ,
+             np.sum(T[:, 2, :], axis=1) ]).T
 
     def calcul_T(self, pos):
         """
