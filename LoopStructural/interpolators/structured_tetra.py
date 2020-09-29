@@ -15,13 +15,14 @@ class TetMesh:
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):
         self.origin = np.array(origin)
         self.step_vector = np.array(step_vector)
-        self.nsteps = np.array(nsteps)+1
+        self.nsteps = np.array(nsteps)
+        self.n_nodes = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
+
         self.nsteps_cells = self.nsteps - 1
         self.n_cell_x = self.nsteps[0] - 1
         self.n_cell_y = self.nsteps[1] - 1
         self.n_cell_z = self.nsteps[2] - 1
         self.n_cells = self.n_cell_x * self.n_cell_y * self.n_cell_z
-        self.n_nodes = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
         self.maximum = origin+self.nsteps*self.step_vector
         self.tetra_mask_even = np.array([
             [7,1,2,4],
