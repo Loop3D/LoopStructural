@@ -1,5 +1,5 @@
 {% set name = "loopstructural" %}
-{% set version = "1.0.4" %}
+{% set version = "1.0.5" %}
 
 package:
   name: "{{ name|lower }}"
@@ -27,10 +27,10 @@ requirements:
     - scipy
     - matplotlib
     - scikit-image
-#     - scikit-learn
-# test:
-#   imports:
-#     - LoopStructural
+    - scikit-learn
+test:
+  imports:
+    - LoopStructural
 
 
 about:

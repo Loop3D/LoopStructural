@@ -3,7 +3,8 @@ name: publish_conda
 on:
   push:
     branches:
-      - release/*
+      - conda_build
+      # - release/*
 jobs:
   publish:
     runs-on: ubuntu-latest
