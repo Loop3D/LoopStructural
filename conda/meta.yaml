@@ -28,9 +28,9 @@ requirements:
   #   - matplotlib
   #   - scikit-image
   #   - scikit-learn
-test:
-  imports:
-    - LoopStructural
+# test:
+#   imports:
+#     - LoopStructural
 
 
 about:
