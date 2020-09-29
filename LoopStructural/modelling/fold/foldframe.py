@@ -21,9 +21,6 @@ class FoldFrame(StructuralFrame):
         super().__init__(name, features, fold)
         self.model = None
 
-    def set_model(self, model):
-        self.model = model
-
     def calculate_fold_axis_rotation(self, feature_builder):
         """
         Calculate the fold axis rotation angle by finding the angle between the
