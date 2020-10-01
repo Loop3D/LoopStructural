@@ -524,6 +524,42 @@ class GeologicalModel:
         self._add_feature(series_feature)
         return series_feature
 
+def create_and_add_dtm(self, series_surface_data, **kwargs):
+        """
+        Parameters
+        ----------
+        series_surface_data : string
+            corresponding to the feature_name in the data
+        kwargs
+
+        Returns
+        -------
+        feature : GeologicalFeature
+            the created geological feature
+        """
+        if self.check_inialisation() == False:
+            return False
+        self.parameters['features'].append({'feature_type': 'foliation', 'feature_name': series_surface_data, **kwargs})
+        interpolator = self.get_interpolator(**kwargs)
+        series_builder = GeologicalFeatureInterpolator(interpolator,
+                                                       name=series_surface_data,
+                                                       **kwargs)
+        # add data
+        series_data = self.data[self.data['feature_name'] == series_surface_data]
+        if series_data.shape[0] == 0:
+            logger.warning("No data for %s, skipping" % series_surface_data)
+            return
+        series_builder.add_data_from_data_frame(series_data)
+        # self._add_faults(series_builder)
+
+        # build feature
+        series_feature = series_builder.build(**kwargs)
+        series_feature.type = 'dtm'
+        # see if any unconformities are above this feature if so add region
+        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
+        self._add_feature(series_feature)
+        return series_feature
+        
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
         """
         Parameters
