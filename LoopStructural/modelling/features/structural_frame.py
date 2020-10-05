@@ -26,6 +26,7 @@ class StructuralFrame:
         self.features = features
         self.data = None
         self.fold = fold
+
     def __getitem__(self, item):
         """
 
@@ -38,6 +39,19 @@ class StructuralFrame:
         the structural frame geological feature
         """
         return self.features[item]
+
+    def set_model(self, model):
+        """Link the model that created the frame to the frame
+        and the features that make up the frame 
+
+        Parameters
+        ----------
+        model : GeologicalModel
+            the geological model that created the fold frame
+        """
+        self.model = model
+        for f in self.features:
+            f.set_model(model)
 
     def add_region(self, region):
         for i in range(3):
