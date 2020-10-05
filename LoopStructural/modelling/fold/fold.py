@@ -89,8 +89,8 @@ class FoldEvent:
         dgz[d < 0] = -dgz[d < 0]
         return fold_direction, fold_axis, dgz
 
-    def get_regularisation_direction(self, points):
-        self.foldframe.features[2].evaluate_gradient(points)
+    # def get_regularisation_direction(self, points):
+    #     self.foldframe.features[2].evaluate_gradient(points)
 
     def rot_mat(self, axis, angle):
         """
