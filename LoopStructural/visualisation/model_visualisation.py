@@ -535,6 +535,7 @@ class LavaVuModelViewer:
                         # if fault_colour != None:
                         #     fault_colour = colors.to_rgba(fault_colour[0])
                         # print(fault_color)
+                    region = kwargs.pop('region',None) 
                     self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],**kwargs)
 
     # def add_model_data(self, cmap='tab20',**kwargs):
