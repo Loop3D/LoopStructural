@@ -5,7 +5,6 @@ import logging
 
 import numpy as np
 import pandas as pd
-
 from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
     DiscreteFoldInterpolator as DFI
@@ -23,21 +22,19 @@ try:
 except ImportError:
     surfe = False
 
-from LoopStructural.utils.helper import all_heading, gradient_vec_names, \
-    strike_dip_vector
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
-from LoopStructural.modelling.features import \
-    GeologicalFeatureInterpolator
-from LoopStructural.modelling.features import RegionFeature
-from LoopStructural.modelling.features import \
-    StructuralFrameBuilder
-from LoopStructural.modelling.features import UnconformityFeature
-from LoopStructural.modelling.fold.fold import FoldEvent
-from LoopStructural.modelling.fold import FoldRotationAngle
-from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.features import (GeologicalFeatureInterpolator,
+                                               RegionFeature,
+                                               StructuralFrameBuilder,
+                                               UnconformityFeature)
+from LoopStructural.modelling.fold import FoldRotationAngle
+from LoopStructural.modelling.fold.fold import FoldEvent
+from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.utils.exceptions import LoopBaseException
+from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
+                                         strike_dip_vector)
 
 logger = logging.getLogger(__name__)
 if not surfe:
@@ -168,7 +165,7 @@ class GeologicalModel:
         (GeologicalModel, dict)
             the created geological model and a dictionary of the map2loop data
         """
-        from LoopStructural.utils import process_map2loop, build_model
+        from LoopStructural.utils import build_model, process_map2loop
         m2lflags = kwargs.pop('m2lflags',{})
         m2l_data = process_map2loop(m2l_directory,m2lflags)
         return build_model(m2l_data,**kwargs), m2l_data
@@ -534,7 +531,7 @@ class GeologicalModel:
         self._add_feature(series_feature)
         return series_feature
 
-def create_and_add_dtm(self, series_surface_data, **kwargs):
+    def create_and_add_dtm(self, series_surface_data, **kwargs):
         """
         Parameters
         ----------
