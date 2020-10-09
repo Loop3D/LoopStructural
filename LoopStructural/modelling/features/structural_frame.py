@@ -51,6 +51,8 @@ class StructuralFrame:
         """
         self.model = model
         for f in self.features:
+            if f is None:
+                continue
             f.set_model(model)
 
     def add_region(self, region):
