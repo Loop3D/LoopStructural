@@ -4,7 +4,7 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 import logging
 
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg
+from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm
 
 logger = logging.getLogger(__name__)
 
@@ -247,7 +247,34 @@ class TetMesh:
             B = np.zeros(c.shape[0])
             self.cg = (c,idc,B)
         return self.cg[0], self.cg[1], self.cg[2]
+    def get_constant_norm(self, region):
+        """
+        Get the constant gradient for the specified nodes
 
+        Parameters
+        ----------
+        region : np.array(dtype=bool)
+            mask of nodes to calculate cg for
+
+        Returns
+        -------
+
+        """
+        
+        logger.info("Running constant gradient")
+        elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+        region = region.astype('int64')
+
+        neighbours = self.get_neighbours()
+        elements = self.get_elements()
+        idc, c, ncons = constant_normg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
+                            region.astype('int64'))
+
+        idc = np.array(idc[:ncons, :])
+        c = np.array(c[:ncons, :])
+        B = np.zeros(c.shape[0])
+        
+        return  c,idc,B
     def get_elements(self):
         """
         Get a numpy array of all of the elements in the mesh

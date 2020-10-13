@@ -84,6 +84,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_ctr_pts(self.interpolation_weights['cpw'])
         self.add_tangent_ctr_pts(self.interpolation_weights['tpw'])
         self.add_interface_ctr_pts(self.interpolation_weights['ipw'])
+        if 'constant_norm' in kwargs:
+            self.add_constant_norm(self,w=kwargs['constant_norm'])
+    
     def add_constant_gradient(self, w=0.1):
         """
         Add the constant gradient regularisation to the system
@@ -112,6 +115,35 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_constraints_to_least_squares(A[outside, :] * w,
                                               B[outside] * w, idc[outside, :],
                                               name='regularisation')
+        return
+    def add_constant_norm(self, w=0.1):
+        """
+        Add the constant gradient regularisation to the system
+
+        Parameters
+        ----------
+        w (double) - weighting of the cg parameter
+
+        Returns
+        -------
+
+        """
+        # iterate over all elements
+        A, idc, B = self.support.get_constant_norm(region=self.region)
+        A = np.array(A)
+        B = np.array(B)
+        idc = np.array(idc)
+
+        gi = np.zeros(self.support.n_nodes)
+        gi[:] = -1
+        gi[self.region] = np.arange(0, self.nx)
+        idc = gi[idc]
+        outside = ~np.any(idc == -1, axis=1)
+
+        # w/=A.shape[0]
+        self.add_constraints_to_least_squares(A[outside, :] * w,
+                                              B[outside] * w, idc[outside, :],
+                                              name='norm_regularisation')
         return
 
     def add_gradient_ctr_pts(self, w=1.0):
