@@ -159,9 +159,8 @@ def constant_norm(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:]
             area = 0.5*np.linalg.norm(norm)
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
-                c[ncons,itr_left] = np.sqrt(e1[0][itr_left]*e1[0][itr_left]+e1[1][itr_left]*e1[1][itr_left]+e1[2][itr_left]*e1[2][itr_left])*area
-                for i in range(3):
-                    c[ncons,itr_left] += e1[i][itr_left]
+                c[ncons,itr_left] = np.sqrt(e1[0][itr_left]*e1[0][itr_left]+e1[1][itr_left]*e1[1][itr_left]+e1[2][itr_left]*e1[2][itr_left])
+              
             next_available_position = Na
             for itr_right in range(Na):
                 common_index = -1
@@ -176,8 +175,7 @@ def constant_norm(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:]
                     position_to_write = 4#next_available_position
                     next_available_position+=1
                 idc[ncons,position_to_write] = idr[itr_right]
-                for i in range(3):
-                    c[ncons,position_to_write] -= np.sqrt(e2[0][itr_right]*e2[0][itr_right]+e2[1][itr_right]*e2[1][itr_right]+e2[2][itr_right]*e2[2][itr_right]) *area
+                c[ncons,position_to_write] -= np.sqrt(e2[0][itr_right]*e2[0][itr_right]+e2[1][itr_right]*e2[1][itr_right]+e2[2][itr_right]*e2[2][itr_right]) 
             ncons+=1
     return idc, c, ncons
 def fold_cg(double [:,:,:] EG, double [:,:] X, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes):

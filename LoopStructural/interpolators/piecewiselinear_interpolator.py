@@ -85,7 +85,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.add_tangent_ctr_pts(self.interpolation_weights['tpw'])
         self.add_interface_ctr_pts(self.interpolation_weights['ipw'])
         if 'constant_norm' in kwargs:
-            self.add_constant_norm(self,w=kwargs['constant_norm'])
+            self.add_constant_norm(w=kwargs['constant_norm'])
     
     def add_constant_gradient(self, w=0.1):
         """
@@ -128,6 +128,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
+        print('adding gradient norm')
         # iterate over all elements
         A, idc, B = self.support.get_constant_norm(region=self.region)
         A = np.array(A)

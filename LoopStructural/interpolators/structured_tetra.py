@@ -267,7 +267,7 @@ class TetMesh:
 
         neighbours = self.get_neighbours()
         elements = self.get_elements()
-        idc, c, ncons = constant_normg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
+        idc, c, ncons = constant_norm(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
                             region.astype('int64'))
 
         idc = np.array(idc[:ncons, :])
