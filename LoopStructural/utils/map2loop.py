@@ -142,10 +142,18 @@ def process_map2loop(m2l_directory, flags={}):
                 group_name = None
             except:
                 print('Couldnt process {}'.format(g))
-    contacts['val'] = np.nan
-    for o in strat_val:
-        contacts.loc[contacts['formation'] == o, 'val'] = strat_val[o]
-
+    #whether to use thickness or interface
+    use_thickness = flags.get('use_thickness',True)
+    if use_thickness:
+        contacts['val'] = np.nan
+        for o in strat_val:
+            contacts.loc[contacts['formation'] == o, 'val'] = strat_val[o]
+    if use_thickness == False:
+        contacts['interface'] = np.nan
+        interface_val = 0
+        for u in contacts['formation'].unique():
+            contacts.loc[contacts['formation'] == u,'interface'] = interface_val
+            interface_val+=1
     tangents['feature_name'] = tangents['group']
     contact_orientations['feature_name'] = None
     contacts['feature_name'] = None
