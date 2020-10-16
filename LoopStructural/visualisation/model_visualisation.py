@@ -178,12 +178,13 @@ class LavaVuModelViewer:
         points[:, 2] = zz
 
         surf = self.lv.triangles(name)
-        surf.vertices(self.model.rescale(points))
+        surf.vertices(self.model.rescale(points,inplace=False))
         surf.indices(tri)
         logger.info("Adding %s section at %f" % (axis, value))
         if geological_feature is None:
             surf.colours(colour)
-        if geological_feature is not None:
+
+        if geological_feature is not None and type(geological_feature) == GeologicalFeature:
             if 'norm' in kwargs:
                 surf.values(np.linalg.norm(
                     geological_feature.evaluate_gradient(points), axis=1),
@@ -198,7 +199,17 @@ class LavaVuModelViewer:
             logger.info("Colouring section with %s min: %f, max: %f" % (
                 geological_feature.name, geological_feature.min(), geological_feature.max()))
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
-
+        if geological_feature == 'model':
+            name = kwargs.get('name','model_section')
+            surf.values(model.evaluate_model(points),
+                            name)
+            surf["colourby"] = name
+            cmap = lavavu.cubehelix(100)
+            if 'cmap' in kwargs:
+                cmap = kwargs['cmap']
+            # logger.info("Colouring section with %s min: %f, max: %f" % (
+            #     geological_feature.name, geological_feature.min(), geological_feature.max()))
+            # surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
                      cmap=None, filename=None, names=None, colours=None,**kwargs):
