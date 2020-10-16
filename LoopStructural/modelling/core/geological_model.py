@@ -5,7 +5,6 @@ import logging
 
 import numpy as np
 import pandas as pd
-
 from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
     DiscreteFoldInterpolator as DFI
@@ -23,21 +22,19 @@ try:
 except ImportError:
     surfe = False
 
-from LoopStructural.utils.helper import all_heading, gradient_vec_names, \
-    strike_dip_vector
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
-from LoopStructural.modelling.features import \
-    GeologicalFeatureInterpolator
-from LoopStructural.modelling.features import RegionFeature
-from LoopStructural.modelling.features import \
-    StructuralFrameBuilder
-from LoopStructural.modelling.features import UnconformityFeature
-from LoopStructural.modelling.fold.fold import FoldEvent
-from LoopStructural.modelling.fold import FoldRotationAngle
-from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.features import (GeologicalFeatureInterpolator,
+                                               RegionFeature,
+                                               StructuralFrameBuilder,
+                                               UnconformityFeature)
+from LoopStructural.modelling.fold import FoldRotationAngle
+from LoopStructural.modelling.fold.fold import FoldEvent
+from LoopStructural.modelling.fold.foldframe import FoldFrame
 from LoopStructural.utils.exceptions import LoopBaseException
+from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
+                                         strike_dip_vector)
 
 logger = logging.getLogger(__name__)
 if not surfe:
@@ -168,7 +165,7 @@ class GeologicalModel:
         (GeologicalModel, dict)
             the created geological model and a dictionary of the map2loop data
         """
-        from LoopStructural.utils import process_map2loop, build_model
+        from LoopStructural.utils import build_model, process_map2loop
         m2lflags = kwargs.pop('m2lflags',{})
         m2l_data = process_map2loop(m2l_directory,m2lflags)
         return build_model(m2l_data,**kwargs), m2l_data
@@ -534,6 +531,42 @@ class GeologicalModel:
         self._add_feature(series_feature)
         return series_feature
 
+    def create_and_add_dtm(self, series_surface_data, **kwargs):
+        """
+        Parameters
+        ----------
+        series_surface_data : string
+            corresponding to the feature_name in the data
+        kwargs
+
+        Returns
+        -------
+        feature : GeologicalFeature
+            the created geological feature
+        """
+        if self.check_inialisation() == False:
+            return False
+        self.parameters['features'].append({'feature_type': 'foliation', 'feature_name': series_surface_data, **kwargs})
+        interpolator = self.get_interpolator(**kwargs)
+        series_builder = GeologicalFeatureInterpolator(interpolator,
+                                                       name=series_surface_data,
+                                                       **kwargs)
+        # add data
+        series_data = self.data[self.data['feature_name'] == series_surface_data]
+        if series_data.shape[0] == 0:
+            logger.warning("No data for %s, skipping" % series_surface_data)
+            return
+        series_builder.add_data_from_data_frame(series_data)
+        # self._add_faults(series_builder)
+
+        # build feature
+        series_feature = series_builder.build(**kwargs)
+        series_feature.type = 'dtm'
+        # see if any unconformities are above this feature if so add region
+        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
+        self._add_feature(series_feature)
+        return series_feature
+        
     def create_and_add_fold_frame(self, foldframe_data, **kwargs):
         """
         Parameters
