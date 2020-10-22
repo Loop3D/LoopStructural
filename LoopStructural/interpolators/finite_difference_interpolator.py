@@ -41,7 +41,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'cpw': 1.,
                                       'gpw': 1.,
                                       'npw': 1.,
-                                      'tpw': 1.})
+                                      'tpw': 1.,
+                                      'ipw': 1.
+                                      })
 
         self.vol = grid.step_vector[0] * grid.step_vector[1] * \
                    grid.step_vector[2]
@@ -126,6 +128,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.add_tangent_ctr_pts(
             np.sqrt(self.vol) * self.interpolation_weights['tpw']
         )
+        self.add_interface_ctr_pts(
+            np.sqrt(self.vol)*self.interpolation_weights['ipw']
+        )
 
     def copy(self):
         """
@@ -170,6 +175,56 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(a.T * w,
                                                   points[inside, 3] * w,
                                                   idc[inside, :])
+    def add_interface_ctr_pts(self, w=1.0):  # for now weight all value points the same
+        """
+        Adds a constraint that defines all points with the same 'id' to be the same value
+        Sets all P1-P2 = 0 for all pairs of points
+
+        Parameters
+        ----------
+        w : double
+            weight
+
+        Returns
+        -------
+
+        """
+        # get elements for points
+        points = self.get_interface_constraints()
+        if points.shape[0] > 1:
+            node_idx, inside = self.support.position_to_cell_corners(
+                            points[:, :3])
+            # print(points[inside,:].shape)
+
+            gi = np.zeros(self.support.n_nodes)
+            gi[:] = -1
+            gi[self.region] = np.arange(0, self.nx)
+            idc = np.zeros(node_idx.shape)
+            idc[:] = -1
+
+            idc[inside, :] = gi[node_idx[inside, :]]
+            inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
+            a = self.support.position_to_dof_coefs(points[inside, :3]).T
+            # create oversided array for storing constraints
+            A = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2))
+            interface_idc = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2),dtype=int)
+            interface_idc[:] = -1
+            c_i = 0
+            
+            for i in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
+                mask = points[inside,3] == i
+                for p1 in range(points[inside][mask].shape[0]):
+                    for p2 in range(p1+1,points[inside][mask].shape[0]):
+                        A[c_i,:8] = a[mask][p1,:]
+                        A[c_i,8:] -= a[mask][p2,:]
+                        interface_idc[c_i,:8] = idc[inside,:][mask,:][p1,:]
+                        interface_idc[c_i,8:] = idc[inside,:][mask,:][p2,:]
+                        c_i+=1
+            outside = ~np.any(interface_idc == -1, axis=1) 
+            
+            self.add_constraints_to_least_squares(A[outside,:] * w,
+                                                    np.zeros(A[outside,:].shape[0]),
+                                                    interface_idc[outside, :], name='interface')
 
     def add_gradient_constraint(self, w=1.):
         """

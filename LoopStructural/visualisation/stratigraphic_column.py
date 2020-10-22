@@ -4,7 +4,7 @@ from matplotlib import cm
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
-class StratigraphiColumnView:
+class StratigraphicColumnView:
     def __init__(self,model,ax=None,cmap=None, labels = None):
         n_units = 0 #count how many discrete colours
         xmin = 0
@@ -19,10 +19,10 @@ class StratigraphiColumnView:
                 continue
             for u in model.stratigraphic_column[g].keys():
                 n_units+=1
-                ymin = model.stratigraphic_column[g][u]['min']
+                ymin = -model.stratigraphic_column[g][u]['min']
                 if np.isinf(model.stratigraphic_column[g][u]['min']):
                     ymin = 0
-                ymax = model.stratigraphic_column[g][u]['max']
+                ymax = -model.stratigraphic_column[g][u]['max']
                 if np.isinf(ymax):
                     ymin = ymax + (ymax-ymin)*(1+np.random.rand())
                 polygon_points = np.array([[xmin,ymin],[xmax,ymin],[xmax,ymax],[xmin,ymax]])
@@ -55,6 +55,6 @@ class StratigraphiColumnView:
 
         ax.add_collection(p)
 
-        ax.set_ylim(0,ymax)
+        ax.set_ylim(ymax+(ymax-ymin)*-2,0)#ax.set_ylim(0,ymax)
         ax.axis('off')
         

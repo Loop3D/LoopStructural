@@ -75,13 +75,13 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         regression = kwargs.get("regression_smoothing", 0.)
         if regression > 0:
             logger.info("Using regression smoothing %f" % regression)
-
+            self.surfe.SetRegressionSmoothing(True,regression)
         greedy = kwargs.get("greedy", (0, 0))
 
         if greedy[0] > 0 or greedy[1] > 0:
             logger.info("Using greedy algorithm: inferface %f and angular %f" %
                         (greedy[0], greedy[1]))
-            self.surfe.SetRegressionSmoothin(True, greedy[0], greedy[1])
+            self.surfe.SetGreedyAlgorithm(True, greedy[0], greedy[1])
         poly_order = kwargs.get('poly_order',None)
         if poly_order:
             logger.info("Setting poly order to %i"%poly_order)

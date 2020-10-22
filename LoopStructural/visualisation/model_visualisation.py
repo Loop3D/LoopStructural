@@ -210,8 +210,6 @@ class LavaVuModelViewer:
             # logger.info("Colouring section with %s min: %f, max: %f" % (
             #     geological_feature.name, geological_feature.min(), geological_feature.max()))
             # surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
-        
-
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
                      cmap=None, filename=None, names=None, colours=None,**kwargs):
@@ -548,6 +546,7 @@ class LavaVuModelViewer:
                         # if fault_colour != None:
                         #     fault_colour = colors.to_rgba(fault_colour[0])
                         # print(fault_color)
+                    region = kwargs.pop('region',None) 
                     self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],**kwargs)
 
     # def add_model_data(self, cmap='tab20',**kwargs):
