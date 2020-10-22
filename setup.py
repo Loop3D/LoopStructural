@@ -20,14 +20,14 @@ def get_version(rel_path):
 setup(
 	name="LoopStructural",
 	install_requires=[
-	'Cython',
-	'numpy',
-	'pandas',
-	'scipy',
-	'matplotlib',
-	# 'lavavu',
-	'scikit-image',
-	'scikit-learn'
+	# 'Cython',
+	# 'numpy',
+	# 'pandas',
+	# 'scipy',
+	# 'matplotlib',
+	# # 'lavavu',
+	# 'scikit-image',
+	# 'scikit-learn'
 	],
 	version=get_version("LoopStructural/__init__.py"),
     packages=find_packages(),
