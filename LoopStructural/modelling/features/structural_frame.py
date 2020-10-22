@@ -14,8 +14,7 @@ class StructuralFrame:
     def __init__(self, name, features, fold=None):
         """
         Structural frame is a curvilinear coordinate system defined by
-        structural
-        observations associated with a fault or fold.
+        structural observations associated with a fault or fold.
 
         Parameters
         ----------
@@ -52,7 +51,7 @@ class StructuralFrame:
         self.model = model
         for f in self.features:
             if f is None:
-                continue
+                continue    
             f.set_model(model)
 
     def add_region(self, region):

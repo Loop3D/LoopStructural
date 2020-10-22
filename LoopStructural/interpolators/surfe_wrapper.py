@@ -76,7 +76,6 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         if regression > 0:
             logger.info("Using regression smoothing %f" % regression)
             self.surfe.SetRegressionSmoothing(True,regression)
-            print("adding regression {}".format(regression))
         greedy = kwargs.get("greedy", (0, 0))
 
         if greedy[0] > 0 or greedy[1] > 0:

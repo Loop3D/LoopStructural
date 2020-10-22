@@ -13,7 +13,7 @@ except ImportError:
     logger.error("Please install lavavu: pip install lavavu")
 import numpy as np
 from skimage.measure import marching_cubes_lewiner as marching_cubes
-
+from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 # adapted/copied from pyvista for sphinx scraper
@@ -146,7 +146,7 @@ class LavaVuModelViewer:
         -------
 
         """
-
+        print('aa')
         if axis == 'x':
             tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
             xx = np.zeros(zz.shape)
@@ -178,12 +178,13 @@ class LavaVuModelViewer:
         points[:, 2] = zz
 
         surf = self.lv.triangles(name)
-        surf.vertices(self.model.rescale(points))
+        surf.vertices(self.model.rescale(points,inplace=False))
         surf.indices(tri)
         logger.info("Adding %s section at %f" % (axis, value))
         if geological_feature is None:
             surf.colours(colour)
-        if geological_feature is not None:
+
+        if geological_feature is not None and type(geological_feature) == GeologicalFeature:
             if 'norm' in kwargs:
                 surf.values(np.linalg.norm(
                     geological_feature.evaluate_gradient(points), axis=1),
@@ -198,7 +199,17 @@ class LavaVuModelViewer:
             logger.info("Colouring section with %s min: %f, max: %f" % (
                 geological_feature.name, geological_feature.min(), geological_feature.max()))
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
-
+        if geological_feature == 'model' and self.model is not None:
+            name = kwargs.get('name','model_section')
+            surf.values(self.model.evaluate_model(points,scale=True),
+                            name)
+            surf["colourby"] = name
+            cmap = lavavu.cubehelix(100)
+            if 'cmap' in kwargs:
+                cmap = kwargs['cmap']
+            # logger.info("Colouring section with %s min: %f, max: %f" % (
+            #     geological_feature.name, geological_feature.min(), geological_feature.max()))
+            # surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
                      cmap=None, filename=None, names=None, colours=None,**kwargs):
