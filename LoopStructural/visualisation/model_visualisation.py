@@ -146,7 +146,7 @@ class LavaVuModelViewer:
         -------
 
         """
-
+        print('aa')
         if axis == 'x':
             tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
             xx = np.zeros(zz.shape)
@@ -201,7 +201,7 @@ class LavaVuModelViewer:
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
         if geological_feature == 'model':
             name = kwargs.get('name','model_section')
-            surf.values(model.evaluate_model(points),
+            surf.values(self.model.evaluate_model(points),
                             name)
             surf["colourby"] = name
             cmap = lavavu.cubehelix(100)

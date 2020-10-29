@@ -45,8 +45,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'ipw': 1.
                                       })
 
-        self.vol = grid.step_vector[0] * grid.step_vector[1] * \
-                   grid.step_vector[2]
+        self.vol = np.sum(grid.step_vector)
 
     def _setup_interpolator(self, **kwargs):
         """
