@@ -666,7 +666,7 @@ class GeologicalModel:
             # allow for predefined functions to be used
             fold_limb_rotation.set_function(kwargs['limb_function'])
         else:
-            fold_limb_rotation.fit_fourier_series(wl=l_wl)
+            fold_limb_rotation.fit_fourier_series(wl=l_wl,**kwargs)
         fold.fold_limb_rotation = fold_limb_rotation
         # fold_limb_fitter = kwargs.get("fold_limb_function",
         # _interpolate_fold_limb_rotation_angle)

@@ -31,7 +31,7 @@ class FoldRotationAngle:
             self.svario = SVariogram(self.fold_frame_coordinate, self.rotation_angle)
         self.fitted_params = None
 
-    def fit_fourier_series(self, wl = None, lags = None, nlag = None, lag = None):
+    def fit_fourier_series(self, wl = None, lags = None, nlag = None, lag = None, skip_variogram=False,**kwargs):
         """
 
         Parameters
@@ -48,8 +48,8 @@ class FoldRotationAngle:
         if self.svario is None:
             self.svario = SVariogram(self.fold_frame_coordinate,
                                      self.rotation_angle)
-
-        self.svario.calc_semivariogram(lags=lags, nlag=nlag, lag=lag)
+        if skip_variogram != False:
+            self.svario.calc_semivariogram(lags=lags, nlag=nlag, lag=lag)
         if wl is None:
             wl = self.svario.find_wavelengths(lags=lags, nlag=nlag, lag=lag)
             # for now only consider single fold wavelength
