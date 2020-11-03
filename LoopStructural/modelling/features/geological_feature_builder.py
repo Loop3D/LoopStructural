@@ -225,7 +225,7 @@ class GeologicalFeatureInterpolator:
                 mask, xyz_names() + gradient_vec_names() + weight_name(
                 )].to_numpy()
         else:
-            return np.zeros(0, 7)
+            return np.zeros((0, 7))
 
     def get_tangent_constraints(self):
         """
@@ -242,7 +242,7 @@ class GeologicalFeatureInterpolator:
                 mask, xyz_names() + tangent_vec_names() + weight_name(
                 )].to_numpy()
         else:
-            return np.zeros(0, 7)
+            return np.zeros((0, 7))
 
     def get_norm_constraints(self):
         """
@@ -260,7 +260,7 @@ class GeologicalFeatureInterpolator:
 
                 )].to_numpy()
         else:
-            return np.zeros(0,7)
+            return np.zeros((0,7))
 
     def get_interface_constraints(self):
         mask = np.all(~np.isnan(self.data.loc[:, interface_name()].to_numpy()), axis=1)
@@ -268,7 +268,7 @@ class GeologicalFeatureInterpolator:
             return self.data.loc[
                 mask, xyz_names() + interface_name() + weight_name()].to_numpy()
         else:
-            return np.zeros(0,5)
+            return np.zeros((0,5))
 
     def get_data_locations(self):
         """

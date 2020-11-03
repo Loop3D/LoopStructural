@@ -92,7 +92,10 @@ def process_map2loop(m2l_directory, flags={}):
         contact_orientations['gy'] = np.nan
         contact_orientations['gz'] = np.nan
         contact_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(contact_orientations['strike'],
-                                                                    contact_orientations['dip'])*max_thickness 
+                                                                    contact_orientations['dip'])*max_thickness   
+    if np.sum(contact_orientations['polarity']==0) >0 and np.sum(contact_orientations['polarity']==-1)==0:
+        # contact_orientations['polarity']+=1
+        contact_orientations.loc[contact_orientations['polarity']==0]=-1
     if not gradient:
         from LoopStructural.utils.helper import strike_dip_vector
         contact_orientations['strike'] = contact_orientations['azimuth'] - 90
@@ -202,7 +205,9 @@ def process_map2loop(m2l_directory, flags={}):
         fault_centers[3] = np.mean(fault_orientations.loc[fault_orientations['formation']==f,['DipDirection']])
         fault_centers[4] = fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance']
         fault_centers[5] = fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius']
-        stratigraphic_column['faults'][f] = {'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'].to_numpy(),
+        stratigraphic_column['faults'][f] = {'FaultCenter':fault_centers[:3],
+                                            'FaultDipDirection':fault_centers[3],
+                                            'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'].to_numpy(),
                                             'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'].to_numpy(),
                                             'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy()}
         if 'colour' in fault_dimensions.columns:

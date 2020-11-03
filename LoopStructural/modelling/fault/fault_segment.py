@@ -138,6 +138,10 @@ class FaultSegment:
 
         return self.faultframe.features[0].evaluate_value(locations) > 0
 
+    def inside_volume(self,locations):
+        v = self.faultframe.evaluate_value(locations)
+        return np.all(np.logical_and(v > -1,v<1),axis=1)
+
     def evaluate_value(self, locations):
         """
         Return the value of the fault surface scalar field
@@ -192,6 +196,27 @@ class FaultSegment:
         # need to scale with fault displacement
         return self.faultframe[1].evaluate_gradient(locations[mask, :])
 
+    def evaluate_displacement(self, points):
+        newp = np.copy(points).astype(float)
+        # evaluate fault function for all points then define mask for only points affected by fault
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # all of these operations should be independent so just run as different threads
+            gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
+            gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
+            gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
+            gx = gx_future.result()
+            gy = gy_future.result()
+            gz = gz_future.result()
+        d = np.zeros(gx.shape)
+        mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
+        mask = np.logical_and(mask,~np.isnan(gz))
+        d[~mask] = 0
+        gx_mask = np.zeros_like(mask,dtype=bool)
+        gx_mask[mask] = gx[mask] > 0
+        d[gx_mask] = 1.
+        if self.faultfunction is not None:
+            d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
+        return d
     def apply_to_points(self, points):
         """
         Unfault the array of points
