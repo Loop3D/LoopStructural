@@ -253,7 +253,10 @@ class GeologicalModel:
         self._add_domain_fault_above(feature)
         self._add_unconformity_above(feature)
         feature.set_model(self)
-
+    
+    def data_for_feature(self,feature_name):
+        return self.data.loc[self.data['feature_name'] == series_surface_data,:]
+        
     def set_model_data(self, data):
         """
         Set the data array for the model
