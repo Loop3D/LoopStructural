@@ -358,21 +358,28 @@ class LavaVuModelViewer:
                 vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
         
-    def add_scalar_field(self, geological_feature, **kwargs):
-        """
+    def add_scalar_field(self, geological_feature, name=None, cmap='rainbow', vmin=None, vmax = None, **kwargs):
+        """Add a block the size of the model area painted with the scalar field value
 
         Parameters
         ----------
         geological_feature : GeologicalFeature
             the geological feature to colour the scalar field by
-        kwargs
-            kwargs for lavavu
-
-        Returns
-        -------
-
+        name : string, optional
+            Name of the object for lavavu, needs to be unique for the viewer object, by default uses feature name
+        cmap : str, optional
+            mpl colourmap reference, by default 'rainbow'
+        vmin : double, optional
+            minimum value of the colourmap, by default None
+        vmax : double, optional
+            maximum value of the colourmap, by default None
         """
-        name = kwargs.get('name', geological_feature.name + '_scalar_field')
+        if name == None:
+            if geological_feature is None:
+                name = 'unnamed scalar field'
+            else:
+                name = geological_feature.name + '_scalar_field'
+
         points, tri = create_box(self.bounding_box,self.nsteps)
 
         surf = self.lv.triangles(name)
@@ -381,13 +388,13 @@ class LavaVuModelViewer:
         val =geological_feature.evaluate_value(self.model.scale(points))
         surf.values(val, geological_feature.name)
         surf["colourby"] = geological_feature.name
-        cmap = kwargs.get('cmap',lavavu.cubehelix(100))
-
         logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
                                                                                geological_feature.min(),
                                                                                geological_feature.max()))
-        vmin = kwargs.get('vmin', np.nanmin(val))
-        vmax = kwargs.get('vmax', np.nanmax(val))
+        if vmin == None:
+            vmin =np.nanmin(val)
+        if vmax == None:
+            vmax = np.nanmax(val)
         surf.colourmap(cmap, range=(vmin, vmax))
 
     def add_model(self, cmap = None, **kwargs):
@@ -548,26 +555,6 @@ class LavaVuModelViewer:
                         # print(fault_color)
                     region = kwargs.pop('region',None) 
                     self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],**kwargs)
-
-    # def add_model_data(self, cmap='tab20',**kwargs):
-    #     from matplotlib import cm
-    #     n_units = 0 #count how many discrete colours
-    #     for g in self.model.stratigraphic_column.keys():
-    #         for u in self.model.stratigraphic_column[g].keys():
-    #             n_units+=1
-    #     tab = cm.get_cmap(cmap,n_units)
-    #     ci = 0
-
-    #     for g in self.model.stratigraphic_column.keys():
-    #         if g in self.model.feature_name_index:
-    #             feature = self.model.features[self.model.feature_name_index[g]]
-    #             for u, vals in self.model.stratigraphic_column[g].items():
-    #                 self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:],**kwargs)
-    #                 ci+=1
-    #     if faults:
-    #         for f in self.model.features:
-    #             if f.type == 'fault':
-    #                 self.add_isosurface(f,isovalue=0,**kwargs)
 
     def add_vector_field(self, geological_feature, **kwargs):
         """
