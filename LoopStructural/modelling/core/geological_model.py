@@ -255,7 +255,7 @@ class GeologicalModel:
         feature.set_model(self)
     
     def data_for_feature(self,feature_name):
-        return self.data.loc[self.data['feature_name'] == series_surface_data,:]
+        return self.data.loc[self.data['feature_name'] == feature_name,:]
         
     def set_model_data(self, data):
         """
