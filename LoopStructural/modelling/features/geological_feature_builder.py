@@ -97,9 +97,11 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
+        vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
+        vector /= np.linalg.norm(vector,axis=1)[:,None]
         self.interpolator.add_gradient_orthogonal_constraint(
             self.interpolator.support.barycentre(),
-            feature.evaluate_gradient(self.interpolator.support.barycentre()),
+            vector,
             w=w
         )
 
@@ -280,7 +282,7 @@ class GeologicalFeatureInterpolator:
         """
         return self.data.loc[:, xyz_names()].to_numpy()
 
-    def build(self, fold=None, fold_weights=None, data_region=None, **kwargs):
+    def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
 
@@ -311,12 +313,10 @@ class GeologicalFeatureInterpolator:
             logger.info("Adding fold to %s" % self.name)
             self.interpolator.fold = fold
             # if we have fold weights use those, otherwise just use default
-            if fold_weights is None:
-                self.interpolator.add_fold_constraints()
-            else:
-                self.interpolator.add_fold_constraints(fold_weights)
+            self.interpolator.add_fold_constraints(**fold_weights)
             if 'cgw' not in kwargs:
-                kwargs['cgw'] = 0.
+                # try adding very small cg
+                kwargs['cgw'] = 0.0
 
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)

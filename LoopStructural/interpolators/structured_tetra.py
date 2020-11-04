@@ -106,7 +106,6 @@ class TetMesh:
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_tetra_for_location(pos)
-        self.properties[prop].shape
         values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
         return values
 
@@ -133,8 +132,16 @@ class TetMesh:
         #grads = np.zeros(tetras.shape)
         values[inside,:] = (element_gradients[inside,:,:]*vertex_vals[inside, None, :]).sum(2)
         length = np.sum(values[inside,:],axis=1)
-        values[inside,:] /= length[:,None]
+        # values[inside,:] /= length[:,None]
         return values
+
+    def inside(self, pos):
+        inside = np.ones(pos.shape[0]).astype(bool)
+        for i in range(3):
+            inside *= pos[:, i] > self.origin[None, i]
+            inside *= pos[:, i] < self.origin[None, i] + \
+                      self.step_vector[None, i] * self.nsteps_cells[None, i]
+        return inside
 
     def get_tetra_for_location(self, pos):
         """
@@ -151,11 +158,13 @@ class TetMesh:
 
         """
         pos = np.array(pos)
+        inside = self.inside(pos)
         # initialise array for tetrahedron vertices
         vertices = np.zeros((5, 4, pos.shape[0], 3))
         vertices[:] = np.nan
         # get cell indexes
         c_xi, c_yi, c_zi = self.position_to_cell_index(pos)
+        
         # determine if using +ve or -ve mask
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # get cell corners
@@ -193,12 +202,17 @@ class TetMesh:
         # if all coords are +ve then point is inside cell
         mask = np.all(c > 0, axis=2)
 
-        inside = np.any(mask,axis=1)
+        inside = np.logical_and(inside,np.any(mask,axis=1))
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
         #create mask to see which cells are even
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # create global node index list
+        # print('nsteps',self.nsteps, 'nsteps_cells', self.nsteps_cells)
+        # print('x',np.min(c_xi),np.max(c_xi),np.min(xi),np.max(xi))
+        # print('y',np.min(c_yi),np.max(c_yi),np.min(yi),np.max(yi))
+        # print('z',np.min(c_zi),np.max(c_zi),np.min(zi),np.max(zi))
+
         gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
         # container for tetras
         tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
@@ -348,12 +362,9 @@ class TetMesh:
         vertices, bc, tetras, inside = self.get_tetra_for_location(pos)
         ps = vertices
         m = np.array(
-            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),
-              (ps[:, 1, 2] - ps[:, 0, 2])],
-             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]),
-              (ps[:, 2, 2] - ps[:, 0, 2])],
-             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]),
-              (ps[:, 3, 2] - ps[:, 0, 2])]])
+            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),(ps[:, 1, 2] - ps[:, 0, 2])],
+             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]),(ps[:, 2, 2] - ps[:, 0, 2])],
+             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]),(ps[:, 3, 2] - ps[:, 0, 2])]])
         I = np.array(
             [[-1., 1., 0., 0.],
              [-1., 0., 1., 0.],
@@ -365,25 +376,7 @@ class TetMesh:
         element_gradients = element_gradients @ I
         return vertices, element_gradients, tetras, inside
 
-    def inside(self, pos):
-        """
-        Check if a point is inside the structured grid
 
-        Parameters
-        ----------
-        pos
-
-        Returns
-        -------
-
-        """
-        # check whether point is inside box
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside = np.logical_and(inside, pos[:, i] >= self.origin[None, i])
-            inside = np.logical_and(inside,pos[:, i] <= self.origin[None, i] + \
-                      self.step_vector[None, i] * self.nsteps[None, i])
-        return inside
 
     def global_node_indicies(self, indexes):
         """
