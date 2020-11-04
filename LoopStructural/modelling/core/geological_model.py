@@ -674,7 +674,7 @@ class GeologicalModel:
         # fold_limb_fitter = kwargs.get("fold_limb_function",
         # _interpolate_fold_limb_rotation_angle)
         # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
-        kwargs['fold_weights'] = kwargs.get('fold_weights', None)
+        kwargs['fold_weights'] = kwargs.get('fold_weights', {})
 
         self._add_faults(series_builder)
         # build feature
