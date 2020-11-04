@@ -147,15 +147,15 @@ class StructuralFrameBuilder:
             #         np.arange(0, self.support.n_elements),
             #         gy_feature.evaluate_gradient(self.support.barycentre),
             #         w=gyxgz)
-            if gx_feature is not None:
+            if gx_feature is not None and gxxgz>0:
                 self.builders[2].add_orthogonal_feature(gx_feature, gxxgz)
             gz_feature = self.builders[2].build(regularisation=regularisation[2], **kwargs)
 
         if len(self.builders[1].data) > 0:
             logger.info("Building %s coordinate 1"%self.name)
-            if gx_feature is not None:
+            if gx_feature is not None and gxxgy>0:
                 self.builders[1].add_orthogonal_feature(gx_feature, gxxgy)
-            if gz_feature is not None:
+            if gz_feature is not None and gyxgz>0:
                 self.builders[1].add_orthogonal_feature(gz_feature, gyxgz)
             gy_feature = self.builders[1].build(regularisation=regularisation[1], **kwargs)
 
