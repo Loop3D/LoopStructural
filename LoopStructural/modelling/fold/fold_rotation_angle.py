@@ -48,7 +48,7 @@ class FoldRotationAngle:
         if self.svario is None:
             self.svario = SVariogram(self.fold_frame_coordinate,
                                      self.rotation_angle)
-        if skip_variogram != False:
+        if skip_variogram == False:
             self.svario.calc_semivariogram(lags=lags, nlag=nlag, lag=lag)
         if wl is None:
             wl = self.svario.find_wavelengths(lags=lags, nlag=nlag, lag=lag)
