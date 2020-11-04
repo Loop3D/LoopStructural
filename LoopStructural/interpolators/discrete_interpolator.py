@@ -147,12 +147,22 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-        if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
-            logger.warning("Constraints contain nan not adding constraints: {}".format(name))
-            return
+
         nr = A.shape[0]
+        if A.shape != idc.shape:
+            return
+        
         if len(A.shape) > 2:
             nr = A.shape[0] * A.shape[1]
+            A = A.reshape((A.shape[0]*A.shape[1],A.shape[2]))
+            idc = idc.reshape((idc.shape[0]*idc.shape[1],idc.shape[2]))
+        # going to assume if any are nan they are all nan
+        mask = np.any(np.isnan(A),axis=1)
+        A[mask,:] = 0
+        if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
+            logger.warning("Constraints contain nan not adding constraints: {}".format(name))
+            # return
+        
         rows = np.arange(0, nr).astype(int)
         rows += self.c_
         constraint_ids = rows.copy()
