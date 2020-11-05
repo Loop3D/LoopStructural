@@ -106,12 +106,14 @@ class StructuralFrameBuilder:
         gxxgy = 1
         gxxgz = 1
         gyxgz = 1
+        step = kwargs.get('step',3)
         if 'gxxgy' in kwargs:
             gxxgy = kwargs['gxxgy']
         if 'gxxgz' in kwargs:
             gxxgz = kwargs['gxxgz']
         if 'gyxgz' in kwargs:
             gyxgz = kwargs['gyxgz']
+
         # set regularisation so the the main surface (foliation, fault) is smooth
         # and the fields are allowed to vary more
         regularisation = kwargs.pop('regularisation', [1., 1., 1.])
@@ -148,15 +150,15 @@ class StructuralFrameBuilder:
             #         gy_feature.evaluate_gradient(self.support.barycentre),
             #         w=gyxgz)
             if gx_feature is not None and gxxgz>0:
-                self.builders[2].add_orthogonal_feature(gx_feature, gxxgz)
+                self.builders[2].add_orthogonal_feature(gx_feature, gxxgz,step=step)
             gz_feature = self.builders[2].build(regularisation=regularisation[2], **kwargs)
 
         if len(self.builders[1].data) > 0:
             logger.info("Building %s coordinate 1"%self.name)
             if gx_feature is not None and gxxgy>0:
-                self.builders[1].add_orthogonal_feature(gx_feature, gxxgy)
+                self.builders[1].add_orthogonal_feature(gx_feature, gxxgy,step=step)
             if gz_feature is not None and gyxgz>0:
-                self.builders[1].add_orthogonal_feature(gz_feature, gyxgz)
+                self.builders[1].add_orthogonal_feature(gz_feature, gyxgz,step=step)
             gy_feature = self.builders[1].build(regularisation=regularisation[1], **kwargs)
 
         if gy_feature is None:

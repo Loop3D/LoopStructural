@@ -80,7 +80,7 @@ class GeologicalFeatureInterpolator:
         """
         self.data = data_frame.copy()
 
-    def add_orthogonal_feature(self, feature, w=1., region=None):
+    def add_orthogonal_feature(self, feature, w=1., region=None,step=1):
         """
         Add a constraint to the interpolator so that the gradient of an exisitng feature is orthogonal
         to the feature being built. E.g. dot product between gradients should be = 0
@@ -92,16 +92,24 @@ class GeologicalFeatureInterpolator:
         w :  double
             how much to weight in least squares sense
         region : unused
-
+        step : int
+            numpy slicing step size to see how many tetras to add
+        
         Returns
         -------
 
+        Notes
+        -----
+        The constraint can be applied to a random subset of the tetrahedral elements in the mesh
+        in theory this shu
         """
         vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
         vector /= np.linalg.norm(vector,axis=1)[:,None]
+        element_idx = np.arange(self.interpolator.support.n_elements)
+        np.random.shuffle(element_idx)
         self.interpolator.add_gradient_orthogonal_constraint(
-            self.interpolator.support.barycentre(),
-            vector,
+            self.interpolator.support.barycentre()[element_idx[::step],:],
+            vector[element_idx[::step],:],
             w=w
         )
 
