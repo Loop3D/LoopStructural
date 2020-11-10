@@ -80,7 +80,7 @@ class GeologicalFeatureInterpolator:
         """
         self.data = data_frame.copy()
 
-    def add_orthogonal_feature(self, feature, w=1., region=None,step=1):
+    def add_orthogonal_feature(self, feature, w=1., region=None,step=1,B=0):
         """
         Add a constraint to the interpolator so that the gradient of an exisitng feature is orthogonal
         to the feature being built. E.g. dot product between gradients should be = 0
@@ -110,9 +110,10 @@ class GeologicalFeatureInterpolator:
         self.interpolator.add_gradient_orthogonal_constraint(
             self.interpolator.support.barycentre()[element_idx[::step],:],
             vector[element_idx[::step],:],
-            w=w
+            w=w,
+            B=B
         )
-
+    
     def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
         """
         Iterates through the list of data and applies any faults active on the
