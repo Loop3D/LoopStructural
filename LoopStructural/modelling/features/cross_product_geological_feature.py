@@ -34,7 +34,7 @@ class CrossProductGeologicalFeature(GeologicalFeature):
         super().__init__(name, None)
         self.geological_feature_a = geological_feature_a
         self.geological_feature_b = geological_feature_b
-
+        self.value_feature = None
     def evaluate_gradient(self, locations):
         """
         Calculate the gradient of the geological feature by using numpy to
@@ -49,8 +49,11 @@ class CrossProductGeologicalFeature(GeologicalFeature):
         -------
 
         """
-        return np.cross(self.geological_feature_a.evaluate_gradient(locations),
-                        self.geological_feature_b.evaluate_gradient(locations),
+        v1 = self.geological_feature_a.evaluate_gradient(locations)
+        # v1 /= np.linalg.norm(v1,axis=1)[:,None]
+        v2 = self.geological_feature_b.evaluate_gradient(locations)
+        # v2 /= np.linalg.norm(v2,axis=1)[:,None]
+        return np.cross(v1,v2,
                         axisa=1,
                         axisb=1)
 
@@ -65,13 +68,22 @@ class CrossProductGeologicalFeature(GeologicalFeature):
         -------
 
         """
-        return np.zeros(evaluation_points.shape[0])
+        values = np.zeros(evaluation_points.shape[0])
+        if self.value_feature is not None:
+            values[:] = self.value_feature.evaluate_value(evaluation_points)
+        return values
 
     def mean(self):
+        if self.value_feature:
+            return self.value_feature.mean()
         return 0.
 
     def min(self):
+        if self.value_feature:
+            return self.value_feature.min()
         return 0.
 
     def max(self):
+        if self.value_feature:
+            return self.value_feature.max()
         return 0.

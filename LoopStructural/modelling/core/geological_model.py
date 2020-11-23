@@ -153,7 +153,7 @@ class GeologicalModel:
 
         Uses the information saved in the map2loop files to build a geological model.
         You can specify kwargs for building foliation using foliation_params and for 
-        faults using fault_params. skip_faults is a flag that allows for the faults to be skipped.
+        faults using fault_params.  faults is a flag that allows for the faults to be skipped.
 
         Parameters
         ----------
@@ -255,7 +255,7 @@ class GeologicalModel:
         feature.set_model(self)
     
     def data_for_feature(self,feature_name):
-        return self.data.loc[self.data['feature_name'] == series_surface_data,:]
+        return self.data.loc[self.data['feature_name'] == feature_name,:]
         
     def set_model_data(self, data):
         """
@@ -674,7 +674,7 @@ class GeologicalModel:
         # fold_limb_fitter = kwargs.get("fold_limb_function",
         # _interpolate_fold_limb_rotation_angle)
         # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
-        kwargs['fold_weights'] = kwargs.get('fold_weights', None)
+        kwargs['fold_weights'] = kwargs.get('fold_weights', {})
 
         self._add_faults(series_builder)
         # build feature
@@ -718,8 +718,10 @@ class GeologicalModel:
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame,name='Fold_{}'.format(fold_frame_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+        gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+
         frame_interpolator = self.get_interpolator(**kwargs)
-        interpolators = [fold_interpolator, frame_interpolator,
+        interpolators = [fold_interpolator, gy_fold_interpolator,
                          frame_interpolator.copy()]
         fold_frame_builder = StructuralFrameBuilder(
             interpolators=interpolators, name=fold_frame_data, **kwargs)
@@ -728,6 +730,7 @@ class GeologicalModel:
 
         ## add the data to the interpolator for the main foliation
         fold_frame_builder[0].add_data_to_interpolator(True)
+
         if "fold_axis" in kwargs:
             logger.info("Using cylindrical fold axis")
             fold.fold_axis = kwargs['fold_axis']
@@ -763,12 +766,11 @@ class GeologicalModel:
         # fold_limb_fitter = kwargs.get("fold_limb_function",
         # _interpolate_fold_limb_rotation_angle)
         # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
-        kwargs['fold_weights'] = kwargs.get('fold_weights', None)
+        kwargs['fold_weights'] = kwargs.get('fold_weights', {})
 
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
         # build feature
-        kwargs['cgw'] = 0.
         kwargs['fold'] = fold
         self._add_faults(fold_frame_builder[0])
         self._add_faults(fold_frame_builder[1])

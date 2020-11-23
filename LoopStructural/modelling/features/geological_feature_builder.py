@@ -80,7 +80,7 @@ class GeologicalFeatureInterpolator:
         """
         self.data = data_frame.copy()
 
-    def add_orthogonal_feature(self, feature, w=1., region=None):
+    def add_orthogonal_feature(self, feature, w=1., region=None,step=1,B=0):
         """
         Add a constraint to the interpolator so that the gradient of an exisitng feature is orthogonal
         to the feature being built. E.g. dot product between gradients should be = 0
@@ -92,17 +92,28 @@ class GeologicalFeatureInterpolator:
         w :  double
             how much to weight in least squares sense
         region : unused
-
+        step : int
+            numpy slicing step size to see how many tetras to add
+        
         Returns
         -------
 
+        Notes
+        -----
+        The constraint can be applied to a random subset of the tetrahedral elements in the mesh
+        in theory this shu
         """
+        vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
+        vector /= np.linalg.norm(vector,axis=1)[:,None]
+        element_idx = np.arange(self.interpolator.support.n_elements)
+        np.random.shuffle(element_idx)
         self.interpolator.add_gradient_orthogonal_constraint(
-            self.interpolator.support.barycentre(),
-            feature.evaluate_gradient(self.interpolator.support.barycentre()),
-            w=w
+            self.interpolator.support.barycentre()[element_idx[::step],:],
+            vector[element_idx[::step],:],
+            w=w,
+            B=B
         )
-
+    
     def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
         """
         Iterates through the list of data and applies any faults active on the
@@ -280,7 +291,7 @@ class GeologicalFeatureInterpolator:
         """
         return self.data.loc[:, xyz_names()].to_numpy()
 
-    def build(self, fold=None, fold_weights=None, data_region=None, **kwargs):
+    def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
 
@@ -311,12 +322,10 @@ class GeologicalFeatureInterpolator:
             logger.info("Adding fold to %s" % self.name)
             self.interpolator.fold = fold
             # if we have fold weights use those, otherwise just use default
-            if fold_weights is None:
-                self.interpolator.add_fold_constraints()
-            else:
-                self.interpolator.add_fold_constraints(fold_weights)
+            self.interpolator.add_fold_constraints(**fold_weights)
             if 'cgw' not in kwargs:
-                kwargs['cgw'] = 0.
+                # try adding very small cg
+                kwargs['cgw'] = 0.0
 
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)

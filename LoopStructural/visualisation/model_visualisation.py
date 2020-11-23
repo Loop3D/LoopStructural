@@ -247,7 +247,8 @@ class LavaVuModelViewer:
         [type]
             [description]
         """
-
+        if geological_feature is None:
+            logger.error("Cannot add isosurface GeologicalFeature does not exist")
         # update the feature to make sure its current
         if 'update' in kwargs:
             geological_feature.update()
@@ -643,6 +644,24 @@ class LavaVuModelViewer:
         if interface.shape[0] > 0 and add_interface:
             self.add_points(self.model.rescale(interface[:,:3],inplace=False), name + "_interface_cp")
 
+    def add_intersection_lineation(self, feature, **kwargs):
+        name = feature.name
+        if 'name' in kwargs:
+            name = kwargs['name']
+            del kwargs['name']
+        intersection = feature.fold.foldframe.calculate_intersection_lineation(
+            feature.builder)
+        gpoints = feature.builder.interpolator.get_gradient_constraints()[:,:6]
+        npoints = feature.builder.interpolator.get_norm_constraints()[:,:6]
+        points = []
+        if gpoints.shape[0] > 0:
+            points.append(gpoints)
+        if npoints.shape[0] > 0:
+            points.append(npoints)
+        points = np.vstack(points)
+        if intersection.shape[0] > 0:
+            self.add_vector_data(self.model.rescale(points[:,:3],inplace=False), intersection, name + "_intersection")
+        
     def add_points(self, points, name, **kwargs):
         """
 
