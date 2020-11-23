@@ -247,7 +247,8 @@ class LavaVuModelViewer:
         [type]
             [description]
         """
-
+        if geological_feature is None:
+            logger.error("Cannot add isosurface GeologicalFeature does not exist")
         # update the feature to make sure its current
         if 'update' in kwargs:
             geological_feature.update()
