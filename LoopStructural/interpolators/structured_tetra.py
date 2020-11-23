@@ -4,7 +4,7 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 import logging
 
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm
+from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
 
 logger = logging.getLogger(__name__)
 
@@ -233,7 +233,7 @@ class TetMesh:
         tetra_return[inside,:] = tetras[mask,:]
         return vertices_return, c_return, tetra_return, inside
 
-    def get_constant_gradient(self, region):
+    def get_constant_gradient(self, region, direction=None):
         """
         Get the constant gradient for the specified nodes
 
@@ -246,6 +246,34 @@ class TetMesh:
         -------
 
         """
+        """
+        Add the constant gradient regularisation to the system
+
+        Parameters
+        ----------
+        w (double) - weighting of the cg parameter
+
+        Returns
+        -------
+
+        """
+        if direction is not None:
+            print('using cg direction')
+            logger.info("Running constant gradient")
+            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+            if elements_gradients.shape[0] != direction.shape[0]:
+                logger.error('Cannot add directional CG, vector field is not the correct length')
+                return
+            region = region.astype('int64')
+
+            neighbours = self.get_neighbours()
+            elements = self.get_elements()
+            idc, c, ncons = fold_cg(elements_gradients, direction, neighbours.astype('int64'), elements.astype('int64'), self.nodes)
+
+            idc = np.array(idc[:ncons, :])
+            c = np.array(c[:ncons, :])
+            B = np.zeros(c.shape[0])
+            return c, idc, B
         if self.cg is None:
             logger.info("Running constant gradient")
             elements_gradients = self.get_element_gradients(np.arange(self.ntetra))

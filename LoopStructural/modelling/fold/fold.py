@@ -26,7 +26,7 @@ class FoldEvent:
         self.fold_limb_rotation = fold_limb_rotation
         self.fold_axis = fold_axis
         self.name = name
-
+        
     def get_fold_axis_orientation(self, points):
         """
         gets the fold axis orientation for evaluation points

@@ -718,8 +718,10 @@ class GeologicalModel:
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame,name='Fold_{}'.format(fold_frame_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+        gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+
         frame_interpolator = self.get_interpolator(**kwargs)
-        interpolators = [fold_interpolator, frame_interpolator,
+        interpolators = [fold_interpolator, gy_fold_interpolator,
                          frame_interpolator.copy()]
         fold_frame_builder = StructuralFrameBuilder(
             interpolators=interpolators, name=fold_frame_data, **kwargs)

@@ -72,7 +72,10 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             self.interpolation_weights[key] = kwargs[key]
         if self.interpolation_weights['cgw'] > 0.:
             self.up_to_date = False
-            self.add_constant_gradient(self.interpolation_weights['cgw'])
+            self.add_constant_gradient(self.interpolation_weights['cgw'],
+            direction_feature=kwargs.get('direction_feature',None),
+            direction_vector=kwargs.get('direction_vector',None)
+            )
             logger.info("Using constant gradient regularisation w = %f"
                         %self.interpolation_weights['cgw'])
         logger.info("Added %i gradient constraints, %i normal constraints,"
@@ -87,7 +90,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if 'constant_norm' in kwargs:
             self.add_constant_norm(w=kwargs['constant_norm'])
     
-    def add_constant_gradient(self, w=0.1):
+    def add_constant_gradient(self, w= 0.1, direction_vector=None, direction_feature=None):
         """
         Add the constant gradient regularisation to the system
 
@@ -99,8 +102,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
+        if direction_feature is not None:
+            print('dir fe')
+            direction_vector = direction_feature.evaluate_gradient(self.support.barycentre())
+        if direction_vector is not None:
+            if direction_vector.shape[0] == 1:
+                # if using a constant direction, tile array so it works for cg calc
+                direction_vector = np.tile(direction_vector,(self.support.barycentre().shape[0],1))
+
+            
         # iterate over all elements
-        A, idc, B = self.support.get_constant_gradient(region=self.region)
+        A, idc, B = self.support.get_constant_gradient(region=self.region,direction=direction_vector)
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
@@ -116,6 +128,50 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                               B[outside] * w, idc[outside, :],
                                               name='regularisation')
         return
+
+    def add_direction_constant_gradient(self, w= 0.1, direction_vector=None, direction_feature=None):
+        """
+        Add the constant gradient regularisation to the system where regularisation is projected
+        on a vector
+
+        Parameters
+        ----------
+        w (double) - weighting of the cg parameter
+        direction_vector
+        direction_feature
+
+        Returns
+        -------
+
+        """
+        if direction_feature:
+            print('dir fe')
+            direction_vector = direction_feature.evaluate_gradient(self.support.barycentre())
+        if direction_vector:
+            if direction_vector.shape[0] == 1:
+                # if using a constant direction, tile array so it works for cg calc
+                direction_vector = np.tile(direction_vector,(self.support.barycentre().shape[0],1))
+
+            
+        # iterate over all elements
+        A, idc, B = self.support.get_constant_gradient(region=self.region,direction=direction_vector)
+        A = np.array(A)
+        B = np.array(B)
+        idc = np.array(idc)
+
+        gi = np.zeros(self.support.n_nodes)
+        gi[:] = -1
+        gi[self.region] = np.arange(0, self.nx)
+        idc = gi[idc]
+        outside = ~np.any(idc == -1, axis=1)
+
+        # w/=A.shape[0]
+        self.add_constraints_to_least_squares(A[outside, :] * w,
+                                              B[outside] * w, idc[outside, :],
+                                              name='regularisation')
+        return
+
+
     def add_constant_norm(self, w=0.1):
         """
         Add the constant gradient regularisation to the system
@@ -128,7 +184,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
-        print('adding gradient norm')
         # iterate over all elements
         A, idc, B = self.support.get_constant_norm(region=self.region)
         A = np.array(A)
@@ -358,6 +413,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:,:3])
             #e, inside = self.support.elements_for_array(points[:, :3])
             #nodes = self.support.nodes[self.support.elements[e]]
+            vector /= np.linalg.norm(vector,axis=1)[:,None]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
             # d_t = self.support.get_elements_gradients(e)
@@ -373,7 +429,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx).astype(int)
             w /= 3
             idc = gi[tetras]
-            B = np.zeros(idc.shape[0])
+            B = np.zeros(idc.shape[0])+B
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                                   B[outside], idc[outside, :])
