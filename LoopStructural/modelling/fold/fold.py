@@ -61,7 +61,7 @@ class FoldEvent:
 
     def get_deformed_orientation(self, points):
         """
-        Calculate the normal to the folded foliation at locations
+        Calculate the direction vectors of the fold
 
         Parameters
         ----------
@@ -70,6 +70,13 @@ class FoldEvent:
 
         Returns
         -------
+        fold_direction : np.array
+            a vector parallel to the fold
+        fold axis : np.array
+            the fold axis
+        dgz : np.array
+            the X direction of the finite strain ellipsoid, perpendicular to both
+            fold axis and fold direction
 
         """
         fold_axis = self.get_fold_axis_orientation(points)
