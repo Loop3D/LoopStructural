@@ -188,7 +188,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.row.extend(rows[~mask].tolist())
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
-
+    
+    def calculate_residual_for_constraints(self):
+        residuals = {}
+        for constraint_name, constraint in self.constraints:
+            residuals[constraint_name] = constraint['A'] @ self.c[constraint['id']] - constraint['B']
+        
     def remove_constraints_from_least_squares(self, name='undefined',
                                               constraint_ids=None):
         """
