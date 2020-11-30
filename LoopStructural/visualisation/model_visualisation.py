@@ -125,8 +125,8 @@ class LavaVuModelViewer:
         self.lv.clear()
         self.lv.cleardata()
         pass
-
-    def add_section(self, geological_feature=None, axis='x', value=None, **kwargs):
+    
+    def add_section(self, geological_feature=None, axis='x', value=None,  **kwargs):
         """
 
         Plot a section/map thru the model and paint with a geological feature
@@ -146,67 +146,77 @@ class LavaVuModelViewer:
         -------
 
         """
-        print('aa')
-        if axis == 'x':
-            tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
-            xx = np.zeros(zz.shape)
-            if value is None:
-                xx[:] = np.nanmean(self.bounding_box[:, 0])
-            else:
-                xx[:] = value
-        if axis == 'y':
-            tri, xx, zz = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
-            yy = np.zeros(xx.shape)
-            if value is None:
-                yy[:] = np.nanmean(self.bounding_box[:, 1])
-            else:
-                yy[:] = value
-        if axis == 'z':
-            tri, xx, yy = create_surface(self.bounding_box[:, 0:2], self.nsteps[0:2])
-            zz = np.zeros(xx.shape)
-            if value is None:
-                zz[:] = np.nanmean(self.bounding_box[:, 2])
-            else:
-                zz[:] = value
-        name = kwargs.get('name', axis + '_slice')
-        colour = kwargs.get('colour', 'red')
+                   
+        try:
+            iter(value)
+        except:
+            print('Creating iterable')
+            value = [value]
+        for v in value:
+            if axis == 'x':
+                v = self.model.scale([[v,0,0]],inplace=False)[0,0]
+                tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
+                xx = np.zeros(zz.shape)
+                if v is None:
+                    xx[:] = np.nanmean(self.bounding_box[:, 0])
+                else:
+                    xx[:] = v
+            if axis == 'y':
+                v = self.model.scale([[0,v,0]],inplace=False)[0,1]
 
-        # create an array to evaluate the feature on for the section
-        points = np.zeros((len(xx), 3))  #
-        points[:, 0] = xx
-        points[:, 1] = yy
-        points[:, 2] = zz
+                tri, xx, zz = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
+                yy = np.zeros(xx.shape)
+                if v is None:
+                    yy[:] = np.nanmean(self.bounding_box[:, 1])
+                else:
+                    yy[:] = v
+            if axis == 'z':
+                v = self.model.scale([[0,0,v]],inplace=False)[0,2]
+                tri, xx, yy = create_surface(self.bounding_box[:, 0:2], self.nsteps[0:2])
+                zz = np.zeros(xx.shape)
+                if v is None:
+                    zz[:] = np.nanmean(self.bounding_box[:, 2])
+                else:
+                    zz[:] = v
+            name = kwargs.get('name', '{}_slice_{}'.format(axis,v))
+            colour = kwargs.get('colour', 'red')
 
-        surf = self.lv.triangles(name)
-        surf.vertices(self.model.rescale(points,inplace=False))
-        surf.indices(tri)
-        logger.info("Adding %s section at %f" % (axis, value))
-        if geological_feature is None:
-            surf.colours(colour)
+            # create an array to evaluate the feature on for the section
+            points = np.zeros((len(xx), 3))  #
+            points[:, 0] = xx
+            points[:, 1] = yy
+            points[:, 2] = zz
 
-        if geological_feature is not None and type(geological_feature) == GeologicalFeature:
-            if 'norm' in kwargs:
-                surf.values(np.linalg.norm(
-                    geological_feature.evaluate_gradient(points), axis=1),
-                    geological_feature.name)
-            else:
-                surf.values(geological_feature.evaluate_value(points),
-                            geological_feature.name)
-            surf["colourby"] = geological_feature.name
-            cmap = lavavu.cubehelix(100)
-            if 'cmap' in kwargs:
-                cmap = kwargs['cmap']
-            logger.info("Colouring section with %s min: %f, max: %f" % (
-                geological_feature.name, geological_feature.min(), geological_feature.max()))
-            surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
-        if geological_feature == 'model' and self.model is not None:
-            name = kwargs.get('name','model_section')
-            surf.values(self.model.evaluate_model(points,scale=True),
-                            name)
-            surf["colourby"] = name
-            cmap = lavavu.cubehelix(100)
-            if 'cmap' in kwargs:
-                cmap = kwargs['cmap']
+            surf = self.lv.triangles(name)
+            surf.vertices(self.model.rescale(points,inplace=False))
+            surf.indices(tri)
+            logger.info("Adding %s section at %f" % (axis, v))
+            if geological_feature is None:
+                surf.colours(colour)
+            #following if statement changed because not evertyhing is a GEologicalFeature
+            if geological_feature is not None: # and type(geological_feature) == GeologicalFeature:
+                if 'norm' in kwargs:
+                    surf.values(np.linalg.norm(
+                        geological_feature.evaluate_gradient(points), axis=1),
+                        geological_feature.name)
+                else:
+                    surf.values(geological_feature.evaluate_value(points),
+                                geological_feature.name)
+                surf["colourby"] = geological_feature.name
+                cmap = lavavu.cubehelix(100)
+                if 'cmap' in kwargs:
+                    cmap = kwargs['cmap']
+                logger.info("Colouring section with %s min: %f, max: %f" % (
+                    geological_feature.name, geological_feature.min(), geological_feature.max()))
+                surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
+            if geological_feature == 'model' and self.model is not None:
+                name = kwargs.get('name','model_section')
+                surf.values(self.model.evaluate_model(points,scale=True),
+                                name)
+                surf["colourby"] = name
+                cmap = lavavu.cubehelix(100)
+                if 'cmap' in kwargs:
+                    cmap = kwargs['cmap']
             # logger.info("Colouring section with %s min: %f, max: %f" % (
             #     geological_feature.name, geological_feature.min(), geological_feature.max()))
             # surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
