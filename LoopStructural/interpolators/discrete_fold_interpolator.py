@@ -135,7 +135,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A *= fold_orientation
             B = np.zeros(A.shape[0])
             idc = self.support.get_elements()[element_idx[::step],:]
-            self.add_constraints_to_least_squares(A, B, idc)
+            self.add_constraints_to_least_squares(A, B, idc, name='fold orientation')
 
         if fold_axis_w is not None:
             """
@@ -150,7 +150,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0]).tolist()
             idc = self.support.get_elements()[element_idx[::step],:]
 
-            self.add_constraints_to_least_squares(A, B, idc)
+            self.add_constraints_to_least_squares(A, B, idc, name='fold axis')
 
         if fold_normalisation is not None:
             """
@@ -170,7 +170,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B *= vol[element_idx[::step]]
             idc = self.support.get_elements()[element_idx[::step],:]
 
-            self.add_constraints_to_least_squares(A, B, idc)
+            self.add_constraints_to_least_squares(A, B, idc, name='fold normalisation')
 
         if fold_regularisation is not None:
             """
@@ -184,18 +184,18 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             A *= fold_regularisation[0]
             B = np.zeros(A.shape[0])
             idc = np.array(idc[:ncons, :])
-            self.add_constraints_to_least_squares(A, B, idc)
+            self.add_constraints_to_least_squares(A, B, idc, name='fold regularisation 1')
 
             idc, c, ncons = fold_cg(eg, deformed_orientation, self.support.get_neighbours(), self.support.get_elements(), self.support.nodes)
             A = np.array(c[:ncons, :])
             A *= fold_regularisation[1]
             B = np.zeros(A.shape[0])
             idc = np.array(idc[:ncons, :])
-            self.add_constraints_to_least_squares(A, B, idc)
+            self.add_constraints_to_least_squares(A, B, idc, name='fold regularisation 2')
 
             idc, c, ncons = fold_cg(eg, fold_axis, self.support.get_neighbours(), self.support.get_elements(), self.support.nodes)
             A = np.array(c[:ncons, :])
             A *= fold_regularisation[2]
             B = np.zeros(A.shape[0])
             idc = np.array(idc[:ncons, :])
-            self.add_constraints_to_least_squares(A, B, idc)
+            self.add_constraints_to_least_squares(A, B, idc, name='fold regularisation 3')

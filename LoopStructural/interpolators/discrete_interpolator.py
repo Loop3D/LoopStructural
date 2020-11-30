@@ -167,13 +167,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows += self.c_
         constraint_ids = rows.copy()
 
-        if name in self.constraints:
-            self.constraints[name]['rows'] = np.hstack([self.constraints[name]['rows'],
-                                                constraint_ids]),
-            self.constraints[name]['A'] =  np.hstack([self.constraints[name]['A'],A])
-            self.constraints[name]['B'] =  np.hstack([self.constraints[name]['B'], B])
-            self.constraints[name]['idc'] = np.hstack([self.constraints[name]['idc'],
-                                                idc]),
+        if name in self.constraints:            
+            # self.constraints[name]['rows'] = np.hstack([self.constraints[name]['rows'],
+            #                                     constraint_ids]),
+            self.constraints[name]['A'] =  np.vstack([self.constraints[name]['A'],A])
+            self.constraints[name]['B'] =  np.vstack([self.constraints[name]['B'], B])
+            self.constraints[name]['idc'] = np.vstack([self.constraints[name]['idc'],
+                                                idc])
+                                   
         if name not in self.constraints:
             self.constraints[name] = {'node_indexes':constraint_ids,'A':A,'B':B,'idc':idc}
         rows = np.tile(rows, (A.shape[-1], 1)).T
