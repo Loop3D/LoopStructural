@@ -58,7 +58,7 @@ jobs:
         python: ['3.6','3.7','3.8']
     steps:
     - uses: actions/checkout@v2
-    - uses: goanpeca/action-setup-conda@v1
+    - uses: conda-incubator/setup-miniconda@v2
       with:
         python-version: ${{ matrix.python }} 
         activate-environment: loop    

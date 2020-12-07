@@ -2,7 +2,7 @@
 Structural frames
 """
 import logging
-
+import numpy as np
 logger = logging.getLogger(__name__)
 
 
@@ -86,7 +86,7 @@ class StructuralFrame:
         """
         self.data = data
 
-    def evaluate_value(self, evaluation_points, i=None):
+    def evaluate_value(self, evaluation_points):
         """
         Evaluate the value of the structural frame for the points.
         Can optionally only evaluate one coordinate
@@ -100,11 +100,15 @@ class StructuralFrame:
         -------
 
         """
-        if i is not None:
-            self.features[i].support.evaluate_value(evaluation_points)
-        return (self.features[0].support.evaluate_value(evaluation_points),
-                self.features[1].support.evaluate_value(evaluation_points),
-                self.features[2].support.evaluate_value(evaluation_points))
+        v = np.zeros(evaluation_points.shape) #create new 3d array of correct length
+        v[:] = np.nan
+        v[:,0] = self.features[0].evaluate_value(evaluation_points)
+        v[:,1] = self.features[1].evaluate_value(evaluation_points)
+        v[:,2] = self.features[2].evaluate_value(evaluation_points)
+        return v
+        # return (self.features[0].evaluate_value(evaluation_points),
+        #         self.features[1].evaluate_value(evaluation_points),
+        #         self.features[2].evaluate_value(evaluation_points))
 
     def evaluate_gradient(self, evaluation_points, i=None):
         """

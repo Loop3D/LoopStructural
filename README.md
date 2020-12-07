@@ -16,7 +16,7 @@ Loop is led by Laurent Ailleres (Monash University) with a team of Work Package 
 
 The project benefits from in-kind contributions from the Geological Survey of Canada, the British Geological Survey, the French Bureau de Recherches Geologiques et Minieres, the RING group at the Universite de Lorraine, the RWTH in Aachen, Germany and AUSCOPE
 
-* Python/cython implementation of a piecewise linear interpolation (Discrete Smooth Interpolator in Gocad) 
+* Python/cython implementation of a Discrete interpolatiors  
 * Fold interpolation using constraints outlined in Laurent 2016 with fold geostatistical tools shown in Grose et al., 2017
 * Fault interpolation 
 

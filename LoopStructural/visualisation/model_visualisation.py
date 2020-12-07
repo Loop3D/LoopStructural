@@ -13,7 +13,7 @@ except ImportError:
     logger.error("Please install lavavu: pip install lavavu")
 import numpy as np
 from skimage.measure import marching_cubes_lewiner as marching_cubes
-
+from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 # adapted/copied from pyvista for sphinx scraper
@@ -199,9 +199,9 @@ class LavaVuModelViewer:
             logger.info("Colouring section with %s min: %f, max: %f" % (
                 geological_feature.name, geological_feature.min(), geological_feature.max()))
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
-        if geological_feature == 'model':
+        if geological_feature == 'model' and self.model is not None:
             name = kwargs.get('name','model_section')
-            surf.values(self.model.evaluate_model(points),
+            surf.values(self.model.evaluate_model(points,scale=True),
                             name)
             surf["colourby"] = name
             cmap = lavavu.cubehelix(100)
@@ -247,7 +247,8 @@ class LavaVuModelViewer:
         [type]
             [description]
         """
-
+        if geological_feature is None:
+            logger.error("Cannot add isosurface GeologicalFeature does not exist")
         # update the feature to make sure its current
         if 'update' in kwargs:
             geological_feature.update()
@@ -358,21 +359,28 @@ class LavaVuModelViewer:
                 vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
         
-    def add_scalar_field(self, geological_feature, **kwargs):
-        """
+    def add_scalar_field(self, geological_feature, name=None, cmap='rainbow', vmin=None, vmax = None, **kwargs):
+        """Add a block the size of the model area painted with the scalar field value
 
         Parameters
         ----------
         geological_feature : GeologicalFeature
             the geological feature to colour the scalar field by
-        kwargs
-            kwargs for lavavu
-
-        Returns
-        -------
-
+        name : string, optional
+            Name of the object for lavavu, needs to be unique for the viewer object, by default uses feature name
+        cmap : str, optional
+            mpl colourmap reference, by default 'rainbow'
+        vmin : double, optional
+            minimum value of the colourmap, by default None
+        vmax : double, optional
+            maximum value of the colourmap, by default None
         """
-        name = kwargs.get('name', geological_feature.name + '_scalar_field')
+        if name == None:
+            if geological_feature is None:
+                name = 'unnamed scalar field'
+            else:
+                name = geological_feature.name + '_scalar_field'
+
         points, tri = create_box(self.bounding_box,self.nsteps)
 
         surf = self.lv.triangles(name)
@@ -381,13 +389,13 @@ class LavaVuModelViewer:
         val =geological_feature.evaluate_value(self.model.scale(points))
         surf.values(val, geological_feature.name)
         surf["colourby"] = geological_feature.name
-        cmap = kwargs.get('cmap',lavavu.cubehelix(100))
-
         logger.info("Adding scalar field of %s to viewer. Min: %f, max: %f" % (geological_feature.name,
                                                                                geological_feature.min(),
                                                                                geological_feature.max()))
-        vmin = kwargs.get('vmin', np.nanmin(val))
-        vmax = kwargs.get('vmax', np.nanmax(val))
+        if vmin == None:
+            vmin =np.nanmin(val)
+        if vmax == None:
+            vmax = np.nanmax(val)
         surf.colourmap(cmap, range=(vmin, vmax))
 
     def add_model(self, cmap = None, **kwargs):
@@ -549,26 +557,6 @@ class LavaVuModelViewer:
                     region = kwargs.pop('region',None) 
                     self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],**kwargs)
 
-    # def add_model_data(self, cmap='tab20',**kwargs):
-    #     from matplotlib import cm
-    #     n_units = 0 #count how many discrete colours
-    #     for g in self.model.stratigraphic_column.keys():
-    #         for u in self.model.stratigraphic_column[g].keys():
-    #             n_units+=1
-    #     tab = cm.get_cmap(cmap,n_units)
-    #     ci = 0
-
-    #     for g in self.model.stratigraphic_column.keys():
-    #         if g in self.model.feature_name_index:
-    #             feature = self.model.features[self.model.feature_name_index[g]]
-    #             for u, vals in self.model.stratigraphic_column[g].items():
-    #                 self.add_isosurface(feature, isovalue=vals['max'],name=u,colour=tab.colors[ci,:],**kwargs)
-    #                 ci+=1
-    #     if faults:
-    #         for f in self.model.features:
-    #             if f.type == 'fault':
-    #                 self.add_isosurface(f,isovalue=0,**kwargs)
-
     def add_vector_field(self, geological_feature, **kwargs):
         """
 
@@ -656,6 +644,24 @@ class LavaVuModelViewer:
         if interface.shape[0] > 0 and add_interface:
             self.add_points(self.model.rescale(interface[:,:3],inplace=False), name + "_interface_cp")
 
+    def add_intersection_lineation(self, feature, **kwargs):
+        name = feature.name
+        if 'name' in kwargs:
+            name = kwargs['name']
+            del kwargs['name']
+        intersection = feature.fold.foldframe.calculate_intersection_lineation(
+            feature.builder)
+        gpoints = feature.builder.interpolator.get_gradient_constraints()[:,:6]
+        npoints = feature.builder.interpolator.get_norm_constraints()[:,:6]
+        points = []
+        if gpoints.shape[0] > 0:
+            points.append(gpoints)
+        if npoints.shape[0] > 0:
+            points.append(npoints)
+        points = np.vstack(points)
+        if intersection.shape[0] > 0:
+            self.add_vector_data(self.model.rescale(points[:,:3],inplace=False), intersection, name + "_intersection")
+        
     def add_points(self, points, name, **kwargs):
         """
 

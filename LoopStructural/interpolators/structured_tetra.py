@@ -4,7 +4,7 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 import logging
 
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg
+from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +106,6 @@ class TetMesh:
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_tetra_for_location(pos)
-        self.properties[prop].shape
         values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
         return values
 
@@ -131,10 +130,18 @@ class TetMesh:
         vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
         vertex_vals = self.properties[prop][tetras]
         #grads = np.zeros(tetras.shape)
-        values[inside,:] = (element_gradients[inside,:,:]*vertex_vals[inside, None, :]).sum(2)
+        values[inside,:] = (element_gradients[inside,:,:]*self.properties[prop][tetras[inside,None,:]]).sum(2)
         length = np.sum(values[inside,:],axis=1)
-        values[inside,:] /= length[:,None]
+        # values[inside,:] /= length[:,None]
         return values
+
+    def inside(self, pos):
+        inside = np.ones(pos.shape[0]).astype(bool)
+        for i in range(3):
+            inside *= pos[:, i] > self.origin[None, i]
+            inside *= pos[:, i] < self.origin[None, i] + \
+                      self.step_vector[None, i] * self.nsteps_cells[None, i]
+        return inside
 
     def get_tetra_for_location(self, pos):
         """
@@ -151,11 +158,13 @@ class TetMesh:
 
         """
         pos = np.array(pos)
+        inside = self.inside(pos)
         # initialise array for tetrahedron vertices
         vertices = np.zeros((5, 4, pos.shape[0], 3))
         vertices[:] = np.nan
         # get cell indexes
         c_xi, c_yi, c_zi = self.position_to_cell_index(pos)
+        
         # determine if using +ve or -ve mask
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # get cell corners
@@ -193,12 +202,17 @@ class TetMesh:
         # if all coords are +ve then point is inside cell
         mask = np.all(c > 0, axis=2)
 
-        inside = np.any(mask,axis=1)
+        inside = np.logical_and(inside,np.any(mask,axis=1))
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
         #create mask to see which cells are even
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # create global node index list
+        # print('nsteps',self.nsteps, 'nsteps_cells', self.nsteps_cells)
+        # print('x',np.min(c_xi),np.max(c_xi),np.min(xi),np.max(xi))
+        # print('y',np.min(c_yi),np.max(c_yi),np.min(yi),np.max(yi))
+        # print('z',np.min(c_zi),np.max(c_zi),np.min(zi),np.max(zi))
+
         gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
         # container for tetras
         tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
@@ -219,7 +233,7 @@ class TetMesh:
         tetra_return[inside,:] = tetras[mask,:]
         return vertices_return, c_return, tetra_return, inside
 
-    def get_constant_gradient(self, region):
+    def get_constant_gradient(self, region, direction=None):
         """
         Get the constant gradient for the specified nodes
 
@@ -232,6 +246,34 @@ class TetMesh:
         -------
 
         """
+        """
+        Add the constant gradient regularisation to the system
+
+        Parameters
+        ----------
+        w (double) - weighting of the cg parameter
+
+        Returns
+        -------
+
+        """
+        if direction is not None:
+            print('using cg direction')
+            logger.info("Running constant gradient")
+            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+            if elements_gradients.shape[0] != direction.shape[0]:
+                logger.error('Cannot add directional CG, vector field is not the correct length')
+                return
+            region = region.astype('int64')
+
+            neighbours = self.get_neighbours()
+            elements = self.get_elements()
+            idc, c, ncons = fold_cg(elements_gradients, direction, neighbours.astype('int64'), elements.astype('int64'), self.nodes)
+
+            idc = np.array(idc[:ncons, :])
+            c = np.array(c[:ncons, :])
+            B = np.zeros(c.shape[0])
+            return c, idc, B
         if self.cg is None:
             logger.info("Running constant gradient")
             elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
@@ -247,7 +289,34 @@ class TetMesh:
             B = np.zeros(c.shape[0])
             self.cg = (c,idc,B)
         return self.cg[0], self.cg[1], self.cg[2]
+    def get_constant_norm(self, region):
+        """
+        Get the constant gradient for the specified nodes
 
+        Parameters
+        ----------
+        region : np.array(dtype=bool)
+            mask of nodes to calculate cg for
+
+        Returns
+        -------
+
+        """
+        
+        logger.info("Running constant gradient")
+        elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+        region = region.astype('int64')
+
+        neighbours = self.get_neighbours()
+        elements = self.get_elements()
+        idc, c, ncons = constant_norm(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
+                            region.astype('int64'))
+
+        idc = np.array(idc[:ncons, :])
+        c = np.array(c[:ncons, :])
+        B = np.zeros(c.shape[0])
+        
+        return  c,idc,B
     def get_elements(self):
         """
         Get a numpy array of all of the elements in the mesh
@@ -348,12 +417,9 @@ class TetMesh:
         vertices, bc, tetras, inside = self.get_tetra_for_location(pos)
         ps = vertices
         m = np.array(
-            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),
-              (ps[:, 1, 2] - ps[:, 0, 2])],
-             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]),
-              (ps[:, 2, 2] - ps[:, 0, 2])],
-             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]),
-              (ps[:, 3, 2] - ps[:, 0, 2])]])
+            [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),(ps[:, 1, 2] - ps[:, 0, 2])],
+             [(ps[:, 2, 0] - ps[:, 0, 0]), (ps[:, 2, 1] - ps[:, 0, 1]),(ps[:, 2, 2] - ps[:, 0, 2])],
+             [(ps[:, 3, 0] - ps[:, 0, 0]), (ps[:, 3, 1] - ps[:, 0, 1]),(ps[:, 3, 2] - ps[:, 0, 2])]])
         I = np.array(
             [[-1., 1., 0., 0.],
              [-1., 0., 1., 0.],
@@ -365,25 +431,7 @@ class TetMesh:
         element_gradients = element_gradients @ I
         return vertices, element_gradients, tetras, inside
 
-    def inside(self, pos):
-        """
-        Check if a point is inside the structured grid
 
-        Parameters
-        ----------
-        pos
-
-        Returns
-        -------
-
-        """
-        # check whether point is inside box
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside = np.logical_and(inside, pos[:, i] >= self.origin[None, i])
-            inside = np.logical_and(inside,pos[:, i] <= self.origin[None, i] + \
-                      self.step_vector[None, i] * self.nsteps[None, i])
-        return inside
 
     def global_node_indicies(self, indexes):
         """
