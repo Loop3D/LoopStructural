@@ -1,6 +1,7 @@
 import logging
 
 import numpy as np
+import pandas as pd
 from sklearn.decomposition import PCA
 
 logger = logging.getLogger(__name__)
