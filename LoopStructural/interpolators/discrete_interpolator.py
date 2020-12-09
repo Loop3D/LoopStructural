@@ -194,7 +194,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def calculate_residual_for_constraints(self):
         residuals = {}
         for constraint_name, constraint in self.constraints:
-            residuals[constraint_name] = np.einsum('ij,ij->i',constraint['A'], model['supergroup_0'].interpolator.c[constraint['idc'].astype(int)]) - constraint['B'].flatten()
+            residuals[constraint_name] = np.einsum('ij,ij->i',constraint['A'],self.c[constraint['idc'].astype(int)]) - constraint['B'].flatten()
         return residuals
     def remove_constraints_from_least_squares(self, name='undefined',
                                               constraint_ids=None):
