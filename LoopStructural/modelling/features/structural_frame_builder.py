@@ -161,19 +161,19 @@ class StructuralFrameBuilder:
                 self.builders[1].add_orthogonal_feature(gz_feature, gyxgz,step=step)
             gy_const_norm = kwargs.get('gy_const_norm',0.)
 
-            ## bit of an ugly hack, adding in norm constraints for the norm we are forcing
-            if gz_feature is not None: 
-                tmp = CrossProductGeologicalFeature('tmp',gx_feature,gz_feature)
-                self.builders[1].add_orthogonal_feature(tmp,10.,step=step,B=1)
-                # gy_feature.value_feature = fold.fold frame[0]
-                # vector = feature.evaluate_gradient(self.builders[1].interpolator.support.barycentre())
-                # vector /= np.linalg.norm(vector,axis=1)[:,None]
-                # element_idx = np.arange(self.builders[1].interpolator.support.n_elements)
-                # np.random.shuffle(element_idx)
-                # norm_pts = np.hstack([self.builders[1].interpolator.support.barycentre()[element_idx[::step],:],vector[element_idx[::step],:],np.ones((vector[element_idx[::step],:].shape[0],1))])
+            # ## bit of an ugly hack, adding in norm constraints for the norm we are forcing
+            # if gz_feature is not None: 
+            #     tmp = CrossProductGeologicalFeature('tmp',gx_feature,gz_feature)
+            #     self.builders[1].add_orthogonal_feature(tmp,10.,step=step,B=1)
+            #     # gy_feature.value_feature = fold.fold frame[0]
+            #     # vector = feature.evaluate_gradient(self.builders[1].interpolator.support.barycentre())
+            #     # vector /= np.linalg.norm(vector,axis=1)[:,None]
+            #     # element_idx = np.arange(self.builders[1].interpolator.support.n_elements)
+            #     # np.random.shuffle(element_idx)
+            #     # norm_pts = np.hstack([self.builders[1].interpolator.support.barycentre()[element_idx[::step],:],vector[element_idx[::step],:],np.ones((vector[element_idx[::step],:].shape[0],1))])
 
-                # self.builders[1].interpolator.set_normal_constraints(norm_pts)
-                self.builders[1].data_added=True
+            #     # self.builders[1].interpolator.set_normal_constraints(norm_pts)
+            #     self.builders[1].data_added=True
             
             gy_feature = self.builders[1].build(regularisation=regularisation[1],**kwargs)
 

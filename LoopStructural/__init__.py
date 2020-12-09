@@ -23,7 +23,7 @@ from .modelling.core.geological_model import GeologicalModel
 from .visualisation.model_visualisation import LavaVuModelViewer
 from .visualisation.map_viewer import MapView
 from .utils.utils import log_to_console, log_to_file
-
+from .utils.helper import empty_dataframe
 #set up logging
 # temp_file = tempfile.mkdtemp()
 # if temp_file:

@@ -168,10 +168,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         constraint_ids = rows.copy()
 
         if name in self.constraints:            
-            # self.constraints[name]['rows'] = np.hstack([self.constraints[name]['rows'],
-            #                                     constraint_ids]),
+            
             self.constraints[name]['A'] =  np.vstack([self.constraints[name]['A'],A])
-            self.constraints[name]['B'] =  np.vstack([self.constraints[name]['B'], B])
+            self.constraints[name]['B'] =  np.hstack([self.constraints[name]['B'], B])
             self.constraints[name]['idc'] = np.vstack([self.constraints[name]['idc'],
                                                 idc])
                                    
