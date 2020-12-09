@@ -150,6 +150,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         nr = A.shape[0]
         if A.shape != idc.shape:
+            logger.error("Cannot add constraints: A and indexes have different shape")
             return
         
         if len(A.shape) > 2:
