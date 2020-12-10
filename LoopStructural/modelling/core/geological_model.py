@@ -1343,6 +1343,7 @@ class GeologicalModel:
         if feature_index > -1:
             return self.features[feature_index]
         else:
+            logger.error("{} does not exist!".format(feature_name))
             return None
 
     def evaluate_feature_value(self, feature_name, xyz, scale=True):
