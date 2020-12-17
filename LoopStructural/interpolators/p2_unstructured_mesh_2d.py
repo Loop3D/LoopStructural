@@ -12,8 +12,8 @@ class P2Unstructured2d(BaseUnstructured2d):
 
     """
     def __init__(self, elements, vertices,neighbours):    
-        BaseUnstructured2d.__init__(elements, vertices, neighbours)
-        
+        BaseUnstructured2d.__init__(self,elements, vertices, neighbours)
+
     def evaluate_mixed_derivative(self,indexes): 
         """
         evaluate partial of N with respect to st (to set u_xy=0)
@@ -124,3 +124,32 @@ class P2Unstructured2d(BaseUnstructured2d):
         N[:,5] = 4*c[:,1]*c[:,0] #4s(1-s-t)        
         
         return N, tri
+
+    def evaluate_d2(self, pos, prop):
+        """
+        Evaluate value of interpolant
+
+        Parameters
+        ----------
+        pos - numpy array
+            locations
+        prop - numpy array
+            property values at nodes
+
+        Returns
+        -------
+
+        """
+        values = np.zeros(pos.shape[0])
+        values[:] = np.nan
+        c, tri = self.evaluate_shape(pos[:,:2])
+        xxConst, yyConst = self.evaluate_shape_d2(tri)
+        xyConst = self.evaluate_mixed_derivative(tri)
+        inside = tri > 0
+        # vertices, c, elements, inside = self.get_elements_for_location(pos)
+        values[inside] = np.sum(xxConst[inside,:]*self.properties[prop][self.elements[tri[inside],:]],axis=1)
+        values[inside] += np.sum(yyConst[inside,:]*self.properties[prop][self.elements[tri[inside],:]],axis=1)
+        values[inside] += np.sum(xyConst[inside,:]*self.properties[prop][self.elements[tri[inside],:]],axis=1)
+
+        return values
+        

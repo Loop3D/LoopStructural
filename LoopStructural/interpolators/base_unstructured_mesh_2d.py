@@ -62,7 +62,7 @@ class BaseUnstructured2d:
         """
         return self.vertices
     
-    def barycentre(self, elements = None):
+    def barycentre(self, element_idx = None):
         """
         Return the barycentres of all tetrahedrons or of specified tetras using
         global index
@@ -76,9 +76,9 @@ class BaseUnstructured2d:
         -------
 
         """
-        if elements is None:
+        if element_idx is None:
             element_idx = np.arange(0,self.nelements)
-        elements = self.get_elements()[element_idx]
+        elements = self.elements[element_idx]
         barycentre = np.sum(self.nodes[elements][:, :, :],
                                  axis=1) / 4.
         return barycentre
