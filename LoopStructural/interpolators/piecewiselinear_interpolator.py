@@ -145,7 +145,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         if direction_feature:
-            print('dir fe')
             direction_vector = direction_feature.evaluate_gradient(self.support.barycentre())
         if direction_vector:
             if direction_vector.shape[0] == 1:
@@ -287,6 +286,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
             # d_t = self.support.get_elements_gradients(e)
+
+            # why? TODO check
             norm = np.zeros((element_gradients.shape[0],element_gradients.shape[1]))
             norm[inside,:] = np.linalg.norm(element_gradients[inside,:,:], axis=2)
             element_gradients /= norm[:, :, None]
