@@ -6,7 +6,7 @@ from enum import Enum
 class FileFormat(Enum):
     """ Enumeration of file export formats 
     """
-    OBJ = 1
+    OBJ = 1 # Not supported yet
     VTK = 2
-    GZ = 3 # Not supported yet
+    GOCAD = 3
     GLTF = 4 # Not supported yet
