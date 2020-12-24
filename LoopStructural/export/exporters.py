@@ -10,7 +10,7 @@ import numpy as np
 from LoopStructural.utils.helper import create_box
 from LoopStructural.export.file_formats import FileFormat
 
- 
+
 logger = logging.getLogger(__name__)
 
 
@@ -121,11 +121,12 @@ def _write_cubeface_evtk(model, file_name, data_label, nsteps, real_coords=True)
     ctype = np.full(tri.shape[0], VtkTriangle.tid)
 
     try:
-        unstructuredGridToVTK(file_name, x, y, z, connectivity = conn, offsets = offset, cell_types = ctype, cellData = None, pointData = {data_label: val})
+        unstructuredGridToVTK(file_name, x, y, z, connectivity=conn, offsets=offset, cell_types=ctype,
+                              cellData=None, pointData={data_label: val})
     except Exception as e:
         logger.warning("Cannot export cuboid surface to VTK file {}: {}".format(file_name, str(e)))
         return False
-    return True 
+    return True
 
 
 def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
@@ -170,11 +171,12 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
 
     # Write to grid
     try:
-        pointsToVTK(file_name, x, y, z, data= {data_label: vals})
+        pointsToVTK(file_name, x, y, z, data={data_label: vals})
     except Exception as e:
         logger.warning("Cannot export volume to VTK file {}: {}".format(file_name, str(e)))
         return False
-    return True 
+    return True
+
 
 def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
     """
@@ -263,10 +265,10 @@ PROPERTY_CLASS_HEADER 1 {propname} {{
 }}
 PROPERTY_SUBCLASS 1 QUANTITY {prop_storage_type}
 """.format(name=os.path.basename(file_name),
-           nsteps1=nsteps[0], nsteps2=nsteps[1], nsteps3=nsteps[2],
-           axismin1=bbox[0, 0], axismin2=bbox[0, 1], axismin3=bbox[0, 2],
-           axismax1=bbox[1, 0], axismax2=bbox[1, 1], axismax3=bbox[1, 2],
-           propname=data_label, prop_storage_type=prop_storage_type))
+                nsteps1=nsteps[0], nsteps2=nsteps[1], nsteps3=nsteps[2],
+                axismin1=bbox[0, 0], axismin2=bbox[0, 1], axismin3=bbox[0, 2],
+                axismax1=bbox[1, 0], axismax2=bbox[1, 1], axismax3=bbox[1, 2],
+                propname=data_label, prop_storage_type=prop_storage_type))
             if no_data_val is not None:
                 fp.write("PROP_NO_DATA_VALUE 1 {no_data_val}\n".format(no_data_val=no_data_val))
             fp.write("""PROP_ETYPE 1 IEEE
