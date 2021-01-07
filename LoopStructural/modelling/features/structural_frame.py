@@ -2,7 +2,7 @@
 Structural frames
 """
 import logging
-
+import numpy as np
 logger = logging.getLogger(__name__)
 
 
@@ -14,8 +14,7 @@ class StructuralFrame:
     def __init__(self, name, features, fold=None):
         """
         Structural frame is a curvilinear coordinate system defined by
-        structural
-        observations associated with a fault or fold.
+        structural observations associated with a fault or fold.
 
         Parameters
         ----------
@@ -26,6 +25,7 @@ class StructuralFrame:
         self.features = features
         self.data = None
         self.fold = fold
+
     def __getitem__(self, item):
         """
 
@@ -38,6 +38,21 @@ class StructuralFrame:
         the structural frame geological feature
         """
         return self.features[item]
+
+    def set_model(self, model):
+        """Link the model that created the frame to the frame
+        and the features that make up the frame 
+
+        Parameters
+        ----------
+        model : GeologicalModel
+            the geological model that created the fold frame
+        """
+        self.model = model
+        for f in self.features:
+            if f is None:
+                continue    
+            f.set_model(model)
 
     def add_region(self, region):
         for i in range(3):
@@ -71,7 +86,7 @@ class StructuralFrame:
         """
         self.data = data
 
-    def evaluate_value(self, evaluation_points, i=None):
+    def evaluate_value(self, evaluation_points):
         """
         Evaluate the value of the structural frame for the points.
         Can optionally only evaluate one coordinate
@@ -85,11 +100,15 @@ class StructuralFrame:
         -------
 
         """
-        if i is not None:
-            self.features[i].support.evaluate_value(evaluation_points)
-        return (self.features[0].support.evaluate_value(evaluation_points),
-                self.features[1].support.evaluate_value(evaluation_points),
-                self.features[2].support.evaluate_value(evaluation_points))
+        v = np.zeros(evaluation_points.shape) #create new 3d array of correct length
+        v[:] = np.nan
+        v[:,0] = self.features[0].evaluate_value(evaluation_points)
+        v[:,1] = self.features[1].evaluate_value(evaluation_points)
+        v[:,2] = self.features[2].evaluate_value(evaluation_points)
+        return v
+        # return (self.features[0].evaluate_value(evaluation_points),
+        #         self.features[1].evaluate_value(evaluation_points),
+        #         self.features[2].evaluate_value(evaluation_points))
 
     def evaluate_gradient(self, evaluation_points, i=None):
         """

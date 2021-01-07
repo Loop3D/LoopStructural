@@ -106,12 +106,14 @@ class StructuralFrameBuilder:
         gxxgy = 1
         gxxgz = 1
         gyxgz = 1
+        step = kwargs.get('step',3)
         if 'gxxgy' in kwargs:
             gxxgy = kwargs['gxxgy']
         if 'gxxgz' in kwargs:
             gxxgz = kwargs['gxxgz']
         if 'gyxgz' in kwargs:
             gyxgz = kwargs['gyxgz']
+
         # set regularisation so the the main surface (foliation, fault) is smooth
         # and the fields are allowed to vary more
         regularisation = kwargs.pop('regularisation', [1., 1., 1.])
@@ -126,7 +128,7 @@ class StructuralFrameBuilder:
                                                     0], **kwargs)
             # remove fold from kwargs
 
-            fold = kwargs.pop('fold', False)
+            fold = kwargs.pop('fold', None)
         if gx_feature is None:
             logger.warning(
                 "Not enough constraints for structural frame coordinate 0, \n"
@@ -147,17 +149,33 @@ class StructuralFrameBuilder:
             #         np.arange(0, self.support.n_elements),
             #         gy_feature.evaluate_gradient(self.support.barycentre),
             #         w=gyxgz)
-            if gx_feature is not None:
-                self.builders[2].add_orthogonal_feature(gx_feature, gxxgz)
+            if gx_feature is not None and gxxgz>0:
+                self.builders[2].add_orthogonal_feature(gx_feature, gxxgz,step=step)
             gz_feature = self.builders[2].build(regularisation=regularisation[2], **kwargs)
 
         if len(self.builders[1].data) > 0:
             logger.info("Building %s coordinate 1"%self.name)
-            if gx_feature is not None:
-                self.builders[1].add_orthogonal_feature(gx_feature, gxxgy)
-            if gz_feature is not None:
-                self.builders[1].add_orthogonal_feature(gz_feature, gyxgz)
-            gy_feature = self.builders[1].build(regularisation=regularisation[1], **kwargs)
+            if gx_feature is not None and gxxgy>0:
+                self.builders[1].add_orthogonal_feature(gx_feature, gxxgy,step=step)
+            if gz_feature is not None and gyxgz>0:
+                self.builders[1].add_orthogonal_feature(gz_feature, gyxgz,step=step)
+            gy_const_norm = kwargs.get('gy_const_norm',0.)
+
+            ## bit of an ugly hack, adding in norm constraints for the norm we are forcing
+            # if gz_feature is not None: 
+            #     tmp = CrossProductGeologicalFeature('tmp',gx_feature,gz_feature)
+            #     self.builders[1].add_orthogonal_feature(tmp,10.,step=step,B=1)
+            #     # gy_feature.value_feature = fold.fold frame[0]
+            #     # vector = feature.evaluate_gradient(self.builders[1].interpolator.support.barycentre())
+            #     # vector /= np.linalg.norm(vector,axis=1)[:,None]
+            #     # element_idx = np.arange(self.builders[1].interpolator.support.n_elements)
+            #     # np.random.shuffle(element_idx)
+            #     # norm_pts = np.hstack([self.builders[1].interpolator.support.barycentre()[element_idx[::step],:],vector[element_idx[::step],:],np.ones((vector[element_idx[::step],:].shape[0],1))])
+
+            #     # self.builders[1].interpolator.set_normal_constraints(norm_pts)
+            #     self.builders[1].data_added=True
+            
+            gy_feature = self.builders[1].build(regularisation=regularisation[1],**kwargs)
 
         if gy_feature is None:
             logger.warning(

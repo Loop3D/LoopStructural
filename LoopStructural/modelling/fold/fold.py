@@ -26,7 +26,7 @@ class FoldEvent:
         self.fold_limb_rotation = fold_limb_rotation
         self.fold_axis = fold_axis
         self.name = name
-
+        
     def get_fold_axis_orientation(self, points):
         """
         gets the fold axis orientation for evaluation points
@@ -61,7 +61,7 @@ class FoldEvent:
 
     def get_deformed_orientation(self, points):
         """
-        Calculate the normal to the folded foliation at locations
+        Calculate the direction vectors of the fold
 
         Parameters
         ----------
@@ -70,6 +70,13 @@ class FoldEvent:
 
         Returns
         -------
+        fold_direction : np.array
+            a vector parallel to the fold
+        fold axis : np.array
+            the fold axis
+        dgz : np.array
+            the X direction of the finite strain ellipsoid, perpendicular to both
+            fold axis and fold direction
 
         """
         fold_axis = self.get_fold_axis_orientation(points)
@@ -89,8 +96,8 @@ class FoldEvent:
         dgz[d < 0] = -dgz[d < 0]
         return fold_direction, fold_axis, dgz
 
-    def get_regularisation_direction(self, points):
-        self.foldframe.features[2].evaluate_gradient(points)
+    # def get_regularisation_direction(self, points):
+    #     self.foldframe.features[2].evaluate_gradient(points)
 
     def rot_mat(self, axis, angle):
         """
