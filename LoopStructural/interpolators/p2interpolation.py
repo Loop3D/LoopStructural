@@ -79,7 +79,7 @@ class P2Interpolator(DiscreteInterpolator):
     
 
     
-    def minimise_grad_steepness(self, stren =0.0, w=0.1):
+    def minimise_grad_steepness(self, stren =0.0, w=0.1,maskall=False,wtfunc=None):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions
         It is not added on the borders 
@@ -92,7 +92,9 @@ class P2Interpolator(DiscreteInterpolator):
             [description], by default 0.1
         """
         tri = np.arange(0,len(self.support.elements))
-        mask = np.all(self.support.neighbours > 0,axis=1)
+        mask = np.ones(self.support.neighbours.shape[0],dtype=bool)
+        if maskall == False:
+            mask[:] = np.all(self.support.neighbours > 0,axis=1)
         tri_points = self.support.nodes[self.support.elements[tri[mask],:],:]
         barycentre = np.mean(tri_points,axis=1)
         M_t = np.ones((tri_points.shape[0],3,3))
@@ -107,6 +109,8 @@ class P2Interpolator(DiscreteInterpolator):
         min_dist = np.min(d,axis=0)
         min_dist/=np.max(min_dist)      
         wt*=(1+stren*min_dist)
+        if wtfunc:
+            wt=wtfunc(barycentre)
         idc = self.support.elements[tri[mask]]
         self.add_constraints_to_least_squares(xyConst*4*wt[:,None],np.zeros(xyConst.shape[0]),idc)
         
@@ -115,7 +119,7 @@ class P2Interpolator(DiscreteInterpolator):
 
             
         
-    def minimize_edge_jumps(self,stren,w=0.1,maxmdDist=None): #NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
+    def minimize_edge_jumps(self,stren,w=0.1,maxmdDist=None,wtfunc=None): #NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         #iterate over all triangles
         # flag inidicate which triangles have had all their relationships added 
         v1 = self.support.nodes[self.support.edges][:,0,:]
@@ -155,8 +159,14 @@ class P2Interpolator(DiscreteInterpolator):
         tri_cp1 = np.hstack([self.support.elements[cp1_tri1],self.support.elements[cp1_tri2]])
         tri_cp2 = np.hstack([self.support.elements[cp2_tri1],self.support.elements[cp2_tri2]])
         # add cp1 and cp2 to the least squares system
-        self.add_constraints_to_least_squares(const_cp1*e_len[:,None]*w,np.zeros(const_cp1.shape[0]),tri_cp1, name='edge jump cp1')
-        self.add_constraints_to_least_squares(const_cp2*e_len[:,None]*w,np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
+        wt = np.zeros(tri_cp1.shape[0])
+        wt[:] = w
+        if wtfunc:
+            wt=wtfunc(tri_cp1)
+        self.add_constraints_to_least_squares(const_cp1*e_len[:,None]*wt[:,None],np.zeros(const_cp1.shape[0]),tri_cp1, name='edge jump cp1')
+        if wtfunc:
+            wt=wtfunc(tri_cp2)
+        self.add_constraints_to_least_squares(const_cp2*e_len[:,None]*wt[:,None],np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
 
         
     def evaluate_d2(self, evaluation_points):
