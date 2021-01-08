@@ -3,7 +3,8 @@ import numpy as np
 import os
 import logging
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 def process_map2loop(m2l_directory, flags={}):
     """

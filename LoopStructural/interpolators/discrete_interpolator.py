@@ -10,7 +10,8 @@ from scipy.sparse import linalg as sla
 from LoopStructural.interpolators.geological_interpolator import \
     GeologicalInterpolator
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class DiscreteInterpolator(GeologicalInterpolator):

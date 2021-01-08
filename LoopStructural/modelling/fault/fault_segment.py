@@ -2,7 +2,8 @@ import logging
 
 from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
 from LoopStructural.modelling.fault.fault_function import BaseFault
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 

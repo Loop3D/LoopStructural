@@ -9,7 +9,8 @@ from LoopStructural.interpolators.discrete_interpolator import \
     DiscreteInterpolator
 from LoopStructural.utils.helper import get_vectors
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):

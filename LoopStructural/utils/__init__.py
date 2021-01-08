@@ -11,4 +11,5 @@ Submodules
     utils
 
 """
+from .logging import getLogger, log_to_file, log_to_console
 from .map2loop import process_map2loop, build_model

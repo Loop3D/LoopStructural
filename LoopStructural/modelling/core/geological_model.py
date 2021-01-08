@@ -36,7 +36,8 @@ from LoopStructural.utils.exceptions import LoopBaseException
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
                                          strike_dip_vector)
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 if not surfe:
     logger.warning("Cannot import Surfe")
 

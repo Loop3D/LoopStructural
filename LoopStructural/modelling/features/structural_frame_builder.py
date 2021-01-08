@@ -6,7 +6,8 @@ import logging
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 from LoopStructural.modelling.features.cross_product_geological_feature \
     import \

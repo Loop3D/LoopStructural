@@ -7,7 +7,8 @@ import logging
 import numpy as np
 import pandas as pd
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 from LoopStructural.utils.helper import xyz_names, val_name, normal_vec_names, \
     weight_name, gradient_vec_names, tangent_vec_names, interface_name

@@ -6,7 +6,8 @@ import logging
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 class TetMesh:
     """
