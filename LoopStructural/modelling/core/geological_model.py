@@ -129,14 +129,19 @@ class GeologicalModel:
         self.feature_name_index = {}
         self.data = None
         self.nsteps = nsteps
-
+        self._str = 'Instance of LoopStructural.GeologicalModel \n'
+        self._str += '------------------------------------------ \n'
         # we want to rescale the model area so that the maximum length is
         # 1
         self.origin = np.array(origin).astype(float)
-        logger.info('Model origin: {} {} {}'.format(self.origin[0],self.origin[1],self.origin[2]))
-
+        originstr = 'Model origin: {} {} {}'.format(self.origin[0],self.origin[1],self.origin[2])
+        logger.info(originstr)
+        self._str+=originstr+'\n'
         self.maximum = np.array(maximum).astype(float)
-        logger.info('Model maximum: {} {} {}'.format(self.maximum[0],self.maximum[1],self.maximum[2]))
+        maximumstr = 'Model maximum: {} {} {}'.format(self.maximum[0],self.maximum[1],self.maximum[2])
+        logger.info(maximumstr)
+        self._str+=maximumstr+'\n'
+
         lengths = self.maximum - self.origin
         self.scale_factor = 1.
         self.bounding_box = np.zeros((2, 3))
@@ -145,7 +150,11 @@ class GeologicalModel:
         if rescale:
             self.scale_factor = np.max(lengths)
             logger.info('Rescaling model using scale factor {}'.format(self.scale_factor))
-
+        self._str+='Model rescale factor: {} \n'.format(self.scale_factor)
+        self._str+='The model contains {} GeologicalFeatures'.format(len(self.features))
+        self._str+=''
+        self._str += '------------------------------------------ \n'
+        self._str += ''
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
@@ -156,6 +165,8 @@ class GeologicalModel:
                                                      'nsteps': nsteps,
                                                      'reuse_supports': reuse_supports}}
         
+    def __str__(self):
+        return self._str
 
     @classmethod
     def from_map2loop_directory(cls, m2l_directory,**kwargs):
