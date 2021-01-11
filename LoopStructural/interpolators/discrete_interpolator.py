@@ -52,7 +52,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_c_ = 0
         self.constraints = {}
         self.interpolation_weights= {}
-
+        logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
+        
     def set_property_name(self, propertyname):
         """
         Set the property name attribute, this is usually used to
@@ -89,7 +90,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.region_map[self.region] = np.array(
             range(0, len(self.region_map[self.region])))
         self.nx = len(self.support.nodes[self.region])
-        
+        logger.info("Interpolation now uses region and has {} degrees of freedom".format(self.nx))
+
     def set_interpolation_weights(self, weights):
         """
         Set the interpolation weights dictionary
