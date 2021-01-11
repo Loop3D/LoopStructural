@@ -151,7 +151,7 @@ class GeologicalModel:
             self.scale_factor = np.max(lengths)
             logger.info('Rescaling model using scale factor {}'.format(self.scale_factor))
         self._str+='Model rescale factor: {} \n'.format(self.scale_factor)
-        self._str+='The model contains {} GeologicalFeatures'.format(len(self.features))
+        self._str+='The model contains {} GeologicalFeatures \n'.format(len(self.features))
         self._str+=''
         self._str += '------------------------------------------ \n'
         self._str += ''
@@ -168,6 +168,9 @@ class GeologicalModel:
     def __str__(self):
         return self._str
 
+    def _ipython_key_completions_(self):
+        return self.feature_name_index.keys()
+        
     @classmethod
     def from_map2loop_directory(cls, m2l_directory,**kwargs):
         """Alternate constructor for a geological model using m2l output
@@ -229,6 +232,12 @@ class GeologicalModel:
         """
         return self.get_feature_by_name(feature_name)
     
+    def feature_names(self):
+        return self.feature_name_index.keys()
+
+    def fault_names(self):
+        pass
+
     def check_inialisation(self):
         if self.data is None:
             logger.error("Data not associated with GeologicalModel. Run set_data")
@@ -270,6 +279,7 @@ class GeologicalModel:
                         (feature.name, self.feature_name_index[feature.name]))
             self.features[self.feature_name_index[feature.name]] = feature
         else:
+            self._str += 'GeologicalFeature: {} of type - {} \n'.format(feature.name,feature.type)
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info("Adding %s to model at location %i" % (
