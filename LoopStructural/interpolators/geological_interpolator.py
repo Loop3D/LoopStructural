@@ -158,6 +158,12 @@ class GeologicalInterpolator:
         """
         return self.data['normal']
 
+    def get_data_locations(self):
+        norm = self.get_norm_constraints()
+        grad = self.get_gradient_constraints()
+        val = self.get_value_constraints()
+        return np.vstack([norm[:,:3],grad[:,:3],val[:,:3]])
+        
     def get_interface_constraints(self):
         return self.data['interface']
     def setup_interpolator(self, **kwargs):
