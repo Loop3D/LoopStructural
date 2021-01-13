@@ -40,24 +40,6 @@ class StructuredGrid(BaseStructuredSupport):
         return self.cell_centres(np.arange(self.n_elements))
 
 
-
-    def update_property(self, propertyname, values):
-        """[summary]
-
-        [extended_summary]
-
-        Parameters
-        ----------
-        propertyname : [type]
-            [description]
-        values : [type]
-            [description]
-        """
-        if values.shape[0] == self.n_nodes:
-            self.properties[propertyname] = values
-        if values.shape[0] == self.n_elements:
-            self.cell_properties[propertyname] = values
-
     def cell_centres(self, global_index):
         """[summary]
 

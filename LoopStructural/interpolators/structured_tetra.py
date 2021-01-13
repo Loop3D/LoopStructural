@@ -41,8 +41,6 @@ class TetMesh:
             [1,0,3,5]
         ])
         self.ntetra = self.n_cells * 5
-        self.properties = {}
-        self.property_gradients = {}
         self.n_elements = self.ntetra
         self.cg = None
 
@@ -125,7 +123,6 @@ class TetMesh:
         values = np.zeros(pos.shape)
         values[:] = np.nan
         vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
-        vertex_vals = self.properties[prop][tetras]
         #grads = np.zeros(tetras.shape)
         values[inside,:] = (element_gradients[inside,:,:]*property_array[tetras[inside,None,:]]).sum(2)
         length = np.sum(values[inside,:],axis=1)

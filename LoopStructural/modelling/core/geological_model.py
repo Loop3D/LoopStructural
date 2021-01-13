@@ -158,7 +158,7 @@ class GeologicalModel:
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
-        if reuse_supports:
+        if self.reuse_supports:
             logger.warning("Supports are shared between geological features \n"
                                 "this may cause unexpected behaviour and should only\n"
                                 "be use by advanced users")
@@ -484,7 +484,7 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            if reuse_supports:
+            if self.reuse_supports:
                 mesh_id = 'mesh_{}'.format(nelements)
                 mesh = self.support.get(mesh_id,
                                         TetMesh(origin=bb[0, :], nsteps=nsteps,
