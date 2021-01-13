@@ -33,7 +33,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         DiscreteInterpolator.__init__(self, mesh)
         # whether to assemble a rectangular matrix or a square matrix
         self.interpolator_type = 'PLI'
-        self.nx = len(self.support.nodes[self.region])
         self.support = mesh
 
         self.interpolation_weights = {'cgw': 0.1, 'cpw': 1., 'npw': 1.,

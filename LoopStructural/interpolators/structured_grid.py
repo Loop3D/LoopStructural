@@ -6,11 +6,14 @@ import logging
 
 import numpy as np
 
+from .base_structured_3d_support import BaseStructuredSupport
+
+
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
 
-class StructuredGrid:
+class StructuredGrid(BaseStructuredSupport):
     """
 
     """
@@ -18,6 +21,7 @@ class StructuredGrid:
                  origin=np.zeros(3),
                  nsteps=np.array([10, 10, 10]),
                  step_vector=np.ones(3),
+                 name=None
                  ):
         """
 
@@ -27,57 +31,15 @@ class StructuredGrid:
         nsteps - 3d list or numpy array of ints
         step_vector - 3d list or numpy array of int
         """
-
-        self.nsteps = np.array(nsteps)
-        self.step_vector = np.array(step_vector)
-        self.origin = np.array(origin)
-        self.maximum = origin+self.nsteps*self.step_vector
-
-        # self.nsteps+=1
-        self.n_nodes = self.nsteps[0] * self.nsteps[1] * self.nsteps[2]
-        # self.nsteps-=1
-        self.dim = 3
-        self.nsteps_cells = self.nsteps - 1
-        self.n_cell_x = self.nsteps[0] - 1
-        self.n_cell_y = self.nsteps[1] - 1
-        self.n_cell_z = self.nsteps[2] - 1
-        self.properties = {}
-        self.n_elements = self.n_cell_x * self.n_cell_y * self.n_cell_z
-
-        # calculate the node positions using numpy (this should probably not
-        # be stored as it defeats
-        # the purpose of a structured grid
-
-        # self.barycentre = self.cell_centres(np.arange(self.n_elements))
-
+        BaseStructuredSupport.__init__(self,origin,nsteps,step_vector)
         self.regions = {}
         self.regions['everywhere'] = np.ones(self.n_nodes).astype(bool)
-
-
-    @property
-    def nodes(self):
-        max = self.origin + self.nsteps_cells * self.step_vector
-        x = np.linspace(self.origin[0], max[0], self.nsteps[0])
-        y = np.linspace(self.origin[1], max[1], self.nsteps[1])
-        z = np.linspace(self.origin[2], max[2], self.nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        return np.array([xx.flatten(order='F'), yy.flatten(order='F'),
-                               zz.flatten(order='F')]).T
+        self.name = name
 
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))
 
-    # @property
-    # def barycentre(self):
-    #     return self.cell_centres(np.arange(self.n_elements))
 
-    def print_geometry(self):
-        print('Origin: %f %f %f' % (
-            self.origin[0], self.origin[1], self.origin[2]))
-        print('Cell size: %f %f %f' % (
-            self.step_vector[0], self.step_vector[1], self.step_vector[2]))
-        max = self.origin + self.nsteps_cells * self.step_vector
-        print('Max extent: %f %f %f' % (max[0], max[1], max[2]))
 
     def update_property(self, propertyname, values):
         """[summary]
@@ -373,7 +335,7 @@ class StructuredGrid:
         globalidx[~inside] = -1
         return globalidx, inside
 
-    def evaluate_value(self, evaluation_points, property_name):
+    def evaluate_value(self, evaluation_points, property_array):
         """
         Evaluate the value of of the property at the locations.
         Trilinear interpolation dot corner values
@@ -387,25 +349,33 @@ class StructuredGrid:
         -------
 
         """
+        if property_array.shape[0] != self.n_nodes:
+            logger.error("Property array does not match grid")
+            raise BaseException
         idc, inside = self.position_to_cell_corners(evaluation_points)
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
 
         v[inside, :] = self.position_to_dof_coefs(
             evaluation_points[inside, :]).T
-        v[inside, :] *= self.properties[property_name][idc[inside, :]]
+        
+        v[inside, :] *= property_array[idc[inside, :]]
+        
         return np.sum(v, axis=1)
 
-    def evaluate_gradient(self, evaluation_points, property_name):
+    def evaluate_gradient(self, evaluation_points, property_array):
+        if property_array.shape[0] != self.n_nodes:
+            logger.error("Property array does not match grid")
+            raise BaseException
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 3, 8))
         T[inside, :, :] = self.calcul_T(evaluation_points[inside, :])
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
-        T[inside, 0, :] *= self.properties[property_name][idc[inside, :]]
-        T[inside, 1, :] *= self.properties[property_name][idc[inside, :]]
-        T[inside, 2, :] *= self.properties[property_name][idc[inside, :]]
+        T[inside, 0, :] *= property_array[idc[inside, :]]
+        T[inside, 1, :] *= property_array[idc[inside, :]]
+        T[inside, 2, :] *= property_array[idc[inside, :]]
         return np.array(
             [np.sum(T[:, 0, :], axis=1), np.sum(T[:, 1, :], axis=1) ,
              np.sum(T[:, 2, :], axis=1) ]).T

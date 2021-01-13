@@ -85,11 +85,7 @@ class TetMesh:
                                  axis=1) / 4.
         return barycentre
 
-    def update_property(self, name, value):
-
-        self.properties[name] = value
-
-    def evaluate_value(self, pos, prop):
+    def evaluate_value(self, pos, property_array):
         """
         Evaluate value of interpolant
 
@@ -107,10 +103,10 @@ class TetMesh:
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_tetra_for_location(pos)
-        values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
+        values[inside] = np.sum(c[inside,:]*property_array[tetras[inside,:]],axis=1)
         return values
 
-    def evaluate_gradient(self, pos, prop):
+    def evaluate_gradient(self, pos, property_array):
         """
         Evaluate the gradient of an interpolant at the locations
 
@@ -131,7 +127,7 @@ class TetMesh:
         vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
         vertex_vals = self.properties[prop][tetras]
         #grads = np.zeros(tetras.shape)
-        values[inside,:] = (element_gradients[inside,:,:]*self.properties[prop][tetras[inside,None,:]]).sum(2)
+        values[inside,:] = (element_gradients[inside,:,:]*property_array[tetras[inside,None,:]]).sum(2)
         length = np.sum(values[inside,:],axis=1)
         # values[inside,:] /= length[:,None]
         return values

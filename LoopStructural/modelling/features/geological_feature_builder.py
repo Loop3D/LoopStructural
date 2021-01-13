@@ -14,7 +14,7 @@ from LoopStructural.utils.helper import xyz_names, val_name, normal_vec_names, \
     weight_name, gradient_vec_names, tangent_vec_names, interface_name
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import get_data_bounding_box_map as get_data_bounding_box
-
+from LoopStructural.utils import get_data_axis_aligned_bounding_box
 
 class GeologicalFeatureInterpolator:
     """[summary]
@@ -310,13 +310,29 @@ class GeologicalFeatureInterpolator:
 
         """
 
-        if data_region is not None:
-            xyz = self.get_data_locations()
-            bb, region = get_data_bounding_box(xyz, data_region)
-            self.interpolator.set_region(region=region)
+
         if not self.data_added:
             self.add_data_to_interpolator(**kwargs)
+        if data_region is not None:
+            xyz = self.interpolator.get_data_locations()
+            bb, region = get_data_bounding_box(xyz, data_region)    
+            # if self.model.reuse_supports == False:
+            if np.any(np.min(bb[0,:])< self.interpolator.support.origin):
+                neworigin = np.min([self.interpolator.support.origin,bb[0,:]],axis=0)
+                logger.info("Changing origin of support for {} from {} {} {} to {} {} {}"\
+                                .format(self.name,self.interpolator.support.origin[0],\
+                                    self.interpolator.support.origin[1],self.interpolator.support.origin[2],\
+                                                neworigin[0],neworigin[1],neworigin[2]))
+                self.interpolator.support.origin = neworigin
+            if np.any(np.max(bb[0,:])< self.interpolator.support.maximum):
+                newmax = np.max([self.interpolator.support.maximum,bb[0,:]],axis=0)
+                logger.info("Changing origin of support for {} from {} {} {} to {} {} {}"\
+                        .format(self.name,self.interpolator.support.maximum[0],
+                        self.interpolator.support.maximum[1],self.interpolator.support.maximum[2],\
+                                                newmax[0],newmax[1],newmax[2]))
 
+                self.interpolator.support.maximum = newmax
+            self.interpolator.set_region(region=region)
         # moving this to init because it needs to be done before constraints
         # are added?
         if fold is not None:

@@ -31,12 +31,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         GeologicalInterpolator.__init__(self)
         self.B = []
         self.support = support
-        self.region_function = None
-        self.region = np.arange(0, support.n_nodes)
-        self.region_map = np.zeros(support.n_nodes).astype(int)
+        self.region_function = lambda xyz : np.ones(xyz.shape[0],dtype=int)
         # self.region_map[self.region] = np.array(range(0,
         # len(self.region_map[self.region])))
-        self.nx = len(self.support.nodes[self.region])
         self.shape = 'rectangular'
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
@@ -53,7 +50,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.constraints = {}
         self.interpolation_weights= {}
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
-        
+
+    @property
+    def nx(self):
+        return len(self.support.nodes[self.region])
+
+    @property
+    def region(self):
+        return self.region_function(self.support.nodes)
+
+    @property
+    def region_map(self):
+        region_map = np.zeros(self.support.n_nodes).astype(int)
+        region_map[self.region] = np.array(
+            range(0, len(region_map[self.region])))
+        return region_map
     def set_property_name(self, propertyname):
         """
         Set the property name attribute, this is usually used to
@@ -85,11 +96,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # evaluate the region function on the support to determine
         # which nodes are inside update region map and degrees of freedom
         self.region_function = region
-        self.region = region(self.support.nodes)
-        self.region_map = np.zeros(self.support.n_nodes).astype(int)
-        self.region_map[self.region] = np.array(
-            range(0, len(self.region_map[self.region])))
-        self.nx = len(self.support.nodes[self.region])
         logger.info("Interpolation now uses region and has {} degrees of freedom".format(self.nx))
 
     def set_interpolation_weights(self, weights):
@@ -511,7 +517,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]
         # check solution is not nan
-        self.support.properties[self.propertyname] = self.c
+        # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
             logger.warning("Solver not run, no scalar field")
         # if solution is all 0, probably didn't work
@@ -544,7 +550,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.support.evaluate_value(
-                evaluation_points[~mask], self.propertyname)
+                evaluation_points[~mask], self.c)
         return evaluated
 
     def evaluate_gradient(self, evaluation_points):
@@ -561,5 +567,5 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         if evaluation_points.shape[0] > 0:
             return self.support.evaluate_gradient(evaluation_points,
-                                                  self.propertyname)
+                                                  self.c)
         return np.zeros((0, 3))
