@@ -158,6 +158,10 @@ class GeologicalModel:
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
+        if reuse_supports:
+            logger.warning("Supports are shared between geological features \n"
+                                "this may cause unexpected behaviour and should only\n"
+                                "be use by advanced users")
         logger.info('Reusing interpolation supports: {}'.format(self.reuse_supports))
         self.stratigraphic_column = None
         self.parameters = {'features': [], 'model': {'bounding_box': self.origin.tolist() + self.maximum.tolist(),
@@ -480,18 +484,22 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            mesh_id = 'mesh_{}'.format(nelements)
-            mesh = self.support.get(mesh_id,
-                                    TetMesh(origin=bb[0, :], nsteps=nsteps,
-                                            step_vector=step_vector))
-            if mesh_id not in self.support:
-                self.support[mesh_id] = mesh
+            if reuse_supports:
+                mesh_id = 'mesh_{}'.format(nelements)
+                mesh = self.support.get(mesh_id,
+                                        TetMesh(origin=bb[0, :], nsteps=nsteps,
+                                                step_vector=step_vector))
+                if mesh_id not in self.support:
+                    self.support[mesh_id] = mesh
+            else:
+                mesh = TetMesh(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector)
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using PLI" % (mesh.ntetra))
 
             return PLI(mesh)
 
         if interpolatortype == 'FDI':
+
             # find the volume of one element
             if element_volume is None:
                 element_volume = box_vol / nelements
@@ -504,12 +512,15 @@ class GeologicalModel:
                 logger.error("Cannot create interpolator: number of steps is too small")
                 return None
             # create a structured grid using the origin and number of steps
-            grid_id = 'grid_{}'.format(nelements)
-            grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
+            if self.reuse_supports:
+                grid_id = 'grid_{}'.format(nelements)
+                grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
                                                             nsteps=nsteps,
                                                             step_vector=step_vector))
-            if grid_id not in self.support:
-                self.support[grid_id] = grid
+                if grid_id not in self.support:
+                    self.support[grid_id] = grid
+            else:
+                grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,step_vector=step_vector)
             logger.info("Creating regular grid with %i elements \n"
                         "for modelling using FDI" % grid.n_elements)
             return FDI(grid)
