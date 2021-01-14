@@ -22,6 +22,25 @@ SurfE can be used for interpolating a GeologicalFeature in a GeologicalModel by 
     interpolatortype = 'surfe'
     
 Additional parameters can be specified to the interpolator including:
+.. list-table:: Surfe parameters
+    :widths 25 50
+    :header-rows: 1
+    
+    * - Parameter
+      - Options
+    * - method
+      - single_surface, Laujaunie, horizons
+    * - kernel
+      - r3, 
+    * - greedy
+      - tuple (interface misfit, angular misfit)
+    * - poly_order
+      - integer
+    * - radius
+      - double, radius for kernel if it uses a shape parameter
+    * - anisotropy
+      - boolean, whether to use global anisotropy
+      
 :code`interpolatoron of scalar distance fields and potential fields by choosing either the provides three methods for surface estimation.
 can be installed by running the written by Michael Hillier from the 
 SurfE
