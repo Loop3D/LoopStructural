@@ -79,8 +79,8 @@ class BaseUnstructured2d:
         if element_idx is None:
             element_idx = np.arange(0,self.nelements)
         elements = self.elements[element_idx]
-        barycentre = np.sum(self.nodes[elements][:, :, :],
-                                 axis=1) / 4.
+        barycentre = np.sum(self.nodes[elements][:, :3, :],
+                                 axis=1) / 3.
         return barycentre
 
     def element_area(self, elements):
@@ -162,7 +162,7 @@ class BaseUnstructured2d:
         points_[:,1:] = pos
         minv = np.linalg.inv(M)
         c = np.einsum('kij,li->lkj',minv,points_)
-        isinside = np.all(c > 0,axis=2)
+        isinside = np.all(c >= 0,axis=2)
         ix,iy = np.where(isinside==True)
         element_idx = np.zeros(pos.shape[0],dtype=int)
         element_idx[:] = -1
