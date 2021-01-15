@@ -77,7 +77,7 @@ class P1Interpolator(DiscreteInterpolator):
                                                   self.support.elements[tri[mask],:],
                                                   name='value')
 
-    def minimize_edge_jumps(self,stren,w=0.1,maxmdDist=None): #NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
+    def minimize_edge_jumps(self,stren,w=0.1,maxmdDist=None, vector_func=None): #NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         #iterate over all triangles
         # flag inidicate which triangles have had all their relationships added 
         v1 = self.support.nodes[self.support.edges][:,0,:]
@@ -93,6 +93,9 @@ class P1Interpolator(DiscreteInterpolator):
         e_len = np.linalg.norm(v,axis=1)
         normal = np.array([v[:,1],-v[:,0]]).T
         normal /= np.linalg.norm(normal,axis=1)[:,None]
+        # evaluate normal if using vector func for cp2 
+        if vector_func:
+            normal = vector_func((v1+v2)/2)
         # evaluate the shape function for the edges for each neighbouring triangle
         Dt, tri1 = self.support.evaluate_shape_derivatives(bc_t1,elements=self.support.edge_relationships[:,0])
         Dn, tri2 = self.support.evaluate_shape_derivatives(bc_t2,elements=self.support.edge_relationships[:,1])

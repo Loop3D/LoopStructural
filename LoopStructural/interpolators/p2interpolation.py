@@ -64,7 +64,48 @@ class P2Interpolator(DiscreteInterpolator):
                                                 name = 'norm')
 
         pass
+    
+    def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
+                                           B=0):
+        """
+        constraints scalar field to be orthogonal to a given vector
 
+        Parameters
+        ----------
+        position
+        normals
+        w
+        B
+
+        Returns
+        -------
+
+        """
+        pass
+        # if points.shape[0] > 0:
+        #     vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:,:3])
+        #     #e, inside = self.support.elements_for_array(points[:, :3])
+        #     #nodes = self.support.nodes[self.support.elements[e]]
+        #     vector /= np.linalg.norm(vector,axis=1)[:,None]
+        #     vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
+        #     vol = np.abs(np.linalg.det(vecs))  # / 6
+        #     # d_t = self.support.get_elements_gradients(e)
+        #     norm = np.linalg.norm(element_gradients, axis=2)
+        #     element_gradients /= norm[:, :, None]
+
+        #     A = np.einsum('ij,ijk->ik', vector, element_gradients)
+
+        #     A *= vol[:, None]
+
+        #     gi = np.zeros(self.support.n_nodes).astype(int)
+        #     gi[:] = -1
+        #     gi[self.region] = np.arange(0, self.nx).astype(int)
+        #     w /= 3
+        #     idc = gi[tetras]
+        #     B = np.zeros(idc.shape[0])+B
+        #     outside = ~np.any(idc == -1, axis=1)
+        #     self.add_constraints_to_least_squares(A[outside, :] * w,
+        #                                           B[outside], idc[outside, :])
     def add_ctr_pts(self, w=1.0):
         points = self.get_value_constraints()
         if points.shape[0] > 1:
@@ -108,9 +149,9 @@ class P2Interpolator(DiscreteInterpolator):
         d = np.linalg.norm((self.get_data_locations()[:,None,:2]-barycentre[None,:,:]),axis=2)
         min_dist = np.min(d,axis=0)
         min_dist/=np.max(min_dist)      
-        wt*=(1+stren*min_dist)
+        wt*=(1+stren*min_dist)*area
         if wtfunc:
-            wt=wtfunc(barycentre)
+            wt=wtfunc(barycentre)*area
         idc = self.support.elements[tri[mask]]
         self.add_constraints_to_least_squares(xyConst*4*wt[:,None],np.zeros(xyConst.shape[0]),idc)
         
@@ -119,7 +160,7 @@ class P2Interpolator(DiscreteInterpolator):
 
             
         
-    def minimize_edge_jumps(self,stren,w=0.1,maxmdDist=None,wtfunc=None): #NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
+    def minimize_edge_jumps(self,stren,w=0.1,maxmdDist=None,wtfunc=None, vector_func=None): #NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         #iterate over all triangles
         # flag inidicate which triangles have had all their relationships added 
         v1 = self.support.nodes[self.support.edges][:,0,:]
@@ -142,14 +183,27 @@ class P2Interpolator(DiscreteInterpolator):
         e_len = np.linalg.norm(v,axis=1)
         normal = np.array([v[:,1],-v[:,0]]).T
         normal /= np.linalg.norm(normal,axis=1)[:,None]
+        
+        # evaluate normal if using vector func for cp1 
+        if vector_func:
+            normal = vector_func(cp[:,0])
+        
         # evaluate the shape function for the edges for each neighbouring triangle
         cp1_Dt, cp1_tri1 = self.support.evaluate_shape_derivatives(cp[:,0],elements=self.support.edge_relationships[:,0])
         cp1_Dn, cp1_tri2 = self.support.evaluate_shape_derivatives(cp[:,0],elements=self.support.edge_relationships[:,1])
-        cp2_Dt, cp2_tri1 = self.support.evaluate_shape_derivatives(cp[:,1],elements=self.support.edge_relationships[:,0])
-        cp2_Dn, cp2_tri2 = self.support.evaluate_shape_derivatives(cp[:,1],elements=self.support.edge_relationships[:,1])
+        
         # constraint for each cp is triangle - neighbour create a Nx12 matrix 
         const_t_cp1 = np.einsum('ij,ikj->ik',normal,cp1_Dt)
         const_n_cp1 = -np.einsum('ij,ikj->ik',normal,cp1_Dn)
+        
+        # evaluate normal if using vector func for cp2 
+        if vector_func:
+            normal = vector_func(cp[:,1])
+        # evaluate the shape function for the edges for each neighbouring triangle
+        cp2_Dt, cp2_tri1 = self.support.evaluate_shape_derivatives(cp[:,1],elements=self.support.edge_relationships[:,0])
+        cp2_Dn, cp2_tri2 = self.support.evaluate_shape_derivatives(cp[:,1],elements=self.support.edge_relationships[:,1])
+        # constraint for each cp is triangle - neighbour create a Nx12 matrix 
+
         const_t_cp2 = np.einsum('ij,ikj->ik',normal,cp2_Dt)
         const_n_cp2 = -np.einsum('ij,ikj->ik',normal,cp2_Dn)
 
