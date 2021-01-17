@@ -21,9 +21,9 @@ three native interpolation algorithms:
 
 1. Piecewise-linear interpolation :cite:`Frank2007`
 2. Discrete Fold Interpolator :cite:`Laurent2016,Grose2017,Grose2018,Grose2019`
-3. Finite Difference Interpolation
+3. Finite Difference Interpolation :cite:`Irakarama2020`
 
-and a wrapper for the generalised radial basis functions provided by Surfe.
+and a wrapper for the generalised radial basis functions provided by Surfe :cite:`Hillier2014`. 
 
 .. toctree::
    :hidden:

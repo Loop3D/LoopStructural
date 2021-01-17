@@ -12,13 +12,10 @@ Within LoopStructural we have implemented three discrete interpolation algorithm
 
 * A Piecewise Linear Interpolation algorithm where the interpolation is performed on a tetraheral mesh minimising the second derivative of the implicit funtion between neighbouring tetrahedron.
 This interpolation algorithm is an implementation of the discrete smooth interpolation algorithm included in Gocad-Skua, which is heavily based on the work of Frank et al., 2007 and Caumon et al., 2007.
-* This interpolation algorithm can also be framed by minimising the second derivatives using finite different on a regular cartesian grid which has been presented by Irakarama et al.,
-* Within the Piecewise Linear framework we have also implemented additional constraints for modelling the geometry of folded surfaces. 
-To do this we build a structural frame, where the structural frame characterises the axial foliation and fold axis of the fold. 
-We modify the regularisation constraint for the folded surfaces so that the regularisation only occurs orthogonal to the fold axis and axial surface.
-We also use the geometry of the fold looking down plunge to add in additional constraints on the folded surface geometry. 
-The fold constraints were first presented by Laurent et al., 2016 and the characterisation of the geometry from datasets was introduced by Grose et al., 2017
 
+* This interpolation algorithm can also be framed by minimising the second derivatives using finite different on a regular cartesian grid which has been presented by Irakarama et al.,
+
+* Within the Piecewise Linear framework we have also implemented additional constraints for modelling the geometry of folded surfaces. To do this we build a structural frame, where the structural frame characterises the axial foliation and fold axis of the fold. We modify the regularisation constraint for the folded surfaces so that the regularisation only occurs orthogonal to the fold axis and axial surface.We also use the geometry of the fold looking down plunge to add in additional constraints on the folded surface geometry. The fold constraints were first presented by Laurent et al., 2016 and the characterisation of the geometry from datasets was introduced by Grose et al., 2017
 
 
 References
