@@ -2,8 +2,9 @@
 
 Implicit Interpolators
 ======================
-The implicit functions have no known analytical solution which means that they need to be approximated from the observations that are provided.
-The implicit function is approximated using a weighted combination of basis functions: 
+The aim of implicit modelling is to find a function which represents the distance away from a reference geological horizon.
+There is no known analytical solution for this problem which means that they need to be approximated from the observations that are provided.
+We can approximate the implicit function using a weighted combination of basis functions: 
 
 .. math:: f(x,y,z) = \sum^N_{i=0} v_i \varphi_i(X) 
 
@@ -13,7 +14,7 @@ Geological observations including the location of contacts and orientation of st
 
 .. math:: f(x,y,z) = v
 
-* Observations constraining an form surface or interface between stratigraphy 
+* Observations constraining an form surface or interface between stratigraphic units 
 
 .. math:: \sum^N_{i=0} \sum^N_{j=i} f(x_i,y_i,z_i) - f(x_j,y_j,z_j) = 0
 
@@ -64,6 +65,7 @@ The regularisation term is added by adding the following constraint for every pa
 .. math:: \nabla\phi_{T1} - \nabla\phi_{T2} = 0
 
 Additional parameters can be specified to the interpolator including:
+
   .. list-table:: Piecewise Linear Interpolator (PLI)
       :widths: 25 75
       :header-rows: 1
@@ -132,6 +134,79 @@ Additional parameters can be specified to the interpolator including:
       * - operators
         - a dictionary of numpy arrays that can be used as masks for finite difference approximation
         
+Solving discrete system
+-----------------------
+
+The discrete interpolation problems are an over determined system of equations:
+
+.. math::
+  A \cdot x = b
+
+Where A is a rectangular sparse matrix and a row of A represents the nodes in the discrete support. 
+A is over determined.
+We are looking to find the solution vector x, this can be done by using least squares:
+
+.. math::
+  A.T \cdot A \cdot x = A.T \cdot b
+
+There are many different algorithms that can be used for solving this problem and with different advantages and use cases. 
+LoopStructural can be used with many different solvers and can be used with custom solvers if required.
+There are two main families of solvers that are available for solving sparse linear algeba: direct and iterative. 
+Direct solvers usually try to find the inverse or pseudo inverse of the matrix. 
+
+Direct solvers used in LoopStructural are:
+
+* lu decomposition 'using the scipy implementation'<https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.SuperLU.html>
+* cholesky decomposition using sksparse library *only on linux*
+
+
+
+
+Iterative solvers:
+
+* conjugate gradient solver - using scipy
+* algorithmic multigrid solver - using pyamg
+* lsqr - this solver uses the rectangular matrix directly, therefore does not require computing A.T A and A.T B. Uses scipy
+
+.. code-block:
+  model.create_and_add_foliation('my_foliation',solver='lu')
+  model.create_and_add_foliation('my_foliation',solver='chol')
+  model.create_and_add_foliation('my_foliation',solver='cg')
+  model.create_and_add_foliation('my_foliation',solver='lsqr')
+  model.create_and_add_foliation('my_foliation',solver='pyamg')
+
+Using an external solver:
+
+You can also pass a function that solves
+
+.. math::
+   A.T \cdot A \cdot x = A.T \cdot B
+
+to LoopStructural if you want to use another solver by using the `external` keyword . 
+
+.. code-block:
+  def mysolver(A,B):
+    from scipy.sparse.linalg import gmres
+    x = gmres(A,B)
+    return x[0]
+  model.create_and_add_foliation('my_foliation',solver='external',external=mysolver)
+ 
+ The solution to the least squares problem will be stored in the interpolator object and can be easily accessed:
+
+.. code-block:
+  model.create_and_add_foliation('my_foliation',solver='pyamg')
+  pyamg_solution = model['my_foliation'].interpolator.c[model['my_foliation'].interpolator.region]
+
+Note that when interpolating a subset of a mesh using a region, LoopStructural will fill the unused nodes in the interpolation support with nan.
+To return only the values that are related to the solver make sure you mask using the region.  
+
+The choice of solver is somewhat dependent on the model you are creating. 
+If you have a small model and a relatively large amount of memory on your computer a direct solver may be the most appropriate.
+
+If your model is large, or computer memory is a limitation an iterative solver is the best choice.
+However, iterative solvers can suffer from poor convergence if the matrix is poorly conditioned (this is possible when modeling irregular geometries).
+Solving the iterative problem can be sped up by using a preconditioner for the matrix. 
+
 Data Supported Interpolation
 -----------------------------
 LoopStructural provides a wrapper to the SurfE c++ library developed  Natural Resources Canada (Geological Survey of Canada) by Michael Hillier, Eric de Kemp, and Ernst Schetselaar for the purposes of 3D structural geological modelling particularly in sparse data environments.
@@ -140,6 +215,7 @@ SurfE can be used for interpolating a GeologicalFeature in a GeologicalModel by 
     interpolatortype = 'surfe'
     
 Additional parameters can be specified to the interpolator including:
+
   .. list-table:: Surfe parameters
       :widths: 25 75
       :header-rows: 1
@@ -159,6 +235,4 @@ Additional parameters can be specified to the interpolator including:
       * - anisotropy
         - boolean, whether to use global anisotropy
       
-:code`interpolatoron of scalar distance fields and potential fields by choosing either the provides three methods for surface estimation.
-can be installed by running the written by Michael Hillier from the 
-SurfE
+

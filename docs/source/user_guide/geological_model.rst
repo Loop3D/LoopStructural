@@ -1,15 +1,19 @@
 Geological Model
 ================
+
 The GeologicalModel is the main entry point for creating a LoopStructural model. 
 GeologicalModel's define the bounding box of the model, determine how the different scalar fields interact and apply the time aware modelling.
 
 Creating a model manually
 -------------------------
+
 A GeologicalModel can be created using the default constructor.
+
 .. code-block::
     model = GeologicalModel(origin,maximum)
 
 Additional arguments that can be provided are:
+
   .. list-table:: Finite Difference Interpolator (FDI)
       :widths: 25 75
       :header-rows: 1
@@ -60,10 +64,12 @@ The only required argument is the feature_name, which is the identifier to the d
                                     damp = True)
                                     
 The other parameters are used to tune the behaviour of LoopStructural. 
-Different interpolation schemes can be used, interpolation_options_ for more information 
+Different interpolation schemes can be used, see :doc:`interpolation_options` for more information.
+
 
 Adding a fault
 ~~~~~~~~~~~~~~
+
 Faults are modelled by building a structural frame to define the fault geometry.
 The structural frame has three coordinates:
 
@@ -94,6 +100,7 @@ The fault can be modelled with either a constant displacement on the hanging wal
 
 Adding an uncomformity
 ~~~~~~~~~~~~~~~~~~~~~~
+
 There are two ways an unconformity can be added into the model. 
 The first approach creates an unconformity as a new geological feature assigning the unconformity surface to the 0 isovalue.
 Using this approach does not ensure that the unconformity is conformable to a stratigraphic series. 
@@ -120,6 +127,7 @@ This will clip any younger stratigraphic units to be clipped by the value of the
 
 Setting a stratigraphic column
 ------------------------------
+
 The GeologicalModel can have a stratigraphic column assigned to it. 
 The stratigraphic column performs a map between the GeologicalFeatures representing stratigraphy and a unique identification for each stratigraphic unit.
 The stratigraphic column can also be used to specify colouring for faults.
@@ -141,6 +149,7 @@ If it is a fault, this scalar field is not used for evaluating the stratigraphy.
 
 Using the GeologicalModel
 -------------------------
+
 The GeologicalModel has a number of helper functions allowing you to easily access different 
 aspects of the model.
 
