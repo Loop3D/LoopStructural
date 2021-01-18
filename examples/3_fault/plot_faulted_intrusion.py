@@ -63,7 +63,7 @@ fault = model.create_and_add_fault('fault',
 
 viewer = LavaVuModelViewer(model)
 viewer.add_isosurface(fault,
-                     voxet=model.voxet(),
+                      
                       isovalue=0
 #                       slices=[0,1]#nslices=10
                      )
@@ -89,7 +89,7 @@ strati = model.create_and_add_foliation('strati',nelements=30000,interpolatortyp
 
 viewer = LavaVuModelViewer(model)
 viewer.add_isosurface(strati,
-                     voxet=model.voxet(),
+                      
                      isovalue=0)
 # viewer.add_data(model.features[0][0])
 viewer.add_data(strati)
