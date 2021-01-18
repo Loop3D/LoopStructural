@@ -6,15 +6,15 @@ import logging
 import numpy as np
 import pandas as pd
 from LoopStructural.datasets import normal_vector_headers
-from LoopStructural.interpolators.discrete_fold_interpolator import \
+from LoopStructural.interpolators import \
     DiscreteFoldInterpolator as DFI
-from LoopStructural.interpolators.finite_difference_interpolator import \
+from LoopStructural.interpolators import \
     FiniteDifferenceInterpolator as FDI
-from LoopStructural.interpolators.piecewiselinear_interpolator import \
+from LoopStructural.interpolators import \
     PiecewiseLinearInterpolator as PLI
 
 try:
-    from LoopStructural.interpolators.surfe_wrapper import \
+    from LoopStructural.surfe_wrapper import \
         SurfeRBFInterpolator as Surfe
 
     surfe = True
@@ -22,9 +22,9 @@ try:
 except ImportError:
     surfe = False
 
-from LoopStructural.interpolators.structured_grid import StructuredGrid
-from LoopStructural.interpolators.structured_tetra import TetMesh
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
+from LoopStructural.modelling.fault import FaultSegment
 from LoopStructural.modelling.features import (GeologicalFeatureInterpolator,
                                                RegionFeature,
                                                StructuralFrameBuilder,

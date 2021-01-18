@@ -222,7 +222,70 @@ class P2Interpolator(DiscreteInterpolator):
             wt=wtfunc(tri_cp2)
         self.add_constraints_to_least_squares(const_cp2*e_len[:,None]*wt[:,None],np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
 
+    def minimize_edge_jump_magnitude(self,stren,w=0.1,maxmdDist=None,wtfunc=None, vector_func=None): #NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
+        #iterate over all triangles
+        # flag inidicate which triangles have had all their relationships added 
+        v1 = self.support.nodes[self.support.edges][:,0,:]
+        v2 = self.support.nodes[self.support.edges][:,1,:]
+        ncp = 2
+        midedge = v1-v2
         
+        cp = np.zeros((v1.shape[0],ncp,2))
+        cp[:,0] = 0.25*v1 + 0.75*v2
+        cp[:,1] = 0.27*v1 + 0.25*v2
+
+        d = np.linalg.norm((self.get_data_locations()[:,None,:2]-cp[None,:,0,:]),axis=2)
+        cp1_min_dist = np.min(d,axis=0)
+
+        d = np.linalg.norm((self.get_data_locations()[:,None,:2]-cp[None,:,1,:]),axis=2)
+        cp2_min_dist = np.min(d,axis=0)
+        
+        cp1_min_dist/=np.max([cp1_min_dist,cp2_min_dist]) 
+        cp2_min_dist/=np.max([cp1_min_dist,cp2_min_dist]) 
+
+        v = v1-v2
+        e_len = np.linalg.norm(v,axis=1)
+        normal = np.array([v[:,1],-v[:,0]]).T
+        normal /= np.linalg.norm(normal,axis=1)[:,None]
+        
+        # evaluate normal if using vector func for cp1 
+        if vector_func:
+            normal = vector_func(cp[:,0])
+        
+        # evaluate the shape function for the edges for each neighbouring triangle
+        cp1_Dt, cp1_tri1 = self.support.evaluate_shape_derivatives(cp[:,0],elements=self.support.edge_relationships[:,0])
+        cp1_Dn, cp1_tri2 = self.support.evaluate_shape_derivatives(cp[:,0],elements=self.support.edge_relationships[:,1])
+        
+        # constraint for each cp is triangle - neighbour create a Nx12 matrix 
+        const_t_cp1 = np.einsum('ij,ikj->ik',normal,cp1_Dt)
+        const_n_cp1 = -np.einsum('ij,ikj->ik',normal,cp1_Dn)
+        
+        # evaluate normal if using vector func for cp2 
+        if vector_func:
+            normal = vector_func(cp[:,1])
+        # evaluate the shape function for the edges for each neighbouring triangle
+        cp2_Dt, cp2_tri1 = self.support.evaluate_shape_derivatives(cp[:,1],elements=self.support.edge_relationships[:,0])
+        cp2_Dn, cp2_tri2 = self.support.evaluate_shape_derivatives(cp[:,1],elements=self.support.edge_relationships[:,1])
+        # constraint for each cp is triangle - neighbour create a Nx12 matrix 
+
+        const_t_cp2 = np.einsum('ij,ikj->ik',normal,cp2_Dt)
+        const_n_cp2 = -np.einsum('ij,ikj->ik',normal,cp2_Dn)
+
+        const_cp1 = np.hstack([const_t_cp1,const_n_cp1])
+        const_cp2 = np.hstack([const_t_cp2,const_n_cp2])
+        # get vertex indexes
+        tri_cp1 = np.hstack([self.support.elements[cp1_tri1],self.support.elements[cp1_tri2]])
+        tri_cp2 = np.hstack([self.support.elements[cp2_tri1],self.support.elements[cp2_tri2]])
+        # add cp1 and cp2 to the least squares system
+        wt = np.zeros(tri_cp1.shape[0])
+        wt[:] = w
+        if wtfunc:
+            wt=wtfunc(tri_cp1)
+        self.add_constraints_to_least_squares(const_cp1*e_len[:,None]*wt[:,None],np.zeros(const_cp1.shape[0]),tri_cp1, name='edge jump cp1')
+        if wtfunc:
+            wt=wtfunc(tri_cp2)
+        self.add_constraints_to_least_squares(const_cp2*e_len[:,None]*wt[:,None],np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
+
     def evaluate_d2(self, evaluation_points):
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
