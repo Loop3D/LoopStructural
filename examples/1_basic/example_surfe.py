@@ -55,7 +55,7 @@ viewer.add_isosurface(model.features[0],
 # #                    value=0,
 # #                    boundary_points=model.bounding_box,
 # #                    nsteps=np.array([30,30,30]),
-# #                    voxet=model.voxet(),
+# #                     ,
 # #                   cmap='prism')
 # viewer.add_scalar_field(model.features[0],
 #                      cmap='prism')
