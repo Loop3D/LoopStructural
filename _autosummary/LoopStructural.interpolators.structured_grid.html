@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -200,15 +210,14 @@
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="LoopStructural.interpolators.structured_grid.StructuredGrid">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.structured_grid.</code><code class="sig-name descname">StructuredGrid</code><span class="sig-paren">(</span><em class="sig-param">origin=array([0.</em>, <em class="sig-param">0.</em>, <em class="sig-param">0.])</em>, <em class="sig-param">nsteps=array([10</em>, <em class="sig-param">10</em>, <em class="sig-param">10])</em>, <em class="sig-param">step_vector=array([1.</em>, <em class="sig-param">1.</em>, <em class="sig-param">1.])</em>, <em class="sig-param">maximum=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.structured_grid.</code><code class="sig-name descname">StructuredGrid</code><span class="sig-paren">(</span><em class="sig-param">origin=array([0.</em>, <em class="sig-param">0.</em>, <em class="sig-param">0.])</em>, <em class="sig-param">nsteps=array([10</em>, <em class="sig-param">10</em>, <em class="sig-param">10])</em>, <em class="sig-param">step_vector=array([1.</em>, <em class="sig-param">1.</em>, <em class="sig-param">1.])</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.base_structured_3d_support.BaseStructuredSupport</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array</strong> (<em>origin</em>) – </p></li>
 <li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array of ints</strong> (<em>nsteps</em>) – </p></li>
 <li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array of int</strong> (<em>step_vector</em>) – </p></li>
-<li><p><strong>maximum</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -268,7 +277,7 @@ yi, zi</p>
 
 <dl class="method">
 <dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.evaluate_value">
-<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em>, <em class="sig-param">property_name</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.evaluate_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em>, <em class="sig-param">property_array</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.evaluate_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the value of of the property at the locations.
 Trilinear interpolation dot corner values</p>
 <dl class="field-list simple">
@@ -358,21 +367,6 @@ Trilinear interpolation dot corner values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><em>array of interpolation coefficients</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.structured_grid.StructuredGrid.update_property">
-<code class="sig-name descname">update_property</code><span class="sig-paren">(</span><em class="sig-param">propertyname</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_grid.StructuredGrid.update_property" title="Permalink to this definition">¶</a></dt>
-<dd><p>[summary]</p>
-<p>[extended_summary]</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>propertyname</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
-<li><p><strong>values</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>

@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -210,8 +220,7 @@
 <p>[summary]</p>
 <p>[extended_summary]</p>
 <p>Structural frame is a curvilinear coordinate system defined by
-structural
-observations associated with a fault or fold.</p>
+structural observations associated with a fault or fold.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -237,7 +246,7 @@ Can optionally only evaluate the ith coordinate</p>
 
 <dl class="method">
 <dt id="LoopStructural.modelling.features.structural_frame.StructuralFrame.evaluate_value">
-<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em>, <em class="sig-param">i=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.structural_frame.StructuralFrame.evaluate_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.structural_frame.StructuralFrame.evaluate_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the value of the structural frame for the points.
 Can optionally only evaluate one coordinate</p>
 <dl class="field-list simple">
@@ -268,6 +277,18 @@ Can optionally only evaluate one coordinate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>data</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.features.structural_frame.StructuralFrame.set_model">
+<code class="sig-name descname">set_model</code><span class="sig-paren">(</span><em class="sig-param">model</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.structural_frame.StructuralFrame.set_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link the model that created the frame to the frame
+and the features that make up the frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> (<a class="reference internal" href="LoopStructural.modelling.core.geological_model.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel"><em>GeologicalModel</em></a>) – the geological model that created the fold frame</p>
 </dd>
 </dl>
 </dd></dl>

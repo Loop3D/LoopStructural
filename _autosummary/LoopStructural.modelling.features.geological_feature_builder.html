@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -258,7 +268,7 @@ data in the order they are added</p>
 
 <dl class="method">
 <dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_orthogonal_feature">
-<code class="sig-name descname">add_orthogonal_feature</code><span class="sig-paren">(</span><em class="sig-param">feature</em>, <em class="sig-param">w=1.0</em>, <em class="sig-param">region=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_orthogonal_feature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_orthogonal_feature</code><span class="sig-paren">(</span><em class="sig-param">feature</em>, <em class="sig-param">w=1.0</em>, <em class="sig-param">region=None</em>, <em class="sig-param">step=1</em>, <em class="sig-param">B=0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.add_orthogonal_feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a constraint to the interpolator so that the gradient of an exisitng feature is orthogonal
 to the feature being built. E.g. dot product between gradients should be = 0</p>
 <dl class="field-list simple">
@@ -267,14 +277,18 @@ to the feature being built. E.g. dot product between gradients should be = 0</p>
 <li><p><strong>feature</strong> (<a class="reference internal" href="LoopStructural.modelling.features.geological_feature.html#LoopStructural.modelling.features.geological_feature.GeologicalFeature" title="LoopStructural.modelling.features.geological_feature.GeologicalFeature"><em>GeologicalFeature</em></a>) – feature which we want to be orthogonal to</p></li>
 <li><p><strong>w</strong> (<em>double</em>) – how much to weight in least squares sense</p></li>
 <li><p><strong>region</strong> (<em>unused</em>) – </p></li>
+<li><p><strong>step</strong> (<em>int</em>) – numpy slicing step size to see how many tetras to add</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The constraint can be applied to a random subset of the tetrahedral elements in the mesh
+in theory this shu</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">fold=None</em>, <em class="sig-param">fold_weights=None</em>, <em class="sig-param">data_region=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">fold=None</em>, <em class="sig-param">fold_weights={}</em>, <em class="sig-param">data_region=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalFeatureInterpolator.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs the interpolation and builds the geological feature</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

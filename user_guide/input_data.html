@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Input data &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Geological Model" href="geological_model.html" />
+    <link rel="prev" title="About" href="../about.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Input data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#value-constraints">Value constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interface-constraints">Interface constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gradient-norm-constraints">Gradient norm constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gradient-constraints">Gradient constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tangent-constraints">Tangent constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualisation.html">LavaVuModelViewer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Input data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/user_guide/input_data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="input-data">
+<h1>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h1>
+<p>To create a geological model the data needs to be formatted in a table the following headings:</p>
+<ul class="simple">
+<li><p>X - x component of the cartesian coordinates</p></li>
+<li><p>Y - y component of the cartesian coordinates</p></li>
+<li><p>Z - z component of the cartesian coordinates</p></li>
+<li><p>feature_name - unique name of the geological feature being modelled</p></li>
+<li><p>val - value observations of the scalar field</p></li>
+<li><p>interface - unique identifier for an inteface containing similar scalar field values</p></li>
+<li><p>nx - x component of the gradient norm</p></li>
+<li><p>ny - y component of the gradient norm</p></li>
+<li><p>nz - z component of the gradient norm</p></li>
+<li><p>gx - x component of a gradient constraint</p></li>
+<li><p>gy - y component of a gradient constraint</p></li>
+<li><p>gz - z component of a gradient constraint</p></li>
+<li><p>tx - x component of a gradient tangent constraint</p></li>
+<li><p>ty - y component of a gradient tangent constraint</p></li>
+<li><p>tz - z component of a gradient tangent constraint</p></li>
+<li><p>coord - coordinate of the structural frame data point is used for</p></li>
+</ul>
+<div class="section" id="value-constraints">
+<h2>Value constraints<a class="headerlink" href="#value-constraints" title="Permalink to this headline">¶</a></h2>
+<p>Value constraints set the value of the implicit function to equal the value.
+This should represent the distance from the reference horizon.
+It is important to consider the range in value of this field and the coordinates of the model.
+If the range in value of the scalar field is very large relative to the model coordinates, it would be expected that the resulting model will be very steep.</p>
+</div>
+<div class="section" id="interface-constraints">
+<h2>Interface constraints<a class="headerlink" href="#interface-constraints" title="Permalink to this headline">¶</a></h2>
+<p>Interface constraints are points which should have the same value of the implicit function.
+This is comparable to the way data are interpreted using the Lajaunnie approach.
+A warning, when using interface constraints there is no gradient information implicitly defined by the value of the points.
+This means that unless there are sufficient gradient normal constraints located between interfaces the scalar field may not appear as expected.
+Another consideration is that using discrete approaches the implicit function is solved in a least squares sense, this means that all of the constraints minimised equally.
+Due to the implementation of interface constraints, these tend to be weighted higher in the system of equations due to there being more pairs of points than points.
+As a result, it is recommended to increase the weighting of the normal constraints by at least the average number of points in an interface.</p>
+</div>
+<div class="section" id="gradient-norm-constraints">
+<h2>Gradient norm constraints<a class="headerlink" href="#gradient-norm-constraints" title="Permalink to this headline">¶</a></h2>
+<p>Sets the partial derivatives of the implicit function to equal the components of the gradient norm vector.
+This has a similar limitation as the value constraints, the magnitude of the vector needs to within the correct scale of the model.
+This means the normal vector should be scaled in the same way as the model coordinates.</p>
+</div>
+<div class="section" id="gradient-constraints">
+<h2>Gradient constraints<a class="headerlink" href="#gradient-constraints" title="Permalink to this headline">¶</a></h2>
+<p>Gradient constraints find a pair of vectors that are orthogonal to the normal vector to the field.
+This this can be the strike vector and the dip vector.
+Two constraints are added into the implicit functions constraining the scalar field to be orthogonal to these vectors.
+This constraint will control the gradient of the scalar field without controlling the polarity or the length of the gradient norm.
+For this reason these constraints are not as strong as the gradient norm constraint.</p>
+</div>
+<div class="section" id="tangent-constraints">
+<h2>Tangent constraints<a class="headerlink" href="#tangent-constraints" title="Permalink to this headline">¶</a></h2>
+<p>Constrains a vector to be orthogonal to the scalar field by adding the following constraint:</p>
+<div class="math notranslate nohighlight">
+\[f(x,y,z) \cdot \textbf{t} = 0\]</div>
+<p>This constraint does not control the vaue of the scalar field and is quite weak.
+It is not recommended for use, however it could be used for integrating form lines, instead of using interface constraints.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="geological_model.html" class="btn btn-neutral float-right" title="Geological Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../about.html" class="btn btn-neutral float-left" title="About" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Lachlan Grose
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

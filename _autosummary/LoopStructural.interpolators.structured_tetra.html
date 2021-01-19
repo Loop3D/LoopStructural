@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.interpolators.structured_grid" href="LoopStructural.interpolators.structured_grid.html" />
-    <link rel="prev" title="LoopStructural.interpolators.finite_difference_interpolator" href="LoopStructural.interpolators.finite_difference_interpolator.html" /> 
+    <link rel="prev" title="LoopStructural.interpolators.surfe_wrapper" href="LoopStructural.interpolators.surfe_wrapper.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -232,7 +242,7 @@ yi, zi</p>
 
 <dl class="method">
 <dt id="LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_gradient">
-<code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">pos</em>, <em class="sig-param">prop</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">pos</em>, <em class="sig-param">property_array</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the gradient of an interpolant at the locations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -246,7 +256,7 @@ yi, zi</p>
 
 <dl class="method">
 <dt id="LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_value">
-<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">pos</em>, <em class="sig-param">prop</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate_value</code><span class="sig-paren">(</span><em class="sig-param">pos</em>, <em class="sig-param">property_array</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.evaluate_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate value of interpolant</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -260,7 +270,18 @@ yi, zi</p>
 
 <dl class="method">
 <dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_constant_gradient">
-<code class="sig-name descname">get_constant_gradient</code><span class="sig-paren">(</span><em class="sig-param">region</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_constant_gradient" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_constant_gradient</code><span class="sig-paren">(</span><em class="sig-param">region</em>, <em class="sig-param">direction=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_constant_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the constant gradient for the specified nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>region</strong> (<em>np.array</em><em>(</em><em>dtype=bool</em><em>)</em>) – mask of nodes to calculate cg for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.get_constant_norm">
+<code class="sig-name descname">get_constant_norm</code><span class="sig-paren">(</span><em class="sig-param">region</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.get_constant_norm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the constant gradient for the specified nodes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -365,17 +386,6 @@ with the neighbours for each element</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="LoopStructural.interpolators.structured_tetra.TetMesh.inside">
-<code class="sig-name descname">inside</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.inside" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if a point is inside the structured grid</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pos</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="LoopStructural.interpolators.structured_tetra.TetMesh.node_indexes_to_position">
 <code class="sig-name descname">node_indexes_to_position</code><span class="sig-paren">(</span><em class="sig-param">xindex</em>, <em class="sig-param">yindex</em>, <em class="sig-param">zindex</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.structured_tetra.TetMesh.node_indexes_to_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the xyz position from the node coordinates</p>
@@ -439,7 +449,7 @@ with the neighbours for each element</p>
         <a href="LoopStructural.interpolators.structured_grid.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.structured_grid" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="LoopStructural.interpolators.finite_difference_interpolator.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.finite_difference_interpolator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="LoopStructural.interpolators.surfe_wrapper.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.surfe_wrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

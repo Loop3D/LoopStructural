@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:17.410** total execution time for **auto_examples_3_fault** files:
+**00:09.375** total execution time for **auto_examples_3_fault** files:
 
 +-------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_3_fault_plot_faulted_intrusion.py` (``plot_faulted_intrusion.py``) | 00:17.410 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_3_fault_plot_faulted_intrusion.py` (``plot_faulted_intrusion.py``) | 00:09.375 | 0.0 MB |
 +-------------------------------------------------------------------------------------------------+-----------+--------+

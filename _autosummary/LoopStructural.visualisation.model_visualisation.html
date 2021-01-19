@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -303,7 +313,7 @@ You can update the model resolution by changing the attribute nsteps
 
 <dl class="method">
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_model_surfaces">
-<code class="sig-name descname">add_model_surfaces</code><span class="sig-paren">(</span><em class="sig-param">faults=True</em>, <em class="sig-param">cmap=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_model_surfaces" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_model_surfaces</code><span class="sig-paren">(</span><em class="sig-param">faults=True</em>, <em class="sig-param">cmap=None</em>, <em class="sig-param">fault_colour='black'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_model_surfaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add surfaces for all of the interfaces in the model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -334,12 +344,16 @@ You can update the model resolution by changing the attribute nsteps
 
 <dl class="method">
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_scalar_field">
-<code class="sig-name descname">add_scalar_field</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_scalar_field" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<code class="sig-name descname">add_scalar_field</code><span class="sig-paren">(</span><em class="sig-param">geological_feature</em>, <em class="sig-param">name=None</em>, <em class="sig-param">cmap='rainbow'</em>, <em class="sig-param">vmin=None</em>, <em class="sig-param">vmax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_scalar_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a block the size of the model area painted with the scalar field value</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geological_feature</strong> (<a class="reference internal" href="LoopStructural.modelling.features.geological_feature.html#LoopStructural.modelling.features.geological_feature.GeologicalFeature" title="LoopStructural.modelling.features.geological_feature.GeologicalFeature"><em>GeologicalFeature</em></a>) – the geological feature to colour the scalar field by</p></li>
-<li><p><strong>kwargs</strong> – kwargs for lavavu</p></li>
+<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – Name of the object for lavavu, needs to be unique for the viewer object, by default uses feature name</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – mpl colourmap reference, by default ‘rainbow’</p></li>
+<li><p><strong>vmin</strong> (<em>double</em><em>, </em><em>optional</em>) – minimum value of the colourmap, by default None</p></li>
+<li><p><strong>vmax</strong> (<em>double</em><em>, </em><em>optional</em>) – maximum value of the colourmap, by default None</p></li>
 </ul>
 </dd>
 </dl>

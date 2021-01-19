@@ -80,7 +80,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7fa8e72b3400>
+    <matplotlib.contour.QuadContourSet object at 0x7fddddc2bb20>
 
 
 
@@ -107,7 +107,7 @@ fault frame and an expected displacement model.
 
     viewer = LavaVuModelViewer(model)
     viewer.add_isosurface(fault,
-                         voxet=model.voxet(),
+                      
                           isovalue=0
     #                       slices=[0,1]#nslices=10
                          )
@@ -133,7 +133,7 @@ fault frame and an expected displacement model.
 
     viewer = LavaVuModelViewer(model)
     viewer.add_isosurface(strati,
-                         voxet=model.voxet(),
+                      
                          isovalue=0)
     # viewer.add_data(model.features[0][0])
     viewer.add_data(strati)
@@ -168,7 +168,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  17.410 seconds)
+   **Total running time of the script:** ( 0 minutes  9.375 seconds)
 
 
 .. _sphx_glr_download_auto_examples_3_fault_plot_faulted_intrusion.py:

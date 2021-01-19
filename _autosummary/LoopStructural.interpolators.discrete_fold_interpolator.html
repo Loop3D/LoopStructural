@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -112,6 +122,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.surfe_wrapper.html">LoopStructural.interpolators.surfe_wrapper</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-support-submodules">Interpolation Support Submodules</a></li>
@@ -306,7 +317,7 @@ LINUX ONLY!</p>
 
 <dl class="method">
 <dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator._solve_pyamg">
-<code class="sig-name descname">_solve_pyamg</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator._solve_pyamg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_solve_pyamg</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">tol=1e-08</em>, <em class="sig-param">x0=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator._solve_pyamg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Solve least squares system using pyamg algorithmic multigrid solver</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -320,7 +331,18 @@ LINUX ONLY!</p>
 
 <dl class="method">
 <dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_constant_gradient">
-<code class="sig-name descname">add_constant_gradient</code><span class="sig-paren">(</span><em class="sig-param">w=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_constant_gradient" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_constant_gradient</code><span class="sig-paren">(</span><em class="sig-param">w=0.1</em>, <em class="sig-param">direction_vector=None</em>, <em class="sig-param">direction_feature=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_constant_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the constant gradient regularisation to the system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>double</strong><strong>) </strong><strong>- weighting of the cg parameter</strong> (<em>w</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_constant_norm">
+<code class="sig-name descname">add_constant_norm</code><span class="sig-paren">(</span><em class="sig-param">w=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_constant_norm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the constant gradient regularisation to the system</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -361,6 +383,22 @@ index given the shape of the input arrays</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_direction_constant_gradient">
+<code class="sig-name descname">add_direction_constant_gradient</code><span class="sig-paren">(</span><em class="sig-param">w=0.1</em>, <em class="sig-param">direction_vector=None</em>, <em class="sig-param">direction_feature=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_direction_constant_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the constant gradient regularisation to the system where regularisation is projected
+on a vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>double</strong><strong>) </strong><strong>- weighting of the cg parameter</strong> (<em>w</em>) – </p></li>
+<li><p><strong>direction_vector</strong> – </p></li>
+<li><p><strong>direction_feature</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_equality_constraints">
 <code class="sig-name descname">add_equality_constraints</code><span class="sig-paren">(</span><em class="sig-param">node_idx</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_equality_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds hard constraints to the least squares system. For now this just
@@ -378,15 +416,16 @@ the node values to be fixed using a lagrangian.</p>
 
 <dl class="method">
 <dt id="LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_fold_constraints">
-<code class="sig-name descname">add_fold_constraints</code><span class="sig-paren">(</span><em class="sig-param">fold_orientation=10.0</em>, <em class="sig-param">fold_axis_w=10.0</em>, <em class="sig-param">fold_regularisation=0.1</em>, <em class="sig-param">fold_normalisation=1.0</em>, <em class="sig-param">fold_norm=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_fold_constraints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_fold_constraints</code><span class="sig-paren">(</span><em class="sig-param">fold_orientation=10.0, fold_axis_w=10.0, fold_regularisation=[0.1, 0.01, 0.01], fold_normalisation=1.0, fold_norm=1.0, step=2</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_fold_interpolator.DiscreteFoldInterpolator.add_fold_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fold_orientation</strong> (<em>double</em>) – weight for the fold direction/orientation in the least squares system</p></li>
 <li><p><strong>fold_axis_w</strong> (<em>double</em>) – weight for the fold axis in the least squares system</p></li>
-<li><p><strong>fold_regularisation</strong> (<em>double</em>) – weight for the fold regularisation in the least squares system</p></li>
+<li><p><strong>fold_regularisation</strong> (<em>list</em>) – weight for the fold regularisation in the least squares system</p></li>
 <li><p><strong>fold_normalisation</strong> (<em>double</em>) – weight for the fold norm constraint in the least squares system</p></li>
 <li><p><strong>fold_norm</strong> – length of the interpolation norm in the least squares system</p></li>
+<li><p><strong>step</strong> (<em>int</em>) – array step for adding constraints</p></li>
 </ul>
 </dd>
 </dl>

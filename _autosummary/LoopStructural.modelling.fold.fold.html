@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -219,10 +229,19 @@ and two geometrical descriptors</p>
 <dl class="method">
 <dt id="LoopStructural.modelling.fold.fold.FoldEvent.get_deformed_orientation">
 <code class="sig-name descname">get_deformed_orientation</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.fold.fold.FoldEvent.get_deformed_orientation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the normal to the folded foliation at locations</p>
+<dd><p>Calculate the direction vectors of the fold</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>- np.array</strong> (<em>points</em>) – location Nx3 array of x,y,z locations to evaluate fold</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fold_direction</strong> (<em>np.array</em>) – a vector parallel to the fold</p></li>
+<li><p><strong>fold axis</strong> (<em>np.array</em>) – the fold axis</p></li>
+<li><p><strong>dgz</strong> (<em>np.array</em>) – the X direction of the finite strain ellipsoid, perpendicular to both
+fold axis and fold direction</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

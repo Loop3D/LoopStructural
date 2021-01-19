@@ -96,6 +96,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
 <ul>
@@ -200,7 +210,7 @@
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="LoopStructural.modelling.core.geological_model.GeologicalModel">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.modelling.core.geological_model.</code><code class="sig-name descname">GeologicalModel</code><span class="sig-paren">(</span><em class="sig-param">origin</em>, <em class="sig-param">maximum</em>, <em class="sig-param">rescale=True</em>, <em class="sig-param">nsteps=(40</em>, <em class="sig-param">40</em>, <em class="sig-param">40)</em>, <em class="sig-param">reuse_supports=False</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.modelling.core.geological_model.</code><code class="sig-name descname">GeologicalModel</code><span class="sig-paren">(</span><em class="sig-param">origin</em>, <em class="sig-param">maximum</em>, <em class="sig-param">rescale=True</em>, <em class="sig-param">nsteps=(40</em>, <em class="sig-param">40</em>, <em class="sig-param">40)</em>, <em class="sig-param">reuse_supports=False</em>, <em class="sig-param">logfile=None</em>, <em class="sig-param">loglevel='info'</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A geological model is the recipe for building a 3D model and  can include
 the rescaling of the model between 0 and 1.</p>
@@ -433,6 +443,22 @@ unconformity so it is not evaluated below the unconformity</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>domain_Fault</strong> (<em>GeologicalFeature</em>) – the created domain fault</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_dtm">
+<code class="sig-name descname">create_and_add_dtm</code><span class="sig-paren">(</span><em class="sig-param">series_surface_data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_dtm" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_surface_data</strong> (<em>string</em>) – corresponding to the feature_name in the data</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>feature</strong> (<em>GeologicalFeature</em>) – the created geological feature</p>
 </dd>
 </dl>
 </dd></dl>
@@ -692,7 +718,7 @@ xyz</p>
 <dd><p>Alternate constructor for a geological model using m2l output</p>
 <p>Uses the information saved in the map2loop files to build a geological model.
 You can specify kwargs for building foliation using foliation_params and for
-faults using fault_params. skip_faults is a flag that allows for the faults to be skipped.</p>
+faults using fault_params.  faults is a flag that allows for the faults to be skipped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>m2l_directory</strong> (<em>string</em>) – path to map2loop directory</p>
@@ -719,7 +745,7 @@ faults using fault_params. skip_faults is a flag that allows for the faults to b
 
 <dl class="method">
 <dt id="LoopStructural.modelling.core.geological_model.GeologicalModel.get_interpolator">
-<code class="sig-name descname">get_interpolator</code><span class="sig-paren">(</span><em class="sig-param">interpolatortype='PLI'</em>, <em class="sig-param">nelements=100000.0</em>, <em class="sig-param">buffer=0.2</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.get_interpolator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_interpolator</code><span class="sig-paren">(</span><em class="sig-param">interpolatortype='PLI'</em>, <em class="sig-param">nelements=100000.0</em>, <em class="sig-param">buffer=0.2</em>, <em class="sig-param">element_volume=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.GeologicalModel.get_interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an interpolator given the arguments, also constructs a
 support for a discrete interpolator</p>
 <dl class="field-list simple">
