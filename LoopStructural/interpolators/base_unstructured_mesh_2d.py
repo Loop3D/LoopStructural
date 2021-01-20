@@ -107,7 +107,7 @@ class BaseUnstructured2d:
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
         c, tri = self.evaluate_shape(pos[:,:2])
-        inside = tri > 0
+        inside = tri >= 0
         # vertices, c, elements, inside = self.get_elements_for_location(pos)
         values[inside] = np.sum(c[inside,:]*self.properties[prop][self.elements[tri[inside],:]],axis=1)
         return values
@@ -131,7 +131,7 @@ class BaseUnstructured2d:
         values = np.zeros(pos.shape)
         values[:] = np.nan
         element_gradients, tri = self.evaluate_shape_derivatives(pos[:,:2])
-        inside = tri > 0
+        inside = tri >= 0
         # ?vertices, element_gradients, elements, inside = self.get_element_gradient_for_location(pos[:,:2])
         # vertex_vals = self.properties[prop][elements]
         #grads = np.zeros(tetras.shape)
