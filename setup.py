@@ -16,7 +16,11 @@ def get_version(rel_path):
             return line.split(delim)[1]
     else:
         raise RuntimeError("Unable to find version string.")
+try:
+	import Cython
 
+except:
+	raise RuntimeError("'Please install cython to compile LoopStructural'")
 setup(
 	name="LoopStructural",
 	install_requires=[
