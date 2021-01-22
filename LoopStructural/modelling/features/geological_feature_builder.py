@@ -33,9 +33,9 @@ class GeologicalFeatureInterpolator:
             defining whether the location (xyz) should be included in the
         kwargs - name of the feature, region to interpolate the feature
         """
-        self.interpolator = interpolator
-        self.name = name
-        self.interpolator.set_property_name(self.name)
+        self._interpolator = interpolator
+        self._name = name
+        self._interpolator.set_property_name(self.name)
         # everywhere region is just a lambda that returns true for all locations
         if region is None:
             self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
@@ -47,6 +47,14 @@ class GeologicalFeatureInterpolator:
         self.faults = []
         self.data_added = False
         self.interpolator.set_region(region=self.region)
+        self._feature = None
+        self.up_to_date = False
+        
+    @property
+    def feature(self):
+        if self.up_to_date == False:
+            self.update()
+        return self._feature
 
     def update(self):
         pass
@@ -64,6 +72,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
+        self.up_to_date = False
         self.faults.append(fault)
 
     def add_data_from_data_frame(self, data_frame):
@@ -104,6 +113,7 @@ class GeologicalFeatureInterpolator:
         The constraint can be applied to a random subset of the tetrahedral elements in the mesh
         in theory this shu
         """
+        self.up_to_date = False
         vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
         vector /= np.linalg.norm(vector,axis=1)[:,None]
         element_idx = np.arange(self.interpolator.support.n_elements)
@@ -208,6 +218,7 @@ class GeologicalFeatureInterpolator:
             self.interpolator.set_interface_constraints(interface_data)
 
         self.data_added = True
+        self.up_to_date = False
 
     def get_value_constraints(self):
         """
@@ -346,10 +357,11 @@ class GeologicalFeatureInterpolator:
 
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
-        return GeologicalFeature(self.name,
+        self._feature = GeologicalFeature(self.name,
                                  self.interpolator,
                                  builder=self, data=self.data,
                                  region=self.region,
                                  faults=self.faults,
                                  fold = fold
                                  )
+        return self._feature
