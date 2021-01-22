@@ -529,15 +529,11 @@ class GeologicalModel:
             logger.warning("No data for %s, skipping" % series_surface_data)
             return
         series_builder.add_data_from_data_frame(series_data)
-        self._add_faults(series_builder)
+        # self._add_faults(series_builder)
 
-        # build feature
-        series_feature = series_builder.build(**kwargs)
-        series_feature.type = 'series'
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
-        self._add_feature(series_feature)
-        return series_feature
+        
+        self.features.append(series_builder.feature)
+        return series_builder
 
 
     def _add_unconformity_above(self, feature):

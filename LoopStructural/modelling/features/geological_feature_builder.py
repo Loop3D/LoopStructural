@@ -35,7 +35,7 @@ class GeologicalFeatureInterpolator:
         """
         self._interpolator = interpolator
         self._name = name
-        self._interpolator.set_property_name(self.name)
+        self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
         if region is None:
             self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
@@ -46,18 +46,26 @@ class GeologicalFeatureInterpolator:
         self.data = pd.DataFrame(columns=header)
         self.faults = []
         self.data_added = False
-        self.interpolator.set_region(region=self.region)
+        self._interpolator.set_region(region=self.region)
         self._feature = None
         self.up_to_date = False
-        
+        self._build_arguments = {}
+    
     @property
     def feature(self):
-        if self.up_to_date == False:
-            self.update()
         return self._feature
 
+    @property
+    def build_arguments(self):
+        return self._build_arguments 
+    
+    @build_arguments.setter
+    def build_arguments(self, build_arguments):
+        self._build_arguments = build_arguments
+
     def update(self):
-        pass
+        self.build(self.build_arguments)
+        
 
     def add_fault(self, fault):
         """
