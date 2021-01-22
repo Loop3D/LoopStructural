@@ -5,4 +5,5 @@ data, bb = load_claudius()
 
 model = GeologicalModel(bb[0,:],bb[1,:])
 model.set_model_data(data)
-model.create_and_add_foliation('strati')
+strati = model.create_and_add_foliation('strati')
+strati.evaluate_value(model.regular_grid())

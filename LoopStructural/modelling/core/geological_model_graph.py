@@ -533,7 +533,7 @@ class GeologicalModel:
 
         
         self.features.append(series_builder.feature)
-        return series_builder
+        return series_builder.feature
 
 
     def _add_unconformity_above(self, feature):

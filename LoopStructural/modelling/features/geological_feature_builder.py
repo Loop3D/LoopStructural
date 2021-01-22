@@ -15,6 +15,7 @@ from LoopStructural.utils.helper import xyz_names, val_name, normal_vec_names, \
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import get_data_bounding_box_map as get_data_bounding_box
 from LoopStructural.utils import get_data_axis_aligned_bounding_box
+from LoopStructural.utils import RegionEverywhere
 
 class GeologicalFeatureInterpolator:
     """[summary]
@@ -38,7 +39,7 @@ class GeologicalFeatureInterpolator:
         self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
         if region is None:
-            self.region = lambda pos: np.ones(pos.shape[0], dtype=bool)
+            self.region = RegionEverywhere()
         else:
             self.region = region
         header = xyz_names()+val_name()+gradient_vec_names()+\
@@ -48,9 +49,16 @@ class GeologicalFeatureInterpolator:
         self.data_added = False
         self._interpolator.set_region(region=self.region)
         self._feature = None
-        self.up_to_date = False
+        self._up_to_date = False
         self._build_arguments = {}
-    
+        self.fold = None
+        self._feature = GeologicalFeature(self._name,
+                                 self._interpolator,
+                                 builder=self, 
+                                 region=self.region,
+                                 faults=self.faults,
+                                 fold = self.fold
+                                 )
     @property
     def feature(self):
         return self._feature
@@ -64,9 +72,23 @@ class GeologicalFeatureInterpolator:
         self._build_arguments = build_arguments
 
     def update(self):
-        self.build(self.build_arguments)
-        
+        self.build(**self.build_arguments)
+    @property
+    def name(self):
+        return self._name
+    @property
+    def interpolator(self):
+        return self._interpolator
 
+    def up_to_date(self):
+        #has anything changed in the builder since we built the feature? if so update
+        if self._up_to_date == False:
+            self.update()
+        #check if the interpolator is up to date, if not solve
+        if self._interpolator.up_to_date == False:
+            self.update()
+        
+        
     def add_fault(self, fault):
         """
         Add a fault to the geological feature builder
@@ -121,7 +143,7 @@ class GeologicalFeatureInterpolator:
         The constraint can be applied to a random subset of the tetrahedral elements in the mesh
         in theory this shu
         """
-        self.up_to_date = False
+        self._up_to_date = False
         vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
         vector /= np.linalg.norm(vector,axis=1)[:,None]
         element_idx = np.arange(self.interpolator.support.n_elements)
@@ -226,7 +248,7 @@ class GeologicalFeatureInterpolator:
             self.interpolator.set_interface_constraints(interface_data)
 
         self.data_added = True
-        self.up_to_date = False
+        self._up_to_date = False
 
     def get_value_constraints(self):
         """
@@ -365,11 +387,5 @@ class GeologicalFeatureInterpolator:
 
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
-        self._feature = GeologicalFeature(self.name,
-                                 self.interpolator,
-                                 builder=self, data=self.data,
-                                 region=self.region,
-                                 faults=self.faults,
-                                 fold = fold
-                                 )
+        self._up_to_date = True
         return self._feature
