@@ -59,6 +59,7 @@ class GeologicalFeatureInterpolator:
                                  faults=self.faults,
                                  fold = self.fold
                                  )
+        self._orthogonal_features = {}
     @property
     def feature(self):
         return self._feature
@@ -69,7 +70,9 @@ class GeologicalFeatureInterpolator:
     
     @build_arguments.setter
     def build_arguments(self, build_arguments):
-        self._build_arguments = build_arguments
+        # self._build_arguments = {}
+        for k, i in build_arguments.items():
+            self._build_arguments[k] = i
 
     def update(self):
         self.build(**self.build_arguments)
@@ -102,7 +105,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-        self.up_to_date = False
+        self._up_to_date = False
         self.faults.append(fault)
 
     def add_data_from_data_frame(self, data_frame):
@@ -143,17 +146,9 @@ class GeologicalFeatureInterpolator:
         The constraint can be applied to a random subset of the tetrahedral elements in the mesh
         in theory this shu
         """
+        self._orthogonal_features[feature.name] = [feature,w,region,step,B]
         self._up_to_date = False
-        vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
-        vector /= np.linalg.norm(vector,axis=1)[:,None]
-        element_idx = np.arange(self.interpolator.support.n_elements)
-        np.random.shuffle(element_idx)
-        self.interpolator.add_gradient_orthogonal_constraint(
-            self.interpolator.support.barycentre()[element_idx[::step],:],
-            vector[element_idx[::step],:],
-            w=w,
-            B=B
-        )
+        
     
     def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
         """
@@ -249,7 +244,20 @@ class GeologicalFeatureInterpolator:
 
         self.data_added = True
         self._up_to_date = False
-
+    
+    def install_gradient_constraint(self):
+        for g in self._orthogonal_features.values():
+            feature,w,region,step,B = g
+            vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
+            vector /= np.linalg.norm(vector,axis=1)[:,None]
+            element_idx = np.arange(self.interpolator.support.n_elements)
+            np.random.shuffle(element_idx)
+            self.interpolator.add_gradient_orthogonal_constraint(
+                self.interpolator.support.barycentre()[element_idx[::step],:],
+                vector[element_idx[::step],:],
+                w=w,
+                B=B
+            )
     def get_value_constraints(self):
         """
         Get the value constraints for this geological feature
@@ -352,8 +360,7 @@ class GeologicalFeatureInterpolator:
         """
 
 
-        if not self.data_added:
-            self.add_data_to_interpolator(**kwargs)
+        self.add_data_to_interpolator(**kwargs)
         if data_region is not None:
             xyz = self.interpolator.get_data_locations()
             bb, region = get_data_bounding_box(xyz, data_region)    
@@ -384,7 +391,7 @@ class GeologicalFeatureInterpolator:
             if 'cgw' not in kwargs:
                 # try adding very small cg
                 kwargs['cgw'] = 0.0
-
+        
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
         self._up_to_date = True

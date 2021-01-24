@@ -5,6 +5,8 @@ import logging
 
 import numpy as np
 import pandas as pd
+import networkx as nx
+
 from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators.discrete_fold_interpolator import \
     DiscreteFoldInterpolator as DFI
@@ -164,6 +166,7 @@ class GeologicalModel:
                                 "be use by advanced users")
         logger.info('Reusing interpolation supports: {}'.format(self.reuse_supports))
         self.stratigraphic_column = None
+        self.feature_graph = nx.DiGraph()
         self.parameters = {'features': [], 'model': {'bounding_box': self.origin.tolist() + self.maximum.tolist(),
                                                      'rescale': rescale,
                                                      'nsteps': nsteps,
@@ -288,10 +291,31 @@ class GeologicalModel:
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info("Adding %s to model at location %i" % (
                 feature.name, len(self.features)))
-        self._add_domain_fault_above(feature)
-        self._add_unconformity_above(feature)
+        # self._add_domain_fault_above(feature)
+        # self._add_unconformity_above(feature)
         feature.set_model(self)
-    
+        
+    def _add_faults(self, feature_builder, features=None):
+        """Adds all existing faults to a geological feature builder 
+        
+        Parameters
+        ----------
+        feature_builder : GeologicalFeatureInterpolator/StructuralFrameBuilder
+            The feature buider to add the faults to
+        features : list, optional
+            A specific list of features rather than all features in the model
+        Returns
+        -------
+
+        """
+        if features is None:
+            features = self.features
+        for f in reversed(features):
+            if f.type == 'fault':
+                feature_builder.add_fault(f)
+            # if f.type == 'unconformity':
+            #     break
+                
     def data_for_feature(self,feature_name):
         return self.data.loc[self.data['feature_name'] == feature_name,:]
         
@@ -529,10 +553,10 @@ class GeologicalModel:
             logger.warning("No data for %s, skipping" % series_surface_data)
             return
         series_builder.add_data_from_data_frame(series_data)
-        # self._add_faults(series_builder)
+        self._add_faults(series_builder)
 
-        
-        self.features.append(series_builder.feature)
+        series_builder.build_arguments = kwargs
+        self._add_feature(series_builder.feature)
         return series_builder.feature
 
 
@@ -675,22 +699,20 @@ class GeologicalModel:
         # work but for visualisation
         # we want to add a region!
         # check if this fault overprint any existing faults exist in the stack
-        
 
         fault_frame = fault_frame_builder.build(**kwargs)
-        if 'abut' in kwargs:
-            fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
+        
 
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
                              **kwargs)
-        for f in reversed(self.features):
-            if f.type == 'unconformity':
-                fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
-                break
-        if displacement == 0:
-            fault.type = 'fault_inactive'
+        # for f in reversed(self.features):
+        #     if f.type == 'unconformity':
+        #         fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
+        #         break
+        # if displacement == 0:
+        #     fault.type = 'fault_inactive'
+        # self._add_feature(fault)
         self._add_feature(fault)
-        
 
         return fault
 

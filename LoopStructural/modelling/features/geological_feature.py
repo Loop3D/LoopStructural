@@ -148,7 +148,7 @@ class GeologicalFeature:
         -------
 
         """
-        self.up_to_date()
+        self.builder.up_to_date()
         v = np.zeros(evaluation_points.shape)
         v[:] = np.nan
         mask = np.zeros(evaluation_points.shape[0]).astype(bool)
@@ -173,7 +173,7 @@ class GeologicalFeature:
         misfit : np.array(N,dtype=double)
             dot product between interpolated gradient and constraints
         """
-        self.up_to_date()
+        self.builder.up_to_date()
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
 
@@ -198,7 +198,7 @@ class GeologicalFeature:
         misfit : np.array(N,dtype=double)
             difference between interpolated scalar field and value constraints
         """
-        self.up_to_date()
+        self.builder.up_to_date()
 
         locations = self.interpolator.get_value_constraints()
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
