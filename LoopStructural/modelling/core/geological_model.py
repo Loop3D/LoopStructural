@@ -658,7 +658,7 @@ class GeologicalModel:
         
         return fold_frame
 
-    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None,
+    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, svario=True,
                                         **kwargs):
         """
         Create a folded foliation field from data and a fold frame
@@ -668,6 +668,8 @@ class GeologicalModel:
         foliation_data : str
             unique string in type column of data frame
         fold_frame :  FoldFrame
+        svario  : Boolean
+            whether to calculate svariograms, saves time if avoided
         kwargs
             additional kwargs to be passed through to other functions
 
@@ -693,7 +695,6 @@ class GeologicalModel:
         series_builder.add_data_from_data_frame(
             self.data[self.data['feature_name'] == foliation_data])
         self._add_faults(series_builder)
-
         series_builder.add_data_to_interpolator(True)
         if "fold_axis" in kwargs:
             fold.fold_axis = kwargs['fold_axis']
@@ -702,7 +703,7 @@ class GeologicalModel:
         if fold.fold_axis is None:
             far, fad = fold_frame.calculate_fold_axis_rotation(
                 series_builder)
-            fold_axis_rotation = FoldRotationAngle(far, fad)
+            fold_axis_rotation = FoldRotationAngle(far, fad,svario=svario)
             a_wl = kwargs.get("axis_wl", None)
             if 'axis_function' in kwargs:
                 # allow predefined function to be used
@@ -713,7 +714,7 @@ class GeologicalModel:
         # give option of passing own fold limb rotation function
         flr, fld = fold_frame.calculate_fold_limb_rotation(
             series_builder)
-        fold_limb_rotation = FoldRotationAngle(flr, fld)
+        fold_limb_rotation = FoldRotationAngle(flr, fld,svario=svario)
         l_wl = kwargs.get("limb_wl", None)
         if 'limb_function' in kwargs:
             # allow for predefined functions to be used
