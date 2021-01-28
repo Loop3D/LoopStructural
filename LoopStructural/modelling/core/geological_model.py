@@ -25,6 +25,7 @@ except ImportError:
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.fault import FaultBuilder
 from LoopStructural.modelling.features import (GeologicalFeatureInterpolator,
                                                RegionFeature,
                                                StructuralFrameBuilder,
@@ -1092,13 +1093,19 @@ class GeologicalModel:
         # evaluated where the unconformity is positive
         return domain_fault_uc
 
-    def create_and_add_fault(self, fault_surface_data, displacement, renormalise=True, **kwargs):
+    def create_and_add_fault(self, fault_surface_data, displacement, fault_extent = None, fault_influence = None, fault_vectical_radius = None, **kwargs):
         """
         Parameters
         ----------
         fault_surface_data : string
             name of the fault surface data in the dataframe
         displacement : displacement magnitude
+        fault_extent : [type], optional
+            [description], by default None
+        fault_influence : [type], optional
+            [description], by default None
+        fault_vectical_radius : [type], optional
+            [description], by default None
         kwargs : additional kwargs for Fault and interpolators
 
         Returns
@@ -1112,10 +1119,11 @@ class GeologicalModel:
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
-        fault_frame_builder = StructuralFrameBuilder(interpolator,
+        fault_frame_builder = FaultBuilder(interpolator,
                                                      name=fault_surface_data,
                                                      **kwargs)
         # add data
+        fault_vector
         fault_frame_data = self.data[
             self.data['feature_name'] == fault_surface_data].copy()
         

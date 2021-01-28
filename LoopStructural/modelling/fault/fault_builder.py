@@ -17,9 +17,9 @@ class FaultBuilder(StructuralFrameBuilder):
                                 fault_center, 
                                 normal_vector,
                                 slip_vector,
-                                influence_distance,
-                                horizontal_radius,
-                                vertical_radius):
+                                influence_distance = None,
+                                horizontal_radius = None,
+                                vertical_radius = None):
         """Generate the required data for building a fault frame for a fault with the 
         specified parameters
 
@@ -46,16 +46,21 @@ class FaultBuilder(StructuralFrameBuilder):
         normal_vector[0] = np.sin(np.deg2rad(fault_dip_direction))
         normal_vector[1] = np.cos(np.deg2rad(fault_dip_direction))
         strike_vector = np.cross(normal_vector,slip_vector)
-        fault_edges[0,:] = fault_center[:3]+normal_vector*influence_distance
-        fault_edges[1,:] = fault_center[:3]-normal_vector*influence_distance
-        fault_tips[0,:] = fault_center[:3]+strike_vector*horizontal_radius
-        fault_tips[1,:] = fault_center[:3]-strike_vector*horizontal_radius
-        fault_depth[0,:] = fault_center[:3]+slip_vector*vertical_radius
-        fault_depth[1,:] = fault_center[:3]-slip_vector*vertical_radius
-        data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
-        data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
-        data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
-        data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
+        if influence_distance is not None:
+            fault_edges[0,:] = fault_center[:3]+normal_vector*influence_distance
+            fault_edges[1,:] = fault_center[:3]-normal_vector*influence_distance
+            data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
+            data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
+        if horizontal_radius is not None:
+            fault_tips[0,:] = fault_center[:3]+strike_vector*horizontal_radius
+            fault_tips[1,:] = fault_center[:3]-strike_vector*horizontal_radius
+            data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
+            data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
+        if vertical_radius is not None:
+            fault_depth[0,:] = fault_center[:3]+slip_vector*vertical_radius
+            fault_depth[1,:] = fault_center[:3]-slip_vector*vertical_radius
+            #TODO need to add data here
+        
         # add strike vector to constraint fault extent
 
         data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
