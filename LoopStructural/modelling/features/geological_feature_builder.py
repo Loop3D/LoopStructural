@@ -108,7 +108,7 @@ class GeologicalFeatureInterpolator:
         self._up_to_date = False
         self.faults.append(fault)
 
-    def add_data_from_data_frame(self, data_frame):
+    def add_data_from_data_frame(self, data_frame, overwrite = False):
         """
         Extract data from a pandas dataframe with columns for
 
