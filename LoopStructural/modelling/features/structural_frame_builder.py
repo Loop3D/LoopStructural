@@ -162,7 +162,7 @@ class StructuralFrameBuilder:
                 self.builders[1].add_orthogonal_feature(gz_feature, gyxgz,step=step)
             gy_const_norm = kwargs.get('gy_const_norm',0.)
 
-            ## bit of an ugly hack, adding in norm constraints for the norm we are forcing
+
             # if gz_feature is not None: 
             #     tmp = CrossProductGeologicalFeature('tmp',gx_feature,gz_feature)
             #     self.builders[1].add_orthogonal_feature(tmp,10.,step=step,B=1)

@@ -1245,6 +1245,7 @@ class GeologicalModel:
         points : np.array((N,3),dtype=double)
 
         """
+        points = np.array(points).astype(float)
         if inplace==False:
             points = points.copy()
 
@@ -1329,6 +1330,7 @@ class GeologicalModel:
         >>> model.evaluate_model(xyz)
         
         """
+        xyz = np.array(xyz)
         if scale:
             xyz = self.scale(xyz,inplace=False)
         strat_id = np.zeros(xyz.shape[0],dtype=int)
