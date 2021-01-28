@@ -577,7 +577,9 @@ class GeologicalModel:
         self._add_faults(series_builder)
 
         # build feature
-        series_feature = series_builder.build(**kwargs)
+        # series_feature = series_builder.build(**kwargs)
+        series_feature = series_builder.feature
+        series_builder.build_arguments = kwargs
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
@@ -613,7 +615,9 @@ class GeologicalModel:
         # self._add_faults(series_builder)
 
         # build feature
-        series_feature = series_builder.build(**kwargs)
+        # series_feature = series_builder.build(**kwargs)
+        series_feature = series_builder.feature
+        series_builder.build_arguments = kwargs
         series_feature.type = 'dtm'
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
@@ -730,7 +734,9 @@ class GeologicalModel:
         # build feature
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
-        series_feature = series_builder.build(**kwargs)
+        # series_feature = series_builder.build(**kwargs)
+        series_feature = series_builder.feature
+        series_builder.build_arguments = kwargs
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
@@ -971,7 +977,9 @@ class GeologicalModel:
         self._add_faults(unconformity_feature_builder)
 
         # build feature
-        uc_feature_base = unconformity_feature_builder.build(**kwargs)
+        # uc_feature_base = unconformity_feature_builder.build(**kwargs)
+        uc_feature_base = unconformity_feature_builder.feature
+        unconformity_feature_builder.build_arguments = kwargs
         uc_feature_base.type = 'unconformity_base'
         # uc_feature = UnconformityFeature(uc_feature_base,0)
         # iterate over existing features and add the unconformity as a
@@ -1071,7 +1079,9 @@ class GeologicalModel:
         self._add_faults(domain_fault_feature_builder)
 
         # build feature
-        domain_fault = domain_fault_feature_builder.build(**kwargs)
+        # domain_fault = domain_fault_feature_builder.build(**kwargs)
+        domain_fault = domain_fault_feature_builder.feature
+        domain_fault_feature_builder.build_arguments = kwargs
         domain_fault.type = 'domain_fault'
         self._add_feature(domain_fault)
         self._add_domain_fault_below(domain_fault)
@@ -1108,80 +1118,8 @@ class GeologicalModel:
         # add data
         fault_frame_data = self.data[
             self.data['feature_name'] == fault_surface_data].copy()
-        if 'coord' not in fault_frame_data:
-            fault_frame_data['coord'] = 0
-        vals = fault_frame_data['val']
-        if len(np.unique(vals[~np.isnan(vals)])) == 1 and renormalise:
-            logger.info("Setting fault ellipsoid to 1/3 of fault length")
-            xyz = fault_frame_data[['X', 'Y', 'Z']].to_numpy()
-            p1 = xyz[0, :]  # fault_frame_data.loc[0 ,['X','Y']]
-            p2 = xyz[-1, :]  # fault_frame_data.loc[-1 ,['X','Y']]
-            # get a vector that goes from p1-p2 and normalise
-            vector = p1 - p2
-            length = np.linalg.norm(vector)
-            vector /= length
-            # now create the orthogonal vector
-            # newvector = np.zeros(3)
-            length /= 3
-            # length/=2
-            # print(fault_frame_data)
-            mask = ~np.isnan(fault_frame_data['gx'])
-            vectors = fault_frame_data[mask][['gx', 'gy', 'gz']].to_numpy()
-            lengths = np.linalg.norm(vectors, axis=1)
-            vectors /= lengths[:, None]
-            # added 20/08 rescale fault ellipsoid for m2l
-            # vectors*=length
-            fault_frame_data.loc[mask, ['gx', 'gy', 'gz']] = vectors
-            if 'strike' in fault_frame_data.columns and 'dip' in \
-                    fault_frame_data.columns:
-                fault_frame_data = fault_frame_data.drop(['dip', 'strike'],
-                                                         axis=1)
-        #     print(fault_frame_data)
-        # if there is no slip direction data assume vertical
-        if fault_frame_data[fault_frame_data['coord'] == 1].shape[0] == 0:
-            logger.info("Adding fault frame slip")
-            loc = np.mean(fault_frame_data[['X', 'Y', 'Z']], axis=0)
-            coord1 = pd.DataFrame([[loc[0], loc[1], loc[2], 0, 0, -1]],
-                                  columns=normal_vector_headers())
-            coord1['coord'] = 1
-            fault_frame_data = pd.concat([fault_frame_data, coord1],
-                                         sort=False)
- 
-        if fault_frame_data[fault_frame_data['coord'] == 2].shape[0] == 0:
-            logger.info("Adding fault extent data as first and last point")
-            ## first and last point of the line
-            value_data = fault_frame_data[fault_frame_data['val'] == 0]
-            if not value_data.empty:
-                coord2 = value_data.iloc[[0, len(value_data) - 1]]
-                coord2 = coord2.reset_index(drop=True)
-                c2_scale = kwargs.get('length_scale',1.)
-                coord2.loc[0, 'val'] = -1/c2_scale
-                coord2.loc[1, 'val'] = 1/c2_scale
-                coord2['coord'] = 2
-                fault_frame_data = pd.concat([fault_frame_data, coord2],
-                                         sort=False)
+        
         fault_frame_builder.add_data_from_data_frame(fault_frame_data)
-        # if there is no fault slip data then we could find the strike of
-        # the fault and build
-        # the second coordinate
-        # if we add a region to the fault then the fault operator doesn't
-        # work but for visualisation
-        # we want to add a region!
-
-        if 'splayregion' in kwargs and 'splay' in kwargs:
-            # result['splayregionfeature'] = RegionFeature(kwargs['splayregion'])
-            # apply splay to all parts of fault frame
-            for i in range(3):
-                # work out the values of the nodes where we want hard
-                # constraints
-                idc = np.arange(0, interpolator.support.n_nodes)[
-                    kwargs['splayregion'](interpolator.support.nodes)]
-                val = kwargs['splay'][i].evaluate_value(
-                    interpolator.support.nodes[
-                    kwargs['splayregion'](interpolator.support.nodes), :])
-                mask = ~np.isnan(val)
-                fault_frame_builder[i].interpolator.add_equality_constraints(
-                    idc[mask], val[mask])
         # check if this fault overprint any existing faults exist in the stack
         overprinted = kwargs.get('overprinted', [])
         overprinted_faults = []
