@@ -6,7 +6,8 @@ import logging
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 from LoopStructural.modelling.features.cross_product_geological_feature \
     import \
@@ -106,7 +107,7 @@ class StructuralFrameBuilder:
         gxxgy = 1
         gxxgz = 1
         gyxgz = 1
-        step = kwargs.get('step',3)
+        step = kwargs.get('step', 10)
         if 'gxxgy' in kwargs:
             gxxgy = kwargs['gxxgy']
         if 'gxxgz' in kwargs:

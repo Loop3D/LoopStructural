@@ -9,7 +9,8 @@ from LoopStructural.interpolators.discrete_interpolator import \
     DiscreteInterpolator
 from LoopStructural.utils.helper import get_vectors
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
@@ -32,7 +33,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         DiscreteInterpolator.__init__(self, mesh)
         # whether to assemble a rectangular matrix or a square matrix
         self.interpolator_type = 'PLI'
-        self.nx = len(self.support.nodes[self.region])
         self.support = mesh
 
         self.interpolation_weights = {'cgw': 0.1, 'cpw': 1., 'npw': 1.,

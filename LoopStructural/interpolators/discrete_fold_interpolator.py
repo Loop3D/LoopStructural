@@ -9,7 +9,8 @@ from LoopStructural.interpolators.cython.dsi_helper import fold_cg
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
