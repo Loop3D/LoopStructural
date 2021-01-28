@@ -36,7 +36,8 @@ from LoopStructural.utils.exceptions import LoopBaseException
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
                                          strike_dip_vector)
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger, log_to_file
+logger = getLogger(__name__)
 if not surfe:
     logger.warning("Cannot import Surfe")
 
@@ -85,7 +86,7 @@ class GeologicalModel:
 
     """
     def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40),
-                 reuse_supports=False):
+                 reuse_supports=False, logfile=None, loglevel='info'):
         """
         Parameters
         ----------
@@ -119,16 +120,28 @@ class GeologicalModel:
 
 
         """
+        if logfile:
+            self.logfile = logfile
+            log_to_file(logfile,loglevel)
+        
+        logger.info('Initialising geological model')
         self.features = []
         self.feature_name_index = {}
         self.data = None
         self.nsteps = nsteps
-
+        self._str = 'Instance of LoopStructural.GeologicalModel \n'
+        self._str += '------------------------------------------ \n'
         # we want to rescale the model area so that the maximum length is
         # 1
         self.origin = np.array(origin).astype(float)
-
+        originstr = 'Model origin: {} {} {}'.format(self.origin[0],self.origin[1],self.origin[2])
+        logger.info(originstr)
+        self._str+=originstr+'\n'
         self.maximum = np.array(maximum).astype(float)
+        maximumstr = 'Model maximum: {} {} {}'.format(self.maximum[0],self.maximum[1],self.maximum[2])
+        logger.info(maximumstr)
+        self._str+=maximumstr+'\n'
+
         lengths = self.maximum - self.origin
         self.scale_factor = 1.
         self.bounding_box = np.zeros((2, 3))
@@ -136,17 +149,32 @@ class GeologicalModel:
         self.bounding_box[1, :] = self.maximum - self.origin
         if rescale:
             self.scale_factor = np.max(lengths)
-
+            logger.info('Rescaling model using scale factor {}'.format(self.scale_factor))
+        self._str+='Model rescale factor: {} \n'.format(self.scale_factor)
+        self._str+='The model contains {} GeologicalFeatures \n'.format(len(self.features))
+        self._str+=''
+        self._str += '------------------------------------------ \n'
+        self._str += ''
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
+        if self.reuse_supports:
+            logger.warning("Supports are shared between geological features \n"
+                                "this may cause unexpected behaviour and should only\n"
+                                "be use by advanced users")
+        logger.info('Reusing interpolation supports: {}'.format(self.reuse_supports))
         self.stratigraphic_column = None
         self.parameters = {'features': [], 'model': {'bounding_box': self.origin.tolist() + self.maximum.tolist(),
                                                      'rescale': rescale,
                                                      'nsteps': nsteps,
                                                      'reuse_supports': reuse_supports}}
         
+    def __str__(self):
+        return self._str
 
+    def _ipython_key_completions_(self):
+        return self.feature_name_index.keys()
+        
     @classmethod
     def from_map2loop_directory(cls, m2l_directory,**kwargs):
         """Alternate constructor for a geological model using m2l output
@@ -166,6 +194,7 @@ class GeologicalModel:
             the created geological model and a dictionary of the map2loop data
         """
         from LoopStructural.utils import build_model, process_map2loop
+        logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
         m2lflags = kwargs.pop('m2lflags',{})
         m2l_data = process_map2loop(m2l_directory,m2lflags)
         return build_model(m2l_data,**kwargs), m2l_data
@@ -191,11 +220,12 @@ class GeologicalModel:
             return None
         model = pickle.load(open(file,'rb'))
         if type(model) == GeologicalModel:
+            logger.info('GeologicalModel initialised from file')
             return model
         else:
             logger.error('{} does not contain a geological model'.format(file))
             return None
-
+        
     def __getitem__(self, feature_name):
         """Accessor for feature in features using feature_name_index
 
@@ -206,6 +236,12 @@ class GeologicalModel:
         """
         return self.get_feature_by_name(feature_name)
     
+    def feature_names(self):
+        return self.feature_name_index.keys()
+
+    def fault_names(self):
+        pass
+
     def check_inialisation(self):
         if self.data is None:
             logger.error("Data not associated with GeologicalModel. Run set_data")
@@ -226,6 +262,7 @@ class GeologicalModel:
                         "pip install dill")
             return
         try:
+            logger.info('Writing GeologicalModel to: {}'.format(file))
             pickle.dump(self,open(file,'wb'))
         except pickle.PicklingError:
             logger.error('Error saving file')
@@ -246,6 +283,7 @@ class GeologicalModel:
                         (feature.name, self.feature_name_index[feature.name]))
             self.features[self.feature_name_index[feature.name]] = feature
         else:
+            self._str += 'GeologicalFeature: {} of type - {} \n'.format(feature.name,feature.type)
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info("Adding %s to model at location %i" % (
@@ -284,7 +322,7 @@ class GeologicalModel:
                 data = pd.read_csv(data)
             except:
                 logger.error("Could not load pandas data frame from data")
-
+        logger.info('Adding data to GeologicalModel with {} data points'.format(len(data)))
         self.data = data.copy()
         self.data['X'] -= self.origin[0]
         self.data['Y'] -= self.origin[1]
@@ -293,7 +331,7 @@ class GeologicalModel:
         self.data['Y'] /= self.scale_factor
         self.data['Z'] /= self.scale_factor
         if 'type' in self.data:
-            logger.warning("'type' is being replaced with 'feature_name' \n")
+            logger.warning("'type' is depreciated replace with 'feature_name' \n")
             self.data.rename(columns={'type':'feature_name'},inplace=True)
         for h in all_heading():
             if h not in self.data:
@@ -304,6 +342,7 @@ class GeologicalModel:
                     self.data[h] = 0
         
         if 'strike' in self.data and 'dip' in self.data:
+            logger.info('Converting strike and dip to vectors')
             mask = np.all(~np.isnan(self.data.loc[:, ['strike', 'dip']]),
                           axis=1)
             self.data.loc[mask, gradient_vec_names()] = strike_dip_vector(
@@ -358,6 +397,7 @@ class GeologicalModel:
         """
         # if the colour for a unit hasn't been specified we can just sample from 
         # a colour map e.g. tab20
+        logger.info('Adding stratigraphic column to model')
         random_colour = True
         n_units=0
         for g in stratigraphic_column.keys():
@@ -402,7 +442,7 @@ class GeologicalModel:
                 self.create_and_add_folded_foliation(f)
 
     def get_interpolator(self, interpolatortype='PLI', nelements=1e5,
-                         buffer=0.2, **kwargs):
+                         buffer=0.2, element_volume = None, **kwargs):
         """
         Returns an interpolator given the arguments, also constructs a
         support for a discrete interpolator
@@ -434,54 +474,64 @@ class GeologicalModel:
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         box_vol = (bb[1, 0]-bb[0, 0]) * (bb[1, 1]-bb[0, 1]) * (bb[1, 2]-bb[0, 2])
         if interpolatortype == "PLI":
-            nelements /= 5
-            ele_vol = box_vol / nelements
+            if element_volume is None:
+                nelements /= 5
+                element_volume = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
-            step_vector[:] = ele_vol ** (1. / 3.)
+            step_vector[:] = element_volume ** (1. / 3.)
             # step_vector /= np.array([1,1,2])
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            mesh_id = 'mesh_{}'.format(nelements)
-            mesh = self.support.get(mesh_id,
-                                    TetMesh(origin=bb[0, :], nsteps=nsteps,
-                                            step_vector=step_vector))
-            if mesh_id not in self.support:
-                self.support[mesh_id] = mesh
+            if self.reuse_supports:
+                mesh_id = 'mesh_{}'.format(nelements)
+                mesh = self.support.get(mesh_id,
+                                        TetMesh(origin=bb[0, :], nsteps=nsteps,
+                                                step_vector=step_vector))
+                if mesh_id not in self.support:
+                    self.support[mesh_id] = mesh
+            else:
+                mesh = TetMesh(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector)
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using PLI" % (mesh.ntetra))
 
             return PLI(mesh)
 
         if interpolatortype == 'FDI':
+
             # find the volume of one element
-            ele_vol = box_vol / nelements
+            if element_volume is None:
+                element_volume = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
-            step_vector[:] = ele_vol ** (1. / 3.)
+            step_vector[:] = element_volume ** (1. / 3.)
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             if np.any(np.less(nsteps, 3)):
                 logger.error("Cannot create interpolator: number of steps is too small")
                 return None
             # create a structured grid using the origin and number of steps
-            grid_id = 'grid_{}'.format(nelements)
-            grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
+            if self.reuse_supports:
+                grid_id = 'grid_{}'.format(nelements)
+                grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
                                                             nsteps=nsteps,
                                                             step_vector=step_vector))
-            if grid_id not in self.support:
-                self.support[grid_id] = grid
+                if grid_id not in self.support:
+                    self.support[grid_id] = grid
+            else:
+                grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps,step_vector=step_vector)
             logger.info("Creating regular grid with %i elements \n"
                         "for modelling using FDI" % grid.n_elements)
             return FDI(grid)
 
         if interpolatortype == "DFI":  # "fold" in kwargs:
-            nelements /= 5
-            ele_vol = box_vol / nelements
+            if element_volume is None:
+                nelements /= 5
+                element_volume = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
-            step_vector[:] = ele_vol ** (1. / 3.)
+            step_vector[:] = element_volume ** (1. / 3.)
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps

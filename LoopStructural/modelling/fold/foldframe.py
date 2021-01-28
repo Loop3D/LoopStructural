@@ -4,7 +4,8 @@ import numpy as np
 
 from LoopStructural.modelling.features.structural_frame import StructuralFrame
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class FoldFrame(StructuralFrame):

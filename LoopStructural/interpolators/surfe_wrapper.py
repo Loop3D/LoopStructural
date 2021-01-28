@@ -9,7 +9,8 @@ from .geological_interpolator import GeologicalInterpolator
 import logging
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 import surfepy
 

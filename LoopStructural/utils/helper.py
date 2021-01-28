@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 def get_data_axis_aligned_bounding_box(xyz, buffer):

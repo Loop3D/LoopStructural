@@ -9,7 +9,8 @@ from LoopStructural.utils.helper import get_vectors
 from .discrete_interpolator import DiscreteInterpolator
 from .operator import Operator
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):

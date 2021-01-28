@@ -10,7 +10,8 @@ from LoopStructural.utils.helper import create_box
 from LoopStructural.export.file_formats import FileFormat
 
  
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 def write_cubeface(model, file_name, data_label, nsteps, file_format):

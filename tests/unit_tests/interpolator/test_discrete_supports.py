@@ -20,14 +20,12 @@ def test_create_structured_grid_origin_nsteps():
   
 def test_evaluate_value():
     grid = StructuredGrid()
-    grid.update_property('X',grid.nodes[:,0])
     assert np.sum(grid.barycentre()[:,0] - 
-    grid.evaluate_value(grid.barycentre(),'X')) ==0
+    grid.evaluate_value(grid.barycentre(),grid.nodes[:,0])) ==0
 
 def test_evaluate_gradient():
     grid = StructuredGrid()
-    grid.update_property('Y',grid.nodes[:,1])
-    vector = np.mean(grid.evaluate_gradient(grid.barycentre(),'Y'),axis=0)
+    vector = np.mean(grid.evaluate_gradient(grid.barycentre(),grid.nodes[:,1]),axis=0)
     # vector/=np.linalg.norm(vector)
     assert np.sum(vector-np.array([0,grid.step_vector[1],0])) == 0
     
@@ -76,13 +74,11 @@ def test_create_tetmesh_origin_nsteps():
 
 def test_evaluate_value_tetmesh():
     grid = TetMesh()
-    grid.update_property('X',grid.nodes[:,0])
     assert np.sum(grid.barycentre()[:,0] - 
-    grid.evaluate_value(grid.barycentre(),'X')) ==0
+    grid.evaluate_value(grid.barycentre(),grid.nodes[:,0])) ==0
 
 def test_evaluate_gradient_tetmesh():
     grid = TetMesh()
-    grid.update_property('Y',grid.nodes[:,1])
-    vector = np.mean(grid.evaluate_gradient(grid.barycentre(),'Y'),axis=0)
+    vector = np.mean(grid.evaluate_gradient(grid.barycentre(),grid.nodes[:,1]),axis=0)
     # vector/=np.linalg.norm(vector)
     assert np.sum(vector-np.array([0,grid.step_vector[1],0])) == 0

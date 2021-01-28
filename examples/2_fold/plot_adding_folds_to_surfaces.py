@@ -154,7 +154,7 @@ viewer = LavaVuModelViewer(model,background="white")
 #                      cmap='prism')
 viewer.add_data(stratigraphy)
 viewer.add_isosurface(stratigraphy,
-                     voxet=model.voxet())
+                      )
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 

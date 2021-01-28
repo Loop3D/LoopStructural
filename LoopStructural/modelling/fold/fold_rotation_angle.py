@@ -7,7 +7,8 @@ from LoopStructural.modelling.fold.fold_rotation_angle_feature import \
     fourier_series
 from LoopStructural.modelling.fold import SVariogram
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class FoldRotationAngle:
