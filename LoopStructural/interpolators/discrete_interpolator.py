@@ -156,7 +156,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-
         nr = A.shape[0]
         if A.shape != idc.shape:
             return

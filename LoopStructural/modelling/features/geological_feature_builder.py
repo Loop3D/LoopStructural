@@ -208,7 +208,6 @@ class GeologicalFeatureInterpolator:
             logger.error("Not enough constraints for scalar field add more")
         # self.interpolator.reset()
         mask = ~np.isnan(data.loc[:,val_name()].to_numpy())
-
         # add value constraints
         if mask.shape[0]>0:
             value_data = data.loc[mask[:,0],xyz_names()+val_name()+weight_name()].to_numpy()
@@ -340,6 +339,21 @@ class GeologicalFeatureInterpolator:
 
         """
         return self.data.loc[:, xyz_names()].to_numpy()
+    def set_interpolation_geometry(self,origin,maximum):
+        """Update the interpolation support geometry to new bounding box
+
+        Parameters
+        ----------
+        origin : np.array(3)
+            origin vector
+        maximum : np.array(3)
+            maximum vector
+        """
+        logger.info("Setting mesh origin: {} {} {} ".format(origin[0],origin[1],origin[2]))
+        logger.info("Setting mesh maximum: {} {} {}".format(maximum[0],maximum[1],maximum[2]))
+        self.interpolator.support.origin = origin
+        self.interpolator.support.maximum = maximum
+        self._up_to_date = False
 
     def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):
         """
@@ -391,7 +405,6 @@ class GeologicalFeatureInterpolator:
             if 'cgw' not in kwargs:
                 # try adding very small cg
                 kwargs['cgw'] = 0.0
-        
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
         self._up_to_date = True

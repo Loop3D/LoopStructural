@@ -1093,7 +1093,15 @@ class GeologicalModel:
         # evaluated where the unconformity is positive
         return domain_fault_uc
 
-    def create_and_add_fault(self, fault_surface_data, displacement, fault_extent = None, fault_influence = None, fault_vectical_radius = None, **kwargs):
+    def create_and_add_fault(self, 
+                            fault_surface_data, 
+                            displacement, 
+                            fault_slip_vector=None,
+                            fault_center = None, 
+                            fault_extent = None, 
+                            fault_influence = None, 
+                            fault_vectical_radius = None, 
+                            **kwargs):
         """
         Parameters
         ----------
@@ -1123,11 +1131,27 @@ class GeologicalModel:
                                                      name=fault_surface_data,
                                                      **kwargs)
         # add data
-        fault_vector
-        fault_frame_data = self.data[
-            self.data['feature_name'] == fault_surface_data].copy()
-        
-        fault_frame_builder.add_data_from_data_frame(fault_frame_data)
+        fault_frame_data = self.data[ self.data['feature_name'] == fault_surface_data].copy()
+        mask = np.logical_and(fault_frame_data['coord']==0,~np.isnan(fault_frame_data['gz']))
+        fault_normal_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
+        mask = np.logical_and(fault_frame_data['coord']==1,~np.isnan(fault_frame_data['gz']))
+        if fault_slip_vector is None:
+            fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
+        if fault_center is None:
+            # if we haven't defined a fault centre take the center of mass for lines assocaited with
+            # the fault trace
+            mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
+            fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
+        fault_frame_builder.create_data_from_geometry(fault_frame_data,
+                                                      self.scale(fault_center),
+                                                      fault_normal_vector,
+                                                      fault_slip_vector,
+                                                      influence_distance=fault_influence/self.scale_factor,
+                                                      horizontal_radius=fault_extent/self.scale_factor,
+                                                      vertical_radius=fault_vectical_radius/self.scale_factor
+                                                      )
+        fault_frame_builder.set_mesh_geometry(0.1)
+        # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # check if this fault overprint any existing faults exist in the stack
         overprinted = kwargs.get('overprinted', [])
         overprinted_faults = []
@@ -1193,8 +1217,11 @@ class GeologicalModel:
         """
         if inplace==False:
             points = points.copy()
-
-        points[:, :] -= self.origin
+        # if len(points.shape) == 1:
+        #     points = points[None,:]
+        # if len(points.shape) != 2:
+        #     logger.error("cannot scale array of dimensions".format(len(points.shape)))
+        points -= self.origin
         points /= self.scale_factor
         return points
 
