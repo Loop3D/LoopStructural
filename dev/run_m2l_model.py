@@ -21,12 +21,12 @@ foliation_params = {'interpolatortype':'FDI' , # 'interpolatortype':'PLI',
 
 fault_params = {'interpolatortype':'FDI',
                 'nelements':1e4,
-                # 'data_region':.2, 
-                'solver':'lu',
+                'data_region':.1000, 
+                'solver':'pyamg',
 #                 overprints:overprints,
                 'cpw':10,
                 'npw':10}
-foliation_params = {'nelements':1e5,  # how many tetras/voxels
+foliation_params = {'nelements':1e4,  # how many tetras/voxels
                     'buffer':2.5,  # how much to extend nterpolation around box
                     'solver':'pyamg',
                     'npw':10,
@@ -47,7 +47,11 @@ model, m2l_data = GeologicalModel.from_map2loop_directory('./dev/unconf',
 # print(model.features[1][0].interpolator.support)
 # print(model.support)
 view = LavaVuModelViewer(model,vertical_exaggeration=1) 
-view.add_isosurface(model.features[1][0])
+# for i in range(3):#f in model['supergroup_0'].faults:
+#     f = model['supergroup_0'].faults[i]
+#     view.add_vector_field(f,locations=model.regular_grid()[::100,:])
+# # model['supergroup_0'].evaluate_value(model.regular_grid(nsteps=(10,10,10)))
+#     view.add_isosurface(f,value=0)
 # # view.interactive()
 view.add_model_surfaces(faults=True)#filename=filename)
 # # # view.add_data(model['supergroup_0'])

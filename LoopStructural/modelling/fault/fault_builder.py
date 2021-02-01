@@ -95,7 +95,7 @@ class FaultBuilder(StructuralFrameBuilder):
 
         # for builder in self.builders:
         # all three coordinates share the same support
-        self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum-length*buffer)
+        # self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum-length*buffer)
             
     def add_splay(self,splayregion,splay):
         for i in range(3):
