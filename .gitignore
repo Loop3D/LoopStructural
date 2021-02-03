@@ -128,3 +128,4 @@ docs/source/auto_examples/*
 examples/*/*.png
 docs/source/test/*
 examples/*.png
+dev/unconf
