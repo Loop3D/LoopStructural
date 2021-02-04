@@ -13,7 +13,7 @@ try:
 except ImportError:
     logger.error("Please install lavavu: pip install lavavu")
 import numpy as np
-from skimage.measure import marching_cubes_lewiner as marching_cubes
+from skimage.measure import marching_cubes
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
@@ -310,6 +310,7 @@ class LavaVuModelViewer:
                 self.model.rescale(verts)
 
             except (ValueError, RuntimeError) as e:
+                print(e)
                 logger.warning("Cannot isosurface {} at {}, skipping".format(geological_feature.name,isovalue))
                 continue
 
@@ -398,6 +399,14 @@ class LavaVuModelViewer:
         if vmax == None:
             vmax = np.nanmax(val)
         surf.colourmap(cmap, range=(vmin, vmax))
+
+    def add_box(self,bounding_box,name,colour='red'):
+        points, tri = create_box(bounding_box,self.nsteps)
+
+        surf = self.lv.triangles(name)
+        surf.vertices(self.model.rescale(points))
+        surf.indices(tri)
+        surf.colours(colour)
 
     def add_model(self, cmap = None, **kwargs):
         """Add a block model painted by stratigraphic id to the viewer
