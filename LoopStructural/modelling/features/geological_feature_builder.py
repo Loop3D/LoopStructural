@@ -353,6 +353,8 @@ class GeologicalFeatureInterpolator:
         logger.info("Setting mesh maximum: {} {} {}".format(maximum[0],maximum[1],maximum[2]))
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
+
+
         self._up_to_date = False
 
     def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):

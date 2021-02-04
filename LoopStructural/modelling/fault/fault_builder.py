@@ -75,12 +75,16 @@ class FaultBuilder(StructuralFrameBuilder):
             if vertical_radius is not None:
                 fault_depth[0,:] = fault_center[:3]+slip_vector*vertical_radius
                 fault_depth[1,:] = fault_center[:3]-slip_vector*vertical_radius
+                # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
+                #     [fault_depth[0,0],fault_depth[0,1],fault_depth[0,2],self.name,1,1]
+                # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
+                #     [fault_depth[1,0],fault_depth[1,1],fault_depth[1,2],self.name,-1,1]
                 self.update_geometry(fault_depth)
                 #TODO need to add data here
             data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] =\
                 [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],1]
         # add strike vector to constraint fault extent
-            data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
+            data.loc[len(data),['X','Y','Z','feature_name','gx','gy','gz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
                 self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
         self.add_data_from_data_frame(data)
     def set_mesh_geometry(self,buffer):
@@ -92,10 +96,16 @@ class FaultBuilder(StructuralFrameBuilder):
             percentage of length to add to edges
         """
         length = self.maximum-self.origin
-
+        # origin = self.builders[0].interpolator.support.origin
+        # maximum = self.builders[0].interpolator.support.maximum#set_interpolation_geometry
+        # if origin[2]>self.origin[2]:
+        #     origin[2]=self.origin[2]
+        # if maximum[2]<self.maximum[2]:
+        #     maximum[2]=self.maximum[2]
+        # self.builders[0].set_interpolation_geometry(origin,maximum)
         # for builder in self.builders:
         # all three coordinates share the same support
-        # self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum-length*buffer)
+        self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum+length*buffer)
             
     def add_splay(self,splayregion,splay):
         for i in range(3):
@@ -109,3 +119,6 @@ class FaultBuilder(StructuralFrameBuilder):
             mask = ~np.isnan(val)
             fault_frame_builder[i].interpolator.add_equality_constraints(
                 idc[mask], val[mask])
+    def update(self):
+        for i in range(3):
+            self.builders[i].update()
