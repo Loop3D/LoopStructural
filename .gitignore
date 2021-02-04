@@ -129,3 +129,4 @@ examples/*/*.png
 docs/source/test/*
 examples/*.png
 dev/unconf/*
+dev/scalar_field

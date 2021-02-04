@@ -1,0 +1,1163 @@
+****************************************************************
+*                Begin Solver Diagnostic Results               *
+*                                                              *
+*        ''solver #'' refers to below solver descriptors       *
+*                                                              *
+*        ''iters'' refers to iterations taken                  *
+*                                                              *
+*        ''op complexity'' refers to operator complexity       *
+*                                                              *
+*        ''work per DOA'' refers to work per digit of          *
+*          accuracy to solve the algebraic system, i.e. it     *
+*          measures the overall efficiency of the solver       *
+****************************************************************
+
+
+ solver # | iters | op complexity | work per DOA 
+-------------------------------------------------
+    1     |  err  |      err      |     err      
+    2     |  err  |      err      |     err      
+    3     |  err  |      err      |     err      
+    4     |  err  |      err      |     err      
+    5     |  err  |      err      |     err      
+    6     |  err  |      err      |     err      
+    7     |  err  |      err      |     err      
+    8     |  err  |      err      |     err      
+    9     |  err  |      err      |     err      
+    10    |  err  |      err      |     err      
+    11    |  err  |      err      |     err      
+    12    |  err  |      err      |     err      
+    13    |  err  |      err      |     err      
+    14    |  err  |      err      |     err      
+    15    |  err  |      err      |     err      
+    16    |  err  |      err      |     err      
+    17    |  err  |      err      |     err      
+    18    |  err  |      err      |     err      
+    19    |  err  |      err      |     err      
+    20    |  err  |      err      |     err      
+    21    |  err  |      err      |     err      
+    22    |  err  |      err      |     err      
+    23    |  err  |      err      |     err      
+    24    |  err  |      err      |     err      
+    25    |  err  |      err      |     err      
+    26    |  err  |      err      |     err      
+    27    |  err  |      err      |     err      
+    28    |  err  |      err      |     err      
+    29    |  err  |      err      |     err      
+    30    |  err  |      err      |     err      
+    31    |  err  |      err      |     err      
+    32    |  err  |      err      |     err      
+    33    |  err  |      err      |     err      
+    34    |  err  |      err      |     err      
+    35    |  err  |      err      |     err      
+    36    |  err  |      err      |     err      
+    37    |  err  |      err      |     err      
+    38    |  err  |      err      |     err      
+    39    |  err  |      err      |     err      
+    40    |  err  |      err      |     err      
+    41    |  err  |      err      |     err      
+    42    |  err  |      err      |     err      
+    43    |  err  |      err      |     err      
+    44    |  err  |      err      |     err      
+    45    |  err  |      err      |     err      
+    46    |  err  |      err      |     err      
+    47    |  err  |      err      |     err      
+    48    |  err  |      err      |     err      
+    49    |  err  |      err      |     err      
+    50    |  err  |      err      |     err      
+    51    |  err  |      err      |     err      
+    52    |  err  |      err      |     err      
+    53    |  err  |      err      |     err      
+    54    |  err  |      err      |     err      
+    55    |  err  |      err      |     err      
+    56    |  err  |      err      |     err      
+    57    |  err  |      err      |     err      
+    58    |  err  |      err      |     err      
+    59    |  err  |      err      |     err      
+    60    |  err  |      err      |     err      
+
+****************************************************************
+*                 Begin Solver Descriptors                     
+*       Solver used is smoothed_aggregation_solver( )             
+****************************************************************
+
+Solver Descriptor 1
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None] 
+ 
+Solver Descriptor 2
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 3
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 4
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 5
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 6
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 7
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 8
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 9
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 10
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 11
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = None 
+ 
+Solver Descriptor 12
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 13
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 14
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = None 
+ 
+Solver Descriptor 15
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 16
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 17
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 18
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 19
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 20
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 21
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = None 
+ 
+Solver Descriptor 22
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 23
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 24
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 25
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 26
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 27
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 28
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 29
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 30
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 31
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 32
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = None 
+ 
+Solver Descriptor 33
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 34
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 35
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 36
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 37
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 38
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 39
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 40
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('symmetric', {'theta': 0.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 41
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 42
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = None 
+ 
+Solver Descriptor 43
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 44
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 45
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 46
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 47
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 48
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 49
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 50
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 51
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 52
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = jacobi
+    improve_candidates = None 
+ 
+Solver Descriptor 53
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 54
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('jacobi', {'filter': True, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 55
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 56
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 2, 'degree': 1, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 57
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 58
+  Solve phase arguments:
+    cycle = V
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 3, 'degree': 2, 'weighting': 'local'})
+    improve_candidates = None 
+ 
+Solver Descriptor 59
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = [('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 4}), None, None, None, None, None, None, None, None, None, None, None, None, None, None] 
+ 
+Solver Descriptor 60
+  Solve phase arguments:
+    cycle = W
+    krylov accel = cg
+    tol = 1e-08
+    maxiter = 300
+  Setup phase arguments:
+    max_levels = 15
+    max_coarse = 300
+    coarse_solver = pinv
+    presmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    postsmoother = ('block_gauss_seidel', {'sweep': 'symmetric', 'iterations': 1})
+    test
+    strength = ('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 4.0})
+    aggregate = standard
+    smooth = ('energy', {'krylov': 'cg', 'maxiter': 4, 'degree': 3, 'weighting': 'local'})
+    improve_candidates = None 
+ 
