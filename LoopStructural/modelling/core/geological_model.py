@@ -13,14 +13,6 @@ from LoopStructural.interpolators.finite_difference_interpolator import \
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator as PLI
 
-try:
-    from LoopStructural.interpolators.surfe_wrapper import \
-        SurfeRBFInterpolator as Surfe
-
-    surfe = True
-
-except ImportError:
-    surfe = False
 
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
@@ -39,8 +31,7 @@ from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
 
 from LoopStructural.utils import getLogger, log_to_file
 logger = getLogger(__name__)
-if not surfe:
-    logger.warning("Cannot import Surfe")
+
 
 
 def _calculate_average_intersection(series_builder, fold_frame, fold,
@@ -543,6 +534,18 @@ class GeologicalModel:
             return DFI(mesh, kwargs['fold'])
         if interpolatortype == 'Surfe' or interpolatortype == 'surfe' and \
                 surfe:
+            # move import of surfe to where we actually try and use it
+            try:
+                from LoopStructural.interpolators.surfe_wrapper import \
+                    SurfeRBFInterpolator as Surfe
+
+                surfe = True
+
+            except ImportError:
+                surfe = False
+            if not surfe:
+                logger.warning("Cannot import Surfe, try another interpolator")
+                raise ImportError
             method = kwargs.get('method', 'single_surface')
             logger.info("Using surfe interpolator")
             return Surfe(method)
@@ -1150,7 +1153,7 @@ class GeologicalModel:
                                                       horizontal_radius=fault_extent/self.scale_factor,
                                                       vertical_radius=fault_vectical_radius/self.scale_factor
                                                       )
-        fault_frame_builder.set_mesh_geometry(0.1)
+        fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
         # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # check if this fault overprint any existing faults exist in the stack
         overprinted = kwargs.get('overprinted', [])
@@ -1167,6 +1170,7 @@ class GeologicalModel:
 
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
                              **kwargs)
+        fault.builder=fault_frame_builder
         for f in reversed(self.features):
             if f.type == 'unconformity':
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
@@ -1438,3 +1442,23 @@ class GeologicalModel:
             return feature.evaluate_gradient(scaled_xyz)
         else:
             return np.zeros(xyz.shape[0])
+
+    def update(self,verbose=False):
+        if verbose:
+            nfeatures = 0
+            for f in self.features:
+                if f.type=='fault':
+                    nfeatures+=3
+                else:
+                    nfeatures+=1
+            print('Updating geological model. There are: \n'
+            '{} geological features that need to be interpolated\n'.format(nfeatures)
+            )
+        from tqdm import tqdm
+        import time
+        start = time.time()
+        for f in tqdm(self.features):
+            f.builder.update()
+        if verbose:
+            print("Model update took: {} seconds".format(time.time()-start))
+
