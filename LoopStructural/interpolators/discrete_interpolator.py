@@ -373,7 +373,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
 
         lsqrargs = {}
-        # lsqrargs['tol'] = 1e-12
+        lsqrargs['tol'] = 1e-12
+        lsqrargs['atol'] = 0
         if 'iter_lim' in kwargs:
             logger.info("Using %i maximum iterations" % kwargs['iter_lim'])
             lsqrargs['iter_lim'] = kwargs['iter_lim']
@@ -455,7 +456,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs['M'] = precon(A)
         return sla.cg(A, B, **cgargs)[0][:self.nx]
 
-    def _solve_pyamg(self, A, B, tol=1e-8,x0=None,**kwargs):
+    def _solve_pyamg(self, A, B, tol=1e-12,x0=None,**kwargs):
         """
         Solve least squares system using pyamg algorithmic multigrid solver
 

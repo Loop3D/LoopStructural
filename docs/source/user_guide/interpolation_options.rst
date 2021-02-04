@@ -207,6 +207,49 @@ If your model is large, or computer memory is a limitation an iterative solver i
 However, iterative solvers can suffer from poor convergence if the matrix is poorly conditioned (this is possible when modeling irregular geometries).
 Solving the iterative problem can be sped up by using a preconditioner for the matrix. 
 
+In the following example the Claudius test dataset is used to test the solver time. 
+The same dataset is used for varying number of elements from 1,000 to 100,000 at intervals of 5,000 on a computer running ubuntu with 32gb of ram and a 4 core i7 cpu.
+
+.. code-block::
+    from LoopStructural import GeologicalModel
+    from LoopStructural.datasets import load_claudius
+    import time
+
+    data, bb = load_claudius() # load data
+    model = GeologicalModel(bb[0,:],bb[1,:])
+    model.set_model_data(data)
+    strati = model.create_and_add_foliation('strati',nelements=1e5,solver='pyamg',interpolatortype='FDI') 
+
+    results= {}
+    for solver in ['pyamg','chol','cg','lu','lsqr']:
+        results[solver] = {'nx':[],'nel':[],'time':[],'c':[]}
+        for nel in np.arange(1e3,1e5,5e3):
+            start = time.time()
+            strati = model.create_and_add_foliation('strati',nelements=nel,solver=solver,interpolatortype='FDI')
+            strati.builder.update()
+            results[solver]['time'].append(time.time()-start)
+            results[solver]['nx'].append(strati.interpolator.nx)
+            results[solver]['nel'].append(nel)
+            # optional save out the solution
+            # np.save('scalar_field/{}_{}.npy'.format(solver,nel),strati.interpolator.c)
+
+The results are shown below where the time in seconds is plotted on a logscale. 
+We can see that the direct solvers (lu, chol) are efficient for solving system with small number of elements, however increases significantly when the number of elements increases.
+
+
+.. image:: ../images/solver_comparison.png
+
+It is clear that when modelling a large system using an iterative solver is beneficial. 
+The conjugate gradient solver is the default solver for LoopStructural and performs similarly to the pyamg multigrid solver.
+Pyamg creates a coarse interpolation problem, or series of layers of coarse problems, and solves this using either a direct or iterative solver and then uses this as a preconditioner for the conjugate gradient method for a finer solution. 
+Both pyamg and cg have the following parameters that can be used to specify the behaviour of the solver:
+
+With two parameters tol and atol controlling the tolerance of the 
+
+.. math:: norm(residual) <= max(tol*norm(b), atol)  
+
+Another parameter maxiter can be used to specify the maximum number of iterations for the alorithm.
+
 Data Supported Interpolation
 -----------------------------
 LoopStructural provides a wrapper to the SurfE c++ library developed  Natural Resources Canada (Geological Survey of Canada) by Michael Hillier, Eric de Kemp, and Ernst Schetselaar for the purposes of 3D structural geological modelling particularly in sparse data environments.
