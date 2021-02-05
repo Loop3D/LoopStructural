@@ -140,7 +140,7 @@ class GeologicalModel:
         self.bounding_box[1, :] = self.maximum - self.origin
         self.bounding_box[1, :] = self.maximum - self.origin
         if rescale:
-            self.scale_factor = np.max(lengths)
+            self.scale_factor = np.max(lengths,dtype=float)
             logger.info('Rescaling model using scale factor {}'.format(self.scale_factor))
         self._str+='Model rescale factor: {} \n'.format(self.scale_factor)
         self._str+='The model contains {} GeologicalFeatures \n'.format(len(self.features))
@@ -1103,7 +1103,8 @@ class GeologicalModel:
                             fault_center = None, 
                             fault_extent = None, 
                             fault_influence = None, 
-                            fault_vectical_radius = None, 
+                            fault_vectical_radius = None,
+                            faultfunction=None, 
                             **kwargs):
         """
         Parameters
@@ -1145,13 +1146,19 @@ class GeologicalModel:
             # the fault trace
             mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
             fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
+        if influence_distance:
+            influence_distance=fault_influence/self.scale_factor
+        if horizontal_radius:
+            horizontal_radius=fault_extent/self.scale_factor
+        if vertical_radius:
+            vertical_radius=fault_vectical_radius/self.scale_factor    
         fault_frame_builder.create_data_from_geometry(fault_frame_data,
                                                       self.scale(fault_center),
                                                       fault_normal_vector,
                                                       fault_slip_vector,
-                                                      influence_distance=fault_influence/self.scale_factor,
-                                                      horizontal_radius=fault_extent/self.scale_factor,
-                                                      vertical_radius=fault_vectical_radius/self.scale_factor
+                                                      influence_distance=fault_influence,
+                                                      horizontal_radius=fault_extent,
+                                                      vertical_radius=fault_vectical_radius
                                                       )
         fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
         # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
