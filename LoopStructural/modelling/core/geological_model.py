@@ -1443,22 +1443,41 @@ class GeologicalModel:
         else:
             return np.zeros(xyz.shape[0])
 
-    def update(self,verbose=False):
-        if verbose:
-            nfeatures = 0
-            for f in self.features:
-                if f.type=='fault':
-                    nfeatures+=3
-                else:
-                    nfeatures+=1
+    def update(self,verbose=False,progressbar=True):
+        total_dof = 0
+        nfeatures = 0
+        for f in self.features:
+            if f.type=='fault':
+                nfeatures+=3
+                total_dof+=f[0].interpolator.nx*3
+            else:
+                nfeatures+=1
+                total_dof+=f.interpolator.nx
+        if verbose==True:
             print('Updating geological model. There are: \n'
             '{} geological features that need to be interpolated\n'.format(nfeatures)
             )
+        
         from tqdm import tqdm
         import time
         start = time.time()
-        for f in tqdm(self.features):
-            f.builder.update()
+        sizecounter = 0
+        
+        # Load tqdm with size counter instead of file counter
+        with tqdm(total=total_dof) as pbar:
+            buf = 1
+            for f in self.features:
+                pbar.set_description('Interpolating {}'.format(f.name))
+                if f.type == 'fault':
+                    for i in range(3):
+                        f[i].builder.update()
+                        buf+=f[i].interpolator.nx
+                else:
+                    f.builder.update()
+                    buf+=f.interpolator.nx
+                pbar.update(buf)
+
+            
         if verbose:
             print("Model update took: {} seconds".format(time.time()-start))
 
