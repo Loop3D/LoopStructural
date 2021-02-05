@@ -483,6 +483,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        logger.info("Solving interpolation for {}".format(self.propertyname))
+
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         damp = True

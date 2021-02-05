@@ -1450,7 +1450,7 @@ class GeologicalModel:
             if f.type=='fault':
                 nfeatures+=3
                 total_dof+=f[0].interpolator.nx*3
-            else:
+            if f.type == 'series':
                 nfeatures+=1
                 total_dof+=f.interpolator.nx
         if verbose==True:
@@ -1472,7 +1472,7 @@ class GeologicalModel:
                     for i in range(3):
                         f[i].builder.update()
                         buf+=f[i].interpolator.nx
-                else:
+                if f.type == 'series':
                     f.builder.update()
                     buf+=f.interpolator.nx
                 pbar.update(buf)
