@@ -43,7 +43,7 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
-        if fold_axis not None:
+        if fold_axis is not None:
             if fold_axis.shape[0] > 0 and fold_axis.shape[1] == 6:
                 points.append(fold_axis)
         if len(points) == 0:

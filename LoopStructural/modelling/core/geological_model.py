@@ -695,8 +695,9 @@ class GeologicalModel:
         self._add_faults(series_builder)
 
         series_builder.add_data_to_interpolator(True)
-        fold_axis = kwargs.get('fold_axis')
-        if fold_axis not None:
+        fold_axis = kwargs.get('fold_axis',None)
+        if fold_axis is not None:
+            fold_axis = np.array(fold_axis)
             if len(fold_axis.shape) == 1:
                 fold.fold_axis = fold_axis
         
