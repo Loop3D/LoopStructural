@@ -168,7 +168,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # w/=A.shape[0]
         self.add_constraints_to_least_squares(A[outside, :] * w,
                                               B[outside] * w, idc[outside, :],
-                                              name='regularisation')
+                                              name='directional regularisation')
         return
 
 
@@ -391,7 +391,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                 outside = ~np.any(interface_idc == -1, axis=1)
                 self.add_constraints_to_least_squares(interface_A[outside,:] * w,
                                                       np.zeros(interface_A[outside,:].shape[0]),
-                                                      interface_idc[outside, :], name='value')
+                                                      interface_idc[outside, :], name='interface')
 
     def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
                                            B=0):
@@ -432,6 +432,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             B = np.zeros(idc.shape[0])+B
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :] * w,
-                                                  B[outside], idc[outside, :])
+                                                  B[outside], idc[outside, :], name='gradient_orthogonal')
 
 
