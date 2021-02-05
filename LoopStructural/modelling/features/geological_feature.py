@@ -132,7 +132,6 @@ class GeologicalFeature:
         # apply faulting after working out which regions are visible
         if self.faults_enabled:
             for f in self.faults:
-                print(f.name, self.name)
                 evaluation_points = f.apply_to_points(evaluation_points)
         v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         return v

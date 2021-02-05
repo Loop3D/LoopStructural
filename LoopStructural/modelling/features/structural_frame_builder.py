@@ -166,7 +166,7 @@ class StructuralFrameBuilder:
                 self.builders[1].add_orthogonal_feature(gz_feature, gyxgz,step=step)
             gy_feature = self.builders[1].feature
             kwargs['regularisation'] = regularisation[1]
-            self.builders[2].build_arguments = kwargs
+            self.builders[1].build_arguments = kwargs
 
         if gy_feature is None:
             logger.warning(
