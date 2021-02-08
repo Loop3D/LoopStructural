@@ -147,29 +147,26 @@ class LavaVuModelViewer:
         -------
 
         """
-        print('aa')
         if axis == 'x':
             tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
             xx = np.zeros(zz.shape)
             if value is None:
-                xx[:] = np.nanmean(self.bounding_box[:, 0])
-            else:
-                xx[:] = value
+                value = np.nanmean(self.bounding_box[:, 0])
+            xx[:] = value
         if axis == 'y':
             tri, xx, zz = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
             yy = np.zeros(xx.shape)
             if value is None:
-                yy[:] = np.nanmean(self.bounding_box[:, 1])
-            else:
-                yy[:] = value
+                value = np.nanmean(self.bounding_box[:, 1])
+            yy[:] = value
         if axis == 'z':
             tri, xx, yy = create_surface(self.bounding_box[:, 0:2], self.nsteps[0:2])
             zz = np.zeros(xx.shape)
             if value is None:
-                zz[:] = np.nanmean(self.bounding_box[:, 2])
-            else:
-                zz[:] = value
-        name = kwargs.get('name', axis + '_slice')
+                value = np.nanmean(self.bounding_box[:, 2])
+            zz[:] = value
+        name = kwargs.get('name', geological_feature.name)
+        name = '{}_section_at_{}_of_{}'.format(axis,value,name)
         colour = kwargs.get('colour', 'red')
 
         # create an array to evaluate the feature on for the section
@@ -208,9 +205,7 @@ class LavaVuModelViewer:
             cmap = lavavu.cubehelix(100)
             if 'cmap' in kwargs:
                 cmap = kwargs['cmap']
-            # logger.info("Colouring section with %s min: %f, max: %f" % (
-            #     geological_feature.name, geological_feature.min(), geological_feature.max()))
-            # surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
+
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
                      cmap=None, filename=None, names=None, colours=None,**kwargs):
