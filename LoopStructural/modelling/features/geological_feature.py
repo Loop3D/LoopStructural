@@ -120,6 +120,9 @@ class GeologicalFeature:
             numpy array containing evaluated values
 
         """
+        #TODO need to add a generic type checker for all methods
+        #if evaluation_points is not a numpy array try and convert
+        #otherwise error
         self.builder.up_to_date()
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
