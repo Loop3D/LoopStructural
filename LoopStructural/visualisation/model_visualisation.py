@@ -492,7 +492,18 @@ class LavaVuModelViewer:
         vmin = kwargs.get('vmin', np.nanmin(vals))
         vmax = kwargs.get('vmax', np.nanmax(vals))
         surf.colourmap(cmap, range=(vmin, vmax))
+        
+    def add_fault_ellipse(self, faults=None, **kwargs):
+        from matplotlib.patches import Ellipse
+        for k, f in self.model.stratigraphic_column['faults'].items():
+            center = self.model.rescale(f['FaultCenter'])
+            e = Ellipse((center[0],center[1]),
+                            f['HorizontalRadius']*2,
+                            f['InfluenceDistance']*2,
+                            360-f['FaultDipDirection'],
+                                facecolor='None',edgecolor='k')
 
+        self.ax.add_patch(e)
     def add_model_surfaces(self, faults = True, cmap=None, fault_colour='black',**kwargs):
         """Add surfaces for all of the interfaces in the model
 

@@ -140,7 +140,7 @@ class GeologicalModel:
         self.bounding_box[1, :] = self.maximum - self.origin
         self.bounding_box[1, :] = self.maximum - self.origin
         if rescale:
-            self.scale_factor = np.max(lengths,dtype=float)
+            self.scale_factor = float(np.max(lengths))
             logger.info('Rescaling model using scale factor {}'.format(self.scale_factor))
         self._str+='Model rescale factor: {} \n'.format(self.scale_factor)
         self._str+='The model contains {} GeologicalFeatures \n'.format(len(self.features))
@@ -1141,25 +1141,30 @@ class GeologicalModel:
         mask = np.logical_and(fault_frame_data['coord']==1,~np.isnan(fault_frame_data['gz']))
         if fault_slip_vector is None:
             fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
+        if fault_center is not None:
+            fault_center = self.scale(fault_center,inplace=False)
         if fault_center is None:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
             fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
-        if influence_distance:
-            influence_distance=fault_influence/self.scale_factor
-        if horizontal_radius:
-            horizontal_radius=fault_extent/self.scale_factor
-        if vertical_radius:
-            vertical_radius=fault_vectical_radius/self.scale_factor    
+        if fault_influence:
+            fault_influence=fault_influence/self.scale_factor
+        if fault_extent:
+            fault_extent=fault_extent/self.scale_factor
+        if fault_vectical_radius:
+            fault_vectical_radius=fault_vectical_radius/self.scale_factor
         fault_frame_builder.create_data_from_geometry(fault_frame_data,
-                                                      self.scale(fault_center),
+                                                      fault_center,
                                                       fault_normal_vector,
                                                       fault_slip_vector,
                                                       influence_distance=fault_influence,
                                                       horizontal_radius=fault_extent,
                                                       vertical_radius=fault_vectical_radius
                                                       )
+        if fault_influence == None or fault_extent == None or fault_vectical_radius == None:
+            fault_frame_builder.origin = self.origin
+            fault_frame_builder.maximum = self.maximum
         fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
         # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # check if this fault overprint any existing faults exist in the stack

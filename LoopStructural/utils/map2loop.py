@@ -317,7 +317,7 @@ def build_model(m2l_data, skip_faults = False, unconformities=False, fault_param
             faults.append(model.create_and_add_fault(f,
                                                     -m2l_data['max_displacement'][f],
                                                     faultfunction='BaseFault',
-                                                    fault_slip_vector=np.array([0,0,-1]),
+                                                    fault_slip_vector=np.array([0.,0.,-1.]),
                                                     fault_center=fault_center,
                                                     fault_extent=fault_extent,
                                                     fault_influence=fault_influence,

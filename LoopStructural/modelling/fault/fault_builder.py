@@ -51,6 +51,8 @@ class FaultBuilder(StructuralFrameBuilder):
         vertical_radius : double
             fault volume radius in the slip direction
         """
+        normal_vector/=np.linalg.norm(normal_vector)
+        slip_vector/=np.linalg.norm(slip_vector)
         strike_vector = np.cross(normal_vector,slip_vector)
         fault_edges = np.zeros((2,3))
         fault_tips = np.zeros((2,3))
