@@ -107,10 +107,7 @@ class StructuralFrame:
         v[:,1] = self.features[1].evaluate_value(evaluation_points)
         v[:,2] = self.features[2].evaluate_value(evaluation_points)
         return v
-        # return (self.features[0].evaluate_value(evaluation_points),
-        #         self.features[1].evaluate_value(evaluation_points),
-        #         self.features[2].evaluate_value(evaluation_points))
-
+        
     def evaluate_gradient(self, evaluation_points, i=None):
         """
         Evaluate the gradient of the structural frame.

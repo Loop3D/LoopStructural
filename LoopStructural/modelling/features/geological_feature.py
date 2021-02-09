@@ -48,7 +48,6 @@ class GeologicalFeature:
         self.name = name
         self.interpolator = interpolator
         self.ndim = 1
-        self.data = data
         self.builder = builder
         self.region = region
         self.regions = []
@@ -105,20 +104,6 @@ class GeologicalFeature:
         """
         self.regions.append(region)
 
-    def set_builder(self, builder):
-        """
-
-        Parameters
-        ----------
-        builder : GeologicalFeatureInterpolator
-            the builder associated with this feature
-
-        Returns
-        -------
-
-        """
-        self.builder = builder
-
     def evaluate_value(self, evaluation_points):
         """
         Evaluate the scalar field value of the geological feature at the locations
@@ -135,7 +120,10 @@ class GeologicalFeature:
             numpy array containing evaluated values
 
         """
-
+        #TODO need to add a generic type checker for all methods
+        #if evaluation_points is not a numpy array try and convert
+        #otherwise error
+        self.builder.up_to_date()
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
@@ -163,6 +151,7 @@ class GeologicalFeature:
         -------
 
         """
+        self.builder.up_to_date()
         v = np.zeros(evaluation_points.shape)
         v[:] = np.nan
         mask = np.zeros(evaluation_points.shape[0]).astype(bool)
@@ -187,6 +176,7 @@ class GeologicalFeature:
         misfit : np.array(N,dtype=double)
             dot product between interpolated gradient and constraints
         """
+        self.builder.up_to_date()
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
 
@@ -211,6 +201,8 @@ class GeologicalFeature:
         misfit : np.array(N,dtype=double)
             difference between interpolated scalar field and value constraints
         """
+        self.builder.up_to_date()
+
         locations = self.interpolator.get_value_constraints()
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
         diff/=(self.max()-self.min())
@@ -256,32 +248,5 @@ class GeologicalFeature:
             return 0
         return np.nanmax(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-
-    def update(self):
-        """
-        Calculate average of the support values
-
-        Returns
-        -------
-
-        """
-        # re-run the interpolator and update the support.
-        # this is a bit clumsy and not abstract, i think
-        # if evaluating the property doesn't require the dictionary on
-        # the nodes and actually just uses the interpolator values this
-        # would be
-        # much better.
-        self.interpolator.up_to_date = False
-        self.interpolator.update()
-
-    def get_interpolator(self):
-        """
-        Get the interpolator used to build this feature
-
-        Returns
-        -------
-        interpolator : GeologicalInterpolator
-        """
-        return self.interpolator
 
 

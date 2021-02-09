@@ -156,8 +156,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-
         nr = A.shape[0]
+        #logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
+        # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
             return
         
@@ -491,6 +492,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        logger.info("Solving interpolation for {}".format(self.propertyname))
+
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         damp = True
@@ -531,7 +534,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.warning("Solver not run, no scalar field")
         # if solution is all 0, probably didn't work
         if np.all(self.c[self.region] == 0):
-            logger.warning("No solution, scalar field 0. Add more data.")
+            logger.warning("No solution, {} scalar field 0. Add more data.".format(self.propertyname))
 
     def update(self):
         """

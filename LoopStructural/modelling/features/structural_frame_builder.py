@@ -125,8 +125,10 @@ class StructuralFrameBuilder:
         fold = None
         if len(self.builders[0].data) > 0:
             logger.info("Building %s coordinate 0"%self.name)
-            gx_feature = self.builders[0].build(regularisation=regularisation[
-                                                    0], **kwargs)
+            gx_feature = self.builders[0].feature
+            kwargs['regularisation']=regularisation[0]
+            self.builders[0].build_arguments = kwargs
+
             # remove fold from kwargs
 
             fold = kwargs.pop('fold', None)
@@ -135,9 +137,9 @@ class StructuralFrameBuilder:
                 "Not enough constraints for structural frame coordinate 0, \n"
                 "Add some more and try again.")
         # make sure that all of the coordinates are using the same region
-        if gx_feature is not None and gx_feature.get_interpolator().region_function is not None:
-            self.builders[1].interpolator.set_region(gx_feature.get_interpolator().region_function)
-            self.builders[2].interpolator.set_region(gx_feature.get_interpolator().region_function)
+        if gx_feature is not None and gx_feature.interpolator.region_function is not None:
+            self.builders[1].interpolator.set_region(gx_feature.interpolator.region_function)
+            self.builders[2].interpolator.set_region(gx_feature.interpolator.region_function)
             if 'data_region' in kwargs:
                 kwargs.pop('data_region')
             if 'region' in kwargs:
@@ -152,7 +154,9 @@ class StructuralFrameBuilder:
             #         w=gyxgz)
             if gx_feature is not None and gxxgz>0:
                 self.builders[2].add_orthogonal_feature(gx_feature, gxxgz,step=step)
-            gz_feature = self.builders[2].build(regularisation=regularisation[2], **kwargs)
+            gz_feature = self.builders[2].feature
+            kwargs['regularisation'] = regularisation[2]
+            self.builders[2].build_arguments = kwargs
 
         if len(self.builders[1].data) > 0:
             logger.info("Building %s coordinate 1"%self.name)
@@ -160,23 +164,10 @@ class StructuralFrameBuilder:
                 self.builders[1].add_orthogonal_feature(gx_feature, gxxgy,step=step)
             if gz_feature is not None and gyxgz>0:
                 self.builders[1].add_orthogonal_feature(gz_feature, gyxgz,step=step)
-            gy_const_norm = kwargs.get('gy_const_norm',0.)
+            gy_feature = self.builders[1].feature
+            kwargs['regularisation'] = regularisation[1]
+            self.builders[1].build_arguments = kwargs
 
-
-            # if gz_feature is not None: 
-            #     tmp = CrossProductGeologicalFeature('tmp',gx_feature,gz_feature)
-            #     self.builders[1].add_orthogonal_feature(tmp,10.,step=step,B=1)
-            #     # gy_feature.value_feature = fold.fold frame[0]
-            #     # vector = feature.evaluate_gradient(self.builders[1].interpolator.support.barycentre())
-            #     # vector /= np.linalg.norm(vector,axis=1)[:,None]
-            #     # element_idx = np.arange(self.builders[1].interpolator.support.n_elements)
-            #     # np.random.shuffle(element_idx)
-            #     # norm_pts = np.hstack([self.builders[1].interpolator.support.barycentre()[element_idx[::step],:],vector[element_idx[::step],:],np.ones((vector[element_idx[::step],:].shape[0],1))])
-
-            #     # self.builders[1].interpolator.set_normal_constraints(norm_pts)
-            #     self.builders[1].data_added=True
-            
-            gy_feature = self.builders[1].build(regularisation=regularisation[1],**kwargs)
 
         if gy_feature is None:
             logger.warning(
