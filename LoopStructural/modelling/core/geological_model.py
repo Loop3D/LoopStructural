@@ -532,8 +532,7 @@ class GeologicalModel:
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
-        if interpolatortype == 'Surfe' or interpolatortype == 'surfe' and \
-                surfe:
+        if interpolatortype == 'Surfe' or interpolatortype == 'surfe':
             # move import of surfe to where we actually try and use it
             try:
                 from LoopStructural.interpolators.surfe_wrapper import \
