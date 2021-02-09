@@ -1,9 +1,9 @@
 name: publish_conda
 
 on:
-  push:
-    branches:
-      - release/*
+  release:
+    types:
+      [created]
 jobs:
   publish:
     runs-on: ubuntu-latest
