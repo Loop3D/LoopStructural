@@ -67,10 +67,10 @@ class BaseStructuredSupport:
         """
         update the number of steps to fit new boundary
         """
-        maximum = np.array(maximum)
+        maximum = np.array(maximum,dtype=float)
         length = maximum-self.origin
         length /= self.step_vector
-        self.nsteps = np.ceil(length).astype(int)
+        self._nsteps = np.ceil(length).astype(int)
     @property
     def n_nodes(self):
         return np.product(self.nsteps)

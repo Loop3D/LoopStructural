@@ -13,7 +13,7 @@ try:
 except ImportError:
     logger.error("Please install lavavu: pip install lavavu")
 import numpy as np
-from skimage.measure import marching_cubes_lewiner as marching_cubes
+from skimage.measure import marching_cubes
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
@@ -147,80 +147,66 @@ class LavaVuModelViewer:
         -------
 
         """
-                   
-        try:
-            iter(value)
-        except:
-            print('Creating iterable')
-            value = [value]
-        for v in value:
-            if axis == 'x':
-                v = self.model.scale([[v,0,0]],inplace=False)[0,0]
-                tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
-                xx = np.zeros(zz.shape)
-                if v is None:
-                    xx[:] = np.nanmean(self.bounding_box[:, 0])
-                else:
-                    xx[:] = v
-            if axis == 'y':
-                v = self.model.scale([[0,v,0]],inplace=False)[0,1]
+        if axis == 'x':
+            tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
+            xx = np.zeros(zz.shape)
+            if value is None:
+                value = np.nanmean(self.bounding_box[:, 0])
+            xx[:] = value
+        if axis == 'y':
+            tri, xx, zz = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
+            yy = np.zeros(xx.shape)
+            if value is None:
+                value = np.nanmean(self.bounding_box[:, 1])
+            yy[:] = value
+        if axis == 'z':
+            tri, xx, yy = create_surface(self.bounding_box[:, 0:2], self.nsteps[0:2])
+            zz = np.zeros(xx.shape)
+            if value is None:
+                value = np.nanmean(self.bounding_box[:, 2])
+            zz[:] = value
+        name = kwargs.get('name', geological_feature.name)
+        name = '{}_section_at_{}_of_{}'.format(axis,value,name)
+        colour = kwargs.get('colour', 'red')
 
-                tri, xx, zz = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
-                yy = np.zeros(xx.shape)
-                if v is None:
-                    yy[:] = np.nanmean(self.bounding_box[:, 1])
-                else:
-                    yy[:] = v
-            if axis == 'z':
-                v = self.model.scale([[0,0,v]],inplace=False)[0,2]
-                tri, xx, yy = create_surface(self.bounding_box[:, 0:2], self.nsteps[0:2])
-                zz = np.zeros(xx.shape)
-                if v is None:
-                    zz[:] = np.nanmean(self.bounding_box[:, 2])
-                else:
-                    zz[:] = v
-            name = kwargs.get('name', '{}_slice_{}'.format(axis,v))
-            colour = kwargs.get('colour', 'red')
+        # create an array to evaluate the feature on for the section
+        points = np.zeros((len(xx), 3))  #
+        points[:, 0] = xx
+        points[:, 1] = yy
+        points[:, 2] = zz
 
-            # create an array to evaluate the feature on for the section
-            points = np.zeros((len(xx), 3))  #
-            points[:, 0] = xx
-            points[:, 1] = yy
-            points[:, 2] = zz
+        surf = self.lv.triangles(name)
+        surf.vertices(self.model.rescale(points,inplace=False))
+        surf.indices(tri)
+        logger.info("Adding %s section at %f" % (axis, value))
+        if geological_feature is None:
+            surf.colours(colour)
 
-            surf = self.lv.triangles(name)
-            surf.vertices(self.model.rescale(points,inplace=False))
-            surf.indices(tri)
-            logger.info("Adding %s section at %f" % (axis, v))
-            if geological_feature is None:
-                surf.colours(colour)
-            #following if statement changed because not evertyhing is a GEologicalFeature
-            if geological_feature is not None: # and type(geological_feature) == GeologicalFeature:
-                if 'norm' in kwargs:
-                    surf.values(np.linalg.norm(
-                        geological_feature.evaluate_gradient(points), axis=1),
-                        geological_feature.name)
-                else:
-                    surf.values(geological_feature.evaluate_value(points),
-                                geological_feature.name)
-                surf["colourby"] = geological_feature.name
-                cmap = lavavu.cubehelix(100)
-                if 'cmap' in kwargs:
-                    cmap = kwargs['cmap']
-                logger.info("Colouring section with %s min: %f, max: %f" % (
-                    geological_feature.name, geological_feature.min(), geological_feature.max()))
-                surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
-            if geological_feature == 'model' and self.model is not None:
-                name = kwargs.get('name','model_section')
-                surf.values(self.model.evaluate_model(points,scale=True),
-                                name)
-                surf["colourby"] = name
-                cmap = lavavu.cubehelix(100)
-                if 'cmap' in kwargs:
-                    cmap = kwargs['cmap']
-            # logger.info("Colouring section with %s min: %f, max: %f" % (
-            #     geological_feature.name, geological_feature.min(), geological_feature.max()))
-            # surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
+        if geological_feature is not None and type(geological_feature) == GeologicalFeature:
+            if 'norm' in kwargs:
+                surf.values(np.linalg.norm(
+                    geological_feature.evaluate_gradient(points), axis=1),
+                    geological_feature.name)
+            else:
+                surf.values(geological_feature.evaluate_value(points),
+                            geological_feature.name)
+            surf["colourby"] = geological_feature.name
+            cmap = lavavu.cubehelix(100)
+            if 'cmap' in kwargs:
+                cmap = kwargs['cmap']
+            logger.info("Colouring section with %s min: %f, max: %f" % (
+                geological_feature.name, geological_feature.min(), geological_feature.max()))
+            surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
+        if geological_feature == 'model' and self.model is not None:
+            name = kwargs.get('name','model_section')
+            surf.values(self.model.evaluate_model(points,scale=True),
+                            name)
+            surf["colourby"] = name
+            cmap = lavavu.cubehelix(100)
+            if 'cmap' in kwargs:
+                cmap = kwargs['cmap']
+
+
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
                      cmap=None, filename=None, names=None, colours=None,**kwargs):
@@ -320,6 +306,7 @@ class LavaVuModelViewer:
                 self.model.rescale(verts)
 
             except (ValueError, RuntimeError) as e:
+                print(e)
                 logger.warning("Cannot isosurface {} at {}, skipping".format(geological_feature.name,isovalue))
                 continue
 
@@ -408,6 +395,14 @@ class LavaVuModelViewer:
         if vmax == None:
             vmax = np.nanmax(val)
         surf.colourmap(cmap, range=(vmin, vmax))
+
+    def add_box(self,bounding_box,name,colour='red'):
+        points, tri = create_box(bounding_box,self.nsteps)
+
+        surf = self.lv.triangles(name)
+        surf.vertices(self.model.rescale(points))
+        surf.indices(tri)
+        surf.colours(colour)
 
     def add_model(self, cmap = None, **kwargs):
         """Add a block model painted by stratigraphic id to the viewer
@@ -498,7 +493,18 @@ class LavaVuModelViewer:
         vmin = kwargs.get('vmin', np.nanmin(vals))
         vmax = kwargs.get('vmax', np.nanmax(vals))
         surf.colourmap(cmap, range=(vmin, vmax))
+        
+    def add_fault_ellipse(self, faults=None, **kwargs):
+        from matplotlib.patches import Ellipse
+        for k, f in self.model.stratigraphic_column['faults'].items():
+            center = self.model.rescale(f['FaultCenter'])
+            e = Ellipse((center[0],center[1]),
+                            f['HorizontalRadius']*2,
+                            f['InfluenceDistance']*2,
+                            360-f['FaultDipDirection'],
+                                facecolor='None',edgecolor='k')
 
+        self.ax.add_patch(e)
     def add_model_surfaces(self, faults = True, cmap=None, fault_colour='black',**kwargs):
         """Add surfaces for all of the interfaces in the model
 

@@ -46,7 +46,8 @@ class FaultSegment:
         if self.faultframe is not None:
             self.displacementfeature = FaultDisplacementFeature(
                 self.faultframe, self.faultfunction, name = self.name)
-
+        self.builder = None
+    
     def __getitem__(self, item):
         """
 
@@ -59,7 +60,7 @@ class FaultSegment:
 
         """
         return self.faultframe[item]
-
+    
     def set_model(self, model):
         """
         Link a geological model to the feature

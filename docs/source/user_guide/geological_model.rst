@@ -10,6 +10,7 @@ Creating a model manually
 A GeologicalModel can be created using the default constructor.
 
 .. code-block::
+
     model = GeologicalModel(origin,maximum)
 
 Additional arguments that can be provided are:
@@ -173,6 +174,21 @@ A GeologicalFeature can be extracted from the model either by name
     myfeature_also = model['myfeature']
     myfeature_by_index = model.features[0]
     myfeature_by_name = model.get_feature_by_name('myfeature')
+
+Solving/Updating a geological model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In version 1.1+ the implicit function representing a geological feature does not have to be solved to generate the model object.
+The scalar field is solved on demand when the geological features are evaluated. 
+This means that parts of the geological model can be modified and only the older (features lower in the feature list) are updated.
+All features in the model can be updated:
+
+.. code-block::
+
+    model.update(verbose=False)
+
+This will solve the implicit function for all features in the model and provide a progress bar. 
+The verbose flag provides additional information useful for debugging including the number of degrees of freedom in the system and the time taken to solve.
 
 Evaluating a scalar field
 ~~~~~~~~~~~~~~~~~~~~~~~~~
