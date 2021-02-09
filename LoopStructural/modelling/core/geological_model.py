@@ -702,13 +702,17 @@ class GeologicalModel:
         self._add_faults(series_builder)
 
         series_builder.add_data_to_interpolator(True)
-        if "fold_axis" in kwargs:
-            fold.fold_axis = kwargs['fold_axis']
+        fold_axis = kwargs.get('fold_axis',None)
+        if fold_axis is not None:
+            fold_axis = np.array(fold_axis)
+            if len(fold_axis.shape) == 1:
+                fold.fold_axis = fold_axis
+        
         if "av_fold_axis" in kwargs:
             _calculate_average_intersection(series_builder, fold_frame, fold)
         if fold.fold_axis is None:
             far, fad = fold_frame.calculate_fold_axis_rotation(
-                series_builder)
+                series_builder,fold_axis=fold_axis)
             fold_axis_rotation = FoldRotationAngle(far, fad)
             a_wl = kwargs.get("axis_wl", None)
             if 'axis_function' in kwargs:
@@ -1230,6 +1234,7 @@ class GeologicalModel:
         points : np.array((N,3),dtype=double)
 
         """
+        points = np.array(points).astype(float)
         if inplace==False:
             points = points.copy()
         # if len(points.shape) == 1:
@@ -1317,6 +1322,7 @@ class GeologicalModel:
         >>> model.evaluate_model(xyz)
         
         """
+        xyz = np.array(xyz)
         if scale:
             xyz = self.scale(xyz,inplace=False)
         strat_id = np.zeros(xyz.shape[0],dtype=int)

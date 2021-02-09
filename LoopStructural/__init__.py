@@ -19,8 +19,6 @@ import logging
 from logging.config import dictConfig
 import tempfile
 from pathlib import Path
-
-
 #set up logging
 # temp_file = tempfile.mkdtemp()
 # if temp_file:

@@ -177,11 +177,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows += self.c_
         constraint_ids = rows.copy()
 
-        if name in self.constraints:
-            self.constraints[name] = np.hstack([self.constraints[name],
-                                                constraint_ids])
+        if name in self.constraints:            
+            
+            self.constraints[name]['A'] =  np.vstack([self.constraints[name]['A'],A])
+            self.constraints[name]['B'] =  np.hstack([self.constraints[name]['B'], B])
+            self.constraints[name]['idc'] = np.vstack([self.constraints[name]['idc'],
+                                                idc])
+                                   
         if name not in self.constraints:
-            self.constraints[name] = constraint_ids
+            self.constraints[name] = {'node_indexes':constraint_ids,'A':A,'B':B.flatten(),'idc':idc}
         rows = np.tile(rows, (A.shape[-1], 1)).T
 
         self.c_ += nr
@@ -196,7 +200,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.row.extend(rows[~mask].tolist())
             self.col.extend(idc[~mask].tolist())
             self.B.extend(B.tolist())
-
+    
+    def calculate_residual_for_constraints(self):
+        residuals = {}
+        for constraint_name, constraint in self.constraints:
+            residuals[constraint_name] = np.einsum('ij,ij->i',constraint['A'],self.c[constraint['idc'].astype(int)]) - constraint['B'].flatten()
+        return residuals
     def remove_constraints_from_least_squares(self, name='undefined',
                                               constraint_ids=None):
         """

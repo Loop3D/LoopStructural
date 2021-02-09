@@ -168,6 +168,7 @@ class StructuralFrameBuilder:
             kwargs['regularisation'] = regularisation[1]
             self.builders[1].build_arguments = kwargs
 
+
         if gy_feature is None:
             logger.warning(
                 "Not enough constraints for structural frame coordinate 1, \n"

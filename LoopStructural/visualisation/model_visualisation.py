@@ -126,8 +126,8 @@ class LavaVuModelViewer:
         self.lv.clear()
         self.lv.cleardata()
         pass
-
-    def add_section(self, geological_feature=None, axis='x', value=None, **kwargs):
+    
+    def add_section(self, geological_feature=None, axis='x', value=None,  **kwargs):
         """
 
         Plot a section/map thru the model and paint with a geological feature
@@ -205,6 +205,7 @@ class LavaVuModelViewer:
             cmap = lavavu.cubehelix(100)
             if 'cmap' in kwargs:
                 cmap = kwargs['cmap']
+
 
     def add_isosurface(self, geological_feature, value = None, isovalue=None,
                      paint_with=None, slices=None, colour='red', nslices=None, 
