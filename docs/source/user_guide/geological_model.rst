@@ -10,6 +10,7 @@ Creating a model manually
 A GeologicalModel can be created using the default constructor.
 
 .. code-block::
+
     model = GeologicalModel(origin,maximum)
 
 Additional arguments that can be provided are:
