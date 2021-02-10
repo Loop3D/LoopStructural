@@ -1131,7 +1131,9 @@ class GeologicalModel:
         """
         self.parameters['features'].append(
             {'feature_type': 'fault', 'feature_name': fault_surface_data, 'displacement': displacement, **kwargs})
-
+        if 'data_region' in kwargs:
+            kwargs.pop('data_region')
+            logger.error("kwarg data_region currently not supported, disabling")
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
@@ -1483,18 +1485,18 @@ class GeologicalModel:
         sizecounter = 0
         
         # Load tqdm with size counter instead of file counter
-        with tqdm(total=total_dof) as pbar:
+        with tqdm(total=nfeatures) as pbar:
             buf=0
             for f in self.features:
                 pbar.set_description('Interpolating {}'.format(f.name))
                 if f.type == 'fault':
                     for i in range(3):
+                        buf+=1
                         f[i].builder.update()
-                        buf=f[i].interpolator.nx
+                        pbar.update()
                 if f.type == 'series':
                     f.builder.update()
-                    buf=f.interpolator.nx
-                pbar.update(buf)
+                    pbar.update()
 
             
         if verbose:

@@ -530,8 +530,9 @@ class LavaVuModelViewer:
         start = time.time()
         n_units = 0 #count how many discrete colours
         for g in self.model.stratigraphic_column.keys():
-            for u in self.model.stratigraphic_column[g].keys():
-                n_units+=1
+            if g in self.model.feature_name_index:
+                for u in self.model.stratigraphic_column[g].keys():
+                    n_units+=1
         n_faults = 0
         for f in self.model.features:
             if f.type=='fault':
