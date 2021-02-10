@@ -224,19 +224,18 @@ def process_map2loop(m2l_directory, flags={}):
         fault_tips[1,:] = fault_centers[:3]-strike_vector*fault_centers[5]
         # fault_depth[0,:] = fault_centers[:3]+slip_vector*fault_centers[5]
         # fault_depth[1,:] = fault_centers[:3]-slip_vector*fault_centers[5]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
-        # add strike vector to constraint fault extent
-        fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','DipDirection','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, fault_centers[3]-90,2]
-        fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','dip','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, 0,2]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
+        # # add strike vector to constraint fault extent
+        # fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','DipDirection','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, fault_centers[3]-90,2]
+        # fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','dip','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, 0,2]
 
         # print('downthro',displacements_numpy[index, 1])
         
     fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
     fault_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(fault_orientations['strike'], fault_orientations['dip'])
-
     for g in groups['group'].unique():
         groups.loc[groups['group']==g,'group'] = supergroups[g]
     # fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
@@ -248,10 +247,8 @@ def process_map2loop(m2l_directory, flags={}):
     fault_orientations['feature_name'] = fault_orientations['formation']
     fault_locations['feature_name'] = fault_locations['formation']
 
-    
-
     data = pd.concat([tangents, contact_orientations, contacts, fault_orientations, fault_locations])
-    data.reset_index()
+    data.reset_index(inplace=True)
 
     return {'data': data,
             'groups': groups,
@@ -312,9 +309,19 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
             except:
                 logger.info('No entry for %s in fault_fault_relations' % f)
         #     continue
+
+            fault_center = m2l_data['stratigraphic_column']['faults'][f]['FaultCenter']
+            fault_influence = m2l_data['stratigraphic_column']['faults'][f]['InfluenceDistance']
+            fault_extent = m2l_data['stratigraphic_column']['faults'][f]['HorizontalRadius']
+            fault_vertical_radius = m2l_data['stratigraphic_column']['faults'][f]['VerticalRadius']
             faults.append(model.create_and_add_fault(f,
                                                     -m2l_data['max_displacement'][f],
                                                     faultfunction='BaseFault',
+                                                    fault_slip_vector=np.array([0.,0.,-1.]),
+                                                    fault_center=fault_center,
+                                                    fault_extent=fault_extent,
+                                                    fault_influence=fault_influence,
+                                                    fault_vectical_radius=fault_vertical_radius,
                                                     overprints=overprints,
                                                     **fault_params,
                                                     )

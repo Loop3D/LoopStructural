@@ -82,3 +82,28 @@ def test_evaluate_gradient_tetmesh():
     vector = np.mean(grid.evaluate_gradient(grid.barycentre(),grid.nodes[:,1]),axis=0)
     # vector/=np.linalg.norm(vector)
     assert np.sum(vector-np.array([0,grid.step_vector[1],0])) == 0
+
+def test_change_origin():
+    grid = StructuredGrid(origin=np.zeros(3),nsteps=np.array([5,5,5]))
+    grid.origin = np.array([-1,-1,-1])
+    assert(np.all(grid.origin == np.array([-1,-1,-1])))
+    assert (np.all(grid.nsteps == np.array([6,6,6])))
+    assert (np.all(grid.step_vector == np.ones(3)))
+
+def test_change_maximum():
+    grid = StructuredGrid(origin=np.zeros(3),nsteps=np.array([5,5,5]))
+    grid.maximum = np.array([7,7,7])
+    assert (np.all(grid.nsteps == np.array([7,7,7])))
+    assert (np.all(grid.maximum == np.array([7,7,7])))
+    assert (np.all(grid.step_vector == np.ones(3)))
+
+def test_change_maximum_and_origin():
+    grid = StructuredGrid(origin=np.zeros(3),nsteps=np.array([5,5,5]))
+    grid.origin = np.array([-1.,-1.,-1.])
+    assert(np.all(grid.origin == np.array([-1,-1,-1])))
+    assert (np.all(grid.nsteps == np.array([6,6,6])))
+    assert (np.all(grid.step_vector == np.ones(3)))
+    grid.maximum = np.array([7.,7.,7.])
+    assert (np.all(grid.nsteps == np.array([8,8,8])))
+    assert (np.all(grid.maximum == np.array([7.,7.,7.])))
+    assert (np.all(grid.step_vector == np.ones(3)))

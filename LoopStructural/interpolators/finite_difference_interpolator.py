@@ -75,7 +75,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         -------
 
         """
-
         for key in kwargs:
             self.up_to_date = False
             if 'regularisation' in kwargs:

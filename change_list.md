@@ -1,6 +1,7 @@
 # Major changes
+- Faults can be defined by the influence distance, extent and vertical radius
+- Scalar fields are interpolated when required, not when added
+- To interpolate all scalar fields run model.update()
 
 # Minor changes
-* Added getitem accessor for returning feature from model
-* Model is set for structural frames
-* Adding tests for grids/tetras
+- various small changes to visualisation 

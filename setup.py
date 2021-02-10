@@ -1,6 +1,24 @@
 #setup cython code
-from setuptools import setup, find_packages
-from Cython.Build import cythonize
+import sys
+try:
+	from setuptools import setup, find_packages
+except:
+	raise RuntimeError("Cannot import setuptools \n"\
+	     "python -m pip install setuptools")
+	sys.exit(1)
+
+try:
+	from Cython.Build import cythonize
+except:
+	raise RuntimeError("Cannot import cython \n"\
+	     "python -m pip install cython")
+	sys.exit(1)
+try:
+	import numpy
+except:
+	raise RuntimeError("Cannot import numpy \n"\
+	     "python -m pip install numpy")
+	sys.exit(1)	 		 
 import numpy
 import os
 import codecs
