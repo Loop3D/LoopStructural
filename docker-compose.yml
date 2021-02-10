@@ -5,6 +5,8 @@ services:
     build: ./
     volumes:
       - /home/lgrose/dev/python/LoopStructuralApplications/:/home/joyvan/shared_volume loop
+      - ./:/home/joyvan/LoopStructural
     ports:
       - 9888:8888
+    command: tail -F blah
     

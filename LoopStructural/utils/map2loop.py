@@ -262,7 +262,7 @@ def process_map2loop(m2l_directory, flags={}):
             'strat_va':strat_val,
             'downthrow_dir':downthrow_dir}
 
-def build_model(m2l_data, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
+def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
     """[summary]
 
     [extended_summary]
@@ -330,4 +330,6 @@ def build_model(m2l_data, skip_faults = False, unconformities=False, fault_param
         if group_features[-1] and unconformities:
             model.add_unconformity(group_features[-1], 0)
     model.set_stratigraphic_column(m2l_data['stratigraphic_column'])
+    if evaluate:
+        model.update(verbose=True)
     return model

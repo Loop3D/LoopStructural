@@ -498,8 +498,22 @@ class LavaVuModelViewer:
         vmin = kwargs.get('vmin', np.nanmin(vals))
         vmax = kwargs.get('vmax', np.nanmax(vals))
         surf.colourmap(cmap, range=(vmin, vmax))
+        
+    def add_fault(self,fault,step=100):
+        self.add_isosurface(fault,value=0,name=fault.name)
+        self.add_vector_field(fault,locations=self.model.regular_grid()[::step])
 
-    def add_model_surfaces(self, faults = True, cmap=None, fault_colour='black',**kwargs):
+    def unfault_grid(self,feature,grid=None):
+        if grid is None:
+            grid = self.model.regular_grid()
+        # apply all faults associated with a feature to a regular grid
+        self.add_value_data(self.model.rescale(grid,inplace=False),grid[:,2],name='Regular grid before faults',pointsize=10,)
+   
+        for f in feature.faults:
+            grid = f.apply_to_points(grid)
+        self.add_value_data(self.model.rescale(grid,inplace=False),grid[:,2],name='Regular grid after faults',pointsize=10,)
+
+    def add_model_surfaces(self, strati=True, faults = True, cmap=None, fault_colour='black',**kwargs):
         """Add surfaces for all of the interfaces in the model
 
 
@@ -514,12 +528,20 @@ class LavaVuModelViewer:
         Other parameters are passed to self.add_isosurface() 
 
         """
+        import time
         from matplotlib import cm
         from matplotlib import colors
+        from tqdm.auto import tqdm
+        start = time.time()
         n_units = 0 #count how many discrete colours
         for g in self.model.stratigraphic_column.keys():
             for u in self.model.stratigraphic_column[g].keys():
                 n_units+=1
+        n_faults = 0
+        for f in self.model.features:
+            if f.type=='fault':
+                n_faults+=1
+        
         if cmap is None:            
             colours = []
             boundaries = []
@@ -537,37 +559,47 @@ class LavaVuModelViewer:
             cmap = cm.get_cmap(cmap,n_units)
         ci = 0
         cmap_colours = colors.to_rgba_array(cmap.colors)
-        for g in self.model.stratigraphic_column.keys():
-            if g in self.model.feature_name_index:
-                feature = self.model.features[self.model.feature_name_index[g]]
-                names = []
-                values = []
-                colours = []
-                for u, vals in self.model.stratigraphic_column[g].items():
-                    names.append(u)
-                    values.append(vals['min'])
-                    colours.append(cmap_colours[ci,:])
-                    ci+=1
-                self.add_isosurface(feature, slices=values,names=names,colours=colours,**kwargs)
-
+        n_surfaces = 0
+        if strati:
+            n_surfaces+=n_units
         if faults:
-            for f in self.model.features:
-                if f.type == 'fault':
-                    def mask(x):
-                        val = f.displacementfeature.evaluate_value(x)
-                        val[np.isnan(val)] = 0
-                        maskv = np.zeros(val.shape).astype(bool)
-                        maskv[np.abs(val) > 0.001] = 1
-                        return maskv
-                    if f.name in self.model.stratigraphic_column['faults']:
-                        fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',['red'])
-                        # print(fault_colour)
-                        # if fault_colour != None:
-                        #     fault_colour = colors.to_rgba(fault_colour[0])
-                        # print(fault_color)
-                    region = kwargs.pop('region',None) 
-                    self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],**kwargs)
+            n_surfaces+=n_faults
+        with tqdm(total=n_surfaces) as pbar:
 
+            if strati:
+                for g in self.model.stratigraphic_column.keys():
+                    if g in self.model.feature_name_index:
+                        feature = self.model.features[self.model.feature_name_index[g]]
+                        names = []
+                        values = []
+                        colours = []
+                        for u, vals in self.model.stratigraphic_column[g].items():
+                            names.append(u)
+                            values.append(vals['min'])
+                            colours.append(cmap_colours[ci,:])
+                            ci+=1
+                        pbar.set_description('Isosurfacing {}'.format(feature.name))
+                        self.add_isosurface(feature, slices=values,names=names,colours=colours,**kwargs)
+                        pbar.update(len(values))
+            
+
+            if faults:
+                for f in self.model.features:
+                    if f.type == 'fault':
+                        def mask(x):
+                            val = f.displacementfeature.evaluate_value(x)
+                            val[np.isnan(val)] = 0
+                            maskv = np.zeros(val.shape).astype(bool)
+                            maskv[np.abs(val) > 0.001] = 1
+                            return maskv
+                        if f.name in self.model.stratigraphic_column['faults']:
+                            fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',['red'])
+                        pbar.set_description('Isosurfacing {}'.format(f.name))
+
+                        region = kwargs.pop('region',None) 
+                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name,**kwargs)
+                        pbar.update(1)
+            print("Adding surfaces took {} seconds".format(time.time()-start))
     def add_vector_field(self, geological_feature, **kwargs):
         """
 
@@ -738,7 +770,7 @@ class LavaVuModelViewer:
         if "pointsize" not in kwargs:
             kwargs["pointsize"] = 4
         # set the colour map to diverge unless user decides otherwise
-        cmap = kwargs.get('cmap', "spot")
+        cmap = kwargs.get('cmap', "rainbow")
         p = self.lv.points(name, **kwargs)
         p.vertices(position)
         p.values(value, "v")
@@ -748,7 +780,7 @@ class LavaVuModelViewer:
             logger.info('vmin {} and vmax {}'.format(kwargs['vmin'],kwargs['vmax']))
             p.colourmap(cmap, range=(kwargs['vmin'],kwargs['vmax']))
         else:
-            p.colourmap(cmap)
+            p.colourmap(cmap, range=(np.nanmin(value),np.nanmax(value)))
 
     def add_fold(self, fold, **kwargs):
         """

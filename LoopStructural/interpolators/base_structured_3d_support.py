@@ -33,7 +33,6 @@ class BaseStructuredSupport:
     def nsteps(self,nsteps):
         #if nsteps changes we need to change the step vector
         change_factor = nsteps/self.nsteps
-        change_factor
         self._step_vector/=change_factor
         self._nsteps = nsteps
         
