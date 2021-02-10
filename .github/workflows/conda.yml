@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish Loop Conda
-        uses: Loop3D/conda-publish-action@1.6
+        uses: Loop3D/conda-publish-action@1.8
         with:
           subdir: "conda"
           anacondatoken: ${{ secrets.CONDA }}
