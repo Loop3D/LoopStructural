@@ -1,5 +1,5 @@
 {% set name = "loopstructural" %}
-{% set version = "1.0.5" %}
+{% set version = load_setup_py_data().version %}
 
 package:
   name: "{{ name|lower }}"
