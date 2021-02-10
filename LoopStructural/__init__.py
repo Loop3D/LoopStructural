@@ -29,7 +29,7 @@ formatter = logging.Formatter('%(asctime)s ~ %(name)-12s ~ %(levelname)-10s ~ %(
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
-__version__ = '1.0.6-dev'
+__version__ = '1.0.7-dev'
 from .modelling.core.geological_model import GeologicalModel
 from .visualisation.model_visualisation import LavaVuModelViewer
 from .visualisation.map_viewer import MapView
