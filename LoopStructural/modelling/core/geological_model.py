@@ -1086,7 +1086,7 @@ class GeologicalModel:
         # evaluated where the unconformity is positive
         return domain_fault_uc
 
-    def create_and_add_fault(self, fault_surface_data, displacement, renormalise=True, **kwargs):
+    def create_and_add_fault(self, fault_surface_data, displacement, renormalise=True, faultfunction=None,**kwargs):
         """
         Parameters
         ----------
