@@ -96,8 +96,8 @@ class FaultBuilder(StructuralFrameBuilder):
                 #     [fault_depth[1,0],fault_depth[1,1],fault_depth[1,2],self.name,-1,1]
                 self.update_geometry(fault_depth)
                 #TODO need to add data here
-            data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] =\
-                [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],1]
+            data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
+                [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
         # add strike vector to constraint fault extent
             data.loc[len(data),['X','Y','Z','feature_name','gx','gy','gz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
                 self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
