@@ -883,6 +883,9 @@ class LavaVuModelViewer:
         """
         self.lv.image(fname, **kwargs)
 
+    def export_to_webgl(self,fname, **kwargs ):
+        
+        self.lv.webgl(fname,**kwargs)
     def display(self, fname=None, **kwargs):
         """
         Calls the lv object display function. Shows a static image of the viewer inline.

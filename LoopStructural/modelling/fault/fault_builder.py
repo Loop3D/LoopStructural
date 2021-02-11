@@ -2,7 +2,7 @@ from ..features.structural_frame_builder import StructuralFrameBuilder
 
 import numpy as np
 class FaultBuilder(StructuralFrameBuilder):
-    def __init__(self,interpolator=None,interpolators=None,**kwargs):
+    def __init__(self,interpolator=None,interpolators=None,model=None,fault_bounding_box_buffer=0.2,**kwargs):
         """A specialised structural frame builder for building a fault
 
         Parameters
@@ -11,16 +11,29 @@ class FaultBuilder(StructuralFrameBuilder):
             the interpolator to use for building the fault frame, by default None
         interpolators : [GeologicalInterpolator, GeologicalInterpolator, GeologicalInterpolator], optional
             a list of interpolators to use for building the fault frame, by default None
+        model : GeologicalModel
+            reference to the model containing the fault
+        fault_bounding_box_buffer: float, default 0.2
+            the maximum area around the model domain that a fault is modelled. For high displacement faults this
+            may need to be large, smaller values will be result in fewer degrees of freedom = quicker interpolation
         """
 
         StructuralFrameBuilder.__init__(self,interpolator,interpolators,**kwargs)
         self.origin = np.array([np.nan,np.nan,np.nan])
         self.maximum = np.array([np.nan,np.nan,np.nan])
+        self.model = model
+        # define a maximum area to mesh adding buffer to model
+        buffer = .2
+        self.minimum_origin = self.model.bounding_box[0,:] - buffer*(self.model.bounding_box[1,:]-self.model.bounding_box[0,:])
+        self.maximum_maximum = self.model.bounding_box[1,:] + buffer*(self.model.bounding_box[1,:]-self.model.bounding_box[0,:])
 
     def update_geometry(self,points):
+
         self.origin = np.nanmin(np.array([np.min(points,axis=0),self.origin]),axis=0)
         self.maximum = np.nanmax(np.array([np.max(points,axis=0),self.maximum]),axis=0)
-        
+        self.origin[self.origin<self.minimum_origin] = self.minimum_origin[self.origin<self.minimum_origin]
+        self.maximum[self.maximum>self.maximum_maximum] = self.maximum_maximum[self.maximum>self.maximum_maximum]
+
     def create_data_from_geometry(self, 
                                 data,
                                 fault_center, 

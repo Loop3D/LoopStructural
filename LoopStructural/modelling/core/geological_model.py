@@ -1139,6 +1139,7 @@ class GeologicalModel:
         interpolator = self.get_interpolator(**kwargs)
         fault_frame_builder = FaultBuilder(interpolator,
                                                      name=fault_surface_data,
+                                                     model=self,
                                                      **kwargs)
         # add data
         fault_frame_data = self.data[ self.data['feature_name'] == fault_surface_data].copy()
