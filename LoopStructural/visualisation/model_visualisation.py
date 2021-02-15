@@ -629,7 +629,7 @@ class LavaVuModelViewer:
         vectorfield.vectors(vector[mask, :])
         return
 
-    def add_data(self, feature, **kwargs):
+    def add_data(self, feature, disks=True, vectors = False,**kwargs):
         """
 
         Plot the data linked to the feature, can choose whether to plot all data types
@@ -667,12 +667,20 @@ class LavaVuModelViewer:
         interface = feature.builder.get_interface_constraints()
 
         if grad.shape[0] > 0 and add_grad:
-            self.add_vector_data(self.model.rescale(grad[:, :3],inplace=False), grad[:, 3:6], name + "_grad_cp",
+            if disks:
+                self.add_orientation_disks(self.model.rescale(grad[:, :3],inplace=False), grad[:, 3:6], name + "_grad_cp",
                                  **kwargs)
+            if vectors:
+                self.add_vector_data(self.model.rescale(grad[:, :3],inplace=False), grad[:, 3:6], name + "_grad_cp",
+                                    **kwargs)
 
         if norm.shape[0] > 0 and add_grad:
-            self.add_vector_data(self.model.rescale(norm[:, :3],inplace=False), norm[:, 3:6], name + "_norm_cp",
+            if disks:
+                self.add_orientation_disks(self.model.rescale(norm[:, :3],inplace=False), norm[:, 3:6], name + "_norm_cp",
                                  **kwargs)
+            if vectors:
+                self.add_vector_data(self.model.rescale(norm[:, :3],inplace=False), norm[:, 3:6], name + "_norm_cp",
+                                    **kwargs)
         if value.shape[0] > 0 and add_value:
             kwargs['range'] = [feature.min(), feature.max()]
             self.add_value_data(self.model.rescale(value[:, :3],inplace=False), value[:, 3], name + "_value_cp",
@@ -741,6 +749,18 @@ class LavaVuModelViewer:
         if position.shape[0] > 0:
             vector /= np.linalg.norm(vector, axis=1)[:, None]
             vectorfield = self.lv.vectors(name, **kwargs)
+            vectorfield.vertices(position)
+            vectorfield.vectors(vector)
+            return
+    def add_orientation_disks(self,position,vector,name,symb_scale=1.,scaleshapes=None,shapelength=0,**kwargs):
+        if 'colour' not in kwargs:
+            kwargs['colour'] = 'black'
+        # normalise
+        if scaleshapes is None:
+            scaleshapes = np.max(self.model.maximum-self.model.origin)*0.014*symb_scale
+        if position.shape[0] > 0:
+            vector /= np.linalg.norm(vector, axis=1)[:, None]
+            vectorfield = self.lv.shapes(name, scaleshapes=scaleshapes,shapelength=shapelength,**kwargs)
             vectorfield.vertices(position)
             vectorfield.vectors(vector)
             return

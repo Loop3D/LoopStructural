@@ -112,6 +112,7 @@ class GeologicalModel:
 
 
         """
+        # print('tet')
         if logfile:
             self.logfile = logfile
             log_to_file(logfile,loglevel)
