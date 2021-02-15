@@ -4,9 +4,11 @@ services:
   structural:
     build: ./
     volumes:
-      - /home/lgrose/dev/python/LoopStructuralApplications/:/home/joyvan/shared_volume loop
-      - ./:/home/joyvan/LoopStructural
+      - /home/lgrose/dev/python/LoopStructural/:/home/jovyan/LoopStructural
+      - /home/lgrose/LoopStructural/:/home/jovyan/notebooks
     ports:
-      - 9888:8888
-    command: tail -F blah
+      - 8888:8888
+      - 8050:8050
+      - 8080-8090:8080-8090
+
     
