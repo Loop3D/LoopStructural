@@ -16,23 +16,26 @@ build:
 requirements:
   build:
     - Cython
+    - numpy
   host:
     - pip
     - python
     - cython
     - setuptools
     - numpy
-  # run:
-  #   - Cython
-  #   - numpy
-  #   - pandas
-  #   - scipy
-  #   - matplotlib
-  #   - scikit-image
-  #   - scikit-learn
-# test:
-#   imports:
-#     - LoopStructural
+  run:
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib
+    - scikit-image
+    - scikit-learn
+    - tqdm
+    - pyamg
+
+test:
+  imports:
+    - LoopStructural
 
 
 about:
