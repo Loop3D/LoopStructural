@@ -309,7 +309,6 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
             except:
                 logger.info('No entry for %s in fault_fault_relations' % f)
         #     continue
-
             fault_center = m2l_data['stratigraphic_column']['faults'][f]['FaultCenter']
             fault_influence = m2l_data['stratigraphic_column']['faults'][f]['InfluenceDistance']
             fault_extent = m2l_data['stratigraphic_column']['faults'][f]['HorizontalRadius']

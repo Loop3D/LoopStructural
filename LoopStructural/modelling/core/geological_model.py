@@ -1176,7 +1176,7 @@ class GeologicalModel:
         fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
         # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # check if this fault overprint any existing faults exist in the stack
-        overprinted = kwargs.get('overprinted', [])
+        overprinted = kwargs.get('overprints', [])
         overprinted_faults = []
         for o in overprinted:
             overprinted_faults.append(self.features[self.feature_name_index[o]])
