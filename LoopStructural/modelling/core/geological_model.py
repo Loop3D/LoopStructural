@@ -747,6 +747,7 @@ class GeologicalModel:
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
         series_feature.type = 'series'
+        series_feature.fold = fold
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
         # result['support'] = series_feature.get_interpolator().support
