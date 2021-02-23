@@ -407,6 +407,7 @@ class GeologicalFeatureInterpolator:
             if 'cgw' not in kwargs:
                 # try adding very small cg
                 kwargs['cgw'] = 0.0
+        self.install_gradient_constraint()
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
         self._up_to_date = True

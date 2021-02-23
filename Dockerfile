@@ -6,6 +6,7 @@ LABEL maintainer="lachlan.grose@monash.edu"
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     gcc \
+    g++ \
     libc-dev
 
 RUN conda install -c conda-forge pip scikit-learn cython numpy==1.20.1 pandas scipy pymc3 jupyter pyamg -y

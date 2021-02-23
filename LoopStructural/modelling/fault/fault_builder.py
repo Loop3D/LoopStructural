@@ -28,7 +28,7 @@ class FaultBuilder(StructuralFrameBuilder):
         self.maximum_maximum = self.model.bounding_box[1,:] + buffer*(self.model.bounding_box[1,:]-self.model.bounding_box[0,:])
 
     def update_geometry(self,points):
-
+        
         self.origin = np.nanmin(np.array([np.min(points,axis=0),self.origin]),axis=0)
         self.maximum = np.nanmax(np.array([np.max(points,axis=0),self.maximum]),axis=0)
         self.origin[self.origin<self.minimum_origin] = self.minimum_origin[self.origin<self.minimum_origin]

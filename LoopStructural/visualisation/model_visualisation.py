@@ -165,6 +165,7 @@ class LavaVuModelViewer:
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 2])
             zz[:] = value
+
         name = kwargs.get('name', geological_feature.name)
         name = '{}_section_at_{}_of_{}'.format(axis,value,name)
         colour = kwargs.get('colour', 'red')
