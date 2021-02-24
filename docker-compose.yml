@@ -10,5 +10,4 @@ services:
       - 8888:8888
       - 8050:8050
       - 8080-8090:8080-8090
-
-    
+    # command: jupyter notebook --ip='0.0.0.0' --NotebookApp.token='' --no-browser

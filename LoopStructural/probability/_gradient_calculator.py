@@ -1,4 +1,8 @@
 import numpy as np
+
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
+
 def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1e-3,
               epsscale=0.5):
     """
@@ -87,7 +91,7 @@ def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1e-3,
             cureps *= epsscale
             if cureps < mineps or flipflop > flipflopmax:
                 # if no convergence set flat derivative (TODO: check if there is a better thing to do instead)
-                warnings.warn("Derivative calculation did not converge: setting flat derivative.")
+                logger.warn("Derivative calculation did not converge: setting flat derivative.")
                 grads[count] = 0.
                 break
             leps *= epsscale
