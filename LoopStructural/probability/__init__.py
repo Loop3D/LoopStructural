@@ -1,3 +1,6 @@
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
+
 try:
     import theano
 except ImportError:
