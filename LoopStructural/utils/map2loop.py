@@ -328,8 +328,12 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
                                                     **fault_params,
                                                     )
                         )
-    for e in networkx.edge_bfs(m2l_data['fault_graph']):
-        model[e[1]].builder.add_fault(model[e[0]])
+    # for e in networkx.edge_bfs(m2l_data['fault_graph']):
+    #     model[e[1]].builder.add_fault(model[e[0]])
+    #     model[e[1]][0].interpolator.reset()
+    #     model[e[1]][1].interpolator.reset()
+    #     model[e[1]][2].interpolator.reset()
+
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
     for i in np.sort(m2l_data['groups']['group number'].unique()):
