@@ -33,6 +33,7 @@ def process_map2loop(m2l_directory, flags={}):
     fault_fault_relations = pd.read_csv(m2l_directory + '/output/fault-fault-relationships.csv')
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
     fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv')
+    fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
 
     supergroups = {}
     sgi = 0
@@ -251,7 +252,6 @@ def process_map2loop(m2l_directory, flags={}):
     data = pd.concat([tangents, contact_orientations, contacts, fault_orientations, fault_locations])
     data.reset_index(inplace=True)
     
-    # fault_graph = networkx.read_gml
     return {'data': data,
             'groups': groups,
             'max_displacement': max_displacement,
@@ -259,7 +259,8 @@ def process_map2loop(m2l_directory, flags={}):
             'stratigraphic_column': stratigraphic_column,
             'bounding_box':bb,
             'strat_va':strat_val,
-            'downthrow_dir':downthrow_dir}
+            'downthrow_dir':downthrow_dir,
+            'fault_graph':fault_graph}
 
 def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
     """[summary]
@@ -327,7 +328,8 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
                                                     **fault_params,
                                                     )
                         )
-
+    for e in networkx.edge_bfs(m2l_data['fault_graph']):
+        model[e[1]].builder.add_fault(model[e[0]])
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
     for i in np.sort(m2l_data['groups']['group number'].unique()):
