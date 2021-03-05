@@ -84,22 +84,25 @@ class FaultBuilder(StructuralFrameBuilder):
                 fault_tips[1,:] = fault_center[:3]-strike_vector*horizontal_radius
                 self.update_geometry(fault_tips)
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,1,2]
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-1,2]
+                    [fault_center[0],fault_center[1],fault_center[2],self.name,0,2]
+                # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
+                #     [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-1,2]
+                strike_vector /= horizontal_radius
             if vertical_radius is not None:
                 fault_depth[0,:] = fault_center[:3]+slip_vector*vertical_radius
                 fault_depth[1,:] = fault_center[:3]-slip_vector*vertical_radius
-                # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                #     [fault_depth[0,0],fault_depth[0,1],fault_depth[0,2],self.name,1,1]
+                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
+                    [fault_center[0],fault_center[1],fault_center[2],self.name,0,1]
                 # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                 #     [fault_depth[1,0],fault_depth[1,1],fault_depth[1,2],self.name,-1,1]
                 self.update_geometry(fault_depth)
                 #TODO need to add data here
+                slip_vector /= vertical_radius
+
             data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
                 [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
         # add strike vector to constraint fault extent
-            data.loc[len(data),['X','Y','Z','feature_name','gx','gy','gz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
+            data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
                 self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
         self.add_data_from_data_frame(data)
     def set_mesh_geometry(self,buffer):
