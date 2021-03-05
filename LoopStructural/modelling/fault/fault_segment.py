@@ -164,7 +164,8 @@ class FaultSegment:
         # check regions
         for r in self.regions:
             mask = np.logical_and(mask, r(locations))
-        return self.faultframe[0].evaluate_value(locations[mask, :])
+        v[mask]=self.faultframe[0].evaluate_value(locations[mask, :])
+        return v
 
     def mean(self):
         return self.faultframe[0].mean()
@@ -188,15 +189,16 @@ class FaultSegment:
         -------
 
         """
-        v = np.zeros(locations.shape[0])
-        v[:] = np.nan
+        v = np.zeros(locations.shape)
+        v[:,:] = np.nan
         mask = np.zeros(locations.shape[0]).astype(bool)
         mask[:] = True
         # check regions
         for r in self.regions:
             mask = np.logical_and(mask, r(locations))
         # need to scale with fault displacement
-        return self.faultframe[1].evaluate_gradient(locations[mask, :])
+        v[mask,:] = self.faultframe[1].evaluate_gradient(locations[mask, :])
+        return v
 
     def evaluate_displacement(self, points):
         newp = np.copy(points).astype(float)
@@ -294,4 +296,3 @@ class FaultSegment:
             # apply displacement
             newp[mask, :] += g
         return newp
-
