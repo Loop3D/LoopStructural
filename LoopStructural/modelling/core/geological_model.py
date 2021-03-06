@@ -77,7 +77,7 @@ class GeologicalModel:
 
 
     """
-    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40),
+    def __init__(self, origin, maximum, rescale=True, nsteps=(50, 50, 25),
                  reuse_supports=False, logfile=None, loglevel='info'):
         """
         Parameters
@@ -1171,15 +1171,19 @@ class GeologicalModel:
                                                       vertical_radius=fault_vectical_radius
                                                       )
         if fault_influence == None or fault_extent == None or fault_vectical_radius == None:
-            fault_frame_builder.origin = self.origin
-            fault_frame_builder.maximum = self.maximum
+            fault_frame_builder.origin = self.bounding_box[0,:]
+            fault_frame_builder.maximum = self.bounding_box[1,:]
         fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
         # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # check if this fault overprint any existing faults exist in the stack
-        overprinted = kwargs.get('overprinted', [])
+        overprinted = kwargs.get('overprints', [])
         overprinted_faults = []
         for o in overprinted:
-            overprinted_faults.append(self.features[self.feature_name_index[o]])
+            try:
+                overprinted_faults.append(self.features[self.feature_name_index[o]])
+            except KeyError:
+                logger.warning("{} could not be added to overprint {} \
+                because it does not exist".format(o,fault_surface_data))
         self._add_faults(fault_frame_builder[0],overprinted_faults)
         self._add_faults(fault_frame_builder[1],overprinted_faults)
         self._add_faults(fault_frame_builder[2],overprinted_faults)
@@ -1252,7 +1256,7 @@ class GeologicalModel:
         return points
 
 
-    def regular_grid(self, nsteps=(50, 50, 25), shuffle = True, rescale=False):
+    def regular_grid(self, nsteps=None, shuffle = True, rescale=False):
         """
         Return a regular grid within the model bounding box
 
@@ -1266,6 +1270,8 @@ class GeologicalModel:
         xyz : np.array((N,3),dtype=float)
             locations of points in regular grid
         """
+        if nsteps is None:
+            nsteps = self.nsteps
         x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0],
                         nsteps[0])
         y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1],

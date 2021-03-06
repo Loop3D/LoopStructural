@@ -165,6 +165,7 @@ class LavaVuModelViewer:
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 2])
             zz[:] = value
+
         name = kwargs.get('name', geological_feature.name)
         name = '{}_section_at_{}_of_{}'.format(axis,value,name)
         colour = kwargs.get('colour', 'red')
@@ -247,8 +248,7 @@ class LavaVuModelViewer:
         if geological_feature is None:
             logger.error("Cannot add isosurface GeologicalFeature does not exist")
         # update the feature to make sure its current
-        if 'update' in kwargs:
-            geological_feature.update()
+        
 
 
         # do isosurfacing of support using marching tetras/cubes

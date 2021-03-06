@@ -12,7 +12,6 @@ from .base_structured_3d_support import BaseStructuredSupport
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
-
 class StructuredGrid(BaseStructuredSupport):
     """
 

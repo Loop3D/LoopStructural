@@ -71,6 +71,23 @@ class StructuralFrameBuilder:
 
     def __getitem__(self, item):
         return self.builders[item]
+    
+    def add_fault(self, fault):
+        """
+        Add a fault to the geological feature builder
+
+        Parameters
+        ----------
+        fault : FaultSegment
+            A faultsegment to add to the geological feature
+
+        Returns
+        -------
+
+        """
+        for i in range(3):
+            self.builders[i].add_fault(fault)   
+        
 
     def add_data_from_data_frame(self, data_frame):
         """
