@@ -423,9 +423,6 @@ class LavaVuModelViewer:
         >>> viewer.nsteps = np.array([100,100,100])
 
         """
-        import matplotlib.colors as colors
-        from matplotlib import cm
-
         name = kwargs.get('name', 'geological_model')
         points, tri = create_box(self.bounding_box, self.nsteps)
 

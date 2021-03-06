@@ -31,8 +31,6 @@ ch.setLevel(logging.WARNING)
 loggers = {}
 __version__ = '1.0.75dev'
 from .modelling.core.geological_model import GeologicalModel
-from .visualisation.model_visualisation import LavaVuModelViewer
-from .visualisation.map_viewer import MapView
 from .utils import log_to_console, log_to_file, getLogger
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")
