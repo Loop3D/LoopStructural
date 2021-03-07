@@ -21,6 +21,7 @@ try:
 except ImportError:
     logger.warning('Cannot use MapView or RotationAnglePlotter as matplotlib is not installed. \n'\
                    'Install matplotlib and try again. ')
-try:                   
-    from .model_visualisation import LavaVuModelViewer
-from .sphinx_scraper import _get_loop_visualisation_scraper
+try:
+    from .sphinx_scraper import _get_loop_visualisation_scraper
+except:
+    logger.error('Cannot use sphinx scraper, pip install -r docs/requirements.txt')
