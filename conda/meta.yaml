@@ -7,7 +7,6 @@ package:
 
 source:
   git_url: https://github.com/Loop3D/LoopStructural
-  # git_tag: lg_development
 
 build:
   number: 0
@@ -27,7 +26,6 @@ requirements:
     - numpy
     - pandas
     - scipy
-    - matplotlib
     - scikit-image
     - scikit-learn
     - tqdm

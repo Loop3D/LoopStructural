@@ -3,9 +3,8 @@ scikit-learn
 scikit-image
 scipy
 numpy
-matplotlib
 setuptools
 pandas
-pyevtk
+
 
 
