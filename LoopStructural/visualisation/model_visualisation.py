@@ -13,7 +13,10 @@ try:
 except ImportError:
     logger.error("Please install lavavu: pip install lavavu")
 import numpy as np
-from skimage.measure import marching_cubes
+try:
+    from skimage.measure import marching_cubes
+except ImportError:
+    from skimage.measure import marching_cubes_lewiner as marching_cubes
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
@@ -434,7 +437,11 @@ class LavaVuModelViewer:
         surf["colourby"] = 'model'
 
         if cmap is None:
-            import matplotlib.colors as colors
+            try:
+                import matplotlib.colors as colors
+            except ImportError:
+                logger.warning("Cannot use predefined colours as I can't import matplotlib")
+                cmap = 'tab20'
             colours = []
             boundaries = []
             data = []
@@ -521,8 +528,6 @@ class LavaVuModelViewer:
 
         """
         import time
-        from matplotlib import cm
-        from matplotlib import colors
         from tqdm.auto import tqdm
         start = time.time()
         n_units = 0 #count how many discrete colours
@@ -535,7 +540,13 @@ class LavaVuModelViewer:
             if f.type=='fault':
                 n_faults+=1
         
-        if cmap is None:            
+        if cmap is None:
+            try:
+                from matplotlib import cm
+                from matplotlib import colors
+            except ImportError:
+                logger.warning("Cannot use predefined colours, matplotlib is not installed. \n")
+                cmap = 'tab20'                            
             colours = []
             boundaries = []
             data = []

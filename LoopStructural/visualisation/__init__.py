@@ -12,8 +12,15 @@ Submodules
     rotation_angle_plotter
 
 """
-
-from .map_viewer import MapView
-from .model_visualisation import LavaVuModelViewer
+from ..utils import getLogger
+logger = getLogger()
+try:
+    import matplotlib
+    from .map_viewer import MapView
+    from .rotation_angle_plotter import RotationAnglePlotter
+except ImportError:
+    logger.warning('Cannot use MapView or RotationAnglePlotter as matplotlib is not installed. \n
+                   'Install matplotlib and try again. ')
+try:                   
+    from .model_visualisation import LavaVuModelViewer
 from .sphinx_scraper import _get_loop_visualisation_scraper
-from .rotation_angle_plotter import RotationAnglePlotter
