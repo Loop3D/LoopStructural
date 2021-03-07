@@ -44,7 +44,7 @@ setup(
 	'scikit-image',
 	'scikit-learn',
 	'tqdm',
-	'pyamg'
+	# 'pyamg'
 	],
 	version=get_version("LoopStructural/__init__.py"),
     packages=find_packages(),
