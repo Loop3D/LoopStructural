@@ -16,6 +16,7 @@ import numpy as np
 try:
     from skimage.measure import marching_cubes
 except ImportError:
+    logger.warning("Using depreciated version of scikit-image")
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box

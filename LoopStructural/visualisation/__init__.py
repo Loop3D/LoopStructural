@@ -26,6 +26,6 @@ try:
 except:
     logger.error('Cannot use sphinx scraper, pip install -r docs/requirements.txt')
 try:
-    from .visualistion import LavaVuModelViewer
+    from .model_visualisation import LavaVuModelViewer
 except:
     logger.error("Missing lavavu, can't import LavaVuModelViewer")
