@@ -25,3 +25,7 @@ try:
     from .sphinx_scraper import _get_loop_visualisation_scraper
 except:
     logger.error('Cannot use sphinx scraper, pip install -r docs/requirements.txt')
+try:
+    from .visualistion import LavaVuModelViewer
+except:
+    logger.error("Missing lavavu, can't import LavaVuModelViewer")
