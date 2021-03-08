@@ -2,7 +2,9 @@ version: "3"
 
 services:
   structural:
-    build: ./
+    build: 
+      context: ./
+      dockerfile: DockerFileDev
     volumes:
       - /home/lgrose/dev/python/LoopStructural/:/home/jovyan/LoopStructural
       - /home/lgrose/LoopStructural/:/home/jovyan/notebooks
