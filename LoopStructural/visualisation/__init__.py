@@ -13,7 +13,7 @@ Submodules
 
 """
 from ..utils import getLogger
-logger = getLogger()
+logger = getLogger(__name__)
 try:
     import matplotlib
     from .map_viewer import MapView
