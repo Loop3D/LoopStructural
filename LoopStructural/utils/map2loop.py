@@ -212,7 +212,10 @@ def process_map2loop(m2l_directory, flags={}):
                                             'FaultDipDirection':fault_centers[3],
                                             'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'].to_numpy(),
                                             'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'].to_numpy(),
-                                            'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy()}
+                                            'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy(),
+                                            'FaultSlip':np.array([0.,0.,-1.]),
+                                            'FaultNorm':normal_vector}
+
         if 'colour' in fault_dimensions.columns:
             stratigraphic_column['faults'][f]['colour'] = fault_dimensions.loc[fault_dimensions['Fault']==f,'colour'].to_numpy()
         normal_vector[0] = np.sin(np.deg2rad(fault_centers[3]))
@@ -316,10 +319,11 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
             fault_influence = m2l_data['stratigraphic_column']['faults'][f]['InfluenceDistance']
             fault_extent = m2l_data['stratigraphic_column']['faults'][f]['HorizontalRadius']
             fault_vertical_radius = m2l_data['stratigraphic_column']['faults'][f]['VerticalRadius']
+            fault_slip_vector=m2l_data['stratigraphic_column']['faults'][f]['FaultSlip'] 
             faults.append(model.create_and_add_fault(f,
                                                     -m2l_data['max_displacement'][f],
                                                     faultfunction='BaseFault',
-                                                    fault_slip_vector=np.array([0.,0.,-1.]),
+                                                    fault_slip_vector=fault_slip_vector,
                                                     fault_center=fault_center,
                                                     fault_extent=fault_extent,
                                                     fault_influence=fault_influence,
