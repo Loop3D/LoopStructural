@@ -1,15 +1,20 @@
 Installation
 ====================
-LoopStructural is supported and tested on Python 3.6+ and can be installed on Linux, Windows and Mac. There are
-three ways of installing LoopStructural onto your system:
+LoopStructural is supported and tested on Python 3.6+ and can be installed on Linux, Windows and Mac. 
+We recommend installing LoopStructural into clean python environment. Either using anaconda or python virtual environments. 
+There are three ways of installing LoopStructural onto your system:
 
-Installing from pip
-~~~~~~~~~~~~~~~~~~~~
+Installing from pip or conda
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block::
 
     pip install LoopStructural
 
+.. code-block::
+    conda install -c conda-forge -c loop3d loopstructural
+
+    
 Compiling LoopStructural from source
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -38,13 +43,12 @@ Required dependencies:
 * numpy
 * pandas
 * scipy
-* matplotlib
-* LavaVu
 * scikit-image
 * scikit-learn
 
 Optional dependencies:
-
+* matplotlib, 2D visualisation
+* LavaVu, 3D visualisation
 * surfepy, radial basis interpolation
 * rasterio, exporting triangulated surfaces
 * map2loop, generation of input datasets from regional Australian maps

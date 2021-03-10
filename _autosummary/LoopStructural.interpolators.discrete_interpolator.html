@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>LoopStructural.interpolators.discrete_interpolator &mdash; LoopStructural 0.1 documentation</title>
   
@@ -17,10 +17,14 @@
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -33,8 +37,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -57,7 +60,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> LoopStructural
+            <a href="../index.html" class="icon icon-home"> LoopStructural
           
 
           
@@ -122,7 +125,6 @@
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.piecewiselinear_interpolator.html">LoopStructural.interpolators.piecewiselinear_interpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_fold_interpolator.html">LoopStructural.interpolators.discrete_fold_interpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.surfe_wrapper.html">LoopStructural.interpolators.surfe_wrapper</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-support-submodules">Interpolation Support Submodules</a></li>
@@ -172,6 +174,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -187,7 +191,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/_autosummary/LoopStructural.interpolators.discrete_interpolator.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -211,342 +215,6 @@
 <span class="target" id="module-LoopStructural.interpolators.discrete_interpolator"></span><p>Discrete interpolator base for least squares</p>
 <div class="section" id="members">
 <h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator">
-<em class="property">class </em><code class="sig-prename descclassname">LoopStructural.interpolators.discrete_interpolator.</code><code class="sig-name descname">DiscreteInterpolator</code><span class="sig-paren">(</span><em class="sig-param">support</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator</span></code></a></p>
-<p>Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
-any interpolator that solves the system using least squares approximation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>support</strong> – A discrete mesh with, nodes, elements, etc</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve">
-<code class="sig-name descname">_solve</code><span class="sig-paren">(</span><em class="sig-param">solver='cg'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main entry point to run the solver and update the node value
-attribute for the
-discreteinterpolator class</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>solver</strong> (<em>string</em>) – solver e.g. cg, lu, chol, custom</p></li>
-<li><p><strong>kwargs</strong> – kwargs for solver e.g. maxiter, preconditioner etc, damping for</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>bool</em> – True if the interpolation is run</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_cg">
-<code class="sig-name descname">_solve_cg</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">precon=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_cg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call scipy conjugate gradient</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy.sparse.matrix</em>) – square sparse matrix</p></li>
-<li><p><strong>B</strong> (<em>numpy vector</em>) – </p></li>
-<li><p><strong>precon</strong> (<em>scipy.sparse.matrix</em>) – a preconditioner for the conjugate gradient system</p></li>
-<li><p><strong>kwargs</strong> – kwargs to pass to scipy solve e.g. atol, btol, callback etc</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_chol">
-<code class="sig-name descname">_solve_chol</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_chol" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call suitesparse cholmod through scikitsparse
-LINUX ONLY!</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy.sparse.matrix</em>) – square sparse matrix</p></li>
-<li><p><strong>B</strong> (<em>numpy array</em>) – RHS of equation</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_lsqr">
-<code class="sig-name descname">_solve_lsqr</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_lsqr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call scipy lsqr</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>rectangular sparse matrix</em>) – </p></li>
-<li><p><strong>B</strong> (<em>vector</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_lu">
-<code class="sig-name descname">_solve_lu</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_lu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call scipy LU decomoposition</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy square sparse matrix</em>) – </p></li>
-<li><p><strong>B</strong> (<em>numpy vector</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_pyamg">
-<code class="sig-name descname">_solve_pyamg</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">tol=1e-08</em>, <em class="sig-param">x0=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator._solve_pyamg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solve least squares system using pyamg algorithmic multigrid solver</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>scipy.sparse.matrix</em>) – </p></li>
-<li><p><strong>B</strong> (<em>numpy array</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_constraints_to_least_squares">
-<code class="sig-name descname">add_constraints_to_least_squares</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">idc</em>, <em class="sig-param">name='undefined'</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_constraints_to_least_squares" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds constraints to the least squares system. Automatically works
-out the row
-index given the shape of the input arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>numpy array / list</em>) – RxC numpy array of constraints where C is number of columns,R rows</p></li>
-<li><p><strong>B</strong> (<em>numpy array /list</em>) – B values array length R</p></li>
-<li><p><strong>idc</strong> (<em>numpy array/list</em>) – RxC column index</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>list of constraint ids</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints">
-<code class="sig-name descname">add_equality_constraints</code><span class="sig-paren">(</span><em class="sig-param">node_idx</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds hard constraints to the least squares system. For now this just
-sets
-the node values to be fixed using a lagrangian.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_idx</strong> (<em>numpy array/list</em>) – int array of node indexes</p></li>
-<li><p><strong>values</strong> (<em>numpy array/list</em>) – array of node values</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_tangent_ctr_pts">
-<code class="sig-name descname">add_tangent_ctr_pts</code><span class="sig-paren">(</span><em class="sig-param">w=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_tangent_ctr_pts" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>w</strong> (<em>double</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix">
-<code class="sig-name descname">build_matrix</code><span class="sig-paren">(</span><em class="sig-param">square=True</em>, <em class="sig-param">damp=True</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assemble constraints into interpolation matrix. Adds equaltiy
-constraints
-using lagrange modifiers if necessary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>damp</strong> (<em>bool</em>) – Flag whether damping should be added to the diagonal of the matrix</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>Interpolation matrix and B</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.evaluate_gradient">
-<code class="sig-name descname">evaluate_gradient</code><span class="sig-paren">(</span><em class="sig-param">evaluation_points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate the gradient of the scalar field at the evaluation points
-:param evaluation_points: xyz locations to evaluate the gradient
-:type evaluation_points: np.array</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_gradient_constraints">
-<code class="sig-name descname">get_gradient_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_gradient_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_norm_constraints">
-<code class="sig-name descname">get_norm_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_norm_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_tangent_constraints">
-<code class="sig-name descname">get_tangent_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_tangent_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints">
-<code class="sig-name descname">get_value_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.get_value_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>numpy array</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.remove_constraints_from_least_squares">
-<code class="sig-name descname">remove_constraints_from_least_squares</code><span class="sig-paren">(</span><em class="sig-param">name='undefined'</em>, <em class="sig-param">constraint_ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.remove_constraints_from_least_squares" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove constraints from the least squares system using the constraint ids
-which corresponds to the rows in the interpolation matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>constraint_ids</strong> (<em>np.array</em><em>(</em><em>dtype=int</em><em>)</em>) – id of constraints to remove</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the interpolation constraints</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_gradient_constraints">
-<code class="sig-name descname">set_gradient_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_gradient_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_interpolation_weights">
-<code class="sig-name descname">set_interpolation_weights</code><span class="sig-paren">(</span><em class="sig-param">weights</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_interpolation_weights" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the interpolation weights dictionary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- dictionary</strong> (<em>weights</em>) – Entry of new weights to assign to self.interpolation_weights</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_normal_constraints">
-<code class="sig-name descname">set_normal_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_normal_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_property_name">
-<code class="sig-name descname">set_property_name</code><span class="sig-paren">(</span><em class="sig-param">propertyname</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_property_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the property name attribute, this is usually used to
-save the property on the support</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>propertyname</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_region">
-<code class="sig-name descname">set_region</code><span class="sig-paren">(</span><em class="sig-param">region=None</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_region" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the region of the support the interpolator is working on</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>- function</strong><strong>(</strong><strong>position</strong><strong>)</strong> (<em>region</em>) – return true when in region, false when out</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_tangent_constraints">
-<code class="sig-name descname">set_tangent_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_tangent_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_value_constraints">
-<code class="sig-name descname">set_value_constraints</code><span class="sig-paren">(</span><em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.set_value_constraints" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>points</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.setup_interpolator">
-<code class="sig-name descname">setup_interpolator</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.setup_interpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs all of the required setting up stuff</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.solve_system">
-<code class="sig-name descname">solve_system</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.solve_system" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solves the interpolation equations</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the solver is up to date, if not rerun interpolation using
-the previously used solver. If the interpolation has not been run
-before it will
-return False</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>bool</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -555,37 +223,29 @@ return False</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="LoopStructural.interpolators.piecewiselinear_interpolator.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.piecewiselinear_interpolator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="LoopStructural.interpolators.geological_interpolator.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.geological_interpolator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="LoopStructural.interpolators.piecewiselinear_interpolator.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.piecewiselinear_interpolator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.interpolators.geological_interpolator.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.geological_interpolator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Lachlan Grose
+        &#169; Copyright 2020, Lachlan Grose.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

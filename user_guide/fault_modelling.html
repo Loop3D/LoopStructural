@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Fault modelling &mdash; LoopStructural 0.1 documentation</title>
   
@@ -17,10 +17,14 @@
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -33,8 +37,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -57,7 +60,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> LoopStructural
+            <a href="../index.html" class="icon icon-home"> LoopStructural
           
 
           
@@ -104,7 +107,10 @@
 <li class="toctree-l1"><a class="reference internal" href="geological_model.html">Geological Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interpolation_options.html">Implicit Interpolators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fold_modelling.html">Fold modelling</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Fault modelling</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Fault modelling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fault-function">Fault function</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="visualisation.html">LavaVuModelViewer</a></li>
 </ul>
 <p class="caption"><span class="caption-text">LoopStructural API</span></p>
@@ -156,6 +162,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -167,7 +175,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/user_guide/fault_modelling.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -183,6 +191,66 @@
             
   <div class="section" id="fault-modelling">
 <h1>Fault modelling<a class="headerlink" href="#fault-modelling" title="Permalink to this headline">¶</a></h1>
+<p>Fault can be added into LoopStructural using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">LoopStructural.GeologicalModel.create_and_add_fault()</span></code> function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span><span class="p">(</span><span class="n">feature_name</span><span class="p">,</span>
+                           <span class="n">displacement</span><span class="p">,</span>
+                           <span class="n">fault_slip_vector</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">fault_center</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">fault_extent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">fault_influence</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">fault_vectical_radius</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">faultfunction</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="o">**</span><span class="n">kwargs</span>
+                           <span class="p">)</span>
+</pre></div>
+</div>
+<p>In version 1.1 the additional arguments for the fault geometry were added.
+Additional parameters can be specified to the interpolator including:</p>
+<blockquote>
+<div><table class="colwidths-given docutils align-default" id="id1">
+<caption><span class="caption-text">Fault parameters</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Options</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>feature_name</p></td>
+<td><p>identifying string in the model dataframe</p></td>
+</tr>
+<tr class="row-odd"><td><p>displacement</p></td>
+<td><p>magnitude of the displacement, or maximum displacement,</p></td>
+</tr>
+<tr class="row-even"><td><p>fault_slip_vector</p></td>
+<td><p>numpy array describing the fault slip</p></td>
+</tr>
+<tr class="row-odd"><td><p>fault_center</p></td>
+<td><p>the center of the fault</p></td>
+</tr>
+<tr class="row-even"><td><p>fault_extent</p></td>
+<td><p>the radius of the fault ellipsoid parallel to fault surface and orthogonal to slip direction</p></td>
+</tr>
+<tr class="row-odd"><td><p>fault_influence</p></td>
+<td><p>radius of ellipsoid orthogonal to fault</p></td>
+</tr>
+<tr class="row-even"><td><p>fault_vertical_radius</p></td>
+<td><p>fault ellipsoid radius in slip direction</p></td>
+</tr>
+<tr class="row-odd"><td><p>faultfunction</p></td>
+<td><p>function describing the fault slip in the fault frame coordinates</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="section" id="fault-function">
+<h2>Fault function<a class="headerlink" href="#fault-function" title="Permalink to this headline">¶</a></h2>
+<p>The fault function describes the displacement magnitude of the fault relative to the fault frame coordinate.
+A basic fault function is provided in LoopStructural.</p>
+</div>
 </div>
 
 
@@ -190,37 +258,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="visualisation.html" class="btn btn-neutral float-right" title="LavaVuModelViewer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="fold_modelling.html" class="btn btn-neutral float-left" title="Fold modelling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="visualisation.html" class="btn btn-neutral float-right" title="LavaVuModelViewer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fold_modelling.html" class="btn btn-neutral float-left" title="Fold modelling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Lachlan Grose
+        &#169; Copyright 2020, Lachlan Grose.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
