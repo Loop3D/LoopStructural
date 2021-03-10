@@ -532,6 +532,7 @@ class LavaVuModelViewer:
         from tqdm.auto import tqdm
         start = time.time()
         n_units = 0 #count how many discrete colours
+        name_suffix = kwargs.pop('name','')
         for g in self.model.stratigraphic_column.keys():
             if g in self.model.feature_name_index:
                 for u in self.model.stratigraphic_column[g].keys():
@@ -579,7 +580,7 @@ class LavaVuModelViewer:
                         values = []
                         colours = []
                         for u, vals in self.model.stratigraphic_column[g].items():
-                            names.append(u)
+                            names.append(u+name_suffix)
                             values.append(vals['min'])
                             colours.append(cmap_colours[ci,:])
                             ci+=1
@@ -602,7 +603,7 @@ class LavaVuModelViewer:
                         pbar.set_description('Isosurfacing {}'.format(f.name))
 
                         region = kwargs.pop('region',None) 
-                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name,**kwargs)
+                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name+name_suffix,**kwargs)
                         pbar.update(1)
             print("Adding surfaces took {} seconds".format(time.time()-start))
     def add_vector_field(self, geological_feature, **kwargs):
