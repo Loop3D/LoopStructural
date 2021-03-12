@@ -36,7 +36,7 @@ jobs:
       shell: powershell
       run: |
         python --version
-        conda install -c conda-forge conda-build scikit-build numpy
+        conda install -c conda-forge conda-build scikit-build numpy cython
         cd conda
         conda build -c anaconda -c conda-forge -c loop3d -c conda-forge/label/cf202003  -c pytorch -c fcakyon -c districtdatalabs --output-folder . .
     - name: upload
