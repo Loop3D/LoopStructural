@@ -29,7 +29,7 @@ formatter = logging.Formatter('%(asctime)s ~ %(name)-12s ~ %(levelname)-10s ~ %(
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
-__version__ = '1.0.83'
+__version__ = '1.0.84'
 from .modelling.core.geological_model import GeologicalModel
 from .utils import log_to_console, log_to_file, getLogger
 logger = getLogger(__name__)
