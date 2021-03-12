@@ -73,8 +73,8 @@ jobs:
     - name: Building Loop wheel and installing
       shell: bash -l {0}
       run: |
+        python setup.py install build_ext --inplace
         python setup.py bdist_wheel
-        python setup.py bdist
     - name: Publish wheels to PyPI
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
