@@ -14,7 +14,7 @@ jobs:
         uses: joerick/cibuildwheel@v1.10.0
         env:
           CIBW_ARCHS_MACOS: x86_64 universal2
-          CIBW_SKIP: cp27-*
+          CIBW_BUILD: "cp37-*"
           CIBW_BEFORE_BUILD: "pip install numpy cython"
 
       - name: Publish wheels to PyPI
