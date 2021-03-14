@@ -528,6 +528,12 @@ class LavaVuModelViewer:
         Other parameters are passed to self.add_isosurface() 
 
         """
+        try:
+                from matplotlib import cm
+                from matplotlib import colors
+            except ImportError:
+                logger.warning("Cannot add model surfaces without matplotlib \n")
+                return
         import time
         from tqdm.auto import tqdm
         start = time.time()
@@ -543,12 +549,7 @@ class LavaVuModelViewer:
                 n_faults+=1
         
         if cmap is None:
-            try:
-                from matplotlib import cm
-                from matplotlib import colors
-            except ImportError:
-                logger.warning("Cannot use predefined colours, matplotlib is not installed. \n")
-                cmap = 'tab20'                            
+                         
             colours = []
             boundaries = []
             data = []
@@ -562,7 +563,7 @@ class LavaVuModelViewer:
                     boundaries.append(v['id'])
             cmap = colors.ListedColormap(colours)
         else:
-            cmap = cm.get_cmap(cmap,n_units)
+            cmap = cm.get_cmap('tab20',n_units)
         ci = 0
         cmap_colours = colors.to_rgba_array(cmap.colors)
         n_surfaces = 0
