@@ -379,4 +379,4 @@ def all_heading():
     return xyz_names() + normal_vec_names() + tangent_vec_names() + \
            gradient_vec_names() + weight_name() + val_name() + coord_name() + feature_name() + interface_name()
 def empty_dataframe():
-    empty_data_frame =pd.DataFrame(columns=[all_heading()])
+    return empty_data_frame =pd.DataFrame(columns=[all_heading()])
