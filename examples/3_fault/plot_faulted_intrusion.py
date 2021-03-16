@@ -84,9 +84,9 @@ fault = model.create_and_add_fault('fault',
                                    nelements=2000,
                                    steps=4,
                                    interpolatortype='PLI',
-                                  buffer=0.3)
+                                  buffer=2)
 strati = model.create_and_add_foliation('strati',nelements=30000,interpolatortype='PLI',cgw=0.03)
-
+model.update()
 viewer = LavaVuModelViewer(model)
 viewer.add_isosurface(strati,
                       
