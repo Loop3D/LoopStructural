@@ -41,6 +41,8 @@ jobs:
         conda build -c anaconda -c conda-forge -c loop3d -c conda-forge/label/cf202003  -c pytorch -c fcakyon -c districtdatalabs --output-folder . .
     - name: upload
       shell: powershell
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.CONDA }}
       run: | 
         conda install anaconda-client
-        anaconda upload --label main win-64/*.tar.bz2 -t ${{ secrets.CONDA }}
+        anaconda upload --label main win-64/*.tar.bz2 
