@@ -3,14 +3,46 @@ name: publish_conda
 on:
   release:
     types: [created, edited]
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Publish Loop Conda
-        uses: Loop3D/conda-publish-action@1.8
+        uses: Loop3D/conda-publish-action@1.9
         with:
           subdir: "conda"
           anacondatoken: ${{ secrets.CONDA }}
-          platforms: "win osx linux"
+          platforms: "linux"
+  windows:
+    runs-on: windows-2016
+    strategy:
+      matrix:
+        python: ['3.6']
+    steps:
+    - uses: actions/checkout@v2
+    - name: submodules
+      shell: bash -l {0}
+      run: |
+        git submodule update --init --recursive
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: ${{ matrix.python }} 
+        activate-environment: loop    
+    - name: Conda build
+      shell: powershell
+      run: |
+        python --version
+        conda install -c conda-forge conda-build scikit-build numpy cython
+        cd conda
+        conda build -c anaconda -c conda-forge -c loop3d -c conda-forge/label/cf202003  -c pytorch -c fcakyon -c districtdatalabs --output-folder . .
+    - name: upload
+      shell: powershell
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.CONDA }}
+      run: | 
+        conda install anaconda-client
+        anaconda upload --label main win-64/*.tar.bz2 
