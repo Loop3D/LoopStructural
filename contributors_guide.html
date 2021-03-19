@@ -105,7 +105,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#feature-requests">Feature requests</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#contributing-new-code">Contributing new code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-new-code">Contributing new code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#commit-messages">Commit messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-numbering">Version numbering</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#license">License</a></li>
 </ul>
@@ -229,6 +231,30 @@ to be easily reproduced this will help us in determining the source of the bug.<
 <p>Any contributions to the documentation and code for LoopStructural are welcome.</p>
 <p>If you would like to contribute code to LoopStructural please open an <a class="reference external" href="https://github.com/Loop3D/LoopStructural/issues/new/choose">issue</a> either
 a bug report or a feature request and then submit a pull request and link it to this issue.</p>
+</div>
+<div class="section" id="commit-messages">
+<h2>Commit messages<a class="headerlink" href="#commit-messages" title="Permalink to this headline">¶</a></h2>
+<p>A changelog is automatically generated from the commit message, the following keywords are identified in the commit log.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>add - defining a new feature that is added to LoopStructural</p></li>
+<li><p>fix - a bugfix</p></li>
+<li><p>change - any changes to features</p></li>
+<li><p>remove - removing features or code from LoopStructural</p></li>
+<li><p>merge</p></li>
+<li><p>doc - changes to documentation</p></li>
+</ul>
+</div></blockquote>
+<p>The commit messages should include a short summary in the first line that will be referenced in the change log.</p>
+</div>
+<div class="section" id="version-numbering">
+<h2>Version numbering<a class="headerlink" href="#version-numbering" title="Permalink to this headline">¶</a></h2>
+<p>LoopStructural is versions according to semantic versioning:</p>
+<p>Given a version number MAJOR.MINOR.PATCH, increment the:</p>
+<p>MAJOR version when you make incompatible API changes,
+MINOR version when you add functionality in a backwards compatible manner, and
+PATCH version when you make backwards compatible bug fixes.
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.</p>
 <div class="section" id="documentation">
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
 <p>LoopStructural documentation is produced using sphinx with examples being provided by sphinx gallery.
