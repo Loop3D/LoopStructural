@@ -1063,7 +1063,13 @@ class LavaVuModelViewer:
         """Remove all objects from the viewer
         """
         self.lv.clear()
-    
+    @property
+    def camera(self):
+        return self.lv.camera
+    @camera.setter
+    def camera(self,camera):
+        self.lv.camera = camera
+        
     @property
     def xmin(self):
         return self.lv['xmin']
