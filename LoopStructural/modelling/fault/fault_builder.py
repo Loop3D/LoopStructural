@@ -105,6 +105,7 @@ class FaultBuilder(StructuralFrameBuilder):
             data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
                 self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
         self.add_data_from_data_frame(data)
+        
     def set_mesh_geometry(self,buffer):
         """set the mesh geometry
 
@@ -128,17 +129,16 @@ class FaultBuilder(StructuralFrameBuilder):
     def add_splay(self,splayregion,splay):
         # assume all parts of structural frame have the same support
         support = self.builders[0].interpolator.support
-
         for i in range(3):
             # work out the values of the nodes where we want hard
             # constraints
             idc = np.arange(0, support.n_nodes)[
                 splayregion(support.nodes)]
             val = splay[i].evaluate_value(
-                interpolator.support.nodes[
+                support.nodes[
                 splayregion(support.nodes), :])
             mask = ~np.isnan(val)
-            fault_frame_builder[i].interpolator.add_equality_constraints(
+            self.__getitem__(i).interpolator.add_equality_constraints(
                 idc[mask], val[mask])
         
     def update(self):

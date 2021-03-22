@@ -1171,12 +1171,14 @@ class GeologicalModel:
                                                       horizontal_radius=fault_extent,
                                                       vertical_radius=fault_vectical_radius
                                                       )
-        if 'splay' in kwargs and 'splayregion' in kwargs:
-            fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
+        
         if fault_influence == None or fault_extent == None or fault_vectical_radius == None:
             fault_frame_builder.origin = self.bounding_box[0,:]
             fault_frame_builder.maximum = self.bounding_box[1,:]
-        fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
+        if 'force_mesh_geometry' not in kwargs:
+            fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
+        if 'splay' in kwargs and 'splayregion' in kwargs:
+            fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
         # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # check if this fault overprint any existing faults exist in the stack
         overprinted = kwargs.get('overprints', [])
