@@ -529,11 +529,11 @@ class LavaVuModelViewer:
 
         """
         try:
-                from matplotlib import cm
-                from matplotlib import colors
-            except ImportError:
-                logger.warning("Cannot add model surfaces without matplotlib \n")
-                return
+            from matplotlib import cm
+            from matplotlib import colors
+        except ImportError:
+            logger.warning("Cannot add model surfaces without matplotlib \n")
+            return
         import time
         from tqdm.auto import tqdm
         start = time.time()
