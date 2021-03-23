@@ -529,11 +529,11 @@ class LavaVuModelViewer:
 
         """
         try:
-                from matplotlib import cm
-                from matplotlib import colors
-            except ImportError:
-                logger.warning("Cannot add model surfaces without matplotlib \n")
-                return
+            from matplotlib import cm
+            from matplotlib import colors
+        except ImportError:
+            logger.warning("Cannot add model surfaces without matplotlib \n")
+            return
         import time
         from tqdm.auto import tqdm
         start = time.time()
@@ -1063,7 +1063,13 @@ class LavaVuModelViewer:
         """Remove all objects from the viewer
         """
         self.lv.clear()
-    
+    @property
+    def camera(self):
+        return self.lv.camera
+    @camera.setter
+    def camera(self,camera):
+        self.lv.camera = camera
+        
     @property
     def xmin(self):
         return self.lv['xmin']
