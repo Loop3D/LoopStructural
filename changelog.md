@@ -4,12 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.1.0](https://github.com/Loop3D/LoopStructural/releases/tag/1.1.0) - 2021-03-19
+## [1.1.0](https://github.com/Loop3D/LoopStructural/releases/tag/1.1.0) - 2021-03-30
 
-<small>[Compare with 1.0.89](https://github.com/Loop3D/LoopStructural/compare/1.0.89...1.1.0)</small>
+<small>[Compare with 1.0.9](https://github.com/Loop3D/LoopStructural/compare/1.0.9...1.1.0)</small>
 
 ### Added
+- Added opacity to isosurface ([a05385d](https://github.com/Loop3D/LoopStructural/commit/a05385da9425012e8d33d2dcbc879f83d5c55a70) by Lachlan Grose).
+- Adding function to estimate fold hinge location ([f3b45fe](https://github.com/Loop3D/LoopStructural/commit/f3b45fe54466ddb147efd11e63f52b0989e27d0b) by Lachlan Grose).
+- Added fault splay ([7f0d92f](https://github.com/Loop3D/LoopStructural/commit/7f0d92f3f7de45420493a60ff7b1c0925f36ae00) by Lachlan Grose).
+- Adding splay fault to fault builder ([6e7ae27](https://github.com/Loop3D/LoopStructural/commit/6e7ae27932b14c6e7aba940f19b968979b2a8a41) by Lachlan Grose).
+- Added ability to save current lavavu view ([1bcdf83](https://github.com/Loop3D/LoopStructural/commit/1bcdf83df7204d1fe08eb6158dd74557e982649f) by Lachlan Grose).
 - Adding change log ([e1ca83e](https://github.com/Loop3D/LoopStructural/commit/e1ca83ef35d83f8ae3c5bdcd304bc1002bc8b61c) by Lachlan Grose).
+
+### Changed
+- Changed default dip annotation on map ([5019cf6](https://github.com/Loop3D/LoopStructural/commit/5019cf6a66c24c6fd293c0c9dc96c604265f1edf) by Lachlan Grose).
+
+### Fixed
+- Fix (hopefully) incompatibility with lavavu versions due to numpy ([ff0cda4](https://github.com/Loop3D/LoopStructural/commit/ff0cda443807489a88cd60cc5c5ef985b74105c8) by Lachlan Grose).
+- Fixed nan comparison error for folds ([6bcafc7](https://github.com/Loop3D/LoopStructural/commit/6bcafc706772ea4202e72df5f388f843d5f25596) by Lachlan Grose).
+- Fixed bug with empty dataframe ([64f6f1c](https://github.com/Loop3D/LoopStructural/commit/64f6f1cd2ac971c4d9fe2f9f3e5a461888b0b885) by Lachlan Grose).
+- Fix - fixing up import issues ([bd4c0f3](https://github.com/Loop3D/LoopStructural/commit/bd4c0f36e74a5dd1c0331fce07d6d0f6237e67f5) by Lachlan Grose).
+
+
+## [1.0.9](https://github.com/Loop3D/LoopStructural/releases/tag/1.0.9) - 2021-03-16
+
+<small>[Compare with 1.0.89](https://github.com/Loop3D/LoopStructural/compare/1.0.89...1.0.9)</small>
 
 
 ## [1.0.89](https://github.com/Loop3D/LoopStructural/releases/tag/1.0.89) - 2021-03-14
@@ -20,6 +39,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.0.88](https://github.com/Loop3D/LoopStructural/releases/tag/1.0.88) - 2021-03-14
 
 <small>[Compare with 1.0.860](https://github.com/Loop3D/LoopStructural/compare/1.0.860...1.0.88)</small>
+
+### Fixed
+- Fixing numpy version ([d97c80f](https://github.com/Loop3D/LoopStructural/commit/d97c80ff91ccecf8322338bb1d98596d7b14f013) by Lachlan Grose).
 
 
 ## [1.0.860](https://github.com/Loop3D/LoopStructural/releases/tag/1.0.860) - 2021-03-12
