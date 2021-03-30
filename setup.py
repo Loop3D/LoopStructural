@@ -39,7 +39,7 @@ def get_version(rel_path):
 setup(
 	name="LoopStructural",
 	install_requires=[
-	'numpy==1.18', #need to fix numpy to 1.18 because we build against it
+	'numpy>=1.18', #need to fix numpy to 1.18 because we build against it
 	'pandas',
 	'scipy',
 	'scikit-image',
