@@ -12,6 +12,7 @@ try:
     from lavavu.vutils import is_notebook
 except ImportError:
     logger.error("Please install lavavu: pip install lavavu")
+    lavavu = None
 import numpy as np
 try:
     from skimage.measure import marching_cubes
@@ -212,9 +213,20 @@ class LavaVuModelViewer:
                 cmap = kwargs['cmap']
 
 
-    def add_isosurface(self, geological_feature, value = None, isovalue=None,
-                     paint_with=None, slices=None, colour='red', nslices=None, 
-                     cmap=None, filename=None, names=None, colours=None,**kwargs):
+    def add_isosurface(self, 
+                        geological_feature, 
+                        value = None, 
+                        isovalue=None,
+                        paint_with=None, 
+                        slices=None, 
+                        colour='red', 
+                        nslices=None, 
+                        cmap=None, 
+                        filename=None, 
+                        names=None, 
+                        colours=None, 
+                        opacity=None,
+                     **kwargs):
         """ Plot the surface of a geological feature 
 
         [extended_summary]
@@ -243,7 +255,8 @@ class LavaVuModelViewer:
             list of names same length as slices
         colours: list, optional
             list of colours same length as slices
-
+        opacity: double, optional
+            change the opacity of the surface(s)
         Returns
         -------
         [type]
@@ -347,6 +360,11 @@ class LavaVuModelViewer:
             surf.indices(faces)
             if painter is None:
                 surf.colours(colour)
+            if opacity is not None:
+                # if opacity not isinstance(x, (int, float, complex)):
+                    # logger.warning("Opacity must be numeric")
+                # else:
+                surf["opacity"] = opacity
             if painter is not None:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
@@ -361,7 +379,14 @@ class LavaVuModelViewer:
                 vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
         
-    def add_scalar_field(self, geological_feature, name=None, cmap='rainbow', vmin=None, vmax = None, **kwargs):
+    def add_scalar_field(self, 
+                        geological_feature, 
+                        name=None, 
+                        cmap='rainbow', 
+                        vmin=None, 
+                        vmax = None, 
+                        opacity=None, 
+                        **kwargs):
         """Add a block the size of the model area painted with the scalar field value
 
         Parameters
@@ -376,6 +401,8 @@ class LavaVuModelViewer:
             minimum value of the colourmap, by default None
         vmax : double, optional
             maximum value of the colourmap, by default None
+        opacity : double, optional
+            change the opacity of the block
         """
         if name == None:
             if geological_feature is None:
@@ -436,7 +463,7 @@ class LavaVuModelViewer:
         val = self.model.evaluate_model(points,scale=True)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
-
+        
         if cmap is None:
             try:
                 import matplotlib.colors as colors
