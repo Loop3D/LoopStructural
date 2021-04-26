@@ -131,3 +131,17 @@ class FoldRotationAngle:
 
         """
         self. fold_rotation_function = function
+
+    def find_hinges(self,range,step):
+        
+        import scipy.optimize as optimize
+        def fra(x):
+            x = np.array([x])
+            return self.__call__(x)
+        roots = []
+        x = range[0]
+        while x < range[1]:
+            result = optimize.root_scalar(fra,bracket=[x,x+step])
+            roots.append(result.root)
+            x+=step
+        return roots

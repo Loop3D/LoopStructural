@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import logging
+import networkx
 
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
@@ -32,6 +33,7 @@ def process_map2loop(m2l_directory, flags={}):
     fault_fault_relations = pd.read_csv(m2l_directory + '/output/fault-fault-relationships.csv')
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
     fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv')
+    fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
 
     supergroups = {}
     sgi = 0
@@ -210,7 +212,10 @@ def process_map2loop(m2l_directory, flags={}):
                                             'FaultDipDirection':fault_centers[3],
                                             'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'].to_numpy(),
                                             'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'].to_numpy(),
-                                            'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy()}
+                                            'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy(),
+                                            'FaultSlip':np.array([0.,0.,-1.]),
+                                            'FaultNorm':normal_vector}
+
         if 'colour' in fault_dimensions.columns:
             stratigraphic_column['faults'][f]['colour'] = fault_dimensions.loc[fault_dimensions['Fault']==f,'colour'].to_numpy()
         normal_vector[0] = np.sin(np.deg2rad(fault_centers[3]))
@@ -249,7 +254,7 @@ def process_map2loop(m2l_directory, flags={}):
 
     data = pd.concat([tangents, contact_orientations, contacts, fault_orientations, fault_locations])
     data.reset_index(inplace=True)
-
+    
     return {'data': data,
             'groups': groups,
             'max_displacement': max_displacement,
@@ -257,7 +262,8 @@ def process_map2loop(m2l_directory, flags={}):
             'stratigraphic_column': stratigraphic_column,
             'bounding_box':bb,
             'strat_va':strat_val,
-            'downthrow_dir':downthrow_dir}
+            'downthrow_dir':downthrow_dir,
+            'fault_graph':fault_graph}
 
 def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
     """[summary]
@@ -300,31 +306,37 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
             if model.data[model.data['feature_name'] == f].shape[0] == 0:
                 continue
             fault_id = f
-            overprints = []
-            try:
-                overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
-                for i in overprint_id:
-                    overprints.append(i)
-                logger.info('Adding fault overprints {}'.format(f))
-            except:
-                logger.info('No entry for %s in fault_fault_relations' % f)
-        #     continue
+        #     overprints = []
+        #     try:
+        #         overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
+        #         for i in overprint_id:
+        #             overprints.append(i)
+        #         logger.info('Adding fault overprints {}'.format(f))
+        #     except:
+        #         logger.info('No entry for %s in fault_fault_relations' % f)
+        # #     continue
             fault_center = m2l_data['stratigraphic_column']['faults'][f]['FaultCenter']
             fault_influence = m2l_data['stratigraphic_column']['faults'][f]['InfluenceDistance']
             fault_extent = m2l_data['stratigraphic_column']['faults'][f]['HorizontalRadius']
             fault_vertical_radius = m2l_data['stratigraphic_column']['faults'][f]['VerticalRadius']
+            fault_slip_vector=m2l_data['stratigraphic_column']['faults'][f]['FaultSlip'] 
             faults.append(model.create_and_add_fault(f,
                                                     -m2l_data['max_displacement'][f],
                                                     faultfunction='BaseFault',
-                                                    fault_slip_vector=np.array([0.,0.,-1.]),
+                                                    fault_slip_vector=fault_slip_vector,
                                                     fault_center=fault_center,
                                                     fault_extent=fault_extent,
                                                     fault_influence=fault_influence,
                                                     fault_vectical_radius=fault_vertical_radius,
-                                                    overprints=overprints,
+                                                    # overprints=overprints,
                                                     **fault_params,
                                                     )
                         )
+    # for e in networkx.edge_bfs(m2l_data['fault_graph']):
+    #     model[e[1]].builder.add_fault(model[e[0]])
+    #     model[e[1]][0].interpolator.reset()
+    #     model[e[1]][1].interpolator.reset()
+    #     model[e[1]][2].interpolator.reset()
 
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []

@@ -18,7 +18,8 @@ try:
 except:
 	raise RuntimeError("Cannot import numpy \n"\
 	     "python -m pip install numpy")
-	sys.exit(1)	 		 
+	sys.exit(1)	 
+		 
 import numpy
 import os
 import codecs
@@ -38,16 +39,13 @@ def get_version(rel_path):
 setup(
 	name="LoopStructural",
 	install_requires=[
-	'Cython',
-	'numpy',
+	'numpy>=1.18', #need to fix numpy to 1.18 because we build against it
 	'pandas',
 	'scipy',
-	'matplotlib',
-	# 'lavavu',
 	'scikit-image',
 	'scikit-learn',
-	'tqdm'
-
+	'tqdm',
+	# 'pyamg'
 	],
 	version=get_version("LoopStructural/__init__.py"),
     packages=find_packages(),

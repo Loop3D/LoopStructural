@@ -12,8 +12,13 @@ try:
     from lavavu.vutils import is_notebook
 except ImportError:
     logger.error("Please install lavavu: pip install lavavu")
+    lavavu = None
 import numpy as np
-from skimage.measure import marching_cubes
+try:
+    from skimage.measure import marching_cubes
+except ImportError:
+    logger.warning("Using depreciated version of scikit-image")
+    from skimage.measure import marching_cubes_lewiner as marching_cubes
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
@@ -208,9 +213,20 @@ class LavaVuModelViewer:
                 cmap = kwargs['cmap']
 
 
-    def add_isosurface(self, geological_feature, value = None, isovalue=None,
-                     paint_with=None, slices=None, colour='red', nslices=None, 
-                     cmap=None, filename=None, names=None, colours=None,**kwargs):
+    def add_isosurface(self, 
+                        geological_feature, 
+                        value = None, 
+                        isovalue=None,
+                        paint_with=None, 
+                        slices=None, 
+                        colour='red', 
+                        nslices=None, 
+                        cmap=None, 
+                        filename=None, 
+                        names=None, 
+                        colours=None, 
+                        opacity=None,
+                     **kwargs):
         """ Plot the surface of a geological feature 
 
         [extended_summary]
@@ -239,7 +255,8 @@ class LavaVuModelViewer:
             list of names same length as slices
         colours: list, optional
             list of colours same length as slices
-
+        opacity: double, optional
+            change the opacity of the surface(s)
         Returns
         -------
         [type]
@@ -248,8 +265,7 @@ class LavaVuModelViewer:
         if geological_feature is None:
             logger.error("Cannot add isosurface GeologicalFeature does not exist")
         # update the feature to make sure its current
-        if 'update' in kwargs:
-            geological_feature.update()
+        
 
 
         # do isosurfacing of support using marching tetras/cubes
@@ -344,6 +360,11 @@ class LavaVuModelViewer:
             surf.indices(faces)
             if painter is None:
                 surf.colours(colour)
+            if opacity is not None:
+                # if opacity not isinstance(x, (int, float, complex)):
+                    # logger.warning("Opacity must be numeric")
+                # else:
+                surf["opacity"] = opacity
             if painter is not None:
                 # add a property to the surface nodes for visualisation
                 # calculate the mode value, just to get the most common value
@@ -358,7 +379,14 @@ class LavaVuModelViewer:
                 vmax = kwargs.get('vmax', max_property_val)
                 surf.colourmap(cmap, range=(vmin, vmax))  # nodes.shape[0]))
         
-    def add_scalar_field(self, geological_feature, name=None, cmap='rainbow', vmin=None, vmax = None, **kwargs):
+    def add_scalar_field(self, 
+                        geological_feature, 
+                        name=None, 
+                        cmap='rainbow', 
+                        vmin=None, 
+                        vmax = None, 
+                        opacity=None, 
+                        **kwargs):
         """Add a block the size of the model area painted with the scalar field value
 
         Parameters
@@ -373,6 +401,8 @@ class LavaVuModelViewer:
             minimum value of the colourmap, by default None
         vmax : double, optional
             maximum value of the colourmap, by default None
+        opacity : double, optional
+            change the opacity of the block
         """
         if name == None:
             if geological_feature is None:
@@ -424,9 +454,6 @@ class LavaVuModelViewer:
         >>> viewer.nsteps = np.array([100,100,100])
 
         """
-        import matplotlib.colors as colors
-        from matplotlib import cm
-
         name = kwargs.get('name', 'geological_model')
         points, tri = create_box(self.bounding_box, self.nsteps)
 
@@ -436,9 +463,13 @@ class LavaVuModelViewer:
         val = self.model.evaluate_model(points,scale=True)
         surf.values(val, 'model')
         surf["colourby"] = 'model'
-
+        
         if cmap is None:
-            import matplotlib.colors as colors
+            try:
+                import matplotlib.colors as colors
+            except ImportError:
+                logger.warning("Cannot use predefined colours as I can't import matplotlib")
+                cmap = 'tab20'
             colours = []
             boundaries = []
             data = []
@@ -524,12 +555,17 @@ class LavaVuModelViewer:
         Other parameters are passed to self.add_isosurface() 
 
         """
+        try:
+            from matplotlib import cm
+            from matplotlib import colors
+        except ImportError:
+            logger.warning("Cannot add model surfaces without matplotlib \n")
+            return
         import time
-        from matplotlib import cm
-        from matplotlib import colors
         from tqdm.auto import tqdm
         start = time.time()
         n_units = 0 #count how many discrete colours
+        name_suffix = kwargs.pop('name','')
         for g in self.model.stratigraphic_column.keys():
             if g in self.model.feature_name_index:
                 for u in self.model.stratigraphic_column[g].keys():
@@ -539,7 +575,8 @@ class LavaVuModelViewer:
             if f.type=='fault':
                 n_faults+=1
         
-        if cmap is None:            
+        if cmap is None:
+                         
             colours = []
             boundaries = []
             data = []
@@ -553,7 +590,7 @@ class LavaVuModelViewer:
                     boundaries.append(v['id'])
             cmap = colors.ListedColormap(colours)
         else:
-            cmap = cm.get_cmap(cmap,n_units)
+            cmap = cm.get_cmap('tab20',n_units)
         ci = 0
         cmap_colours = colors.to_rgba_array(cmap.colors)
         n_surfaces = 0
@@ -571,7 +608,7 @@ class LavaVuModelViewer:
                         values = []
                         colours = []
                         for u, vals in self.model.stratigraphic_column[g].items():
-                            names.append(u)
+                            names.append(u+name_suffix)
                             values.append(vals['min'])
                             colours.append(cmap_colours[ci,:])
                             ci+=1
@@ -594,7 +631,7 @@ class LavaVuModelViewer:
                         pbar.set_description('Isosurfacing {}'.format(f.name))
 
                         region = kwargs.pop('region',None) 
-                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name,**kwargs)
+                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name+name_suffix,**kwargs)
                         pbar.update(1)
             print("Adding surfaces took {} seconds".format(time.time()-start))
     def add_vector_field(self, geological_feature, **kwargs):
@@ -1053,7 +1090,13 @@ class LavaVuModelViewer:
         """Remove all objects from the viewer
         """
         self.lv.clear()
-    
+    @property
+    def camera(self):
+        return self.lv.camera
+    @camera.setter
+    def camera(self,camera):
+        self.lv.camera = camera
+        
     @property
     def xmin(self):
         return self.lv['xmin']
