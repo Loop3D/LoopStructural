@@ -4,7 +4,7 @@ services:
   structural:
     build: 
       context: ./
-      dockerfile: DockerFileDev
+      dockerfile: DockerfileDev
     volumes:
       - /home/lgrose/dev/python/LoopStructural/:/home/jovyan/LoopStructural
       - /home/lgrose/LoopStructural/:/home/jovyan/notebooks
