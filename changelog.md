@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.1.0](https://github.com/Loop3D/LoopStructural/releases/tag/1.1.0) - 2021-03-30
+## [1.1.0](https://github.com/Loop3D/LoopStructural/releases/tag/1.1.0) - 2021-03-31
 
 <small>[Compare with 1.0.9](https://github.com/Loop3D/LoopStructural/compare/1.0.9...1.1.0)</small>
 
