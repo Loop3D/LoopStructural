@@ -219,7 +219,7 @@ def process_map2loop(m2l_directory, flags={}):
         downthrow_dir[f] = displacements_numpy[index,[1,3,4]]
         if displacements_numpy[index,1] == 1.0:
             logger.info("Estimating downthrow direction using fault intersections")
-            fault_intersection_angles[f]
+            # fault_intersection_angles[f]
         if np.abs(displacements_numpy[index, 1] - displacements_numpy[index, 2]) > 90:
             # fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]=-fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]
             fault_orientations.loc[fault_orientations['formation'] == f, 'DipDirection'] -= 180#displacements_numpy[
