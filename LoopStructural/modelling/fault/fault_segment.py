@@ -7,7 +7,7 @@ logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
-
+use_threads = False
 class FaultSegment:
     """
     Class for representing a slip event of a fault
@@ -203,14 +203,22 @@ class FaultSegment:
     def evaluate_displacement(self, points):
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points then define mask for only points affected by fault
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        gx = None
+        gy = None
+        gz = None
+        if use_threads:
+            with ThreadPoolExecutor(max_workers=8) as executor:
             # all of these operations should be independent so just run as different threads
-            gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
-            gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
-            gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
-            gx = gx_future.result()
-            gy = gy_future.result()
-            gz = gz_future.result()
+                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
+                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
+                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
+                gx = gx_future.result()
+                gy = gy_future.result()
+                gz = gz_future.result()
+        else:
+            gx = self.faultframe.features[0].evaluate_value(newp)
+            gy = self.faultframe.features[1].evaluate_value(newp)
+            gz = self.faultframe.features[2].evaluate_value(newp)
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
         mask = np.logical_and(mask,~np.isnan(gz))
@@ -236,14 +244,22 @@ class FaultSegment:
         steps = self.steps
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points then define mask for only points affected by fault
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            # all of these operations should be independent so just run as different threads
-            gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
-            gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
-            gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
-            gx = gx_future.result()
-            gy = gy_future.result()
-            gz = gz_future.result()
+        gx = None
+        gy = None
+        gz = None
+        if use_threads:
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                # all of these operations should be independent so just run as different threads
+                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
+                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
+                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
+                gx = gx_future.result()
+                gy = gy_future.result()
+                gz = gz_future.result()
+        else:
+            gx = self.faultframe.features[0].evaluate_value(newp)
+            gy = self.faultframe.features[1].evaluate_value(newp)
+            gz = self.faultframe.features[2].evaluate_value(newp)
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
         mask = np.logical_and(mask,~np.isnan(gz))
@@ -258,16 +274,26 @@ class FaultSegment:
         d *= self.displacement
         # calculate the fault frame for the evaluation points
         for i in range(steps):
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be independent so just run as different threads
-                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp[mask, :])
-                g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp[mask, :])
-                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp[mask, :])
-                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp[mask, :])
-                gx = gx_future.result()
-                g = g_future.result()
-                gy = gy_future.result()
-                gz = gz_future.result()
+            gx = None
+            gy = None
+            gz = None
+            g = None
+            if use_threads:
+                with ThreadPoolExecutor(max_workers=8) as executor:
+                    # all of these operations should be independent so just run as different threads
+                    gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp[mask, :])
+                    g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp[mask, :])
+                    gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp[mask, :])
+                    gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp[mask, :])
+                    gx = gx_future.result()
+                    g = g_future.result()
+                    gy = gy_future.result()
+                    gz = gz_future.result()
+            else:
+                gx = self.faultframe.features[0].evaluate_value(newp[mask, :])
+                gy = self.faultframe.features[1].evaluate_value(newp[mask, :])
+                gz = self.faultframe.features[2].evaluate_value(newp[mask, :])
+                g = self.faultframe.features[1].evaluate_gradient(newp[mask, :])
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
@@ -296,3 +322,14 @@ class FaultSegment:
             # apply displacement
             newp[mask, :] += g
         return newp
+    
+    def add_abutting_fault(self,abutting_fault_feature):
+        pts = self.faultframe[0].builder.data[['X','Y','Z']].to_numpy()#get_value_constraints()
+        # check whether the fault is on the hanging wall or footwall of abutting fault
+        abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
+        if abut_value > 0:
+            for i in range(1):
+                self.faultframe[i].add_region(lambda pos: abutting_fault_feature.evaluate_value(pos) > 0)
+        if abut_value < 0:
+            for i in range(1):
+                self.faultframe[i].add_region(lambda pos: abutting_fault_feature.evaluate_value(pos) < 0)

@@ -1181,21 +1181,20 @@ class GeologicalModel:
             fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
         # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
         # check if this fault overprint any existing faults exist in the stack
-        overprinted = kwargs.get('overprints', [])
-        overprinted_faults = []
-        for o in overprinted:
-            try:
-                overprinted_faults.append(self.features[self.feature_name_index[o]])
-            except KeyError:
-                logger.warning("{} could not be added to overprint {} \
-                because it does not exist".format(o,fault_surface_data))
-        self._add_faults(fault_frame_builder[0],overprinted_faults)
-        self._add_faults(fault_frame_builder[1],overprinted_faults)
-        self._add_faults(fault_frame_builder[2],overprinted_faults)
+        # overprinted = kwargs.get('overprints', [])
+        # overprinted_faults = []
+        # for o in overprinted:
+        #     try:
+        #         overprinted_faults.append(self.features[self.feature_name_index[o]])
+        #     except KeyError:
+        #         logger.warning("{} could not be added to overprint {} \
+        #         because it does not exist".format(o,fault_surface_data))
+        # self._add_faults(fault_frame_builder[0],overprinted_faults)
+        # self._add_faults(fault_frame_builder[1],overprinted_faults)
+        # self._add_faults(fault_frame_builder[2],overprinted_faults)
 
         fault_frame = fault_frame_builder.build(**kwargs)
-        if 'abut' in kwargs:
-            fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
+        
 
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
                              faultfunction=faultfunction,
