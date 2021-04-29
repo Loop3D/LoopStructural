@@ -226,7 +226,7 @@ class LavaVuModelViewer:
                         names=None, 
                         colours=None, 
                         opacity=None,
-                        callback_function=None,
+                        function=None,
                      **kwargs):
         """ Plot the surface of a geological feature 
 
@@ -348,8 +348,8 @@ class LavaVuModelViewer:
                 
             if colours is not None and len(colours) == len(slices_):
                 colour=colours[i]
-            if callback_function is not None:
-                callback_function(verts,faces,name)
+            if function is not None:
+                function(verts,faces,name)
             if filename is not None:
                 svalues = None
                 # svalues[:] = np.nan
