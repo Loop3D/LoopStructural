@@ -108,7 +108,8 @@ class FaultBuilder(StructuralFrameBuilder):
             # data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
             #     self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
         self.add_data_from_data_frame(data)
-        
+        self.update_geometry(data[['X','Y','Z']].to_numpy())
+
     def set_mesh_geometry(self,buffer):
         """set the mesh geometry
 
