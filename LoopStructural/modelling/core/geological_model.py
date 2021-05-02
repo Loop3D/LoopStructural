@@ -229,6 +229,16 @@ class GeologicalModel:
         """
         return self.get_feature_by_name(feature_name)
     
+    @property
+    def faults(self):
+        faults = []
+        for f in model.features:
+            if f.type == 'fault':
+                faults.append(f)
+
+        return f
+
+    
     def feature_names(self):
         return self.feature_name_index.keys()
 
