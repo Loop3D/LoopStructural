@@ -360,23 +360,18 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
             for intersection in m2l_data['fault_intersection_angles'][f]:
                 if intersection[0] in m2l_data['max_displacement'].keys():
                     f2_norm = m2l_data['stratigraphic_column']['faults'][intersection[0]]['FaultNorm']
-                    print(f,intersection[0],np.dot(f1_norm,f2_norm),intersection[2])
                     if intersection[2] < 30 and np.dot(f1_norm,f2_norm)>0:
-                        print('Adding splay {} to {}'.format(intersection[0],f))
-                        model[intersection[0]].builder.add_splay(model[f])
-                    # model[f].builder.add_fault(model[intersection[0]])
-                    # model[f][0].interpolator.reset()
-                    # model[f][1].interpolator.reset()
-                    # model[f][2].interpolator.reset()
+                        logger.info('Adding splay {} to {}'.format(intersection[0],f))
+                        if model[f] is None:
+                            logger.error('Fault {} does not exist, cannot be added as splay')
+                        elif model[intersection[0]] is None:
+                            logger.error('Fault {} does not exist')
+                        else:
+                            model[intersection[0]].builder.add_splay(model[f])
+
                     else:
-                        print('Adding abut {} to {}'.format(intersection[0],f))
-
+                        logger.info('Adding abut {} to {}'.format(intersection[0],f))
                         model[intersection[0]].add_abutting_fault(model[f])
-
-        # model[e[1]].add_abutting_fault(model[e[0]])
-        # model[e[1]][0].interpolator.reset()
-        # model[e[1]][1].interpolator.reset()
-        # model[e[1]][2].interpolator.reset()
 
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
