@@ -72,7 +72,7 @@ class LavaVuModelViewer:
         if self.bounding_box is None or self.nsteps is None:
             logger.error("Plot area has not been defined.")
         self.bounding_box = np.array(self.bounding_box)
-        self.nsteps = np.array(self.nsteps)
+        self._nsteps = np.array(self.nsteps)
         self._model = model
         # prerotate to a nice view
         # self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
@@ -123,6 +123,14 @@ class LavaVuModelViewer:
         self.nsteps = nsteps
         logger.info("Using grid with dimensions {} {} {}".format(nsteps[0],nsteps[1],nsteps[2]))
 
+    @property
+    def nsteps(self):
+        return self._nsteps
+
+    @nsteps.setter
+    def nsteps(self,nsteps):
+        self._nsteps = np.array(nsteps)
+    
     def deep_clean(self):
         """[summary]
 
