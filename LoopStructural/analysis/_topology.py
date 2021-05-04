@@ -1,4 +1,4 @@
-def _calculate_fault_topology_matrix(self, model, xyz):
+def calculate_fault_topology_matrix(self, model, xyz):
     """Calculate fault ellipsoid and hw/fw
 
     Parameters

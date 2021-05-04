@@ -4,15 +4,6 @@
 LoopStructural API
 =======================
 
-.. autosummary::
-    :toctree:
-
-
-    interpolators
-    modelling
-    visualisation
-    utils
-
 """
 
 import logging
