@@ -329,7 +329,11 @@ class FaultSegment:
         abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
         if abut_value > 0:
             for i in range(1):
-                self.faultframe[i].add_region(lambda pos: abutting_fault_feature.evaluate_value(pos) > 0)
+                ## adding the nan check avoids truncating the fault at the edge of the abutting fault bounding box.
+                ## it makes the assumption that the abutted fault is not drawn across the abutting fault... but this should be ok
+                self.faultframe[i].add_region(lambda pos: np.logical_or(abutting_fault_feature.evaluate_value(pos) > 0,
+                                                                        np.isnan(abutting_fault_feature.evaluate_value(pos))))
         if abut_value < 0:
             for i in range(1):
-                self.faultframe[i].add_region(lambda pos: abutting_fault_feature.evaluate_value(pos) < 0)
+                self.faultframe[i].add_region(lambda pos: np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0, 
+                                                                        np.isnan(abutting_fault_feature.evaluate_value(pos))))

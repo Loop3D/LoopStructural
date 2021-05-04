@@ -339,6 +339,7 @@ class GeologicalFeatureInterpolator:
 
         """
         return self.data.loc[:, xyz_names()].to_numpy()
+        
     def set_interpolation_geometry(self,origin,maximum):
         """Update the interpolation support geometry to new bounding box
 
