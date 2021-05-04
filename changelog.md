@@ -4,9 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.1.0](https://github.com/Loop3D/LoopStructural/releases/tag/1.1.0) - 2021-03-31
+## [1.1.0](https://github.com/Loop3D/LoopStructural/releases/tag/1.1.0) - 2021-05-04
 
-<small>[Compare with 1.0.9](https://github.com/Loop3D/LoopStructural/compare/1.0.9...1.1.0)</small>
+<small>[Compare with 1.0.91](https://github.com/Loop3D/LoopStructural/compare/1.0.91...1.1.0)</small>
+
+### Added
+- Adding placeholder to rotate interpolation support ([3d65e37](https://github.com/Loop3D/LoopStructural/commit/3d65e370949688964944dd6e269b477295547026) by Lachlan Grose).
+- Adding automatic splay fault/abut fault to map2loop model. ([2e2a4df](https://github.com/Loop3D/LoopStructural/commit/2e2a4df48d90e23eb03a04a6fa031869bc35f08e) by Lachlan Grose).
+
+
+## [1.0.91](https://github.com/Loop3D/LoopStructural/releases/tag/1.0.91) - 2021-03-30
+
+<small>[Compare with 1.0.9](https://github.com/Loop3D/LoopStructural/compare/1.0.9...1.0.91)</small>
 
 ### Added
 - Added opacity to isosurface ([a05385d](https://github.com/Loop3D/LoopStructural/commit/a05385da9425012e8d33d2dcbc879f83d5c55a70) by Lachlan Grose).
@@ -145,16 +154,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/Loop3D/LoopStructural/compare/latest...1.0.4)</small>
 
+
+## [latest](https://github.com/Loop3D/LoopStructural/releases/tag/latest) - 2020-09-02
+
+<small>[Compare with 1.0.3](https://github.com/Loop3D/LoopStructural/compare/1.0.3...latest)</small>
+
 ### Added
 - Add documentation ([2de74be](https://github.com/Loop3D/LoopStructural/commit/2de74be7d27d3ca6db95c94468f66251c5356b7a) by Vincent Fazio).
 - Add export to file of 6-face cuboid volumes ([f9e4de9](https://github.com/Loop3D/LoopStructural/commit/f9e4de9e1796f166a2ae9baf3067ccbe541ea151) by Vincent Fazio).
 - Added 'python3-dev' to ubuntu documentation ([77eab16](https://github.com/Loop3D/LoopStructural/commit/77eab16bc1b71f54c9504a3bae4b4eea276ac4c5) by Vincent Fazio).
 - Adding numpy to conda build ([87860c1](https://github.com/Loop3D/LoopStructural/commit/87860c1d983d6cecf82f544690c9b95bc657103c) by Lachlan Grose).
-
-
-## [latest](https://github.com/Loop3D/LoopStructural/releases/tag/latest) - 2020-07-06
-
-<small>[Compare with 1.0.3](https://github.com/Loop3D/LoopStructural/compare/1.0.3...latest)</small>
 
 
 ## [1.0.3](https://github.com/Loop3D/LoopStructural/releases/tag/1.0.3) - 2020-07-06

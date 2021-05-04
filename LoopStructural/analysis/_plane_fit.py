@@ -1,4 +1,6 @@
 import numpy as np
+
+
 def plane_fit(points):
     
     soln = []
@@ -41,3 +43,9 @@ class PlaneFitFeature:
         return -np.inf
     def max(self):
         return np.inf
+    def evaluate_gradient(self,xyz):
+        grad = np.zeros_like(xyz)
+        grad[:,0] = self.soln[None,0]
+        grad[:,1] = self.soln[None,1]
+        grad[:,2] = self.soln[None,2]
+        return grad

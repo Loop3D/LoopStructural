@@ -3,7 +3,7 @@ import numpy as np
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
-def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1e-3,
+def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1,
               epsscale=0.5):
     """
     Calculate the partial derivatives of a function at a set of values. The

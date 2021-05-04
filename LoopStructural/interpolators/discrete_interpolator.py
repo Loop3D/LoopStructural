@@ -374,7 +374,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
 
         lsqrargs = {}
-        lsqrargs['tol'] = 1e-12
+        lsqrargs['btol'] = 1e-12
         lsqrargs['atol'] = 0
         if 'iter_lim' in kwargs:
             logger.info("Using %i maximum iterations" % kwargs['iter_lim'])

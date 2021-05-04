@@ -7,7 +7,7 @@ logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
-use_threads = False
+use_threads = True
 class FaultSegment:
     """
     Class for representing a slip event of a fault

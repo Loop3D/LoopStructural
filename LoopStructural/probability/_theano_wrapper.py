@@ -24,7 +24,10 @@ class LogLikelihood(tt.Op):
         # initialise the LogLikelihoodGradient Op class that calculates the gradient
         # of the our log-likelihood function
         self.loglikegrad = LogLikelihoodGradient(self.loglike)
-
+        self.reps = 1e-3
+        self.reltol = 1e-3
+        self.epsscale = 0.5
+        self.mineps = 1e-9
     def perform(self, node, inputs, outputs):
         # the method that is used when calling the Op
         # (theta,) = inputs
@@ -76,6 +79,10 @@ class LogLikelihoodGradient(tt.Op):
             return self.loglike(values)
 
         # calculate gradients
-        grads = gradients(theta, lnlike)
+        self.reps = 1e-3
+        self.reltol = 1e-3
+        self.epsscale = 0.5
+        self.mineps = 1e-9
+        grads = gradients(theta, lnlike)#,reps=self.reps,mineps=self.mineps,epsscale=self.epsscale,reltol=self.reltol)
 
         outputs[0][0] = grads
