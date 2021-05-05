@@ -35,6 +35,8 @@ def process_map2loop(m2l_directory, flags={}):
     fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv')
     fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
 
+
+    ## read supergroups file
     supergroups = {}
     sgi = 0
     try:
@@ -56,8 +58,24 @@ def process_map2loop(m2l_directory, flags={}):
     except KeyError:
         pass
     
-
+    ## read bounding box
     bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
+
+    ## read fault intersection graph
+    fault_intersection_angles = {}
+    with open(m2l_directory+'/graph/fault-fault-intersection.txt','r') as f:
+        for l in f:
+            fault_id = int(l.split(',')[1])
+            fault_intersection_angles['Fault_{}'.format(fault_id)] = []
+            intersections = l[l.find('{')+1:l.find('}')]
+            intersections = intersections.replace('(','')
+            intersections = intersections.replace(')','')
+            intersection_data = intersections.split(',')
+            i = 0
+            while i < len(intersection_data):
+                fault_intersection_angles['Fault_{}'.format(fault_id)].append(['Fault_{}'.format(int(intersection_data[i])),intersection_data[i+1],float(intersection_data[i+2])])
+                i+=3
+
 
     # process tangent data to be tx, ty, tz
     tangents['tz'] = 0
@@ -199,6 +217,9 @@ def process_map2loop(m2l_directory, flags={}):
         max_displacement[f] = displacements_numpy[
             index, 0]
         downthrow_dir[f] = displacements_numpy[index,[1,3,4]]
+        if displacements_numpy[index,1] == 1.0:
+            logger.info("Estimating downthrow direction using fault intersections")
+            # fault_intersection_angles[f]
         if np.abs(displacements_numpy[index, 1] - displacements_numpy[index, 2]) > 90:
             # fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]=-fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]
             fault_orientations.loc[fault_orientations['formation'] == f, 'DipDirection'] -= 180#displacements_numpy[
@@ -263,7 +284,8 @@ def process_map2loop(m2l_directory, flags={}):
             'bounding_box':bb,
             'strat_va':strat_val,
             'downthrow_dir':downthrow_dir,
-            'fault_graph':fault_graph}
+            'fault_graph':fault_graph,
+            'fault_intersection_angles':fault_intersection_angles}
 
 def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
     """[summary]
@@ -306,15 +328,15 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
             if model.data[model.data['feature_name'] == f].shape[0] == 0:
                 continue
             fault_id = f
-        #     overprints = []
-        #     try:
-        #         overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
-        #         for i in overprint_id:
-        #             overprints.append(i)
-        #         logger.info('Adding fault overprints {}'.format(f))
-        #     except:
-        #         logger.info('No entry for %s in fault_fault_relations' % f)
-        # #     continue
+            overprints = []
+            try:
+                overprint_id = m2l_data['fault_fault'][m2l_data['fault_fault'][fault_id] == 1]['fault_id'].to_numpy()
+                for i in overprint_id:
+                    overprints.append(i)
+                logger.info('Adding fault overprints {}'.format(f))
+            except:
+                logger.info('No entry for %s in fault_fault_relations' % f)
+        #     continue
             fault_center = m2l_data['stratigraphic_column']['faults'][f]['FaultCenter']
             fault_influence = m2l_data['stratigraphic_column']['faults'][f]['InfluenceDistance']
             fault_extent = m2l_data['stratigraphic_column']['faults'][f]['HorizontalRadius']
@@ -332,11 +354,24 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
                                                     **fault_params,
                                                     )
                         )
-    # for e in networkx.edge_bfs(m2l_data['fault_graph']):
-    #     model[e[1]].builder.add_fault(model[e[0]])
-    #     model[e[1]][0].interpolator.reset()
-    #     model[e[1]][1].interpolator.reset()
-    #     model[e[1]][2].interpolator.reset()
+    for f in m2l_data['fault_intersection_angles']:
+        if f in m2l_data['max_displacement'].keys():
+            f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+            for intersection in m2l_data['fault_intersection_angles'][f]:
+                if intersection[0] in m2l_data['max_displacement'].keys():
+                    f2_norm = m2l_data['stratigraphic_column']['faults'][intersection[0]]['FaultNorm']
+                    if intersection[2] < 30 and np.dot(f1_norm,f2_norm)>0:
+                        logger.info('Adding splay {} to {}'.format(intersection[0],f))
+                        if model[f] is None:
+                            logger.error('Fault {} does not exist, cannot be added as splay')
+                        elif model[intersection[0]] is None:
+                            logger.error('Fault {} does not exist')
+                        else:
+                            model[intersection[0]].builder.add_splay(model[f])
+
+                    else:
+                        logger.info('Adding abut {} to {}'.format(intersection[0],f))
+                        model[intersection[0]].add_abutting_fault(model[f])
 
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []

@@ -374,7 +374,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
 
         lsqrargs = {}
-        lsqrargs['tol'] = 1e-12
+        lsqrargs['btol'] = 1e-12
         lsqrargs['atol'] = 0
         if 'iter_lim' in kwargs:
             logger.info("Using %i maximum iterations" % kwargs['iter_lim'])
@@ -494,7 +494,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         logger.info("Solving interpolation for {}".format(self.propertyname))
-
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         damp = True

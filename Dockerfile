@@ -25,6 +25,10 @@ RUN adduser --disabled-password \
     --uid ${NB_UID} \
     ${NB_USER}
 WORKDIR ${HOME}
+USER ${NB_USER}
+
+RUN mkdir notebooks
+RUN mkdir LoopStructural
 
 USER root
 RUN chown -R ${NB_UID} ${HOME}
@@ -39,7 +43,6 @@ ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
-
 USER ${NB_USER}
 
 RUN mkdir notebooks

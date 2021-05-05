@@ -7,6 +7,7 @@ class BaseStructuredSupport:
                  origin=np.zeros(3),
                  nsteps=np.array([10, 10, 10]),
                  step_vector=np.ones(3),
+                 rotation_xy=None
                  ):
         """
 
@@ -25,6 +26,13 @@ class BaseStructuredSupport:
         self._step_vector = step_vector
         self._origin = np.array(origin)  
         self.supporttype='Base'
+        self.rotation_xy = None
+        if rotation_xy is not None:
+            self.rotation_xy = np.zeros((3,3))
+            self.rotation_xy[0,0] = np.cos(np.deg2rad(rotation_xy))
+            self.rotation_xy[0,1] = -np.sin(np.deg2rad(rotation_xy))
+            self.rotation_xy[1,0] = np.sin(np.deg2rad(rotation_xy))
+            self.rotation_xy[1,1] = np.cos(np.deg2rad(rotation_xy))
 
     @property
     def nsteps(self):

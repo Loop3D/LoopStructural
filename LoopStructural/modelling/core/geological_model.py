@@ -161,7 +161,8 @@ class GeologicalModel:
                                                      'rescale': rescale,
                                                      'nsteps': nsteps,
                                                      'reuse_supports': reuse_supports}}
-        
+        self.tol = 1e-10*np.max(self.bounding_box[1,:]-self.bounding_box[0,:])
+
     def __str__(self):
         return self._str
 
@@ -434,7 +435,7 @@ class GeologicalModel:
             if featuretype == 'folded_strati':
                 self.create_and_add_folded_foliation(f)
 
-    def get_interpolator(self, interpolatortype='PLI', nelements=1e5,
+    def get_interpolator(self, interpolatortype='FDI', nelements=1e4,
                          buffer=0.2, element_volume = None, **kwargs):
         """
         Returns an interpolator given the arguments, also constructs a
@@ -552,7 +553,7 @@ class GeologicalModel:
         logger.warning("No interpolator")
         return interpolator
 
-    def create_and_add_foliation(self, series_surface_data, **kwargs):
+    def create_and_add_foliation(self, series_surface_data, tol = None, **kwargs):
         """
         Parameters
         ----------
@@ -567,6 +568,9 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
+        # if tol is not specified use the model default
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append({'feature_type': 'foliation', 'feature_name': series_surface_data, **kwargs})
         interpolator = self.get_interpolator(**kwargs)
         series_builder = GeologicalFeatureInterpolator(interpolator,
@@ -584,6 +588,7 @@ class GeologicalModel:
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
+        series_builder.build_arguments['tol'] = tol
         series_feature.type = 'series'
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
@@ -1105,6 +1110,7 @@ class GeologicalModel:
     def create_and_add_fault(self, 
                             fault_surface_data, 
                             displacement, 
+                            tol = None,
                             fault_slip_vector=None,
                             fault_center = None, 
                             fault_extent = None, 
@@ -1131,6 +1137,8 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append(
             {'feature_type': 'fault', 'feature_name': fault_surface_data, 'displacement': displacement, **kwargs})
         if 'data_region' in kwargs:
@@ -1179,23 +1187,10 @@ class GeologicalModel:
             fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
         if 'splay' in kwargs and 'splayregion' in kwargs:
             fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
-        # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
-        # check if this fault overprint any existing faults exist in the stack
-        overprinted = kwargs.get('overprints', [])
-        overprinted_faults = []
-        for o in overprinted:
-            try:
-                overprinted_faults.append(self.features[self.feature_name_index[o]])
-            except KeyError:
-                logger.warning("{} could not be added to overprint {} \
-                because it does not exist".format(o,fault_surface_data))
-        self._add_faults(fault_frame_builder[0],overprinted_faults)
-        self._add_faults(fault_frame_builder[1],overprinted_faults)
-        self._add_faults(fault_frame_builder[2],overprinted_faults)
 
+        kwargs['tol'] = tol
         fault_frame = fault_frame_builder.build(**kwargs)
-        if 'abut' in kwargs:
-            fault_frame[0].add_region(lambda pos: kwargs['abut'].evaluate(pos))
+        
 
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
                              faultfunction=faultfunction,
