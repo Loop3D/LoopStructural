@@ -63,64 +63,9 @@ class StructuredGrid(BaseStructuredSupport):
             self.step_vector[None, 2] * iz
         return np.array([x, y, z]).T
 
-    def position_to_cell_index(self, pos):
-        """[summary]
 
-        [extended_summary]
 
-        Parameters
-        ----------
-        pos : [type]
-            [description]
 
-        Returns
-        -------
-        [type]
-            [description]
-        """
-
-        pos = self.check_position(pos)
-
-        ix = pos[:, 0] - self.origin[None, 0]
-        iy = pos[:, 1] - self.origin[None, 1]
-        iz = pos[:, 2] - self.origin[None, 2]
-        ix = ix // self.step_vector[None, 0]
-        iy = iy // self.step_vector[None, 1]
-        iz = iz // self.step_vector[None, 2]
-        return ix.astype(int), iy.astype(int), iz.astype(int)
-
-    def inside(self, pos):
-
-        # check whether point is inside box
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= pos[:, i] < self.origin[None, i] + \
-                      self.step_vector[None, i] * self.nsteps_cells[None, i]
-        return inside
-
-    def check_position(self, pos):
-        """[summary]
-
-        [extended_summary]
-
-        Parameters
-        ----------
-        pos : [type]
-            [description]
-
-        Returns
-        -------
-        [type]
-            [description]
-        """
-
-        if len(pos.shape) == 1:
-            pos = np.array([pos])
-        if len(pos.shape) != 2:
-            print("Position array needs to be a list of points or a point")
-            return False
-        return pos
 
     def trilinear(self, x, y, z):
         """
@@ -158,7 +103,7 @@ class StructuredGrid(BaseStructuredSupport):
 
         """
         # TODO check if inside mesh
-
+        pos = self.rotate(pos)
         # calculate local coordinates for positions
         local_x = ((pos[:, 0] - self.origin[None, 0]) % self.step_vector[
             None, 0]) / self.step_vector[None, 0]

@@ -507,25 +507,6 @@ class TetMesh:
             np.dstack([cornersx, cornersy, cornersz]).T)
         return globalidx, inside
 
-    def position_to_cell_index(self, pos):
-        """
-        Find which cell a point is in
-
-        Parameters
-        ----------
-        pos
-
-        Returns
-        -------
-
-        """
-        ix = pos[:, 0] - self.origin[None, 0]
-        iy = pos[:, 1] - self.origin[None, 1]
-        iz = pos[:, 2] - self.origin[None, 2]
-        ix = ix // self.step_vector[None, 0]
-        iy = iy // self.step_vector[None, 1]
-        iz = iz // self.step_vector[None, 2]
-        return ix.astype(int), iy.astype(int), iz.astype(int)
 
     def node_indexes_to_position(self, xindex, yindex, zindex):
         """

@@ -1184,7 +1184,8 @@ class GeologicalModel:
             fault_frame_builder.origin = self.bounding_box[0,:]
             fault_frame_builder.maximum = self.bounding_box[1,:]
         if 'force_mesh_geometry' not in kwargs:
-            fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
+            fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.4),0)#,
+                                            #np.rad2deg(np.arccos(np.dot(fault_normal_vector[:2],np.array([0,1])))))
         if 'splay' in kwargs and 'splayregion' in kwargs:
             fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
 

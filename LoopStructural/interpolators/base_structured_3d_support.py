@@ -26,13 +26,11 @@ class BaseStructuredSupport:
         self._step_vector = step_vector
         self._origin = np.array(origin)  
         self.supporttype='Base'
-        self.rotation_xy = None
-        if rotation_xy is not None:
-            self.rotation_xy = np.zeros((3,3))
-            self.rotation_xy[0,0] = np.cos(np.deg2rad(rotation_xy))
-            self.rotation_xy[0,1] = -np.sin(np.deg2rad(rotation_xy))
-            self.rotation_xy[1,0] = np.sin(np.deg2rad(rotation_xy))
-            self.rotation_xy[1,1] = np.cos(np.deg2rad(rotation_xy))
+        self._rotation_xy = np.zeros((3,3))
+        self._rotation_xy[0,0] = 1
+        self._rotation_xy[1,1] = 1
+        self._rotation_xy[2,2] = 1
+        self.rotation_xy = rotation_xy
 
     @property
     def nsteps(self):
@@ -44,7 +42,19 @@ class BaseStructuredSupport:
         self._step_vector/=change_factor
         self._nsteps = nsteps
         
+    @property
+    def rotation_xy(self):
+        return self._rotation_xy 
 
+    @rotation_xy.setter
+    def rotation_xy(self,rotation_xy):
+        if rotation_xy is not None:
+            self._rotation_xy[:,:] = 0
+            self._rotation_xy[0,0] = np.cos(np.deg2rad(rotation_xy))
+            self._rotation_xy[0,1] = -np.sin(np.deg2rad(rotation_xy))
+            self._rotation_xy[1,0] = np.sin(np.deg2rad(rotation_xy))
+            self._rotation_xy[1,1] = np.cos(np.deg2rad(rotation_xy))
+            self._rotation_xy[2,2] = 1. #make sure rotation around z vector
     @property
     def step_vector(self):
         return self._step_vector
@@ -107,3 +117,68 @@ class BaseStructuredSupport:
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         return np.array([xx.flatten(order='F'), yy.flatten(order='F'),
                                zz.flatten(order='F')]).T
+
+    def rotate(self,pos):
+        """
+        """
+        return np.einsum('ijk,ik->ij', self.rotation_xy[None,:,:], pos)
+
+    def position_to_cell_index(self, pos):
+        """[summary]
+
+        [extended_summary]
+
+        Parameters
+        ----------
+        pos : [type]
+            [description]
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
+
+        pos = self.rotate(pos)
+        pos = self.check_position(pos)
+
+        ix = pos[:, 0] - self.origin[None, 0]
+        iy = pos[:, 1] - self.origin[None, 1]
+        iz = pos[:, 2] - self.origin[None, 2]
+        ix = ix // self.step_vector[None, 0]
+        iy = iy // self.step_vector[None, 1]
+        iz = iz // self.step_vector[None, 2]
+        return ix.astype(int), iy.astype(int), iz.astype(int)
+
+    def inside(self, pos):
+        pos = self.rotate(pos)
+        # check whether point is inside box
+        inside = np.ones(pos.shape[0]).astype(bool)
+        for i in range(3):
+            inside *= pos[:, i] > self.origin[None, i]
+            inside *= pos[:, i] < self.origin[None, i] + \
+                      self.step_vector[None, i] * self.nsteps_cells[None, i]
+        return inside
+
+    def check_position(self, pos):
+        """[summary]
+
+        [extended_summary]
+
+        Parameters
+        ----------
+        pos : [type]
+            [description]
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
+
+        if len(pos.shape) == 1:
+            pos = np.array([pos])
+        if len(pos.shape) != 2:
+            print("Position array needs to be a list of points or a point")
+            return False
+        return pos
