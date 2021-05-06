@@ -60,6 +60,7 @@ class GeologicalFeatureInterpolator:
                                  fold = self.fold
                                  )
         self._orthogonal_features = {}
+        self._equality_constraints = {}
     @property
     def feature(self):
         return self._feature
@@ -257,6 +258,28 @@ class GeologicalFeatureInterpolator:
                 w=w,
                 B=B
             )
+    def add_equality_constraints(self,feature, region):
+
+        self._equality_constraints[feature.name] = [feature,region]
+        self._up_to_date = False
+
+    def install_equality_constraints(self):
+        for e in self._equality_constraints.values():
+            # assume all parts of structural frame have the same support
+            support = self.builders[0].interpolator.support
+            
+            # work out the values of the nodes where we want hard
+            # constraints
+            idc = np.arange(0, support.n_nodes)[
+                e[1](support.nodes)]
+            val = e[0].evaluate_value(
+                support.nodes[
+                e[1](support.nodes), :])
+            mask = ~np.isnan(val)
+            self.__getitem__(0).interpolator.add_equality_constraints(
+                idc[mask], val[mask])
+
+
     def get_value_constraints(self):
         """
         Get the value constraints for this geological feature
@@ -340,7 +363,7 @@ class GeologicalFeatureInterpolator:
         """
         return self.data.loc[:, xyz_names()].to_numpy()
         
-    def set_interpolation_geometry(self,origin,maximum):
+    def set_interpolation_geometry(self,origin,maximum, rotation=None):
         """Update the interpolation support geometry to new bounding box
 
         Parameters
@@ -354,8 +377,7 @@ class GeologicalFeatureInterpolator:
         logger.info("Setting mesh maximum: {} {} {}".format(maximum[0],maximum[1],maximum[2]))
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
-
-
+        self.interpolator.support.rotation_xy = rotation
         self._up_to_date = False
 
     def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):
@@ -409,6 +431,7 @@ class GeologicalFeatureInterpolator:
                 # try adding very small cg
                 kwargs['cgw'] = 0.0
         self.install_gradient_constraint()
+        self.install_equality_constraints()
         self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
         self._up_to_date = True

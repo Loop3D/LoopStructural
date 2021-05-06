@@ -113,7 +113,7 @@ class FaultBuilder(StructuralFrameBuilder):
         self.add_data_from_data_frame(data)
         self.update_geometry(data[['X','Y','Z']].to_numpy())
 
-    def set_mesh_geometry(self,buffer):
+    def set_mesh_geometry(self,buffer,rotation):
         """set the mesh geometry
 
         Parameters
@@ -121,7 +121,7 @@ class FaultBuilder(StructuralFrameBuilder):
         buffer : double 
             percentage of length to add to edges
         """
-        length = self.maximum-self.origin
+        length = np.max(self.maximum-self.origin)
         # origin = self.builders[0].interpolator.support.origin
         # maximum = self.builders[0].interpolator.support.maximum#set_interpolation_geometry
         # if origin[2]>self.origin[2]:
@@ -131,37 +131,28 @@ class FaultBuilder(StructuralFrameBuilder):
         # self.builders[0].set_interpolation_geometry(origin,maximum)
         # for builder in self.builders:
         # all three coordinates share the same support
-        self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum+length*buffer)
+        self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum+length*buffer,rotation)
             
     def add_splay(self,splay,splayregion=None):
-        # assume all parts of structural frame have the same support
         if splayregion is None:
-            pts = self.builders[0].data[['X','Y','Z','val']].to_numpy()#get_value_constraints()
-            pts = pts[pts[:,3]==0,:]
-            # check whether the fault is on the hanging wall or footwall of splay fault
+            def splayregion(xyz):
+                pts = self.builders[0].data[['X','Y','Z','val']].to_numpy()#get_value_constraints()
+                pts = pts[pts[:,3]==0,:]
+                # check whether the fault is on the hanging wall or footwall of splay fault
 
-            ext_field = splay[2].evaluate_value(pts)
-            surf_field = splay[0].evaluate_value(pts)
-            intersection_value = ext_field[np.nanargmin(np.abs(surf_field))]
-            if np.nanmedian(ext_field) > intersection_value:
-                splayregion = lambda xyz : splay[2].evaluate_value(xyz) < intersection_value
-            elif np.nanmedian(ext_field) < intersection_value:
-                splayregion = lambda xyz : splay[2].evaluate_value(xyz) > intersection_value
-            else:
-                logger.warning('Not adding splay, cannot identify splay overlap region for {} and {}'.format(self.name,splay.name))
-                return
-        support = self.builders[0].interpolator.support
+                ext_field = splay[2].evaluate_value(pts[:,:3])
+                surf_field = splay[0].evaluate_value(pts[:,:3])
+                intersection_value = ext_field[np.nanargmin(np.abs(surf_field))]
+                if np.nanmedian(ext_field) > intersection_value:
+                    return splay[2].evaluate_value(xyz) < intersection_value
+                elif np.nanmedian(ext_field) < intersection_value:
+                    return splay[2].evaluate_value(xyz) > intersection_value
+                else:
+                    logger.warning('Not adding splay, cannot identify splay overlap region for {} and {}'.format(self.name,splay.name))
+                    return np.zeros(pts.shape[0],dtype='bool')
+                    
+        self.builders[0].add_equality_constraints(splay, splayregion)
         
-        # work out the values of the nodes where we want hard
-        # constraints
-        idc = np.arange(0, support.n_nodes)[
-            splayregion(support.nodes)]
-        val = splay[0].evaluate_value(
-            support.nodes[
-            splayregion(support.nodes), :])
-        mask = ~np.isnan(val)
-        self.__getitem__(0).interpolator.add_equality_constraints(
-            idc[mask], val[mask])
     
     
 

@@ -326,14 +326,16 @@ class FaultSegment:
     def add_abutting_fault(self,abutting_fault_feature):
         pts = self.faultframe[0].builder.data[['X','Y','Z']].to_numpy()#get_value_constraints()
         # check whether the fault is on the hanging wall or footwall of abutting fault
-        abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
-        if abut_value > 0:
-            for i in range(1):
-                ## adding the nan check avoids truncating the fault at the edge of the abutting fault bounding box.
-                ## it makes the assumption that the abutted fault is not drawn across the abutting fault... but this should be ok
-                self.faultframe[i].add_region(lambda pos: np.logical_or(abutting_fault_feature.evaluate_value(pos) > 0,
-                                                                        np.isnan(abutting_fault_feature.evaluate_value(pos))))
-        if abut_value < 0:
-            for i in range(1):
-                self.faultframe[i].add_region(lambda pos: np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0, 
-                                                                        np.isnan(abutting_fault_feature.evaluate_value(pos))))
+        
+        def abutting_region(pos):
+            abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
+            if abut_value > 0:
+                 ## adding the nan check avoids truncating the fault at the edge of the abutting fault bounding box.
+                    ## it makes the assumption that the abutted fault is not drawn across the abutting fault... but this should be ok
+                return np.logical_or(abutting_fault_feature.evaluate_value(pos) > 0, 
+                                        np.isnan(abutting_fault_feature.evaluate_value(pos)))
+            if abut_value < 0:
+                return np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0, 
+                                        np.isnan(abutting_fault_feature.evaluate_value(pos)))
+
+        self.faultframe[0].add_region(abutting_region)
