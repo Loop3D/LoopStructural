@@ -555,16 +555,29 @@ class LavaVuModelViewer:
             grid = f.apply_to_points(grid)
         self.add_value_data(self.model.rescale(grid,inplace=False),grid[:,2],name='Regular grid after faults',pointsize=10,)
 
-    def add_model_surfaces(self, strati=True, faults = True, cmap=None, fault_colour='black',**kwargs):
+    def add_model_surfaces(self, 
+                           strati=True, 
+                           faults = True, 
+                           cmap=None, 
+                           fault_colour='black',
+                           displacement_cmap=None,
+                           **kwargs):
         """Add surfaces for all of the interfaces in the model
 
 
         Parameters
         ----------
+        strati : bool, optional
+            whether to draw stratigraphy
         faults : bool, optional
             whether to draw faults, by default True
         cmap : string
             matplotlib cmap
+        fault_colour : string
+            colour string for faults
+        displacement_cmap : string/None
+            if string is specified uses this cmap to colour
+            faults by displacement
         Notes
         ------
         Other parameters are passed to self.add_isosurface() 
@@ -576,6 +589,7 @@ class LavaVuModelViewer:
         except ImportError:
             logger.warning("Cannot add model surfaces without matplotlib \n")
             return
+        from ..modelling.features import LambdaGeologicalFeature
         import time
         from tqdm.auto import tqdm
         start = time.time()
@@ -644,7 +658,13 @@ class LavaVuModelViewer:
                         if f.name in self.model.stratigraphic_column['faults']:
                             fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',['red'])
                         pbar.set_description('Isosurfacing {}'.format(f.name))
-
+                        if displacement_cmap is not None:
+                            fault_colour=[None]
+                            kwargs['cmap']=displacement_cmap
+                            kwargs['vmin'] = np.min(self.model.faults_displacement_magnitude)
+                            kwargs['vmax'] = np.max(self.model.faults_displacement_magnitude)
+                            kwargs['paint_with'] = LambdaGeologicalFeature(lambda xyz: np.zeros(xyz.shape[0])+f.displacement)
+                            #  = feature
                         region = kwargs.pop('region',None) 
                         self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name+name_suffix,**kwargs)
                         pbar.update(1)

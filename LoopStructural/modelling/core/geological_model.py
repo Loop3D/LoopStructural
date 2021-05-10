@@ -249,7 +249,14 @@ class GeologicalModel:
             if f.type == 'series':
                 series.append(f)
         return series
-        
+    
+    @property
+    def faults_displacement_magnitude(self):
+        displacements = []
+        for f in self.faults:
+            displacements.append(f.displacement)
+        return np.array(displacements)
+
     def feature_names(self):
         return self.feature_name_index.keys()
 
