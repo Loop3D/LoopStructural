@@ -61,7 +61,7 @@ class BaseStructuredSupport:
     
     @step_vector.setter
     def step_vector(self,step_vector):
-        change_factor = step_vector/self.step_vector
+        change_factor = step_vector/self._step_vector
         newsteps = self._nsteps/change_factor
         self._nsteps =np.ceil(newsteps).astype(int)
         self._step_vector = step_vector

@@ -379,7 +379,9 @@ class GeologicalFeatureInterpolator:
         self.interpolator.support.maximum = maximum
         self.interpolator.support.rotation_xy = rotation
         self._up_to_date = False
-
+        while self.interpolator.nx < 100:
+            self.interpolator.support.step_vector=self.interpolator.support.step_vector*0.9
+            
     def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
