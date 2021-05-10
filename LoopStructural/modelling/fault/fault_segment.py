@@ -150,8 +150,9 @@ class FaultSegment:
             boolean array true if on hanging wall, false if on footwall
 
         """
-
-        return self.faultframe.features[0].evaluate_value(locations) > 0
+        v = self.faultframe.features[0].evaluate_value(locations)
+        v[~np.isnan(v)] = v[~np.isnan(v)] > 0
+        return v
 
     def inside_volume(self,locations):
         v = self.faultframe.evaluate_value(locations)

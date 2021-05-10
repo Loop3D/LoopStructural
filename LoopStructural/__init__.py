@@ -10,11 +10,6 @@ import logging
 from logging.config import dictConfig
 import tempfile
 from pathlib import Path
-#set up logging
-# temp_file = tempfile.mkdtemp()
-# if temp_file:
-#     # temp_file = tempfile.tempdir+Path('/default-loop-structural-logfile.log')
-#     log_to_file(temp_file)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s ~ %(name)-12s ~ %(levelname)-10s ~ %(message)s')
 ch.setFormatter(formatter)
