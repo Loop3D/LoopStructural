@@ -354,25 +354,41 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
                                                     **fault_params,
                                                     )
                         )
-    for f in m2l_data['fault_intersection_angles']:
-        if f in m2l_data['max_displacement'].keys():
-            f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
-            for intersection in m2l_data['fault_intersection_angles'][f]:
-                if intersection[0] in m2l_data['max_displacement'].keys():
-                    f2_norm = m2l_data['stratigraphic_column']['faults'][intersection[0]]['FaultNorm']
-                    if intersection[2] < 30 and np.dot(f1_norm,f2_norm)>0:
-                        logger.info('Adding splay {} to {}'.format(intersection[0],f))
-                        if model[f] is None:
-                            logger.error('Fault {} does not exist, cannot be added as splay')
-                        elif model[intersection[0]] is None:
-                            logger.error('Fault {} does not exist')
-                        else:
-                            model[intersection[0]].builder.add_splay(model[f])
+    # for f in m2l_data['fault_intersection_angles']:
+    #     if f in m2l_data['max_displacement'].keys():
+    #         f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+    #         for intersection in m2l_data['fault_intersection_angles'][f]:
+    #             if intersection[0] in m2l_data['max_displacement'].keys():
+    #                 f2_norm = m2l_data['stratigraphic_column']['faults'][intersection[0]]['FaultNorm']
+    #                 if intersection[2] < 30 and np.dot(f1_norm,f2_norm)>0:
+    #                     logger.info('Adding splay {} to {}'.format(intersection[0],f))
+    #                     if model[f] is None:
+    #                         logger.error('Fault {} does not exist, cannot be added as splay')
+    #                     elif model[intersection[0]] is None:
+    #                         logger.error('Fault {} does not exist')
+    #                     else:
+    #                         model[intersection[0]].builder.add_splay(model[f])
 
-                    else:
-                        logger.info('Adding abut {} to {}'.format(intersection[0],f))
-                        model[intersection[0]].add_abutting_fault(model[f])
-
+    #                 else:
+    #                     logger.info('Adding abut {} to {}'.format(intersection[0],f))
+    #                     model[intersection[0]].add_abutting_fault(model[f])
+    faults = m2l_data['fault_graph']
+    for f in faults.nodes:
+        f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+        for e in faults.edges(f):
+            data = faults.get_edge_data(*e)
+            f2_norm =  m2l_data['stratigraphic_column']['faults'][e[1]]['FaultNorm']
+            if float(data['angle']) < 30 and np.dot(f1_norm,f2_norm)>0:
+                if model[f] is None:
+                    logger.error('Fault {} does not exist, cannot be added as splay')
+                elif model[e[1]] is None:
+                    logger.error('Fault {} does not exist')
+                else:
+                    region = model[e[1]].builder.add_splay(model[f])
+                    model[e[1]].splay[model[f].name] = region
+            else:
+                    logger.info('Adding abut {} to {}'.format(e[1],f))
+                    model[e[1]].add_abutting_fault(model[f])
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
     for i in np.sort(m2l_data['groups']['group number'].unique()):
