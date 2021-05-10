@@ -48,7 +48,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         self.vol = grid.step_vector[0] * grid.step_vector[1] * \
                    grid.step_vector[2]
-
+        self.type = 'FDI'
+        
     def _setup_interpolator(self, **kwargs):
         """
 

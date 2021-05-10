@@ -39,7 +39,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                       'gpw': 1., 'tpw': 1., 'ipw': 1.}
         self.__str = 'Piecewise Linear Interpolator with %i unknowns. \n' % \
                      self.nx
-
+        self.type = 'PLI'
+        
     def __str__(self):
         return self.__str
 
