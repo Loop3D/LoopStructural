@@ -12,15 +12,16 @@ jobs:
           auto-activate-base: true
           installer-url: https://github.com/conda-forge/miniforge/releases/download/4.10.1-0/Miniforge-pypy3-4.10.1-0-Linux-x86_64.sh
           channels: anaconda,conda-forge,loop3d,conda-forge/label/cf202003
-          python-version: 3.7
+          python-version: 3.9
       - name: Building and uploading m2l pkg for linux, osx and windows
         shell: bash -l {0}
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
             conda install cython numpy scipy matplotlib -y
+            conda install -c conda-forge theano -y
             pip install lavavu-osmesa 
-            pip install .
+            python setup.py install build_ext --inplace
             cd docs
             pip install -r requirements.txt
             make html

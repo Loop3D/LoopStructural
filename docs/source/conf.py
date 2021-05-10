@@ -89,6 +89,6 @@ sphinx_gallery_conf = {
     
 }
 
-def setup(app):
-    app.add_stylesheet('custom.css')
+# def setup(app):
+#     app.add_stylesheet('custom.css')
 
