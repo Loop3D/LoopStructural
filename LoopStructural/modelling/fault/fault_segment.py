@@ -47,7 +47,19 @@ class FaultSegment:
             self.displacementfeature = FaultDisplacementFeature(
                 self.faultframe, self.faultfunction, name = self.name)
         self.builder = None
-    
+        self.splay = {}
+        self.abut = {}
+
+    def __str__(self):
+        _str = 'FaultSegment - {} \n'.format(self.name)
+        _str += 'Interpolator: {} \n'.format(self.faultframe[0].interpolator.type)
+        _str += 'Degrees of freedom: {}\n'.format(self.faultframe[0].interpolator.nx)
+        for name in self.splay.keys():
+            _str += 'Splays from {}\n'.format(name)
+        for name in self.abut.keys():
+            _str += 'Abuts {}\n'.format(name)
+        return _str
+            
     def __getitem__(self, item):
         """
 
@@ -228,7 +240,7 @@ class FaultSegment:
         d[gx_mask] = 1.
         if self.faultfunction is not None:
             d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
-        return d
+        return d*self.displacement
     def apply_to_points(self, points):
         """
         Unfault the array of points
@@ -337,5 +349,5 @@ class FaultSegment:
             if abut_value < 0:
                 return np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0, 
                                         np.isnan(abutting_fault_feature.evaluate_value(pos)))
-
+        self.abut[abutting_fault_feature.name] = abutting_region
         self.faultframe[0].add_region(abutting_region)

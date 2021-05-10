@@ -83,16 +83,16 @@ class FaultBuilder(StructuralFrameBuilder):
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0]
             if horizontal_radius is not None:
-                fault_tips[0,:] = fault_center[:3]+strike_vector*0.1*horizontal_radius
-                fault_tips[1,:] = fault_center[:3]-strike_vector*0.1*horizontal_radius
+                fault_tips[0,:] = fault_center[:3]+strike_vector*0.5*horizontal_radius
+                fault_tips[1,:] = fault_center[:3]-strike_vector*0.5*horizontal_radius
                 self.update_geometry(fault_tips)
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_center[0],fault_center[1],fault_center[2],self.name,0,2]
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-.1,2]
+                    [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-.5,2]
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.1,2]
-                # strike_vector /= horizontal_radius
+                    [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.5,2]
+                strike_vector /= horizontal_radius
             if vertical_radius is not None:
                 fault_depth[0,:] = fault_center[:3]+slip_vector*vertical_radius
                 fault_depth[1,:] = fault_center[:3]-slip_vector*vertical_radius
@@ -143,16 +143,21 @@ class FaultBuilder(StructuralFrameBuilder):
                 ext_field = splay[2].evaluate_value(pts[:,:3])
                 surf_field = splay[0].evaluate_value(pts[:,:3])
                 intersection_value = ext_field[np.nanargmin(np.abs(surf_field))]
+                mask = np.zeros(xyz.shape[0],dtype='bool')
+                val = splay[2].evaluate_value(xyz)
+
                 if np.nanmedian(ext_field) > intersection_value:
-                    return splay[2].evaluate_value(xyz) < intersection_value
+                    mask[~np.isnan(val)] = val[~np.isnan(val)] < intersection_value
+                    return mask
                 elif np.nanmedian(ext_field) < intersection_value:
-                    return splay[2].evaluate_value(xyz) > intersection_value
+                    mask[~np.isnan(val)] = val[~np.isnan(val)] > intersection_value
+                    return mask
                 else:
                     logger.warning('Not adding splay, cannot identify splay overlap region for {} and {}'.format(self.name,splay.name))
-                    return np.zeros(pts.shape[0],dtype='bool')
+                    return mask
                     
         self.builders[0].add_equality_constraints(splay, splayregion)
-        
+        return splayregion
     
     
 
