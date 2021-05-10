@@ -6,4 +6,4 @@ Various tools for analysing loopstructural models, including calculating fault i
 """
 from ._fault_displacement import displacement_missfit
 from ._fault_intersection import calculate_fault_intersections
-from ._toplogy import calculate_fault_topology_matrix
+from ._topology import calculate_fault_topology_matrix

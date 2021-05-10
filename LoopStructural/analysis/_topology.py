@@ -1,4 +1,5 @@
-def calculate_fault_topology_matrix(self, model, xyz):
+import numpy as np
+def calculate_fault_topology_matrix(model, xyz=None):
     """Calculate fault ellipsoid and hw/fw
 
     Parameters
@@ -13,6 +14,9 @@ def calculate_fault_topology_matrix(self, model, xyz):
     topology_matrix : np.array
         matrix containing nan (outside), 0 (footwall), 1 (hangingwall)
     """
-    topology_matrix = np.zeros((xyz.shape,len(model.faults)),dtype=int)
+    if xyz is None:
+        xyz = model.regular_grid(rescale=False,shuffle=False)
+    topology_matrix = np.zeros((xyz.shape[0],len(model.faults)),dtype=int)
     for i, f in enumerate(model.faults):
-        topology_matrix[:,i].evaluate(xyz)
+        topology_matrix[:,i] = f.evaluate(xyz)
+    return topology_matrix
