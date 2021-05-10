@@ -54,6 +54,7 @@ class FaultSegment:
         _str = 'FaultSegment - {} \n'.format(self.name)
         _str += 'Interpolator: {} \n'.format(self.faultframe[0].interpolator.type)
         _str += 'Degrees of freedom: {}\n'.format(self.faultframe[0].interpolator.nx)
+        _str += 'Displacement magnitude: {}\n'.format(self.displacement)
         for name in self.splay.keys():
             _str += 'Splays from {}\n'.format(name)
         for name in self.abut.keys():
