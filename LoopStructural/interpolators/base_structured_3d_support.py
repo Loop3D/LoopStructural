@@ -22,8 +22,8 @@ class BaseStructuredSupport:
         # we use property decorators to update these when different parts of
         # the geometry need to change
         # inisialise the private attributes
-        self._nsteps = nsteps
-        self._step_vector = step_vector
+        self._nsteps = np.array(nsteps)
+        self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)  
         self.supporttype='Base'
         self._rotation_xy = np.zeros((3,3))

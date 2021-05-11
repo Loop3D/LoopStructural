@@ -5,26 +5,19 @@ import logging
 
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
+from .base_structured_3d_support import BaseStructuredSupport
 
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
-class TetMesh:
+class TetMesh(BaseStructuredSupport):
     """
 
     """
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):
-        self.origin = np.array(origin)
-        self.step_vector = np.array(step_vector)
-        self.nsteps = np.array(nsteps)
-        self.n_nodes = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
+        BaseStructuredSupport.__init__(self,origin,nsteps,step_vector)
 
-        self.nsteps_cells = self.nsteps - 1
-        self.n_cell_x = self.nsteps[0] - 1
-        self.n_cell_y = self.nsteps[1] - 1
-        self.n_cell_z = self.nsteps[2] - 1
-        self.n_cells = self.n_cell_x * self.n_cell_y * self.n_cell_z
-        self.maximum = origin+self.nsteps*self.step_vector
+        
         self.tetra_mask_even = np.array([
             [7,1,2,4],
             [6,2,4,7],
@@ -40,27 +33,17 @@ class TetMesh:
             [2,0,3,6],
             [1,0,3,5]
         ])
-        self.ntetra = self.n_cells * 5
-        self.n_elements = self.ntetra
+        
         self.cg = None
-
     @property
-    def nodes(self):
-        """
-        Gets the nodes of the mesh as a property rather than using a function, accessible as a property! Python magic!
+    def ntetra(self):
+        return np.product(self.nsteps_cells) * 5
+    
+    @property
+    def n_elements(self):
+        return self.ntetra
 
-        Returns
-        -------
-        nodes : np.array((N,3))
-            Fortran ordered
-        """
-        max = self.origin + self.nsteps_cells * self.step_vector
-        x = np.linspace(self.origin[0], max[0], self.nsteps[0])
-        y = np.linspace(self.origin[1], max[1], self.nsteps[1])
-        z = np.linspace(self.origin[2], max[2], self.nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        return np.array([xx.flatten(order='F'), yy.flatten(order='F'),
-                               zz.flatten(order='F')]).T
+    
 
     def barycentre(self, elements = None):
         """
@@ -321,9 +304,9 @@ class TetMesh:
 
         """
 
-        x = np.arange(0, self.n_cell_x)
-        y = np.arange(0, self.n_cell_y)
-        z = np.arange(0, self.n_cell_z)
+        x = np.arange(0, self.nsteps_cells[0])
+        y = np.arange(0, self.nsteps_cells[1])
+        z = np.arange(0, self.nsteps_cells[2])
 
         c_xi, c_yi, c_zi = np.meshgrid(x, y, z,indexing='ij')
         c_xi = c_xi.flatten(order='F')
@@ -353,9 +336,9 @@ class TetMesh:
         """
         if elements is None:
             elements = np.arange(0,self.ntetra)
-        x = np.arange(0, self.n_cell_x)
-        y = np.arange(0, self.n_cell_y)
-        z = np.arange(0, self.n_cell_z)
+        x = np.arange(0, self.nsteps_cells[0])
+        y = np.arange(0, self.nsteps_cells[1])
+        z = np.arange(0, self.nsteps_cells[2])
 
         c_xi, c_yi, c_zi = np.meshgrid(x, y, z, indexing='ij')
         c_xi = c_xi.flatten(order='F')
