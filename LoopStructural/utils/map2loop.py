@@ -388,6 +388,8 @@ def build_model(m2l_data,
         for e in faults.edges(f):
             data = faults.get_edge_data(*e)
             f2_norm =  m2l_data['stratigraphic_column']['faults'][e[1]]['FaultNorm']
+            
+
             if float(data['angle']) < 30 and np.dot(f1_norm,f2_norm)>0:
                 if model[f] is None or model[e[1]] is None:
                     logger.error('Fault {} does not exist, cannot be added as splay')
