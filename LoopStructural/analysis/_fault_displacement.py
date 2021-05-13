@@ -11,6 +11,7 @@ def displacement_missfit(d,
                             fname,
                             model,
                             fault_params,
+                            strati_name,
                             view=None):
     ## create the fault in the model
     if view is not None:
@@ -51,7 +52,7 @@ def displacement_missfit(d,
     data2 = model.data.copy()
 
     # mask only data associated with the faulted strati
-    mask = np.logical_and(mask,model.data['feature_name']=='supergroup_0')
+    mask = np.logical_and(mask,model.data['feature_name']==strati_name)
     if view is not None:
         view.add_isosurface(model[fname],value=0)
     value_data = data2.loc[mask,'val'].to_numpy()
