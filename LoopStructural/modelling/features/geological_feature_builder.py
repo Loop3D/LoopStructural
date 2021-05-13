@@ -265,19 +265,22 @@ class GeologicalFeatureInterpolator:
 
     def install_equality_constraints(self):
         for e in self._equality_constraints.values():
-            # assume all parts of structural frame have the same support
-            support = self.interpolator.support
-            
-            # work out the values of the nodes where we want hard
-            # constraints
-            idc = np.arange(0, support.n_nodes)[
-                e[1](support.nodes)]
-            val = e[0].evaluate_value(
-                support.nodes[
-                e[1](support.nodes), :])
-            mask = ~np.isnan(val)
-            self.interpolator.add_equality_constraints(
-                idc[mask], val[mask])
+            try:
+                # assume all parts of structural frame have the same support
+                support = self.interpolator.support
+                
+                # work out the values of the nodes where we want hard
+                # constraints
+                idc = np.arange(0, support.n_nodes)[
+                    e[1](support.nodes)]
+                val = e[0].evaluate_value(
+                    support.nodes[
+                    e[1](support.nodes), :])
+                mask = ~np.isnan(val)
+                self.interpolator.add_equality_constraints(
+                    idc[mask], val[mask])
+            except:
+                logger.error("Could not add equality")
 
 
     def get_value_constraints(self):
