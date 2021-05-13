@@ -177,7 +177,10 @@ class FaultSegment:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(locations))
+            try:
+                mask = np.logical_and(mask, r(locations))
+            except:
+                logger.error("nan slicing")
         v[mask]=self.faultframe[0].evaluate_value(locations[mask, :])
         return v
 
@@ -209,7 +212,10 @@ class FaultSegment:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(locations))
+            try:
+                mask = np.logical_and(mask, r(locations))
+            except:
+                logger.error("nan slicing ")
         # need to scale with fault displacement
         v[mask,:] = self.faultframe[1].evaluate_gradient(locations[mask, :])
         return v
