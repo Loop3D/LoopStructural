@@ -17,11 +17,12 @@ def calculate_fault_topology_matrix(model, xyz=None):
     if xyz is None:
         xyz = model.regular_grid(rescale=False,shuffle=False)
     topology_matrix = np.zeros((xyz.shape[0],len(model.faults)))
-    # topology_matrix[:] = -9999
+    topology_matrix[:] = np.nan
     for i, f in enumerate(model.faults):
-        topology_matrix[:,i] = f.evaluate(xyz)
+        topology_matrix[f.inside_volume(xyz),i] = f.evaluate(xyz[f.inside_volume(xyz),:])
     topology_matrix[topology_matrix==0] = -1
     topology_matrix[np.isnan(topology_matrix)] =0 
-    # topology_matrix[topology_matrix==0] = -1
-    # topology_matrix[topology_matrix==-9999] = 0
     return topology_matrix.astype(int)
+
+
+    

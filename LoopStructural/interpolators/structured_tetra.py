@@ -43,7 +43,9 @@ class TetMesh(BaseStructuredSupport):
     def n_elements(self):
         return self.ntetra
 
-    
+    @property
+    def n_cells(self):
+        return np.product(self.nsteps_cells)
 
     def barycentre(self, elements = None):
         """
@@ -624,17 +626,17 @@ class TetMesh(BaseStructuredSupport):
             inside = np.logical_and(inside, neigh_cell[:, :, 1] >= 0)
             inside = np.logical_and(inside, neigh_cell[:, :, 2] >= 0)
             inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 0] < self.n_cell_x)
+                                    neigh_cell[:, :, 0] < self.nsteps_cells[0])
             inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 1] < self.n_cell_y)
+                                    neigh_cell[:, :, 1] < self.nsteps_cells[1])
             inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 2] < self.n_cell_z)
+                                    neigh_cell[:, :, 2] < self.nsteps_cells[2])
 
             global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
             global_neighbour_idx = (neigh_cell[:, :, 0] + neigh_cell[:, :, 1] *
-                                    self.n_cell_x + neigh_cell[:, :, 2] *
-                                    self.n_cell_x * self.n_cell_y) * 5 + mask[:, 3]
+                                    self.nsteps_cells[0] + neigh_cell[:, :, 2] *
+                                    self.nsteps_cells[0] * self.nsteps_cells[1]) * 5 + mask[:, 3]
 
             global_neighbour_idx[~inside] = -1
             neighbours[logic, 1:] = global_neighbour_idx

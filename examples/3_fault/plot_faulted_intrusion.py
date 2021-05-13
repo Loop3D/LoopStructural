@@ -68,7 +68,7 @@ viewer.add_isosurface(fault,
 #                       slices=[0,1]#nslices=10
                      )
 xyz = model.data[model.data['feature_name']=='strati'][['X','Y','Z']].to_numpy()
-xyz = xyz[fault.evaluate(xyz),:]
+xyz = xyz[fault.evaluate(xyz).astype(bool),:]
 viewer.add_vector_field(fault, locations= xyz)
 viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
 viewer.rotation = [-73.24819946289062, -86.82220458984375, -13.912878036499023]

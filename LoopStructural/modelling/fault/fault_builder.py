@@ -31,7 +31,6 @@ class FaultBuilder(StructuralFrameBuilder):
         self.maximum_maximum = self.model.bounding_box[1,:] + fault_bounding_box_buffer*(self.model.bounding_box[1,:]-self.model.bounding_box[0,:])
 
     def update_geometry(self,points):
-        
         self.origin = np.nanmin(np.array([np.min(points,axis=0),self.origin]),axis=0)
         self.maximum = np.nanmax(np.array([np.max(points,axis=0),self.maximum]),axis=0)
         self.origin[self.origin<self.minimum_origin] = self.minimum_origin[self.origin<self.minimum_origin]
@@ -69,6 +68,10 @@ class FaultBuilder(StructuralFrameBuilder):
         """
         normal_vector/=np.linalg.norm(normal_vector)
         slip_vector/=np.linalg.norm(slip_vector)
+        # check if slip vector is inside fault plane, if not project onto fault plane
+        if not np.isclose(normal_vector @ slip_vector, 0):
+            logger.info("{} : projecting slip vector onto fault plane".format(self.name))
+            slip_vector = np.cross(normal_vector, np.cross(slip_vector ,normal_vector))
         strike_vector = np.cross(normal_vector,slip_vector)
         fault_edges = np.zeros((2,3))
         fault_tips = np.zeros((2,3))
@@ -105,8 +108,8 @@ class FaultBuilder(StructuralFrameBuilder):
                 # print(np.linalg.norm(slip_vector))
                 slip_vector /= vertical_radius
                 # print(np.linalg.norm(slip_vector))
-            data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
-                [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
+                data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
+                    [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
         # add strike vector to constraint fault extent
             # data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
             #     self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
