@@ -13,7 +13,6 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
@@ -37,7 +36,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -45,8 +43,8 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.visualisation.rotation_angle_plotter" href="LoopStructural.visualisation.rotation_angle_plotter.html" />
-    <link rel="prev" title="LoopStructural.visualisation.map_viewer" href="LoopStructural.visualisation.map_viewer.html" /> 
+    <link rel="next" title="LoopStructural.visualisation.model_visualisation.close_all" href="LoopStructural.visualisation.model_visualisation.close_all.html" />
+    <link rel="prev" title="LoopStructural.visualisation.model_plotter" href="LoopStructural.visualisation.model_plotter.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,27 +108,39 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
-<p class="caption"><span class="caption-text">LoopStructural API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
-</ul>
+<p class="caption"><span class="caption-text">API</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../LoopStructural.visualisation.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.html#visualisation">Visualisation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">LoopStructural.visualisation.map_viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.visualisation.model_visualisation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#members">Members</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.close_all.html">LoopStructural.visualisation.model_visualisation.close_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.create_box.html">LoopStructural.visualisation.model_visualisation.create_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.create_surface.html">LoopStructural.visualisation.model_visualisation.create_surface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.getLogger.html">LoopStructural.visualisation.model_visualisation.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.get_vectors.html">LoopStructural.visualisation.model_visualisation.get_vectors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.is_notebook.html">LoopStructural.visualisation.model_visualisation.is_notebook</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.marching_cubes.html">LoopStructural.visualisation.model_visualisation.marching_cubes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.GeologicalFeature.html">LoopStructural.visualisation.model_visualisation.GeologicalFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.html">LoopStructural.visualisation.model_visualisation.LavaVuModelViewer</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">LoopStructural.visualisation.rotation_angle_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">LoopStructural.visualisation.sphinx_scraper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">LoopStructural.visualisation.stratigraphic_column</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.visualisation.html#members">Members</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -179,9 +189,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
         
-          <li><a href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a> &raquo;</li>
+          <li><a href="LoopStructural.visualisation.html">LoopStructural.visualisation</a> &raquo;</li>
         
       <li>LoopStructural.visualisation.model_visualisation</li>
     
@@ -202,17 +212,54 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="loopstructural-visualisation-model-visualisation">
-<h1>LoopStructural.visualisation.model_visualisation<a class="headerlink" href="#loopstructural-visualisation-model-visualisation" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
-</ul>
-</div>
-<span class="target" id="module-LoopStructural.visualisation.model_visualisation"></span><p>A wrapper for lavavu</p>
-<div class="section" id="members">
-<h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-</div>
+  <div class="section" id="module-LoopStructural.visualisation.model_visualisation">
+<span id="loopstructural-visualisation-model-visualisation"></span><h1>LoopStructural.visualisation.model_visualisation<a class="headerlink" href="#module-LoopStructural.visualisation.model_visualisation" title="Permalink to this headline">¶</a></h1>
+<p>A wrapper for lavavu</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.close_all.html#LoopStructural.visualisation.model_visualisation.close_all" title="LoopStructural.visualisation.model_visualisation.close_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_all</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.create_box.html#LoopStructural.visualisation.model_visualisation.create_box" title="LoopStructural.visualisation.model_visualisation.create_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_box</span></code></a>(bounding_box, nsteps)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.create_surface.html#LoopStructural.visualisation.model_visualisation.create_surface" title="LoopStructural.visualisation.model_visualisation.create_surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_surface</span></code></a>(bounding_box, nstep)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.getLogger.html#LoopStructural.visualisation.model_visualisation.getLogger" title="LoopStructural.visualisation.model_visualisation.getLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getLogger</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.get_vectors.html#LoopStructural.visualisation.model_visualisation.get_vectors" title="LoopStructural.visualisation.model_visualisation.get_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vectors</span></code></a>(normal)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.is_notebook.html#LoopStructural.visualisation.model_visualisation.is_notebook" title="LoopStructural.visualisation.model_visualisation.is_notebook"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_notebook</span></code></a>()</p></td>
+<td><p>Detects if running within an interactive IPython notebook environment</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.marching_cubes.html#LoopStructural.visualisation.model_visualisation.marching_cubes" title="LoopStructural.visualisation.model_visualisation.marching_cubes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">marching_cubes</span></code></a>(volume[, level, spacing, …])</p></td>
+<td><p>Marching cubes algorithm to find surfaces in 3d volumetric data.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.GeologicalFeature.html#LoopStructural.visualisation.model_visualisation.GeologicalFeature" title="LoopStructural.visualisation.model_visualisation.GeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalFeature</span></code></a>(name, interpolator[, …])</p></td>
+<td><p>Geological feature is class that is used to represent a geometrical element in a geological model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LavaVuModelViewer</span></code></a>([model, bounding_box, …])</p></td>
+<td><p>Short description</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
@@ -221,8 +268,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="LoopStructural.visualisation.rotation_angle_plotter.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.rotation_angle_plotter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="LoopStructural.visualisation.map_viewer.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.map_viewer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.visualisation.model_visualisation.close_all.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.model_visualisation.close_all" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.visualisation.model_plotter.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.model_plotter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

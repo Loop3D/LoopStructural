@@ -1,0 +1,31 @@
+LoopStructural.modelling.fault.FaultDisplacementFeature
+=======================================================
+
+.. currentmodule:: LoopStructural.modelling.fault
+
+.. autoclass:: FaultDisplacementFeature
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FaultDisplacementFeature.__init__
+      ~FaultDisplacementFeature.evaluate_gradient
+      ~FaultDisplacementFeature.evaluate_on_surface
+      ~FaultDisplacementFeature.evaluate_value
+      ~FaultDisplacementFeature.max
+      ~FaultDisplacementFeature.mean
+      ~FaultDisplacementFeature.min
+   
+   
+
+   
+   
+   

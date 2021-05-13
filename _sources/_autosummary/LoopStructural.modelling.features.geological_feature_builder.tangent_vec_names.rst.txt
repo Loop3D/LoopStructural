@@ -1,0 +1,6 @@
+LoopStructural.modelling.features.geological\_feature\_builder.tangent\_vec\_names
+==================================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.geological_feature_builder
+
+.. autofunction:: tangent_vec_names

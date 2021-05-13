@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.empty\_dataframe
+============================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: empty_dataframe

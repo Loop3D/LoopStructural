@@ -1,0 +1,6 @@
+LoopStructural.modelling.features.geological\_feature\_builder.get\_data\_bounding\_box
+=======================================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.geological_feature_builder
+
+.. autofunction:: get_data_bounding_box

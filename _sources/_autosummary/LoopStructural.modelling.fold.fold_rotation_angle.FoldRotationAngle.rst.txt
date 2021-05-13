@@ -1,0 +1,29 @@
+LoopStructural.modelling.fold.fold\_rotation\_angle.FoldRotationAngle
+=====================================================================
+
+.. currentmodule:: LoopStructural.modelling.fold.fold_rotation_angle
+
+.. autoclass:: FoldRotationAngle
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FoldRotationAngle.__init__
+      ~FoldRotationAngle.calculate_misfit
+      ~FoldRotationAngle.find_hinges
+      ~FoldRotationAngle.fit_fourier_series
+      ~FoldRotationAngle.set_function
+   
+   
+
+   
+   
+   

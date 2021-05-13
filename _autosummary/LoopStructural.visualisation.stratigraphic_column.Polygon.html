@@ -1,0 +1,1933 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>LoopStructural.visualisation.stratigraphic_column.Polygon &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView" href="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html" />
+    <link rel="prev" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection" href="LoopStructural.visualisation.stratigraphic_column.PatchCollection.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.html#visualisation">Visualisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">LoopStructural.visualisation.map_viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.html">LoopStructural.visualisation.model_visualisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">LoopStructural.visualisation.rotation_angle_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">LoopStructural.visualisation.sphinx_scraper</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">LoopStructural.visualisation.stratigraphic_column</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.PatchCollection.html">LoopStructural.visualisation.stratigraphic_column.PatchCollection</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.visualisation.stratigraphic_column.Polygon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html">LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.visualisation.html">LoopStructural.visualisation</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.visualisation.stratigraphic_column.html">LoopStructural.visualisation.stratigraphic_column</a> &raquo;</li>
+        
+      <li>LoopStructural.visualisation.stratigraphic_column.Polygon</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-visualisation-stratigraphic-column-polygon">
+<h1>LoopStructural.visualisation.stratigraphic_column.Polygon<a class="headerlink" href="#loopstructural-visualisation-stratigraphic-column-polygon" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.stratigraphic_column.</span></code><code class="sig-name descname"><span class="pre">Polygon</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.patches.Patch</span></code></p>
+<p>A general polygon patch.</p>
+<p><em>xy</em> is a numpy array with shape Nx2.</p>
+<p>If <em>closed</em> is <em>True</em>, the polygon will be closed so the
+starting and ending points are the same.</p>
+<p>Valid keyword arguments are:</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>agg_filter: a filter function, which takes a (m, n, 3) float array and a dpi value, and returns a (m, n, 3) array
+alpha: float or None
+animated: bool
+antialiased or aa: unknown
+capstyle: {‘butt’, ‘round’, ‘projecting’}
+clip_box: <cite>.Bbox</cite>
+clip_on: bool
+clip_path: Patch or (Path, Transform) or None
+color: color
+contains: unknown
+edgecolor or ec: color or None or ‘auto’
+facecolor or fc: color or None
+figure: <cite>.Figure</cite>
+fill: bool
+gid: str
+hatch: {‘/’, ‘\’, ‘|’, ‘-‘, ‘+’, ‘x’, ‘o’, ‘O’, ‘.’, ‘*’}
+in_layout: bool
+joinstyle: {‘miter’, ‘round’, ‘bevel’}
+label: object
+linestyle or ls: {‘-‘, ‘–’, ‘-.’, ‘:’, ‘’, (offset, on-off-seq), …}
+linewidth or lw: float or None
+path_effects: <cite>.AbstractPathEffect</cite>
+picker: None or bool or callable
+rasterized: bool or None
+sketch_params: (scale: float, length: float, randomness: float)
+snap: bool or None
+transform: <cite>.Transform</cite>
+url: str
+visible: bool
+zorder: float</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>xy</em> is a numpy array with shape Nx2.</p>
+<p>If <em>closed</em> is <em>True</em>, the polygon will be closed so the
+starting and ending points are the same.</p>
+<p>Valid keyword arguments are:</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>agg_filter: a filter function, which takes a (m, n, 3) float array and a dpi value, and returns a (m, n, 3) array
+alpha: float or None
+animated: bool
+antialiased or aa: unknown
+capstyle: {‘butt’, ‘round’, ‘projecting’}
+clip_box: <cite>.Bbox</cite>
+clip_on: bool
+clip_path: Patch or (Path, Transform) or None
+color: color
+contains: unknown
+edgecolor or ec: color or None or ‘auto’
+facecolor or fc: color or None
+figure: <cite>.Figure</cite>
+fill: bool
+gid: str
+hatch: {‘/’, ‘\’, ‘|’, ‘-‘, ‘+’, ‘x’, ‘o’, ‘O’, ‘.’, ‘*’}
+in_layout: bool
+joinstyle: {‘miter’, ‘round’, ‘bevel’}
+label: object
+linestyle or ls: {‘-‘, ‘–’, ‘-.’, ‘:’, ‘’, (offset, on-off-seq), …}
+linewidth or lw: float or None
+path_effects: <cite>.AbstractPathEffect</cite>
+picker: None or bool or callable
+rasterized: bool or None
+sketch_params: (scale: float, length: float, randomness: float)
+snap: bool or None
+transform: <cite>.Transform</cite>
+url: str
+visible: bool
+zorder: float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.__init__" title="LoopStructural.visualisation.stratigraphic_column.Polygon.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(xy[, closed])</p></td>
+<td><p><em>xy</em> is a numpy array with shape Nx2.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback" title="LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_callback</span></code></a>(func)</p></td>
+<td><p>Add a callback function that will be called whenever one of the <cite>.Artist</cite>’s properties changes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.contains" title="LoopStructural.visualisation.stratigraphic_column.Polygon.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains</span></code></a>(mouseevent[, radius])</p></td>
+<td><p>Test whether the mouse event occurred in the patch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.contains_point" title="LoopStructural.visualisation.stratigraphic_column.Polygon.contains_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_point</span></code></a>(point[, radius])</p></td>
+<td><p>Return whether the given point is inside the patch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.contains_points" title="LoopStructural.visualisation.stratigraphic_column.Polygon.contains_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_points</span></code></a>(points[, radius])</p></td>
+<td><p>Return whether the given points are inside the patch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.convert_xunits" title="LoopStructural.visualisation.stratigraphic_column.Polygon.convert_xunits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_xunits</span></code></a>(x)</p></td>
+<td><p>Convert <em>x</em> using the unit type of the xaxis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.convert_yunits" title="LoopStructural.visualisation.stratigraphic_column.Polygon.convert_yunits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_yunits</span></code></a>(y)</p></td>
+<td><p>Convert <em>y</em> using the unit type of the yaxis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.draw" title="LoopStructural.visualisation.stratigraphic_column.Polygon.draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw</span></code></a>(renderer)</p></td>
+<td><p>Draw the Artist (and its children) using the given renderer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.findobj" title="LoopStructural.visualisation.stratigraphic_column.Polygon.findobj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">findobj</span></code></a>([match, include_self])</p></td>
+<td><p>Find artist objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.format_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.Polygon.format_cursor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_cursor_data</span></code></a>(data)</p></td>
+<td><p>Return a string representation of <em>data</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_aa" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_aa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_aa</span></code></a>()</p></td>
+<td><p>Alias for <cite>get_antialiased</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_agg_filter" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_agg_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_agg_filter</span></code></a>()</p></td>
+<td><p>Return filter function to be used for agg filter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_alpha" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alpha</span></code></a>()</p></td>
+<td><p>Return the alpha value used for blending - not supported on all backends.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_animated" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_animated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_animated</span></code></a>()</p></td>
+<td><p>Return whether the artist is animated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_antialiased" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_antialiased"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_antialiased</span></code></a>()</p></td>
+<td><p>Return whether antialiasing is used for drawing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_capstyle" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_capstyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_capstyle</span></code></a>()</p></td>
+<td><p>Return the capstyle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_children" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_children"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_children</span></code></a>()</p></td>
+<td><p>Return a list of the child <cite>.Artist</cite>s of this <cite>.Artist</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_box" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_clip_box</span></code></a>()</p></td>
+<td><p>Return the clipbox.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_on" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_clip_on</span></code></a>()</p></td>
+<td><p>Return whether the artist uses clipping.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_path" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_clip_path</span></code></a>()</p></td>
+<td><p>Return the clip path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_closed" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_closed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_closed</span></code></a>()</p></td>
+<td><p>Return whether the polygon is closed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_contains" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_contains</span></code></a>()</p></td>
+<td><p>[<em>Deprecated</em>] Return the custom contains function of the artist if set, or <em>None</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cursor_data</span></code></a>(event)</p></td>
+<td><p>Return the cursor data for a given event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_data_transform" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_data_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_transform</span></code></a>()</p></td>
+<td><p>Return the <cite>~.transforms.Transform</cite> mapping data coordinates to physical coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_ec" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_ec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ec</span></code></a>()</p></td>
+<td><p>Alias for <cite>get_edgecolor</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_edgecolor" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_edgecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edgecolor</span></code></a>()</p></td>
+<td><p>Return the edge color.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_extents" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_extents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_extents</span></code></a>()</p></td>
+<td><p>Return the <cite>Patch</cite>’s axis-aligned extents as a <cite>~.transforms.Bbox</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_facecolor" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_facecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_facecolor</span></code></a>()</p></td>
+<td><p>Return the face color.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_fc" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_fc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fc</span></code></a>()</p></td>
+<td><p>Alias for <cite>get_facecolor</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_figure" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_figure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_figure</span></code></a>()</p></td>
+<td><p>Return the <cite>.Figure</cite> instance the artist belongs to.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_fill" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fill</span></code></a>()</p></td>
+<td><p>Return whether the patch is filled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_gid" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gid</span></code></a>()</p></td>
+<td><p>Return the group id.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_hatch" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_hatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hatch</span></code></a>()</p></td>
+<td><p>Return the hatching pattern.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_in_layout" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_in_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_in_layout</span></code></a>()</p></td>
+<td><p>Return boolean flag, <code class="docutils literal notranslate"><span class="pre">True</span></code> if artist is included in layout calculations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_joinstyle" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_joinstyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_joinstyle</span></code></a>()</p></td>
+<td><p>Return the joinstyle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_label" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_label</span></code></a>()</p></td>
+<td><p>Return the label used for this artist in the legend.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_linestyle" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_linestyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linestyle</span></code></a>()</p></td>
+<td><p>Return the linestyle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_linewidth" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_linewidth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linewidth</span></code></a>()</p></td>
+<td><p>Return the line width in points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_ls" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ls</span></code></a>()</p></td>
+<td><p>Alias for <cite>get_linestyle</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_lw" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_lw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_lw</span></code></a>()</p></td>
+<td><p>Alias for <cite>get_linewidth</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_patch_transform" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_patch_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_patch_transform</span></code></a>()</p></td>
+<td><p>Return the <cite>~.transforms.Transform</cite> instance mapping patch coordinates to data coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_path" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_path</span></code></a>()</p></td>
+<td><p>Get the <cite>.Path</cite> of the polygon.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_path_effects</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_picker</span></code></a>()</p></td>
+<td><p>Return the picking behavior of the artist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_rasterized" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_rasterized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rasterized</span></code></a>()</p></td>
+<td><p>Return whether the artist is to be rasterized.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_sketch_params" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_sketch_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sketch_params</span></code></a>()</p></td>
+<td><p>Return the sketch parameters for the artist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_snap" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_snap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_snap</span></code></a>()</p></td>
+<td><p>Return the snap setting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_tightbbox" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_tightbbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tightbbox</span></code></a>(renderer)</p></td>
+<td><p>Like <cite>.Artist.get_window_extent</cite>, but includes any clipping.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_transform" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_transform</span></code></a>()</p></td>
+<td><p>Return the <cite>~.transforms.Transform</cite> applied to the <cite>Patch</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_transformed_clip_path_and_affine" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_transformed_clip_path_and_affine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_transformed_clip_path_and_affine</span></code></a>()</p></td>
+<td><p>Return the clip path with the non-affine part of its transformation applied, and the remaining affine part of its transformation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_url" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_url</span></code></a>()</p></td>
+<td><p>Return the url.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_verts" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_verts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_verts</span></code></a>()</p></td>
+<td><p>Return a copy of the vertices used in this patch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_visible" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_visible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_visible</span></code></a>()</p></td>
+<td><p>Return the visibility.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_window_extent" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_window_extent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_window_extent</span></code></a>([renderer])</p></td>
+<td><p>Get the axes bounding box in display space.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_xy" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_xy</span></code></a>()</p></td>
+<td><p>Get the vertices of the path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_zorder" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_zorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zorder</span></code></a>()</p></td>
+<td><p>Return the artist’s zorder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.have_units" title="LoopStructural.visualisation.stratigraphic_column.Polygon.have_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">have_units</span></code></a>()</p></td>
+<td><p>Return <em>True</em> if units are set on any axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.is_transform_set" title="LoopStructural.visualisation.stratigraphic_column.Polygon.is_transform_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_transform_set</span></code></a>()</p></td>
+<td><p>Return whether the Artist has an explicitly set transform.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pchanged" title="LoopStructural.visualisation.stratigraphic_column.Polygon.pchanged"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pchanged</span></code></a>()</p></td>
+<td><p>Call all of the registered callbacks.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pick" title="LoopStructural.visualisation.stratigraphic_column.Polygon.pick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pick</span></code></a>(mouseevent)</p></td>
+<td><p>Process a pick event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pickable" title="LoopStructural.visualisation.stratigraphic_column.Polygon.pickable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pickable</span></code></a>()</p></td>
+<td><p>Return whether the artist is pickable.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.properties" title="LoopStructural.visualisation.stratigraphic_column.Polygon.properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">properties</span></code></a>()</p></td>
+<td><p>Return a dictionary of all the properties of the artist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.remove" title="LoopStructural.visualisation.stratigraphic_column.Polygon.remove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove</span></code></a>()</p></td>
+<td><p>Remove the artist from the figure if possible.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback" title="LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_callback</span></code></a>(oid)</p></td>
+<td><p>Remove a callback based on its observer id.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>(**kwargs)</p></td>
+<td><p>A property batch setter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_aa" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_aa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_aa</span></code></a>(aa)</p></td>
+<td><p>Alias for <cite>set_antialiased</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_agg_filter" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_agg_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_agg_filter</span></code></a>(filter_func)</p></td>
+<td><p>Set the agg filter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_alpha" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_alpha</span></code></a>(alpha)</p></td>
+<td><p>Set the alpha value used for blending - not supported on all backends.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_animated" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_animated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_animated</span></code></a>(b)</p></td>
+<td><p>Set the artist’s animation state.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_antialiased" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_antialiased"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_antialiased</span></code></a>(aa)</p></td>
+<td><p>Set whether to use antialiased rendering.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_capstyle" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_capstyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_capstyle</span></code></a>(s)</p></td>
+<td><p>Set the capstyle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_box" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_clip_box</span></code></a>(clipbox)</p></td>
+<td><p>Set the artist’s clip <cite>.Bbox</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_on" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_clip_on</span></code></a>(b)</p></td>
+<td><p>Set whether the artist uses clipping.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_path" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_clip_path</span></code></a>(path[, transform])</p></td>
+<td><p>Set the artist’s clip path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_closed" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_closed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_closed</span></code></a>(closed)</p></td>
+<td><p>Set whether the polygon is closed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_color" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_color</span></code></a>(c)</p></td>
+<td><p>Set both the edgecolor and the facecolor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_contains" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_contains</span></code></a>(picker)</p></td>
+<td><p>[<em>Deprecated</em>] Define a custom contains test for the artist.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_ec" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_ec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ec</span></code></a>(color)</p></td>
+<td><p>Alias for <cite>set_edgecolor</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_edgecolor" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_edgecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_edgecolor</span></code></a>(color)</p></td>
+<td><p>Set the patch edge color.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_facecolor" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_facecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_facecolor</span></code></a>(color)</p></td>
+<td><p>Set the patch face color.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_fc" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_fc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fc</span></code></a>(color)</p></td>
+<td><p>Alias for <cite>set_facecolor</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_figure" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_figure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_figure</span></code></a>(fig)</p></td>
+<td><p>Set the <cite>.Figure</cite> instance the artist belongs to.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_fill" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fill</span></code></a>(b)</p></td>
+<td><p>Set whether to fill the patch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_gid" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gid</span></code></a>(gid)</p></td>
+<td><p>Set the (group) id for the artist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_hatch" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_hatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_hatch</span></code></a>(hatch)</p></td>
+<td><p>Set the hatching pattern.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_in_layout" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_in_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_in_layout</span></code></a>(in_layout)</p></td>
+<td><p>Set if artist is to be included in layout calculations, E.g.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_joinstyle" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_joinstyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_joinstyle</span></code></a>(s)</p></td>
+<td><p>Set the joinstyle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_label" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_label</span></code></a>(s)</p></td>
+<td><p>Set a label that will be displayed in the legend.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_linestyle" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_linestyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linestyle</span></code></a>(ls)</p></td>
+<td><p>Set the patch linestyle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_linewidth" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_linewidth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linewidth</span></code></a>(w)</p></td>
+<td><p>Set the patch linewidth in points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_ls" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ls</span></code></a>(ls)</p></td>
+<td><p>Alias for <cite>set_linestyle</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_lw" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_lw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_lw</span></code></a>(w)</p></td>
+<td><p>Alias for <cite>set_linewidth</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_path_effects" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_path_effects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_path_effects</span></code></a>(path_effects)</p></td>
+<td><p>Set the path effects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_picker</span></code></a>(picker)</p></td>
+<td><p>Define the picking behavior of the artist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_rasterized" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_rasterized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_rasterized</span></code></a>(rasterized)</p></td>
+<td><p>Force rasterized (bitmap) drawing in vector backend output.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_sketch_params" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_sketch_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_sketch_params</span></code></a>([scale, length, randomness])</p></td>
+<td><p>Sets the sketch parameters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_snap" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_snap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_snap</span></code></a>(snap)</p></td>
+<td><p>Set the snapping behavior.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_transform" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_transform</span></code></a>(t)</p></td>
+<td><p>Set the artist transform.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_url" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_url</span></code></a>(url)</p></td>
+<td><p>Set the url for the artist.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_visible" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_visible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_visible</span></code></a>(b)</p></td>
+<td><p>Set the artist’s visibility.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_xy" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xy</span></code></a>(xy)</p></td>
+<td><p>Set the vertices of the polygon.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_zorder" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_zorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_zorder</span></code></a>(level)</p></td>
+<td><p>Set the zorder for the artist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.update" title="LoopStructural.visualisation.stratigraphic_column.Polygon.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(props)</p></td>
+<td><p>Update this artist’s properties from the dict <em>props</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.update_from" title="LoopStructural.visualisation.stratigraphic_column.Polygon.update_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from</span></code></a>(other)</p></td>
+<td><p>Copy properties from <em>other</em> to <em>self</em>.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.axes" title="LoopStructural.visualisation.stratigraphic_column.Polygon.axes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">axes</span></code></a></p></td>
+<td><p>The <cite>~.axes.Axes</cite> instance the artist resides in, or <em>None</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.fill" title="LoopStructural.visualisation.stratigraphic_column.Polygon.fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill</span></code></a></p></td>
+<td><p>Return whether the patch is filled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.mouseover" title="LoopStructural.visualisation.stratigraphic_column.Polygon.mouseover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouseover</span></code></a></p></td>
+<td><p>If this property is set to <em>True</em>, the artist will be queried for custom context information when the mouse cursor moves over it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.stale" title="LoopStructural.visualisation.stratigraphic_column.Polygon.stale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale</span></code></a></p></td>
+<td><p>Whether the artist is ‘stale’ and needs to be re-drawn for the output to match the internal state of the artist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.sticky_edges" title="LoopStructural.visualisation.stratigraphic_column.Polygon.sticky_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sticky_edges</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> sticky edge lists for autoscaling.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validCap</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validJoin</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.xy" title="LoopStructural.visualisation.stratigraphic_column.Polygon.xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xy</span></code></a></p></td>
+<td><p>The vertices of the path as (N, 2) numpy array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zorder</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback">
+<code class="sig-name descname"><span class="pre">add_callback</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback function that will be called whenever one of the
+<cite>.Artist</cite>’s properties changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>callable</em>) – <p>The callback function. It must have the signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">artist</span><span class="p">:</span> <span class="n">Artist</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>where <em>artist</em> is the calling <cite>.Artist</cite>. Return values may exist
+but are ignored.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – The observer id associated with the callback. This id can be
+used for removing the callback with <cite>.remove_callback</cite> later.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback" title="LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_callback</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.axes">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">axes</span></code><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>~.axes.Axes</cite> instance the artist resides in, or <em>None</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.contains">
+<code class="sig-name descname"><span class="pre">contains</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouseevent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether the mouse event occurred in the patch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>(bool, empty dict)</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.contains_point">
+<code class="sig-name descname"><span class="pre">contains_point</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.contains_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the given point is inside the patch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – The point (x, y) to check, in target coordinates of
+<code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. These are display coordinates for patches
+that are added to a figure or axes.</p></li>
+<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Add an additional margin on the patch in target coordinates of
+<code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. See <cite>.Path.contains_point</cite> for further
+details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The proper use of this method depends on the transform of the patch.
+Isolated patches do not have a transform. In this case, the patch
+creation coordinates and the point coordinates match. The following
+example checks that the center of a circle is within the circle</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">center</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">contains_point</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>The convention of checking against the transformed patch stems from
+the fact that this method is predominantly used to check if display
+coordinates (e.g. from mouse events) are within the patch. If you want
+to do the above check with data coordinates, you have to properly
+transform them first:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">center</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_center</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get_transform</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">contains_point</span><span class="p">(</span><span class="n">transformed_center</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.contains_points">
+<code class="sig-name descname"><span class="pre">contains_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.contains_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the given points are inside the patch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<em>(</em><em>N</em><em>, </em><em>2</em><em>) </em><em>array</em>) – The points to check, in target coordinates of
+<code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. These are display coordinates for patches
+that are added to a figure or axes. Columns contain x and y values.</p></li>
+<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Add an additional margin on the patch in target coordinates of
+<code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. See <cite>.Path.contains_point</cite> for further
+details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>length-N bool array</em></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The proper use of this method depends on the transform of the patch.
+See the notes on <cite>.Patch.contains_point</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.convert_xunits">
+<code class="sig-name descname"><span class="pre">convert_xunits</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.convert_xunits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert <em>x</em> using the unit type of the xaxis.</p>
+<p>If the artist is not in contained in an Axes or if the xaxis does not
+have units, <em>x</em> itself is returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.convert_yunits">
+<code class="sig-name descname"><span class="pre">convert_yunits</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.convert_yunits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert <em>y</em> using the unit type of the yaxis.</p>
+<p>If the artist is not in contained in an Axes or if the yaxis does not
+have units, <em>y</em> itself is returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.draw">
+<code class="sig-name descname"><span class="pre">draw</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the Artist (and its children) using the given renderer.</p>
+<p>This has no effect if the artist is not visible (<cite>.Artist.get_visible</cite>
+returns False).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>renderer</strong> (<cite>.RendererBase</cite> subclass.) – </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method is overridden in the Artist subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.fill">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">fill</span></code><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the patch is filled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.findobj">
+<code class="sig-name descname"><span class="pre">findobj</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_self</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.findobj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find artist objects.</p>
+<p>Recursively find all <cite>.Artist</cite> instances contained in the artist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>match</strong> – <p>A filter criterion for the matches. This can be</p>
+<ul>
+<li><p><em>None</em>: Return all objects contained in artist.</p></li>
+<li><p>A function with signature <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">match(artist:</span> <span class="pre">Artist)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code>.
+The result will only contain artists for which the function
+returns <em>True</em>.</p></li>
+<li><p>A class instance: e.g., <cite>.Line2D</cite>. The result will only contain
+artists of this class or its subclasses (<code class="docutils literal notranslate"><span class="pre">isinstance</span></code> check).</p></li>
+</ul>
+</p></li>
+<li><p><strong>include_self</strong> (<em>bool</em>) – Include <em>self</em> in the list to be checked for a match.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <cite>.Artist</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.format_cursor_data">
+<code class="sig-name descname"><span class="pre">format_cursor_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.format_cursor_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string representation of <em>data</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is intended to be overridden by artist subclasses.
+As an end-user of Matplotlib you will most likely not call this
+method yourself.</p>
+</div>
+<p>The default implementation converts ints and floats and arrays of ints
+and floats into a comma-separated string enclosed in square brackets.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cursor_data</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_aa">
+<code class="sig-name descname"><span class="pre">get_aa</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_aa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>get_antialiased</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_agg_filter">
+<code class="sig-name descname"><span class="pre">get_agg_filter</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_agg_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return filter function to be used for agg filter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_alpha">
+<code class="sig-name descname"><span class="pre">get_alpha</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the alpha value used for blending - not supported on all
+backends.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_animated">
+<code class="sig-name descname"><span class="pre">get_animated</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_animated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the artist is animated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_antialiased">
+<code class="sig-name descname"><span class="pre">get_antialiased</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_antialiased" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether antialiasing is used for drawing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_capstyle">
+<code class="sig-name descname"><span class="pre">get_capstyle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_capstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the capstyle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_children">
+<code class="sig-name descname"><span class="pre">get_children</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the child <cite>.Artist</cite>s of this <cite>.Artist</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_box">
+<code class="sig-name descname"><span class="pre">get_clip_box</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the clipbox.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_on">
+<code class="sig-name descname"><span class="pre">get_clip_on</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the artist uses clipping.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_path">
+<code class="sig-name descname"><span class="pre">get_clip_path</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_clip_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the clip path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_closed">
+<code class="sig-name descname"><span class="pre">get_closed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the polygon is closed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_contains">
+<code class="sig-name descname"><span class="pre">get_contains</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>[<em>Deprecated</em>] Return the custom contains function of the artist if set, or <em>None</em>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_contains" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_contains</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 3.3.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data">
+<code class="sig-name descname"><span class="pre">get_cursor_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the cursor data for a given event.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is intended to be overridden by artist subclasses.
+As an end-user of Matplotlib you will most likely not call this
+method yourself.</p>
+</div>
+<p>Cursor data can be used by Artists to provide additional context
+information for a given event. The default implementation just returns
+<em>None</em>.</p>
+<p>Subclasses can override the method and return arbitrary data. However,
+when doing so, they must ensure that <cite>.format_cursor_data</cite> can convert
+the data to a string representation.</p>
+<p>The only current use case is displaying the z-value of an <cite>.AxesImage</cite>
+in the status bar of a plot window, while moving the mouse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>event</strong> (<cite>matplotlib.backend_bases.MouseEvent</cite>) – </p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.format_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.Polygon.format_cursor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_cursor_data</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_data_transform">
+<code class="sig-name descname"><span class="pre">get_data_transform</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_data_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>~.transforms.Transform</cite> mapping data coordinates to
+physical coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_ec">
+<code class="sig-name descname"><span class="pre">get_ec</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_ec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>get_edgecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_edgecolor">
+<code class="sig-name descname"><span class="pre">get_edgecolor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_edgecolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the edge color.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_extents">
+<code class="sig-name descname"><span class="pre">get_extents</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_extents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>Patch</cite>’s axis-aligned extents as a <cite>~.transforms.Bbox</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_facecolor">
+<code class="sig-name descname"><span class="pre">get_facecolor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_facecolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the face color.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_fc">
+<code class="sig-name descname"><span class="pre">get_fc</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_fc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>get_facecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_figure">
+<code class="sig-name descname"><span class="pre">get_figure</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>.Figure</cite> instance the artist belongs to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_fill">
+<code class="sig-name descname"><span class="pre">get_fill</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the patch is filled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_gid">
+<code class="sig-name descname"><span class="pre">get_gid</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_gid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the group id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_hatch">
+<code class="sig-name descname"><span class="pre">get_hatch</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_hatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the hatching pattern.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_in_layout">
+<code class="sig-name descname"><span class="pre">get_in_layout</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_in_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return boolean flag, <code class="docutils literal notranslate"><span class="pre">True</span></code> if artist is included in layout
+calculations.</p>
+<p>E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_guide</span>,
+<cite>.Figure.tight_layout()</cite>, and
+<code class="docutils literal notranslate"><span class="pre">fig.savefig(fname,</span> <span class="pre">bbox_inches='tight')</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_joinstyle">
+<code class="sig-name descname"><span class="pre">get_joinstyle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_joinstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the joinstyle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_label">
+<code class="sig-name descname"><span class="pre">get_label</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the label used for this artist in the legend.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_linestyle">
+<code class="sig-name descname"><span class="pre">get_linestyle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_linestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the linestyle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_linewidth">
+<code class="sig-name descname"><span class="pre">get_linewidth</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_linewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the line width in points.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_ls">
+<code class="sig-name descname"><span class="pre">get_ls</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>get_linestyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_lw">
+<code class="sig-name descname"><span class="pre">get_lw</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_lw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>get_linewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_patch_transform">
+<code class="sig-name descname"><span class="pre">get_patch_transform</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_patch_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>~.transforms.Transform</cite> instance mapping patch coordinates
+to data coordinates.</p>
+<p>For example, one may define a patch of a circle which represents a
+radius of 5 by providing coordinates for a unit circle, and a
+transform which scales the coordinates (the patch coordinate) by 5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_path">
+<code class="sig-name descname"><span class="pre">get_path</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <cite>.Path</cite> of the polygon.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker">
+<code class="sig-name descname"><span class="pre">get_picker</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the picking behavior of the artist.</p>
+<p>The possible values are described in <cite>.set_picker</cite>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_picker</span></code></a>, <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pickable" title="LoopStructural.visualisation.stratigraphic_column.Polygon.pickable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pickable</span></code></a>, <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pick" title="LoopStructural.visualisation.stratigraphic_column.Polygon.pick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pick</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_rasterized">
+<code class="sig-name descname"><span class="pre">get_rasterized</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_rasterized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the artist is to be rasterized.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_sketch_params">
+<code class="sig-name descname"><span class="pre">get_sketch_params</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_sketch_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sketch parameters for the artist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>tuple or None</em> – A 3-tuple with the following elements:</p>
+<ul class="simple">
+<li><p><em>scale</em>: The amplitude of the wiggle perpendicular to the
+source line.</p></li>
+<li><p><em>length</em>: The length of the wiggle along the line.</p></li>
+<li><p><em>randomness</em>: The scale factor by which the length is
+shrunken or expanded.</p></li>
+</ul>
+<p>Returns <em>None</em> if no sketch parameters were set.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_snap">
+<code class="sig-name descname"><span class="pre">get_snap</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_snap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the snap setting.</p>
+<p>See <cite>.set_snap</cite> for details.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_tightbbox">
+<code class="sig-name descname"><span class="pre">get_tightbbox</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_tightbbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <cite>.Artist.get_window_extent</cite>, but includes any clipping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>renderer</strong> (<cite>.RendererBase</cite> subclass) – renderer that will be used to draw the figures (i.e.
+<code class="docutils literal notranslate"><span class="pre">fig.canvas.get_renderer()</span></code>)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><cite>.Bbox</cite> – The enclosing bounding box (in figure pixel coordinates).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_transform">
+<code class="sig-name descname"><span class="pre">get_transform</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>~.transforms.Transform</cite> applied to the <cite>Patch</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_transformed_clip_path_and_affine">
+<code class="sig-name descname"><span class="pre">get_transformed_clip_path_and_affine</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_transformed_clip_path_and_affine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the clip path with the non-affine part of its
+transformation applied, and the remaining affine part of its
+transformation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_url">
+<code class="sig-name descname"><span class="pre">get_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the url.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_verts">
+<code class="sig-name descname"><span class="pre">get_verts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_verts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the vertices used in this patch.</p>
+<p>If the patch contains Bezier curves, the curves will be interpolated by
+line segments.  To access the curves as curves, use <cite>get_path</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_visible">
+<code class="sig-name descname"><span class="pre">get_visible</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the visibility.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_window_extent">
+<code class="sig-name descname"><span class="pre">get_window_extent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_window_extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the axes bounding box in display space.</p>
+<p>The bounding box’ width and height are nonnegative.</p>
+<p>Subclasses should override for inclusion in the bounding box
+“tight” calculation. Default is to return an empty bounding
+box at 0, 0.</p>
+<p>Be careful when using this function, the results will not update
+if the artist window extent of the artist changes.  The extent
+can change due to any changes in the transform stack, such as
+changing the axes limits, the figure size, or the canvas used
+(as is done when saving a figure).  This can lead to unexpected
+behavior where interactive figures will look fine on the screen,
+but will save incorrectly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_xy">
+<code class="sig-name descname"><span class="pre">get_xy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the vertices of the path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>(N, 2) numpy array</em> – The coordinates of the vertices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_zorder">
+<code class="sig-name descname"><span class="pre">get_zorder</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_zorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the artist’s zorder.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.have_units">
+<code class="sig-name descname"><span class="pre">have_units</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.have_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <em>True</em> if units are set on any axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.is_transform_set">
+<code class="sig-name descname"><span class="pre">is_transform_set</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.is_transform_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the Artist has an explicitly set transform.</p>
+<p>This is <em>True</em> after <cite>.set_transform</cite> has been called.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.mouseover">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">mouseover</span></code><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.mouseover" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this property is set to <em>True</em>, the artist will be queried for
+custom context information when the mouse cursor moves over it.</p>
+<p>See also <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_cursor_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_cursor_data()</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ToolCursorPosition</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">NavigationToolbar2</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.pchanged">
+<code class="sig-name descname"><span class="pre">pchanged</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pchanged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call all of the registered callbacks.</p>
+<p>This function is triggered internally when a property is changed.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback" title="LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_callback</span></code></a>, <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback" title="LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_callback</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.pick">
+<code class="sig-name descname"><span class="pre">pick</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouseevent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a pick event.</p>
+<p>Each child artist will fire a pick event if <em>mouseevent</em> is over
+the artist and the artist has picker set.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_picker</span></code></a>, <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_picker</span></code></a>, <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pickable" title="LoopStructural.visualisation.stratigraphic_column.Polygon.pickable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pickable</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.pickable">
+<code class="sig-name descname"><span class="pre">pickable</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pickable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the artist is pickable.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker" title="LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_picker</span></code></a>, <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker" title="LoopStructural.visualisation.stratigraphic_column.Polygon.get_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_picker</span></code></a>, <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.pick" title="LoopStructural.visualisation.stratigraphic_column.Polygon.pick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pick</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.properties">
+<code class="sig-name descname"><span class="pre">properties</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dictionary of all the properties of the artist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.remove">
+<code class="sig-name descname"><span class="pre">remove</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the artist from the figure if possible.</p>
+<p>The effect will not be visible until the figure is redrawn, e.g.,
+with <cite>.FigureCanvasBase.draw_idle</cite>.  Call <cite>~.axes.Axes.relim</cite> to
+update the axes limits if desired.</p>
+<p>Note: <cite>~.axes.Axes.relim</cite> will not see collections even if the
+collection was added to the axes with <em>autolim</em> = True.</p>
+<p>Note: there is no support for removing the artist’s legend entry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback">
+<code class="sig-name descname"><span class="pre">remove_callback</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.remove_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a callback based on its observer id.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback" title="LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_callback</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set">
+<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>A property batch setter.  Pass <em>kwargs</em> to set properties.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_aa">
+<code class="sig-name descname"><span class="pre">set_aa</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_aa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>set_antialiased</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_agg_filter">
+<code class="sig-name descname"><span class="pre">set_agg_filter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_agg_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the agg filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filter_func</strong> (<em>callable</em>) – <p>A filter function, which takes a (m, n, 3) float array and a dpi
+value, and returns a (m, n, 3) array.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_alpha">
+<code class="sig-name descname"><span class="pre">set_alpha</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the alpha value used for blending - not supported on all backends.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alpha</strong> (<em>float</em><em> or </em><em>None</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_animated">
+<code class="sig-name descname"><span class="pre">set_animated</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_animated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the artist’s animation state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_antialiased">
+<code class="sig-name descname"><span class="pre">set_antialiased</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_antialiased" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set whether to use antialiased rendering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>b</strong> (<em>bool</em><em> or </em><em>None</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_capstyle">
+<code class="sig-name descname"><span class="pre">set_capstyle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_capstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the capstyle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>{'butt'</em><em>, </em><em>'round'</em><em>, </em><em>'projecting'}</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_box">
+<code class="sig-name descname"><span class="pre">set_clip_box</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clipbox</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the artist’s clip <cite>.Bbox</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>clipbox</strong> (<cite>.Bbox</cite>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_on">
+<code class="sig-name descname"><span class="pre">set_clip_on</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set whether the artist uses clipping.</p>
+<p>When False artists will be visible outside of the axes which
+can lead to unexpected results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_path">
+<code class="sig-name descname"><span class="pre">set_clip_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the artist’s clip path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<cite>.Patch</cite> or <cite>.Path</cite> or <cite>.TransformedPath</cite> or None) – The clip path. If given a <cite>.Path</cite>, <em>transform</em> must be provided as
+well. If <em>None</em>, a previously set clip path is removed.</p></li>
+<li><p><strong>transform</strong> (<cite>~matplotlib.transforms.Transform</cite>, optional) – Only used if <em>path</em> is a <cite>.Path</cite>, in which case the given <cite>.Path</cite>
+is converted to a <cite>.TransformedPath</cite> using <em>transform</em>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>For efficiency, if <em>path</em> is a <cite>.Rectangle</cite> this method will set the
+clipping box to the corresponding rectangle and set the clipping path
+to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>For technical reasons (support of <cite>~.Artist.set</cite>), a tuple
+(<em>path</em>, <em>transform</em>) is also accepted as a single positional
+parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_closed">
+<code class="sig-name descname"><span class="pre">set_closed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">closed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set whether the polygon is closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>closed</strong> (<em>bool</em>) – True if the polygon is closed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_color">
+<code class="sig-name descname"><span class="pre">set_color</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set both the edgecolor and the facecolor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>c</strong> (<em>color</em>) – </p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Patch.set_facecolor</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Patch.set_edgecolor</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_contains">
+<code class="sig-name descname"><span class="pre">set_contains</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">picker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>[<em>Deprecated</em>] Define a custom contains test for the artist.</p>
+<p>The provided callable replaces the default <cite>.contains</cite> method
+of the artist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>picker</strong> (<em>callable</em>) – <p>A custom picker function to evaluate if an event is within the
+artist. The function must have the signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="n">artist</span><span class="p">:</span> <span class="n">Artist</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">MouseEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span>
+</pre></div>
+</div>
+<p>that returns:</p>
+<ul class="simple">
+<li><p>a bool indicating if the event is within the artist</p></li>
+<li><p>a dict of additional information. The dict should at least
+return the same information as the default <code class="docutils literal notranslate"><span class="pre">contains()</span></code>
+implementation of the respective artist, but may provide
+additional information.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 3.3.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_ec">
+<code class="sig-name descname"><span class="pre">set_ec</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_ec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>set_edgecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_edgecolor">
+<code class="sig-name descname"><span class="pre">set_edgecolor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_edgecolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the patch edge color.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>color</strong> (<em>color</em><em> or </em><em>None</em><em> or </em><em>'auto'</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_facecolor">
+<code class="sig-name descname"><span class="pre">set_facecolor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_facecolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the patch face color.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>color</strong> (<em>color</em><em> or </em><em>None</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_fc">
+<code class="sig-name descname"><span class="pre">set_fc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_fc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>set_facecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_figure">
+<code class="sig-name descname"><span class="pre">set_figure</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <cite>.Figure</cite> instance the artist belongs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fig</strong> (<cite>.Figure</cite>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_fill">
+<code class="sig-name descname"><span class="pre">set_fill</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set whether to fill the patch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_gid">
+<code class="sig-name descname"><span class="pre">set_gid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_gid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the (group) id for the artist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gid</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_hatch">
+<code class="sig-name descname"><span class="pre">set_hatch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hatch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_hatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the hatching pattern.</p>
+<p><em>hatch</em> can be one of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span>   <span class="o">-</span> <span class="n">diagonal</span> <span class="n">hatching</span>
+\   <span class="o">-</span> <span class="n">back</span> <span class="n">diagonal</span>
+<span class="o">|</span>   <span class="o">-</span> <span class="n">vertical</span>
+<span class="o">-</span>   <span class="o">-</span> <span class="n">horizontal</span>
+<span class="o">+</span>   <span class="o">-</span> <span class="n">crossed</span>
+<span class="n">x</span>   <span class="o">-</span> <span class="n">crossed</span> <span class="n">diagonal</span>
+<span class="n">o</span>   <span class="o">-</span> <span class="n">small</span> <span class="n">circle</span>
+<span class="n">O</span>   <span class="o">-</span> <span class="n">large</span> <span class="n">circle</span>
+<span class="o">.</span>   <span class="o">-</span> <span class="n">dots</span>
+<span class="o">*</span>   <span class="o">-</span> <span class="n">stars</span>
+</pre></div>
+</div>
+<p>Letters can be combined, in which case all the specified
+hatchings are done.  If same letter repeats, it increases the
+density of hatching of that pattern.</p>
+<p>Hatching is supported in the PostScript, PDF, SVG and Agg
+backends only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hatch</strong> (<em>{'/'</em><em>, </em><em>'\'</em><em>, </em><em>'|'</em><em>, </em><em>'-'</em><em>, </em><em>'+'</em><em>, </em><em>'x'</em><em>, </em><em>'o'</em><em>, </em><em>'O'</em><em>, </em><em>'.'</em><em>, </em><em>'*'}</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_in_layout">
+<code class="sig-name descname"><span class="pre">set_in_layout</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_layout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_in_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set if artist is to be included in layout calculations,
+E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_guide</span>,
+<cite>.Figure.tight_layout()</cite>, and
+<code class="docutils literal notranslate"><span class="pre">fig.savefig(fname,</span> <span class="pre">bbox_inches='tight')</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>in_layout</strong> (<em>bool</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_joinstyle">
+<code class="sig-name descname"><span class="pre">set_joinstyle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_joinstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the joinstyle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>{'miter'</em><em>, </em><em>'round'</em><em>, </em><em>'bevel'}</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_label">
+<code class="sig-name descname"><span class="pre">set_label</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a label that will be displayed in the legend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>object</em>) – <em>s</em> will be converted to a string by calling <cite>str</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_linestyle">
+<code class="sig-name descname"><span class="pre">set_linestyle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_linestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the patch linestyle.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 61%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>linestyle</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'-'</span></code> or <code class="docutils literal notranslate"><span class="pre">'solid'</span></code></p></td>
+<td><p>solid line</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'--'</span></code> or  <code class="docutils literal notranslate"><span class="pre">'dashed'</span></code></p></td>
+<td><p>dashed line</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'-.'</span></code> or  <code class="docutils literal notranslate"><span class="pre">'dashdot'</span></code></p></td>
+<td><p>dash-dotted line</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">':'</span></code> or <code class="docutils literal notranslate"><span class="pre">'dotted'</span></code></p></td>
+<td><p>dotted line</p></td>
+</tr>
+</tbody>
+</table>
+<p>Alternatively a dash tuple of the following form can be provided:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">onoffseq</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">onoffseq</span></code> is an even length tuple of on and off ink in points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ls</strong> (<em>{'-'</em><em>, </em><em>'--'</em><em>, </em><em>'-.'</em><em>, </em><em>':'</em><em>, </em><em>''</em><em>, </em><em>(</em><em>offset</em><em>, </em><em>on-off-seq</em><em>)</em><em>, </em><em>..}</em>) – The line style.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_linewidth">
+<code class="sig-name descname"><span class="pre">set_linewidth</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_linewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the patch linewidth in points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>w</strong> (<em>float</em><em> or </em><em>None</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_ls">
+<code class="sig-name descname"><span class="pre">set_ls</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>set_linestyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_lw">
+<code class="sig-name descname"><span class="pre">set_lw</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_lw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>set_linewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_path_effects">
+<code class="sig-name descname"><span class="pre">set_path_effects</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_effects</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_path_effects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the path effects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path_effects</strong> (<cite>.AbstractPathEffect</cite>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker">
+<code class="sig-name descname"><span class="pre">set_picker</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">picker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_picker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the picking behavior of the artist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>picker</strong> (<em>None</em><em> or </em><em>bool</em><em> or </em><em>callable</em>) – <p>This can be one of the following:</p>
+<ul>
+<li><p><em>None</em>: Picking is disabled for this artist (default).</p></li>
+<li><p>A boolean: If <em>True</em> then picking will be enabled and the
+artist will fire a pick event if the mouse event is over
+the artist.</p></li>
+<li><p>A function: If picker is callable, it is a user supplied
+function which determines whether the artist is hit by the
+mouse event:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hit</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">picker</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span> <span class="n">mouseevent</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to determine the hit test.  if the mouse event is over the
+artist, return <em>hit=True</em> and props is a dictionary of
+properties you want added to the PickEvent attributes.</p>
+</li>
+<li><p><em>deprecated</em>: For <cite>.Line2D</cite> only, <em>picker</em> can also be a float
+that sets the tolerance for checking whether an event occurred
+“on” the line; this is deprecated.  Use <cite>.Line2D.set_pickradius</cite>
+instead.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_rasterized">
+<code class="sig-name descname"><span class="pre">set_rasterized</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rasterized</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_rasterized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force rasterized (bitmap) drawing in vector backend output.</p>
+<p>Defaults to None, which implies the backend’s default behavior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rasterized</strong> (<em>bool</em><em> or </em><em>None</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_sketch_params">
+<code class="sig-name descname"><span class="pre">set_sketch_params</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_sketch_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the sketch parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em><em>, </em><em>optional</em>) – The amplitude of the wiggle perpendicular to the source
+line, in pixels.  If scale is <cite>None</cite>, or not provided, no
+sketch filter will be provided.</p></li>
+<li><p><strong>length</strong> (<em>float</em><em>, </em><em>optional</em>) – The length of the wiggle along the line, in pixels
+(default 128.0)</p></li>
+<li><p><strong>randomness</strong> (<em>float</em><em>, </em><em>optional</em>) – <p>The scale factor by which the length is shrunken or
+expanded (default 16.0)</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_snap">
+<code class="sig-name descname"><span class="pre">set_snap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snap</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_snap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the snapping behavior.</p>
+<p>Snapping aligns positions with the pixel grid, which results in
+clearer images. For example, if a black line of 1px width was
+defined at a position in between two pixels, the resulting image
+would contain the interpolated value of that line in the pixel grid,
+which would be a grey value on both adjacent pixel positions. In
+contrast, snapping will move the line to the nearest integer pixel
+value, so that the resulting image will really contain a 1px wide
+black line.</p>
+<p>Snapping is currently only supported by the Agg and MacOSX backends.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>snap</strong> (<em>bool</em><em> or </em><em>None</em>) – <p>Possible values:</p>
+<ul class="simple">
+<li><p><em>True</em>: Snap vertices to the nearest pixel center.</p></li>
+<li><p><em>False</em>: Do not modify vertex positions.</p></li>
+<li><p><em>None</em>: (auto) If the path contains only rectilinear line
+segments, round to the nearest pixel center.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_transform">
+<code class="sig-name descname"><span class="pre">set_transform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the artist transform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>t</strong> (<cite>.Transform</cite>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_url">
+<code class="sig-name descname"><span class="pre">set_url</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the url for the artist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_visible">
+<code class="sig-name descname"><span class="pre">set_visible</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the artist’s visibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_xy">
+<code class="sig-name descname"><span class="pre">set_xy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the vertices of the polygon.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>xy</strong> (<em>(</em><em>N</em><em>, </em><em>2</em><em>) </em><em>array-like</em>) – The coordinates of the vertices.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Unlike <cite>~.path.Path</cite>, we do not ignore the last input vertex. If the
+polygon is meant to be closed, and the last point of the polygon is not
+equal to the first, we assume that the user has not explicitly passed a
+<code class="docutils literal notranslate"><span class="pre">CLOSEPOLY</span></code> vertex, and add it ourselves.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_zorder">
+<code class="sig-name descname"><span class="pre">set_zorder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_zorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the zorder for the artist.  Artists with lower zorder
+values are drawn first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>level</strong> (<em>float</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.stale">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">stale</span></code><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.stale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the artist is ‘stale’ and needs to be re-drawn for the output
+to match the internal state of the artist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.sticky_edges">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">sticky_edges</span></code><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.sticky_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> sticky edge lists for autoscaling.</p>
+<p>When performing autoscaling, if a data limit coincides with a value in
+the corresponding sticky_edges list, then no margin will be added–the
+view limit “sticks” to the edge. A typical use case is histograms,
+where one usually expects no margin on the bottom edge (0) of the
+histogram.</p>
+<p>This attribute cannot be assigned to; however, the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>
+lists can be modified in place as needed.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">artist</span><span class="o">.</span><span class="n">sticky_edges</span><span class="o">.</span><span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">artist</span><span class="o">.</span><span class="n">sticky_edges</span><span class="o">.</span><span class="n">y</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.update">
+<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">props</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update this artist’s properties from the dict <em>props</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>props</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.update_from">
+<code class="sig-name descname"><span class="pre">update_from</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.update_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy properties from <em>other</em> to <em>self</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.stratigraphic_column.Polygon.xy">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">xy</span></code><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>The vertices of the path as (N, 2) numpy array.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.visualisation.stratigraphic_column.PatchCollection.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

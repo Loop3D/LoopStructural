@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>LoopStructural.modelling.features.cross_product_geological_feature &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.modelling.features.cross_product_geological_feature.getLogger" href="LoopStructural.modelling.features.cross_product_geological_feature.getLogger.html" />
+    <link rel="prev" title="LoopStructural.modelling.features.UnconformityFeature" href="LoopStructural.modelling.features.UnconformityFeature.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.core.html">LoopStructural.modelling.core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fault.html">LoopStructural.modelling.fault</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.modelling.features.html">LoopStructural.modelling.features</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeature.html">LoopStructural.modelling.features.GeologicalFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeatureInterpolator.html">LoopStructural.modelling.features.GeologicalFeatureInterpolator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.LambdaGeologicalFeature.html">LoopStructural.modelling.features.LambdaGeologicalFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.RegionFeature.html">LoopStructural.modelling.features.RegionFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrame.html">LoopStructural.modelling.features.StructuralFrame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrameBuilder.html">LoopStructural.modelling.features.StructuralFrameBuilder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.UnconformityFeature.html">LoopStructural.modelling.features.UnconformityFeature</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.modelling.features.cross_product_geological_feature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.geological_feature.html">LoopStructural.modelling.features.geological_feature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.geological_feature_builder.html">LoopStructural.modelling.features.geological_feature_builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.lambda_geological_feature.html">LoopStructural.modelling.features.lambda_geological_feature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.region_feature.html">LoopStructural.modelling.features.region_feature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.structural_frame.html">LoopStructural.modelling.features.structural_frame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.structural_frame_builder.html">LoopStructural.modelling.features.structural_frame_builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.unconformity_feature.html">LoopStructural.modelling.features.unconformity_feature</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fold.html">LoopStructural.modelling.fold</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.modelling.html">LoopStructural.modelling</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.modelling.features.html">LoopStructural.modelling.features</a> &raquo;</li>
+        
+      <li>LoopStructural.modelling.features.cross_product_geological_feature</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/LoopStructural.modelling.features.cross_product_geological_feature.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-LoopStructural.modelling.features.cross_product_geological_feature">
+<span id="loopstructural-modelling-features-cross-product-geological-feature"></span><h1>LoopStructural.modelling.features.cross_product_geological_feature<a class="headerlink" href="#module-LoopStructural.modelling.features.cross_product_geological_feature" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.cross_product_geological_feature.getLogger.html#LoopStructural.modelling.features.cross_product_geological_feature.getLogger" title="LoopStructural.modelling.features.cross_product_geological_feature.getLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getLogger</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.cross_product_geological_feature.CrossProductGeologicalFeature.html#LoopStructural.modelling.features.cross_product_geological_feature.CrossProductGeologicalFeature" title="LoopStructural.modelling.features.cross_product_geological_feature.CrossProductGeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CrossProductGeologicalFeature</span></code></a>(name, …)</p></td>
+<td><p>[summary]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.cross_product_geological_feature.GeologicalFeature.html#LoopStructural.modelling.features.cross_product_geological_feature.GeologicalFeature" title="LoopStructural.modelling.features.cross_product_geological_feature.GeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalFeature</span></code></a>(name, interpolator[, …])</p></td>
+<td><p>Geological feature is class that is used to represent a geometrical element in a geological model.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="LoopStructural.modelling.features.cross_product_geological_feature.getLogger.html" class="btn btn-neutral float-right" title="LoopStructural.modelling.features.cross_product_geological_feature.getLogger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.modelling.features.UnconformityFeature.html" class="btn btn-neutral float-left" title="LoopStructural.modelling.features.UnconformityFeature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

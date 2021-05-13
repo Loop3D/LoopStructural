@@ -1,0 +1,6 @@
+LoopStructural.interpolators.discrete\_interpolator.getLogger
+=============================================================
+
+.. currentmodule:: LoopStructural.interpolators.discrete_interpolator
+
+.. autofunction:: getLogger

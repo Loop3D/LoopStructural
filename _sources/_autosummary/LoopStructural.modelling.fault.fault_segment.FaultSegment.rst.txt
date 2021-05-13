@@ -1,0 +1,39 @@
+LoopStructural.modelling.fault.fault\_segment.FaultSegment
+==========================================================
+
+.. currentmodule:: LoopStructural.modelling.fault.fault_segment
+
+.. autoclass:: FaultSegment
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FaultSegment.__init__
+      ~FaultSegment.add_abutting_fault
+      ~FaultSegment.add_region
+      ~FaultSegment.apply_to_points
+      ~FaultSegment.evaluate
+      ~FaultSegment.evaluate_displacement
+      ~FaultSegment.evaluate_gradient
+      ~FaultSegment.evaluate_value
+      ~FaultSegment.inside_volume
+      ~FaultSegment.max
+      ~FaultSegment.mean
+      ~FaultSegment.min
+      ~FaultSegment.set_displacement
+      ~FaultSegment.set_model
+      ~FaultSegment.toggle_faults
+   
+   
+
+   
+   
+   

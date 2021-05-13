@@ -1,0 +1,71 @@
+LoopStructural.interpolators.discrete\_fold\_interpolator.DiscreteFoldInterpolator
+==================================================================================
+
+.. currentmodule:: LoopStructural.interpolators.discrete_fold_interpolator
+
+.. autoclass:: DiscreteFoldInterpolator
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DiscreteFoldInterpolator.__init__
+      ~DiscreteFoldInterpolator.add_constant_gradient
+      ~DiscreteFoldInterpolator.add_constant_norm
+      ~DiscreteFoldInterpolator.add_constraints_to_least_squares
+      ~DiscreteFoldInterpolator.add_ctr_pts
+      ~DiscreteFoldInterpolator.add_direction_constant_gradient
+      ~DiscreteFoldInterpolator.add_equality_constraints
+      ~DiscreteFoldInterpolator.add_fold_constraints
+      ~DiscreteFoldInterpolator.add_gradient_ctr_pts
+      ~DiscreteFoldInterpolator.add_gradient_orthogonal_constraint
+      ~DiscreteFoldInterpolator.add_interface_ctr_pts
+      ~DiscreteFoldInterpolator.add_norm_ctr_pts
+      ~DiscreteFoldInterpolator.add_tangent_ctr_pts
+      ~DiscreteFoldInterpolator.build_matrix
+      ~DiscreteFoldInterpolator.calculate_residual_for_constraints
+      ~DiscreteFoldInterpolator.copy
+      ~DiscreteFoldInterpolator.evaluate_gradient
+      ~DiscreteFoldInterpolator.evaluate_value
+      ~DiscreteFoldInterpolator.from_piecewise_linear_and_fold
+      ~DiscreteFoldInterpolator.get_data_locations
+      ~DiscreteFoldInterpolator.get_gradient_constraints
+      ~DiscreteFoldInterpolator.get_interface_constraints
+      ~DiscreteFoldInterpolator.get_norm_constraints
+      ~DiscreteFoldInterpolator.get_tangent_constraints
+      ~DiscreteFoldInterpolator.get_value_constraints
+      ~DiscreteFoldInterpolator.remove_constraints_from_least_squares
+      ~DiscreteFoldInterpolator.reset
+      ~DiscreteFoldInterpolator.set_gradient_constraints
+      ~DiscreteFoldInterpolator.set_interface_constraints
+      ~DiscreteFoldInterpolator.set_interpolation_weights
+      ~DiscreteFoldInterpolator.set_normal_constraints
+      ~DiscreteFoldInterpolator.set_property_name
+      ~DiscreteFoldInterpolator.set_region
+      ~DiscreteFoldInterpolator.set_tangent_constraints
+      ~DiscreteFoldInterpolator.set_value_constraints
+      ~DiscreteFoldInterpolator.setup_interpolator
+      ~DiscreteFoldInterpolator.solve_system
+      ~DiscreteFoldInterpolator.update
+      ~DiscreteFoldInterpolator.update_fold
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DiscreteFoldInterpolator.nx
+      ~DiscreteFoldInterpolator.region
+      ~DiscreteFoldInterpolator.region_map
+   
+   

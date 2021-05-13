@@ -1,0 +1,6 @@
+LoopStructural.analysis.calculate\_fault\_topology\_matrix
+==========================================================
+
+.. currentmodule:: LoopStructural.analysis
+
+.. autofunction:: calculate_fault_topology_matrix

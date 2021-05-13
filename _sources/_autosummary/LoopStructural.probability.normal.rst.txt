@@ -1,0 +1,6 @@
+LoopStructural.probability.normal
+=================================
+
+.. currentmodule:: LoopStructural.probability
+
+.. autofunction:: normal

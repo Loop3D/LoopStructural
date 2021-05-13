@@ -1,0 +1,67 @@
+LoopStructural.modelling.core.geological\_model.FDI
+===================================================
+
+.. currentmodule:: LoopStructural.modelling.core.geological_model
+
+.. autoclass:: FDI
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FDI.__init__
+      ~FDI.add_constraints_to_least_squares
+      ~FDI.add_equality_constraints
+      ~FDI.add_gradient_constraint
+      ~FDI.add_gradient_orthogonal_constraint
+      ~FDI.add_interface_ctr_pts
+      ~FDI.add_norm_constraint
+      ~FDI.add_regularisation
+      ~FDI.add_tangent_ctr_pts
+      ~FDI.add_vaue_constraint
+      ~FDI.assemble_inner
+      ~FDI.build_matrix
+      ~FDI.calculate_residual_for_constraints
+      ~FDI.copy
+      ~FDI.evaluate_gradient
+      ~FDI.evaluate_value
+      ~FDI.get_data_locations
+      ~FDI.get_gradient_constraints
+      ~FDI.get_interface_constraints
+      ~FDI.get_norm_constraints
+      ~FDI.get_tangent_constraints
+      ~FDI.get_value_constraints
+      ~FDI.remove_constraints_from_least_squares
+      ~FDI.reset
+      ~FDI.set_gradient_constraints
+      ~FDI.set_interface_constraints
+      ~FDI.set_interpolation_weights
+      ~FDI.set_normal_constraints
+      ~FDI.set_property_name
+      ~FDI.set_region
+      ~FDI.set_tangent_constraints
+      ~FDI.set_value_constraints
+      ~FDI.setup_interpolator
+      ~FDI.solve_system
+      ~FDI.update
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FDI.nx
+      ~FDI.region
+      ~FDI.region_map
+   
+   

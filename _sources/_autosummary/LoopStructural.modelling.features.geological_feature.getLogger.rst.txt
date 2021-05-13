@@ -1,0 +1,6 @@
+LoopStructural.modelling.features.geological\_feature.getLogger
+===============================================================
+
+.. currentmodule:: LoopStructural.modelling.features.geological_feature
+
+.. autofunction:: getLogger

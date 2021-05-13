@@ -1,10 +1,41 @@
 LoopStructural.modelling.fold.svariogram
 ========================================
 
-.. contents::
-    :local:
-
 .. automodule:: LoopStructural.modelling.fold.svariogram
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      find_peaks_and_troughs
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      SVariogram
+   
+   
+
+   
+   
+   
+
+
+

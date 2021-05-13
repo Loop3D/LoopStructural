@@ -1,0 +1,6 @@
+LoopStructural.modelling.fold.svariogram.getLogger
+==================================================
+
+.. currentmodule:: LoopStructural.modelling.fold.svariogram
+
+.. autofunction:: getLogger

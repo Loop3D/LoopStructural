@@ -13,7 +13,6 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
@@ -37,7 +36,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -124,15 +122,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide/fault_modelling.html">Fault modelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
-<p class="caption"><span class="caption-text">LoopStructural API</span></p>
+<p class="caption"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../API.html">LoopStructural API</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/LoopStructural.html">LoopStructural</a></li>
 </ul>
 
             
@@ -217,10 +209,10 @@ There are two ways of installing surfe:
 2. Download the precompiled library from the github releases <a class="reference external" href="https://github.com/MichaelHillier/surfe/releases">https://github.com/MichaelHillier/surfe/releases</a></p>
 <p>Once you have the correct file for your system you will need to add an environment variable
 to windows <code class="code docutils literal notranslate"><span class="pre">SURFE</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <span class="n">GeologicalModel</span>
-<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">GeologicalModel</span></a>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LavaVuModelViewer</span></a>
 
-<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_claudius</span> <span class="c1">#demo data</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.datasets.load_claudius.html#LoopStructural.datasets.load_claudius" title="LoopStructural.datasets.load_claudius" class="sphx-glr-backref-module-LoopStructural-datasets sphx-glr-backref-type-py-function"><span class="n">load_claudius</span></a> <span class="c1">#demo data</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">glob</span>
@@ -228,7 +220,7 @@ to windows <code class="code docutils literal notranslate"><span class="pre">SUR
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
-<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span><span class="c1">#claudius.get_data()</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.datasets.load_claudius.html#LoopStructural.datasets.load_claudius" title="LoopStructural.datasets.load_claudius" class="sphx-glr-backref-module-LoopStructural-datasets sphx-glr-backref-type-py-function"><span class="n">load_claudius</span></a><span class="p">()</span><span class="c1">#claudius.get_data()</span>
 <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+=</span><span class="mi">200</span>
 <span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-=</span><span class="mi">200</span>
 <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">+=</span><span class="mi">200</span>
@@ -236,7 +228,7 @@ to windows <code class="code docutils literal notranslate"><span class="pre">SUR
 <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">+=</span><span class="mi">200</span>
 <span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-=</span><span class="mi">200</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+<span class="n">model</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">])</span><span class="c1">#[np.isnan(data[&#39;val&#39;])])</span>
 <span class="n">strati</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s2">&quot;strati&quot;</span><span class="p">,</span>
@@ -244,7 +236,7 @@ to windows <code class="code docutils literal notranslate"><span class="pre">SUR
                                         <span class="n">method</span><span class="o">=</span><span class="s1">&#39;single_surface&#39;</span>
                                         <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">strati</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))))</span>
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">viewer</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LavaVuModelViewer</span></a><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
 
 <span class="c1"># determine the number of unique surfaces in the model from</span>
 <span class="c1"># the input data and then calculate isosurfaces for this</span>

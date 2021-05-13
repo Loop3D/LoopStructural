@@ -1,0 +1,879 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>LoopStructural.Path &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.analysis" href="LoopStructural.analysis.html" />
+    <link rel="prev" title="LoopStructural.GeologicalModel" href="LoopStructural.GeologicalModel.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.dictConfig.html">LoopStructural.dictConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.getLogger.html">LoopStructural.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.log_to_console.html">LoopStructural.log_to_console</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.log_to_file.html">LoopStructural.log_to_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.GeologicalModel.html">LoopStructural.GeologicalModel</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.Path</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+        
+      <li>LoopStructural.Path</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/LoopStructural.Path.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-path">
+<h1>LoopStructural.Path<a class="headerlink" href="#loopstructural-path" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.Path">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.</span></code><code class="sig-name descname"><span class="pre">Path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.PurePath</span></code></p>
+<p>PurePath subclass that can make system calls.</p>
+<p>Path represents a filesystem path but unlike PurePath, also offers
+methods to do system calls on path objects. Depending on your system,
+instantiating a Path will return either a PosixPath or a WindowsPath
+object. You can also instantiate a PosixPath or WindowsPath directly,
+but cannot instantiate a WindowsPath on a POSIX system or vice versa.</p>
+<p>Construct a PurePath from one or several strings and or existing
+PurePath objects.  The strings and path objects are combined so as
+to yield a canonicalized path, which is incorporated into the
+new PurePath object.</p>
+<dl class="py method">
+<dt id="LoopStructural.Path.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.__init__" title="LoopStructural.Path.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.absolute" title="LoopStructural.Path.absolute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute</span></code></a>()</p></td>
+<td><p>Return an absolute version of this path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.as_posix" title="LoopStructural.Path.as_posix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">as_posix</span></code></a>()</p></td>
+<td><p>Return the string representation of the path with forward (/) slashes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.as_uri" title="LoopStructural.Path.as_uri"><code class="xref py py-obj docutils literal notranslate"><span class="pre">as_uri</span></code></a>()</p></td>
+<td><p>Return the path as a ‘file’ URI.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.chmod" title="LoopStructural.Path.chmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chmod</span></code></a>(mode)</p></td>
+<td><p>Change the permissions of the path, like os.chmod().</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.cwd" title="LoopStructural.Path.cwd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cwd</span></code></a>()</p></td>
+<td><p>Return a new path pointing to the current working directory (as returned by os.getcwd()).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.exists" title="LoopStructural.Path.exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exists</span></code></a>()</p></td>
+<td><p>Whether this path exists.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.expanduser" title="LoopStructural.Path.expanduser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expanduser</span></code></a>()</p></td>
+<td><p>Return a new path with expanded ~ and ~user constructs (as returned by os.path.expanduser)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.glob" title="LoopStructural.Path.glob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">glob</span></code></a>(pattern)</p></td>
+<td><p>Iterate over this subtree and yield all existing files (of any kind, including directories) matching the given relative pattern.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.group" title="LoopStructural.Path.group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">group</span></code></a>()</p></td>
+<td><p>Return the group name of the file gid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.home" title="LoopStructural.Path.home"><code class="xref py py-obj docutils literal notranslate"><span class="pre">home</span></code></a>()</p></td>
+<td><p>Return a new path pointing to the user’s home directory (as returned by os.path.expanduser(‘~’)).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.is_absolute" title="LoopStructural.Path.is_absolute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_absolute</span></code></a>()</p></td>
+<td><p>True if the path is absolute (has both a root and, if applicable, a drive).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.is_block_device" title="LoopStructural.Path.is_block_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_block_device</span></code></a>()</p></td>
+<td><p>Whether this path is a block device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.is_char_device" title="LoopStructural.Path.is_char_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_char_device</span></code></a>()</p></td>
+<td><p>Whether this path is a character device.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.is_dir" title="LoopStructural.Path.is_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dir</span></code></a>()</p></td>
+<td><p>Whether this path is a directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.is_fifo" title="LoopStructural.Path.is_fifo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_fifo</span></code></a>()</p></td>
+<td><p>Whether this path is a FIFO.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.is_file" title="LoopStructural.Path.is_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_file</span></code></a>()</p></td>
+<td><p>Whether this path is a regular file (also True for symlinks pointing to regular files).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.is_mount" title="LoopStructural.Path.is_mount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_mount</span></code></a>()</p></td>
+<td><p>Check if this path is a POSIX mount point</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.is_relative_to" title="LoopStructural.Path.is_relative_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_relative_to</span></code></a>(*other)</p></td>
+<td><p>Return True if the path is relative to another path or False.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.is_reserved" title="LoopStructural.Path.is_reserved"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_reserved</span></code></a>()</p></td>
+<td><p>Return True if the path contains one of the special names reserved by the system, if any.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.is_socket" title="LoopStructural.Path.is_socket"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_socket</span></code></a>()</p></td>
+<td><p>Whether this path is a socket.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.is_symlink" title="LoopStructural.Path.is_symlink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symlink</span></code></a>()</p></td>
+<td><p>Whether this path is a symbolic link.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.iterdir" title="LoopStructural.Path.iterdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iterdir</span></code></a>()</p></td>
+<td><p>Iterate over the files in this directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.joinpath" title="LoopStructural.Path.joinpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">joinpath</span></code></a>(*args)</p></td>
+<td><p>Combine this path with one or several arguments, and return a new path representing either a subpath (if all arguments are relative paths) or a totally different path (if one of the arguments is anchored).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.lchmod" title="LoopStructural.Path.lchmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lchmod</span></code></a>(mode)</p></td>
+<td><p>Like chmod(), except if the path points to a symlink, the symlink’s permissions are changed, rather than its target’s.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.link_to" title="LoopStructural.Path.link_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_to</span></code></a>(target)</p></td>
+<td><p>Create a hard link pointing to a path named target.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.lstat" title="LoopStructural.Path.lstat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lstat</span></code></a>()</p></td>
+<td><p>Like stat(), except if the path points to a symlink, the symlink’s status information is returned, rather than its target’s.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.match" title="LoopStructural.Path.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>(path_pattern)</p></td>
+<td><p>Return True if this path matches the given pattern.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.mkdir" title="LoopStructural.Path.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mkdir</span></code></a>([mode, parents, exist_ok])</p></td>
+<td><p>Create a new directory at this given path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.open" title="LoopStructural.Path.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>([mode, buffering, encoding, errors, …])</p></td>
+<td><p>Open the file pointed by this path and return a file object, as the built-in open() function does.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.owner" title="LoopStructural.Path.owner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">owner</span></code></a>()</p></td>
+<td><p>Return the login name of the file owner.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.read_bytes" title="LoopStructural.Path.read_bytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_bytes</span></code></a>()</p></td>
+<td><p>Open the file in bytes mode, read it, and close the file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.read_text" title="LoopStructural.Path.read_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_text</span></code></a>([encoding, errors])</p></td>
+<td><p>Open the file in text mode, read it, and close the file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.readlink" title="LoopStructural.Path.readlink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">readlink</span></code></a>()</p></td>
+<td><p>Return the path to which the symbolic link points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.relative_to" title="LoopStructural.Path.relative_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relative_to</span></code></a>(*other)</p></td>
+<td><p>Return the relative path to another path identified by the passed arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.rename" title="LoopStructural.Path.rename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename</span></code></a>(target)</p></td>
+<td><p>Rename this path to the target path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.replace" title="LoopStructural.Path.replace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replace</span></code></a>(target)</p></td>
+<td><p>Rename this path to the target path, overwriting if that path exists.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.resolve" title="LoopStructural.Path.resolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve</span></code></a>([strict])</p></td>
+<td><p>Make the path absolute, resolving all symlinks on the way and also normalizing it (for example turning slashes into backslashes under Windows).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.rglob" title="LoopStructural.Path.rglob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rglob</span></code></a>(pattern)</p></td>
+<td><p>Recursively yield all existing files (of any kind, including directories) matching the given relative pattern, anywhere in this subtree.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.rmdir" title="LoopStructural.Path.rmdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rmdir</span></code></a>()</p></td>
+<td><p>Remove this directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.samefile" title="LoopStructural.Path.samefile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">samefile</span></code></a>(other_path)</p></td>
+<td><p>Return whether other_path is the same or not as this file (as returned by os.path.samefile()).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.stat" title="LoopStructural.Path.stat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stat</span></code></a>()</p></td>
+<td><p>Return the result of the stat() system call on this path, like os.stat() does.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.symlink_to" title="LoopStructural.Path.symlink_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symlink_to</span></code></a>(target[, target_is_directory])</p></td>
+<td><p>Make this path a symlink pointing to the given path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.touch" title="LoopStructural.Path.touch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">touch</span></code></a>([mode, exist_ok])</p></td>
+<td><p>Create this file with the given access mode, if it doesn’t exist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.unlink" title="LoopStructural.Path.unlink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unlink</span></code></a>([missing_ok])</p></td>
+<td><p>Remove this file or link.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.with_name" title="LoopStructural.Path.with_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_name</span></code></a>(name)</p></td>
+<td><p>Return a new path with the file name changed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.with_stem" title="LoopStructural.Path.with_stem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_stem</span></code></a>(stem)</p></td>
+<td><p>Return a new path with the stem changed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.with_suffix" title="LoopStructural.Path.with_suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_suffix</span></code></a>(suffix)</p></td>
+<td><p>Return a new path with the file suffix changed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.write_bytes" title="LoopStructural.Path.write_bytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_bytes</span></code></a>(data)</p></td>
+<td><p>Open the file in bytes mode, write to it, and close the file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.write_text" title="LoopStructural.Path.write_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_text</span></code></a>(data[, encoding, errors])</p></td>
+<td><p>Open the file in text mode, write to it, and close the file.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.anchor" title="LoopStructural.Path.anchor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">anchor</span></code></a></p></td>
+<td><p>The concatenation of the drive and root, or ‘’.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.drive" title="LoopStructural.Path.drive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drive</span></code></a></p></td>
+<td><p>The drive prefix (letter or UNC path), if any.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.name" title="LoopStructural.Path.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>The final path component, if any.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.parent" title="LoopStructural.Path.parent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code></a></p></td>
+<td><p>The logical parent of the path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.parents" title="LoopStructural.Path.parents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parents</span></code></a></p></td>
+<td><p>A sequence of this path’s logical parents.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.parts" title="LoopStructural.Path.parts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parts</span></code></a></p></td>
+<td><p>An object providing sequence-like access to the components in the filesystem path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.root" title="LoopStructural.Path.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a></p></td>
+<td><p>The root of the path, if any.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.stem" title="LoopStructural.Path.stem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stem</span></code></a></p></td>
+<td><p>The final path component, minus its last suffix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.suffix" title="LoopStructural.Path.suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffix</span></code></a></p></td>
+<td><p>The final component’s last suffix, if any.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.suffixes" title="LoopStructural.Path.suffixes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffixes</span></code></a></p></td>
+<td><p>A list of the final component’s suffixes, if any.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.Path.absolute">
+<code class="sig-name descname"><span class="pre">absolute</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.absolute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an absolute version of this path.  This function works
+even if the path doesn’t point to anything.</p>
+<p>No normalization is done, i.e. all ‘.’ and ‘..’ will be kept along.
+Use resolve() to get the canonical path to a file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.anchor">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">anchor</span></code><a class="headerlink" href="#LoopStructural.Path.anchor" title="Permalink to this definition">¶</a></dt>
+<dd><p>The concatenation of the drive and root, or ‘’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.as_posix">
+<code class="sig-name descname"><span class="pre">as_posix</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.as_posix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the string representation of the path with forward (/)
+slashes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.as_uri">
+<code class="sig-name descname"><span class="pre">as_uri</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.as_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path as a ‘file’ URI.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.chmod">
+<code class="sig-name descname"><span class="pre">chmod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.chmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the permissions of the path, like os.chmod().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.cwd">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">cwd</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path pointing to the current working directory
+(as returned by os.getcwd()).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.drive">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">drive</span></code><a class="headerlink" href="#LoopStructural.Path.drive" title="Permalink to this definition">¶</a></dt>
+<dd><p>The drive prefix (letter or UNC path), if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.exists">
+<code class="sig-name descname"><span class="pre">exists</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.expanduser">
+<code class="sig-name descname"><span class="pre">expanduser</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.expanduser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path with expanded ~ and ~user constructs
+(as returned by os.path.expanduser)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.glob">
+<code class="sig-name descname"><span class="pre">glob</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.glob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over this subtree and yield all existing files (of any
+kind, including directories) matching the given relative pattern.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.group">
+<code class="sig-name descname"><span class="pre">group</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the group name of the file gid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.home">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">home</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.home" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path pointing to the user’s home directory (as
+returned by os.path.expanduser(‘~’)).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_absolute">
+<code class="sig-name descname"><span class="pre">is_absolute</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_absolute" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the path is absolute (has both a root and, if applicable,
+a drive).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_block_device">
+<code class="sig-name descname"><span class="pre">is_block_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_block_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a block device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_char_device">
+<code class="sig-name descname"><span class="pre">is_char_device</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_char_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a character device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_dir">
+<code class="sig-name descname"><span class="pre">is_dir</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_fifo">
+<code class="sig-name descname"><span class="pre">is_fifo</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_fifo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a FIFO.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_file">
+<code class="sig-name descname"><span class="pre">is_file</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a regular file (also True for symlinks pointing
+to regular files).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_mount">
+<code class="sig-name descname"><span class="pre">is_mount</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_mount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this path is a POSIX mount point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_relative_to">
+<code class="sig-name descname"><span class="pre">is_relative_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_relative_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the path is relative to another path or False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_reserved">
+<code class="sig-name descname"><span class="pre">is_reserved</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_reserved" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the path contains one of the special names reserved
+by the system, if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_socket">
+<code class="sig-name descname"><span class="pre">is_socket</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_socket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a socket.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.is_symlink">
+<code class="sig-name descname"><span class="pre">is_symlink</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.is_symlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a symbolic link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.iterdir">
+<code class="sig-name descname"><span class="pre">iterdir</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.iterdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over the files in this directory.  Does not yield any
+result for the special paths ‘.’ and ‘..’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.joinpath">
+<code class="sig-name descname"><span class="pre">joinpath</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.joinpath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine this path with one or several arguments, and return a
+new path representing either a subpath (if all arguments are relative
+paths) or a totally different path (if one of the arguments is
+anchored).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.lchmod">
+<code class="sig-name descname"><span class="pre">lchmod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.lchmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like chmod(), except if the path points to a symlink, the symlink’s
+permissions are changed, rather than its target’s.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.link_to">
+<code class="sig-name descname"><span class="pre">link_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.link_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a hard link pointing to a path named target.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.lstat">
+<code class="sig-name descname"><span class="pre">lstat</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.lstat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like stat(), except if the path points to a symlink, the symlink’s
+status information is returned, rather than its target’s.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.match">
+<code class="sig-name descname"><span class="pre">match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_pattern</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this path matches the given pattern.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.mkdir">
+<code class="sig-name descname"><span class="pre">mkdir</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">511</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.mkdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new directory at this given path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#LoopStructural.Path.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final path component, if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.open">
+<code class="sig-name descname"><span class="pre">open</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file pointed by this path and return a file object, as
+the built-in open() function does.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.owner">
+<code class="sig-name descname"><span class="pre">owner</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.owner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the login name of the file owner.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.parent">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">parent</span></code><a class="headerlink" href="#LoopStructural.Path.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The logical parent of the path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.parents">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">parents</span></code><a class="headerlink" href="#LoopStructural.Path.parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sequence of this path’s logical parents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.parts">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">parts</span></code><a class="headerlink" href="#LoopStructural.Path.parts" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object providing sequence-like access to the
+components in the filesystem path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.read_bytes">
+<code class="sig-name descname"><span class="pre">read_bytes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.read_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in bytes mode, read it, and close the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.read_text">
+<code class="sig-name descname"><span class="pre">read_text</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.read_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in text mode, read it, and close the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.readlink">
+<code class="sig-name descname"><span class="pre">readlink</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.readlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path to which the symbolic link points.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.relative_to">
+<code class="sig-name descname"><span class="pre">relative_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.relative_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the relative path to another path identified by the passed
+arguments.  If the operation is not possible (because this is not
+a subpath of the other path), raise ValueError.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.rename">
+<code class="sig-name descname"><span class="pre">rename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename this path to the target path.</p>
+<p>The target path may be absolute or relative. Relative paths are
+interpreted relative to the current working directory, <em>not</em> the
+directory of the Path object.</p>
+<p>Returns the new Path instance pointing to the target path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.replace">
+<code class="sig-name descname"><span class="pre">replace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename this path to the target path, overwriting if that path exists.</p>
+<p>The target path may be absolute or relative. Relative paths are
+interpreted relative to the current working directory, <em>not</em> the
+directory of the Path object.</p>
+<p>Returns the new Path instance pointing to the target path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.resolve">
+<code class="sig-name descname"><span class="pre">resolve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.resolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the path absolute, resolving all symlinks on the way and also
+normalizing it (for example turning slashes into backslashes under
+Windows).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.rglob">
+<code class="sig-name descname"><span class="pre">rglob</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.rglob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively yield all existing files (of any kind, including
+directories) matching the given relative pattern, anywhere in
+this subtree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.rmdir">
+<code class="sig-name descname"><span class="pre">rmdir</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.rmdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove this directory.  The directory must be empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.root">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">root</span></code><a class="headerlink" href="#LoopStructural.Path.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>The root of the path, if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.samefile">
+<code class="sig-name descname"><span class="pre">samefile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.samefile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether other_path is the same or not as this file
+(as returned by os.path.samefile()).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.stat">
+<code class="sig-name descname"><span class="pre">stat</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.stat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the result of the stat() system call on this path, like
+os.stat() does.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.stem">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">stem</span></code><a class="headerlink" href="#LoopStructural.Path.stem" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final path component, minus its last suffix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.suffix">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">suffix</span></code><a class="headerlink" href="#LoopStructural.Path.suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final component’s last suffix, if any.</p>
+<p>This includes the leading period. For example: ‘.txt’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.suffixes">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">suffixes</span></code><a class="headerlink" href="#LoopStructural.Path.suffixes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the final component’s suffixes, if any.</p>
+<p>These include the leading periods. For example: [‘.tar’, ‘.gz’]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.symlink_to">
+<code class="sig-name descname"><span class="pre">symlink_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_is_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.symlink_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make this path a symlink pointing to the given path.
+Note the order of arguments (self, target) is the reverse of os.symlink’s.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.touch">
+<code class="sig-name descname"><span class="pre">touch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">438</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.touch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create this file with the given access mode, if it doesn’t exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.unlink">
+<code class="sig-name descname"><span class="pre">unlink</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">missing_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.unlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove this file or link.
+If the path is a directory, use rmdir() instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.with_name">
+<code class="sig-name descname"><span class="pre">with_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.with_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path with the file name changed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.with_stem">
+<code class="sig-name descname"><span class="pre">with_stem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.with_stem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path with the stem changed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.with_suffix">
+<code class="sig-name descname"><span class="pre">with_suffix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.with_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path with the file suffix changed.  If the path
+has no suffix, add given suffix.  If the given suffix is an empty
+string, remove the suffix from the path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.write_bytes">
+<code class="sig-name descname"><span class="pre">write_bytes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.write_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in bytes mode, write to it, and close the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.Path.write_text">
+<code class="sig-name descname"><span class="pre">write_text</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.write_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in text mode, write to it, and close the file.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="LoopStructural.analysis.html" class="btn btn-neutral float-right" title="LoopStructural.analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.GeologicalModel.html" class="btn btn-neutral float-left" title="LoopStructural.GeologicalModel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

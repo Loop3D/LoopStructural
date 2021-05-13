@@ -1,0 +1,31 @@
+LoopStructural.modelling.features.StructuralFrame
+=================================================
+
+.. currentmodule:: LoopStructural.modelling.features
+
+.. autoclass:: StructuralFrame
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~StructuralFrame.__init__
+      ~StructuralFrame.add_region
+      ~StructuralFrame.evaluate_gradient
+      ~StructuralFrame.evaluate_value
+      ~StructuralFrame.get_feature
+      ~StructuralFrame.set_data
+      ~StructuralFrame.set_model
+   
+   
+
+   
+   
+   

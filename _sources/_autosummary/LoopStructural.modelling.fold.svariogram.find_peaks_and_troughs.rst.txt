@@ -1,0 +1,6 @@
+LoopStructural.modelling.fold.svariogram.find\_peaks\_and\_troughs
+==================================================================
+
+.. currentmodule:: LoopStructural.modelling.fold.svariogram
+
+.. autofunction:: find_peaks_and_troughs

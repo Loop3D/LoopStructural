@@ -93,7 +93,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7f4d5b226a90>
+    <matplotlib.contour.QuadContourSet object at 0x7f4868c51d60>
 
 
 
@@ -128,7 +128,7 @@ fault frame and an expected displacement model.
     #                       slices=[0,1]#nslices=10
                          )
     xyz = model.data[model.data['feature_name']=='strati'][['X','Y','Z']].to_numpy()
-    xyz = xyz[fault.evaluate(xyz),:]
+    xyz = xyz[fault.evaluate(xyz).astype(bool),:]
     viewer.add_vector_field(fault, locations= xyz)
     viewer.add_points(model.data[model.data['feature_name']=='strati'][['X','Y','Z']],name='prefault')
     viewer.rotation = [-73.24819946289062, -86.82220458984375, -13.912878036499023]
@@ -186,7 +186,7 @@ fault frame and an expected displacement model.
 
  .. code-block:: none
 
-      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  50%|#####     | 2/4 [00:00<00:00, 12.67it/s]    Interpolating strati:  75%|#######5  | 3/4 [00:00<00:00, 12.67it/s]    Interpolating strati: 100%|##########| 4/4 [00:01<00:00,  3.49it/s]    Interpolating strati: 100%|##########| 4/4 [00:01<00:00,  3.92it/s]
+      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  50%|#####     | 2/4 [00:00<00:00, 17.87it/s]    Interpolating strati:  75%|#######5  | 3/4 [00:00<00:00, 17.87it/s]    Interpolating strati: 100%|##########| 4/4 [00:01<00:00,  2.72it/s]    Interpolating strati: 100%|##########| 4/4 [00:01<00:00,  3.11it/s]
 
 
 
@@ -194,7 +194,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.582 seconds)
+   **Total running time of the script:** ( 0 minutes  8.188 seconds)
 
 
 .. _sphx_glr_download_auto_examples_3_fault_plot_faulted_intrusion.py:

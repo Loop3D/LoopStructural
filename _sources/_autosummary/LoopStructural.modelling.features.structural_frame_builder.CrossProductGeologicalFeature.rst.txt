@@ -1,0 +1,35 @@
+LoopStructural.modelling.features.structural\_frame\_builder.CrossProductGeologicalFeature
+==========================================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.structural_frame_builder
+
+.. autoclass:: CrossProductGeologicalFeature
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~CrossProductGeologicalFeature.__init__
+      ~CrossProductGeologicalFeature.add_region
+      ~CrossProductGeologicalFeature.evaluate_gradient
+      ~CrossProductGeologicalFeature.evaluate_gradient_misfit
+      ~CrossProductGeologicalFeature.evaluate_value
+      ~CrossProductGeologicalFeature.evaluate_value_misfit
+      ~CrossProductGeologicalFeature.max
+      ~CrossProductGeologicalFeature.mean
+      ~CrossProductGeologicalFeature.min
+      ~CrossProductGeologicalFeature.set_model
+      ~CrossProductGeologicalFeature.toggle_faults
+   
+   
+
+   
+   
+   

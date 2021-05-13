@@ -1,10 +1,43 @@
-LoopStructural.modelling.fault.fault_segment
-============================================
-
-.. contents::
-    :local:
+LoopStructural.modelling.fault.fault\_segment
+=============================================
 
 .. automodule:: LoopStructural.modelling.fault.fault_segment
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseFault
+      FaultDisplacementFeature
+      FaultSegment
+      ThreadPoolExecutor
+   
+   
+
+   
+   
+   
+
+
+

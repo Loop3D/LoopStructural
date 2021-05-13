@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.plunge\_and\_plunge\_dir\_to\_vector
+================================================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: plunge_and_plunge_dir_to_vector

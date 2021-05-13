@@ -1,10 +1,40 @@
-LoopStructural.visualisation.rotation_angle_plotter
-===================================================
-
-.. contents::
-    :local:
+LoopStructural.visualisation.rotation\_angle\_plotter
+=====================================================
 
 .. automodule:: LoopStructural.visualisation.rotation_angle_plotter
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      RotationAnglePlotter
+   
+   
+
+   
+   
+   
+
+
+

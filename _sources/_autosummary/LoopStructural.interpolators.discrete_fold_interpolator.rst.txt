@@ -1,10 +1,42 @@
-LoopStructural.interpolators.discrete_fold_interpolator
-=======================================================
-
-.. contents::
-    :local:
+LoopStructural.interpolators.discrete\_fold\_interpolator
+=========================================================
 
 .. automodule:: LoopStructural.interpolators.discrete_fold_interpolator
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      fold_cg
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      DiscreteFoldInterpolator
+      PiecewiseLinearInterpolator
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,6 @@
+LoopStructural.utils.utils.strike\_symbol
+=========================================
+
+.. currentmodule:: LoopStructural.utils.utils
+
+.. autofunction:: strike_symbol

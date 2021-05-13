@@ -1,0 +1,6 @@
+LoopStructural.interpolators.structured\_grid.getLogger
+=======================================================
+
+.. currentmodule:: LoopStructural.interpolators.structured_grid
+
+.. autofunction:: getLogger

@@ -1,0 +1,6 @@
+LoopStructural.visualisation.model\_visualisation.is\_notebook
+==============================================================
+
+.. currentmodule:: LoopStructural.visualisation.model_visualisation
+
+.. autofunction:: is_notebook

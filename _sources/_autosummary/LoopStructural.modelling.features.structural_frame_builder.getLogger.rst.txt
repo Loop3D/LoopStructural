@@ -1,0 +1,6 @@
+LoopStructural.modelling.features.structural\_frame\_builder.getLogger
+======================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.structural_frame_builder
+
+.. autofunction:: getLogger

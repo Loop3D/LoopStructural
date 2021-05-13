@@ -1,0 +1,26 @@
+LoopStructural.modelling.fold.FoldRotationAngleFeature
+======================================================
+
+.. currentmodule:: LoopStructural.modelling.fold
+
+.. autoclass:: FoldRotationAngleFeature
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FoldRotationAngleFeature.__init__
+      ~FoldRotationAngleFeature.evaluate_value
+   
+   
+
+   
+   
+   

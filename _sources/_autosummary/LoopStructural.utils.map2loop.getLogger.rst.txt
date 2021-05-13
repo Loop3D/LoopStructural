@@ -1,0 +1,6 @@
+LoopStructural.utils.map2loop.getLogger
+=======================================
+
+.. currentmodule:: LoopStructural.utils.map2loop
+
+.. autofunction:: getLogger

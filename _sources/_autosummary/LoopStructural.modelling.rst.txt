@@ -1,10 +1,35 @@
 LoopStructural.modelling
 ========================
 
-.. contents::
-    :local:
-
 .. automodule:: LoopStructural.modelling
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst                 
+   :recursive:
+
+   LoopStructural.modelling.core
+   LoopStructural.modelling.fault
+   LoopStructural.modelling.features
+   LoopStructural.modelling.fold
+

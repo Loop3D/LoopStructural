@@ -1,0 +1,6 @@
+LoopStructural.modelling.fold.fold\_rotation\_angle.curve\_fit
+==============================================================
+
+.. currentmodule:: LoopStructural.modelling.fold.fold_rotation_angle
+
+.. autofunction:: curve_fit

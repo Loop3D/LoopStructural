@@ -1,0 +1,6 @@
+LoopStructural.utils.logging.get\_levels
+========================================
+
+.. currentmodule:: LoopStructural.utils.logging
+
+.. autofunction:: get_levels

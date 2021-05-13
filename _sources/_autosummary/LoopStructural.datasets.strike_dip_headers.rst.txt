@@ -1,0 +1,6 @@
+LoopStructural.datasets.strike\_dip\_headers
+============================================
+
+.. currentmodule:: LoopStructural.datasets
+
+.. autofunction:: strike_dip_headers

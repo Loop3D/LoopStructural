@@ -1,0 +1,6 @@
+LoopStructural.datasets.load\_duplex
+====================================
+
+.. currentmodule:: LoopStructural.datasets
+
+.. autofunction:: load_duplex

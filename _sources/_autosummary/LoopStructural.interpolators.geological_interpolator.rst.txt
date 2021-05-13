@@ -1,10 +1,40 @@
-LoopStructural.interpolators.geological_interpolator
-====================================================
-
-.. contents::
-    :local:
+LoopStructural.interpolators.geological\_interpolator
+=====================================================
 
 .. automodule:: LoopStructural.interpolators.geological_interpolator
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      GeologicalInterpolator
+   
+   
+
+   
+   
+   
+
+
+

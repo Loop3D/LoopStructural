@@ -1,10 +1,40 @@
 LoopStructural.modelling.fold.fold
 ==================================
 
-.. contents::
-    :local:
-
 .. automodule:: LoopStructural.modelling.fold.fold
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      FoldEvent
+   
+   
+
+   
+   
+   
+
+
+

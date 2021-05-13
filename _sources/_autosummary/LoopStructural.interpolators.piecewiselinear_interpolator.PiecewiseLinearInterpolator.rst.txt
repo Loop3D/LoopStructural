@@ -1,0 +1,68 @@
+LoopStructural.interpolators.piecewiselinear\_interpolator.PiecewiseLinearInterpolator
+======================================================================================
+
+.. currentmodule:: LoopStructural.interpolators.piecewiselinear_interpolator
+
+.. autoclass:: PiecewiseLinearInterpolator
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PiecewiseLinearInterpolator.__init__
+      ~PiecewiseLinearInterpolator.add_constant_gradient
+      ~PiecewiseLinearInterpolator.add_constant_norm
+      ~PiecewiseLinearInterpolator.add_constraints_to_least_squares
+      ~PiecewiseLinearInterpolator.add_ctr_pts
+      ~PiecewiseLinearInterpolator.add_direction_constant_gradient
+      ~PiecewiseLinearInterpolator.add_equality_constraints
+      ~PiecewiseLinearInterpolator.add_gradient_ctr_pts
+      ~PiecewiseLinearInterpolator.add_gradient_orthogonal_constraint
+      ~PiecewiseLinearInterpolator.add_interface_ctr_pts
+      ~PiecewiseLinearInterpolator.add_norm_ctr_pts
+      ~PiecewiseLinearInterpolator.add_tangent_ctr_pts
+      ~PiecewiseLinearInterpolator.build_matrix
+      ~PiecewiseLinearInterpolator.calculate_residual_for_constraints
+      ~PiecewiseLinearInterpolator.copy
+      ~PiecewiseLinearInterpolator.evaluate_gradient
+      ~PiecewiseLinearInterpolator.evaluate_value
+      ~PiecewiseLinearInterpolator.get_data_locations
+      ~PiecewiseLinearInterpolator.get_gradient_constraints
+      ~PiecewiseLinearInterpolator.get_interface_constraints
+      ~PiecewiseLinearInterpolator.get_norm_constraints
+      ~PiecewiseLinearInterpolator.get_tangent_constraints
+      ~PiecewiseLinearInterpolator.get_value_constraints
+      ~PiecewiseLinearInterpolator.remove_constraints_from_least_squares
+      ~PiecewiseLinearInterpolator.reset
+      ~PiecewiseLinearInterpolator.set_gradient_constraints
+      ~PiecewiseLinearInterpolator.set_interface_constraints
+      ~PiecewiseLinearInterpolator.set_interpolation_weights
+      ~PiecewiseLinearInterpolator.set_normal_constraints
+      ~PiecewiseLinearInterpolator.set_property_name
+      ~PiecewiseLinearInterpolator.set_region
+      ~PiecewiseLinearInterpolator.set_tangent_constraints
+      ~PiecewiseLinearInterpolator.set_value_constraints
+      ~PiecewiseLinearInterpolator.setup_interpolator
+      ~PiecewiseLinearInterpolator.solve_system
+      ~PiecewiseLinearInterpolator.update
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PiecewiseLinearInterpolator.nx
+      ~PiecewiseLinearInterpolator.region
+      ~PiecewiseLinearInterpolator.region_map
+   
+   

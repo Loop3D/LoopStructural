@@ -1,10 +1,40 @@
-LoopStructural.visualisation.map_viewer
-=======================================
-
-.. contents::
-    :local:
+LoopStructural.visualisation.map\_viewer
+========================================
 
 .. automodule:: LoopStructural.visualisation.map_viewer
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      MapView
+   
+   
+
+   
+   
+   
+
+
+

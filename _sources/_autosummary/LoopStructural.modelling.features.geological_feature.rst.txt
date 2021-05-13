@@ -1,10 +1,40 @@
-LoopStructural.modelling.features.geological_feature
-====================================================
-
-.. contents::
-    :local:
+LoopStructural.modelling.features.geological\_feature
+=====================================================
 
 .. automodule:: LoopStructural.modelling.features.geological_feature
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      GeologicalFeature
+   
+   
+
+   
+   
+   
+
+
+

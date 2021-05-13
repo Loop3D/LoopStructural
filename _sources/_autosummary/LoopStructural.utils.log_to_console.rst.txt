@@ -1,0 +1,6 @@
+LoopStructural.utils.log\_to\_console
+=====================================
+
+.. currentmodule:: LoopStructural.utils
+
+.. autofunction:: log_to_console

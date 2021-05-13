@@ -13,7 +13,6 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
@@ -37,7 +36,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -45,8 +43,8 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.interpolators.operator" href="LoopStructural.interpolators.operator.html" />
-    <link rel="prev" title="LoopStructural.interpolators.structured_tetra" href="LoopStructural.interpolators.structured_tetra.html" /> 
+    <link rel="next" title="LoopStructural.interpolators.structured_grid.getLogger" href="LoopStructural.interpolators.structured_grid.getLogger.html" />
+    <link rel="prev" title="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" href="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,28 +108,41 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
-<p class="caption"><span class="caption-text">LoopStructural API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
-</ul>
+<p class="caption"><span class="caption-text">API</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-submodules">Interpolation Submodules</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../LoopStructural.interpolators.html#interpolation-support-submodules">Interpolation Support Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.structured_tetra.html">LoopStructural.interpolators.structured_tetra</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.interpolators.structured_grid</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#members">Members</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">LoopStructural.interpolators.StructuredGrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.base_structured_3d_support.html">LoopStructural.interpolators.base_structured_3d_support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.cython.html">LoopStructural.interpolators.cython</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_fold_interpolator.html">LoopStructural.interpolators.discrete_fold_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.html">LoopStructural.interpolators.discrete_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html">LoopStructural.interpolators.geological_interpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.operator.html">LoopStructural.interpolators.operator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.piecewiselinear_interpolator.html">LoopStructural.interpolators.piecewiselinear_interpolator</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.interpolators.structured_grid</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.structured_grid.getLogger.html">LoopStructural.interpolators.structured_grid.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.structured_grid.BaseStructuredSupport.html">LoopStructural.interpolators.structured_grid.BaseStructuredSupport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.structured_grid.StructuredGrid.html">LoopStructural.interpolators.structured_grid.StructuredGrid</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.interpolators.html#members">Members</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.structured_tetra.html">LoopStructural.interpolators.structured_tetra</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -180,9 +191,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
         
-          <li><a href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a> &raquo;</li>
+          <li><a href="LoopStructural.interpolators.html">LoopStructural.interpolators</a> &raquo;</li>
         
       <li>LoopStructural.interpolators.structured_grid</li>
     
@@ -203,17 +214,44 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="loopstructural-interpolators-structured-grid">
-<h1>LoopStructural.interpolators.structured_grid<a class="headerlink" href="#loopstructural-interpolators-structured-grid" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
-</ul>
-</div>
-<span class="target" id="module-LoopStructural.interpolators.structured_grid"></span><p>Cartesian grid for fold interpolator</p>
-<div class="section" id="members">
-<h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-</div>
+  <div class="section" id="module-LoopStructural.interpolators.structured_grid">
+<span id="loopstructural-interpolators-structured-grid"></span><h1>LoopStructural.interpolators.structured_grid<a class="headerlink" href="#module-LoopStructural.interpolators.structured_grid" title="Permalink to this headline">¶</a></h1>
+<p>Cartesian grid for fold interpolator</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.structured_grid.getLogger.html#LoopStructural.interpolators.structured_grid.getLogger" title="LoopStructural.interpolators.structured_grid.getLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getLogger</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.structured_grid.BaseStructuredSupport.html#LoopStructural.interpolators.structured_grid.BaseStructuredSupport" title="LoopStructural.interpolators.structured_grid.BaseStructuredSupport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseStructuredSupport</span></code></a>([origin, nsteps, …])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param origin - 3d list or numpy array</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.structured_grid.StructuredGrid.html#LoopStructural.interpolators.structured_grid.StructuredGrid" title="LoopStructural.interpolators.structured_grid.StructuredGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredGrid</span></code></a>([origin, nsteps, …])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param origin - 3d list or numpy array</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
@@ -222,8 +260,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="LoopStructural.interpolators.operator.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.operator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="LoopStructural.interpolators.structured_tetra.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.structured_tetra" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.interpolators.structured_grid.getLogger.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.structured_grid.getLogger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.piecewiselinear_interpolator.PiecewiseLinearInterpolator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

@@ -1,10 +1,40 @@
-LoopStructural.modelling.features.structural_frame
-==================================================
-
-.. contents::
-    :local:
+LoopStructural.modelling.features.structural\_frame
+===================================================
 
 .. automodule:: LoopStructural.modelling.features.structural_frame
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      StructuralFrame
+   
+   
+
+   
+   
+   
+
+
+

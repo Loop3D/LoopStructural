@@ -1,0 +1,6 @@
+LoopStructural.utils.utils.read\_voxet
+======================================
+
+.. currentmodule:: LoopStructural.utils.utils
+
+.. autofunction:: read_voxet

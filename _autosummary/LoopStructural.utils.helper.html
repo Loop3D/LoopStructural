@@ -13,7 +13,6 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
@@ -37,7 +36,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -45,8 +43,8 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.utils.utils" href="LoopStructural.utils.utils.html" />
-    <link rel="prev" title="LoopStructural.utils" href="../LoopStructural.utils.html" /> 
+    <link rel="next" title="LoopStructural.utils.helper.all_heading" href="LoopStructural.utils.helper.all_heading.html" />
+    <link rel="prev" title="LoopStructural.utils.exceptions.LoopBaseException" href="LoopStructural.utils.exceptions.LoopBaseException.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,24 +108,54 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
-<p class="caption"><span class="caption-text">LoopStructural API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
-</ul>
+<p class="caption"><span class="caption-text">API</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../LoopStructural.utils.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.html#utils">Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.bounding_box.html">LoopStructural.utils.bounding_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.exceptions.html">LoopStructural.utils.exceptions</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.utils.helper</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#members">Members</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.all_heading.html">LoopStructural.utils.helper.all_heading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.coord_name.html">LoopStructural.utils.helper.coord_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.create_box.html">LoopStructural.utils.helper.create_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.create_surface.html">LoopStructural.utils.helper.create_surface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.empty_dataframe.html">LoopStructural.utils.helper.empty_dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.feature_name.html">LoopStructural.utils.helper.feature_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.getLogger.html">LoopStructural.utils.helper.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_data_axis_aligned_bounding_box.html">LoopStructural.utils.helper.get_data_axis_aligned_bounding_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box.html">LoopStructural.utils.helper.get_data_bounding_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box_map.html">LoopStructural.utils.helper.get_data_bounding_box_map</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_dip_vector.html">LoopStructural.utils.helper.get_dip_vector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_strike_vector.html">LoopStructural.utils.helper.get_strike_vector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_vectors.html">LoopStructural.utils.helper.get_vectors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.gradient_vec_names.html">LoopStructural.utils.helper.gradient_vec_names</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.interface_name.html">LoopStructural.utils.helper.interface_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.normal_vec_names.html">LoopStructural.utils.helper.normal_vec_names</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.normal_vector_to_strike_and_dip.html">LoopStructural.utils.helper.normal_vector_to_strike_and_dip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector.html">LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.rotation.html">LoopStructural.utils.helper.rotation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.strike_dip_vector.html">LoopStructural.utils.helper.strike_dip_vector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.tangent_vec_names.html">LoopStructural.utils.helper.tangent_vec_names</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.val_name.html">LoopStructural.utils.helper.val_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.weight_name.html">LoopStructural.utils.helper.weight_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.xyz_names.html">LoopStructural.utils.helper.xyz_names</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.PCA.html">LoopStructural.utils.helper.PCA</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.logging.html">LoopStructural.utils.logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.map2loop.html">LoopStructural.utils.map2loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.regions.html">LoopStructural.utils.regions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.utils.html">LoopStructural.utils.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.utils.html#members">Members</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
 </ul>
 </li>
 </ul>
@@ -178,9 +206,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
         
-          <li><a href="../LoopStructural.utils.html">LoopStructural.utils</a> &raquo;</li>
+          <li><a href="LoopStructural.utils.html">LoopStructural.utils</a> &raquo;</li>
         
       <li>LoopStructural.utils.helper</li>
     
@@ -201,16 +229,117 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="loopstructural-utils-helper">
-<h1>LoopStructural.utils.helper<a class="headerlink" href="#loopstructural-utils-helper" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
-</ul>
-</div>
-<span class="target" id="module-LoopStructural.utils.helper"></span><div class="section" id="members">
-<h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-</div>
+  <div class="section" id="module-LoopStructural.utils.helper">
+<span id="loopstructural-utils-helper"></span><h1>LoopStructural.utils.helper<a class="headerlink" href="#module-LoopStructural.utils.helper" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.all_heading.html#LoopStructural.utils.helper.all_heading" title="LoopStructural.utils.helper.all_heading"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_heading</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.coord_name.html#LoopStructural.utils.helper.coord_name" title="LoopStructural.utils.helper.coord_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coord_name</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.create_box.html#LoopStructural.utils.helper.create_box" title="LoopStructural.utils.helper.create_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_box</span></code></a>(bounding_box, nsteps)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.create_surface.html#LoopStructural.utils.helper.create_surface" title="LoopStructural.utils.helper.create_surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_surface</span></code></a>(bounding_box, nstep)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.empty_dataframe.html#LoopStructural.utils.helper.empty_dataframe" title="LoopStructural.utils.helper.empty_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty_dataframe</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.feature_name.html#LoopStructural.utils.helper.feature_name" title="LoopStructural.utils.helper.feature_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feature_name</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.getLogger.html#LoopStructural.utils.helper.getLogger" title="LoopStructural.utils.helper.getLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getLogger</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.get_data_axis_aligned_bounding_box.html#LoopStructural.utils.helper.get_data_axis_aligned_bounding_box" title="LoopStructural.utils.helper.get_data_axis_aligned_bounding_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_axis_aligned_bounding_box</span></code></a>(xyz, buffer)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param xyz</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box.html#LoopStructural.utils.helper.get_data_bounding_box" title="LoopStructural.utils.helper.get_data_bounding_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_bounding_box</span></code></a>(xyz, buffer)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param xyz</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box_map.html#LoopStructural.utils.helper.get_data_bounding_box_map" title="LoopStructural.utils.helper.get_data_bounding_box_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_bounding_box_map</span></code></a>(xyz, buffer)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param xyz</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.get_dip_vector.html#LoopStructural.utils.helper.get_dip_vector" title="LoopStructural.utils.helper.get_dip_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dip_vector</span></code></a>(strike, dip)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.get_strike_vector.html#LoopStructural.utils.helper.get_strike_vector" title="LoopStructural.utils.helper.get_strike_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_strike_vector</span></code></a>(strike)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param strike</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.get_vectors.html#LoopStructural.utils.helper.get_vectors" title="LoopStructural.utils.helper.get_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vectors</span></code></a>(normal)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.gradient_vec_names.html#LoopStructural.utils.helper.gradient_vec_names" title="LoopStructural.utils.helper.gradient_vec_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient_vec_names</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.interface_name.html#LoopStructural.utils.helper.interface_name" title="LoopStructural.utils.helper.interface_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interface_name</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.normal_vec_names.html#LoopStructural.utils.helper.normal_vec_names" title="LoopStructural.utils.helper.normal_vec_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal_vec_names</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.normal_vector_to_strike_and_dip.html#LoopStructural.utils.helper.normal_vector_to_strike_and_dip" title="LoopStructural.utils.helper.normal_vector_to_strike_and_dip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal_vector_to_strike_and_dip</span></code></a>(normal_vector)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector.html#LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector" title="LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plunge_and_plunge_dir_to_vector</span></code></a>(plunge, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.rotation.html#LoopStructural.utils.helper.rotation" title="LoopStructural.utils.helper.rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation</span></code></a>(axis, angle)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.strike_dip_vector.html#LoopStructural.utils.helper.strike_dip_vector" title="LoopStructural.utils.helper.strike_dip_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">strike_dip_vector</span></code></a>(strike, dip)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.tangent_vec_names.html#LoopStructural.utils.helper.tangent_vec_names" title="LoopStructural.utils.helper.tangent_vec_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tangent_vec_names</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.val_name.html#LoopStructural.utils.helper.val_name" title="LoopStructural.utils.helper.val_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">val_name</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.weight_name.html#LoopStructural.utils.helper.weight_name" title="LoopStructural.utils.helper.weight_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_name</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.utils.helper.xyz_names.html#LoopStructural.utils.helper.xyz_names" title="LoopStructural.utils.helper.xyz_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz_names</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA" title="LoopStructural.utils.helper.PCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCA</span></code></a>([n_components, copy, whiten, …])</p></td>
+<td><p>Principal component analysis (PCA).</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
@@ -219,8 +348,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="LoopStructural.utils.utils.html" class="btn btn-neutral float-right" title="LoopStructural.utils.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../LoopStructural.utils.html" class="btn btn-neutral float-left" title="LoopStructural.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.utils.helper.all_heading.html" class="btn btn-neutral float-right" title="LoopStructural.utils.helper.all_heading" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.utils.exceptions.LoopBaseException.html" class="btn btn-neutral float-left" title="LoopStructural.utils.exceptions.LoopBaseException" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

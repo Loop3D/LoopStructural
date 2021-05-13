@@ -29,7 +29,6 @@ from scipy.interpolate import Rbf
 import matplotlib.pyplot as plt
 
 
-import ipywidgets as widgets
 
 
 ######################################################################

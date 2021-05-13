@@ -1,0 +1,6 @@
+LoopStructural.interpolators.discrete\_fold\_interpolator.fold\_cg
+==================================================================
+
+.. currentmodule:: LoopStructural.interpolators.discrete_fold_interpolator
+
+.. autofunction:: fold_cg

@@ -1,10 +1,41 @@
-LoopStructural.interpolators.structured_grid
-============================================
-
-.. contents::
-    :local:
+LoopStructural.interpolators.structured\_grid
+=============================================
 
 .. automodule:: LoopStructural.interpolators.structured_grid
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseStructuredSupport
+      StructuredGrid
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,6 @@
+LoopStructural.getLogger
+========================
+
+.. currentmodule:: LoopStructural
+
+.. autofunction:: getLogger

@@ -13,7 +13,6 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
   <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
@@ -37,7 +36,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -45,8 +43,8 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.modelling.fold.foldframe" href="LoopStructural.modelling.fold.foldframe.html" />
-    <link rel="prev" title="LoopStructural.modelling.fold.fold_rotation_angle" href="LoopStructural.modelling.fold.fold_rotation_angle.html" /> 
+    <link rel="next" title="LoopStructural.modelling.fold.fold_rotation_angle_feature.fourier_series" href="LoopStructural.modelling.fold.fold_rotation_angle_feature.fourier_series.html" />
+    <link rel="prev" title="LoopStructural.modelling.fold.fold_rotation_angle.SVariogram" href="LoopStructural.modelling.fold.fold_rotation_angle.SVariogram.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,32 +108,38 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
 </ul>
-<p class="caption"><span class="caption-text">LoopStructural API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../API.html">LoopStructural API</a></li>
-</ul>
+<p class="caption"><span class="caption-text">API</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../LoopStructural.modelling.html">LoopStructural.modelling</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.modelling.html#main-api-for-creating-a-geologicalmodel">Main API for creating a GeologicalModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.modelling.html#geological-features">Geological Features</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../LoopStructural.modelling.html#folding-classes">Folding classes</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fold.fold.html">LoopStructural.modelling.fold.fold</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fold.fold_rotation_angle.html">LoopStructural.modelling.fold.fold_rotation_angle</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.modelling.fold.fold_rotation_angle_feature</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#members">Members</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.core.html">LoopStructural.modelling.core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fault.html">LoopStructural.modelling.fault</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.features.html">LoopStructural.modelling.features</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.modelling.fold.html">LoopStructural.modelling.fold</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.fourier_series.html">LoopStructural.modelling.fold.fourier_series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.FoldEvent.html">LoopStructural.modelling.fold.FoldEvent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.FoldFrame.html">LoopStructural.modelling.fold.FoldFrame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.FoldRotationAngle.html">LoopStructural.modelling.fold.FoldRotationAngle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.FoldRotationAngleFeature.html">LoopStructural.modelling.fold.FoldRotationAngleFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.SVariogram.html">LoopStructural.modelling.fold.SVariogram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.fold.html">LoopStructural.modelling.fold.fold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.fold_rotation_angle.html">LoopStructural.modelling.fold.fold_rotation_angle</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.modelling.fold.fold_rotation_angle_feature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.foldframe.html">LoopStructural.modelling.fold.foldframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.fold.svariogram.html">LoopStructural.modelling.fold.svariogram</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fold.foldframe.html">LoopStructural.modelling.fold.foldframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fold.svariogram.html">LoopStructural.modelling.fold.svariogram</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.modelling.html#fault-classes">Fault classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../LoopStructural.modelling.html#members">Members</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../LoopStructural.utils.html">LoopStructural.utils</a></li>
 </ul>
 
             
@@ -184,9 +188,11 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../API.html">LoopStructural API</a> &raquo;</li>
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
         
-          <li><a href="../LoopStructural.modelling.html">LoopStructural.modelling</a> &raquo;</li>
+          <li><a href="LoopStructural.modelling.html">LoopStructural.modelling</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.modelling.fold.html">LoopStructural.modelling.fold</a> &raquo;</li>
         
       <li>LoopStructural.modelling.fold.fold_rotation_angle_feature</li>
     
@@ -207,16 +213,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="loopstructural-modelling-fold-fold-rotation-angle-feature">
-<h1>LoopStructural.modelling.fold.fold_rotation_angle_feature<a class="headerlink" href="#loopstructural-modelling-fold-fold-rotation-angle-feature" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#members" id="id1">Members</a></p></li>
-</ul>
-</div>
-<span class="target" id="module-LoopStructural.modelling.fold.fold_rotation_angle_feature"></span><div class="section" id="members">
-<h2><a class="toc-backref" href="#id1">Members</a><a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
-</div>
+  <div class="section" id="module-LoopStructural.modelling.fold.fold_rotation_angle_feature">
+<span id="loopstructural-modelling-fold-fold-rotation-angle-feature"></span><h1>LoopStructural.modelling.fold.fold_rotation_angle_feature<a class="headerlink" href="#module-LoopStructural.modelling.fold.fold_rotation_angle_feature" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.fold.fold_rotation_angle_feature.fourier_series.html#LoopStructural.modelling.fold.fold_rotation_angle_feature.fourier_series" title="LoopStructural.modelling.fold.fold_rotation_angle_feature.fourier_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fourier_series</span></code></a>(x, c0, c1, c2, w)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param x</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.fold.fold_rotation_angle_feature.getLogger.html#LoopStructural.modelling.fold.fold_rotation_angle_feature.getLogger" title="LoopStructural.modelling.fold.fold_rotation_angle_feature.getLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getLogger</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.fold.fold_rotation_angle_feature.FoldRotationAngleFeature.html#LoopStructural.modelling.fold.fold_rotation_angle_feature.FoldRotationAngleFeature" title="LoopStructural.modelling.fold.fold_rotation_angle_feature.FoldRotationAngleFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FoldRotationAngleFeature</span></code></a>(fold_frame, rotation)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param fold_frame</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
@@ -225,8 +258,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="LoopStructural.modelling.fold.foldframe.html" class="btn btn-neutral float-right" title="LoopStructural.modelling.fold.foldframe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="LoopStructural.modelling.fold.fold_rotation_angle.html" class="btn btn-neutral float-left" title="LoopStructural.modelling.fold.fold_rotation_angle" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.modelling.fold.fold_rotation_angle_feature.fourier_series.html" class="btn btn-neutral float-right" title="LoopStructural.modelling.fold.fold_rotation_angle_feature.fourier_series" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.modelling.fold.fold_rotation_angle.SVariogram.html" class="btn btn-neutral float-left" title="LoopStructural.modelling.fold.fold_rotation_angle.SVariogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

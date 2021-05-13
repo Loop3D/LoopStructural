@@ -1,0 +1,6 @@
+LoopStructural.interpolators.cython.dsi\_helper.nextafter
+=========================================================
+
+.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
+
+.. autofunction:: nextafter

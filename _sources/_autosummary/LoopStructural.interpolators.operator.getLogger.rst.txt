@@ -1,0 +1,6 @@
+LoopStructural.interpolators.operator.getLogger
+===============================================
+
+.. currentmodule:: LoopStructural.interpolators.operator
+
+.. autofunction:: getLogger

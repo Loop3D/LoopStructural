@@ -1,0 +1,26 @@
+LoopStructural.modelling.fault.fault\_function.FaultDisplacement
+================================================================
+
+.. currentmodule:: LoopStructural.modelling.fault.fault_function
+
+.. autoclass:: FaultDisplacement
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FaultDisplacement.__init__
+      ~FaultDisplacement.evaluate
+   
+   
+
+   
+   
+   

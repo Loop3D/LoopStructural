@@ -1,10 +1,44 @@
-LoopStructural.interpolators.structured_tetra
-=============================================
-
-.. contents::
-    :local:
+LoopStructural.interpolators.structured\_tetra
+==============================================
 
 .. automodule:: LoopStructural.interpolators.structured_tetra
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      cg
+      constant_norm
+      fold_cg
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseStructuredSupport
+      TetMesh
+   
+   
+
+   
+   
+   
+
+
+

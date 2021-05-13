@@ -1,0 +1,6 @@
+LoopStructural.modelling.features.geological\_feature\_builder.weight\_name
+===========================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.geological_feature_builder
+
+.. autofunction:: weight_name

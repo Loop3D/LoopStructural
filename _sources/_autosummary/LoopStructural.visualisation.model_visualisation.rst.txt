@@ -1,10 +1,47 @@
-LoopStructural.visualisation.model_visualisation
-================================================
-
-.. contents::
-    :local:
+LoopStructural.visualisation.model\_visualisation
+=================================================
 
 .. automodule:: LoopStructural.visualisation.model_visualisation
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      close_all
+      create_box
+      create_surface
+      getLogger
+      get_vectors
+      is_notebook
+      marching_cubes
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      GeologicalFeature
+      LavaVuModelViewer
+   
+   
+
+   
+   
+   
+
+
+

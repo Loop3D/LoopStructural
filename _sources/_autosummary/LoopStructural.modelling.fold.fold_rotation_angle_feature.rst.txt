@@ -1,10 +1,41 @@
-LoopStructural.modelling.fold.fold_rotation_angle_feature
-=========================================================
-
-.. contents::
-    :local:
+LoopStructural.modelling.fold.fold\_rotation\_angle\_feature
+============================================================
 
 .. automodule:: LoopStructural.modelling.fold.fold_rotation_angle_feature
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      fourier_series
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      FoldRotationAngleFeature
+   
+   
+
+   
+   
+   
+
+
+

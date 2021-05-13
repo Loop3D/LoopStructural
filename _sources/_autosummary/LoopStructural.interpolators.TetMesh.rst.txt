@@ -1,0 +1,62 @@
+LoopStructural.interpolators.TetMesh
+====================================
+
+.. currentmodule:: LoopStructural.interpolators
+
+.. autoclass:: TetMesh
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TetMesh.__init__
+      ~TetMesh.barycentre
+      ~TetMesh.cell_corner_indexes
+      ~TetMesh.check_position
+      ~TetMesh.evaluate_gradient
+      ~TetMesh.evaluate_value
+      ~TetMesh.get_constant_gradient
+      ~TetMesh.get_constant_norm
+      ~TetMesh.get_element_gradients
+      ~TetMesh.get_elements
+      ~TetMesh.get_neighbours
+      ~TetMesh.get_tetra_for_location
+      ~TetMesh.get_tetra_gradient_for_location
+      ~TetMesh.global_cell_indicies
+      ~TetMesh.global_index_to_cell_index
+      ~TetMesh.global_index_to_node_index
+      ~TetMesh.global_node_indicies
+      ~TetMesh.inside
+      ~TetMesh.node_indexes_to_position
+      ~TetMesh.position_to_cell_corners
+      ~TetMesh.position_to_cell_index
+      ~TetMesh.rotate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TetMesh.maximum
+      ~TetMesh.n_cells
+      ~TetMesh.n_elements
+      ~TetMesh.n_nodes
+      ~TetMesh.nodes
+      ~TetMesh.nsteps
+      ~TetMesh.nsteps_cells
+      ~TetMesh.ntetra
+      ~TetMesh.origin
+      ~TetMesh.rotation_xy
+      ~TetMesh.step_vector
+   
+   

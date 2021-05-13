@@ -1,0 +1,6 @@
+LoopStructural.utils.map2loop.build\_model
+==========================================
+
+.. currentmodule:: LoopStructural.utils.map2loop
+
+.. autofunction:: build_model

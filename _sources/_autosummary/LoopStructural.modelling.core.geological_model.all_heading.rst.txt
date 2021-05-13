@@ -1,0 +1,6 @@
+LoopStructural.modelling.core.geological\_model.all\_heading
+============================================================
+
+.. currentmodule:: LoopStructural.modelling.core.geological_model
+
+.. autofunction:: all_heading

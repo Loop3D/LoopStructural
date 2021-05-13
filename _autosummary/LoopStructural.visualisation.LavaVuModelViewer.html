@@ -1,0 +1,828 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>LoopStructural.visualisation.LavaVuModelViewer &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.visualisation.MapView" href="LoopStructural.visualisation.MapView.html" />
+    <link rel="prev" title="LoopStructural.visualisation.getLogger" href="LoopStructural.visualisation.getLogger.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.visualisation.html#visualisation">Visualisation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.getLogger.html">LoopStructural.visualisation.getLogger</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.visualisation.LavaVuModelViewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.MapView.html">LoopStructural.visualisation.MapView</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.RotationAnglePlotter.html">LoopStructural.visualisation.RotationAnglePlotter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">LoopStructural.visualisation.map_viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.html">LoopStructural.visualisation.model_visualisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">LoopStructural.visualisation.rotation_angle_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">LoopStructural.visualisation.sphinx_scraper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">LoopStructural.visualisation.stratigraphic_column</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.visualisation.html">LoopStructural.visualisation</a> &raquo;</li>
+        
+      <li>LoopStructural.visualisation.LavaVuModelViewer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/LoopStructural.visualisation.LavaVuModelViewer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-visualisation-lavavumodelviewer">
+<h1>LoopStructural.visualisation.LavaVuModelViewer<a class="headerlink" href="#loopstructural-visualisation-lavavumodelviewer" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.</span></code><code class="sig-name descname"><span class="pre">LavaVuModelViewer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_exaggeration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Short description</p>
+<p>A wrapper to plot LoopStructural object with lavavu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>lavavu viewer kwargs</em>) – </p>
+</dd>
+</dl>
+<p>objects : dictionary of objects that have been plotted</p>
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_exaggeration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper to plot LoopStructural object with lavavu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>lavavu viewer kwargs</em>) – </p>
+</dd>
+</dl>
+<p>objects : dictionary of objects that have been plotted</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.__init__" title="LoopStructural.visualisation.LavaVuModelViewer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([model, bounding_box, nsteps, …])</p></td>
+<td><p>A wrapper to plot LoopStructural object with lavavu</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_box</span></code>(bounding_box, name[, colour])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_data</span></code></a>(feature[, disks, vectors])</p></td>
+<td><p>Plot the data linked to the feature, can choose whether to plot all data types using value and grad kwargs</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_fault</span></code>(fault[, step])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_fault_displacements" title="LoopStructural.visualisation.LavaVuModelViewer.add_fault_displacements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_fault_displacements</span></code></a>([cmap])</p></td>
+<td><p>Add a block model painted by the fault displacement magnitude</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_fold" title="LoopStructural.visualisation.LavaVuModelViewer.add_fold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_fold</span></code></a>(fold, **kwargs)</p></td>
+<td><p>Draw the vector components of the fold at the locations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_intersection_lineation</span></code>(feature, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" title="LoopStructural.visualisation.LavaVuModelViewer.add_isosurface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_isosurface</span></code></a>(geological_feature[, value, …])</p></td>
+<td><p>Plot the surface of a geological feature</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_model" title="LoopStructural.visualisation.LavaVuModelViewer.add_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model</span></code></a>([cmap])</p></td>
+<td><p>Add a block model painted by stratigraphic id to the viewer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_model_surfaces" title="LoopStructural.visualisation.LavaVuModelViewer.add_model_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_surfaces</span></code></a>([strati, faults, cmap, …])</p></td>
+<td><p>Add surfaces for all of the interfaces in the model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_orientation_disks</span></code>(position, vector, name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_points" title="LoopStructural.visualisation.LavaVuModelViewer.add_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_points</span></code></a>(points, name, **kwargs)</p></td>
+<td><p>Plot points location in the lavavu viewer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" title="LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_scalar_field</span></code></a>(geological_feature[, name, …])</p></td>
+<td><p>Add a block the size of the model area painted with the scalar field value</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_section" title="LoopStructural.visualisation.LavaVuModelViewer.add_section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_section</span></code></a>([geological_feature, axis, value])</p></td>
+<td><p>Plot a section/map thru the model and paint with a geological feature</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_support_box</span></code>(geological_feature[, paint])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_value_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_value_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_data</span></code></a>(position, value, name, **kwargs)</p></td>
+<td><p>Plot points data with a value component</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_vector_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_data</span></code></a>(position, vector, name, **kwargs)</p></td>
+<td><p>Plot point data with a vector component into the lavavu viewer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_field" title="LoopStructural.visualisation.LavaVuModelViewer.add_vector_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_field</span></code></a>(geological_feature, **kwargs)</p></td>
+<td><p>Plot the gradient of a geological feature at given locations</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.clear" title="LoopStructural.visualisation.LavaVuModelViewer.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>()</p></td>
+<td><p>Remove all objects from the viewer</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.deep_clean" title="LoopStructural.visualisation.LavaVuModelViewer.deep_clean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_clean</span></code></a>()</p></td>
+<td><p>[summary]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.display" title="LoopStructural.visualisation.LavaVuModelViewer.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>([fname])</p></td>
+<td><p>Calls the lv object display function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_to_webgl</span></code>(fname, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.image" title="LoopStructural.visualisation.LavaVuModelViewer.image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image</span></code></a>(name, **kwargs)</p></td>
+<td><p>Calls the lv object image function to save the display state</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.image_array" title="LoopStructural.visualisation.LavaVuModelViewer.image_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_array</span></code></a>(**kwargs)</p></td>
+<td><p>Return the current viewer image image data as a numpy array</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.interactive" title="LoopStructural.visualisation.LavaVuModelViewer.interactive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interactive</span></code></a>([popout])</p></td>
+<td><p>Runs the lavavu viewer as either a jupyter notebook inline interactive viewer or as a separate window</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.rotate" title="LoopStructural.visualisation.LavaVuModelViewer.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(r)</p></td>
+<td><p>Rotate by a vector of rotation angles</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.rotatex" title="LoopStructural.visualisation.LavaVuModelViewer.rotatex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotatex</span></code></a>(r)</p></td>
+<td><p>Rotate the viewer in the x plane</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.rotatey" title="LoopStructural.visualisation.LavaVuModelViewer.rotatey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotatey</span></code></a>(r)</p></td>
+<td><p>Rotate the viewer in the Y plane</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.rotatez" title="LoopStructural.visualisation.LavaVuModelViewer.rotatez"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotatez</span></code></a>(r)</p></td>
+<td><p>Rotate the viewer in the z plane</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.save" title="LoopStructural.visualisation.LavaVuModelViewer.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname, **kwargs)</p></td>
+<td><p>Calls lavavu.Viewer.image to save the viewer current state as an image</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.set_viewer_rotation" title="LoopStructural.visualisation.LavaVuModelViewer.set_viewer_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_viewer_rotation</span></code></a>(rotation)</p></td>
+<td><p>Set the viewer rotation given a list of rotations x,y,z</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.set_zscale" title="LoopStructural.visualisation.LavaVuModelViewer.set_zscale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_zscale</span></code></a>(zscale)</p></td>
+<td><p>Set the vertical scale for lavavu</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfault_grid</span></code>(feature[, grid])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.border" title="LoopStructural.visualisation.LavaVuModelViewer.border"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border</span></code></a></p></td>
+<td><p>The width of the border around the model area</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">camera</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.nelements" title="LoopStructural.visualisation.LavaVuModelViewer.nelements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nelements</span></code></a></p></td>
+<td><p>The number of elements to use for evaluating the isosurface</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.rotation" title="LoopStructural.visualisation.LavaVuModelViewer.rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation</span></code></a></p></td>
+<td><p>Accessor for the viewer rotation :returns: <em>list</em> – x,y,z rotations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xmax</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xmin</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ymax</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ymin</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zmax</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zmin</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_data">
+<code class="sig-name descname"><span class="pre">add_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the data linked to the feature, can choose whether to plot all data types
+using value and grad kwargs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature</strong> – </p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_fault_displacements">
+<code class="sig-name descname"><span class="pre">add_fault_displacements</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rainbow'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_fault_displacements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a block model painted by the fault displacement magnitude</p>
+<p>Calls fault.displacementfeature.evaluate_value(points) for all faults</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cmap</strong> (<em>matplotlib cmap</em><em>, </em><em>optional</em>) – colourmap name or object from mpl</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>It is sensible to increase the viewer step sizes before running this function to
+increase the resolution of the model as its not possible to interpolate a discrete
+colourmap and this causes the model to look like a lego block.
+You can update the model resolution by changing the attribute nsteps
+&gt;&gt;&gt; viewer.nsteps = np.array([100,100,100])</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_fold">
+<code class="sig-name descname"><span class="pre">add_fold</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fold</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the vector components of the fold at the locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- fold object</strong> (<em>fold</em>) – </p></li>
+<li><p><strong>- numpy array of xyz</strong> (<em>locations</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_isosurface">
+<code class="sig-name descname"><span class="pre">add_isosurface</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isovalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paint_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nslices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the surface of a geological feature</p>
+<p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geological_feature</strong> (<a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature"><em>GeologicalFeature</em></a>) – [description]</p></li>
+<li><p><strong>value</strong> (<em>float</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>isovalue</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>paint_with</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>slices</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>colour</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>nslices</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>cmap</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>filename</strong> (<em>string</em><em>, </em><em>optional</em>) – filename for exporting</p></li>
+<li><p><strong>names</strong> (<em>list</em><em>, </em><em>optional</em>) – list of names same length as slices</p></li>
+<li><p><strong>colours</strong> (<em>list</em><em>, </em><em>optional</em>) – list of colours same length as slices</p></li>
+<li><p><strong>opacity</strong> (<em>double</em><em>, </em><em>optional</em>) – change the opacity of the surface(s)</p></li>
+<li><p><strong>callback_function</strong> – called with verts, tri and surface name - e.g.
+callback_function(verts,tri,name)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>[type]</em> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_model">
+<code class="sig-name descname"><span class="pre">add_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a block model painted by stratigraphic id to the viewer</p>
+<p>Calls self.model.evaluate_model() for a cube surrounding the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cmap</strong> (<em>matplotlib cmap</em><em>, </em><em>optional</em>) – colourmap name or object from mpl</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>It is sensible to increase the viewer step sizes before running this function to
+increase the resolution of the model as its not possible to interpolate a discrete
+colourmap and this causes the model to look like a lego block.
+You can update the model resolution by changing the attribute nsteps
+&gt;&gt;&gt; viewer.nsteps = np.array([100,100,100])</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_model_surfaces">
+<code class="sig-name descname"><span class="pre">add_model_surfaces</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strati</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displacement_cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_model_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add surfaces for all of the interfaces in the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strati</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to draw stratigraphy</p></li>
+<li><p><strong>faults</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to draw faults, by default True</p></li>
+<li><p><strong>cmap</strong> (<em>string</em>) – matplotlib cmap</p></li>
+<li><p><strong>fault_colour</strong> (<em>string</em>) – colour string for faults</p></li>
+<li><p><strong>displacement_cmap</strong> (<em>string/None</em>) – if string is specified uses this cmap to colour
+faults by displacement</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Other parameters are passed to self.add_isosurface()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_points">
+<code class="sig-name descname"><span class="pre">add_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot points location in the lavavu viewer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<em>numpy array of the points locations</em>) – </p></li>
+<li><p><strong>name</strong> (<em>string name of the object for lavavu</em>) – </p></li>
+<li><p><strong>**kwargs</strong> (<em>lavavu points kwargs</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field">
+<code class="sig-name descname"><span class="pre">add_scalar_field</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rainbow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a block the size of the model area painted with the scalar field value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geological_feature</strong> (<a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature"><em>GeologicalFeature</em></a>) – the geological feature to colour the scalar field by</p></li>
+<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – Name of the object for lavavu, needs to be unique for the viewer object, by default uses feature name</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – mpl colourmap reference, by default ‘rainbow’</p></li>
+<li><p><strong>vmin</strong> (<em>double</em><em>, </em><em>optional</em>) – minimum value of the colourmap, by default None</p></li>
+<li><p><strong>vmax</strong> (<em>double</em><em>, </em><em>optional</em>) – maximum value of the colourmap, by default None</p></li>
+<li><p><strong>opacity</strong> (<em>double</em><em>, </em><em>optional</em>) – change the opacity of the block</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_section">
+<code class="sig-name descname"><span class="pre">add_section</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a section/map thru the model and paint with a geological feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geological_feature</strong> (<em>Geological feature</em>) – The feature to paint the section with</p></li>
+<li><p><strong>axis</strong> (<em>string</em>) – which axis, x,y,z</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – Where to make the section</p></li>
+<li><p><strong>kwargs</strong> – additional kwargs passes to lavavu for colourmaps etc</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_value_data">
+<code class="sig-name descname"><span class="pre">add_value_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_value_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot points data with a value component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>numpy array N</em><em>,</em><em>3 for xyz locations</em>) – </p></li>
+<li><p><strong>value</strong> (<em>N array of values</em>) – </p></li>
+<li><p><strong>name</strong> (<em>string name of the object for lavavu</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>kwargs to pass to lavavu</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_vector_data">
+<code class="sig-name descname"><span class="pre">add_vector_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot point data with a vector component into the lavavu viewer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>numpy array N</em><em>,</em><em>3 for xyz locations</em>) – </p></li>
+<li><p><strong>vector</strong> (<em>numpy array of vector N</em><em>,</em><em>3</em>) – </p></li>
+<li><p><strong>name</strong> (<em>string name for the object in lavavu</em>) – </p></li>
+<li><p><strong>to pass to lavavu</strong> (<em>kwargs</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.add_vector_field">
+<code class="sig-name descname"><span class="pre">add_vector_field</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the gradient of a geological feature at given locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geological_feature</strong> (<em>Geological Feature to evaluate gradient</em>) – </p></li>
+<li><p><strong>locations</strong> (<em>(</em><em>(</em><em>N</em><em>,</em><em>3</em><em>)</em><em>) </em><em>array of evaluation locations</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>kwargs for lavavu vector</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.border">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">border</span></code><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.border" title="Permalink to this definition">¶</a></dt>
+<dd><p>The width of the border around the model area</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>border</strong> (<em>double</em>) – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.clear">
+<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all objects from the viewer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.deep_clean">
+<code class="sig-name descname"><span class="pre">deep_clean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.deep_clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<p>[extended_summary]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.display">
+<code class="sig-name descname"><span class="pre">display</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the lv object display function. Shows a static image of the viewer inline.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.image">
+<code class="sig-name descname"><span class="pre">image</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the lv object image function to save the display state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – name of the image file to save</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.image_array">
+<code class="sig-name descname"><span class="pre">image_array</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.image_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current viewer image image data as a numpy array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>np.array</em>) – image as a numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.interactive">
+<code class="sig-name descname"><span class="pre">interactive</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">popout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.interactive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the lavavu viewer as either a jupyter notebook
+inline interactive viewer or as a separate window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.nelements">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">nelements</span></code><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.nelements" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of elements to use for evaluating the isosurface</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>nelements</strong> (<em>int</em>) – number of elements to use for isosurfacing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.rotate">
+<code class="sig-name descname"><span class="pre">rotate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate by a vector of rotation angles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>list/numpy array</em>) – a vector of rotations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.rotatex">
+<code class="sig-name descname"><span class="pre">rotatex</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.rotatex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the viewer in the x plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>double</em>) – degrees to rotate, can be +ve or -ve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.rotatey">
+<code class="sig-name descname"><span class="pre">rotatey</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.rotatey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the viewer in the Y plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>double</em>) – degrees to rotate, can be +ve or -ve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.rotatez">
+<code class="sig-name descname"><span class="pre">rotatez</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.rotatez" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the viewer in the z plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>double</em>) – degrees to rotate, can be +ve or -ve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.rotation">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">rotation</span></code><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the viewer rotation
+:returns: <em>list</em> – x,y,z rotations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.save">
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls lavavu.Viewer.image to save the viewer current state as an image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- file name string including relative path</strong> (<em>fname</em>) – </p></li>
+<li><p><strong>- optional kwargs to give to lavavu e.g. transparent</strong> (<em>kwargs</em>) – </p></li>
+<li><p><strong>resolution</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.set_viewer_rotation">
+<code class="sig-name descname"><span class="pre">set_viewer_rotation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.set_viewer_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the viewer rotation given a list of rotations x,y,z</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>numpy array of 3 rotation</strong> (<em>rotation</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.LavaVuModelViewer.set_zscale">
+<code class="sig-name descname"><span class="pre">set_zscale</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zscale</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.set_zscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the vertical scale for lavavu</p>
+<p>just a simple wrapper for lavavu modelscale([xscale,yscale,zscale])</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>zscale</strong> (<em>float</em>) – vertical scale</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="LoopStructural.visualisation.MapView.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.MapView" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.visualisation.getLogger.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.getLogger" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

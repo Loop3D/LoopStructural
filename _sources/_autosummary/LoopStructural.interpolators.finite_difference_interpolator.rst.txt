@@ -1,10 +1,43 @@
-LoopStructural.interpolators.finite_difference_interpolator
-===========================================================
-
-.. contents::
-    :local:
+LoopStructural.interpolators.finite\_difference\_interpolator
+=============================================================
 
 .. automodule:: LoopStructural.interpolators.finite_difference_interpolator
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+      get_vectors
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      DiscreteInterpolator
+      FiniteDifferenceInterpolator
+      Operator
+   
+   
+
+   
+   
+   
+
+
+

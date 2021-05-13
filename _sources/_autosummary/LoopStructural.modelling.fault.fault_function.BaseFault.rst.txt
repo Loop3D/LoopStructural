@@ -1,0 +1,36 @@
+LoopStructural.modelling.fault.fault\_function.BaseFault
+========================================================
+
+.. currentmodule:: LoopStructural.modelling.fault.fault_function
+
+.. autoclass:: BaseFault
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseFault.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseFault.fault_displacement
+      ~BaseFault.fw
+      ~BaseFault.gxf
+      ~BaseFault.gyf
+      ~BaseFault.gzf
+      ~BaseFault.hw
+   
+   

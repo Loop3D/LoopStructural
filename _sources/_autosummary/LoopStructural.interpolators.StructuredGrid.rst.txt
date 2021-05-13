@@ -1,0 +1,58 @@
+LoopStructural.interpolators.StructuredGrid
+===========================================
+
+.. currentmodule:: LoopStructural.interpolators
+
+.. autoclass:: StructuredGrid
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~StructuredGrid.__init__
+      ~StructuredGrid.barycentre
+      ~StructuredGrid.calcul_T
+      ~StructuredGrid.cell_centres
+      ~StructuredGrid.cell_corner_indexes
+      ~StructuredGrid.check_position
+      ~StructuredGrid.evaluate_gradient
+      ~StructuredGrid.evaluate_value
+      ~StructuredGrid.global_index_to_cell_index
+      ~StructuredGrid.global_indicies
+      ~StructuredGrid.inside
+      ~StructuredGrid.neighbour_global_indexes
+      ~StructuredGrid.node_indexes_to_position
+      ~StructuredGrid.position_to_cell_corners
+      ~StructuredGrid.position_to_cell_index
+      ~StructuredGrid.position_to_dof_coefs
+      ~StructuredGrid.position_to_local_coordinates
+      ~StructuredGrid.rotate
+      ~StructuredGrid.slice
+      ~StructuredGrid.trilinear
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~StructuredGrid.maximum
+      ~StructuredGrid.n_elements
+      ~StructuredGrid.n_nodes
+      ~StructuredGrid.nodes
+      ~StructuredGrid.nsteps
+      ~StructuredGrid.nsteps_cells
+      ~StructuredGrid.origin
+      ~StructuredGrid.rotation_xy
+      ~StructuredGrid.step_vector
+   
+   

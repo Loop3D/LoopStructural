@@ -1,0 +1,6 @@
+LoopStructural.interpolators.cython.dsi\_helper.log1p
+=====================================================
+
+.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
+
+.. autofunction:: log1p

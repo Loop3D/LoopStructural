@@ -1,0 +1,33 @@
+LoopStructural.modelling.fault.FaultBuilder
+===========================================
+
+.. currentmodule:: LoopStructural.modelling.fault
+
+.. autoclass:: FaultBuilder
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FaultBuilder.__init__
+      ~FaultBuilder.add_data_from_data_frame
+      ~FaultBuilder.add_fault
+      ~FaultBuilder.add_splay
+      ~FaultBuilder.build
+      ~FaultBuilder.create_data_from_geometry
+      ~FaultBuilder.set_mesh_geometry
+      ~FaultBuilder.update
+      ~FaultBuilder.update_geometry
+   
+   
+
+   
+   
+   

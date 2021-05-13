@@ -1,0 +1,43 @@
+LoopStructural.interpolators.base\_structured\_3d\_support.BaseStructuredSupport
+================================================================================
+
+.. currentmodule:: LoopStructural.interpolators.base_structured_3d_support
+
+.. autoclass:: BaseStructuredSupport
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseStructuredSupport.__init__
+      ~BaseStructuredSupport.check_position
+      ~BaseStructuredSupport.inside
+      ~BaseStructuredSupport.position_to_cell_index
+      ~BaseStructuredSupport.rotate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseStructuredSupport.maximum
+      ~BaseStructuredSupport.n_elements
+      ~BaseStructuredSupport.n_nodes
+      ~BaseStructuredSupport.nodes
+      ~BaseStructuredSupport.nsteps
+      ~BaseStructuredSupport.nsteps_cells
+      ~BaseStructuredSupport.origin
+      ~BaseStructuredSupport.rotation_xy
+      ~BaseStructuredSupport.step_vector
+   
+   

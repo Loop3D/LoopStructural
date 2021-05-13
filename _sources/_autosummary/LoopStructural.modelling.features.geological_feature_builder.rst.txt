@@ -1,10 +1,51 @@
-LoopStructural.modelling.features.geological_feature_builder
-============================================================
-
-.. contents::
-    :local:
+LoopStructural.modelling.features.geological\_feature\_builder
+==============================================================
 
 .. automodule:: LoopStructural.modelling.features.geological_feature_builder
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+      get_data_axis_aligned_bounding_box
+      get_data_bounding_box
+      gradient_vec_names
+      interface_name
+      normal_vec_names
+      tangent_vec_names
+      val_name
+      weight_name
+      xyz_names
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      GeologicalFeature
+      GeologicalFeatureInterpolator
+      RegionEverywhere
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,903 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>LoopStructural.probability.LogLikelihoodGradient &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.utils" href="LoopStructural.utils.html" />
+    <link rel="prev" title="LoopStructural.probability.LogLikelihood" href="LoopStructural.probability.LogLikelihood.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.probability.getLogger.html">LoopStructural.probability.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.probability.normal.html">LoopStructural.probability.normal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.probability.LogLikelihood.html">LoopStructural.probability.LogLikelihood</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.probability.LogLikelihoodGradient</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.probability.html">LoopStructural.probability</a> &raquo;</li>
+        
+      <li>LoopStructural.probability.LogLikelihoodGradient</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/LoopStructural.probability.LogLikelihoodGradient.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-probability-loglikelihoodgradient">
+<h1>LoopStructural.probability.LogLikelihoodGradient<a class="headerlink" href="#loopstructural-probability-loglikelihoodgradient" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.probability.LogLikelihoodGradient">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.probability.</span></code><code class="sig-name descname"><span class="pre">LogLikelihoodGradient</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal_loglikelihood</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">theano.gof.op.Op</span></code></p>
+<p>This Op will be called with a vector of values and also return a vector of
+values - the gradients in each dimension.</p>
+<p>Initialise the class with the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>normal_loglikelihood</strong> – The log-likelihood function</p></li>
+<li><p><strong>model</strong> – the Geological Model</p></li>
+<li><p><strong>sigma</strong> – The standard deviation</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal_loglikelihood</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the class with the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>normal_loglikelihood</strong> – The log-likelihood function</p></li>
+<li><p><strong>model</strong> – the Geological Model</p></li>
+<li><p><strong>sigma</strong> – The standard deviation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">L_op</span></code>(inputs, outputs, output_grads)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.R_op" title="LoopStructural.probability.LogLikelihoodGradient.R_op"><code class="xref py py-obj docutils literal notranslate"><span class="pre">R_op</span></code></a>(inputs, eval_points)</p></td>
+<td><p>This method is primarily used by tensor.Rop</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.__init__" title="LoopStructural.probability.LogLikelihoodGradient.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(normal_loglikelihood)</p></td>
+<td><p>Initialise the class with the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.add_tag_trace" title="LoopStructural.probability.LogLikelihoodGradient.add_tag_trace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tag_trace</span></code></a>(thing[, user_line])</p></td>
+<td><p>Add tag.trace to an node or variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_cleanup_code_struct" title="LoopStructural.probability.LogLikelihoodGradient.c_cleanup_code_struct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_cleanup_code_struct</span></code></a>(node, name)</p></td>
+<td><p>Optional: return a code string specific to the apply to be inserted in the struct cleanup code.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_code" title="LoopStructural.probability.LogLikelihoodGradient.c_code"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_code</span></code></a>(node, name, inputs, outputs, sub)</p></td>
+<td><p>Required: return the C implementation of an Op.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version" title="LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_code_cache_version</span></code></a>()</p></td>
+<td><p>Return a tuple of integers indicating the version of this Op.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version_apply" title="LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version_apply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_code_cache_version_apply</span></code></a>(node)</p></td>
+<td><p>Return a tuple of integers indicating the version of this Op.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cleanup" title="LoopStructural.probability.LogLikelihoodGradient.c_code_cleanup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_code_cleanup</span></code></a>(node, name, inputs, outputs, sub)</p></td>
+<td><p>Optional: return C code to run after c_code, whether it failed or not.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_compile_args" title="LoopStructural.probability.LogLikelihoodGradient.c_compile_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_compile_args</span></code></a>()</p></td>
+<td><p>Optional: Return a list of compile args recommended to compile the code returned by other methods in this class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_header_dirs" title="LoopStructural.probability.LogLikelihoodGradient.c_header_dirs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_header_dirs</span></code></a>()</p></td>
+<td><p>Optional: Return a list of header search paths required by code returned by this class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_headers" title="LoopStructural.probability.LogLikelihoodGradient.c_headers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_headers</span></code></a>()</p></td>
+<td><p>Optional: Return a list of header files required by code returned by this class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_init_code" title="LoopStructural.probability.LogLikelihoodGradient.c_init_code"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_init_code</span></code></a>()</p></td>
+<td><p>Optional: return a list of code snippets to be inserted in module initialization.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_init_code_apply" title="LoopStructural.probability.LogLikelihoodGradient.c_init_code_apply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_init_code_apply</span></code></a>(node, name)</p></td>
+<td><p>Optional: return a code string specific to the apply to be inserted in the module initialization code.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_init_code_struct" title="LoopStructural.probability.LogLikelihoodGradient.c_init_code_struct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_init_code_struct</span></code></a>(node, name, sub)</p></td>
+<td><p>Optional: return a code string specific to the apply to be inserted in the struct initialization code.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_lib_dirs" title="LoopStructural.probability.LogLikelihoodGradient.c_lib_dirs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_lib_dirs</span></code></a>()</p></td>
+<td><p>Optional: Return a list of library search paths required by code returned by this class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_libraries" title="LoopStructural.probability.LogLikelihoodGradient.c_libraries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_libraries</span></code></a>()</p></td>
+<td><p>Optional: Return a list of libraries required by code returned by this class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_no_compile_args" title="LoopStructural.probability.LogLikelihoodGradient.c_no_compile_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_no_compile_args</span></code></a>()</p></td>
+<td><p>Optional: return a list of incompatible gcc compiler arguments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_support_code" title="LoopStructural.probability.LogLikelihoodGradient.c_support_code"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_support_code</span></code></a>()</p></td>
+<td><p>Optional: Return utility code (a string, or a list of strings) for use by a <cite>Variable</cite> or <cite>Op</cite> to be included at global scope prior to the rest of the code for this class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_support_code_apply" title="LoopStructural.probability.LogLikelihoodGradient.c_support_code_apply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_support_code_apply</span></code></a>(node, name)</p></td>
+<td><p>Optional: return utility code for use by an <cite>Op</cite> that will be inserted at global scope, that can be specialized for the support of a particular <cite>Apply</cite> node.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_support_code_struct" title="LoopStructural.probability.LogLikelihoodGradient.c_support_code_struct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_support_code_struct</span></code></a>(node, name)</p></td>
+<td><p>Optional: return utility code for use by an <cite>Op</cite> that will be inserted at struct scope, that can be specialized for the support of a particular <cite>Apply</cite> node.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.do_constant_folding" title="LoopStructural.probability.LogLikelihoodGradient.do_constant_folding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_constant_folding</span></code></a>(node)</p></td>
+<td><p>This allows each op to determine if it wants to be constant folded when all its inputs are constant. This allows it to choose where it puts its memory/speed trade-off. Also, it could make things faster as constants can’t be used for inplace operations (see <a href="#id1"><span class="problematic" id="id2">*</span></a>IncSubtensor).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(node)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.make_c_thunk" title="LoopStructural.probability.LogLikelihoodGradient.make_c_thunk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_c_thunk</span></code></a>(node, storage_map, compute_map, …)</p></td>
+<td><p>Like make_thunk, but will only try to make a C thunk.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.make_node" title="LoopStructural.probability.LogLikelihoodGradient.make_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_node</span></code></a>(*inputs)</p></td>
+<td><p>Create a “apply” nodes for the inputs in that order.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.make_py_thunk" title="LoopStructural.probability.LogLikelihoodGradient.make_py_thunk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_py_thunk</span></code></a>(node, storage_map, …[, debug])</p></td>
+<td><p>Like make_thunk() but only makes python thunks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.make_thunk" title="LoopStructural.probability.LogLikelihoodGradient.make_thunk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_thunk</span></code></a>(node, storage_map, compute_map, …)</p></td>
+<td><p>This function must return a thunk, that is a zero-arguments function that encapsulates the computation to be performed by this op on the arguments of the node.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.perform" title="LoopStructural.probability.LogLikelihoodGradient.perform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">perform</span></code></a>(node, inputs, outputs)</p></td>
+<td><p>Required: Calculate the function on the inputs and put the variables in the output storage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.prepare_node" title="LoopStructural.probability.LogLikelihoodGradient.prepare_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_node</span></code></a>(node, storage_map, compute_map, …)</p></td>
+<td><p>Make any special modifications that the Op needs before doing make_thunk().</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_output</span></code></p></td>
+<td><p>Configuration variable for <cite>__call__</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itypes</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">otypes</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.R_op">
+<code class="sig-name descname"><span class="pre">R_op</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.R_op" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is primarily used by tensor.Rop</p>
+<p>Suppose the op outputs</p>
+<p>[ f_1(inputs), …, f_n(inputs) ]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> (<em>a Variable</em><em> or </em><em>list of Variables</em>) – </p></li>
+<li><p><strong>eval_points</strong> – A Variable or list of Variables with the same length as inputs.
+Each element of eval_points specifies the value of the corresponding
+input at the point where the R op is to be evaluated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>list of n elements</em> –</p>
+<dl class="simple">
+<dt>rval[i] should be Rop(f=f_i(inputs),</dt><dd><p>wrt=inputs,
+eval_points=eval_points)</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.add_tag_trace">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">add_tag_trace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.add_tag_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add tag.trace to an node or variable.</p>
+<p>The argument is returned after being affected (inplace).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thing</strong> – The object where we add .tag.trace.</p></li>
+<li><p><strong>user_line</strong> – The max number of user line to keep.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>We also use config.traceback.limit for the maximum number of stack level
+we look.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_cleanup_code_struct">
+<code class="sig-name descname"><span class="pre">c_cleanup_code_struct</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_cleanup_code_struct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return a code string specific to the apply to be
+inserted in the struct cleanup code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>an Apply instance in the graph being compiled</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A unique name to distinguish variables from those of other nodes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_code">
+<code class="sig-name descname"><span class="pre">c_code</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required: return the C implementation of an Op.</p>
+<p>Returns C code that does the computation associated to this <cite>Op</cite>,
+given names for the inputs and outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>Apply instance</em>) – The node for which we are compiling the current c_code.
+The same Op may be used in more than one node.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A name that is automatically assigned and guaranteed to be
+unique.</p></li>
+<li><p><strong>inputs</strong> (<em>list of strings</em>) – There is a string for each input of the function, and the
+string is the name of a C variable pointing to that input.
+The type of the variable depends on the declared type of
+the input.  There is a corresponding python variable that
+can be accessed by prepending “<a href="#id5"><span class="problematic" id="id6">py_</span></a>” to the name in the
+list.</p></li>
+<li><p><strong>outputs</strong> (<em>list of strings</em>) – Each string is the name of a C variable where the Op should
+store its output.  The type depends on the declared type of
+the output.  There is a corresponding python variable that
+can be accessed by prepending “<a href="#id7"><span class="problematic" id="id8">py_</span></a>” to the name in the
+list.  In some cases the outputs will be preallocated and
+the value of the variable may be pre-filled.  The value for
+an unallocated output is type-dependent.</p></li>
+<li><p><strong>sub</strong> (<em>dict of strings</em>) – Extra symbols defined in <cite>CLinker</cite> sub symbols (such as ‘fail’).
+WRITEME</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version">
+<code class="sig-name descname"><span class="pre">c_code_cache_version</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tuple of integers indicating the version of this Op.</p>
+<p>An empty tuple indicates an ‘unversioned’ Op that will not be cached
+between processes.</p>
+<p>The cache mechanism may erase cached modules that have been superceded
+by newer versions. See <cite>ModuleCache</cite> for details.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version_apply" title="LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version_apply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_code_cache_version_apply</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version_apply">
+<code class="sig-name descname"><span class="pre">c_code_cache_version_apply</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tuple of integers indicating the version of this Op.</p>
+<p>An empty tuple indicates an ‘unversioned’ Op that will not be
+cached between processes.</p>
+<p>The cache mechanism may erase cached modules that have been
+superceded by newer versions.  See <cite>ModuleCache</cite> for details.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version" title="LoopStructural.probability.LogLikelihoodGradient.c_code_cache_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_code_cache_version</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This function overrides <cite>c_code_cache_version</cite> unless it explicitly
+calls <cite>c_code_cache_version</cite>. The default implementation simply
+calls <cite>c_code_cache_version</cite> and ignores the <cite>node</cite> argument.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_code_cleanup">
+<code class="sig-name descname"><span class="pre">c_code_cleanup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_code_cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return C code to run after c_code, whether it failed or not.</p>
+<p>This is a convenient place to clean up things allocated by c_code().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>Apply instance</em>) – WRITEME</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A name that is automatically assigned and guaranteed to be
+unique.</p></li>
+<li><p><strong>inputs</strong> (<em>list of strings</em>) – There is a string for each input of the function, and the
+string is the name of a C variable pointing to that input.
+The type of the variable depends on the declared type of
+the input. There is a corresponding python variable that
+can be accessed by prepending “<a href="#id9"><span class="problematic" id="id10">py_</span></a>” to the name in the
+list.</p></li>
+<li><p><strong>outputs</strong> (<em>list of strings</em>) – Each string is the name of a C variable correspoinding to
+one of the outputs of the Op. The type depends on the
+declared type of the output. There is a corresponding
+python variable that can be accessed by prepending “<a href="#id11"><span class="problematic" id="id12">py_</span></a>” to
+the name in the list.</p></li>
+<li><p><strong>sub</strong> (<em>dict of strings</em>) – extra symbols defined in <cite>CLinker</cite> sub symbols (such as ‘fail’).
+WRITEME</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_compile_args">
+<code class="sig-name descname"><span class="pre">c_compile_args</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_compile_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: Return a list of compile args recommended to compile the
+code returned by other methods in this class.</p>
+<p class="rubric">Example</p>
+<p>return [‘-ffast-math’]</p>
+<p>Compiler arguments related to headers, libraries and search paths should
+be provided via the functions <cite>c_headers</cite>, <cite>c_libraries</cite>,
+<cite>c_header_dirs</cite>, and <cite>c_lib_dirs</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_header_dirs">
+<code class="sig-name descname"><span class="pre">c_header_dirs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_header_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: Return a list of header search paths required by code
+returned by this class.</p>
+<p class="rubric">Examples</p>
+<p>return [‘/usr/local/include’, ‘/opt/weirdpath/src/include’]</p>
+<p>Provides search paths for headers, in addition to those in any relevant
+environment variables.</p>
+<p>Hint: for unix compilers, these are the things that get ‘-I’ prefixed
+in the compiler cmdline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_headers">
+<code class="sig-name descname"><span class="pre">c_headers</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: Return a list of header files required by code returned by
+this class.</p>
+<p class="rubric">Examples</p>
+<p>return [‘&lt;iostream&gt;’, ‘&lt;math.h&gt;’, ‘/full/path/to/header.h’]</p>
+<p>These strings will be prefixed with “#include ” and inserted at the
+beginning of the c source code.</p>
+<p>Strings in this list that start neither with ‘&lt;’ nor ‘”’ will be
+enclosed in double-quotes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_init_code">
+<code class="sig-name descname"><span class="pre">c_init_code</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_init_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return a list of code snippets to be inserted in module
+initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_init_code_apply">
+<code class="sig-name descname"><span class="pre">c_init_code_apply</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_init_code_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return a code string specific to the apply
+to be inserted in the module initialization code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>an Apply instance in the graph being compiled</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A string or number that serves to uniquely identify this node.
+Symbol names defined by this support code should include the name,
+so that they can be called from the c_code, and so that they do not
+cause name collisions.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is called in addition to c_init_code and will supplement
+whatever is returned from there.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_init_code_struct">
+<code class="sig-name descname"><span class="pre">c_init_code_struct</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_init_code_struct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return a code string specific to the apply
+to be inserted in the struct initialization code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>an Apply instance in the graph being compiled</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A unique name to distinguish variables from those of other nodes.</p></li>
+<li><p><strong>sub</strong> – A dictionary of values to substitute in the code.
+Most notably it contains a ‘fail’ entry that you should place in
+your code after setting a python exception to indicate an error.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_lib_dirs">
+<code class="sig-name descname"><span class="pre">c_lib_dirs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_lib_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: Return a list of library search paths required by code
+returned by this class.</p>
+<p class="rubric">Examples</p>
+<p>return [‘/usr/local/lib’, ‘/opt/weirdpath/build/libs’].</p>
+<p>Provides search paths for libraries, in addition to those in any
+relevant environment variables (e.g. LD_LIBRARY_PATH).</p>
+<p>Hint: for unix compilers, these are the things that get ‘-L’ prefixed
+in the compiler cmdline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_libraries">
+<code class="sig-name descname"><span class="pre">c_libraries</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_libraries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: Return a list of libraries required by code returned by
+this class.</p>
+<p class="rubric">Examples</p>
+<p>return [‘gsl’, ‘gslcblas’, ‘m’, ‘fftw3’, ‘g2c’].</p>
+<p>The compiler will search the directories specified by the environment
+variable LD_LIBRARY_PATH in addition to any returned by <cite>c_lib_dirs</cite>.</p>
+<p>Hint: for unix compilers, these are the things that get ‘-l’ prefixed
+in the compiler cmdline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_no_compile_args">
+<code class="sig-name descname"><span class="pre">c_no_compile_args</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_no_compile_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return a list of incompatible gcc compiler arguments.</p>
+<p>We will remove those arguments from the command line of gcc. So if
+another Op adds a compile arg in the graph that is incompatible
+with this Op, the incompatible arg will not be used.
+Useful for instance to remove -ffast-math.</p>
+<p>EXAMPLE</p>
+<p>WRITEME</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_support_code">
+<code class="sig-name descname"><span class="pre">c_support_code</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_support_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: Return utility code (a string, or a list of strings) for use by a <cite>Variable</cite> or <cite>Op</cite> to be
+included at global scope prior to the rest of the code for this class.</p>
+<p>QUESTION: How many times will this support code be emitted for a graph
+with many instances of the same type?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_support_code_apply">
+<code class="sig-name descname"><span class="pre">c_support_code_apply</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_support_code_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return utility code for use by an <cite>Op</cite> that will be
+inserted at global scope, that can be specialized for the
+support of a particular <cite>Apply</cite> node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>an Apply instance in the graph being compiled</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A string or number that serves to uniquely identify this node.
+Symbol names defined by this support code should include the name,
+so that they can be called from the c_code, and so that they do not
+cause name collisions.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is called in addition to c_support_code and will
+supplement whatever is returned from there.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.c_support_code_struct">
+<code class="sig-name descname"><span class="pre">c_support_code_struct</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.c_support_code_struct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional: return utility code for use by an <cite>Op</cite> that will be
+inserted at struct scope, that can be specialized for the
+support of a particular <cite>Apply</cite> node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>an Apply instance in the graph being compiled</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A unique name to distinguish you variables from those of other
+nodes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>MethodNotDefined</strong> – Subclass does not implement this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.do_constant_folding">
+<code class="sig-name descname"><span class="pre">do_constant_folding</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.do_constant_folding" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows each op to determine if it wants to be constant
+folded when all its inputs are constant. This allows it to
+choose where it puts its memory/speed trade-off. Also, it
+could make things faster as constants can’t be used for inplace
+operations (see <a href="#id3"><span class="problematic" id="id4">*</span></a>IncSubtensor).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.make_c_thunk">
+<code class="sig-name descname"><span class="pre">make_c_thunk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_recycling</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.make_c_thunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like make_thunk, but will only try to make a C thunk.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.make_node">
+<code class="sig-name descname"><span class="pre">make_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.make_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a “apply” nodes for the inputs in that order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.make_py_thunk">
+<code class="sig-name descname"><span class="pre">make_py_thunk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_recycling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.make_py_thunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like make_thunk() but only makes python thunks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.make_thunk">
+<code class="sig-name descname"><span class="pre">make_thunk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_recycling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.make_thunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function must return a thunk, that is a zero-arguments
+function that encapsulates the computation to be performed
+by this op on the arguments of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> – Something previously returned by self.make_node.</p></li>
+<li><p><strong>storage_map</strong> – dict variable -&gt; one-element-list where a computed
+value for this variable may be found.</p></li>
+<li><p><strong>compute_map</strong> – dict variable -&gt; one-element-list where a boolean
+value will be found. The boolean indicates whether the
+variable’s storage_map container contains a valid value (True)
+or if it has not been computed yet (False).</p></li>
+<li><p><strong>no_recycling</strong> – List of variables for which it is forbidden to reuse memory
+allocated by a previous call.</p></li>
+<li><p><strong>impl</strong> – Currently, None, ‘c’ or ‘py’. If ‘c’ or ‘py’ we will only try
+that version of the code.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If the thunk consults the storage_map on every call, it is safe
+for it to ignore the no_recycling argument, because elements of the
+no_recycling list will have a value of None in the storage map.  If
+the thunk can potentially cache return values (like CLinker does),
+then it must not do so for variables in the no_recycling list.</p>
+<p>self.prepare_node(node, …) is always called. If we try ‘c’ and it
+fail and we try again ‘py’, prepare_node will be called twice.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.perform">
+<code class="sig-name descname"><span class="pre">perform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.perform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required: Calculate the function on the inputs and put the variables in
+the output storage. Return None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>Apply instance</em>) – Contains the symbolic inputs and outputs.</p></li>
+<li><p><strong>inputs</strong> (<em>list</em>) – Sequence of inputs (immutable).</p></li>
+<li><p><strong>output_storage</strong> (<em>list</em>) – List of mutable 1-element lists (do not change the length of
+these lists)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The <cite>output_storage</cite> list might contain data. If an element of
+output_storage is not None, it has to be of the right type,
+for instance, for a TensorVariable, it has to be a Numpy ndarray,
+with the right number of dimensions, and the correct dtype.
+Its shape and stride pattern, can be arbitrary. It not is
+guaranteed that it was produced by a previous call to impl. It
+could be allocated by another Op impl is free to reuse it as it
+sees fit, or to discard it and allocate new memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>MethodNotDefined</strong> – The subclass does not override this method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.probability.LogLikelihoodGradient.prepare_node">
+<code class="sig-name descname"><span class="pre">prepare_node</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.probability.LogLikelihoodGradient.prepare_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make any special modifications that the Op needs before doing
+make_thunk().</p>
+<p>This can modify the node inplace and should return nothing.</p>
+<p>It can be called multiple time with different impl. It is the
+op responsibility to don’t re-prepare the node when it isn’t
+good to do so.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="LoopStructural.utils.html" class="btn btn-neutral float-right" title="LoopStructural.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.probability.LogLikelihood.html" class="btn btn-neutral float-left" title="LoopStructural.probability.LogLikelihood" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

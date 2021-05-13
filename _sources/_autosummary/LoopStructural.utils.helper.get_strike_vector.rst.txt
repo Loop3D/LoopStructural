@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.get\_strike\_vector
+===============================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: get_strike_vector

@@ -1,0 +1,25 @@
+LoopStructural.modelling.fault.Ones
+===================================
+
+.. currentmodule:: LoopStructural.modelling.fault
+
+.. autoclass:: Ones
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Ones.__init__
+   
+   
+
+   
+   
+   

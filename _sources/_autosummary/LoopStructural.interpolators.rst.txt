@@ -1,10 +1,55 @@
 LoopStructural.interpolators
 ============================
 
-.. contents::
-    :local:
-
 .. automodule:: LoopStructural.interpolators
+  
+   
+   
+   
 
-    Members
-    =======
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      DiscreteFoldInterpolator
+      FiniteDifferenceInterpolator
+      PiecewiseLinearInterpolator
+      StructuredGrid
+      TetMesh
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst                 
+   :recursive:
+
+   LoopStructural.interpolators.base_structured_3d_support
+   LoopStructural.interpolators.cython
+   LoopStructural.interpolators.discrete_fold_interpolator
+   LoopStructural.interpolators.discrete_interpolator
+   LoopStructural.interpolators.finite_difference_interpolator
+   LoopStructural.interpolators.geological_interpolator
+   LoopStructural.interpolators.operator
+   LoopStructural.interpolators.piecewiselinear_interpolator
+   LoopStructural.interpolators.structured_grid
+   LoopStructural.interpolators.structured_tetra
+   LoopStructural.interpolators.surfe_wrapper
+

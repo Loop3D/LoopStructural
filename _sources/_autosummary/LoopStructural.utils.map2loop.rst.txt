@@ -1,0 +1,33 @@
+LoopStructural.utils.map2loop
+=============================
+
+.. automodule:: LoopStructural.utils.map2loop
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      build_model
+      getLogger
+      process_map2loop
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

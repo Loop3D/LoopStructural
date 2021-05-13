@@ -1,0 +1,1503 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>LoopStructural.interpolators.discrete_interpolator.coo_matrix &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.interpolators.finite_difference_interpolator" href="LoopStructural.interpolators.finite_difference_interpolator.html" />
+    <link rel="prev" title="LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator" href="LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">LavaVuModelViewer</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">LoopStructural.interpolators.StructuredGrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.base_structured_3d_support.html">LoopStructural.interpolators.base_structured_3d_support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.cython.html">LoopStructural.interpolators.cython</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_fold_interpolator.html">LoopStructural.interpolators.discrete_fold_interpolator</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.html">LoopStructural.interpolators.discrete_interpolator</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.bmat.html">LoopStructural.interpolators.discrete_interpolator.bmat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.eye.html">LoopStructural.interpolators.discrete_interpolator.eye</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.getLogger.html">LoopStructural.interpolators.discrete_interpolator.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.html">LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator.html">LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.interpolators.discrete_interpolator.coo_matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html">LoopStructural.interpolators.geological_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.operator.html">LoopStructural.interpolators.operator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.piecewiselinear_interpolator.html">LoopStructural.interpolators.piecewiselinear_interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.structured_grid.html">LoopStructural.interpolators.structured_grid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.structured_tetra.html">LoopStructural.interpolators.structured_tetra</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.interpolators.html">LoopStructural.interpolators</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.interpolators.discrete_interpolator.html">LoopStructural.interpolators.discrete_interpolator</a> &raquo;</li>
+        
+      <li>LoopStructural.interpolators.discrete_interpolator.coo_matrix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/LoopStructural.interpolators.discrete_interpolator.coo_matrix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-interpolators-discrete-interpolator-coo-matrix">
+<h1>LoopStructural.interpolators.discrete_interpolator.coo_matrix<a class="headerlink" href="#loopstructural-interpolators-discrete-interpolator-coo-matrix" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.discrete_interpolator.</span></code><code class="sig-name descname"><span class="pre">coo_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.sparse.data._data_matrix</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.sparse.data._minmax_mixin</span></code></p>
+<p>A sparse matrix in COOrdinate format.</p>
+<p>Also known as the ‘ijv’ or ‘triplet’ format.</p>
+<dl>
+<dt>This can be instantiated in several ways:</dt><dd><dl>
+<dt>coo_matrix(D)</dt><dd><p>with a dense matrix D</p>
+</dd>
+<dt>coo_matrix(S)</dt><dd><p>with another sparse matrix S (equivalent to S.tocoo())</p>
+</dd>
+<dt>coo_matrix((M, N), [dtype])</dt><dd><p>to construct an empty matrix with shape (M, N)
+dtype is optional, defaulting to dtype=’d’.</p>
+</dd>
+<dt>coo_matrix((data, (i, j)), [shape=(M, N)])</dt><dd><dl class="simple">
+<dt>to construct from three arrays:</dt><dd><ol class="arabic simple">
+<li><p>data[:]   the entries of the matrix, in any order</p></li>
+<li><p>i[:]      the row indices of the matrix entries</p></li>
+<li><p>j[:]      the column indices of the matrix entries</p></li>
+</ol>
+</dd>
+</dl>
+<p>Where <code class="docutils literal notranslate"><span class="pre">A[i[k],</span> <span class="pre">j[k]]</span> <span class="pre">=</span> <span class="pre">data[k]</span></code>.  When shape is not
+specified, it is inferred from the index arrays</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.dtype">
+<code class="sig-name descname"><span class="pre">dtype</span></code><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data type of the matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dtype</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.shape">
+<code class="sig-name descname"><span class="pre">shape</span></code><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shape of the matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>2-tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.ndim">
+<code class="sig-name descname"><span class="pre">ndim</span></code><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.ndim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of dimensions (this is always 2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.nnz">
+<code class="sig-name descname"><span class="pre">nnz</span></code><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.nnz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of stored values, including explicit zeros</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.data">
+<code class="sig-name descname"><span class="pre">data</span></code><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>COO format data array of the matrix</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.row">
+<code class="sig-name descname"><span class="pre">row</span></code><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.row" title="Permalink to this definition">¶</a></dt>
+<dd><p>COO format row index array of the matrix</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.col">
+<code class="sig-name descname"><span class="pre">col</span></code><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.col" title="Permalink to this definition">¶</a></dt>
+<dd><p>COO format column index array of the matrix</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Sparse matrices can be used in arithmetic operations: they support
+addition, subtraction, multiplication, division, and matrix power.</p>
+<dl class="simple">
+<dt>Advantages of the COO format</dt><dd><ul class="simple">
+<li><p>facilitates fast conversion among sparse formats</p></li>
+<li><p>permits duplicate entries (see example)</p></li>
+<li><p>very fast conversion to and from CSR/CSC formats</p></li>
+</ul>
+</dd>
+<dt>Disadvantages of the COO format</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>does not directly support:</dt><dd><ul>
+<li><p>arithmetic operations</p></li>
+<li><p>slicing</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Intended Usage</dt><dd><ul class="simple">
+<li><p>COO is a fast format for constructing sparse matrices</p></li>
+<li><p>Once a matrix has been constructed, convert to CSR or
+CSC format for fast arithmetic and matrix vector operations</p></li>
+<li><p>By default when converting to CSR or CSC format, duplicate (i,j)
+entries will be summed together.  This facilitates efficient
+construction of finite element matrices and the like. (see example)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Constructing an empty matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coo_matrix</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="go">array([[0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0]], dtype=int8)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Constructing a matrix using ijv format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="go">array([[4, 0, 9, 0],</span>
+<span class="go">       [0, 7, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 5]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Constructing a matrix with duplicate indices</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coo</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Duplicate indices are maintained until implicitly or explicitly summed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">coo</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coo</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="go">array([[3, 0, 1, 0],</span>
+<span class="go">       [0, 2, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 1]])</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.__init__" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(arg1[, shape, dtype, copy])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsin" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsin</span></code></a>()</p></td>
+<td><p>Element-wise arcsin.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsinh" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsinh</span></code></a>()</p></td>
+<td><p>Element-wise arcsinh.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctan" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctan</span></code></a>()</p></td>
+<td><p>Element-wise arctan.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctanh" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctanh</span></code></a>()</p></td>
+<td><p>Element-wise arctanh.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmax" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code></a>([axis, out])</p></td>
+<td><p>Return indices of maximum elements along an axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmin" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code></a>([axis, out])</p></td>
+<td><p>Return indices of minimum elements along an axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.asformat" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.asformat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asformat</span></code></a>(format[, copy])</p></td>
+<td><p>Return this matrix in the passed format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.asfptype" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.asfptype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfptype</span></code></a>()</p></td>
+<td><p>Upcast matrix to a floating point format (if necessary)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.astype" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.astype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">astype</span></code></a>(dtype[, casting, copy])</p></td>
+<td><p>Cast the matrix elements to a specified type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.ceil" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ceil</span></code></a>()</p></td>
+<td><p>Element-wise ceil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.conj" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.conj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conj</span></code></a>([copy])</p></td>
+<td><p>Element-wise complex conjugation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.conjugate" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.conjugate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conjugate</span></code></a>([copy])</p></td>
+<td><p>Element-wise complex conjugation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.copy" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Returns a copy of this matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_nonzero</span></code></a>()</p></td>
+<td><p>Number of non-zero entries, equivalent to</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.deg2rad" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deg2rad</span></code></a>()</p></td>
+<td><p>Element-wise deg2rad.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.diagonal" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diagonal</span></code></a>([k])</p></td>
+<td><p>Returns the kth diagonal of the matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.dot" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dot</span></code></a>(other)</p></td>
+<td><p>Ordinary dot product</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.eliminate_zeros" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.eliminate_zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eliminate_zeros</span></code></a>()</p></td>
+<td><p>Remove zero entries from the matrix</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.expm1" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.expm1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expm1</span></code></a>()</p></td>
+<td><p>Element-wise expm1.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.floor" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a>()</p></td>
+<td><p>Element-wise floor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getH" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getH</span></code></a>()</p></td>
+<td><p>Return the Hermitian transpose of this matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.get_shape" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.get_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_shape</span></code></a>()</p></td>
+<td><p>Get shape of a matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getcol" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getcol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getcol</span></code></a>(j)</p></td>
+<td><p>Returns a copy of column j of the matrix, as an (m x 1) sparse matrix (column vector).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getformat" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getformat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getformat</span></code></a>()</p></td>
+<td><p>Format of a matrix representation as a string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getmaxprint" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getmaxprint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getmaxprint</span></code></a>()</p></td>
+<td><p>Maximum number of elements to display when printed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getnnz" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getnnz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getnnz</span></code></a>([axis])</p></td>
+<td><p>Number of stored values, including explicit zeros.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getrow" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getrow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getrow</span></code></a>(i)</p></td>
+<td><p>Returns a copy of row i of the matrix, as a (1 x n) sparse matrix (row vector).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.log1p" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a>()</p></td>
+<td><p>Element-wise log1p.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.max" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a>([axis, out])</p></td>
+<td><p>Return the maximum of the matrix or maximum along an axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.maximum" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a>(other)</p></td>
+<td><p>Element-wise maximum between this and another matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.mean" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>([axis, dtype, out])</p></td>
+<td><p>Compute the arithmetic mean along the specified axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.min" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a>([axis, out])</p></td>
+<td><p>Return the minimum of the matrix or maximum along an axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.minimum" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code></a>(other)</p></td>
+<td><p>Element-wise minimum between this and another matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.multiply" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiply</span></code></a>(other)</p></td>
+<td><p>Point-wise multiplication by another matrix</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.nonzero" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonzero</span></code></a>()</p></td>
+<td><p>nonzero indices</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.power" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(n[, dtype])</p></td>
+<td><p>This function performs element-wise power.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.rad2deg" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>()</p></td>
+<td><p>Element-wise rad2deg.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.reshape" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reshape</span></code></a>(self, shape[, order, copy])</p></td>
+<td><p>Gives a new shape to a sparse matrix without changing its data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.resize" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.resize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code></a>(*shape)</p></td>
+<td><p>Resize the matrix in-place to dimensions given by <code class="docutils literal notranslate"><span class="pre">shape</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.rint" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.rint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rint</span></code></a>()</p></td>
+<td><p>Element-wise rint.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.set_shape" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.set_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_shape</span></code></a>(shape)</p></td>
+<td><p>See <cite>reshape</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.setdiag" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.setdiag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiag</span></code></a>(values[, k])</p></td>
+<td><p>Set diagonal or off-diagonal elements of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sign" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>()</p></td>
+<td><p>Element-wise sign.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sin" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>()</p></td>
+<td><p>Element-wise sin.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sinh" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>()</p></td>
+<td><p>Element-wise sinh.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sqrt" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>()</p></td>
+<td><p>Element-wise sqrt.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code></a>([axis, dtype, out])</p></td>
+<td><p>Sum the matrix elements over a given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum_duplicates" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum_duplicates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum_duplicates</span></code></a>()</p></td>
+<td><p>Eliminate duplicate matrix entries by adding them together</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tan" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>()</p></td>
+<td><p>Element-wise tan.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tanh" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>()</p></td>
+<td><p>Element-wise tanh.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.toarray" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.toarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toarray</span></code></a>([order, out])</p></td>
+<td><p>See the docstring for <cite>spmatrix.toarray</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tobsr" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tobsr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobsr</span></code></a>([blocksize, copy])</p></td>
+<td><p>Convert this matrix to Block Sparse Row format.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocoo" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocoo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tocoo</span></code></a>([copy])</p></td>
+<td><p>Convert this matrix to COOrdinate format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsc" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tocsc</span></code></a>([copy])</p></td>
+<td><p>Convert this matrix to Compressed Sparse Column format</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsr" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tocsr</span></code></a>([copy])</p></td>
+<td><p>Convert this matrix to Compressed Sparse Row format</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.todense" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.todense"><code class="xref py py-obj docutils literal notranslate"><span class="pre">todense</span></code></a>([order, out])</p></td>
+<td><p>Return a dense matrix representation of this matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.todia" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.todia"><code class="xref py py-obj docutils literal notranslate"><span class="pre">todia</span></code></a>([copy])</p></td>
+<td><p>Convert this matrix to sparse DIAgonal format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.todok" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.todok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">todok</span></code></a>([copy])</p></td>
+<td><p>Convert this matrix to Dictionary Of Keys format.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tolil" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tolil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolil</span></code></a>([copy])</p></td>
+<td><p>Convert this matrix to List of Lists format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.transpose" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>([axes, copy])</p></td>
+<td><p>Reverses the dimensions of the sparse matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.trunc" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>()</p></td>
+<td><p>Element-wise trunc.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.dtype" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.ndim" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id0" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.nnz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nnz</span></code></a></p></td>
+<td><p>Number of stored values, including explicit zeros.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id1" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a></p></td>
+<td><p>Get shape of a matrix.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsin">
+<code class="sig-name descname"><span class="pre">arcsin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise arcsin.</p>
+<p>See <cite>numpy.arcsin</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsinh">
+<code class="sig-name descname"><span class="pre">arcsinh</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arcsinh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise arcsinh.</p>
+<p>See <cite>numpy.arcsinh</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctan">
+<code class="sig-name descname"><span class="pre">arctan</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise arctan.</p>
+<p>See <cite>numpy.arctan</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctanh">
+<code class="sig-name descname"><span class="pre">arctanh</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.arctanh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise arctanh.</p>
+<p>See <cite>numpy.arctanh</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmax">
+<code class="sig-name descname"><span class="pre">argmax</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of maximum elements along an axis.</p>
+<p>Implicit zero elements are also taken into account. If there are
+several maximum values, the index of the first occurrence is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{-2</em><em>, </em><em>-1</em><em>, </em><em>0</em><em>, </em><em>1</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) – Axis along which the argmax is computed. If None (default), index
+of the maximum element in the flatten data is returned.</p></li>
+<li><p><strong>out</strong> (<em>None</em><em>, </em><em>optional</em>) – This argument is in the signature <em>solely</em> for NumPy
+compatibility reasons. Do not pass in anything except for
+the default value, as this argument is not used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ind</strong> (<em>numpy.matrix or int</em>) – Indices of maximum elements. If matrix, its size along <cite>axis</cite> is 1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmin">
+<code class="sig-name descname"><span class="pre">argmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.argmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of minimum elements along an axis.</p>
+<p>Implicit zero elements are also taken into account. If there are
+several minimum values, the index of the first occurrence is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{-2</em><em>, </em><em>-1</em><em>, </em><em>0</em><em>, </em><em>1</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) – Axis along which the argmin is computed. If None (default), index
+of the minimum element in the flatten data is returned.</p></li>
+<li><p><strong>out</strong> (<em>None</em><em>, </em><em>optional</em>) – This argument is in the signature <em>solely</em> for NumPy
+compatibility reasons. Do not pass in anything except for
+the default value, as this argument is not used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ind</strong> (<em>numpy.matrix or int</em>) – Indices of minimum elements. If matrix, its size along <cite>axis</cite> is 1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.asformat">
+<code class="sig-name descname"><span class="pre">asformat</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.asformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return this matrix in the passed format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> (<em>{str</em><em>, </em><em>None}</em>) – The desired matrix format (“csr”, “csc”, “lil”, “dok”, “array”, …)
+or None for no conversion.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the result is guaranteed to not share data with self.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>A</strong> (<em>This matrix in the passed format.</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.asfptype">
+<code class="sig-name descname"><span class="pre">asfptype</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.asfptype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upcast matrix to a floating point format (if necessary)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.astype">
+<code class="sig-name descname"><span class="pre">astype</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.astype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast the matrix elements to a specified type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtype</strong> (<em>string</em><em> or </em><em>numpy dtype</em>) – Typecode or data-type to which to cast the data.</p></li>
+<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) – Controls what kind of data casting may occur.
+Defaults to ‘unsafe’ for backwards compatibility.
+‘no’ means the data types should not be cast at all.
+‘equiv’ means only byte-order changes are allowed.
+‘safe’ means only casts which can preserve values are allowed.
+‘same_kind’ means only safe casts or casts within a kind,
+like float64 to float32, are allowed.
+‘unsafe’ means any data conversions may be done.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>copy</cite> is <cite>False</cite>, the result might share some memory with this
+matrix. If <cite>copy</cite> is <cite>True</cite>, it is guaranteed that the result and
+this matrix do not share any memory.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.ceil">
+<code class="sig-name descname"><span class="pre">ceil</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.ceil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise ceil.</p>
+<p>See <cite>numpy.ceil</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.conj">
+<code class="sig-name descname"><span class="pre">conj</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.conj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise complex conjugation.</p>
+<p>If the matrix is of non-complex data type and <cite>copy</cite> is False,
+this method does nothing and the data is not copied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the result is guaranteed to not share data with self.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>A</strong> (<em>The element-wise complex conjugate.</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.conjugate">
+<code class="sig-name descname"><span class="pre">conjugate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise complex conjugation.</p>
+<p>If the matrix is of non-complex data type and <cite>copy</cite> is False,
+this method does nothing and the data is not copied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the result is guaranteed to not share data with self.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>A</strong> (<em>The element-wise complex conjugate.</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.copy">
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of this matrix.</p>
+<p>No data/indices will be shared between the returned value and current
+matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero">
+<code class="sig-name descname"><span class="pre">count_nonzero</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of non-zero entries, equivalent to</p>
+<p>np.count_nonzero(a.toarray())</p>
+<p>Unlike getnnz() and the nnz property, which return the number of stored
+entries (the length of the data attribute), this method counts the
+actual number of non-zero entries in data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.deg2rad">
+<code class="sig-name descname"><span class="pre">deg2rad</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.deg2rad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise deg2rad.</p>
+<p>See <cite>numpy.deg2rad</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.diagonal">
+<code class="sig-name descname"><span class="pre">diagonal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.diagonal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the kth diagonal of the matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – <p>Which diagonal to get, corresponding to elements a[i, i+k].
+Default: 0 (the main diagonal).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.0.</span></p>
+</div>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diagonal</span></code></dt><dd><p>Equivalent numpy function.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+<span class="go">array([1, 0, 5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([2, 3])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.dot">
+<code class="sig-name descname"><span class="pre">dot</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ordinary dot product</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="go">array([ 1, -3, -1], dtype=int64)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.eliminate_zeros">
+<code class="sig-name descname"><span class="pre">eliminate_zeros</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.eliminate_zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove zero entries from the matrix</p>
+<p>This is an <em>in place</em> operation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.expm1">
+<code class="sig-name descname"><span class="pre">expm1</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.expm1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise expm1.</p>
+<p>See <cite>numpy.expm1</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.floor">
+<code class="sig-name descname"><span class="pre">floor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.floor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise floor.</p>
+<p>See <cite>numpy.floor</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getH">
+<code class="sig-name descname"><span class="pre">getH</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Hermitian transpose of this matrix.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix.getH</span></code></dt><dd><p>NumPy’s implementation of <cite>getH</cite> for matrices</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.get_shape">
+<code class="sig-name descname"><span class="pre">get_shape</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.get_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get shape of a matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getcol">
+<code class="sig-name descname"><span class="pre">getcol</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getcol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of column j of the matrix, as an (m x 1) sparse
+matrix (column vector).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getformat">
+<code class="sig-name descname"><span class="pre">getformat</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format of a matrix representation as a string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getmaxprint">
+<code class="sig-name descname"><span class="pre">getmaxprint</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getmaxprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum number of elements to display when printed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getnnz">
+<code class="sig-name descname"><span class="pre">getnnz</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getnnz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of stored values, including explicit zeros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>axis</strong> (<em>None</em><em>, </em><em>0</em><em>, or </em><em>1</em>) – Select between the number of values across the whole matrix, in
+each column, or in each row.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_nonzero</span></code></a></dt><dd><p>Number of non-zero entries</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.getrow">
+<code class="sig-name descname"><span class="pre">getrow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.getrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of row i of the matrix, as a (1 x n) sparse
+matrix (row vector).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.log1p">
+<code class="sig-name descname"><span class="pre">log1p</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.log1p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise log1p.</p>
+<p>See <cite>numpy.log1p</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.max">
+<code class="sig-name descname"><span class="pre">max</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the maximum of the matrix or maximum along an axis.
+This takes all elements into account, not just the non-zero ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{-2</em><em>, </em><em>-1</em><em>, </em><em>0</em><em>, </em><em>1</em><em>, </em><em>None} optional</em>) – Axis along which the sum is computed. The default is to
+compute the maximum over all the matrix elements, returning
+a scalar (i.e., <cite>axis</cite> = <cite>None</cite>).</p></li>
+<li><p><strong>out</strong> (<em>None</em><em>, </em><em>optional</em>) – This argument is in the signature <em>solely</em> for NumPy
+compatibility reasons. Do not pass in anything except
+for the default value, as this argument is not used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>amax</strong> (<em>coo_matrix or scalar</em>) – Maximum of <cite>a</cite>. If <cite>axis</cite> is None, the result is a scalar value.
+If <cite>axis</cite> is given, the result is a sparse.coo_matrix of dimension
+<code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.min" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a></dt><dd><p>The minimum value of a sparse matrix along a given axis.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix.max</span></code></dt><dd><p>NumPy’s implementation of ‘max’ for matrices</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.maximum">
+<code class="sig-name descname"><span class="pre">maximum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.maximum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise maximum between this and another matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.mean">
+<code class="sig-name descname"><span class="pre">mean</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the arithmetic mean along the specified axis.</p>
+<p>Returns the average of the matrix elements. The average is taken
+over all elements in the matrix by default, otherwise over the
+specified axis. <cite>float64</cite> intermediate and return values are used
+for integer inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{-2</em><em>, </em><em>-1</em><em>, </em><em>0</em><em>, </em><em>1</em><em>, </em><em>None} optional</em>) – Axis along which the mean is computed. The default is to compute
+the mean of all elements in the matrix (i.e., <cite>axis</cite> = <cite>None</cite>).</p></li>
+<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – <p>Type to use in computing the mean. For integer inputs, the default
+is <cite>float64</cite>; for floating point inputs, it is the same as the
+input dtype.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.18.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>out</strong> (<em>np.matrix</em><em>, </em><em>optional</em>) – <p>Alternative output matrix in which to place the result. It must
+have the same shape as the expected output, but the type of the
+output values will be cast if necessary.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.18.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>m</strong> (<em>np.matrix</em>)</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix.mean</span></code></dt><dd><p>NumPy’s implementation of ‘mean’ for matrices</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.min">
+<code class="sig-name descname"><span class="pre">min</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the minimum of the matrix or maximum along an axis.
+This takes all elements into account, not just the non-zero ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{-2</em><em>, </em><em>-1</em><em>, </em><em>0</em><em>, </em><em>1</em><em>, </em><em>None} optional</em>) – Axis along which the sum is computed. The default is to
+compute the minimum over all the matrix elements, returning
+a scalar (i.e., <cite>axis</cite> = <cite>None</cite>).</p></li>
+<li><p><strong>out</strong> (<em>None</em><em>, </em><em>optional</em>) – This argument is in the signature <em>solely</em> for NumPy
+compatibility reasons. Do not pass in anything except for
+the default value, as this argument is not used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>amin</strong> (<em>coo_matrix or scalar</em>) – Minimum of <cite>a</cite>. If <cite>axis</cite> is None, the result is a scalar value.
+If <cite>axis</cite> is given, the result is a sparse.coo_matrix of dimension
+<code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.max" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a></dt><dd><p>The maximum value of a sparse matrix along a given axis.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix.min</span></code></dt><dd><p>NumPy’s implementation of ‘min’ for matrices</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.minimum">
+<code class="sig-name descname"><span class="pre">minimum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.minimum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise minimum between this and another matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.multiply">
+<code class="sig-name descname"><span class="pre">multiply</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.multiply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point-wise multiplication by another matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id0">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">nnz</span></code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of stored values, including explicit zeros.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero" title="LoopStructural.interpolators.discrete_interpolator.coo_matrix.count_nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_nonzero</span></code></a></dt><dd><p>Number of non-zero entries</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.nonzero">
+<code class="sig-name descname"><span class="pre">nonzero</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.nonzero" title="Permalink to this definition">¶</a></dt>
+<dd><p>nonzero indices</p>
+<p>Returns a tuple of arrays (row,col) containing the indices
+of the non-zero elements of the matrix.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+<span class="go">(array([0, 0, 1, 2, 2]), array([0, 1, 2, 0, 2]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.power">
+<code class="sig-name descname"><span class="pre">power</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.power" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs element-wise power.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>n is a scalar</em>) – </p></li>
+<li><p><strong>dtype</strong> (<em>If dtype is not specified</em><em>, </em><em>the current dtype will be preserved.</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.rad2deg">
+<code class="sig-name descname"><span class="pre">rad2deg</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.rad2deg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise rad2deg.</p>
+<p>See <cite>numpy.rad2deg</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.reshape">
+<code class="sig-name descname"><span class="pre">reshape</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.reshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a new shape to a sparse matrix without changing its data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>length-2 tuple of ints</em>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Read the elements using this index order. ‘C’ means to read and
+write the elements using C-like index order; e.g., read entire first
+row, then second row, etc. ‘F’ means to read and write the elements
+using Fortran-like index order; e.g., read entire first column, then
+second column, etc.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates whether or not attributes of self should be copied
+whenever possible. The degree to which attributes are copied varies
+depending on the type of sparse matrix being used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>reshaped_matrix</strong> (<em>sparse matrix</em>) – A sparse matrix with the given <cite>shape</cite>, not necessarily of the same
+format as the current object.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix.reshape</span></code></dt><dd><p>NumPy’s implementation of ‘reshape’ for matrices</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.resize">
+<code class="sig-name descname"><span class="pre">resize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resize the matrix in-place to dimensions given by <code class="docutils literal notranslate"><span class="pre">shape</span></code></p>
+<p>Any elements that lie within the new shape will remain at the same
+indices, while non-zero elements lying outside the new shape are
+removed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>shape</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>)</em>) – number of rows and columns in the new matrix</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The semantics are not identical to <cite>numpy.ndarray.resize</cite> or
+<cite>numpy.resize</cite>. Here, the same data will be maintained at each index
+before and after reshape, if that index is within the new bounds. In
+numpy, resizing maintains contiguity of the array, moving elements
+around in the logical matrix but not within a flattened representation.</p>
+<p>We give no guarantees about whether the underlying data attributes
+(arrays, etc.) will be modified in place or replaced with new objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.rint">
+<code class="sig-name descname"><span class="pre">rint</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.rint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise rint.</p>
+<p>See <cite>numpy.rint</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.set_shape">
+<code class="sig-name descname"><span class="pre">set_shape</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.set_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <cite>reshape</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.setdiag">
+<code class="sig-name descname"><span class="pre">setdiag</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.setdiag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set diagonal or off-diagonal elements of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>array_like</em>) – <p>New values of the diagonal elements.</p>
+<p>Values may have any length. If the diagonal is longer than values,
+then the remaining diagonal entries will not be set. If values if
+longer than the diagonal, then the remaining values are ignored.</p>
+<p>If a scalar value is given, all of the diagonal is set to it.</p>
+</p></li>
+<li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – Which off-diagonal to set, corresponding to elements a[i,i+k].
+Default: 0 (the main diagonal).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id1">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">shape</span></code><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get shape of a matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sign">
+<code class="sig-name descname"><span class="pre">sign</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise sign.</p>
+<p>See <cite>numpy.sign</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sin">
+<code class="sig-name descname"><span class="pre">sin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise sin.</p>
+<p>See <cite>numpy.sin</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sinh">
+<code class="sig-name descname"><span class="pre">sinh</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sinh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise sinh.</p>
+<p>See <cite>numpy.sinh</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sqrt">
+<code class="sig-name descname"><span class="pre">sqrt</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sqrt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise sqrt.</p>
+<p>See <cite>numpy.sqrt</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum">
+<code class="sig-name descname"><span class="pre">sum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum the matrix elements over a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{-2</em><em>, </em><em>-1</em><em>, </em><em>0</em><em>, </em><em>1</em><em>, </em><em>None} optional</em>) – Axis along which the sum is computed. The default is to
+compute the sum of all the matrix elements, returning a scalar
+(i.e., <cite>axis</cite> = <cite>None</cite>).</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – <p>The type of the returned matrix and of the accumulator in which
+the elements are summed.  The dtype of <cite>a</cite> is used by default
+unless <cite>a</cite> has an integer dtype of less precision than the default
+platform integer.  In that case, if <cite>a</cite> is signed then the platform
+integer is used while if <cite>a</cite> is unsigned then an unsigned integer
+of the same precision as the platform integer is used.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.18.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>out</strong> (<em>np.matrix</em><em>, </em><em>optional</em>) – <p>Alternative output matrix in which to place the result. It must
+have the same shape as the expected output, but the type of the
+output values will be cast if necessary.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.18.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sum_along_axis</strong> (<em>np.matrix</em>) – A matrix with the same shape as <cite>self</cite>, with the specified
+axis removed.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix.sum</span></code></dt><dd><p>NumPy’s implementation of ‘sum’ for matrices</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum_duplicates">
+<code class="sig-name descname"><span class="pre">sum_duplicates</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.sum_duplicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eliminate duplicate matrix entries by adding them together</p>
+<p>This is an <em>in place</em> operation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tan">
+<code class="sig-name descname"><span class="pre">tan</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise tan.</p>
+<p>See <cite>numpy.tan</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tanh">
+<code class="sig-name descname"><span class="pre">tanh</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tanh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise tanh.</p>
+<p>See <cite>numpy.tanh</cite> for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.toarray">
+<code class="sig-name descname"><span class="pre">toarray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.toarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>See the docstring for <cite>spmatrix.toarray</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tobsr">
+<code class="sig-name descname"><span class="pre">tobsr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tobsr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this matrix to Block Sparse Row format.</p>
+<p>With copy=False, the data/indices may be shared between this matrix and
+the resultant bsr_matrix.</p>
+<p>When blocksize=(R, C) is provided, it will be used for construction of
+the bsr_matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocoo">
+<code class="sig-name descname"><span class="pre">tocoo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocoo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this matrix to COOrdinate format.</p>
+<p>With copy=False, the data/indices may be shared between this matrix and
+the resultant coo_matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsc">
+<code class="sig-name descname"><span class="pre">tocsc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this matrix to Compressed Sparse Column format</p>
+<p>Duplicate entries will be summed together.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span>  <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span>  <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="go">array([[3, 0, 1, 0],</span>
+<span class="go">       [0, 2, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 1]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsr">
+<code class="sig-name descname"><span class="pre">tocsr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tocsr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this matrix to Compressed Sparse Row format</p>
+<p>Duplicate entries will be summed together.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span>  <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span>  <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="go">array([[3, 0, 1, 0],</span>
+<span class="go">       [0, 2, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 1]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.todense">
+<code class="sig-name descname"><span class="pre">todense</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.todense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dense matrix representation of this matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Whether to store multi-dimensional data in C (row-major)
+or Fortran (column-major) order in memory. The default
+is ‘None’, indicating the NumPy default of C-ordered.
+Cannot be specified in conjunction with the <cite>out</cite>
+argument.</p></li>
+<li><p><strong>out</strong> (<em>ndarray</em><em>, </em><em>2-D</em><em>, </em><em>optional</em>) – If specified, uses this array (or <cite>numpy.matrix</cite>) as the
+output buffer instead of allocating a new array to
+return. The provided array must have the same shape and
+dtype as the sparse matrix on which you are calling the
+method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>arr</strong> (<em>numpy.matrix, 2-D</em>) – A NumPy matrix object with the same shape and containing
+the same data represented by the sparse matrix, with the
+requested memory order. If <cite>out</cite> was passed and was an
+array (rather than a <cite>numpy.matrix</cite>), it will be filled
+with the appropriate values and returned wrapped in a
+<cite>numpy.matrix</cite> object that shares the same memory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.todia">
+<code class="sig-name descname"><span class="pre">todia</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.todia" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this matrix to sparse DIAgonal format.</p>
+<p>With copy=False, the data/indices may be shared between this matrix and
+the resultant dia_matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.todok">
+<code class="sig-name descname"><span class="pre">todok</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.todok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this matrix to Dictionary Of Keys format.</p>
+<p>With copy=False, the data/indices may be shared between this matrix and
+the resultant dok_matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.tolil">
+<code class="sig-name descname"><span class="pre">tolil</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.tolil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this matrix to List of Lists format.</p>
+<p>With copy=False, the data/indices may be shared between this matrix and
+the resultant lil_matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.transpose">
+<code class="sig-name descname"><span class="pre">transpose</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverses the dimensions of the sparse matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axes</strong> (<em>None</em><em>, </em><em>optional</em>) – This argument is in the signature <em>solely</em> for NumPy
+compatibility reasons. Do not pass in anything except
+for the default value.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates whether or not attributes of <cite>self</cite> should be
+copied whenever possible. The degree to which attributes
+are copied varies depending on the type of sparse matrix
+being used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>p</strong> (<cite>self</cite> with the dimensions reversed.)</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix.transpose</span></code></dt><dd><p>NumPy’s implementation of ‘transpose’ for matrices</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.coo_matrix.trunc">
+<code class="sig-name descname"><span class="pre">trunc</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.coo_matrix.trunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise trunc.</p>
+<p>See <cite>numpy.trunc</cite> for more information.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="LoopStructural.interpolators.finite_difference_interpolator.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.finite_difference_interpolator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

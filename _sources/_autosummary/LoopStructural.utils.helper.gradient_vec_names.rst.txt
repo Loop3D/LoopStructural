@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.gradient\_vec\_names
+================================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: gradient_vec_names

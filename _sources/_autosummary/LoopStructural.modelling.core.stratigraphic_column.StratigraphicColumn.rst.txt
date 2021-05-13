@@ -1,0 +1,26 @@
+LoopStructural.modelling.core.stratigraphic\_column.StratigraphicColumn
+=======================================================================
+
+.. currentmodule:: LoopStructural.modelling.core.stratigraphic_column
+
+.. autoclass:: StratigraphicColumn
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~StratigraphicColumn.__init__
+      ~StratigraphicColumn.add_series
+   
+   
+
+   
+   
+   

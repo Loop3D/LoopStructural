@@ -1,0 +1,6 @@
+LoopStructural.interpolators.discrete\_interpolator.bmat
+========================================================
+
+.. currentmodule:: LoopStructural.interpolators.discrete_interpolator
+
+.. autofunction:: bmat
