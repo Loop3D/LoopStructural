@@ -6,3 +6,4 @@ from .region_feature import RegionFeature
 from .structural_frame import StructuralFrame
 from .structural_frame_builder import StructuralFrameBuilder
 from .unconformity_feature import UnconformityFeature
+from .analytical_feature import AnalyticalGeologicalFeature

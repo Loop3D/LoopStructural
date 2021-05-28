@@ -13,13 +13,18 @@ def calculate_fault_intersections(model):
     for name in fault_names:
         xyz=model.regular_grid(shuffle=False)
         vals = model[name].evaluate_value(xyz)
-        model.nsteps = (50,50,25)
         model.step_vector = (model.bounding_box[1,:]-model.bounding_box[0,:])/model.nsteps
-        verts, faces, normals, values = marching_cubes(
-                        vals.reshape(model.nsteps, order='C'),
-                        0,
-                        spacing=model.step_vector)
-        verts = model.rescale(verts)
+        try:
+                
+            verts, faces, normals, values = marching_cubes(
+                            vals.reshape(model.nsteps, order='C'),
+                            0,
+                            spacing=model.step_vector)
+            verts = model.rescale(verts)
+        except (ValueError, RuntimeError) as e:
+                print(e)
+                logger.warning("Cannot isosurface {} at {}, skipping".format(geological_feature.name,isovalue))
+                continue
         for name2 in fault_names:
             if name2  == name:
                 continue

@@ -47,7 +47,20 @@ class FaultSegment:
             self.displacementfeature = FaultDisplacementFeature(
                 self.faultframe, self.faultfunction, name = self.name)
         self.builder = None
-    
+        self.splay = {}
+        self.abut = {}
+
+    def __str__(self):
+        _str = 'FaultSegment - {} \n'.format(self.name)
+        _str += 'Interpolator: {} \n'.format(self.faultframe[0].interpolator.type)
+        _str += 'Degrees of freedom: {}\n'.format(self.faultframe[0].interpolator.nx)
+        _str += 'Displacement magnitude: {}\n'.format(self.displacement)
+        for name in self.splay.keys():
+            _str += 'Splays from {}\n'.format(name)
+        for name in self.abut.keys():
+            _str += 'Abuts {}\n'.format(name)
+        return _str
+            
     def __getitem__(self, item):
         """
 
@@ -137,8 +150,9 @@ class FaultSegment:
             boolean array true if on hanging wall, false if on footwall
 
         """
-
-        return self.faultframe.features[0].evaluate_value(locations) > 0
+        v = self.faultframe.features[0].evaluate_value(locations)
+        v[~np.isnan(v)] = v[~np.isnan(v)] > 0
+        return v.astype
 
     def inside_volume(self,locations):
         v = self.faultframe.evaluate_value(locations)
@@ -163,7 +177,10 @@ class FaultSegment:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(locations))
+            try:
+                mask = np.logical_and(mask, r(locations))
+            except:
+                logger.error("nan slicing")
         v[mask]=self.faultframe[0].evaluate_value(locations[mask, :])
         return v
 
@@ -195,7 +212,10 @@ class FaultSegment:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(locations))
+            try:
+                mask = np.logical_and(mask, r(locations))
+            except:
+                logger.error("nan slicing ")
         # need to scale with fault displacement
         v[mask,:] = self.faultframe[1].evaluate_gradient(locations[mask, :])
         return v
@@ -228,7 +248,7 @@ class FaultSegment:
         d[gx_mask] = 1.
         if self.faultfunction is not None:
             d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
-        return d
+        return d*self.displacement
     def apply_to_points(self, points):
         """
         Unfault the array of points
@@ -337,5 +357,5 @@ class FaultSegment:
             if abut_value < 0:
                 return np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0, 
                                         np.isnan(abutting_fault_feature.evaluate_value(pos)))
-
+        self.abut[abutting_fault_feature.name] = abutting_region
         self.faultframe[0].add_region(abutting_region)

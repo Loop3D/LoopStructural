@@ -33,22 +33,7 @@ def displacement_missfit(d,
     v = model[fname].faultframe.evaluate_value(model.data[['X','Y','Z']].to_numpy())
     np.all(np.logical_and(v > -1,v<1),axis=1)
     mask = model[fname].inside_volume(model.data[['X','Y','Z']].to_numpy())
-    if np.sum(mask) == 0:
-        view.rotation = [-12.21526050567627, 40.99689483642578, 57.64434051513672]
-        view.add_data(model[fname][0])
-        view.add_data(model[fname][1])
-        view.add_data(model[fname][2])
-
-        view.add_isosurface(model[fname][0],slices=[-1,0,1])
-        view.add_isosurface(model[fname][1],slices=[-1,0,1])
-        view.add_isosurface(model[fname][2],slices=[-1,0,1])
-        view.add_isosurface(model[fname][0])
-        view.add_isosurface(model[fname][1])
-        view.add_isosurface(model[fname][2])
-        view.add_scalar_field(model[fname].displacementfeature)
-        view.display()
-        raise BaseException
-        return None, None, None, None, None
+    
     data2 = model.data.copy()
 
     # mask only data associated with the faulted strati
