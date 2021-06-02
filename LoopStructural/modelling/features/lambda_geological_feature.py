@@ -14,6 +14,13 @@ class LambdaGeologicalFeature:
         self.name = name
         self.gradient_function = gradient_function
         self.model = model
+        if self.model is not None:
+            v = function(self.model.regular_grid((10, 10, 10)))
+            self._min = np.nanmin(v)#function(self.model.regular_grid((10, 10, 10))))
+            self._max = np.nanmax(v)
+        else:
+            self._min = 0
+            self._max = 0
     def evaluate_value(self, xyz):
         v = np.zeros((xyz.shape[0]))
         if self.function is None:
@@ -29,8 +36,8 @@ class LambdaGeologicalFeature:
             v[:,:] = self.gradient_function(xyz)
         return v
     def min(self):
-        return 0
+        return self._min
     def max(self):
-        return 0
+        return self._max
 
     
