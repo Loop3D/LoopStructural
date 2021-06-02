@@ -196,7 +196,7 @@ class LavaVuModelViewer:
         if geological_feature is None:
             surf.colours(colour)
 
-        if geological_feature is not None and type(geological_feature) == GeologicalFeature:
+        if geological_feature is not None:# and type(geological_feature) == GeologicalFeature:
             if 'norm' in kwargs:
                 surf.values(np.linalg.norm(
                     geological_feature.evaluate_gradient(points), axis=1),
