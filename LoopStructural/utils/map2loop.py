@@ -3,6 +3,7 @@ import numpy as np
 import os
 import logging
 import networkx
+from scipy.stats import truncnorm
 
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
@@ -34,6 +35,9 @@ def process_map2loop(m2l_directory, flags={}):
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
     fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv')
     fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
+
+    # whether to simulate thickness variations
+    thickness_probabilities = flags.get('thickness_probabilities',False)
 
 
     ## read supergroups file
@@ -95,7 +99,17 @@ def process_map2loop(m2l_directory, flags={}):
         for l in file:
             if i>=1:
                 linesplit = l.split(',')
-                thickness[linesplit[0]] = float(linesplit[1])
+                if thickness_probabilities:
+                    std = float(linesplit[2])
+                    mean = float(linesplit[1])
+                    if  np.isnan(std):
+                        std = float(linesplit[1])
+                    a = (0-mean) / std
+                    b = 100.
+                    thickness[linesplit[0]] = (truncnorm.rvs(a,b,size=1)*std)[0]+mean
+                else:
+                    thickness[linesplit[0]] = float(linesplit[1])
+                
                 # normalise the thicknesses
                 if float(linesplit[1]) > max_thickness:
                     max_thickness=float(linesplit[1])
@@ -285,7 +299,8 @@ def process_map2loop(m2l_directory, flags={}):
             'strat_va':strat_val,
             'downthrow_dir':downthrow_dir,
             'fault_graph':fault_graph,
-            'fault_intersection_angles':fault_intersection_angles}
+            'fault_intersection_angles':fault_intersection_angles,
+            'thickness':thickness}
 
 def build_model(m2l_data, 
                 evaluate = True, 
