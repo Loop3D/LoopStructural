@@ -25,7 +25,8 @@ If you want to use LoopStructural the easiest way to get started is to use a doc
 1. Pull the loopstructural docker image `docker pull lachlangrose/loopstructural`
 2. Start a docker container `docker run -it -p 8888:8888 lachlangrose/loopstructural`
 
-
+## Documentation
+The LoopStructural documentation can be found [here](https://loop3d.github.io/LoopStructural)
 ## Problems
 Any bugs/feature requests/comments please create a new [issue](https://github.com/Loop3D/LoopStructural/issues). 
 
