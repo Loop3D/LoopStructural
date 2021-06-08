@@ -1,4 +1,7 @@
 import numpy as np
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
+
 def calculate_fault_topology_matrix(model, xyz=None):
     """Calculate fault ellipsoid and hw/fw
 

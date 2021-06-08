@@ -1,6 +1,7 @@
 import numpy as np
 
-
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 def plane_fit(points):
     
     soln = []

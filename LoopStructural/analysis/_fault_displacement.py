@@ -1,6 +1,7 @@
 import numpy as np
 from ._plane_fit import PlaneFitFeature
-
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 def displacement_missfit(d,
                             fault_slip,
                             fault_center, 
