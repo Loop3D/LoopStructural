@@ -178,8 +178,10 @@ class LavaVuModelViewer:
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 2])
             zz[:] = value
-
-        name = kwargs.get('name', geological_feature.name)
+        if geological_feature == 'model' and self.model is not None:
+            name = kwargs.get('name','model_section')
+        else:
+            name = kwargs.get('name', geological_feature.name)
         name = '{}_section_at_{}_of_{}'.format(axis,value,name)
         colour = kwargs.get('colour', 'red')
 
@@ -196,7 +198,7 @@ class LavaVuModelViewer:
         if geological_feature is None:
             surf.colours(colour)
 
-        if geological_feature is not None:# and type(geological_feature) == GeologicalFeature:
+        if geological_feature is not None and type(geological_feature) != str:
             if 'norm' in kwargs:
                 surf.values(np.linalg.norm(
                     geological_feature.evaluate_gradient(points), axis=1),
@@ -213,12 +215,13 @@ class LavaVuModelViewer:
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
         if geological_feature == 'model' and self.model is not None:
             name = kwargs.get('name','model_section')
-            surf.values(self.model.evaluate_model(points,scale=True),
+            v = self.model.evaluate_model(points,scale=False)
+            surf.values(v,
                             name)
             surf["colourby"] = name
-            cmap = lavavu.cubehelix(100)
-            if 'cmap' in kwargs:
-                cmap = kwargs['cmap']
+            cmap = kwargs.get('cmap',lavavu.cubehelix(100))
+            surf.colourmap(cmap)
+     
 
 
     def add_isosurface(self, 
@@ -1127,10 +1130,11 @@ class LavaVuModelViewer:
         self.lv.clear()
     @property
     def camera(self):
-        return self.lv.camera
+        return self.lv.camera()
+        
     @camera.setter
     def camera(self,camera):
-        self.lv.camera = camera
+        self.lv.camera(camera)
         
     @property
     def xmin(self):

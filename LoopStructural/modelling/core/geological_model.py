@@ -1283,7 +1283,7 @@ class GeologicalModel:
         return points
 
 
-    def regular_grid(self, nsteps=None, shuffle = True, rescale=False):
+    def regular_grid(self, nsteps=None, shuffle = True, rescale=False, order='C'):
         """
         Return a regular grid within the model bounding box
 
@@ -1306,7 +1306,7 @@ class GeologicalModel:
         z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2],
                         nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        locs = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        locs = np.array([xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]).T
         if shuffle:
             logger.info("Shuffling points")
             np.random.shuffle(locs)
