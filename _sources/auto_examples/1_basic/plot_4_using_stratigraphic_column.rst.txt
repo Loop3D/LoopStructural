@@ -124,7 +124,7 @@ for the `model.evaluate_model(xyz)` function to be called.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.728 seconds)
+   **Total running time of the script:** ( 0 minutes  3.606 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_4_using_stratigraphic_column.py:
