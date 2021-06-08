@@ -120,8 +120,8 @@ Create model
 
  .. code-block:: none
 
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:01<00:00,  3.44it/s]Adding surfaces took 1.1649963855743408 seconds
-    Isosurfacing strati: 100%|##########| 4/4 [00:01<00:00,  3.44it/s]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00,  4.05it/s]Adding surfaces took 0.9878504276275635 seconds
+    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00,  4.05it/s]
 
 
 
@@ -209,8 +209,8 @@ It is also possible to change the logging level for the console log.
 
  .. code-block:: none
 
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:01<00:00,  3.41it/s]Adding surfaces took 1.1754446029663086 seconds
-    Isosurfacing strati: 100%|##########| 4/4 [00:01<00:00,  3.41it/s]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00,  4.12it/s]Adding surfaces took 0.9716551303863525 seconds
+    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00,  4.12it/s]
 
 
 
@@ -218,7 +218,7 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.017 seconds)
+   **Total running time of the script:** ( 0 minutes  3.356 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_5_using_logging.py:
