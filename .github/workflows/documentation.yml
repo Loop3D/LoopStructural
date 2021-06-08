@@ -1,4 +1,4 @@
-name: Run tests and try to build wheel
+name: Build documentation and deploy
 
 on: ['push','pull_request']
 
@@ -26,7 +26,7 @@ jobs:
             pip install -r requirements.txt
             git-changelog -o changelog.md ../.
             make html
-            
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.3
         with:
