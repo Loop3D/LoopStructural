@@ -36,6 +36,7 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
    :hidden:
 
    installation
+   background
    auto_examples/index
    contributors_guide
    about
