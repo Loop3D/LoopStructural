@@ -20,3 +20,5 @@ try:
     from .model_visualisation import LavaVuModelViewer
 except:
     logger.error("Missing lavavu, can't import LavaVuModelViewer")
+
+from ._scalar_field import ScalarField
