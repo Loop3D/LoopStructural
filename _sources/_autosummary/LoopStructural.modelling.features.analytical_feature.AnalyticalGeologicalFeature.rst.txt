@@ -1,0 +1,30 @@
+LoopStructural.modelling.features.analytical\_feature.AnalyticalGeologicalFeature
+=================================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.analytical_feature
+
+.. autoclass:: AnalyticalGeologicalFeature
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AnalyticalGeologicalFeature.__init__
+      ~AnalyticalGeologicalFeature.evaluate_gradient
+      ~AnalyticalGeologicalFeature.evaluate_value
+      ~AnalyticalGeologicalFeature.max
+      ~AnalyticalGeologicalFeature.min
+      ~AnalyticalGeologicalFeature.set_model
+   
+   
+
+   
+   
+   

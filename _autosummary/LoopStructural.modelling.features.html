@@ -43,7 +43,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.modelling.features.GeologicalFeature" href="LoopStructural.modelling.features.GeologicalFeature.html" />
+    <link rel="next" title="LoopStructural.modelling.features.AnalyticalGeologicalFeature" href="LoopStructural.modelling.features.AnalyticalGeologicalFeature.html" />
     <link rel="prev" title="LoopStructural.modelling.fault.fault_segment.ThreadPoolExecutor" href="LoopStructural.modelling.fault.fault_segment.ThreadPoolExecutor.html" /> 
 </head>
 
@@ -95,6 +95,7 @@
 <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
@@ -119,6 +120,7 @@
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.core.html">LoopStructural.modelling.core</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fault.html">LoopStructural.modelling.fault</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.modelling.features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.AnalyticalGeologicalFeature.html">LoopStructural.modelling.features.AnalyticalGeologicalFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeature.html">LoopStructural.modelling.features.GeologicalFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeatureInterpolator.html">LoopStructural.modelling.features.GeologicalFeatureInterpolator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.LambdaGeologicalFeature.html">LoopStructural.modelling.features.LambdaGeologicalFeature</a></li>
@@ -126,6 +128,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrame.html">LoopStructural.modelling.features.StructuralFrame</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrameBuilder.html">LoopStructural.modelling.features.StructuralFrameBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.UnconformityFeature.html">LoopStructural.modelling.features.UnconformityFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.analytical_feature.html">LoopStructural.modelling.features.analytical_feature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.cross_product_geological_feature.html">LoopStructural.modelling.features.cross_product_geological_feature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.geological_feature.html">LoopStructural.modelling.features.geological_feature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.features.geological_feature_builder.html">LoopStructural.modelling.features.geological_feature_builder</a></li>
@@ -224,25 +227,28 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalFeature</span></code></a>(name, interpolator[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.AnalyticalGeologicalFeature.html#LoopStructural.modelling.features.AnalyticalGeologicalFeature" title="LoopStructural.modelling.features.AnalyticalGeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalyticalGeologicalFeature</span></code></a>(name, vector, origin)</p></td>
 <td><p>Geological feature is class that is used to represent a geometrical element in a geological model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeatureInterpolator.html#LoopStructural.modelling.features.GeologicalFeatureInterpolator" title="LoopStructural.modelling.features.GeologicalFeatureInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalFeatureInterpolator</span></code></a>(interpolator)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalFeature</span></code></a>(name, interpolator[, …])</p></td>
+<td><p>Geological feature is class that is used to represent a geometrical element in a geological model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeatureInterpolator.html#LoopStructural.modelling.features.GeologicalFeatureInterpolator" title="LoopStructural.modelling.features.GeologicalFeatureInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalFeatureInterpolator</span></code></a>(interpolator)</p></td>
 <td><p>[summary]</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.LambdaGeologicalFeature.html#LoopStructural.modelling.features.LambdaGeologicalFeature" title="LoopStructural.modelling.features.LambdaGeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LambdaGeologicalFeature</span></code></a>([function, name, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.LambdaGeologicalFeature.html#LoopStructural.modelling.features.LambdaGeologicalFeature" title="LoopStructural.modelling.features.LambdaGeologicalFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LambdaGeologicalFeature</span></code></a>([function, name, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.RegionFeature.html#LoopStructural.modelling.features.RegionFeature" title="LoopStructural.modelling.features.RegionFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegionFeature</span></code></a>(function)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.RegionFeature.html#LoopStructural.modelling.features.RegionFeature" title="LoopStructural.modelling.features.RegionFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegionFeature</span></code></a>(function)</p></td>
 <td><p>Create a GeologicalFeature to represent a region in a model The region is defined by a boolean function on position.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrame.html#LoopStructural.modelling.features.StructuralFrame" title="LoopStructural.modelling.features.StructuralFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralFrame</span></code></a>(name, features[, fold])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrame.html#LoopStructural.modelling.features.StructuralFrame" title="LoopStructural.modelling.features.StructuralFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralFrame</span></code></a>(name, features[, fold])</p></td>
 <td><p>[summary]</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrameBuilder.html#LoopStructural.modelling.features.StructuralFrameBuilder" title="LoopStructural.modelling.features.StructuralFrameBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralFrameBuilder</span></code></a>([interpolator, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.StructuralFrameBuilder.html#LoopStructural.modelling.features.StructuralFrameBuilder" title="LoopStructural.modelling.features.StructuralFrameBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralFrameBuilder</span></code></a>([interpolator, …])</p></td>
 <td><p>[summary]</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.UnconformityFeature.html#LoopStructural.modelling.features.UnconformityFeature" title="LoopStructural.modelling.features.UnconformityFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnconformityFeature</span></code></a>(feature, value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.UnconformityFeature.html#LoopStructural.modelling.features.UnconformityFeature" title="LoopStructural.modelling.features.UnconformityFeature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnconformityFeature</span></code></a>(feature, value)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param feature</dt>
 <dd class="field-odd"><p></p></dd>
@@ -258,28 +264,31 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.cross_product_geological_feature.html#module-LoopStructural.modelling.features.cross_product_geological_feature" title="LoopStructural.modelling.features.cross_product_geological_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.cross_product_geological_feature</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.analytical_feature.html#module-LoopStructural.modelling.features.analytical_feature" title="LoopStructural.modelling.features.analytical_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.analytical_feature</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.geological_feature.html#module-LoopStructural.modelling.features.geological_feature" title="LoopStructural.modelling.features.geological_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.geological_feature</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.cross_product_geological_feature.html#module-LoopStructural.modelling.features.cross_product_geological_feature" title="LoopStructural.modelling.features.cross_product_geological_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.cross_product_geological_feature</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.geological_feature.html#module-LoopStructural.modelling.features.geological_feature" title="LoopStructural.modelling.features.geological_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.geological_feature</span></code></a></p></td>
 <td><p>Geological features</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.geological_feature_builder.html#module-LoopStructural.modelling.features.geological_feature_builder" title="LoopStructural.modelling.features.geological_feature_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.geological_feature_builder</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.geological_feature_builder.html#module-LoopStructural.modelling.features.geological_feature_builder" title="LoopStructural.modelling.features.geological_feature_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.geological_feature_builder</span></code></a></p></td>
 <td><p>Feature builder</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.lambda_geological_feature.html#module-LoopStructural.modelling.features.lambda_geological_feature" title="LoopStructural.modelling.features.lambda_geological_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.lambda_geological_feature</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.lambda_geological_feature.html#module-LoopStructural.modelling.features.lambda_geological_feature" title="LoopStructural.modelling.features.lambda_geological_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.lambda_geological_feature</span></code></a></p></td>
 <td><p>Geological features</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.region_feature.html#module-LoopStructural.modelling.features.region_feature" title="LoopStructural.modelling.features.region_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.region_feature</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.region_feature.html#module-LoopStructural.modelling.features.region_feature" title="LoopStructural.modelling.features.region_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.region_feature</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.structural_frame.html#module-LoopStructural.modelling.features.structural_frame" title="LoopStructural.modelling.features.structural_frame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.structural_frame</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.structural_frame.html#module-LoopStructural.modelling.features.structural_frame" title="LoopStructural.modelling.features.structural_frame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.structural_frame</span></code></a></p></td>
 <td><p>Structural frames</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.structural_frame_builder.html#module-LoopStructural.modelling.features.structural_frame_builder" title="LoopStructural.modelling.features.structural_frame_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.structural_frame_builder</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.structural_frame_builder.html#module-LoopStructural.modelling.features.structural_frame_builder" title="LoopStructural.modelling.features.structural_frame_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.structural_frame_builder</span></code></a></p></td>
 <td><p>structural frame builder</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.features.unconformity_feature.html#module-LoopStructural.modelling.features.unconformity_feature" title="LoopStructural.modelling.features.unconformity_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.unconformity_feature</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.features.unconformity_feature.html#module-LoopStructural.modelling.features.unconformity_feature" title="LoopStructural.modelling.features.unconformity_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.unconformity_feature</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -292,7 +301,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="LoopStructural.modelling.features.GeologicalFeature.html" class="btn btn-neutral float-right" title="LoopStructural.modelling.features.GeologicalFeature" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.modelling.features.AnalyticalGeologicalFeature.html" class="btn btn-neutral float-right" title="LoopStructural.modelling.features.AnalyticalGeologicalFeature" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="LoopStructural.modelling.fault.fault_segment.ThreadPoolExecutor.html" class="btn btn-neutral float-left" title="LoopStructural.modelling.fault.fault_segment.ThreadPoolExecutor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

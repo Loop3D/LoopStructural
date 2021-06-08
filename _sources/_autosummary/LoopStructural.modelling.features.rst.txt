@@ -20,6 +20,7 @@ LoopStructural.modelling.features
       :template: custom-class-template.rst
       :recursive:              
    
+      AnalyticalGeologicalFeature
       GeologicalFeature
       GeologicalFeatureInterpolator
       LambdaGeologicalFeature
@@ -43,6 +44,7 @@ LoopStructural.modelling.features
    :template: custom-module-template.rst                 
    :recursive:
 
+   LoopStructural.modelling.features.analytical_feature
    LoopStructural.modelling.features.cross_product_geological_feature
    LoopStructural.modelling.features.geological_feature
    LoopStructural.modelling.features.geological_feature_builder

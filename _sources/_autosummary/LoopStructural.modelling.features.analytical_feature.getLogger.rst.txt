@@ -1,0 +1,6 @@
+LoopStructural.modelling.features.analytical\_feature.getLogger
+===============================================================
+
+.. currentmodule:: LoopStructural.modelling.features.analytical_feature
+
+.. autofunction:: getLogger
