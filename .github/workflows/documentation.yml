@@ -13,7 +13,7 @@ jobs:
           installer-url: https://github.com/conda-forge/miniforge/releases/download/4.10.1-0/Miniforge-pypy3-4.10.1-0-Linux-x86_64.sh
           channels: anaconda,conda-forge,loop3d,conda-forge/label/cf202003
           python-version: 3.9
-      - name: Building and uploading m2l pkg for linux, osx and windows
+      - name: Build documentation 
         shell: bash -l {0}
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
