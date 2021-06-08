@@ -25,6 +25,7 @@ jobs:
             cd docs
             pip install -r requirements.txt
             make html
+            
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.3
         with:
