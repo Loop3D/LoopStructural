@@ -27,7 +27,7 @@ def calculate_fault_intersections(model):
             verts = model.rescale(verts)
         except (ValueError, RuntimeError) as e:
                 print(e)
-                logger.warning("Cannot isosurface {} at {}, skipping".format(geological_feature.name,isovalue))
+                logger.warning("Cannot isosurface {} at {}, skipping".format(name,0))
                 continue
         for name2 in fault_names:
             if name2  == name:
