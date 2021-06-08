@@ -38,8 +38,9 @@ def process_map2loop(m2l_directory, flags={}):
 
     # whether to simulate thickness variations
     thickness_probabilities = flags.get('thickness_probabilities',False)
-
-
+    orientation_probabilities = flags.get('orientation_probabilities',False)
+    fault_orientation_probabilities = flags.get('fault_orientation_probabilities',False)
+    fault_slip_vector = flags.get('fault_slip_vector',None)
     ## read supergroups file
     supergroups = {}
     sgi = 0
@@ -243,12 +244,18 @@ def process_map2loop(m2l_directory, flags={}):
         fault_centers[3] = np.mean(fault_orientations.loc[fault_orientations['formation']==f,['DipDirection']])
         fault_centers[4] = fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance']
         fault_centers[5] = fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius']
+        if type(fault_slip_vector) == dict:
+            fault_slip = fault_slip_vector[f]
+        elif type(fault_slip_vector) == np.array:
+            fault_slip = fault_slip_vector
+        else:
+            fault_slip = np.array([0.,0.,-1.]) 
         stratigraphic_column['faults'][f] = {'FaultCenter':fault_centers[:3],
                                             'FaultDipDirection':fault_centers[3],
                                             'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'].to_numpy(),
                                             'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'].to_numpy(),
                                             'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy(),
-                                            'FaultSlip':np.array([0.,0.,-1.]),
+                                            'FaultSlip':fault_slip,
                                             'FaultNorm':normal_vector}
 
         if 'colour' in fault_dimensions.columns:
