@@ -1,6 +1,8 @@
 name: Build documentation and deploy
 
-on: ['push','pull_request']
+on:
+  release:
+    types: [created, edited]
 
 jobs:
   flake8:
