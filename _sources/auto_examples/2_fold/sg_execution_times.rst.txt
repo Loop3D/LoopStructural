@@ -5,10 +5,10 @@
 
 Computation times
 =================
-**00:29.082** total execution time for **auto_examples_2_fold** files:
+**00:24.889** total execution time for **auto_examples_2_fold** files:
 
 +--------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_2_fold_plot_refolded_folds.py` (``plot_refolded_folds.py``)                     | 00:23.432 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_2_fold_plot_refolded_folds.py` (``plot_refolded_folds.py``)                     | 00:20.088 | 0.0 MB |
 +--------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_2_fold_plot_adding_folds_to_surfaces.py` (``plot_adding_folds_to_surfaces.py``) | 00:05.650 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_2_fold_plot_adding_folds_to_surfaces.py` (``plot_adding_folds_to_surfaces.py``) | 00:04.800 | 0.0 MB |
 +--------------------------------------------------------------------------------------------------------------+-----------+--------+

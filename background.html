@@ -95,7 +95,11 @@
 <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Background</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#intepreting-a-map-into-model-input">Intepreting a map into model input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automatic-intepretation-into-a-model-using-map2loop">Automatic intepretation into a model using map2loop</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors_guide.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
@@ -108,7 +112,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_guide/interpolation_options.html">Implicit Interpolators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/fold_modelling.html">Fold modelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/fault_modelling.html">Fault modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/visualisation.html">LavaVuModelViewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/visualisation.html">Visualisation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API</span></p>
 <ul>
@@ -184,9 +188,21 @@
 <h1>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h1>
 <p>LoopStructural is an opensource Python 3.6+ library for 3D geological modelling where geological objects are represented by an implicit function.
 Where the implicit function represents the distance or pseudodistance to a reference horizion.
-The implicit function is approximated from the observations of the surface, for example locations of the geological feature or the orientation of the geological feature.
-This is calculated by is a function that is an approximation of observations of the geological objects. using implicit functions.
-This . It implements</p>
+There is no analytical function that can be used to represent the geometry of geological objects, so the implicit function has to be approximated.
+The implicit function is approximated from the observations of the surface
+* location of the geological feature can be used to define the value of the implicit function at a location
+* orientation of the geological feature (e.g. strike and dip of a surface) can be used to constrain the gradient of the implicit function</p>
+<p>Complex features such as folds, faults and unconformities need additional information to be incorporated into the model.
+Using LoopStructural the overprinting relationships between folds can be incorporated by applying specific fold constraints.
+Faults require the fault displacement and fault slip direction vector to be known to incorporate these directly into the model.
+Unconformities are incorporated by specifying the value of an existing implicit function that defines the unconformity surface.</p>
+<div class="section" id="intepreting-a-map-into-model-input">
+<h2>Intepreting a map into model input<a class="headerlink" href="#intepreting-a-map-into-model-input" title="Permalink to this headline">¶</a></h2>
+<p>To build a geological model the user needs to convert their observations into the appropriate format for LoopStructural.</p>
+</div>
+<div class="section" id="automatic-intepretation-into-a-model-using-map2loop">
+<h2>Automatic intepretation into a model using map2loop<a class="headerlink" href="#automatic-intepretation-into-a-model-using-map2loop" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
