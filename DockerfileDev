@@ -45,6 +45,7 @@ USER ${NB_USER}
 
 RUN mkdir notebooks
 RUN mkdir LoopStructural
+RUN mkdir map2loop
 
 # RUN pip install -e LoopStructural
 CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token=''", "--no-browser" ]

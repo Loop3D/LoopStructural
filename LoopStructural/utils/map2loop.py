@@ -3,6 +3,7 @@ import numpy as np
 import os
 import logging
 import networkx
+from scipy.stats import truncnorm
 
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
@@ -35,7 +36,11 @@ def process_map2loop(m2l_directory, flags={}):
     fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv')
     fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
 
-
+    # whether to simulate thickness variations
+    thickness_probabilities = flags.get('thickness_probabilities',False)
+    orientation_probabilities = flags.get('orientation_probabilities',False)
+    fault_orientation_probabilities = flags.get('fault_orientation_probabilities',False)
+    fault_slip_vector = flags.get('fault_slip_vector',None)
     ## read supergroups file
     supergroups = {}
     sgi = 0
@@ -95,7 +100,17 @@ def process_map2loop(m2l_directory, flags={}):
         for l in file:
             if i>=1:
                 linesplit = l.split(',')
-                thickness[linesplit[0]] = float(linesplit[1])
+                if thickness_probabilities:
+                    std = float(linesplit[2])
+                    mean = float(linesplit[1])
+                    if  np.isnan(std):
+                        std = float(linesplit[1])
+                    a = (0-mean) / std
+                    b = 100.
+                    thickness[linesplit[0]] = (truncnorm.rvs(a,b,size=1)*std)[0]+mean
+                else:
+                    thickness[linesplit[0]] = float(linesplit[1])
+                
                 # normalise the thicknesses
                 if float(linesplit[1]) > max_thickness:
                     max_thickness=float(linesplit[1])
@@ -229,12 +244,18 @@ def process_map2loop(m2l_directory, flags={}):
         fault_centers[3] = np.mean(fault_orientations.loc[fault_orientations['formation']==f,['DipDirection']])
         fault_centers[4] = fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance']
         fault_centers[5] = fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius']
+        if type(fault_slip_vector) == dict:
+            fault_slip = fault_slip_vector[f]
+        elif type(fault_slip_vector) == np.array:
+            fault_slip = fault_slip_vector
+        else:
+            fault_slip = np.array([0.,0.,-1.]) 
         stratigraphic_column['faults'][f] = {'FaultCenter':fault_centers[:3],
                                             'FaultDipDirection':fault_centers[3],
                                             'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'].to_numpy(),
                                             'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'].to_numpy(),
                                             'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy(),
-                                            'FaultSlip':np.array([0.,0.,-1.]),
+                                            'FaultSlip':fault_slip,
                                             'FaultNorm':normal_vector}
 
         if 'colour' in fault_dimensions.columns:
@@ -285,9 +306,18 @@ def process_map2loop(m2l_directory, flags={}):
             'strat_va':strat_val,
             'downthrow_dir':downthrow_dir,
             'fault_graph':fault_graph,
-            'fault_intersection_angles':fault_intersection_angles}
+            'fault_intersection_angles':fault_intersection_angles,
+            'thickness':thickness}
 
-def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
+def build_model(m2l_data, 
+                evaluate = True, 
+                skip_faults = False, 
+                unconformities = False, 
+                fault_params = None, 
+                foliation_params = None, 
+                rescale = True,
+                skip_features = [],
+                **kwargs):
     """[summary]
 
     [extended_summary]
@@ -327,6 +357,8 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
         for f in m2l_data['max_displacement'].keys():
             if model.data[model.data['feature_name'] == f].shape[0] == 0:
                 continue
+            if f in skip_features:
+                continue
             fault_id = f
             overprints = []
             try:
@@ -354,25 +386,46 @@ def build_model(m2l_data, evaluate=True, skip_faults = False, unconformities=Fal
                                                     **fault_params,
                                                     )
                         )
-    for f in m2l_data['fault_intersection_angles']:
-        if f in m2l_data['max_displacement'].keys():
-            f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
-            for intersection in m2l_data['fault_intersection_angles'][f]:
-                if intersection[0] in m2l_data['max_displacement'].keys():
-                    f2_norm = m2l_data['stratigraphic_column']['faults'][intersection[0]]['FaultNorm']
-                    if intersection[2] < 30 and np.dot(f1_norm,f2_norm)>0:
-                        logger.info('Adding splay {} to {}'.format(intersection[0],f))
-                        if model[f] is None:
-                            logger.error('Fault {} does not exist, cannot be added as splay')
-                        elif model[intersection[0]] is None:
-                            logger.error('Fault {} does not exist')
-                        else:
-                            model[intersection[0]].builder.add_splay(model[f])
+    # for f in m2l_data['fault_intersection_angles']:
+    #     if f in m2l_data['max_displacement'].keys():
+    #         f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+    #         for intersection in m2l_data['fault_intersection_angles'][f]:
+    #             if intersection[0] in m2l_data['max_displacement'].keys():
+    #                 f2_norm = m2l_data['stratigraphic_column']['faults'][intersection[0]]['FaultNorm']
+    #                 if intersection[2] < 30 and np.dot(f1_norm,f2_norm)>0:
+    #                     logger.info('Adding splay {} to {}'.format(intersection[0],f))
+    #                     if model[f] is None:
+    #                         logger.error('Fault {} does not exist, cannot be added as splay')
+    #                     elif model[intersection[0]] is None:
+    #                         logger.error('Fault {} does not exist')
+    #                     else:
+    #                         model[intersection[0]].builder.add_splay(model[f])
 
-                    else:
-                        logger.info('Adding abut {} to {}'.format(intersection[0],f))
-                        model[intersection[0]].add_abutting_fault(model[f])
+    #                 else:
+    #                     logger.info('Adding abut {} to {}'.format(intersection[0],f))
+    #                     model[intersection[0]].add_abutting_fault(model[f])
+    faults = m2l_data['fault_graph']
+    for f in faults.nodes:
+        f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+        for e in faults.edges(f):
+            data = faults.get_edge_data(*e)
+            f2_norm =  m2l_data['stratigraphic_column']['faults'][e[1]]['FaultNorm']
+            
 
+            if float(data['angle']) < 30 and np.dot(f1_norm,f2_norm)>0:
+                if model[f] is None or model[e[1]] is None:
+                    logger.error('Fault {} does not exist, cannot be added as splay')
+                elif model[e[1]] is None:
+                    logger.error('Fault {} does not exist')
+                else:
+                    region = model[e[1]].builder.add_splay(model[f])
+                    model[e[1]].splay[model[f].name] = region
+            else:
+                if model[f] is None or model[e[1]] is None:
+                    continue
+
+                logger.info('Adding abut {} to {}'.format(e[1],f))
+                model[e[1]].add_abutting_fault(model[f])
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
     for i in np.sort(m2l_data['groups']['group number'].unique()):

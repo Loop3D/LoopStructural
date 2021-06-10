@@ -1,15 +1,6 @@
 """
-This is the base visualistion module for loop structural
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    map_viewer
-    model_visualisation
-    rotation_angle_plotter
+Visualisation
+=============
 
 """
 from ..utils import getLogger
@@ -29,3 +20,5 @@ try:
     from .model_visualisation import LavaVuModelViewer
 except:
     logger.error("Missing lavavu, can't import LavaVuModelViewer")
+
+from ._scalar_field import ScalarField

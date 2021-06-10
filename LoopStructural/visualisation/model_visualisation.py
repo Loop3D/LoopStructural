@@ -178,8 +178,10 @@ class LavaVuModelViewer:
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 2])
             zz[:] = value
-
-        name = kwargs.get('name', geological_feature.name)
+        if geological_feature == 'model' and self.model is not None:
+            name = kwargs.get('name','model_section')
+        else:
+            name = kwargs.get('name', geological_feature.name)
         name = '{}_section_at_{}_of_{}'.format(axis,value,name)
         colour = kwargs.get('colour', 'red')
 
@@ -196,7 +198,7 @@ class LavaVuModelViewer:
         if geological_feature is None:
             surf.colours(colour)
 
-        if geological_feature is not None and type(geological_feature) == GeologicalFeature:
+        if geological_feature is not None and type(geological_feature) != str:
             if 'norm' in kwargs:
                 surf.values(np.linalg.norm(
                     geological_feature.evaluate_gradient(points), axis=1),
@@ -213,12 +215,13 @@ class LavaVuModelViewer:
             surf.colourmap(cmap, range=[geological_feature.min(), geological_feature.max()])
         if geological_feature == 'model' and self.model is not None:
             name = kwargs.get('name','model_section')
-            surf.values(self.model.evaluate_model(points,scale=True),
+            v = self.model.evaluate_model(points,scale=False)
+            surf.values(v,
                             name)
             surf["colourby"] = name
-            cmap = lavavu.cubehelix(100)
-            if 'cmap' in kwargs:
-                cmap = kwargs['cmap']
+            cmap = kwargs.get('cmap',lavavu.cubehelix(100))
+            surf.colourmap(cmap)
+     
 
 
     def add_isosurface(self, 
@@ -555,16 +558,29 @@ class LavaVuModelViewer:
             grid = f.apply_to_points(grid)
         self.add_value_data(self.model.rescale(grid,inplace=False),grid[:,2],name='Regular grid after faults',pointsize=10,)
 
-    def add_model_surfaces(self, strati=True, faults = True, cmap=None, fault_colour='black',**kwargs):
+    def add_model_surfaces(self, 
+                           strati=True, 
+                           faults = True, 
+                           cmap=None, 
+                           fault_colour='black',
+                           displacement_cmap=None,
+                           **kwargs):
         """Add surfaces for all of the interfaces in the model
 
 
         Parameters
         ----------
+        strati : bool, optional
+            whether to draw stratigraphy
         faults : bool, optional
             whether to draw faults, by default True
         cmap : string
             matplotlib cmap
+        fault_colour : string
+            colour string for faults
+        displacement_cmap : string/None
+            if string is specified uses this cmap to colour
+            faults by displacement
         Notes
         ------
         Other parameters are passed to self.add_isosurface() 
@@ -576,6 +592,7 @@ class LavaVuModelViewer:
         except ImportError:
             logger.warning("Cannot add model surfaces without matplotlib \n")
             return
+        from ..modelling.features import LambdaGeologicalFeature
         import time
         from tqdm.auto import tqdm
         start = time.time()
@@ -644,7 +661,13 @@ class LavaVuModelViewer:
                         if f.name in self.model.stratigraphic_column['faults']:
                             fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',['red'])
                         pbar.set_description('Isosurfacing {}'.format(f.name))
-
+                        if displacement_cmap is not None:
+                            fault_colour=[None]
+                            kwargs['cmap']=displacement_cmap
+                            kwargs['vmin'] = np.min(self.model.faults_displacement_magnitude)
+                            kwargs['vmax'] = np.max(self.model.faults_displacement_magnitude)
+                            kwargs['paint_with'] = LambdaGeologicalFeature(lambda xyz: np.zeros(xyz.shape[0])+f.displacement)
+                            #  = feature
                         region = kwargs.pop('region',None) 
                         self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name+name_suffix,**kwargs)
                         pbar.update(1)
@@ -1107,10 +1130,11 @@ class LavaVuModelViewer:
         self.lv.clear()
     @property
     def camera(self):
-        return self.lv.camera
+        return self.lv.camera()
+        
     @camera.setter
     def camera(self,camera):
-        self.lv.camera = camera
+        self.lv.camera(camera)
         
     @property
     def xmin(self):

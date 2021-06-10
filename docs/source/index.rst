@@ -36,10 +36,12 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
    :hidden:
 
    installation
+   background
    auto_examples/index
    contributors_guide
    about
-
+   changelog
+   
 .. toctree::
    :caption: User Guide:
    :hidden:
@@ -55,8 +57,14 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
    :caption: LoopStructural API
    :hidden:
 
-   API
-.. automodule:: LoopStructural
+
+.. autosummary::
+   :caption: API
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
+
+   LoopStructural
 
 
 .. .. toctree::

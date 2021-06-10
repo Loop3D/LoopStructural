@@ -12,7 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../'))
+# import m2r
+sys.path.insert(0, os.path.abspath('../..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -49,8 +50,10 @@ extensions = [
         # The Napoleon extension allows for nicer argument formatting.
         'sphinx.ext.napoleon',
         # add sphinx gallery
-        'sphinx_gallery.gen_gallery'
+        'sphinx_gallery.gen_gallery',
         # citations
+        'myst_parser'
+
 
 ]
 
@@ -89,6 +92,6 @@ sphinx_gallery_conf = {
     
 }
 
-def setup(app):
-    app.add_stylesheet('custom.css')
+# def setup(app):
+#     app.add_stylesheet('custom.css')
 

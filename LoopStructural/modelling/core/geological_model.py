@@ -122,18 +122,15 @@ class GeologicalModel:
         self.feature_name_index = {}
         self.data = None
         self.nsteps = nsteps
-        self._str = 'Instance of LoopStructural.GeologicalModel \n'
-        self._str += '------------------------------------------ \n'
+        
         # we want to rescale the model area so that the maximum length is
         # 1
         self.origin = np.array(origin).astype(float)
         originstr = 'Model origin: {} {} {}'.format(self.origin[0],self.origin[1],self.origin[2])
         logger.info(originstr)
-        self._str+=originstr+'\n'
         self.maximum = np.array(maximum).astype(float)
         maximumstr = 'Model maximum: {} {} {}'.format(self.maximum[0],self.maximum[1],self.maximum[2])
         logger.info(maximumstr)
-        self._str+=maximumstr+'\n'
 
         lengths = self.maximum - self.origin
         self.scale_factor = 1.
@@ -143,11 +140,7 @@ class GeologicalModel:
         if rescale:
             self.scale_factor = float(np.max(lengths))
             logger.info('Rescaling model using scale factor {}'.format(self.scale_factor))
-        self._str+='Model rescale factor: {} \n'.format(self.scale_factor)
-        self._str+='The model contains {} GeologicalFeatures \n'.format(len(self.features))
-        self._str+=''
-        self._str += '------------------------------------------ \n'
-        self._str += ''
+        
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
@@ -164,7 +157,17 @@ class GeologicalModel:
         self.tol = 1e-10*np.max(self.bounding_box[1,:]-self.bounding_box[0,:])
 
     def __str__(self):
-        return self._str
+        lengths = self.maximum - self.origin
+        _str = 'GeologicalModel - {} x {} x {}\n'.format(*lengths)
+        _str += '------------------------------------------ \n'
+        _str+='The model contains {} GeologicalFeatures \n'.format(len(self.features))
+        _str+=''
+        _str += '------------------------------------------ \n'
+        _str += ''
+        _str += 'Model origin: {} {} {}\n'.format(self.origin[0],self.origin[1],self.origin[2])
+        _str += 'Model maximum: {} {} {}\n'.format(self.maximum[0],self.maximum[1],self.maximum[2])
+        _str+='Model rescale factor: {} \n'.format(self.scale_factor)
+        return _str
 
     def _ipython_key_completions_(self):
         return self.feature_name_index.keys()
@@ -230,6 +233,30 @@ class GeologicalModel:
         """
         return self.get_feature_by_name(feature_name)
     
+    @property
+    def faults(self):
+        faults = []
+        for f in self.features:
+            if f.type == 'fault':
+                faults.append(f)
+
+        return faults
+    
+    @property
+    def series(self):
+        series = []
+        for f in self.features:
+            if f.type == 'series':
+                series.append(f)
+        return series
+    
+    @property
+    def faults_displacement_magnitude(self):
+        displacements = []
+        for f in self.faults:
+            displacements.append(f.displacement)
+        return np.array(displacements)
+
     def feature_names(self):
         return self.feature_name_index.keys()
 
@@ -277,7 +304,6 @@ class GeologicalModel:
                         (feature.name, self.feature_name_index[feature.name]))
             self.features[self.feature_name_index[feature.name]] = feature
         else:
-            self._str += 'GeologicalFeature: {} of type - {} \n'.format(feature.name,feature.type)
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info("Adding %s to model at location %i" % (
@@ -1184,7 +1210,8 @@ class GeologicalModel:
             fault_frame_builder.origin = self.bounding_box[0,:]
             fault_frame_builder.maximum = self.bounding_box[1,:]
         if 'force_mesh_geometry' not in kwargs:
-            fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.1))
+            fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.4),0)#,
+                                            #np.rad2deg(np.arccos(np.dot(fault_normal_vector[:2],np.array([0,1])))))
         if 'splay' in kwargs and 'splayregion' in kwargs:
             fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
 
@@ -1256,7 +1283,7 @@ class GeologicalModel:
         return points
 
 
-    def regular_grid(self, nsteps=None, shuffle = True, rescale=False):
+    def regular_grid(self, nsteps=None, shuffle = True, rescale=False, order='C'):
         """
         Return a regular grid within the model bounding box
 
@@ -1279,7 +1306,7 @@ class GeologicalModel:
         z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2],
                         nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        locs = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        locs = np.array([xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]).T
         if shuffle:
             logger.info("Shuffling points")
             np.random.shuffle(locs)

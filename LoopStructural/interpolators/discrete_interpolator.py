@@ -50,7 +50,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.constraints = {}
         self.interpolation_weights= {}
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
-
+        self.type = 'discrete'
     @property
     def nx(self):
         return len(self.support.nodes[self.region])

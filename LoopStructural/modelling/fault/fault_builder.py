@@ -31,7 +31,6 @@ class FaultBuilder(StructuralFrameBuilder):
         self.maximum_maximum = self.model.bounding_box[1,:] + fault_bounding_box_buffer*(self.model.bounding_box[1,:]-self.model.bounding_box[0,:])
 
     def update_geometry(self,points):
-        
         self.origin = np.nanmin(np.array([np.min(points,axis=0),self.origin]),axis=0)
         self.maximum = np.nanmax(np.array([np.max(points,axis=0),self.maximum]),axis=0)
         self.origin[self.origin<self.minimum_origin] = self.minimum_origin[self.origin<self.minimum_origin]
@@ -69,6 +68,10 @@ class FaultBuilder(StructuralFrameBuilder):
         """
         normal_vector/=np.linalg.norm(normal_vector)
         slip_vector/=np.linalg.norm(slip_vector)
+        # check if slip vector is inside fault plane, if not project onto fault plane
+        if not np.isclose(normal_vector @ slip_vector, 0):
+            logger.info("{} : projecting slip vector onto fault plane".format(self.name))
+            slip_vector = np.cross(normal_vector, np.cross(slip_vector ,normal_vector))
         strike_vector = np.cross(normal_vector,slip_vector)
         fault_edges = np.zeros((2,3))
         fault_tips = np.zeros((2,3))
@@ -83,16 +86,16 @@ class FaultBuilder(StructuralFrameBuilder):
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0]
             if horizontal_radius is not None:
-                fault_tips[0,:] = fault_center[:3]+strike_vector*0.1*horizontal_radius
-                fault_tips[1,:] = fault_center[:3]-strike_vector*0.1*horizontal_radius
+                fault_tips[0,:] = fault_center[:3]+strike_vector*0.5*horizontal_radius
+                fault_tips[1,:] = fault_center[:3]-strike_vector*0.5*horizontal_radius
                 self.update_geometry(fault_tips)
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_center[0],fault_center[1],fault_center[2],self.name,0,2]
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-.1,2]
+                    [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-.5,2]
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.1,2]
-                # strike_vector /= horizontal_radius
+                    [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.5,2]
+                strike_vector /= horizontal_radius
             if vertical_radius is not None:
                 fault_depth[0,:] = fault_center[:3]+slip_vector*vertical_radius
                 fault_depth[1,:] = fault_center[:3]-slip_vector*vertical_radius
@@ -105,15 +108,15 @@ class FaultBuilder(StructuralFrameBuilder):
                 # print(np.linalg.norm(slip_vector))
                 slip_vector /= vertical_radius
                 # print(np.linalg.norm(slip_vector))
-            data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
-                [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
+                data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
+                    [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
         # add strike vector to constraint fault extent
             # data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
             #     self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
         self.add_data_from_data_frame(data)
         self.update_geometry(data[['X','Y','Z']].to_numpy())
 
-    def set_mesh_geometry(self,buffer):
+    def set_mesh_geometry(self,buffer,rotation):
         """set the mesh geometry
 
         Parameters
@@ -121,7 +124,7 @@ class FaultBuilder(StructuralFrameBuilder):
         buffer : double 
             percentage of length to add to edges
         """
-        length = self.maximum-self.origin
+        length = np.max(self.maximum-self.origin)
         # origin = self.builders[0].interpolator.support.origin
         # maximum = self.builders[0].interpolator.support.maximum#set_interpolation_geometry
         # if origin[2]>self.origin[2]:
@@ -131,37 +134,33 @@ class FaultBuilder(StructuralFrameBuilder):
         # self.builders[0].set_interpolation_geometry(origin,maximum)
         # for builder in self.builders:
         # all three coordinates share the same support
-        self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum+length*buffer)
+        self.builders[0].set_interpolation_geometry(self.origin-length*buffer,self.maximum+length*buffer,rotation)
             
     def add_splay(self,splay,splayregion=None):
-        # assume all parts of structural frame have the same support
         if splayregion is None:
-            pts = self.builders[0].data[['X','Y','Z','val']].to_numpy()#get_value_constraints()
-            pts = pts[pts[:,3]==0,:]
-            # check whether the fault is on the hanging wall or footwall of splay fault
+            def splayregion(xyz):
+                pts = self.builders[0].data[['X','Y','Z','val']].to_numpy()#get_value_constraints()
+                pts = pts[pts[:,3]==0,:]
+                # check whether the fault is on the hanging wall or footwall of splay fault
 
-            ext_field = splay[2].evaluate_value(pts)
-            surf_field = splay[0].evaluate_value(pts)
-            intersection_value = ext_field[np.nanargmin(np.abs(surf_field))]
-            if np.nanmedian(ext_field) > intersection_value:
-                splayregion = lambda xyz : splay[2].evaluate_value(xyz) < intersection_value
-            elif np.nanmedian(ext_field) < intersection_value:
-                splayregion = lambda xyz : splay[2].evaluate_value(xyz) > intersection_value
-            else:
-                logger.warning('Not adding splay, cannot identify splay overlap region for {} and {}'.format(self.name,splay.name))
-                return
-        support = self.builders[0].interpolator.support
-        
-        # work out the values of the nodes where we want hard
-        # constraints
-        idc = np.arange(0, support.n_nodes)[
-            splayregion(support.nodes)]
-        val = splay[0].evaluate_value(
-            support.nodes[
-            splayregion(support.nodes), :])
-        mask = ~np.isnan(val)
-        self.__getitem__(0).interpolator.add_equality_constraints(
-            idc[mask], val[mask])
+                ext_field = splay[2].evaluate_value(pts[:,:3])
+                surf_field = splay[0].evaluate_value(pts[:,:3])
+                intersection_value = ext_field[np.nanargmin(np.abs(surf_field))]
+                mask = np.zeros(xyz.shape[0],dtype='bool')
+                val = splay[2].evaluate_value(xyz)
+
+                if np.nanmedian(ext_field) > intersection_value:
+                    mask[~np.isnan(val)] = val[~np.isnan(val)] < intersection_value
+                    return mask
+                elif np.nanmedian(ext_field) < intersection_value:
+                    mask[~np.isnan(val)] = val[~np.isnan(val)] > intersection_value
+                    return mask
+                else:
+                    logger.warning('Not adding splay, cannot identify splay overlap region for {} and {}'.format(self.name,splay.name))
+                    return mask
+                    
+        self.builders[0].add_equality_constraints(splay, splayregion)
+        return splayregion
     
     
 
