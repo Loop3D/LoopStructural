@@ -44,6 +44,7 @@ def process_map2loop(m2l_directory, flags={}):
     ## read supergroups file
     supergroups = {}
     sgi = 0
+    contact_orientations.loc[contact_orientations['polarity']==0,'polarity'] = -1
     try:
         with open(m2l_directory + '/tmp/super_groups.csv') as    f:
             for l in f:
