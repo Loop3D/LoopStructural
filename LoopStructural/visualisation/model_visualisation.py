@@ -5,14 +5,15 @@ A wrapper for lavavu
 
 import logging
 from LoopStructural.utils import getLogger
+from LoopStructural.utils import LoopImportError
 logger = getLogger(__name__)
 
 try:
     import lavavu
     from lavavu.vutils import is_notebook
+#catch the import lavavu error and provide more information
 except ImportError:
-    logger.error("Please install lavavu: pip install lavavu")
-    lavavu = None
+    raise LoopImportError('lavavu',additional_information="Please install lavavu: pip install lavavu")
 import numpy as np
 try:
     from skimage.measure import marching_cubes
@@ -36,11 +37,6 @@ def close_all():
     # return True
 ##
 class LavaVuModelViewer:
-    """
-
-    Short description
-
-    """
     def __init__(self, model=None, bounding_box=None, nsteps=None, vertical_exaggeration=1., **kwargs):
         """
         A wrapper to plot LoopStructural object with lavavu
@@ -76,6 +72,7 @@ class LavaVuModelViewer:
         self._model = model
         # prerotate to a nice view
         # self.lv.rotate([-57.657936096191406, -13.939384460449219, -6.758780479431152])
+    
     def close(self):
         pass
     
