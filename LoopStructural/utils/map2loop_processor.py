@@ -5,18 +5,40 @@ import logging
 import networkx
 from scipy.stats import truncnorm
 
+from LoopStructural.utils import strike_dip_vector
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
-class FromMap2Loop:
-    def __init__(self, contacts, displacements, fault_orientations, fault_locations, fault_dimensions, fault_graph ):
+class ProcessInputData:
+    def __init__(   self,  
+                    contacts, 
+                    orientations, 
+                    fault_displacements, 
+                    fault_orientations, 
+                    fault_locations, 
+                    fault_dimensions, 
+                    fault_graph,
+                    stratigraphic_order,
+                    intrusions,
+                    fault_stratigraphy
+                ):
+ 
         self._contacts = contacts
-        self._displacements = displacements
+        self._orientations = orientations
+        self._fault_displacements = fault_displacements
         self._fault_orientations = fault_orientations
         self._fault_locations = fault_locations
         self._fault_dimensions = fault_dimensions
         self._fault_graph = fault_graph
+        self._fault_stratigraphy = fault_stratigraphy
+        self._stratigraphic_order = stratigraphic_order
+        self._intrusions = intrusions
         self._thicknesses = {}
-        self._data = pd.DataFrame()
+        self._data = None
+    
+    @property
+    def data(self):
+        self._update()
+        return self._data
     @property
     def thicknesses(self):
         return self._thicknesses
@@ -24,8 +46,77 @@ class FromMap2Loop:
     @thicknesses.setter
     def thicknesses(self,thicknesses):
         self._thicknesses = thicknesses
+    @property
+    def vector_scale(self):
+        return self._vector_scale
 
-    def calculate_unit_thicknesses(self,thickness_file, thickness_probabilities = False):
+    @vector_scale.setter
+    def vector_scale(self,vector_scale):
+        self._vector_scale = vector_scale
+  
+
+    
+    def _update(self):
+        dataframes = []
+        dataframes.append(self._process_contacts())
+        dataframes.append(self._process_orientations())
+        dataframes.append(self._process_fault_orientations())
+        dataframes.append(self._process_fault_locations())
+        self._data = pd.concat(dataframes)
+        self._data.reset_index(inplace=False)
+    
+    def _process_contacts(self):
+        value = 0
+        stratigraphic_values = {}
+        for sg in self._stratigraphic_order:
+            for g in reversed(sg):
+                stratigraphic_values[g] = value
+                value+=self._thicknesses[g]
+        use_thickness = flags.get('use_thickness',True)
+        if use_thickness:
+            contacts['val'] = np.nan
+            for o in strat_val:
+                contacts.loc[contacts['formation'] == o, 'val'] = strat_val[o]
+    if use_thickness == False:
+        contacts['interface'] = np.nan
+        interface_val = 0
+        for u in contacts['formation'].unique():
+            contacts.loc[contacts['formation'] == u,'interface'] = interface_val
+            interface_val+=1
+    tangents['feature_name'] = tangents['group']
+    contact_orientations['feature_name'] = None
+    contacts['feature_name'] = None
+    for g in groups['group'].unique():
+        val = 0
+        for c in groups.loc[groups['group'] == g, 'code']:
+            contact_orientations.loc[contact_orientations['formation'] == c, 'feature_name'] = supergroups[g]
+            contacts.loc[contacts['formation'] == c, 'feature_name'] = supergroups[g]
+    def _process_orientations(self):
+        if self._gradient:
+            contact_orientations['strike'] = contact_orientations['azimuth'] - 90
+            contact_orientations['gx'] = np.nan
+            contact_orientations['gy'] = np.nan
+            contact_orientations['gz'] = np.nan
+            contact_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(contact_orientations['strike'],
+                                                                        contact_orientations['dip'])
+                                                                        *self._vector_scale   
+        if np.sum(contact_orientations['polarity']==0) >0 and np.sum(contact_orientations['polarity']==-1)==0:
+            # contact_orientations['polarity']+=1
+            contact_orientations.loc[contact_orientations['polarity']==0]=-1
+        if not gradient:
+            from LoopStructural.utils.helper import strike_dip_vector
+            contact_orientations['strike'] = contact_orientations['azimuth'] - 90
+            contact_orientations['nx'] = np.nan
+            contact_orientations['ny'] = np.nan
+            contact_orientations['nz'] = np.nan
+            contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
+                                                                        contact_orientations['dip'])*vector_scale *contact_orientations['polarity'].to_numpy()[:,None]
+        contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
+    def _process_fault_orientations(self):
+
+    def _process_fault_locations(self):
+
+    def load_unit_unit_thicknesses(self,thickness_file, thickness_probabilities = False):
         i = 0
         thickness = {}
         max_thickness = 0
