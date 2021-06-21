@@ -305,7 +305,7 @@ new PurePath object.</p>
 <td><p>Like chmod(), except if the path points to a symlink, the symlink’s permissions are changed, rather than its target’s.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.link_to" title="LoopStructural.Path.link_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_to</span></code></a>(target)</p></td>
-<td><p>Create a hard link pointing to a path named target.</p></td>
+<td><p>Make the target path a hard link pointing to this path.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.lstat" title="LoopStructural.Path.lstat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lstat</span></code></a>()</p></td>
 <td><p>Like stat(), except if the path points to a symlink, the symlink’s status information is returned, rather than its target’s.</p></td>
@@ -356,7 +356,7 @@ new PurePath object.</p>
 <td><p>Return the result of the stat() system call on this path, like os.stat() does.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.Path.symlink_to" title="LoopStructural.Path.symlink_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symlink_to</span></code></a>(target[, target_is_directory])</p></td>
-<td><p>Make this path a symlink pointing to the given path.</p></td>
+<td><p>Make this path a symlink pointing to the target path.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.Path.touch" title="LoopStructural.Path.touch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">touch</span></code></a>([mode, exist_ok])</p></td>
 <td><p>Create this file with the given access mode, if it doesn’t exist.</p></td>
@@ -595,7 +595,11 @@ permissions are changed, rather than its target’s.</p>
 <dl class="py method">
 <dt id="LoopStructural.Path.link_to">
 <code class="sig-name descname"><span class="pre">link_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.link_to" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a hard link pointing to a path named target.</p>
+<dd><p>Make the target path a hard link pointing to this path.</p>
+<p>Note this function does not make this path a hard link to <em>target</em>,
+despite the implication of the function and argument names. The order
+of arguments (target, link) is the reverse of Path.symlink_to, but
+matches that of os.link.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -766,8 +770,8 @@ os.stat() does.</p>
 <dl class="py method">
 <dt id="LoopStructural.Path.symlink_to">
 <code class="sig-name descname"><span class="pre">symlink_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_is_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.Path.symlink_to" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make this path a symlink pointing to the given path.
-Note the order of arguments (self, target) is the reverse of os.symlink’s.</p>
+<dd><p>Make this path a symlink pointing to the target path.
+Note the order of arguments (link, target) is the reverse of os.symlink.</p>
 </dd></dl>
 
 <dl class="py method">
