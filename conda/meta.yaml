@@ -31,10 +31,6 @@ requirements:
     - tqdm
     - pyamg
 
-test:
-  imports:
-    - LoopStructural
-
 
 about:
   home: "https://github.com/Loop3D/LoopStructural"
