@@ -40,5 +40,5 @@ jobs:
       shell: powershell
       run: | 
         conda install anaconda-client
-        anaconda -v -t  ${{ secrets.CONDA }} upload --label conda/main win-64/*.tar.bz2 --force
+        anaconda -v -t  ${{ secrets.CONDA }} upload --label main conda/win-64/*.tar.bz2 --force
 
