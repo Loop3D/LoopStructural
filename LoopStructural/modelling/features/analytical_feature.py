@@ -46,7 +46,12 @@ class AnalyticalGeologicalFeature:
 
     def evaluate_value(self,xyz):
         xyz2 = np.zeros(xyz.shape)
-        xyz2[:] = xyz-self.origin
+
+        for f in self.faults:
+            print('applying fault')
+            xyz2[:] = f.apply_to_points(xyz)
+        xyz2[:] = self.model.rescale(xyz2,inplace=False)
+        xyz2[:] = xyz2-self.origin
         normal = self.vector/np.linalg.norm(self.vector)
         distance = normal[0]*xyz2[:,0]+normal[1]*xyz2[:,1]+normal[2]*xyz2[:,2]
         return distance/np.linalg.norm(self.vector)
