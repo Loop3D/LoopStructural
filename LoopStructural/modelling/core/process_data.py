@@ -9,7 +9,7 @@ from LoopStructural.utils import strike_dip_vector
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 class ProcessInputData:
-    def __init__(   self,  
+    def __init__(   self, 
                     contacts, 
                     contact_orientations, 
                     stratigraphic_order,
@@ -29,7 +29,7 @@ class ProcessInputData:
         contacts : DataFrame
             x,y,z,formation
         contact_orientations : DataFrame
-            x,y,z,strike,dip
+            x,y,z,strike,dip, formation
         stratigraphic_order : nested list
             a nested list e.g. [['a','b','c'],['d','e']]
             a->b->c are the youngest supergroup, d->e older.
@@ -64,7 +64,6 @@ class ProcessInputData:
             self._use_thickness = True
         self._vector_scale = 1.
         self._gradient = False
-
         # all of the properties are processed using setter and getter methods
         # using the property decorator. This means that you can changet he underlying data
         # e.g. the contact dataframe and the model input data will be updated.
@@ -143,7 +142,7 @@ class ProcessInputData:
 
             for fname in fault_dimensions.index:
                 pts = self.fault_orientations.loc[self.fault_orientations['feature_name'] == fname,
-                                                        ['nx','ny','nz']]
+                                                        ['gx','gy','gz']]
                 fault_dimensions.loc[fname,['nx','ny','nz']] = np.mean(pts,axis=0)
         if 'sx' not in fault_dimensions.columns or \
            'sy' not in fault_dimensions.columns or \
@@ -167,6 +166,15 @@ class ProcessInputData:
     @property
     def fault_graph(self):
         return self._fault_graph
+    def draw_fault_graph(self):
+        try:
+            import networkx
+        
+            pos=networkx.nx_agraph.graphviz_layout(self.fault_graph,prog="dot")
+            networkx.draw(self.fault_graph,pos,with_labels=True)
+        except ImportError:
+            logger.error("dependencies missing can't plot graph")
+    
     @fault_graph.setter
     def fault_graph(self, fault_graph):
         fault_graph = copy.copy(fault_graph)
@@ -176,11 +184,11 @@ class ProcessInputData:
             fault_graph.nodes[n]['fault_vectical_radius'] = self.fault_dimensions.loc[n,'SlipDistance']
             fault_graph.nodes[n]['fault_extent'] = self.fault_dimensions.loc[n,'ExtentDistance']
             fault_graph.nodes[n]['colour'] = self.fault_dimensions.loc[n,'colour']
-            fault_graph.nodes[n]['FaultNormal'] = self.fault_dimensions.loc[n,['nx','ny','nz']].to_numpy()
-            fault_graph.nodes[n]['fault_slip_vector'] = self.fault_dimensions.loc[n,['sx','sy','sz']].to_numpy()
-            fault_graph.nodes[n]['FaultDisplacement'] = self.fault_dimensions.loc[n,'displacement']
-            fault_graph.nodes[n]['fault_center'] = self.fault_dimensions.loc[n,['X','Y','Z']].to_numpy()
-            faultfunction
+            fault_graph.nodes[n]['fault_normal'] = self.fault_dimensions.loc[n,['nx','ny','nz']].to_numpy().astype(float)
+            fault_graph.nodes[n]['fault_slip_vector'] = self.fault_dimensions.loc[n,['sx','sy','sz']].to_numpy().astype(float)
+            fault_graph.nodes[n]['displacement'] = self.fault_dimensions.loc[n,'displacement']
+            fault_graph.nodes[n]['fault_center'] = self.fault_dimensions.loc[n,['X','Y','Z']].to_numpy().astype(float)
+            fault_graph.nodes[n]['faultfunction'] = 'BaseFault'
         self._fault_graph = fault_graph
 
     @property
@@ -199,7 +207,7 @@ class ProcessInputData:
         if self.fault_locations is not None:
             dataframes.append(self.fault_orientations)
         data = pd.concat(dataframes)
-        data.reset_index(inplace=False)
+        data.reset_index(inplace=True)
         return data
 
     @property
@@ -344,12 +352,12 @@ class ProcessInputData:
             return
         fault_orientations = fault_orientations.copy()
         fault_orientations['coord'] = 0
-        fault_orientations['nx'] = np.nan
-        fault_orientations['ny'] = np.nan
-        fault_orientations['nz'] = np.nan
-        fault_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(fault_orientations['strike'], fault_orientations['dip'])
+        fault_orientations['gx'] = np.nan
+        fault_orientations['gy'] = np.nan
+        fault_orientations['gz'] = np.nan
+        fault_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(fault_orientations['strike'], fault_orientations['dip'])
         fault_orientations['feature_name'] = fault_orientations['fault_name']
-        self._fault_orientations = fault_orientations[['X','Y','Z','nx','ny','nz','coord','feature_name']]
+        self._fault_orientations = fault_orientations[['X','Y','Z','gx','gy','gz','coord','feature_name']]
 
     @property
     def fault_locations(self):
