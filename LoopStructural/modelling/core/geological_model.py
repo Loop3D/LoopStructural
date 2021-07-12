@@ -197,6 +197,23 @@ class GeologicalModel:
         return build_model(m2l_data,**kwargs), m2l_data
 
     @classmethod
+    def from_processor(cls, processor):
+        model = GeologicalModel(processor.origin,processor.maximum)
+        model.set_model_data(data)
+        # for 
+
+        # model.create_and_add_fault(f,
+        #                                             -m2l_data['max_displacement'][f],
+        #                                             faultfunction='BaseFault',
+        #                                             fault_slip_vector=fault_slip_vector,
+        #                                             fault_center=fault_center,
+        #                                             fault_extent=fault_extent,
+        #                                             fault_influence=fault_influence,
+        #                                             fault_vectical_radius=fault_vertical_radius,
+        #                                             # overprints=overprints,
+        #                                             **fault_params,
+        #                                             )
+    @classmethod
     def from_file(cls, file):
         """Load a geological model from file
 
