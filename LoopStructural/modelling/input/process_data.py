@@ -154,7 +154,7 @@ class ProcessInputData:
                 if  'sx' not in self.fault_orientations.columns or \
                     'sy' not in self.fault_orientations.columns or \
                     'sz' not in self.fault_orientations:
-                    # if we don't know slip assum its down
+                    # if we don't know slip assume its down
                     fault_dimensions.loc[fname,['sx','sy','sz']] = np.array([0.,0.,-1.])
                 else:
                     pts = self.fault_orientations.loc[self.fault_orientations['feature_name'] == fname,
@@ -166,6 +166,7 @@ class ProcessInputData:
     @property
     def fault_graph(self):
         return self._fault_graph
+
     def draw_fault_graph(self):
         try:
             import networkx
@@ -194,6 +195,7 @@ class ProcessInputData:
     @property
     def fault_names(self):
         return list(self.fault_dimensions['fault_name'])
+        
     @property
     def data(self):
         """This is the main function that does all the work, should be called
