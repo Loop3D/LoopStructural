@@ -207,9 +207,9 @@ class GeologicalModel:
         #                                             faultfunction='BaseFault',
         #                                             fault_slip_vector=fault_slip_vector,
         #                                             fault_center=fault_center,
-        #                                             fault_extent=fault_extent,
-        #                                             fault_influence=fault_influence,
-        #                                             fault_vectical_radius=fault_vertical_radius,
+        #                                             major_axis=major_axis,
+        #                                             minor_axis=minor_axis,
+        #                                             intermediate_axis=fault_intermediate_axis,
         #                                             # overprints=overprints,
         #                                             **fault_params,
         #                                             )
@@ -1156,9 +1156,9 @@ class GeologicalModel:
                             tol = None,
                             fault_slip_vector=None,
                             fault_center = None, 
-                            fault_extent = None, 
-                            fault_influence = None, 
-                            fault_vectical_radius = None,
+                            major_axis = None, 
+                            minor_axis = None, 
+                            intermediate_axis = None,
                             faultfunction=None, 
                             **kwargs):
         """
@@ -1167,11 +1167,11 @@ class GeologicalModel:
         fault_surface_data : string
             name of the fault surface data in the dataframe
         displacement : displacement magnitude
-        fault_extent : [type], optional
+        major_axis : [type], optional
             [description], by default None
-        fault_influence : [type], optional
+        minor_axis : [type], optional
             [description], by default None
-        fault_vectical_radius : [type], optional
+        intermediate_axis : [type], optional
             [description], by default None
         kwargs : additional kwargs for Fault and interpolators
 
@@ -1208,22 +1208,22 @@ class GeologicalModel:
             # the fault trace
             mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
             fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
-        if fault_influence:
-            fault_influence=fault_influence/self.scale_factor
-        if fault_extent:
-            fault_extent=fault_extent/self.scale_factor
-        if fault_vectical_radius:
-            fault_vectical_radius=fault_vectical_radius/self.scale_factor
+        if minor_axis:
+            minor_axis=minor_axis/self.scale_factor
+        if major_axis:
+            major_axis=major_axis/self.scale_factor
+        if intermediate_axis:
+            intermediate_axis=intermediate_axis/self.scale_factor
         fault_frame_builder.create_data_from_geometry(fault_frame_data,
                                                       fault_center,
                                                       fault_normal_vector,
                                                       fault_slip_vector,
-                                                      influence_distance=fault_influence,
-                                                      horizontal_radius=fault_extent,
-                                                      vertical_radius=fault_vectical_radius
+                                                      minor_axis=minor_axis,
+                                                      major_axis=major_axis,
+                                                      intermediate_axis=intermediate_axis
                                                       )
         
-        if fault_influence == None or fault_extent == None or fault_vectical_radius == None:
+        if minor_axis == None or major_axis == None or intermediate_axis == None:
             fault_frame_builder.origin = self.bounding_box[0,:]
             fault_frame_builder.maximum = self.bounding_box[1,:]
         if 'force_mesh_geometry' not in kwargs:

@@ -41,9 +41,9 @@ class FaultBuilder(StructuralFrameBuilder):
                                 fault_center, 
                                 normal_vector,
                                 slip_vector,
-                                influence_distance = None,
-                                horizontal_radius = None,
-                                vertical_radius = None):
+                                minor_axis = None,
+                                major_axis = None,
+                                intermediate_axis = None):
         """Generate the required data for building a fault frame for a fault with the 
         specified parameters
 
@@ -59,11 +59,11 @@ class FaultBuilder(StructuralFrameBuilder):
         slip_vector : np.array(3)
             x,y,z components of slip vector for the fault, single observation usually 
             average direction
-        influence_distance : double
+        minor_axis : double
             distance away from fault for the fault volume
-        horizontal_radius : double
+        major_axis : double
             fault extent
-        vertical_radius : double
+        intermediate_axis : double
             fault volume radius in the slip direction
         """
         normal_vector/=np.linalg.norm(normal_vector)
@@ -77,17 +77,17 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_tips = np.zeros((2,3))
         fault_depth = np.zeros((2,3))
         if fault_center is not None:
-            if influence_distance is not None:
-                fault_edges[0,:] = fault_center[:3]+normal_vector*influence_distance
-                fault_edges[1,:] = fault_center[:3]-normal_vector*influence_distance
+            if minor_axis is not None:
+                fault_edges[0,:] = fault_center[:3]+normal_vector*minor_axis
+                fault_edges[1,:] = fault_center[:3]-normal_vector*minor_axis
                 self.update_geometry(fault_edges)
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],self.name,1,0]
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0]
-            if horizontal_radius is not None:
-                fault_tips[0,:] = fault_center[:3]+strike_vector*0.5*horizontal_radius
-                fault_tips[1,:] = fault_center[:3]-strike_vector*0.5*horizontal_radius
+            if major_axis is not None:
+                fault_tips[0,:] = fault_center[:3]+strike_vector*0.5*major_axis
+                fault_tips[1,:] = fault_center[:3]-strike_vector*0.5*major_axis
                 self.update_geometry(fault_tips)
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_center[0],fault_center[1],fault_center[2],self.name,0,2]
@@ -95,10 +95,10 @@ class FaultBuilder(StructuralFrameBuilder):
                     [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-.5,2]
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.5,2]
-                strike_vector /= horizontal_radius
-            if vertical_radius is not None:
-                fault_depth[0,:] = fault_center[:3]+slip_vector*vertical_radius
-                fault_depth[1,:] = fault_center[:3]-slip_vector*vertical_radius
+                strike_vector /= major_axis
+            if intermediate_axis is not None:
+                fault_depth[0,:] = fault_center[:3]+slip_vector*intermediate_axis
+                fault_depth[1,:] = fault_center[:3]-slip_vector*intermediate_axis
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                     [fault_center[0],fault_center[1],fault_center[2],self.name,0,1]
                 # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
@@ -106,7 +106,7 @@ class FaultBuilder(StructuralFrameBuilder):
                 self.update_geometry(fault_depth)
                 #TODO need to add data here
                 # print(np.linalg.norm(slip_vector))
-                slip_vector /= vertical_radius
+                slip_vector /= intermediate_axis
                 # print(np.linalg.norm(slip_vector))
                 data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
                     [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
