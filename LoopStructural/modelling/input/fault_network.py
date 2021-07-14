@@ -1,3 +1,4 @@
+import numpy as np
 class FaultNetwork:
     def __init__(self,faults):
         """A fault network is a basic graph structure that 
@@ -26,7 +27,7 @@ class FaultNetwork:
             name of older fault
         """
         self.connections[fault1] = fault2
-        self.fault_edge_count[self.fault_edges[fault1]] +=1
+        # self.fault_edge_count[self.fault_edges[fault1]] +=1
         self.fault_edge_count[self.fault_edges[fault2]] +=1
 
     def get_fault_iterators(self):
@@ -36,15 +37,19 @@ class FaultNetwork:
         iterators : list
             list of fault iterators
         """
-        fault_idxs = np.where(self.fault_edge_count < 2)
-        return [fault for fault in faults[fault_idx] FaultNetworkIter(fault)]
+        fault_idxs = np.where(self.fault_edge_count == 0)[0]
+        iters = []
+        for f in fault_idxs:
+            fault = self.faults[f]
+            iters.append(FaultNetworkIter(fault,self))
+        return iters
         
 class FaultNetworkIter:
     def __init__(self,faultname,fault_network):
         self.faultname = faultname
         self.fault_network = fault_network
     def __next__(self):
-        if faultname in self.fault_network.connections:
-            return self.fault_network.connections[faultname]
+        if self.faultname in self.fault_network.connections:
+            return FaultNetworkIter(self.fault_network.connections[self.faultname],self.fault_network)
         else:
-            return None
+            return None 
