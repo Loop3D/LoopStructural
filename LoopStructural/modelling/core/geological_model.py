@@ -1200,12 +1200,21 @@ class GeologicalModel:
         fault_normal_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
         mask = np.logical_and(fault_frame_data['coord']==1,~np.isnan(fault_frame_data['gz']))
         if fault_slip_vector is None:
-            fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
+            if 'avSlipDirEasting' in kwargs and 'avSlipDirNorthing' in kwargs and 'avSlipDirAltitude' in kwargs:
+                fault_slip_vector = np.array([kwargs['avSlipDirEasting'],kwargs['avSlipDirNorthing'],kwargs['avSlipDirAltitude']],dtype=float)
+            else:
+                fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
         if fault_center is not None:
             fault_center = self.scale(fault_center,inplace=False)
         if fault_center is None:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
+            if 'centreEasting' in kwargs and 'centreNorthing' in kwargs and 'centreAltitude' in kwargs:
+                fault_center = self.scale(np.array([kwargs['centreEasting'],
+                                                        kwargs['centreNorthing'],
+                                                        kwargs['centreAltitude']],
+                                                        dtype=float),inplace=False)
+
             mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
             fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
         if minor_axis:

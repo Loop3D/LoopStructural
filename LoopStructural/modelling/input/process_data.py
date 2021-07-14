@@ -5,6 +5,7 @@ import logging
 import networkx
 from scipy.stats import truncnorm
 import copy
+from .fault_network import FaultNetwork
 from LoopStructural.utils import strike_dip_vector
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
@@ -15,8 +16,8 @@ class ProcessInputData:
                     stratigraphic_order,
                     fault_orientations = None, 
                     fault_locations = None, 
-                    fault_dimensions = None, 
-                    fault_graph = None,
+                    fault_properties = None, 
+                    fault_edges = None,
                     intrusions = None,
                     fault_stratigraphy = None,
                     thicknesses = None,
@@ -37,9 +38,8 @@ class ProcessInputData:
             data frame with x,y,z,strike,fault_name, by default None
         fault_locations : DataFrame, optional
             data frame with x,y,z,fault_name, by default None
-        fault_dimensions : DataFrame, optional
-            dataframe with fault_name, InfluenceDistance,SlipDistance,ExtentDistance,
-             Displacement, colour, X,Y,Z by default None
+        fault_properties : DataFrame, optional
+            dataframe with properties used for building fault
         fault_graph : graph, optional
             graph describing fault fault relationship, by default None
         intrusions : list, optional
@@ -75,10 +75,11 @@ class ProcessInputData:
         self.fault_orientations = fault_orientations
         self._fault_locations = None
         self.fault_locations = fault_locations
-        self._fault_dimensions = None
-        self.fault_dimensions = fault_dimensions
-        self._fault_graph = None
-        self.fault_graph = fault_graph
+        # self._fault_dimensions = None
+        self._fault_properties = None
+        self.fault_properties = fault_properties
+        self._fault_network = None
+        self.set_fault_network(fault_edges)# = fault_graph
         self._fault_stratigraphy = fault_stratigraphy
         self._intrusions = intrusions
         self._thicknesses = thicknesses
@@ -86,8 +87,9 @@ class ProcessInputData:
         self._colours = {}
         self.colours = colours
         # flags
- 
+        
 
+    
     @property
     def colours(self):
         return self._colours
@@ -100,6 +102,7 @@ class ProcessInputData:
                 self._colours[s] = np.random.random(3)
         else:
             self._colours=colours
+
     @property
     def stratigraphic_column(self):
         stratigraphic_column = {}
@@ -113,88 +116,72 @@ class ProcessInputData:
         # add faults into the column 
         stratigraphic_column['faults'] = self.fault_dimensions
         return stratigraphic_column
-
     @property
-    def fault_dimensions(self):
-        return self._fault_dimensions
+    def fault_properties(self):
+        return self._fault_properties
 
-    @fault_dimensions.setter
-    def fault_dimensions(self, fault_dimensions):
-        if fault_dimensions is None:
+    @fault_properties.setter
+    def fault_properties(self, fault_properties):
+        if fault_properties is None:
             return
-        fault_dimensions = fault_dimensions.copy()
-        if 'X' not in fault_dimensions.columns or \
-           'Y' not in fault_dimensions.columns or \
-           'Z' not in fault_dimensions:
-            fault_dimensions['X'] = np.nan
-            fault_dimensions['Y'] = np.nan
-            fault_dimensions['Z'] = np.nan
-            for fname in fault_dimensions.index:
+        
+        fault_properties = fault_properties.copy()
+        if 'centreEasting' not in fault_properties.columns or \
+           'centreNorthing' not in fault_properties.columns or \
+           'centreAltitude' not in fault_properties:
+            fault_properties['centreEasting'] = np.nan
+            fault_properties['centreNorthing'] = np.nan
+            fault_properties['centreAltitude'] = np.nan
+            for fname in fault_properties.index:
                 pts = self.fault_locations.loc[self.fault_locations['feature_name'] == fname,
                                                         ['X','Y','Z']]
-                fault_dimensions.loc[fname,['X','Y','Z']] = np.mean(pts,axis=0)
-        if 'nx' not in fault_dimensions.columns or \
-           'ny' not in fault_dimensions.columns or \
-           'nz' not in fault_dimensions:
-            fault_dimensions['nx'] = np.nan
-            fault_dimensions['ny'] = np.nan
-            fault_dimensions['nz'] = np.nan
+                fault_properties.loc[fname,['centreEasting','centreNorthing','centreAltitude']] = np.nanmean(pts,axis=0)
+        if 'avgNormalEasting' not in fault_properties.columns or \
+           'avgNormalNorthing' not in fault_properties.columns or \
+           'avgNormalAltitude' not in fault_properties:
+            fault_properties['avgNormalEasting'] = np.nan
+            fault_properties['avgNormalNorthing'] = np.nan
+            fault_properties['avgNormalAltitude'] = np.nan
 
-            for fname in fault_dimensions.index:
+            for fname in fault_properties.index:
                 pts = self.fault_orientations.loc[self.fault_orientations['feature_name'] == fname,
                                                         ['gx','gy','gz']]
-                fault_dimensions.loc[fname,['nx','ny','nz']] = np.mean(pts,axis=0)
-        if 'sx' not in fault_dimensions.columns or \
-           'sy' not in fault_dimensions.columns or \
-           'sz' not in fault_dimensions:
-            fault_dimensions['sx'] = np.nan
-            fault_dimensions['sy'] = np.nan
-            fault_dimensions['sz'] = np.nan
-            for fname in fault_dimensions.index:
+                fault_properties.loc[fname,['avgNormalEasting','avgNormalNorthing','avgNormalAltitude']] = np.nanmean(pts,axis=0)
+        if 'avgSlipDirEasting' not in fault_properties.columns or \
+           'avgSlipDirNorthing' not in fault_properties.columns or \
+           'avgSlipDirAltitude' not in fault_properties:
+            fault_properties['avgSlipDirEasting'] = np.nan
+            fault_properties['avgSlipDirNorthing'] = np.nan
+            fault_properties['avgSlipDirAltitude'] = np.nan
+            for fname in fault_properties.index:
                 if  'sx' not in self.fault_orientations.columns or \
                     'sy' not in self.fault_orientations.columns or \
                     'sz' not in self.fault_orientations:
                     # if we don't know slip assume its down
-                    fault_dimensions.loc[fname,['sx','sy','sz']] = np.array([0.,0.,-1.])
+                    fault_properties.loc[fname,['avgSlipDirEasting','avgSlipDirNorthing','avgSlipDirAltitude']] = np.array([0.,0.,-1.])
                 else:
                     pts = self.fault_orientations.loc[self.fault_orientations['feature_name'] == fname,
                                                             ['sx','sy','sz']]
-                    fault_dimensions.loc[fname,['sx','sy','sz']] = np.mean(pts,axis=0)
-
-        self._fault_dimensions = fault_dimensions
-
+                    fault_properties.loc[fname,['avgSlipDirEasting','avgSlipDirNorthing','avgSlipDirAltitude']] = np.mean(pts,axis=0)
+        self._fault_properties = fault_properties
+        self._fault_network = FaultNetwork(list(self.fault_properties.index))
     @property
-    def fault_graph(self):
-        return self._fault_graph
+    def fault_network(self):
+        return self._fault_network
 
-    def draw_fault_graph(self):
-        try:
-            import networkx
-        
-            pos=networkx.nx_agraph.graphviz_layout(self.fault_graph,prog="dot")
-            networkx.draw(self.fault_graph,pos,with_labels=True)
-        except ImportError:
-            logger.error("dependencies missing can't plot graph")
+    def set_fault_network(self, edges):
+        if self._fault_network is None:
+            self._fault_network = FaultNetwork(list(self.fault_properties.index))
+        if edges is None:
+            return
+        # self._fault_network = FaultNetwork(list(fault_network.nodes))
+        for e in edges:
+            self._fault_network.add_connection(e[0],e[1])
     
-    @fault_graph.setter
-    def fault_graph(self, fault_graph):
-        fault_graph = copy.copy(fault_graph)
-        # add attributes from the fault_dimensions table
-        for n in fault_graph.nodes:
-            fault_graph.nodes[n]['fault_influence'] = self.fault_dimensions.loc[n,'InfluenceDistance']
-            fault_graph.nodes[n]['fault_vectical_radius'] = self.fault_dimensions.loc[n,'SlipDistance']
-            fault_graph.nodes[n]['fault_extent'] = self.fault_dimensions.loc[n,'ExtentDistance']
-            fault_graph.nodes[n]['colour'] = self.fault_dimensions.loc[n,'colour']
-            fault_graph.nodes[n]['fault_normal'] = self.fault_dimensions.loc[n,['nx','ny','nz']].to_numpy().astype(float)
-            fault_graph.nodes[n]['fault_slip_vector'] = self.fault_dimensions.loc[n,['sx','sy','sz']].to_numpy().astype(float)
-            fault_graph.nodes[n]['displacement'] = self.fault_dimensions.loc[n,'displacement']
-            fault_graph.nodes[n]['fault_center'] = self.fault_dimensions.loc[n,['X','Y','Z']].to_numpy().astype(float)
-            fault_graph.nodes[n]['faultfunction'] = 'BaseFault'
-        self._fault_graph = fault_graph
 
     @property
     def fault_names(self):
-        return list(self.fault_dimensions['fault_name'])
+        return list(self.fault_properties.keys())
         
     @property
     def data(self):
