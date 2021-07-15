@@ -77,7 +77,7 @@ class GeologicalModel:
 
 
     """
-    def __init__(self, origin, maximum, rescale=True, nsteps=(50, 50, 25),
+    def __init__(self, origin, maximum, data = None, rescale=True, nsteps=(50, 50, 25),
                  reuse_supports=False, logfile=None, loglevel='info'):
         """
         Parameters
@@ -120,7 +120,8 @@ class GeologicalModel:
         logger.info('Initialising geological model')
         self.features = []
         self.feature_name_index = {}
-        self.data = None
+        self._data = None
+        self.data = data
         self.nsteps = nsteps
         
         # we want to rescale the model area so that the maximum length is
@@ -331,8 +332,12 @@ class GeologicalModel:
     
     def data_for_feature(self,feature_name):
         return self.data.loc[self.data['feature_name'] == feature_name,:]
-        
-    def set_model_data(self, data):
+    
+    @property
+    def data(self):
+        return self._data
+    @data.setter
+    def data(self,data):
         """
         Set the data array for the model
 
@@ -359,37 +364,39 @@ class GeologicalModel:
                 data = pd.read_csv(data)
             except:
                 logger.error("Could not load pandas data frame from data")
+                raise BaseException('Cannot load data')
         logger.info('Adding data to GeologicalModel with {} data points'.format(len(data)))
-        self.data = data.copy()
-        self.data['X'] -= self.origin[0]
-        self.data['Y'] -= self.origin[1]
-        self.data['Z'] -= self.origin[2]
-        self.data['X'] /= self.scale_factor
-        self.data['Y'] /= self.scale_factor
-        self.data['Z'] /= self.scale_factor
-        if 'type' in self.data:
+        self._data = data.copy()
+        self._data['X'] -= self.origin[0]
+        self._data['Y'] -= self.origin[1]
+        self._data['Z'] -= self.origin[2]
+        self._data['X'] /= self.scale_factor
+        self._data['Y'] /= self.scale_factor
+        self._data['Z'] /= self.scale_factor
+        if 'type' in self._data:
             logger.warning("'type' is depreciated replace with 'feature_name' \n")
-            self.data.rename(columns={'type':'feature_name'},inplace=True)
+            self._data.rename(columns={'type':'feature_name'},inplace=True)
         for h in all_heading():
-            if h not in self.data:
-                self.data[h] = np.nan
+            if h not in self._data:
+                self._data[h] = np.nan
                 if h == 'w':
-                    self.data[h] = 1.
+                    self._data[h] = 1.
                 if h == 'coord':
-                    self.data[h] = 0
+                    self._data[h] = 0
         
-        if 'strike' in self.data and 'dip' in self.data:
+        if 'strike' in self._data and 'dip' in self._data:
             logger.info('Converting strike and dip to vectors')
-            mask = np.all(~np.isnan(self.data.loc[:, ['strike', 'dip']]),
+            mask = np.all(~np.isnan(self._data.loc[:, ['strike', 'dip']]),
                           axis=1)
-            self.data.loc[mask, gradient_vec_names()] = strike_dip_vector(
-                self.data.loc[mask, 'strike'], self.data.loc[mask, 'dip'])
-            self.data.drop(['strike', 'dip'], axis=1, inplace=True)
-        #     self.data.loc
-        # if 'nx' in self.data and 'ny' in self.data and 'nz' in self.data:
-        #     mask = np.all(~np.isnan(self.data.loc[:, ['nx', 'ny','nz']]),
-        #                   axis=1)
-        #     self.data.loc[mask,['nx', 'ny','nz']] /= self.scale_factor
+            self._data.loc[mask, gradient_vec_names()] = strike_dip_vector(
+                self._data.loc[mask, 'strike'], self._data.loc[mask, 'dip'])
+            self._data.drop(['strike', 'dip'], axis=1, inplace=True)
+    
+
+    def set_model_data(self, data):
+        logger.warning("Depreciated method. Model data can now be set using the data attribute")
+        self.data = data
+        
     def extend_model_data(self, newdata):
         """
         Extends the data frame
@@ -410,7 +417,7 @@ class GeologicalModel:
         data_temp['Y'] /= self.scale_factor
         data_temp['Z'] /= self.scale_factor
         self.data.concat([self.data, data_temp], sort=True)
-
+       
     def set_stratigraphic_column(self, stratigraphic_column,cmap='tab20'):
         """
         Adds a stratigraphic column to the model
@@ -1200,8 +1207,8 @@ class GeologicalModel:
         fault_normal_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
         mask = np.logical_and(fault_frame_data['coord']==1,~np.isnan(fault_frame_data['gz']))
         if fault_slip_vector is None:
-            if 'avSlipDirEasting' in kwargs and 'avSlipDirNorthing' in kwargs and 'avSlipDirAltitude' in kwargs:
-                fault_slip_vector = np.array([kwargs['avSlipDirEasting'],kwargs['avSlipDirNorthing'],kwargs['avSlipDirAltitude']],dtype=float)
+            if 'avgSlipDirEasting' in kwargs and 'avgSlipDirNorthing' in kwargs and 'avgSlipDirAltitude' in kwargs:
+                fault_slip_vector = np.array([kwargs['avgSlipDirEasting'],kwargs['avgSlipDirNorthing'],kwargs['avgSlipDirAltitude']],dtype=float)
             else:
                 fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
         if fault_center is not None:
@@ -1214,9 +1221,9 @@ class GeologicalModel:
                                                         kwargs['centreNorthing'],
                                                         kwargs['centreAltitude']],
                                                         dtype=float),inplace=False)
-
-            mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
-            fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
+            else:
+                mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
+                fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
         if minor_axis:
             minor_axis=minor_axis/self.scale_factor
         if major_axis:
