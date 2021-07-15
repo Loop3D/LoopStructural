@@ -87,7 +87,7 @@ class ProcessInputData:
         self._colours = {}
         self.colours = colours
         # flags
-        
+        self._foliation_properties = {} #empty dictionary of foliation parameters
 
     
     @property
@@ -114,8 +114,16 @@ class ProcessInputData:
             for g in reversed(sg):
                 stratigraphic_column['supergroup_{}'.format(i)][g] = {'max': val[g]+self.thicknesses[g], 'min': val[g] , 'id': unit_id, 'colour':self.colours[g]}
         # add faults into the column 
-        stratigraphic_column['faults'] = self.fault_dimensions
+        stratigraphic_column['faults'] = self.fault_properties.to_dict('index')
         return stratigraphic_column
+
+    @property
+    def foliation_properties(self):
+        return self._foliation_properties
+
+    @foliation_properties.setter
+    def foliation_properties(self,foliation_properties):
+        self._foliation_properties = foliation_properties
     @property
     def fault_properties(self):
         return self._fault_properties
@@ -238,9 +246,9 @@ class ProcessInputData:
         stratigraphic_value = {}
         for sg in self._stratigraphic_order:
             value = 0 #reset for each supergroup
-            for g in reversed(sg):
+            for g in sg:
                 stratigraphic_value[g] = value
-                value+=self._thicknesses[g]
+                value-=self._thicknesses[g]
         return stratigraphic_value
 
     def _update_feature_names(self,dataframe):
@@ -255,7 +263,7 @@ class ProcessInputData:
             dataframe['feature_name'] = None
             for i, sg in enumerate(self._stratigraphic_order):
                 for g in sg:
-                    dataframe.loc[dataframe['formation']==g,'feature_name'] = 'supergoup_{}'.format(i)
+                    dataframe.loc[dataframe['formation']==g,'feature_name'] = 'supergroup_{}'.format(i)
     
     @property
     def contacts(self):
