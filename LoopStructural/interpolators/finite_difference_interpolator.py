@@ -80,11 +80,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.up_to_date = False
             if 'regularisation' in kwargs:
                 self.interpolation_weights['dxy'] = kwargs[
-                                                        'regularisation'] * 0.7
+                                                        'regularisation'] * 1.
                 self.interpolation_weights['dyz'] = kwargs[
-                                                        'regularisation'] * 0.7
+                                                        'regularisation'] * 1.
                 self.interpolation_weights['dxz'] = kwargs[
-                                                        'regularisation'] * 0.7
+                                                        'regularisation'] * 1.
                 self.interpolation_weights['dxx'] = kwargs[
                                                         'regularisation'] * 1.
                 self.interpolation_weights['dyy'] = kwargs[
@@ -100,24 +100,24 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if 'operators' not in kwargs:
             operator = Operator.Dxy_mask
 
-            self.assemble_inner(operator, np.sqrt(2 * self.vol) *
+            self.assemble_inner(operator/4.*self.support.step_vector[0]*self.support.step_vector[1], np.sqrt( self.vol) *
                                 self.interpolation_weights['dxy'])
             operator = Operator.Dyz_mask
-            self.assemble_inner(operator, np.sqrt(2 * self.vol) *
+            self.assemble_inner(operator/4.*self.support.step_vector[1]*self.support.step_vector[2], np.sqrt( self.vol) *
                                 self.interpolation_weights['dyz'])
             operator = Operator.Dxz_mask
-            self.assemble_inner(operator, np.sqrt(2 * self.vol) *
+            self.assemble_inner(operator/4.*self.support.step_vector[0]*self.support.step_vector[2], np.sqrt( self.vol) *
                                 self.interpolation_weights['dxz'])
             operator = Operator.Dxx_mask
-            self.assemble_inner(operator,
+            self.assemble_inner(operator/self.support.step_vector[0]**2,
                                 np.sqrt(self.vol) * self.interpolation_weights[
                                     'dxx'])
             operator = Operator.Dyy_mask
-            self.assemble_inner(operator,
+            self.assemble_inner(operator/self.support.step_vector[1]**2,
                                 np.sqrt(self.vol) * self.interpolation_weights[
                                     'dyy'])
             operator = Operator.Dzz_mask
-            self.assemble_inner(operator,
+            self.assemble_inner(operator/self.support.step_vector[2]**2,
                                 np.sqrt(self.vol) * self.interpolation_weights[
                                     'dzz'])
         self.add_norm_constraint(
@@ -392,7 +392,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         idc = gi[idc]
         inside = ~np.any(idc == -1, axis=1)
         B = np.zeros(global_indexes.shape[1])
-        self.add_constraints_to_least_squares(a[inside, :] * w,
+        self.add_constraints_to_least_squares(a[inside, :] * w ,
                                               B[inside],
                                               idc[inside, :],
                                               name='regularisation'

@@ -40,19 +40,18 @@ class StructuredGrid(BaseStructuredSupport):
 
 
     def cell_centres(self, global_index):
-        """[summary]
+        """get the centre of specified cells
 
-        [extended_summary]
-
+        
         Parameters
         ----------
-        global_index : [type]
-            [description]
+        global_index : array/list
+            container of integer global indexes to cells
 
         Returns
         -------
-        [type]
-            [description]
+        numpy array
+            Nx3 array of cell centres
         """
         ix, iy, iz = self.global_index_to_cell_index(global_index)
         x = self.origin[None, 0] + self.step_vector[None, 0] * .5 + \
@@ -353,14 +352,5 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 5] = (1 - x) * y
         T[:, 2, 6] = - x * y
         T[:, 2, 7] = x * y
-        return T
+        return T 
 
-    def slice(self, propertyname, isovalue, region):
-        logger.error("function has been removed, please use the modelviewer class")
-        return
-        #
-        # verts, faces, normals, values = marching_cubes(
-        #     self.properties[propertyname].reshape(self.nsteps, order='F'),
-        #     isovalue,
-        #     spacing=self.step_vector)
-        # return faces, verts + self.origin[None, :]
