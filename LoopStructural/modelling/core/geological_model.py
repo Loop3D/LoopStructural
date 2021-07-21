@@ -77,7 +77,7 @@ class GeologicalModel:
 
 
     """
-    def __init__(self, origin, maximum, data = None, rescale=True, nsteps=(50, 50, 25),
+    def __init__(self, origin, maximum, data = None, rescale=False, nsteps=(50, 50, 25),
                  reuse_supports=False, logfile=None, loglevel='info'):
         """
         Parameters
@@ -200,7 +200,16 @@ class GeologicalModel:
     @classmethod
     def from_processor(cls, processor):
         model = GeologicalModel(processor.origin,processor.maximum)
-        model.set_model_data(data)
+        model.data = processor.data
+        for i in processor.fault_network.get_fault_iterators():
+            model.create_and_add_fault(i.faultname,**processor.fault_properties.to_dict('index')[i.faultname],faultfunction='BaseFault')
+            while i.__next__() is not None:
+                i = i.__next__()
+        for s in processor.stratigraphic_column.keys():
+            if s != 'faults':
+                model.create_and_add_foliation(s,**processor.foliation_properties[s])
+        model.stratigraphic_column = processor.stratigraphic_column
+        return model
         # for 
 
         # model.create_and_add_fault(f,
@@ -337,7 +346,7 @@ class GeologicalModel:
     def data(self):
         return self._data
     @data.setter
-    def data(self,data):
+    def data(self, data):
         """
         Set the data array for the model
 
@@ -356,6 +365,8 @@ class GeologicalModel:
         'eg' 'S0', 'S2', 'F1_axis'
         it is then used by the create functions to get the correct data
         """
+        if data is None:
+            return
         if type(data) != pd.DataFrame:
             logger.warning(
                 "Data is not a pandas data frame, trying to read data frame "

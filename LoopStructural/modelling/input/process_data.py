@@ -88,6 +88,7 @@ class ProcessInputData:
         self.colours = colours
         # flags
         self._foliation_properties = {} #empty dictionary of foliation parameters
+        self.foliation_properties = None
 
     
     @property
@@ -123,7 +124,13 @@ class ProcessInputData:
 
     @foliation_properties.setter
     def foliation_properties(self,foliation_properties):
-        self._foliation_properties = foliation_properties
+        if foliation_properties is None:
+            for k in self.stratigraphic_column.keys():
+                if k != 'faults':
+                    self._foliation_properties[k] = {}
+        else:
+            self._foliation_properties = foliation_properties
+
     @property
     def fault_properties(self):
         return self._fault_properties
@@ -247,7 +254,7 @@ class ProcessInputData:
         for sg in self._stratigraphic_order:
             value = 0 #reset for each supergroup
             for g in sg:
-                stratigraphic_value[g] = value
+                stratigraphic_value[g] = value - self._thicknesses[g]
                 value-=self._thicknesses[g]
         return stratigraphic_value
 
@@ -303,7 +310,13 @@ class ProcessInputData:
     
     @property
     def contact_orientations(self):
-        return self._contact_orientations
+        contact_orientations = self._contact_orientations.copy()
+        #scale
+        contact_orientations.loc[~np.isnan(contact_orientations['nz']),['nx', 'ny', 'nz']]*=self.vector_scale*\
+                                                                contact_orientations['polarity'].to_numpy()[:,None]
+        if self._gradient:
+            contact_orientations.rename(columns={'nx':'gx','ny':'gy','nz':'gz'},inplace=True)
+        return contact_orientations
 
     @contact_orientations.setter
     def contact_orientations(self, contact_orientations):
@@ -317,6 +330,8 @@ class ProcessInputData:
         """
         if contact_orientations is None:
             return
+        if 'polarity' not in contact_orientations.columns:
+            contact_orientations['polarity'] = 1.
         contact_orientations = contact_orientations.copy()
         contact_orientations['strike'] = contact_orientations['azimuth'] - 90
         contact_orientations['nx'] = np.nan
@@ -325,12 +340,7 @@ class ProcessInputData:
         contact_orientations[['nx', 'ny', 'nz']] = strike_dip_vector(contact_orientations['strike'],
                                                                     contact_orientations['dip'])
         self._update_feature_names(contact_orientations)
-        contact_orientations.loc[~np.isnan(contact_orientations['nz']),['nx', 'ny', 'nz']]*=self._vector_scale*\
-                                                                contact_orientations['polarity'].to_numpy()[:,None]
-        contact_orientations.drop(['strike', 'dip', 'azimuth'], inplace=True, axis=1)
-        if self._gradient:
-            contact_orientations.rename(columns={'nx':'gx','ny':'gy','nz':'gz'},inplace=True)
-        self._contact_orientations = contact_orientations[['X','Y','Z','nx','ny','nz','feature_name']]
+        self._contact_orientations = contact_orientations[['X','Y','Z','nx','ny','nz','feature_name','polarity']]
     
     @property
     def fault_orientations(self):
