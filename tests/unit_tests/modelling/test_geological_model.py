@@ -4,7 +4,7 @@ from LoopStructural.interpolators import PiecewiseLinearInterpolator
 from LoopStructural.interpolators import FiniteDifferenceInterpolator
 import numpy as np
 def test_create_scale_factor_model():
-    model = GeologicalModel([0,0,0],[5,5,5])
+    model = GeologicalModel([0,0,0],[5,5,5],rescale=True)
     assert model.scale_factor == 5
 
 def test_access_feature_model():
@@ -42,7 +42,7 @@ def test_element_number_FDI():
     assert interpolator.support.n_elements - 3e4 < 1e3
     
 def test_buffer():
-    model = GeologicalModel([0,0,0],[5,5,5])
+    model = GeologicalModel([0,0,0],[5,5,5],rescale=True)
     interpolator = model.get_interpolator(interpolatortype='FDI',nelements=1e5,buffer=0.2)
     print(interpolator.support.origin)
     assert np.sum(interpolator.support.origin + .2) == 0
