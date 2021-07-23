@@ -174,7 +174,7 @@ class GeologicalModel:
         return self.feature_name_index.keys()
         
     @classmethod
-    def from_map2loop_directory(cls, m2l_directory,**kwargs):
+    def from_map2loop_directory(cls, m2l_directory,foliation_params={},fault_params={},**kwargs):
         """Alternate constructor for a geological model using m2l output
 
         Uses the information saved in the map2loop files to build a geological model.
@@ -191,19 +191,34 @@ class GeologicalModel:
         (GeologicalModel, dict)
             the created geological model and a dictionary of the map2loop data
         """
-        from LoopStructural.utils import build_model, process_map2loop
-        logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
-        m2lflags = kwargs.pop('m2lflags',{})
-        m2l_data = process_map2loop(m2l_directory,m2lflags)
-        return build_model(m2l_data,**kwargs), m2l_data
+        from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor 
+        processor=Map2LoopProcessor(m2l_directory)
+        for foliation_name in processor.stratigraphic_column.keys():
+            if foliation_name != 'faults':
+                processor.foliation_properties[foliation_name] = foliation_params
+        for fault_name in processor.fault_names:
+            for param_name, value in fault_params.items():
+                processor.fault_properties[fault_name][param_name] = value
+            
+       
+        model = GeologicalModel.from_processor(processor)
+        return model
+ 
+
+
+        # from LoopStructural.utils import build_model, process_map2loop
+        # logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
+        # m2lflags = kwargs.pop('m2lflags',{})
+        # m2l_data = process_map2loop(m2l_directory,m2lflags)
+        # return build_model(m2l_data,**kwargs), m2l_data
 
     @classmethod
     def from_processor(cls, processor):
         model = GeologicalModel(processor.origin,processor.maximum)
         model.data = processor.data
         for i in processor.fault_network.get_fault_iterators():
-            model.create_and_add_fault(i.faultname,**processor.fault_properties.to_dict('index')[i.faultname],faultfunction='BaseFault')
-            while i.__next__() is not None:
+            while i is not None:
+                model.create_and_add_fault(i.faultname,**processor.fault_properties.to_dict('index')[i.faultname],faultfunction='BaseFault')
                 i = i.__next__()
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
@@ -1568,14 +1583,10 @@ class GeologicalModel:
             buf=0
             for f in self.features:
                 pbar.set_description('Interpolating {}'.format(f.name))
+                f.builder.up_to_date()
                 if f.type == 'fault':
-                    for i in range(3):
-                        buf+=1
-                        f[i].builder.update()
-                        pbar.update()
-                if f.type == 'series':
-                    f.builder.update()
-                    pbar.update()
+                    for i in range(3): pbar.update()
+                else: pbar.update()
 
             
         if verbose:

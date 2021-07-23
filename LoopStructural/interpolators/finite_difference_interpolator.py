@@ -100,41 +100,41 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if 'operators' not in kwargs:
             
             operator = Operator.Dxy_mask
-            weight =  np.cbrt(self.vol)*self.interpolation_weights['dxy'] / \
-                             (4*self.support.step_vector[0]*self.support.step_vector[1])
+            weight =  self.interpolation_weights['dxy'] / \
+                             4#(4*self.support.step_vector[0]*self.support.step_vector[1])
             self.assemble_inner(operator, weight )
             operator = Operator.Dyz_mask
-            weight = np.cbrt(self.vol)*self.interpolation_weights['dyz'] / \
-                             (4*self.support.step_vector[1]*self.support.step_vector[2])
+            weight = self.interpolation_weights['dyz'] / \
+                             4#(4*self.support.step_vector[1]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxz_mask
-            weight =  np.cbrt(self.vol)*self.interpolation_weights['dxz'] / \
-                             (4*self.support.step_vector[0]*self.support.step_vector[2])
+            weight =  self.interpolation_weights['dxz'] / \
+                             4#(4*self.support.step_vector[0]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
-            weight = np.cbrt(self.vol)*self.interpolation_weights['dxx'] \
-                             / self.support.step_vector[0]**2
+            weight = self.interpolation_weights['dxx'] #\
+                             #/ self.support.step_vector[0]**2
             self.assemble_inner(operator,
                                 weight)
             operator = Operator.Dyy_mask
-            weight =  np.cbrt(self.vol)*self.interpolation_weights['dyy'] / \
-                             self.support.step_vector[1]**2
+            weight =  self.interpolation_weights['dyy'] #/ \
+                             #self.support.step_vector[1]**2
             self.assemble_inner(operator,weight)
             operator = Operator.Dzz_mask
-            weight = np.cbrt(self.vol)*self.interpolation_weights['dzz'] / \
-                             self.support.step_vector[2]**2
+            weight = self.interpolation_weights['dzz']# / \
+                             #self.support.step_vector[2]**2
             self.assemble_inner(operator,weight)
         self.add_norm_constraint(
-            np.cbrt(self.vol)*self.interpolation_weights['npw'])
+            self.interpolation_weights['npw'])
         self.add_gradient_constraint(
-             np.cbrt(self.vol)*self.interpolation_weights['gpw'])
+             self.interpolation_weights['gpw'])
         self.add_vaue_constraint(
-             np.cbrt(self.vol)*self.interpolation_weights['cpw'])
+             self.interpolation_weights['cpw'])
         self.add_tangent_ctr_pts(
-            np.cbrt(self.vol)*np.cbrt(self.vol)*self.interpolation_weights['tpw']
+            self.interpolation_weights['tpw']
         )
         self.add_interface_ctr_pts(
-            np.cbrt(self.vol)*self.interpolation_weights['ipw']
+            self.interpolation_weights['ipw']
         )
 
     def copy(self):
