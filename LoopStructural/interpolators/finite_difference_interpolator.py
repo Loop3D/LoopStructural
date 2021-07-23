@@ -80,17 +80,17 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.up_to_date = False
             if 'regularisation' in kwargs:
                 self.interpolation_weights['dxy'] = kwargs[
-                                                        'regularisation'] * 1.
+                                                        'regularisation'] 
                 self.interpolation_weights['dyz'] = kwargs[
-                                                        'regularisation'] * 1.
+                                                        'regularisation'] 
                 self.interpolation_weights['dxz'] = kwargs[
-                                                        'regularisation'] * 1.
+                                                        'regularisation'] 
                 self.interpolation_weights['dxx'] = kwargs[
-                                                        'regularisation'] * 1.
+                                                        'regularisation'] 
                 self.interpolation_weights['dyy'] = kwargs[
-                                                        'regularisation'] * 1.
+                                                        'regularisation'] 
                 self.interpolation_weights['dzz'] = kwargs[
-                                                        'regularisation'] * 1.
+                                                        'regularisation'] 
             self.interpolation_weights[key] = kwargs[key]
         # if we want to define the operators manually
         if 'operators' in kwargs:
@@ -98,39 +98,49 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 self.assemble_inner(o[0], o[1])
         # otherwise just use defaults
         if 'operators' not in kwargs:
+            
             operator = Operator.Dxy_mask
-
-            self.assemble_inner(operator/4.*self.support.step_vector[0]*self.support.step_vector[1], np.sqrt( self.vol) *
-                                self.interpolation_weights['dxy'])
+            weight =  self.interpolation_weights['dxy'] / \
+                             4#(4*self.support.step_vector[0]*self.support.step_vector[1])
+            print('dxy weight {}'.format(weight))
+            self.assemble_inner(operator, weight )
             operator = Operator.Dyz_mask
-            self.assemble_inner(operator/4.*self.support.step_vector[1]*self.support.step_vector[2], np.sqrt( self.vol) *
-                                self.interpolation_weights['dyz'])
+            weight = self.interpolation_weights['dyz'] / \
+                             4#(4*self.support.step_vector[1]*self.support.step_vector[2])
+            print('dyz weight {}'.format(weight))
+            self.assemble_inner(operator, weight)
             operator = Operator.Dxz_mask
-            self.assemble_inner(operator/4.*self.support.step_vector[0]*self.support.step_vector[2], np.sqrt( self.vol) *
-                                self.interpolation_weights['dxz'])
+            weight =  self.interpolation_weights['dxz'] / \
+                             4#(4*self.support.step_vector[0]*self.support.step_vector[2])
+            print('dxz weight {}'.format(weight))
+            self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
-            self.assemble_inner(operator/self.support.step_vector[0]**2,
-                                np.sqrt(self.vol) * self.interpolation_weights[
-                                    'dxx'])
+            weight = self.interpolation_weights['dxx'] #\
+                             #/ self.support.step_vector[0]**2
+            print('dxx weight {}'.format(weight))
+            self.assemble_inner(operator,
+                                weight)
             operator = Operator.Dyy_mask
-            self.assemble_inner(operator/self.support.step_vector[1]**2,
-                                np.sqrt(self.vol) * self.interpolation_weights[
-                                    'dyy'])
+            weight =  self.interpolation_weights['dyy'] #/ \
+                             #self.support.step_vector[1]**2
+            print('dyy weight {}'.format(weight))
+            self.assemble_inner(operator,weight)
             operator = Operator.Dzz_mask
-            self.assemble_inner(operator/self.support.step_vector[2]**2,
-                                np.sqrt(self.vol) * self.interpolation_weights[
-                                    'dzz'])
+            weight = self.interpolation_weights['dzz']# / \
+                             #self.support.step_vector[2]**2
+            print('dzz weight {}'.format(weight))
+            self.assemble_inner(operator,weight)
         self.add_norm_constraint(
-            np.sqrt(self.vol) * self.interpolation_weights['npw'])
+            self.interpolation_weights['npw'])
         self.add_gradient_constraint(
-            np.sqrt(self.vol) * self.interpolation_weights['gpw'])
+             self.interpolation_weights['gpw'])
         self.add_vaue_constraint(
-            np.sqrt(self.vol) * self.interpolation_weights['cpw'])
+             self.interpolation_weights['cpw'])
         self.add_tangent_ctr_pts(
-            np.sqrt(self.vol) * self.interpolation_weights['tpw']
+            self.interpolation_weights['tpw']
         )
         self.add_interface_ctr_pts(
-            np.sqrt(self.vol)*self.interpolation_weights['ipw']
+            self.interpolation_weights['ipw']
         )
 
     def copy(self):
@@ -172,7 +182,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             a = self.support.position_to_dof_coefs(points[inside, :3])
             # a*=w
-
+            # a/=np.product(self.support.step_vector)
+            print('val w {}'.format(w))
             self.add_constraints_to_least_squares(a.T * w,
                                                   points[inside, 3] * w,
                                                   idc[inside, :],
@@ -299,7 +310,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # this means we are only constraining direction of grad not the
             # magnitude
             T = self.support.calcul_T(points[inside, :3])
-
+            # T*=np.product(self.support.step_vector)
+            T/=self.support.step_vector[0]
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :] * w,
                                                   points[inside, 3] * w,
@@ -390,7 +402,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         gi[:] = -1
         gi[self.region] = np.arange(0, self.nx)
         idc = gi[idc]
-        inside = ~np.any(idc == -1, axis=1)
+        inside = np.ones(a.shape[0],dtype=bool)#~np.any(idc == -1, axis=1)
+        a[idc==-1] = 0
+        idc[idc==-1] = 0
+        print(a.shape)
         B = np.zeros(global_indexes.shape[1])
         self.add_constraints_to_least_squares(a[inside, :] * w ,
                                               B[inside],

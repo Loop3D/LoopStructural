@@ -102,7 +102,7 @@ class StructuredGrid(BaseStructuredSupport):
 
         """
         # TODO check if inside mesh
-        pos = self.rotate(pos)
+        # pos = self.rotate(pos)
         # calculate local coordinates for positions
         local_x = ((pos[:, 0] - self.origin[None, 0]) % self.step_vector[
             None, 0]) / self.step_vector[None, 0]
@@ -110,7 +110,6 @@ class StructuredGrid(BaseStructuredSupport):
             None, 1]) / self.step_vector[None, 1]
         local_z = ((pos[:, 2] - self.origin[None, 2]) % self.step_vector[
             None, 2]) / self.step_vector[None, 2]
-
         return local_x, local_y, local_z
 
     def position_to_dof_coefs(self, pos):
@@ -324,7 +323,7 @@ class StructuredGrid(BaseStructuredSupport):
         # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
         T = np.zeros((pos.shape[0], 3, 8))
         x, y, z = self.position_to_local_coordinates(pos)
-        # div = self.step_vector[0] * self.step_vector[1] * self.step_vector[2]
+        div = self.step_vector[0] * self.step_vector[1] * self.step_vector[2]
 
         T[:, 0, 0] = -(1 - y) * (1 - z)  # v000
         T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
@@ -352,5 +351,6 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 5] = (1 - x) * y
         T[:, 2, 6] = - x * y
         T[:, 2, 7] = x * y
+        
         return T 
 
