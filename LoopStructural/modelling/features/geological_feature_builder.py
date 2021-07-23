@@ -149,6 +149,7 @@ class GeologicalFeatureInterpolator:
         """
         self._orthogonal_features[feature.name] = [feature,w,region,step,B]
         self._up_to_date = False
+
         
     
     def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
@@ -244,6 +245,7 @@ class GeologicalFeatureInterpolator:
 
         self.data_added = True
         self._up_to_date = False
+
     
     def install_gradient_constraint(self):
         for g in self._orthogonal_features.values():
@@ -262,6 +264,7 @@ class GeologicalFeatureInterpolator:
 
         self._equality_constraints[feature.name] = [feature,region]
         self._up_to_date = False
+
 
     def install_equality_constraints(self):
         for e in self._equality_constraints.values():
@@ -382,6 +385,7 @@ class GeologicalFeatureInterpolator:
         self.interpolator.support.maximum = maximum
         self.interpolator.support.rotation_xy = rotation
         self._up_to_date = False
+
         while self.interpolator.nx < 100:
             self.interpolator.support.step_vector=self.interpolator.support.step_vector*0.9
             

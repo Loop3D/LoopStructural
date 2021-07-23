@@ -11,9 +11,9 @@ from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 class ProcessInputData:
     def __init__(   self, 
-                    contacts, 
-                    contact_orientations, 
-                    stratigraphic_order,
+                    contacts=None, 
+                    contact_orientations = None, 
+                    stratigraphic_order = None,
                     fault_orientations = None, 
                     fault_locations = None, 
                     fault_properties = None, 
@@ -192,11 +192,13 @@ class ProcessInputData:
         # self._fault_network = FaultNetwork(list(fault_network.nodes))
         for e in edges:
             self._fault_network.add_connection(e[0],e[1])
-    
+
+    def fault_interesections_angle(self,fault1,fault2):
+        return np.abs(self.fault_properties.loc[fault1,'dip_dir']-self.fault_properties.loc[fault2,'dip_dir'])
 
     @property
     def fault_names(self):
-        return list(self.fault_properties.keys())
+        return list(self.fault_properties.index)
         
     @property
     def data(self):

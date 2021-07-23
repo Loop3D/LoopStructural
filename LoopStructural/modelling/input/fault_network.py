@@ -29,7 +29,7 @@ class FaultNetwork:
         self.connections[fault1] = fault2
         # self.fault_edge_count[self.fault_edges[fault1]] +=1
         self.fault_edge_count[self.fault_edges[fault2]] +=1
-
+    
     def get_fault_iterators(self):
         """
         Returns
