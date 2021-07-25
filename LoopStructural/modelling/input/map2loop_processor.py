@@ -63,6 +63,5 @@ class Map2LoopProcessor(ProcessInputData):
                 logger.info("Estimating downthrow direction using fault intersections")
             # fault_intersection_angles[f]
             if np.abs(fault_properties.loc[fname,'downthrow_dir'] - fault_properties.loc[fname,'dip_dir']) > 90:
-                # fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]=-fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]
-                self.fault_orientations.loc[fault_orientations['formation'] == f, 'DipDirection'] -= 180#displacements_numpy[
+                self.fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'] -= 180#displacements_numpy[
 #         
