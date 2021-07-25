@@ -76,6 +76,7 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_edges = np.zeros((2,3))
         fault_tips = np.zeros((2,3))
         fault_depth = np.zeros((2,3))
+        data.reset_index(inplace=True)
         if fault_center is not None:
             if minor_axis is not None:
                 fault_edges[0,:] = fault_center[:3]+normal_vector*minor_axis

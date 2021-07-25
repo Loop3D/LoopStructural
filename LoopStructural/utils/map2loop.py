@@ -405,28 +405,29 @@ def build_model(m2l_data,
     #                 else:
     #                     logger.info('Adding abut {} to {}'.format(intersection[0],f))
     #                     model[intersection[0]].add_abutting_fault(model[f])
-    faults = m2l_data['fault_graph']
-    for f in faults.nodes:
-        f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
-        for e in faults.edges(f):
-            data = faults.get_edge_data(*e)
-            f2_norm =  m2l_data['stratigraphic_column']['faults'][e[1]]['FaultNorm']
-            
+    faults = m2l_data.get('fault_graph',None)
+    if faults:
+        for f in faults.nodes:
+            f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+            for e in faults.edges(f):
+                data = faults.get_edge_data(*e)
+                f2_norm =  m2l_data['stratigraphic_column']['faults'][e[1]]['FaultNorm']
+                
 
-            if float(data['angle']) < 30 and np.dot(f1_norm,f2_norm)>0:
-                if model[f] is None or model[e[1]] is None:
-                    logger.error('Fault {} does not exist, cannot be added as splay')
-                elif model[e[1]] is None:
-                    logger.error('Fault {} does not exist')
+                if float(data['angle']) < 30 and np.dot(f1_norm,f2_norm)>0:
+                    if model[f] is None or model[e[1]] is None:
+                        logger.error('Fault {} does not exist, cannot be added as splay')
+                    elif model[e[1]] is None:
+                        logger.error('Fault {} does not exist')
+                    else:
+                        region = model[e[1]].builder.add_splay(model[f])
+                        model[e[1]].splay[model[f].name] = region
                 else:
-                    region = model[e[1]].builder.add_splay(model[f])
-                    model[e[1]].splay[model[f].name] = region
-            else:
-                if model[f] is None or model[e[1]] is None:
-                    continue
+                    if model[f] is None or model[e[1]] is None:
+                        continue
 
-                logger.info('Adding abut {} to {}'.format(e[1],f))
-                model[e[1]].add_abutting_fault(model[f])
+                    logger.info('Adding abut {} to {}'.format(e[1],f))
+                    model[e[1]].add_abutting_fault(model[f])
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
     for i in np.sort(m2l_data['groups']['group number'].unique()):
