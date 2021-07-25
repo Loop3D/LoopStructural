@@ -19,7 +19,6 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -c conda-forge cython numpy scipy scikit-image scikit-learn pyamg flake8 pytest networkx
-          pip install lavavu-osmesa
       - name: Checking formatting of code
         shell: bash -l {0}
         run: |
