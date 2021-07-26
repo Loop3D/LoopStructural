@@ -116,6 +116,7 @@ class ProcessInputData:
             stratigraphic_column['supergroup_{}'.format(i)] = {}
             for g in reversed(sg):
                 stratigraphic_column['supergroup_{}'.format(i)][g] = {'max': val[g]+self.thicknesses[g], 'min': val[g] , 'id': unit_id, 'colour':self.colours[g]}
+                unit_id += 1
         # add faults into the column 
         stratigraphic_column['faults'] = self.fault_properties.to_dict('index')
         return stratigraphic_column
@@ -257,9 +258,9 @@ class ProcessInputData:
         stratigraphic_value = {}
         for sg in self._stratigraphic_order:
             value = 0 #reset for each supergroup
-            for g in sg:
-                stratigraphic_value[g] = value - self._thicknesses[g]
-                value-=self._thicknesses[g]
+            for g in reversed(sg):
+                stratigraphic_value[g] = value #+ self._thicknesses[g]
+                value+=self._thicknesses[g]
         return stratigraphic_value
 
     def _update_feature_names(self,dataframe):
