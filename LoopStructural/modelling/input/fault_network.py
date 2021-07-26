@@ -45,10 +45,28 @@ class FaultNetwork:
         return iters
         
 class FaultNetworkIter:
+    """Iterator object to return the next oldest fault in a fault network following edges
+    """
     def __init__(self,faultname,fault_network):
+        """[summary]
+
+        Parameters
+        ----------
+        faultname : string
+            unique name of the fault
+        fault_network : FaultNetwork
+            the fault network with edges
+        """
         self.faultname = faultname
         self.fault_network = fault_network
     def __next__(self):
+        """next method for iterator
+
+        Returns
+        -------
+        FaultNetworkIterator
+            iterator for the next fault, None if the fault is end of an edge
+        """
         if self.faultname in self.fault_network.connections:
             return FaultNetworkIter(self.fault_network.connections[self.faultname],self.fault_network)
         else:

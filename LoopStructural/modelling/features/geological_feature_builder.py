@@ -147,6 +147,11 @@ class GeologicalFeatureInterpolator:
         The constraint can be applied to a random subset of the tetrahedral elements in the mesh
         in theory this shu
         """
+        try:
+            step = int(step) #cast as int in case it was a float
+        except ValueError:
+            logger.error("Cannot cast {} as integer, setting step to 1".format(step))
+            step = 1
         self._orthogonal_features[feature.name] = [feature,w,region,step,B]
         self._up_to_date = False
 

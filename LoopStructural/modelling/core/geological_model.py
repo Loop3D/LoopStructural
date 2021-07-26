@@ -198,7 +198,7 @@ class GeologicalModel:
                 processor.foliation_properties[foliation_name] = foliation_params
         for fault_name in processor.fault_names:
             for param_name, value in fault_params.items():
-                processor.fault_properties[fault_name][param_name] = value
+                processor.fault_properties.loc[fault_name,param_name] = value
             
        
         model = GeologicalModel.from_processor(processor)

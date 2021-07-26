@@ -7,6 +7,13 @@ from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 class Map2LoopProcessor(ProcessInputData):
     def __init__(self,m2l_directory):
+        """Function to build a ProcessInputData object for using m2l data
+
+        Parameters
+        ----------
+        m2l_directory : path
+            path to a m2l root directory
+        """
         groups = pd.read_csv(m2l_directory + '/tmp/all_sorts_clean.csv', index_col=0)
         orientations = pd.read_csv(m2l_directory + '/output/orientations_clean.csv')
         formation_thickness = pd.read_csv(m2l_directory+'/output/formation_summary_thicknesses.csv')
@@ -30,17 +37,14 @@ class Map2LoopProcessor(ProcessInputData):
         fault_orientations['strike'] = fault_orientations['DipDirection'] + 90
 
             
-#             fault_displacements.loc[fault_displacements.loc[fault_displacements['fname']==fname,'vertical_displacement'].idxmax(),'dip_dir']
-
         fault_locations.rename(columns={'formation':'fault_name'},inplace=True)
         intrusions = None
         fault_stratigraphy = None
         stratigraphic_order = [list(groups['code'])]
         thicknesses = dict(zip(list(formation_thickness['formation']),list(formation_thickness['thickness median'])))
         fault_properties['colour'] = 'black'
-#         orientations['polarity']=1
         if np.sum(orientations['polarity']==0) >0 and np.sum(orientations['polarity']==-1)==0:
-#         contact_orientations['polarity']+=1
+            print('updating polarity')
             orientations.loc[orientations['polarity']==0,'polarity']=-1
         ip = super().__init__( 
                     contacts, 
@@ -57,11 +61,23 @@ class Map2LoopProcessor(ProcessInputData):
                     )
         self.origin = bb[[0,1,4]]
         self.maximum = bb[[2,3,5]]
+
     def process_downthrow_direction(self,fault_properties,fault_orientations):
+        """Helper function to update the dip direction given downthrow direction
+
+        Fault dip direction should point to the hanging wall
+
+        Parameters
+        ----------
+        fault_properties : DataFrame
+            data frame with fault name as index and downthrow direction and average dip_dir as columns 
+        fault_orientations : DataFrame
+            orientation data for the faults
+        """                
         for fname in fault_properties.index:
             if fault_properties.loc[fname,'downthrow_dir'] == 1.0:
                 logger.info("Estimating downthrow direction using fault intersections")
             # fault_intersection_angles[f]
             if np.abs(fault_properties.loc[fname,'downthrow_dir'] - fault_properties.loc[fname,'dip_dir']) > 90:
-                self.fault_orientations.loc[fault_orientations['formation'] == fname, 'DipDirection'] -= 180#displacements_numpy[
+                fault_orientations.loc[fault_orientations['fault_name'] == fname, 'DipDirection'] -= 180#displacements_numpy[
 #         

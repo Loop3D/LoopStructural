@@ -23,14 +23,14 @@ class ProcessInputData:
                     thicknesses = None,
                     colours = None
                 ):
-        """
+        """Object to generate loopstructural input dataset from a geological map
 
         Parameters
         ----------
         contacts : DataFrame
-            x,y,z,formation
+            x,y,z,formation for each contact
         contact_orientations : DataFrame
-            x,y,z,strike,dip, formation
+            x,y,z,strike,dip, formation for each contact  
         stratigraphic_order : nested list
             a nested list e.g. [['a','b','c'],['d','e']]
             a->b->c are the youngest supergroup, d->e older.
@@ -40,8 +40,8 @@ class ProcessInputData:
             data frame with x,y,z,fault_name, by default None
         fault_properties : DataFrame, optional
             dataframe with properties used for building fault
-        fault_graph : graph, optional
-            graph describing fault fault relationship, by default None
+        fault_edges : list, optional
+            intersections between faults, by default None
         intrusions : list, optional
             list containing any intrusions, assumes data in contacts/orientations, by default None
         fault_stratigraphy : graph, optional
@@ -54,6 +54,8 @@ class ProcessInputData:
         Notes
         ------
         
+        The processor will generate the best possible data set given the input data. If you only want to build a fault 
+        network then only fault locations, orientations edges and properties are required
         """
         
         self._stratigraphic_order = stratigraphic_order
