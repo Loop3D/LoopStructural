@@ -671,7 +671,7 @@ class LavaVuModelViewer:
                             kwargs['paint_with'] = LambdaGeologicalFeature(lambda xyz: np.zeros(xyz.shape[0])+f.displacement)
                             #  = feature
                         region = kwargs.pop('region',None) 
-                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name+name_suffix,**kwargs)
+                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour,name=f.name+name_suffix,**kwargs)
                         pbar.update(1)
             logger.info("Adding surfaces took {} seconds".format(time.time()-start))
     def add_vector_field(self, geological_feature, **kwargs):
