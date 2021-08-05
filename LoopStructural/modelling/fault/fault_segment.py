@@ -152,7 +152,8 @@ class FaultSegment:
         """
         v = self.faultframe.features[0].evaluate_value(locations)
         v[~np.isnan(v)] = v[~np.isnan(v)] > 0
-        return v
+        v[np.isnan(v)] = 0
+        return v.astype(bool)
 
     def inside_volume(self,locations):
         v = self.faultframe.evaluate_value(locations)

@@ -743,6 +743,7 @@ class GeologicalModel:
         # for i in range(3):
         #     self._add_unconformity_above(fold_frame[i])
         fold_frame.type = 'structuralframe'
+        fold_frame.builder = fold_frame_builder
         self._add_feature(fold_frame)
         
         return fold_frame
@@ -1272,7 +1273,7 @@ class GeologicalModel:
             fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.4),0)#,
                                             #np.rad2deg(np.arccos(np.dot(fault_normal_vector[:2],np.array([0,1])))))
         if 'splay' in kwargs and 'splayregion' in kwargs:
-            fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
+            fault_frame_builder.add_splay(kwargs['splay'],kwargs['splayregion'])
 
         kwargs['tol'] = tol
         fault_frame = fault_frame_builder.build(**kwargs)
