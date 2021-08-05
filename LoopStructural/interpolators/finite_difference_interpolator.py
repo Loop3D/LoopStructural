@@ -112,17 +112,17 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                              4#(4*self.support.step_vector[0]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
-            weight = self.interpolation_weights['dxx'] #\
-                             #/ self.support.step_vector[0]**2
+            weight = self.interpolation_weights['dxx'] \
+                             / 1#self.support.step_vector[0]**2
             self.assemble_inner(operator,
                                 weight)
             operator = Operator.Dyy_mask
-            weight =  self.interpolation_weights['dyy'] #/ \
-                             #self.support.step_vector[1]**2
+            weight =  self.interpolation_weights['dyy'] / \
+                             1#self.support.step_vector[1]**2
             self.assemble_inner(operator,weight)
             operator = Operator.Dzz_mask
-            weight = self.interpolation_weights['dzz']# / \
-                             #self.support.step_vector[2]**2
+            weight = self.interpolation_weights['dzz'] / \
+                             1#self.support.step_vector[2]**2
             self.assemble_inner(operator,weight)
         self.add_norm_constraint(
             self.interpolation_weights['npw'])
@@ -304,15 +304,16 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # magnitude
             T = self.support.calcul_T(points[inside, :3])
             # T*=np.product(self.support.step_vector)
+            # T/=self.support.step_vector[0]
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :] * w,
-                                                  points[inside, 3] * w,
+                                                  points[inside, 3] * w * self.support.step_vector[0],
                                                   idc[inside, :], name='norm')
             self.add_constraints_to_least_squares(T[:, 1, :] * w,
-                                                  points[inside, 4] * w,
+                                                  points[inside, 4] * w * self.support.step_vector[0],
                                                   idc[inside, :], name='norm')
             self.add_constraints_to_least_squares(T[:, 2, :] * w,
-                                                  points[inside, 5] * w,
+                                                  points[inside, 5] * w * self.support.step_vector[0],
                                                   idc[inside, :], name='norm')
 
     def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
