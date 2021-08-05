@@ -351,6 +351,6 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 5] = (1 - x) * y
         T[:, 2, 6] = - x * y
         T[:, 2, 7] = x * y
-        
+        T/=self.step_vector[0]
         return T 
 

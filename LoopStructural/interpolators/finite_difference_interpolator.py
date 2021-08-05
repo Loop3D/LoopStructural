@@ -304,7 +304,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # magnitude
             T = self.support.calcul_T(points[inside, :3])
             # T*=np.product(self.support.step_vector)
-            T/=self.support.step_vector[0]
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :] * w,
                                                   points[inside, 3] * w,
