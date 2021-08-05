@@ -214,7 +214,7 @@ class ProcessInputData:
         if self.fault_orientations is not None:
             dataframes.append(self.fault_orientations)
         if self.fault_locations is not None:
-            dataframes.append(self.fault_orientations)
+            dataframes.append(self.fault_locations)
         data = pd.concat(dataframes)
         data.reset_index(inplace=True)
         return data
