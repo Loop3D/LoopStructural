@@ -25,10 +25,28 @@ def test_evaluate_value():
 
 def test_evaluate_gradient():
     grid = StructuredGrid()
-    vector = np.mean(grid.evaluate_gradient(grid.barycentre(),grid.nodes[:,1]),axis=0)
-    # vector/=np.linalg.norm(vector)
-    assert np.sum(vector-np.array([0,grid.step_vector[1],0])) == 0
-    
+    # test by setting the scalar field to the y coordinate
+    vector = grid.evaluate_gradient(grid.barycentre(),grid.nodes[:,1])
+    assert np.sum(vector-np.array([0,1,0])) == 0
+
+    # same test but for a bigger grid, making sure scaling for cell is ok    
+    grid = StructuredGrid(step_vector=np.array([100,100,100]))
+    vector = grid.evaluate_gradient(grid.barycentre(),grid.nodes[:,1])
+    assert np.sum(vector-np.array([0,1,0])) == 0
+
+def test_evaluate_gradient2():
+    # this test is the same as above but we will use a random vector
+    for i in range(5):
+        step = np.random.uniform(0,100)
+        grid = StructuredGrid(step_vector=np.array([step,step,step]))
+
+        # define random vector
+        n = np.random.random(3)
+        n /= np.linalg.norm(n)
+        distance = n[0]*grid.nodes[:,0]+n[1]*grid.nodes[:,1]+n[2]*grid.nodes[:,2]
+        vector = grid.evaluate_gradient(np.random.uniform(1,8,size=(100,3)),distance)
+        assert np.all(np.isclose(np.sum(vector-n[None,:],axis=1),0)) == True
+    assert i == 4
 def test_get_element():
     grid = StructuredGrid()
     point = grid.barycentre()[[0],:]
