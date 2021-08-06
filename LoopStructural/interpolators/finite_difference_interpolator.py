@@ -101,15 +101,15 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             
             operator = Operator.Dxy_mask
             weight =  self.interpolation_weights['dxy'] / \
-                             4#(4*self.support.step_vector[0]*self.support.step_vector[1])
+                             1#(4*self.support.step_vector[0]*self.support.step_vector[1])
             self.assemble_inner(operator, weight )
             operator = Operator.Dyz_mask
             weight = self.interpolation_weights['dyz'] / \
-                             4#(4*self.support.step_vector[1]*self.support.step_vector[2])
+                             1#(4*self.support.step_vector[1]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxz_mask
             weight =  self.interpolation_weights['dxz'] / \
-                             4#(4*self.support.step_vector[0]*self.support.step_vector[2])
+                             1#(4*self.support.step_vector[0]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
             weight = self.interpolation_weights['dxx'] \
@@ -307,13 +307,13 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # T/=self.support.step_vector[0]
             w /= 3
             self.add_constraints_to_least_squares(T[:, 0, :] * w,
-                                                  points[inside, 3] * w * self.support.step_vector[0],
+                                                  points[inside, 3] * w ,
                                                   idc[inside, :], name='norm')
             self.add_constraints_to_least_squares(T[:, 1, :] * w,
-                                                  points[inside, 4] * w * self.support.step_vector[0],
+                                                  points[inside, 4] * w ,
                                                   idc[inside, :], name='norm')
             self.add_constraints_to_least_squares(T[:, 2, :] * w,
-                                                  points[inside, 5] * w * self.support.step_vector[0],
+                                                  points[inside, 5] * w ,
                                                   idc[inside, :], name='norm')
 
     def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
@@ -395,9 +395,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         gi[:] = -1
         gi[self.region] = np.arange(0, self.nx)
         idc = gi[idc]
-        inside = np.ones(a.shape[0],dtype=bool)#~np.any(idc == -1, axis=1)
-        a[idc==-1] = 0
-        idc[idc==-1] = 0
+        inside = ~np.any(idc == -1, axis=1)#np.ones(a.shape[0],dtype=bool)#
+        # a[idc==-1] = 0
+        # idc[idc==-1] = 0
         B = np.zeros(global_indexes.shape[1])
         self.add_constraints_to_least_squares(a[inside, :] * w ,
                                               B[inside],

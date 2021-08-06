@@ -333,7 +333,7 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 0, 6] = y * (1 - z)
         T[:, 0, 7] = y * z
 
-        T[:, 1, 0] = - (1 - x) * (1 - z)
+        T[:, 1, 0] =  (1 - x) * (1 - z)
         T[:, 1, 1] = - x * (1 - z)
         T[:, 1, 2] = (1 - x) * (1 - z)
         T[:, 1, 3] = -(1 - x) * z

@@ -202,7 +202,7 @@ class GeologicalModel:
             
        
         model = GeologicalModel.from_processor(processor)
-        return model
+        return model, processor
  
 
 
