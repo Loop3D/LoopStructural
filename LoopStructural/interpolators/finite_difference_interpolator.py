@@ -79,17 +79,17 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         for key in kwargs:
             self.up_to_date = False
             if 'regularisation' in kwargs:
-                self.interpolation_weights['dxy'] = kwargs[
+                self.interpolation_weights['dxy'] = 0.1*kwargs[
                                                         'regularisation'] 
-                self.interpolation_weights['dyz'] = kwargs[
+                self.interpolation_weights['dyz'] = 0.1*kwargs[
                                                         'regularisation'] 
-                self.interpolation_weights['dxz'] = kwargs[
+                self.interpolation_weights['dxz'] = 0.1*kwargs[
                                                         'regularisation'] 
-                self.interpolation_weights['dxx'] = kwargs[
+                self.interpolation_weights['dxx'] = 0.1*kwargs[
                                                         'regularisation'] 
-                self.interpolation_weights['dyy'] = kwargs[
+                self.interpolation_weights['dyy'] = 0.1*kwargs[
                                                         'regularisation'] 
-                self.interpolation_weights['dzz'] = kwargs[
+                self.interpolation_weights['dzz'] = 0.1*kwargs[
                                                         'regularisation'] 
             self.interpolation_weights[key] = kwargs[key]
         # if we want to define the operators manually

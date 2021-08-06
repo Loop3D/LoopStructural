@@ -324,7 +324,7 @@ class StructuredGrid(BaseStructuredSupport):
         T = np.zeros((pos.shape[0], 3, 8))
         x, y, z = self.position_to_local_coordinates(pos)
     
-        T[:, 0, 0] = -(1 - y) * (1 - z)  # v000
+        T[:, 0, 0] = (1 - z) * (y- 1)  # v000
         T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
         T[:, 0, 2] = -y * (1 - z)  # (pos[:, 1] - y[:, 0]) / div
         T[:, 0, 3] = -(1 - y) * z  # (pos[:, 1] - y[:, 1]) / div
@@ -333,7 +333,7 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 0, 6] = y * (1 - z)
         T[:, 0, 7] = y * z
 
-        T[:, 1, 0] =  (1 - x) * (1 - z)
+        T[:, 1, 0] =  (x - 1) * (1 - z)
         T[:, 1, 1] = - x * (1 - z)
         T[:, 1, 2] = (1 - x) * (1 - z)
         T[:, 1, 3] = -(1 - x) * z
@@ -350,6 +350,6 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 5] = (1 - x) * y
         T[:, 2, 6] = - x * y
         T[:, 2, 7] = x * y
-        # T/=self.step_vector[0]
+        T/=self.step_vector[0]
         return T 
 
