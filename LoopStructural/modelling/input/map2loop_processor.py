@@ -6,7 +6,7 @@ import networkx
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 class Map2LoopProcessor(ProcessInputData):
-    def __init__(self,m2l_directory):
+    def __init__(self,m2l_directory,use_thickness=None):
         """Function to build a ProcessInputData object for using m2l data
 
         Parameters
@@ -57,7 +57,8 @@ class Map2LoopProcessor(ProcessInputData):
                     fault_edges=list(fault_graph.edges),
                     colours=dict(zip(groups['code'],groups['colour'])),
                     fault_stratigraphy=None,
-                    intrusions=None
+                    intrusions=None,
+                    use_thickness=use_thickness
                     )
         self.origin = bb[[0,1,4]]
         self.maximum = bb[[2,3,5]]

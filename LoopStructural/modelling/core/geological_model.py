@@ -174,7 +174,7 @@ class GeologicalModel:
         return self.feature_name_index.keys()
         
     @classmethod
-    def from_map2loop_directory(cls, m2l_directory,foliation_params={},fault_params={},**kwargs):
+    def from_map2loop_directory(cls, m2l_directory,foliation_params={},fault_params={},use_thickness=True,**kwargs):
         """Alternate constructor for a geological model using m2l output
 
         Uses the information saved in the map2loop files to build a geological model.
@@ -192,14 +192,14 @@ class GeologicalModel:
             the created geological model and a dictionary of the map2loop data
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor 
-        processor=Map2LoopProcessor(m2l_directory)
+        processor=Map2LoopProcessor(m2l_directory,use_thickness)
         for foliation_name in processor.stratigraphic_column.keys():
             if foliation_name != 'faults':
                 processor.foliation_properties[foliation_name] = foliation_params
         for fault_name in processor.fault_names:
             for param_name, value in fault_params.items():
                 processor.fault_properties.loc[fault_name,param_name] = value
-            
+    
        
         model = GeologicalModel.from_processor(processor)
         return model, processor
@@ -539,7 +539,7 @@ class GeologicalModel:
         # faults but also generally a good
         # idea to avoid boundary problems
         # buffer = bb[1, :]
-        buffer = (bb[1,:]-bb[0,:])*buffer
+        buffer = (np.min(bb[1,:]-bb[0,:]))*buffer
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         box_vol = (bb[1, 0]-bb[0, 0]) * (bb[1, 1]-bb[0, 1]) * (bb[1, 2]-bb[0, 2])

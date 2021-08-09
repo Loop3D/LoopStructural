@@ -21,7 +21,8 @@ class ProcessInputData:
                     intrusions = None,
                     fault_stratigraphy = None,
                     thicknesses = None,
-                    colours = None
+                    colours = None,
+                    use_thickness = None
                 ):
         """Object to generate loopstructural input dataset from a geological map
 
@@ -50,7 +51,8 @@ class ProcessInputData:
             dictionary with stratigraphic thicknesses, by default None
         colours : dict, optional
             dictionary with stratigraphic unit colours, by default None
-
+        use_thickness : bool, optional
+            assign value to stratigraphic unit or use interface constraints, by default None
         Notes
         ------
         
@@ -60,9 +62,10 @@ class ProcessInputData:
         
         self._stratigraphic_order = stratigraphic_order
         self._thicknesses = thicknesses
+        self._use_thickness = use_thickness
         if self.thicknesses is None:
             self._use_thickness = False
-        else:
+        if self._use_thickness is None:
             self._use_thickness = True
         self._vector_scale = 1.
         self._gradient = False
