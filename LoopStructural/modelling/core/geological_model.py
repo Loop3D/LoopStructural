@@ -222,7 +222,8 @@ class GeologicalModel:
                 i = i.__next__()
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
-                model.create_and_add_foliation(s,**processor.foliation_properties[s])
+                f = model.create_and_add_foliation(s,**processor.foliation_properties[s])
+                model.add_unconformity(f,0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
         # for 

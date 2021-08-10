@@ -40,7 +40,17 @@ class Map2LoopProcessor(ProcessInputData):
         fault_locations.rename(columns={'formation':'fault_name'},inplace=True)
         intrusions = None
         fault_stratigraphy = None
-        stratigraphic_order = [list(groups['code'])]
+        stratigraphic_order = []
+
+        with open(m2l_directory + '/tmp/super_groups.csv') as f:
+            for line in f:
+                tmp = []
+                for g in line.strip(',\n').split(','):
+                    
+                    tmp.extend(groups.loc[groups['group']==g,'code'].to_list())
+                stratigraphic_order.append(tmp)
+
+        # stratigraphic_order = [list(groups['code'])]
         thicknesses = dict(zip(list(formation_thickness['formation']),list(formation_thickness['thickness median'])))
         fault_properties['colour'] = 'black'
         if np.sum(orientations['polarity']==0) >0 and np.sum(orientations['polarity']==-1)==0:
