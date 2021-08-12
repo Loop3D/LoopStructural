@@ -26,9 +26,9 @@ class FaultNetwork:
         fault2 : string
             name of older fault
         """
-        self.connections[fault1] = fault2
+        self.connections[fault2] = fault1
         # self.fault_edge_count[self.fault_edges[fault1]] +=1
-        self.fault_edge_count[self.fault_edges[fault2]] +=1
+        self.fault_edge_count[self.fault_edges[fault1]] +=1
     
     def get_fault_iterators(self):
         """
