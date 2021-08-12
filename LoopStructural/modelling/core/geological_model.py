@@ -174,7 +174,7 @@ class GeologicalModel:
         return self.feature_name_index.keys()
         
     @classmethod
-    def from_map2loop_directory(cls, m2l_directory,foliation_params={},fault_params={},use_thickness=True,**kwargs):
+    def from_map2loop_directory(cls, m2l_directory,foliation_params={},fault_params={},use_thickness=True,vector_scale=1,**kwargs):
         """Alternate constructor for a geological model using m2l output
 
         Uses the information saved in the map2loop files to build a geological model.
@@ -193,12 +193,21 @@ class GeologicalModel:
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor 
         processor=Map2LoopProcessor(m2l_directory,use_thickness)
+        processor.vector_scale = vector_scale
         for foliation_name in processor.stratigraphic_column.keys():
             if foliation_name != 'faults':
-                processor.foliation_properties[foliation_name] = foliation_params
+                if foliation_name in foliation_params.keys():
+                    processor.foliation_properties[foliation_name] = foliation_params[foliation_name]
+                else:
+                    processor.foliation_properties[foliation_name] = foliation_params
+
         for fault_name in processor.fault_names:
-            for param_name, value in fault_params.items():
-                processor.fault_properties.loc[fault_name,param_name] = value
+            if fault_name in fault_params.keys():
+                for param_name, value in fault_params[fault_name].items():
+                    processor.fault_properties.loc[fault_name,param_name] = value
+            else:
+                for param_name, value in fault_params.items():
+                    processor.fault_properties.loc[fault_name,param_name] = value
     
        
         model = GeologicalModel.from_processor(processor)
@@ -223,7 +232,7 @@ class GeologicalModel:
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
                 f = model.create_and_add_foliation(s,**processor.foliation_properties[s])
-                model.add_unconformity(f,0)
+                # model.add_unconformity(f,0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
         # for 
@@ -546,7 +555,7 @@ class GeologicalModel:
         box_vol = (bb[1, 0]-bb[0, 0]) * (bb[1, 1]-bb[0, 1]) * (bb[1, 2]-bb[0, 2])
         if interpolatortype == "PLI":
             if element_volume is None:
-                nelements /= 5
+                # nelements /= 5
                 element_volume = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
@@ -710,7 +719,7 @@ class GeologicalModel:
         self._add_feature(series_feature)
         return series_feature
         
-    def create_and_add_fold_frame(self, foldframe_data, **kwargs):
+    def create_and_add_fold_frame(self, foldframe_data, tol=None,**kwargs):
         """
         Parameters
         ----------
@@ -726,6 +735,8 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append({'feature_type': 'fold_frame', 'feature_name': foldframe_data, **kwargs})
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
@@ -740,7 +751,7 @@ class GeologicalModel:
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
 
-        fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
+        fold_frame = fold_frame_builder.build(frame=FoldFrame, tol=tol, **kwargs)
         # for i in range(3):
         #     self._add_unconformity_above(fold_frame[i])
         fold_frame.type = 'structuralframe'
@@ -749,7 +760,7 @@ class GeologicalModel:
         
         return fold_frame
 
-    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, svario=True,
+    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, svario=True, tol=None,
                                         **kwargs):
         """
         Create a folded foliation field from data and a fold frame
@@ -771,6 +782,8 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append(
             {'feature_type': 'fold_foliation', 'feature_name': foliation_data, 'fold_frame': fold_frame, **kwargs})
         if fold_frame is None:
@@ -826,6 +839,7 @@ class GeologicalModel:
         # build feature
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
+        kwargs['tol'] = tol
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
@@ -838,7 +852,7 @@ class GeologicalModel:
         return series_feature
 
     def create_and_add_folded_fold_frame(self, fold_frame_data,
-                                         fold_frame=None,
+                                         fold_frame=None, tol=None,
                                          **kwargs):
         """
 
@@ -859,6 +873,8 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append(
             {'feature_type': 'folded_fold_frame', 'feature_name': fold_frame_data, 'fold_frame': fold_frame, **kwargs})
         if fold_frame is None:
@@ -924,7 +940,7 @@ class GeologicalModel:
         self._add_faults(fold_frame_builder[0])
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
-        fold_frame = fold_frame_builder.build(**kwargs, frame=FoldFrame)
+        fold_frame = fold_frame_builder.build(**kwargs, tol=tol,frame=FoldFrame)
         fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region
         # for i in range(3):
