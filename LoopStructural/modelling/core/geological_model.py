@@ -232,7 +232,7 @@ class GeologicalModel:
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
                 f = model.create_and_add_foliation(s,**processor.foliation_properties[s])
-                # model.add_unconformity(f,0)
+                model.add_unconformity(f,0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
         # for 
@@ -821,7 +821,7 @@ class GeologicalModel:
             fold.fold_axis_rotation = fold_axis_rotation
         # give option of passing own fold limb rotation function
         flr, fld = fold_frame.calculate_fold_limb_rotation(
-            series_builder)
+            series_builder, fold.get_fold_axis_orientation)
         fold_limb_rotation = FoldRotationAngle(flr, fld,svario=svario)
         l_wl = kwargs.get("limb_wl", None)
         if 'limb_function' in kwargs:
