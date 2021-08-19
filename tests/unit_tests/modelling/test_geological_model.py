@@ -26,20 +26,20 @@ def test_get_interpolator():
 def test_element_number_PLI():
     model = GeologicalModel([0,0,0],[5,5,5])
     interpolator = model.get_interpolator(interpolatortype='PLI',nelements=1e5,buffer=0.2)
-    assert interpolator.support.n_elements - 1e5 < 1e3
+    assert np.log10(interpolator.support.n_nodes) -5 < 1
     interpolator = model.get_interpolator(interpolatortype='PLI',nelements=1e6,buffer=0.2)
-    assert interpolator.support.n_elements - 1e6 < 1e3
+    assert np.log10(interpolator.support.n_nodes) - 6 < 1
     interpolator = model.get_interpolator(interpolatortype='PLI',nelements=3e4,buffer=0.2)
-    assert interpolator.support.n_elements - 3e4 < 1e3
+    assert np.log10(interpolator.support.n_nodes) - 4 < 1 
 
 def test_element_number_FDI():
     model = GeologicalModel([0,0,0],[5,5,5])
     interpolator = model.get_interpolator(interpolatortype='FDI',nelements=1e5,buffer=0.2)
-    assert interpolator.support.n_elements - 1e5 < 1e3
+    assert np.log10(interpolator.support.n_nodes) -5 < 1
     interpolator = model.get_interpolator(interpolatortype='FDI',nelements=1e6,buffer=0.2)
-    assert interpolator.support.n_elements - 1e6 < 1e3
+    assert np.log10(interpolator.support.n_nodes) - 6 < 1
     interpolator = model.get_interpolator(interpolatortype='FDI',nelements=3e4,buffer=0.2)
-    assert interpolator.support.n_elements - 3e4 < 1e3
+    assert np.log10(interpolator.support.n_nodes) - 4 < 1 
     
 def test_buffer():
     model = GeologicalModel([0,0,0],[5,5,5],rescale=True)
