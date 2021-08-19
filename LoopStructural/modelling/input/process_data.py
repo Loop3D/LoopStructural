@@ -29,9 +29,9 @@ class ProcessInputData:
         Parameters
         ----------
         contacts : DataFrame
-            x,y,z,formation for each contact
+            x,y,z,name for each contact
         contact_orientations : DataFrame
-            x,y,z,strike,dip, formation for each contact  
+            x,y,z,strike,dip,name for each contact  
         stratigraphic_order : nested list
             a nested list e.g. [['a','b','c'],['d','e']]
             a->b->c are the youngest supergroup, d->e older.
@@ -278,7 +278,7 @@ class ProcessInputData:
             dataframe['feature_name'] = None
             for i, sg in enumerate(self._stratigraphic_order):
                 for g in sg:
-                    dataframe.loc[dataframe['formation']==g,'feature_name'] = 'supergroup_{}'.format(i)
+                    dataframe.loc[dataframe['name']==g,'feature_name'] = 'supergroup_{}'.format(i)
     
     @property
     def contacts(self):
@@ -303,7 +303,7 @@ class ProcessInputData:
         if self._use_thickness:
             contacts['val'] = np.nan
             for k, v in self._stratigraphic_value().items():
-                contacts.loc[contacts['formation'] == k,'val'] = v
+                contacts.loc[contacts['name'] == k,'val'] = v
 
             self._contacts = contacts.loc[~np.isnan(contacts['val']),['X','Y','Z','feature_name','val']]
         if not self._use_thickness:
@@ -311,7 +311,7 @@ class ProcessInputData:
             for sg in self._stratigraphic_order:
                 interface_val = 0
                 for g in reversed(sg):
-                    contacts.loc[contacts['formation'] == g,'interface'] = interface_val
+                    contacts.loc[contacts['name'] == g,'interface'] = interface_val
                     interface_val+=1
             self._contacts = contacts.loc[~np.isnan(contacts['interface']),['X','Y','Z','feature_name','interface']]
 
@@ -341,6 +341,7 @@ class ProcessInputData:
         if 'polarity' not in contact_orientations.columns:
             contact_orientations['polarity'] = 1.
         contact_orientations = contact_orientations.copy()
+        
         contact_orientations['strike'] = contact_orientations['azimuth'] - 90
         contact_orientations['nx'] = np.nan
         contact_orientations['ny'] = np.nan
