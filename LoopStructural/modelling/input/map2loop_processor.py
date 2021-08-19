@@ -54,7 +54,6 @@ class Map2LoopProcessor(ProcessInputData):
         thicknesses = dict(zip(list(formation_thickness['formation']),list(formation_thickness['thickness median'])))
         fault_properties['colour'] = 'black'
         if np.sum(orientations['polarity']==0) >0 and np.sum(orientations['polarity']==-1)==0:
-            print('updating polarity')
             orientations.loc[orientations['polarity']==0,'polarity']=-1
         ip = super().__init__( 
                     contacts, 
@@ -91,4 +90,5 @@ class Map2LoopProcessor(ProcessInputData):
             # fault_intersection_angles[f]
             if np.abs(fault_properties.loc[fname,'downthrow_dir'] - fault_properties.loc[fname,'dip_dir']) > 90:
                 fault_orientations.loc[fault_orientations['fault_name'] == fname, 'DipDirection'] -= 180#displacements_numpy[
+                fault_properties.loc[fname,'dip_dir']-=180
 #         
