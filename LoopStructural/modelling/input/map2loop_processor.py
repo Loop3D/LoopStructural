@@ -35,20 +35,43 @@ class Map2LoopProcessor(ProcessInputData):
         fault_properties = fault_dimensions.rename(columns={'Fault':'fault_name','InfluenceDistance':'minor_axis','VerticalRadius':'intermediate_axis','HorizontalRadius':'major_axis'})
         self.process_downthrow_direction(fault_properties,fault_orientations)
         fault_orientations['strike'] = fault_orientations['DipDirection'] + 90
-
+        fault_edge_properties = []
+        for e in fault_graph.edges():
+            fault_edge_properties.append({'angle':fault_graph.get_edge_data(*e)['angle']})
             
         fault_locations.rename(columns={'formation':'fault_name'},inplace=True)
+        contacts.rename(columns={'formation':'name'},inplace=True)
+        orientations.rename(columns={'formation':'name'},inplace=True)
         intrusions = None
         fault_stratigraphy = None
-        stratigraphic_order = []
+        # make sure supergroups are in the groups dataframe 
 
-        with open(m2l_directory + '/tmp/super_groups.csv') as f:
+        supergroups = {}
+        with open('test3' + '/tmp/super_groups.csv') as f:
             for line in f:
-                tmp = []
+            
+                i = 0
                 for g in line.strip(',\n').split(','):
-                    
-                    tmp.extend(groups.loc[groups['group']==g,'code'].to_list())
-                stratigraphic_order.append(tmp)
+                    supergroups[g] = 'supergroup_{}'.format(i)
+                i+=1
+        if 'supergroup' not in groups.columns:
+            groups['supergroup']='none'
+            for i in groups.index:
+                groups.loc[i,'supergroup'] = supergroups[groups.loc[i,'group']]
+
+        # create an ordered list of stratigraphic groups for interpolation,
+        # name of the scalar field will be the name in 'supergroups' column
+        stratigraphic_order = []
+        supergroup = groups.loc[0,'supergroup']
+        tmp = []
+        for i in groups.index:
+            if supergroup != groups.loc[i,'supergroup']:
+                stratigraphic_order.append((supergroup,tmp))
+                supergroup = groups.loc[i,'supergroup']
+                tmp = []
+            tmp.append(groups.loc[i,'code'])
+            
+        stratigraphic_order.append((supergroup,tmp))
 
         # stratigraphic_order = [list(groups['code'])]
         thicknesses = dict(zip(list(formation_thickness['formation']),list(formation_thickness['thickness median'])))
@@ -67,7 +90,8 @@ class Map2LoopProcessor(ProcessInputData):
                     colours=dict(zip(groups['code'],groups['colour'])),
                     fault_stratigraphy=None,
                     intrusions=None,
-                    use_thickness=use_thickness
+                    use_thickness=use_thickness,
+                    fault_edge_properties=fault_edge_properties
                     )
         self.origin = bb[[0,1,4]]
         self.maximum = bb[[2,3,5]]

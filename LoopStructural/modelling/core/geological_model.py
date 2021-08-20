@@ -225,10 +225,22 @@ class GeologicalModel:
     def from_processor(cls, processor):
         model = GeologicalModel(processor.origin,processor.maximum)
         model.data = processor.data
-        for i in processor.fault_network.get_fault_iterators():
-            while i is not None:
-                model.create_and_add_fault(i.faultname,**processor.fault_properties.to_dict('index')[i.faultname],faultfunction='BaseFault')
-                i = i.__next__()
+        for i in processor.fault_network.faults:
+            model.create_and_add_fault(i,**processor.fault_properties.to_dict('index')[i],faultfunction='BaseFault')
+        for edge, properties in processor.fault_network.fault_edge_properties.items():
+            if model[edge[1]] is None or model[edge[0]] is None:
+                logger.warning("cannot add splay {} or {} are not in the model".format(edge[1],edge[0]))
+                continue
+            splay = False
+            if 'angle' in properties:
+                if float(properties['angle']) < 30 and np.abs(processor.stratigraphic_column['faults'][edge[0]]['dip_dir']-processor.stratigraphic_column['faults'][edge[1]]['dip_dir']) <90:
+                    # splay
+                    region = model[edge[1]].builder.add_splay(model[edge[0]])
+
+                    model[edge[1]].splay[model[edge[0]].name] = region
+                    splay = True
+        if splay == False:
+            model[edge[1]].add_abutting_fault(model[edge[0]])
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
                 f = model.create_and_add_foliation(s,**processor.foliation_properties[s])

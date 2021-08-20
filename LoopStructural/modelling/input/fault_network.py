@@ -12,11 +12,11 @@ class FaultNetwork:
         self.faults = faults
         self.fault_edge_count = np.zeros(len(faults),dtype=int)
         self.fault_edges = dict(zip(faults,np.arange(len(faults),dtype=int)))
-
+        self.fault_edge_properties = {}
         # connections 
         self.connections = {}
 
-    def add_connection(self,fault1,fault2):
+    def add_connection(self,fault1,fault2,properties=None):
         """fault 1 is younger than fault2
 
         Parameters
@@ -27,9 +27,10 @@ class FaultNetwork:
             name of older fault
         """
         self.connections[fault2] = fault1
+        self.fault_edge_properties[(fault1,fault2)] = properties
         # self.fault_edge_count[self.fault_edges[fault1]] +=1
         self.fault_edge_count[self.fault_edges[fault1]] +=1
-    
+
     def get_fault_iterators(self):
         """
         Returns

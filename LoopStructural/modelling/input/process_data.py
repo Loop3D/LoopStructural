@@ -22,7 +22,8 @@ class ProcessInputData:
                     fault_stratigraphy = None,
                     thicknesses = None,
                     colours = None,
-                    use_thickness = None
+                    use_thickness = None,
+                    fault_edge_properties=None,
                 ):
         """Object to generate loopstructural input dataset from a geological map
 
@@ -84,7 +85,7 @@ class ProcessInputData:
         self._fault_properties = None
         self.fault_properties = fault_properties
         self._fault_network = None
-        self.set_fault_network(fault_edges)# = fault_graph
+        self.set_fault_network(fault_edges,fault_edge_properties)# = fault_graph
         self._fault_stratigraphy = fault_stratigraphy
         self._intrusions = intrusions
         self._thicknesses = thicknesses
@@ -115,10 +116,10 @@ class ProcessInputData:
         # add stratigraphy into the column
         unit_id = 0
         val = self._stratigraphic_value()
-        for i, sg in enumerate(self._stratigraphic_order):
-            stratigraphic_column['supergroup_{}'.format(i)] = {}
+        for name, sg in self._stratigraphic_order:
+            stratigraphic_column[name] = {}
             for g in reversed(sg):
-                stratigraphic_column['supergroup_{}'.format(i)][g] = {'max': val[g]+self.thicknesses[g], 'min': val[g] , 'id': unit_id, 'colour':self.colours[g]}
+                stratigraphic_column[name][g] = {'max': val[g]+self.thicknesses[g], 'min': val[g] , 'id': unit_id, 'colour':self.colours[g]}
                 unit_id += 1
         # add faults into the column 
         stratigraphic_column['faults'] = self.fault_properties.to_dict('index')
@@ -190,14 +191,16 @@ class ProcessInputData:
     def fault_network(self):
         return self._fault_network
 
-    def set_fault_network(self, edges):
+    def set_fault_network(self, edges,edge_properties=None):
         if self._fault_network is None:
             self._fault_network = FaultNetwork(list(self.fault_properties.index))
+        if edge_properties is None:
+            edge_properties = [{} for i in range(len(edges))]
         if edges is None:
             return
         # self._fault_network = FaultNetwork(list(fault_network.nodes))
-        for e in edges:
-            self._fault_network.add_connection(e[0],e[1])
+        for i, e in enumerate(edges):
+            self._fault_network.add_connection(e[0],e[1],edge_properties[i])
 
     def fault_interesections_angle(self,fault1,fault2):
         return np.abs(self.fault_properties.loc[fault1,'dip_dir']-self.fault_properties.loc[fault2,'dip_dir'])
@@ -259,7 +262,7 @@ class ProcessInputData:
             keys are unit name, value is cumulative thickness/implicit function value
         """
         stratigraphic_value = {}
-        for sg in self._stratigraphic_order:
+        for name, sg in self._stratigraphic_order:
             value = 0 #reset for each supergroup
             for g in reversed(sg):
                 stratigraphic_value[g] = value #+ self._thicknesses[g]
@@ -276,9 +279,9 @@ class ProcessInputData:
                 the dataframe to add the new column to
             """
             dataframe['feature_name'] = None
-            for i, sg in enumerate(self._stratigraphic_order):
+            for name, sg in self._stratigraphic_order:
                 for g in sg:
-                    dataframe.loc[dataframe['name']==g,'feature_name'] = 'supergroup_{}'.format(i)
+                    dataframe.loc[dataframe['name']==g,'feature_name'] = name
     
     @property
     def contacts(self):
