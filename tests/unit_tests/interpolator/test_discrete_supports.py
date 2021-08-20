@@ -36,7 +36,8 @@ def test_evaluate_gradient():
 
 def test_evaluate_gradient2():
     # this test is the same as above but we will use a random vector
-    for i in range(5):
+    np.random.seed(0)
+    for i in range(10):
         step = np.random.uniform(0,100)
         grid = StructuredGrid(step_vector=np.array([step,step,step]))
 
@@ -46,7 +47,7 @@ def test_evaluate_gradient2():
         distance = n[0]*grid.nodes[:,0]+n[1]*grid.nodes[:,1]+n[2]*grid.nodes[:,2]
         vector = grid.evaluate_gradient(np.random.uniform(1,8,size=(100,3)),distance)
         assert np.all(np.isclose(np.sum(vector-n[None,:],axis=1),0)) == True
-    assert i == 4
+    assert i == 9
 def test_get_element():
     grid = StructuredGrid()
     point = grid.barycentre()[[0],:]
