@@ -47,7 +47,7 @@ class Map2LoopProcessor(ProcessInputData):
         # make sure supergroups are in the groups dataframe 
 
         supergroups = {}
-        with open('test3' + '/tmp/super_groups.csv') as f:
+        with open(m2l_directory + '/tmp/super_groups.csv') as f:
             for line in f:
             
                 i = 0
