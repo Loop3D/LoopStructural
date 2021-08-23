@@ -805,7 +805,7 @@ class LavaVuModelViewer:
         p = self.lv.points(name, **kwargs)
         p.vertices(points)
 
-    def add_vector_data(self, position, vector, name, **kwargs):
+    def add_vector_data(self, position, vector, name, normalise=True, **kwargs):
         """
 
         Plot point data with a vector component into the lavavu viewer
@@ -825,7 +825,8 @@ class LavaVuModelViewer:
             kwargs['colour'] = 'black'
         # normalise
         if position.shape[0] > 0:
-            vector /= np.linalg.norm(vector, axis=1)[:, None]
+            if normalise:
+                vector /= np.linalg.norm(vector, axis=1)[:, None]
             vectorfield = self.lv.vectors(name, **kwargs)
             vectorfield.vertices(position)
             vectorfield.vectors(vector)
