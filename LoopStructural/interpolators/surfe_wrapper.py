@@ -115,4 +115,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask,:] = self.surfe.EvaluateVectorInterpolantAtPoints(
                 evaluation_points[~mask])
-        return evaluated
+        return 
+    @property
+    def nx(self):
+        return self.get_data_locations().shape[0]

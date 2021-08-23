@@ -204,3 +204,9 @@ class StructuralFrameBuilder:
                     "Add some more and try again.")
         # use the frame argument to build a structural frame
         return frame(self.name, [gx_feature, gy_feature, gz_feature],fold=fold)
+    def update(self):
+        for i in range(3):
+            self.builders[i].update()
+    def up_to_date(self):
+        for i in range(3):
+            self.builders[i].up_to_date()

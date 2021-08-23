@@ -593,6 +593,11 @@ class LavaVuModelViewer:
         import time
         from tqdm.auto import tqdm
         start = time.time()
+        logger.info("Updating model")
+        self.model.update()
+        logger.info("Model update took: {} seconds".format(time.time()-start))
+        start = time.time()
+        logger.info("Isosurfacing")
         n_units = 0 #count how many discrete colours
         name_suffix = kwargs.pop('name','')
         for g in self.model.stratigraphic_column.keys():
@@ -666,9 +671,9 @@ class LavaVuModelViewer:
                             kwargs['paint_with'] = LambdaGeologicalFeature(lambda xyz: np.zeros(xyz.shape[0])+f.displacement)
                             #  = feature
                         region = kwargs.pop('region',None) 
-                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour[0],name=f.name+name_suffix,**kwargs)
+                        self.add_isosurface(f,isovalue=0,region=mask,colour=fault_colour,name=f.name+name_suffix,**kwargs)
                         pbar.update(1)
-            print("Adding surfaces took {} seconds".format(time.time()-start))
+            logger.info("Adding surfaces took {} seconds".format(time.time()-start))
     def add_vector_field(self, geological_feature, **kwargs):
         """
 
@@ -800,7 +805,7 @@ class LavaVuModelViewer:
         p = self.lv.points(name, **kwargs)
         p.vertices(points)
 
-    def add_vector_data(self, position, vector, name, **kwargs):
+    def add_vector_data(self, position, vector, name, normalise=True, **kwargs):
         """
 
         Plot point data with a vector component into the lavavu viewer
@@ -820,7 +825,8 @@ class LavaVuModelViewer:
             kwargs['colour'] = 'black'
         # normalise
         if position.shape[0] > 0:
-            vector /= np.linalg.norm(vector, axis=1)[:, None]
+            if normalise:
+                vector /= np.linalg.norm(vector, axis=1)[:, None]
             vectorfield = self.lv.vectors(name, **kwargs)
             vectorfield.vertices(position)
             vectorfield.vectors(vector)

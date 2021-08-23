@@ -40,19 +40,18 @@ class StructuredGrid(BaseStructuredSupport):
 
 
     def cell_centres(self, global_index):
-        """[summary]
+        """get the centre of specified cells
 
-        [extended_summary]
-
+        
         Parameters
         ----------
-        global_index : [type]
-            [description]
+        global_index : array/list
+            container of integer global indexes to cells
 
         Returns
         -------
-        [type]
-            [description]
+        numpy array
+            Nx3 array of cell centres
         """
         ix, iy, iz = self.global_index_to_cell_index(global_index)
         x = self.origin[None, 0] + self.step_vector[None, 0] * .5 + \
@@ -103,7 +102,7 @@ class StructuredGrid(BaseStructuredSupport):
 
         """
         # TODO check if inside mesh
-        pos = self.rotate(pos)
+        # pos = self.rotate(pos)
         # calculate local coordinates for positions
         local_x = ((pos[:, 0] - self.origin[None, 0]) % self.step_vector[
             None, 0]) / self.step_vector[None, 0]
@@ -111,7 +110,6 @@ class StructuredGrid(BaseStructuredSupport):
             None, 1]) / self.step_vector[None, 1]
         local_z = ((pos[:, 2] - self.origin[None, 2]) % self.step_vector[
             None, 2]) / self.step_vector[None, 2]
-
         return local_x, local_y, local_z
 
     def position_to_dof_coefs(self, pos):
@@ -325,9 +323,8 @@ class StructuredGrid(BaseStructuredSupport):
         # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
         T = np.zeros((pos.shape[0], 3, 8))
         x, y, z = self.position_to_local_coordinates(pos)
-        # div = self.step_vector[0] * self.step_vector[1] * self.step_vector[2]
-
-        T[:, 0, 0] = -(1 - y) * (1 - z)  # v000
+    
+        T[:, 0, 0] = (1 - z) * (y- 1)  # v000
         T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
         T[:, 0, 2] = -y * (1 - z)  # (pos[:, 1] - y[:, 0]) / div
         T[:, 0, 3] = -(1 - y) * z  # (pos[:, 1] - y[:, 1]) / div
@@ -336,7 +333,7 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 0, 6] = y * (1 - z)
         T[:, 0, 7] = y * z
 
-        T[:, 1, 0] = - (1 - x) * (1 - z)
+        T[:, 1, 0] =  (x - 1) * (1 - z)
         T[:, 1, 1] = - x * (1 - z)
         T[:, 1, 2] = (1 - x) * (1 - z)
         T[:, 1, 3] = -(1 - x) * z
@@ -353,14 +350,7 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 5] = (1 - x) * y
         T[:, 2, 6] = - x * y
         T[:, 2, 7] = x * y
-        return T
+        T/=self.step_vector[0]
 
-    def slice(self, propertyname, isovalue, region):
-        logger.error("function has been removed, please use the modelviewer class")
-        return
-        #
-        # verts, faces, normals, values = marching_cubes(
-        #     self.properties[propertyname].reshape(self.nsteps, order='F'),
-        #     isovalue,
-        #     spacing=self.step_vector)
-        # return faces, verts + self.origin[None, :]
+        return T 
+

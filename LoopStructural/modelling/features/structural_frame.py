@@ -26,6 +26,7 @@ class StructuralFrame:
         self.features = features
         self.data = None
         self.fold = fold
+        self.builder = None
 
     def __getitem__(self, item):
         """

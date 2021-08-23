@@ -1,5 +1,5 @@
 {% set name = "loopstructural" %}
-{% set version = "1.1.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -29,7 +29,13 @@ requirements:
     - scikit-image
     - scikit-learn
     - tqdm
-    - pyamg
+
+test:
+  import:
+    - numpy
+    - pandas
+    - loopstructural
+
 
 
 about:

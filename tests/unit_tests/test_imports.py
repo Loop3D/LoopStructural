@@ -1,10 +1,30 @@
-def test_all_imports():
+def test_import_model():
     success = True
     try:
         from LoopStructural import GeologicalModel
-        from LoopStructural.visualisation import LavaVuModelViewer
-        from LoopStructural.visualisation import RotationAnglePlotter
-        from LoopStructural.utils import process_map2loop, build_model
+    except ImportError:
+        success = False
+    assert success == True
+
+# def test_import_visualisation():
+#     success = True    
+#     try:
+#         from LoopStructural.visualisation import LavaVuModelViewer
+#     except ImportError:
+#         success = False
+#     assert success == True
+
+# def test_import_rotation_angle_plotter():
+#     success = True
+#     try:
+#         from LoopStructural.visualisation import RotationAnglePlotter
+#     except ImportError:
+#         success = False
+#     assert success == True
+
+def test_import_geological_feature():
+    success = True
+    try:
         from LoopStructural.modelling.features import GeologicalFeature
     except ImportError:
         success = False

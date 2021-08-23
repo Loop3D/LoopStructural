@@ -290,7 +290,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # d_t = self.support.get_elements_gradients(e)
             norm = np.zeros((element_gradients.shape[0],element_gradients.shape[1]))
             norm[inside,:] = np.linalg.norm(element_gradients[inside,:,:], axis=2)
-            element_gradients /= norm[:, :, None]
+            # element_gradients /= norm[:, :, None]
 
             d_t = element_gradients
             d_t[inside,:,:] *= vol[inside, None, None]

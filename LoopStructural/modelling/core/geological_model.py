@@ -77,7 +77,7 @@ class GeologicalModel:
 
 
     """
-    def __init__(self, origin, maximum, rescale=True, nsteps=(50, 50, 25),
+    def __init__(self, origin, maximum, data = None, rescale=False, nsteps=(50, 50, 25),
                  reuse_supports=False, logfile=None, loglevel='info'):
         """
         Parameters
@@ -120,7 +120,8 @@ class GeologicalModel:
         logger.info('Initialising geological model')
         self.features = []
         self.feature_name_index = {}
-        self.data = None
+        self._data = None
+        self.data = data
         self.nsteps = nsteps
         
         # we want to rescale the model area so that the maximum length is
@@ -173,7 +174,7 @@ class GeologicalModel:
         return self.feature_name_index.keys()
         
     @classmethod
-    def from_map2loop_directory(cls, m2l_directory,**kwargs):
+    def from_map2loop_directory(cls, m2l_directory,foliation_params={},fault_params={},use_thickness=True,vector_scale=1,**kwargs):
         """Alternate constructor for a geological model using m2l output
 
         Uses the information saved in the map2loop files to build a geological model.
@@ -190,12 +191,75 @@ class GeologicalModel:
         (GeologicalModel, dict)
             the created geological model and a dictionary of the map2loop data
         """
-        from LoopStructural.utils import build_model, process_map2loop
-        logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
-        m2lflags = kwargs.pop('m2lflags',{})
-        m2l_data = process_map2loop(m2l_directory,m2lflags)
-        return build_model(m2l_data,**kwargs), m2l_data
+        from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor 
+        processor=Map2LoopProcessor(m2l_directory,use_thickness)
+        processor.vector_scale = vector_scale
+        for foliation_name in processor.stratigraphic_column.keys():
+            if foliation_name != 'faults':
+                if foliation_name in foliation_params.keys():
+                    processor.foliation_properties[foliation_name] = foliation_params[foliation_name]
+                else:
+                    processor.foliation_properties[foliation_name] = foliation_params
 
+        for fault_name in processor.fault_names:
+            if fault_name in fault_params.keys():
+                for param_name, value in fault_params[fault_name].items():
+                    processor.fault_properties.loc[fault_name,param_name] = value
+            else:
+                for param_name, value in fault_params.items():
+                    processor.fault_properties.loc[fault_name,param_name] = value
+    
+       
+        model = GeologicalModel.from_processor(processor)
+        return model, processor
+ 
+
+
+        # from LoopStructural.utils import build_model, process_map2loop
+        # logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
+        # m2lflags = kwargs.pop('m2lflags',{})
+        # m2l_data = process_map2loop(m2l_directory,m2lflags)
+        # return build_model(m2l_data,**kwargs), m2l_data
+
+    @classmethod
+    def from_processor(cls, processor):
+        model = GeologicalModel(processor.origin,processor.maximum)
+        model.data = processor.data
+        for i in processor.fault_network.faults:
+            model.create_and_add_fault(i,**processor.fault_properties.to_dict('index')[i],faultfunction='BaseFault')
+        for edge, properties in processor.fault_network.fault_edge_properties.items():
+            if model[edge[1]] is None or model[edge[0]] is None:
+                logger.warning("cannot add splay {} or {} are not in the model".format(edge[1],edge[0]))
+                continue
+            splay = False
+            if 'angle' in properties:
+                if float(properties['angle']) < 30 and np.abs(processor.stratigraphic_column['faults'][edge[0]]['dip_dir']-processor.stratigraphic_column['faults'][edge[1]]['dip_dir']) <90:
+                    # splay
+                    region = model[edge[1]].builder.add_splay(model[edge[0]])
+
+                    model[edge[1]].splay[model[edge[0]].name] = region
+                    splay = True
+        if splay == False:
+            model[edge[1]].add_abutting_fault(model[edge[0]])
+        for s in processor.stratigraphic_column.keys():
+            if s != 'faults':
+                f = model.create_and_add_foliation(s,**processor.foliation_properties[s])
+                model.add_unconformity(f,0)
+        model.stratigraphic_column = processor.stratigraphic_column
+        return model
+        # for 
+
+        # model.create_and_add_fault(f,
+        #                                             -m2l_data['max_displacement'][f],
+        #                                             faultfunction='BaseFault',
+        #                                             fault_slip_vector=fault_slip_vector,
+        #                                             fault_center=fault_center,
+        #                                             major_axis=major_axis,
+        #                                             minor_axis=minor_axis,
+        #                                             intermediate_axis=fault_intermediate_axis,
+        #                                             # overprints=overprints,
+        #                                             **fault_params,
+        #                                             )
     @classmethod
     def from_file(cls, file):
         """Load a geological model from file
@@ -314,8 +378,12 @@ class GeologicalModel:
     
     def data_for_feature(self,feature_name):
         return self.data.loc[self.data['feature_name'] == feature_name,:]
-        
-    def set_model_data(self, data):
+    
+    @property
+    def data(self):
+        return self._data
+    @data.setter
+    def data(self, data):
         """
         Set the data array for the model
 
@@ -334,6 +402,8 @@ class GeologicalModel:
         'eg' 'S0', 'S2', 'F1_axis'
         it is then used by the create functions to get the correct data
         """
+        if data is None:
+            return
         if type(data) != pd.DataFrame:
             logger.warning(
                 "Data is not a pandas data frame, trying to read data frame "
@@ -342,37 +412,39 @@ class GeologicalModel:
                 data = pd.read_csv(data)
             except:
                 logger.error("Could not load pandas data frame from data")
+                raise BaseException('Cannot load data')
         logger.info('Adding data to GeologicalModel with {} data points'.format(len(data)))
-        self.data = data.copy()
-        self.data['X'] -= self.origin[0]
-        self.data['Y'] -= self.origin[1]
-        self.data['Z'] -= self.origin[2]
-        self.data['X'] /= self.scale_factor
-        self.data['Y'] /= self.scale_factor
-        self.data['Z'] /= self.scale_factor
-        if 'type' in self.data:
+        self._data = data.copy()
+        self._data['X'] -= self.origin[0]
+        self._data['Y'] -= self.origin[1]
+        self._data['Z'] -= self.origin[2]
+        self._data['X'] /= self.scale_factor
+        self._data['Y'] /= self.scale_factor
+        self._data['Z'] /= self.scale_factor
+        if 'type' in self._data:
             logger.warning("'type' is depreciated replace with 'feature_name' \n")
-            self.data.rename(columns={'type':'feature_name'},inplace=True)
+            self._data.rename(columns={'type':'feature_name'},inplace=True)
         for h in all_heading():
-            if h not in self.data:
-                self.data[h] = np.nan
+            if h not in self._data:
+                self._data[h] = np.nan
                 if h == 'w':
-                    self.data[h] = 1.
+                    self._data[h] = 1.
                 if h == 'coord':
-                    self.data[h] = 0
+                    self._data[h] = 0
         
-        if 'strike' in self.data and 'dip' in self.data:
+        if 'strike' in self._data and 'dip' in self._data:
             logger.info('Converting strike and dip to vectors')
-            mask = np.all(~np.isnan(self.data.loc[:, ['strike', 'dip']]),
+            mask = np.all(~np.isnan(self._data.loc[:, ['strike', 'dip']]),
                           axis=1)
-            self.data.loc[mask, gradient_vec_names()] = strike_dip_vector(
-                self.data.loc[mask, 'strike'], self.data.loc[mask, 'dip'])
-            self.data.drop(['strike', 'dip'], axis=1, inplace=True)
-        #     self.data.loc
-        # if 'nx' in self.data and 'ny' in self.data and 'nz' in self.data:
-        #     mask = np.all(~np.isnan(self.data.loc[:, ['nx', 'ny','nz']]),
-        #                   axis=1)
-        #     self.data.loc[mask,['nx', 'ny','nz']] /= self.scale_factor
+            self._data.loc[mask, gradient_vec_names()] = strike_dip_vector(
+                self._data.loc[mask, 'strike'], self._data.loc[mask, 'dip'])
+            self._data.drop(['strike', 'dip'], axis=1, inplace=True)
+    
+
+    def set_model_data(self, data):
+        logger.warning("Depreciated method. Model data can now be set using the data attribute")
+        self.data = data
+        
     def extend_model_data(self, newdata):
         """
         Extends the data frame
@@ -393,7 +465,7 @@ class GeologicalModel:
         data_temp['Y'] /= self.scale_factor
         data_temp['Z'] /= self.scale_factor
         self.data.concat([self.data, data_temp], sort=True)
-
+       
     def set_stratigraphic_column(self, stratigraphic_column,cmap='tab20'):
         """
         Adds a stratigraphic column to the model
@@ -489,13 +561,13 @@ class GeologicalModel:
         # faults but also generally a good
         # idea to avoid boundary problems
         # buffer = bb[1, :]
-        buffer = (bb[1,:]-bb[0,:])*buffer
+        buffer = (np.min(bb[1,:]-bb[0,:]))*buffer
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         box_vol = (bb[1, 0]-bb[0, 0]) * (bb[1, 1]-bb[0, 1]) * (bb[1, 2]-bb[0, 2])
         if interpolatortype == "PLI":
             if element_volume is None:
-                nelements /= 5
+                # nelements /= 5
                 element_volume = box_vol / nelements
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
@@ -659,7 +731,7 @@ class GeologicalModel:
         self._add_feature(series_feature)
         return series_feature
         
-    def create_and_add_fold_frame(self, foldframe_data, **kwargs):
+    def create_and_add_fold_frame(self, foldframe_data, tol=None,**kwargs):
         """
         Parameters
         ----------
@@ -675,6 +747,8 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append({'feature_type': 'fold_frame', 'feature_name': foldframe_data, **kwargs})
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
@@ -689,15 +763,16 @@ class GeologicalModel:
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
 
-        fold_frame = fold_frame_builder.build(frame=FoldFrame, **kwargs)
+        fold_frame = fold_frame_builder.build(frame=FoldFrame, tol=tol, **kwargs)
         # for i in range(3):
         #     self._add_unconformity_above(fold_frame[i])
         fold_frame.type = 'structuralframe'
+        fold_frame.builder = fold_frame_builder
         self._add_feature(fold_frame)
         
         return fold_frame
 
-    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, svario=True,
+    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, svario=True, tol=None,
                                         **kwargs):
         """
         Create a folded foliation field from data and a fold frame
@@ -719,6 +794,8 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append(
             {'feature_type': 'fold_foliation', 'feature_name': foliation_data, 'fold_frame': fold_frame, **kwargs})
         if fold_frame is None:
@@ -756,7 +833,7 @@ class GeologicalModel:
             fold.fold_axis_rotation = fold_axis_rotation
         # give option of passing own fold limb rotation function
         flr, fld = fold_frame.calculate_fold_limb_rotation(
-            series_builder)
+            series_builder, fold.get_fold_axis_orientation)
         fold_limb_rotation = FoldRotationAngle(flr, fld,svario=svario)
         l_wl = kwargs.get("limb_wl", None)
         if 'limb_function' in kwargs:
@@ -774,6 +851,7 @@ class GeologicalModel:
         # build feature
         kwargs['cgw'] = 0.
         kwargs['fold'] = fold
+        kwargs['tol'] = tol
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
@@ -786,7 +864,7 @@ class GeologicalModel:
         return series_feature
 
     def create_and_add_folded_fold_frame(self, fold_frame_data,
-                                         fold_frame=None,
+                                         fold_frame=None, tol=None,
                                          **kwargs):
         """
 
@@ -807,6 +885,8 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
+        if tol is None:
+            tol = self.tol
         self.parameters['features'].append(
             {'feature_type': 'folded_fold_frame', 'feature_name': fold_frame_data, 'fold_frame': fold_frame, **kwargs})
         if fold_frame is None:
@@ -872,7 +952,7 @@ class GeologicalModel:
         self._add_faults(fold_frame_builder[0])
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
-        fold_frame = fold_frame_builder.build(**kwargs, frame=FoldFrame)
+        fold_frame = fold_frame_builder.build(**kwargs, tol=tol,frame=FoldFrame)
         fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region
         # for i in range(3):
@@ -1139,9 +1219,9 @@ class GeologicalModel:
                             tol = None,
                             fault_slip_vector=None,
                             fault_center = None, 
-                            fault_extent = None, 
-                            fault_influence = None, 
-                            fault_vectical_radius = None,
+                            major_axis = None, 
+                            minor_axis = None, 
+                            intermediate_axis = None,
                             faultfunction=None, 
                             **kwargs):
         """
@@ -1150,11 +1230,11 @@ class GeologicalModel:
         fault_surface_data : string
             name of the fault surface data in the dataframe
         displacement : displacement magnitude
-        fault_extent : [type], optional
+        major_axis : [type], optional
             [description], by default None
-        fault_influence : [type], optional
+        minor_axis : [type], optional
             [description], by default None
-        fault_vectical_radius : [type], optional
+        intermediate_axis : [type], optional
             [description], by default None
         kwargs : additional kwargs for Fault and interpolators
 
@@ -1183,37 +1263,46 @@ class GeologicalModel:
         fault_normal_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
         mask = np.logical_and(fault_frame_data['coord']==1,~np.isnan(fault_frame_data['gz']))
         if fault_slip_vector is None:
-            fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
+            if 'avgSlipDirEasting' in kwargs and 'avgSlipDirNorthing' in kwargs and 'avgSlipDirAltitude' in kwargs:
+                fault_slip_vector = np.array([kwargs['avgSlipDirEasting'],kwargs['avgSlipDirNorthing'],kwargs['avgSlipDirAltitude']],dtype=float)
+            else:
+                fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
         if fault_center is not None:
             fault_center = self.scale(fault_center,inplace=False)
         if fault_center is None:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
-            mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
-            fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
-        if fault_influence:
-            fault_influence=fault_influence/self.scale_factor
-        if fault_extent:
-            fault_extent=fault_extent/self.scale_factor
-        if fault_vectical_radius:
-            fault_vectical_radius=fault_vectical_radius/self.scale_factor
+            if 'centreEasting' in kwargs and 'centreNorthing' in kwargs and 'centreAltitude' in kwargs:
+                fault_center = self.scale(np.array([kwargs['centreEasting'],
+                                                        kwargs['centreNorthing'],
+                                                        kwargs['centreAltitude']],
+                                                        dtype=float),inplace=False)
+            else:
+                mask = np.logical_and(fault_frame_data['coord']==0,fault_frame_data['val']==0)
+                fault_center = fault_frame_data.loc[mask,['X','Y','Z']].mean(axis=0).to_numpy()
+        if minor_axis:
+            minor_axis=minor_axis/self.scale_factor
+        if major_axis:
+            major_axis=major_axis/self.scale_factor
+        if intermediate_axis:
+            intermediate_axis=intermediate_axis/self.scale_factor
         fault_frame_builder.create_data_from_geometry(fault_frame_data,
                                                       fault_center,
                                                       fault_normal_vector,
                                                       fault_slip_vector,
-                                                      influence_distance=fault_influence,
-                                                      horizontal_radius=fault_extent,
-                                                      vertical_radius=fault_vectical_radius
+                                                      minor_axis=minor_axis,
+                                                      major_axis=major_axis,
+                                                      intermediate_axis=intermediate_axis
                                                       )
         
-        if fault_influence == None or fault_extent == None or fault_vectical_radius == None:
+        if minor_axis == None or major_axis == None or intermediate_axis == None:
             fault_frame_builder.origin = self.bounding_box[0,:]
             fault_frame_builder.maximum = self.bounding_box[1,:]
         if 'force_mesh_geometry' not in kwargs:
             fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.4),0)#,
                                             #np.rad2deg(np.arccos(np.dot(fault_normal_vector[:2],np.array([0,1])))))
         if 'splay' in kwargs and 'splayregion' in kwargs:
-            fault_frame_builder.add_splay(kwargs['splayregion'],kwargs['splay'])
+            fault_frame_builder.add_splay(kwargs['splay'],kwargs['splayregion'])
 
         kwargs['tol'] = tol
         fault_frame = fault_frame_builder.build(**kwargs)
@@ -1524,14 +1613,10 @@ class GeologicalModel:
             buf=0
             for f in self.features:
                 pbar.set_description('Interpolating {}'.format(f.name))
+                f.builder.up_to_date()
                 if f.type == 'fault':
-                    for i in range(3):
-                        buf+=1
-                        f[i].builder.update()
-                        pbar.update()
-                if f.type == 'series':
-                    f.builder.update()
-                    pbar.update()
+                    for i in range(3): pbar.update()
+                else: pbar.update()
 
             
         if verbose:

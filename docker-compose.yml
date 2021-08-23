@@ -9,6 +9,7 @@ services:
       - /home/lgrose/dev/python/LoopStructural/:/home/jovyan/LoopStructural
       - /home/lgrose/LoopStructural/:/home/jovyan/notebooks
       - /home/lgrose/dev/python/map2loop-2/:/home/jovyan/map2loop
+      - /home/lgrose/dev/python/LoopProjectFile/:/home/jovyan/LoopProjectFile
     ports:
       - 8888:8888
       - 8050:8050
