@@ -263,6 +263,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
+            norm = np.linalg.norm(T,axis=2)
+            T/=norm[:,:,None]
             strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
 
@@ -288,7 +290,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
             # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
-
             node_idx, inside = self.support.position_to_cell_corners(
                 points[:, :3])
             gi = np.zeros(self.support.n_nodes)
@@ -350,9 +351,15 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
+            #normalise element vector to unit vector for dot product
             T = self.support.calcul_T(points[inside, :3])
+            norm = np.linalg.norm(T,axis=1)
+            T/=norm[:,None,:]
+            # normalise vector to unit vector for dot product
+            vector[inside,:3] /= np.linalg.norm(vector[inside,:3],axis=1)[:,None]
+            # dot product of vector and element gradient 
             A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
-
+            
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient orthogonal')
 
