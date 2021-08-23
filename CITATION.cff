@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Groser"
+  given-names: "Lachlan"
+  orcid: "https://orcid.org/0000-0001-8089-7775"
+- family-names: "Ailleres"
+  given-names: "Laurent"
+  orcid: "https://orcid.org/0000-0002-1897-4394"
+- family-names: "Laurent"
+  given-names: "Gautier"
+  orcid: "https://orcid.org/0000-0003-0638-3391"
+- family-names: "Jessell"
+  given-names: "Mark"
+  orcid: "https://orcid.org/0000-0002-0375-7311v"
+title: "LoopStructural"
+version: 1.0
+doi: 10.5194/gmd-14-3915-2021
+date-released: 2020-10-06
+url: "https://github.com/Loop3d/LoopStructural"
