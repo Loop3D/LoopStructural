@@ -1,0 +1,27 @@
+LoopStructural.modelling.input.fault\_network.FaultNetwork
+==========================================================
+
+.. currentmodule:: LoopStructural.modelling.input.fault_network
+
+.. autoclass:: FaultNetwork
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FaultNetwork.__init__
+      ~FaultNetwork.add_connection
+      ~FaultNetwork.get_fault_iterators
+   
+   
+
+   
+   
+   

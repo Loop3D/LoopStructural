@@ -216,7 +216,6 @@
 <dt id="LoopStructural.visualisation.LavaVuModelViewer">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.</span></code><code class="sig-name descname"><span class="pre">LavaVuModelViewer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_exaggeration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Short description</p>
 <p>A wrapper to plot LoopStructural object with lavavu</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -291,7 +290,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_value_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_value_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_data</span></code></a>(position, value, name, **kwargs)</p></td>
 <td><p>Plot points data with a value component</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_vector_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_data</span></code></a>(position, vector, name, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_vector_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_data</span></code></a>(position, vector, name[, …])</p></td>
 <td><p>Plot point data with a vector component into the lavavu viewer</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_field" title="LoopStructural.visualisation.LavaVuModelViewer.add_vector_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_field</span></code></a>(geological_feature, **kwargs)</p></td>
@@ -574,7 +573,7 @@ faults by displacement</p></li>
 
 <dl class="py method">
 <dt id="LoopStructural.visualisation.LavaVuModelViewer.add_vector_data">
-<code class="sig-name descname"><span class="pre">add_vector_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_vector_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.LavaVuModelViewer.add_vector_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot point data with a vector component into the lavavu viewer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

@@ -41,6 +41,13 @@ LoopStructural.visualisation.model\_visualisation
 
    
    
+   .. rubric:: Exceptions
+
+   .. autosummary::
+      :toctree:                                          
+   
+      LoopImportError
+   
    
 
 

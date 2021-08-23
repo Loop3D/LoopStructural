@@ -20,6 +20,8 @@ LoopStructural.modelling.features.structural\_frame\_builder.StructuralFrameBuil
       ~StructuralFrameBuilder.add_data_from_data_frame
       ~StructuralFrameBuilder.add_fault
       ~StructuralFrameBuilder.build
+      ~StructuralFrameBuilder.up_to_date
+      ~StructuralFrameBuilder.update
    
    
 

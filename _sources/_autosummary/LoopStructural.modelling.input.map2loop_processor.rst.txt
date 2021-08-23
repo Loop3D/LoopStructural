@@ -1,0 +1,41 @@
+LoopStructural.modelling.input.map2loop\_processor
+==================================================
+
+.. automodule:: LoopStructural.modelling.input.map2loop_processor
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      Map2LoopProcessor
+      ProcessInputData
+   
+   
+
+   
+   
+   
+
+
+

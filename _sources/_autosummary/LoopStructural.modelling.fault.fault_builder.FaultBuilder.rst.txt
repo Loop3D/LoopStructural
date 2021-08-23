@@ -23,6 +23,7 @@ LoopStructural.modelling.fault.fault\_builder.FaultBuilder
       ~FaultBuilder.build
       ~FaultBuilder.create_data_from_geometry
       ~FaultBuilder.set_mesh_geometry
+      ~FaultBuilder.up_to_date
       ~FaultBuilder.update
       ~FaultBuilder.update_geometry
    

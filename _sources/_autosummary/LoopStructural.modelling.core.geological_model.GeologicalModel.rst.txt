@@ -39,6 +39,7 @@ LoopStructural.modelling.core.geological\_model.GeologicalModel
       ~GeologicalModel.feature_names
       ~GeologicalModel.from_file
       ~GeologicalModel.from_map2loop_directory
+      ~GeologicalModel.from_processor
       ~GeologicalModel.get_feature_by_name
       ~GeologicalModel.get_interpolator
       ~GeologicalModel.regular_grid
@@ -57,6 +58,7 @@ LoopStructural.modelling.core.geological\_model.GeologicalModel
 
    .. autosummary::
    
+      ~GeologicalModel.data
       ~GeologicalModel.faults
       ~GeologicalModel.faults_displacement_magnitude
       ~GeologicalModel.series

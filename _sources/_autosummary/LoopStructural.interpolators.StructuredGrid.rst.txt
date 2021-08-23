@@ -34,7 +34,6 @@ LoopStructural.interpolators.StructuredGrid
       ~StructuredGrid.position_to_dof_coefs
       ~StructuredGrid.position_to_local_coordinates
       ~StructuredGrid.rotate
-      ~StructuredGrid.slice
       ~StructuredGrid.trilinear
    
    

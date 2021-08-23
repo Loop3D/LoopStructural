@@ -21,7 +21,7 @@
 2b. Refolded folds
 ===================
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-34
+.. GENERATED FROM PYTHON SOURCE LINES 7-31
 
 .. code-block:: default
 
@@ -45,9 +45,6 @@
 
     newdata = pd.DataFrame([[5923.504395,4748.135254,3588.621094,'s2',1.0]],columns=['X','Y','Z','feature_name','val'])
     data = pd.concat([data,newdata],sort=False)
-    data[np.logical_and(data['feature_name'] == 's2',np.isnan(data['nx']))]
-    data.loc[np.logical_and(data['feature_name'] == 's0',~np.isnan(data['val'])),'feature_name'] = 's01'
-
 
     rotation = [-69.11979675292969, 15.704944610595703, 6.00014591217041]
 
@@ -59,13 +56,13 @@
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-38
+.. GENERATED FROM PYTHON SOURCE LINES 32-35
 
 Modelling S2
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-57
+.. GENERATED FROM PYTHON SOURCE LINES 35-54
 
 .. code-block:: default
 
@@ -99,13 +96,13 @@ Modelling S2
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-61
+.. GENERATED FROM PYTHON SOURCE LINES 55-58
 
 Modelling S1
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-78
+.. GENERATED FROM PYTHON SOURCE LINES 58-75
 
 .. code-block:: default
 
@@ -137,13 +134,13 @@ Modelling S1
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-82
+.. GENERATED FROM PYTHON SOURCE LINES 76-79
 
 S2/S1 S-Plots 
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-92
+.. GENERATED FROM PYTHON SOURCE LINES 79-89
 
 .. code-block:: default
 
@@ -172,17 +169,17 @@ S2/S1 S-Plots
  .. code-block:: none
 
 
-    [<matplotlib.lines.Line2D object at 0x7fa5ad25d670>]
+    [<matplotlib.lines.Line2D object at 0x7fb92f0d57f0>]
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-96
+.. GENERATED FROM PYTHON SOURCE LINES 90-93
 
 Modelling S0
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-112
+.. GENERATED FROM PYTHON SOURCE LINES 93-109
 
 .. code-block:: default
 
@@ -213,13 +210,13 @@ Modelling S0
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-116
+.. GENERATED FROM PYTHON SOURCE LINES 110-113
 
 S1/S0 S-Plots 
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-133
+.. GENERATED FROM PYTHON SOURCE LINES 113-130
 
 .. code-block:: default
 
@@ -258,7 +255,7 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  22.702 seconds)
+   **Total running time of the script:** ( 0 minutes  25.935 seconds)
 
 
 .. _sphx_glr_download_auto_examples_2_fold_plot_refolded_folds.py:

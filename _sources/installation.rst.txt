@@ -47,10 +47,10 @@ Required dependencies:
 * scikit-learn
 
 Optional dependencies:
-* matplotlib, 2D visualisation
+
+* matplotlib, 2D/3D visualisation
 * LavaVu, 3D visualisation
 * surfepy, radial basis interpolation
-* rasterio, exporting triangulated surfaces
 * map2loop, generation of input datasets from regional Australian maps
 
 

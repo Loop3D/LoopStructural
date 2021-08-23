@@ -1,0 +1,6 @@
+LoopStructural.modelling.input.map2loop\_processor.getLogger
+============================================================
+
+.. currentmodule:: LoopStructural.modelling.input.map2loop_processor
+
+.. autofunction:: getLogger

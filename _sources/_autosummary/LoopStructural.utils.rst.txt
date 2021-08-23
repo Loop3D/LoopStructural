@@ -26,6 +26,7 @@ LoopStructural.utils
       log_to_console
       log_to_file
       process_map2loop
+      strike_dip_vector
    
    
 
@@ -43,6 +44,14 @@ LoopStructural.utils
    
 
    
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+      :toctree:                                          
+   
+      LoopBaseException
+      LoopImportError
    
    
 

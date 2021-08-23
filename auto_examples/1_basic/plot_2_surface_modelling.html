@@ -298,7 +298,7 @@ dataframe and then using a 3D plot</p>
 <img alt="plot 2 surface modelling" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_2_surface_modelling_001.png" />
 <p>The pandas dataframe can be linked to the <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> using
 <code class="docutils literal notranslate"><span class="pre">.set_model_data(dataframe</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.set_model_data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_model_data</span></a><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code> contains an ordered list of the different
@@ -358,11 +358,14 @@ and makes the solution more stable for some interpolators</p>
 </div>
 <img alt="plot 2 surface modelling" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_2_surface_modelling_002.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/4 [00:00&lt;?, ?it/s]
-Isosurfacing strati:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Isosurfacing strati: 100%|##########| 4/4 [00:01&lt;00:00,  2.95it/s]Adding surfaces took 1.3595106601715088 seconds
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/1 [00:00&lt;?, ?it/s]
+Interpolating strati:   0%|          | 0/1 [00:00&lt;?, ?it/s]
+Interpolating strati: 100%|##########| 1/1 [00:01&lt;00:00,  1.20s/it]
+Interpolating strati: 100%|##########| 1/1 [00:01&lt;00:00,  1.20s/it]
 
-Isosurfacing strati: 100%|##########| 4/4 [00:01&lt;00:00,  2.95it/s]
+  0%|          | 0/4 [00:00&lt;?, ?it/s]
+Isosurfacing strati:   0%|          | 0/4 [00:00&lt;?, ?it/s]
+Isosurfacing strati: 100%|##########| 4/4 [00:00&lt;00:00, 50.72it/s]
 </pre></div>
 </div>
 </div>
@@ -375,7 +378,7 @@ Isosurfacing strati: 100%|##########| 4/4 [00:01&lt;00:00,  2.95it/s]
 </pre></div>
 </div>
 <img alt="plot 2 surface modelling" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_2_surface_modelling_003.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.207 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.363 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-2-surface-modelling-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/312667b0d3ee8fdf0f6f8e13c1523331/plot_2_surface_modelling.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_2_surface_modelling.py</span></code></a></p>

@@ -20,6 +20,8 @@ LoopStructural.modelling.core.geological\_model.StructuralFrameBuilder
       ~StructuralFrameBuilder.add_data_from_data_frame
       ~StructuralFrameBuilder.add_fault
       ~StructuralFrameBuilder.build
+      ~StructuralFrameBuilder.up_to_date
+      ~StructuralFrameBuilder.update
    
    
 

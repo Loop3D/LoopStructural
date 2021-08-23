@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>From geological map to model &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualisation.html">Visualisation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/LoopStructural.html">LoopStructural</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>From geological map to model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user_guide/preparing_data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="from-geological-map-to-model">
+<h1>From geological map to model<a class="headerlink" href="#from-geological-map-to-model" title="Permalink to this headline">¶</a></h1>
+<p>LoopStructural is an implicit geological modelling library with different interpolation algorithms (discrete and data supported).
+A geological model consists of multiple implicit functions that each define a distance or pseudo-distance within the geological object.
+The interaction between the implicit function is defined by the relative timing of the feature and the type of geological feature being modelled.
+Each implicit function is approximated to fit the observations of the geological feature.
+The geological observations need to be converted into mathematical constraints for the function defining the value of the implicit function and the gradient of the implicit function.</p>
+<p>This guide details the <cite>modelling.input</cite> module which provides the tools for converting from a geological dataset into a 3D modelling.</p>
+</div>
+<div class="section" id="input-dataset">
+<h1>Input dataset<a class="headerlink" href="#input-dataset" title="Permalink to this headline">¶</a></h1>
+<p>To build a geological model of the location and distribution of stratigraphic units the input dataset must include:
+1. Location of the interface between stratigraphic units
+2. Orientation of stratigraphy
+3. Order of stratigraphic units
+4. Stratigraphic thicknesses
+5. Location of fault traces
+6. Orientation of fault
+7. Fault properties
+8. Fault intersections
+9. Fault stratigraphy intersections
+10. Visualisation colours</p>
+<div class="section" id="requirements-for-modelling-stratigraphy">
+<h2>Requirements for modelling stratigraphy<a class="headerlink" href="#requirements-for-modelling-stratigraphy" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="contacts">
+<h3>contacts<a class="headerlink" href="#contacts" title="Permalink to this headline">¶</a></h3>
+<p>To build a model showing the distribution and location of stratigraphy the location of the basal interface between stratigraphic layers needs to recorded.
+This can be included as a DataFrame like object with the following columns:
+* <cite>X</cite> eastings of the contact location
+* <cite>Y</cite> northings of the contact Location
+* <cite>Z</cite> altitude of the contact location
+* <cite>formation</cite> a unique name defining the interface</p>
+</div>
+<div class="section" id="orientations">
+<h3>orientations<a class="headerlink" href="#orientations" title="Permalink to this headline">¶</a></h3>
+<p>Structural observations can be included using a DataFrame like object with the following columns:
+* <cite>X</cite> eastings of the contact location
+* <cite>Y</cite> northings of the contact Location
+* <cite>Z</cite> altitude of the contact location
+* <cite>strike</cite> using the right hand thumb rule
+* <cite>dip</cite> angle between horizontal and contact</p>
+</div>
+<div class="section" id="stratigraphic-order">
+<h3>stratigraphic_order<a class="headerlink" href="#stratigraphic-order" title="Permalink to this headline">¶</a></h3>
+<p>The stratigraphic order defines the relative age of the stratigraphic interfaces.
+This can be included using a nested list containing the formation names.
+The lists are to be formated so that the first level of the list contains the youngest conformable layers.
+The next level contains the order of the formations within the conformable group, with them order youngest to oldest.
+In the example below, there are two groups the youngest group contains a,b,c and the older group contains d,e.</p>
+<div class="highlight-[[a,b,c],['d','e]] notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>Note: If the stratigraphy can be interpreted as conformable, it is advisable to include all stratigraphy inside a single group.</p>
+</div>
+<div class="section" id="thicknesses">
+<h3>thicknesses<a class="headerlink" href="#thicknesses" title="Permalink to this headline">¶</a></h3>
+<p>I
+should be incolumn</p>
+</div>
+</div>
+</div>
+<div class="section" id="processinputdata">
+<h1>ProcessInputData<a class="headerlink" href="#processinputdata" title="Permalink to this headline">¶</a></h1>
+<p>The minimum requirements for building a geological model are:
+* contact location observations
+* contact orientation observations
+* stratigraphic order</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

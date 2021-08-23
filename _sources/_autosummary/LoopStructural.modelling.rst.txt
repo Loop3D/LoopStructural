@@ -13,6 +13,15 @@ LoopStructural.modelling
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      ProcessInputData
+   
    
 
    
@@ -32,4 +41,5 @@ LoopStructural.modelling
    LoopStructural.modelling.fault
    LoopStructural.modelling.features
    LoopStructural.modelling.fold
+   LoopStructural.modelling.input
 

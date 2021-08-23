@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>LoopStructural.modelling.input.map2loop_processor.ProcessInputData &mdash; LoopStructural 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.modelling.input.process_data" href="LoopStructural.modelling.input.process_data.html" />
+    <link rel="prev" title="LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor" href="LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">Visualisation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html">LoopStructural.modelling.ProcessInputData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.core.html">LoopStructural.modelling.core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fault.html">LoopStructural.modelling.fault</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.features.html">LoopStructural.modelling.features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.fold.html">LoopStructural.modelling.fold</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.modelling.input.html">LoopStructural.modelling.input</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.fault_network.html">LoopStructural.modelling.input.fault_network</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.html">LoopStructural.modelling.input.map2loop_processor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.html">LoopStructural.modelling.input.process_data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.modelling.html">LoopStructural.modelling</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.modelling.input.html">LoopStructural.modelling.input</a> &raquo;</li>
+        
+          <li><a href="LoopStructural.modelling.input.map2loop_processor.html">LoopStructural.modelling.input.map2loop_processor</a> &raquo;</li>
+        
+      <li>LoopStructural.modelling.input.map2loop_processor.ProcessInputData</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/_autosummary/LoopStructural.modelling.input.map2loop_processor.ProcessInputData.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loopstructural-modelling-input-map2loop-processor-processinputdata">
+<h1>LoopStructural.modelling.input.map2loop_processor.ProcessInputData<a class="headerlink" href="#loopstructural-modelling-input-map2loop-processor-processinputdata" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.modelling.input.map2loop_processor.ProcessInputData">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.input.map2loop_processor.</span></code><code class="sig-name descname"><span class="pre">ProcessInputData</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_orientations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratigraphic_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_orientations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_locations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrusions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_stratigraphy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thicknesses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_edge_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.input.map2loop_processor.ProcessInputData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Object to generate loopstructural input dataset from a geological map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contacts</strong> (<em>DataFrame</em>) – x,y,z,name for each contact</p></li>
+<li><p><strong>contact_orientations</strong> (<em>DataFrame</em>) – x,y,z,strike,dip,name for each contact</p></li>
+<li><p><strong>stratigraphic_order</strong> (<em>nested list</em>) – a nested list e.g. [[‘a’,’b’,’c’],[‘d’,’e’]]
+a-&gt;b-&gt;c are the youngest supergroup, d-&gt;e older.</p></li>
+<li><p><strong>fault_orientations</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – data frame with x,y,z,strike,fault_name, by default None</p></li>
+<li><p><strong>fault_locations</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – data frame with x,y,z,fault_name, by default None</p></li>
+<li><p><strong>fault_properties</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – dataframe with properties used for building fault</p></li>
+<li><p><strong>fault_edges</strong> (<em>list</em><em>, </em><em>optional</em>) – intersections between faults, by default None</p></li>
+<li><p><strong>intrusions</strong> (<em>list</em><em>, </em><em>optional</em>) – list containing any intrusions, assumes data in contacts/orientations, by default None</p></li>
+<li><p><strong>fault_stratigraphy</strong> (<em>graph</em><em>, </em><em>optional</em>) – fault stratigraphy intersection, by default None</p></li>
+<li><p><strong>thicknesses</strong> (<em>dict</em><em>, </em><em>optional</em>) – dictionary with stratigraphic thicknesses, by default None</p></li>
+<li><p><strong>colours</strong> (<em>dict</em><em>, </em><em>optional</em>) – dictionary with stratigraphic unit colours, by default None</p></li>
+<li><p><strong>use_thickness</strong> (<em>bool</em><em>, </em><em>optional</em>) – assign value to stratigraphic unit or use interface constraints, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The processor will generate the best possible data set given the input data. If you only want to build a fault
+network then only fault locations, orientations edges and properties are required</p>
+<dl class="py method">
+<dt id="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_orientations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratigraphic_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_orientations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_locations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrusions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_stratigraphy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thicknesses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_edge_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.input.map2loop_processor.ProcessInputData.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object to generate loopstructural input dataset from a geological map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contacts</strong> (<em>DataFrame</em>) – x,y,z,name for each contact</p></li>
+<li><p><strong>contact_orientations</strong> (<em>DataFrame</em>) – x,y,z,strike,dip,name for each contact</p></li>
+<li><p><strong>stratigraphic_order</strong> (<em>nested list</em>) – a nested list e.g. [[‘a’,’b’,’c’],[‘d’,’e’]]
+a-&gt;b-&gt;c are the youngest supergroup, d-&gt;e older.</p></li>
+<li><p><strong>fault_orientations</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – data frame with x,y,z,strike,fault_name, by default None</p></li>
+<li><p><strong>fault_locations</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – data frame with x,y,z,fault_name, by default None</p></li>
+<li><p><strong>fault_properties</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – dataframe with properties used for building fault</p></li>
+<li><p><strong>fault_edges</strong> (<em>list</em><em>, </em><em>optional</em>) – intersections between faults, by default None</p></li>
+<li><p><strong>intrusions</strong> (<em>list</em><em>, </em><em>optional</em>) – list containing any intrusions, assumes data in contacts/orientations, by default None</p></li>
+<li><p><strong>fault_stratigraphy</strong> (<em>graph</em><em>, </em><em>optional</em>) – fault stratigraphy intersection, by default None</p></li>
+<li><p><strong>thicknesses</strong> (<em>dict</em><em>, </em><em>optional</em>) – dictionary with stratigraphic thicknesses, by default None</p></li>
+<li><p><strong>colours</strong> (<em>dict</em><em>, </em><em>optional</em>) – dictionary with stratigraphic unit colours, by default None</p></li>
+<li><p><strong>use_thickness</strong> (<em>bool</em><em>, </em><em>optional</em>) – assign value to stratigraphic unit or use interface constraints, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The processor will generate the best possible data set given the input data. If you only want to build a fault
+network then only fault locations, orientations edges and properties are required</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.input.map2loop_processor.ProcessInputData.__init__" title="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([contacts, contact_orientations, …])</p></td>
+<td><p>Object to generate loopstructural input dataset from a geological map</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_interesections_angle</span></code>(fault1, fault2)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fault_network</span></code>(edges[, edge_properties])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">colours</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contact_orientations</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contacts</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.input.map2loop_processor.ProcessInputData.data" title="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<td><p>This is the main function that does all the work, should be called before any of the calculated attributes are accessed</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_locations</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_names</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_network</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_orientations</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_properties</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">foliation_properties</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stratigraphic_column</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stratigraphic_name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">thicknesses</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vector_scale</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.data">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">data</span></code><a class="headerlink" href="#LoopStructural.modelling.input.map2loop_processor.ProcessInputData.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main function that does all the work, should be called
+before any of the calculated attributes are accessed</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="LoopStructural.modelling.input.process_data.html" class="btn btn-neutral float-right" title="LoopStructural.modelling.input.process_data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor.html" class="btn btn-neutral float-left" title="LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lachlan Grose.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

@@ -43,7 +43,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.visualisation.rotation_angle_plotter" href="LoopStructural.visualisation.rotation_angle_plotter.html" />
+    <link rel="next" title="LoopStructural.visualisation.model_visualisation.LoopImportError" href="LoopStructural.visualisation.model_visualisation.LoopImportError.html" />
     <link rel="prev" title="LoopStructural.visualisation.model_visualisation.GeologicalFeature" href="LoopStructural.visualisation.model_visualisation.GeologicalFeature.html" /> 
 </head>
 
@@ -134,6 +134,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.marching_cubes.html">LoopStructural.visualisation.model_visualisation.marching_cubes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.GeologicalFeature.html">LoopStructural.visualisation.model_visualisation.GeologicalFeature</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.visualisation.model_visualisation.LavaVuModelViewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_visualisation.LoopImportError.html">LoopStructural.visualisation.model_visualisation.LoopImportError</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">LoopStructural.visualisation.rotation_angle_plotter</a></li>
@@ -222,7 +223,6 @@
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.model_visualisation.</span></code><code class="sig-name descname"><span class="pre">LavaVuModelViewer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_exaggeration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Short description</p>
 <p>A wrapper to plot LoopStructural object with lavavu</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -297,7 +297,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_value_data" title="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_value_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_data</span></code></a>(position, value, name, **kwargs)</p></td>
 <td><p>Plot points data with a value component</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data" title="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_data</span></code></a>(position, vector, name, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data" title="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_data</span></code></a>(position, vector, name[, …])</p></td>
 <td><p>Plot point data with a vector component into the lavavu viewer</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_field" title="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vector_field</span></code></a>(geological_feature, **kwargs)</p></td>
@@ -580,7 +580,7 @@ faults by displacement</p></li>
 
 <dl class="py method">
 <dt id="LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data">
-<code class="sig-name descname"><span class="pre">add_vector_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_vector_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_visualisation.LavaVuModelViewer.add_vector_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot point data with a vector component into the lavavu viewer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -781,7 +781,7 @@ inline interactive viewer or as a separate window</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="LoopStructural.visualisation.rotation_angle_plotter.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.rotation_angle_plotter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.visualisation.model_visualisation.LoopImportError.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.model_visualisation.LoopImportError" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="LoopStructural.visualisation.model_visualisation.GeologicalFeature.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.model_visualisation.GeologicalFeature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
