@@ -155,9 +155,12 @@ class FaultSegment:
         v[np.isnan(v)] = 0
         return v.astype(bool)
 
-    def inside_volume(self,locations):
-        v = self.faultframe.evaluate_value(locations)
-        return np.all(np.logical_and(v > -1,v<1),axis=1)
+    def inside_volume(self,locations,threshold=0.001):
+        # v = self.faultframe.evaluate_value(locations)
+        v = self.evaluate_displacement(locations) / self.displacement
+        v[np.isnan(v)] = 0
+        return np.abs(v) > threshold
+        # return np.all(np.logical_and(v > -1,v<1),axis=1)
 
     def evaluate_value(self, locations):
         """
