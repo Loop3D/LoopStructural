@@ -239,8 +239,8 @@ class GeologicalModel:
 
                     model[edge[1]].splay[model[edge[0]].name] = region
                     splay = True
-        if splay == False:
-            model[edge[1]].add_abutting_fault(model[edge[0]])
+            if splay == False:
+                model[edge[1]].add_abutting_fault(model[edge[0]])
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
                 f = model.create_and_add_foliation(s,**processor.foliation_properties[s])
