@@ -5,7 +5,23 @@ import numpy as np
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
-def calculate_fault_intersections(model):
+def calculate_fault_intersections(model,threshold = 0.001):
+    """Calculate the intersections between faults in the model
+    threshold defines the minimum displacement value that is 
+    considered in a fault volume
+
+    Parameters
+    ----------
+    model : GeologicalModel
+        the model to process
+    threshold : float, optional
+        displacement threshold for defining fault volume, by default 0.001
+
+    Returns
+    -------
+    intersections
+        dataframe matrix of fault intersections
+    """
     fault_names = []
     for f in model.features:
         if f.type == 'fault':
@@ -33,7 +49,9 @@ def calculate_fault_intersections(model):
             if name2  == name:
                 continue
             val = model[name2].evaluate_value(model.scale(verts,inplace=False))
-
+            
+            mask = model[name2].inside_volume(model.scale(verts,inplace=False), threshold)
+            val[~mask] = np.nan
             if np.all(np.isnan(val)):
                 continue
             if np.all(val[~np.isnan(val)] > 0):
