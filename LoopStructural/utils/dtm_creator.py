@@ -9,6 +9,6 @@ def create_dtm_with_rasterio(dtm_path):
     except ImportError:
         print("rasterio not installed. Please install it and try again.")
         return
-    dtm_map = MapUtil(None,dtm=rasterio.open('test3/dtm/dtm_rp.tif'))
+    dtm_map = MapUtil(None,dtm=rasterio.open(dtm_path))
     return lambda xyz : dtm_map.evaluate_dtm_at_points(xyz[:,:2])
 
