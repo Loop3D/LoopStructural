@@ -156,6 +156,7 @@ class GeologicalModel:
                                                      'nsteps': nsteps,
                                                      'reuse_supports': reuse_supports}}
         self.tol = 1e-10*np.max(self.bounding_box[1,:]-self.bounding_box[0,:])
+        self._dtm = None
 
     def __str__(self):
         lengths = self.maximum - self.origin
@@ -247,19 +248,7 @@ class GeologicalModel:
                 model.add_unconformity(f,0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
-        # for 
-
-        # model.create_and_add_fault(f,
-        #                                             -m2l_data['max_displacement'][f],
-        #                                             faultfunction='BaseFault',
-        #                                             fault_slip_vector=fault_slip_vector,
-        #                                             fault_center=fault_center,
-        #                                             major_axis=major_axis,
-        #                                             minor_axis=minor_axis,
-        #                                             intermediate_axis=fault_intermediate_axis,
-        #                                             # overprints=overprints,
-        #                                             **fault_params,
-        #                                             )
+        
     @classmethod
     def from_file(cls, file):
         """Load a geological model from file
@@ -296,7 +285,18 @@ class GeologicalModel:
             name of the feature to return
         """
         return self.get_feature_by_name(feature_name)
-    
+    @property
+    def dtm(self):
+        return self._dtm
+
+    @dtm.setter
+    def dtm(self, dtm):
+        if not callable(dtm):
+            raise BaseException('DTM must be a callable function \n'
+                                'use LoopStructural.utils.dtm_creator to build one')
+        else:
+            self._dtm = dtm
+
     @property
     def faults(self):
         faults = []
