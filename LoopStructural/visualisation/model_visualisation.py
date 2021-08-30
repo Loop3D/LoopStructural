@@ -320,6 +320,10 @@ class LavaVuModelViewer:
 
         if region is not None:
             val[~region(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
+        if self.model.dtm is not None:
+            xyz=self.model.rescale(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T,inplace=False)
+            dtmv = self.model.dtm(xyz[:,:2])
+            val[xyz[:,2]>dtmv] = np.nan
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
         for i, isovalue in enumerate(slices_):
             logger.info("Creating isosurface of %s at %f" % (geological_feature.name, isovalue))
@@ -659,6 +663,7 @@ class LavaVuModelViewer:
                             val[np.isnan(val)] = 0
                             maskv = np.zeros(val.shape).astype(bool)
                             maskv[np.abs(val) > 0.001] = 1
+                            
                             return maskv
                         if f.name in self.model.stratigraphic_column['faults']:
                             fault_colour = self.model.stratigraphic_column['faults'][f.name].get('colour',['red'])
@@ -805,6 +810,42 @@ class LavaVuModelViewer:
         p = self.lv.points(name, **kwargs)
         p.vertices(points)
 
+    def add_dtm(self, name='dtm',colour='brown',paint_with=None, **kwargs):
+        if self.model == None:
+            raise BaseException('No model cannot add dtm')
+        if self.model.dtm == None:
+            raise BaseException('No dtm for model add one')
+        
+        # generate a triangular mesh 
+        tri_mask_even = np.array([[0,3,2],
+                        [0,3,1]])
+        tri_mask_odd = np.array([[2,0,1],
+                                [2,1,3]])
+        c_xi, c_yi = np.meshgrid(np.arange(0, self.model.nsteps[0]-1), np.arange(0, self.model.nsteps[1]-1),indexing='ij')
+        c_xi = c_xi.flatten(order='F')
+        c_yi = c_yi.flatten(order='F')
+        # get cell corners
+        xcorner = np.array([0, 1, 0, 1])
+        ycorner = np.array([0, 0, 1, 1])
+        xi = c_xi[:,None] + xcorner[None,:]
+        yi = c_yi[:,None] + ycorner[None,:]#, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
+        even_mask = (c_xi + c_yi) % 2 == 0
+        gi = xi + yi * self.model.nsteps[0]
+        triangles = np.zeros((c_xi.shape[0], 2, 3)).astype('int64')
+        triangles[even_mask, :, :] = gi[even_mask, :][:, tri_mask_even]
+        triangles[~even_mask, :, :] = gi[~even_mask, :][:, tri_mask_odd]
+
+        triangles.reshape((triangles.shape[0]*triangles.shape[1],triangles.shape[2]))
+        points = np.array(np.meshgrid(np.linspace(self.model.origin[0],self.model.maximum[0],self.model.nsteps[0]),
+                            np.linspace(self.model.origin[1],self.model.maximum[1],self.model.nsteps[1]))).T.reshape(-1,2)
+        points = np.hstack([points,np.zeros((points.shape[0],1))])
+        points[:,2] = self.model.dtm(points[:,:2])
+        dtm = self.lv.triangles(name,colour=colour)
+        dtm.vertices(points)
+        dtm.indices(triangles)
+            
+
+        
     def add_vector_data(self, position, vector, name, normalise=True, **kwargs):
         """
 
