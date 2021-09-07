@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.2.4](https://www.github.com/Loop3D/LoopStructural/compare/v1.2.3...v1.2.4) (2021-09-07)
+
+
+### Bug Fixes
+
+* changing ci to run on published ([7c043f0](https://www.github.com/Loop3D/LoopStructural/commit/7c043f0fa70ec51b4b5728db5f0da9432e9cae37))
+* pip publish run on release published ([bbc0e38](https://www.github.com/Loop3D/LoopStructural/commit/bbc0e38fcb16e695b0f35bf910cf3f203ef854fc))
+
 ### [1.2.3](https://www.github.com/Loop3D/LoopStructural/compare/v1.2.2...v1.2.3) (2021-09-07)
 
 
