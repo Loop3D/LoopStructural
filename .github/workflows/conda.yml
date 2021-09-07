@@ -2,7 +2,7 @@ name: publish_conda
 
 on:
   release:
-    types: [created, edited]
+    types: [published]
 jobs:
   conda-deploy:
     name: Uploading to Loop3d for python ${{ matrix.os }})
