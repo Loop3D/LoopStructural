@@ -5,20 +5,20 @@
 
 Computation times
 =================
-**01:46.659** total execution time for **auto_examples_1_basic** files:
+**01:46.007** total execution time for **auto_examples_1_basic** files:
 
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_1_basic_plot_3_multiple_groups.py` (``plot_3_multiple_groups.py``)                       | 00:48.057 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_1_basic_plot_3_multiple_groups.py` (``plot_3_multiple_groups.py``)                       | 00:47.947 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_1_basic_plot_4_using_stratigraphic_column.py` (``plot_4_using_stratigraphic_column.py``) | 00:46.994 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_1_basic_plot_4_using_stratigraphic_column.py` (``plot_4_using_stratigraphic_column.py``) | 00:46.751 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_1_basic_plot_2_surface_modelling.py` (``plot_2_surface_modelling.py``)                   | 00:04.152 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_1_basic_plot_2_surface_modelling.py` (``plot_2_surface_modelling.py``)                   | 00:03.946 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_1_basic_plot_5_using_logging.py` (``plot_5_using_logging.py``)                           | 00:03.932 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_1_basic_plot_5_using_logging.py` (``plot_5_using_logging.py``)                           | 00:03.906 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_1_basic_plot_3_model_visualisation.py` (``plot_3_model_visualisation.py``)               | 00:02.203 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_1_basic_plot_3_model_visualisation.py` (``plot_3_model_visualisation.py``)               | 00:02.107 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_1_basic_plot_1_data_prepration.py` (``plot_1_data_prepration.py``)                       | 00:01.321 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_1_basic_plot_1_data_prepration.py` (``plot_1_data_prepration.py``)                       | 00:01.351 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_auto_examples_1_basic_example_surfe.py` (``example_surfe.py``)                                         | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------+-----------+--------+

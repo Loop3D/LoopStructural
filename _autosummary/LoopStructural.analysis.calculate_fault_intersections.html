@@ -128,6 +128,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.version.html">LoopStructural.version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
 </ul>
 </li>
@@ -206,8 +207,22 @@
 <h1>LoopStructural.analysis.calculate_fault_intersections<a class="headerlink" href="#loopstructural-analysis-calculate-fault-intersections" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="LoopStructural.analysis.calculate_fault_intersections">
-<code class="sig-prename descclassname"><span class="pre">LoopStructural.analysis.</span></code><code class="sig-name descname"><span class="pre">calculate_fault_intersections</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.analysis.calculate_fault_intersections" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname"><span class="pre">LoopStructural.analysis.</span></code><code class="sig-name descname"><span class="pre">calculate_fault_intersections</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.analysis.calculate_fault_intersections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the intersections between faults in the model
+threshold defines the minimum displacement value that is
+considered in a fault volume</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel"><em>GeologicalModel</em></a>) – the model to process</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – displacement threshold for defining fault volume, by default 0.001</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>intersections</em> – dataframe matrix of fault intersections</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 

@@ -19,6 +19,7 @@ LoopStructural.visualisation.model\_visualisation.LavaVuModelViewer
       ~LavaVuModelViewer.__init__
       ~LavaVuModelViewer.add_box
       ~LavaVuModelViewer.add_data
+      ~LavaVuModelViewer.add_dtm
       ~LavaVuModelViewer.add_fault
       ~LavaVuModelViewer.add_fault_displacements
       ~LavaVuModelViewer.add_fold

@@ -119,6 +119,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">LoopStructural.interpolators</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html">LoopStructural.interpolators.GeologicalInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">LoopStructural.interpolators.StructuredGrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
@@ -137,6 +138,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.version.html">LoopStructural.version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
 </ul>
 </li>
@@ -225,17 +227,25 @@
 <tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator" title="LoopStructural.interpolators.FiniteDifferenceInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator</span></code></a>(grid)</p></td>
 <td><p>Finite difference interpolation on a regular cartesian grid</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html#LoopStructural.interpolators.PiecewiseLinearInterpolator" title="LoopStructural.interpolators.PiecewiseLinearInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearInterpolator</span></code></a>(mesh)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator" title="LoopStructural.interpolators.GeologicalInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalInterpolator</span></code></a>()</p></td>
+<td><p><dl class="py attribute">
+<dt id="LoopStructural.interpolators.data">
+<code class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></code><code class="sig-name descname"><span class="pre">data</span></code><a class="headerlink" href="#LoopStructural.interpolators.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html#LoopStructural.interpolators.PiecewiseLinearInterpolator" title="LoopStructural.interpolators.PiecewiseLinearInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearInterpolator</span></code></a>(mesh)</p></td>
 <td><p>Piecewise Linear Interpolator Approximates scalar field by finding coefficients to a piecewise linear equation on a tetrahedral mesh.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid" title="LoopStructural.interpolators.StructuredGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredGrid</span></code></a>([origin, nsteps, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid" title="LoopStructural.interpolators.StructuredGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredGrid</span></code></a>([origin, nsteps, …])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param origin - 3d list or numpy array</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html#LoopStructural.interpolators.TetMesh" title="LoopStructural.interpolators.TetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TetMesh</span></code></a>([origin, nsteps, step_vector])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html#LoopStructural.interpolators.TetMesh" title="LoopStructural.interpolators.TetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TetMesh</span></code></a>([origin, nsteps, step_vector])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param origin - 3d list or numpy array</dt>
 <dd class="field-odd"><p></p></dd>

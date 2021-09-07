@@ -55,5 +55,6 @@
    LoopStructural.modelling
    LoopStructural.probability
    LoopStructural.utils
+   LoopStructural.version
    LoopStructural.visualisation
 

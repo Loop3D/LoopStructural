@@ -1,0 +1,42 @@
+LoopStructural.modelling.features.geological\_feature\_builder.GeologicalInterpolator
+=====================================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.geological_feature_builder
+
+.. autoclass:: GeologicalInterpolator
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GeologicalInterpolator.__init__
+      ~GeologicalInterpolator.get_data_locations
+      ~GeologicalInterpolator.get_gradient_constraints
+      ~GeologicalInterpolator.get_interface_constraints
+      ~GeologicalInterpolator.get_norm_constraints
+      ~GeologicalInterpolator.get_tangent_constraints
+      ~GeologicalInterpolator.get_value_constraints
+      ~GeologicalInterpolator.reset
+      ~GeologicalInterpolator.set_gradient_constraints
+      ~GeologicalInterpolator.set_interface_constraints
+      ~GeologicalInterpolator.set_normal_constraints
+      ~GeologicalInterpolator.set_property_name
+      ~GeologicalInterpolator.set_region
+      ~GeologicalInterpolator.set_tangent_constraints
+      ~GeologicalInterpolator.set_value_constraints
+      ~GeologicalInterpolator.setup_interpolator
+      ~GeologicalInterpolator.solve_system
+      ~GeologicalInterpolator.update
+   
+   
+
+   
+   
+   

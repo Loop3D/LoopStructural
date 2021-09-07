@@ -1,0 +1,23 @@
+LoopStructural.version
+======================
+
+.. automodule:: LoopStructural.version
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

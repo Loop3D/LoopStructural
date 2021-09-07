@@ -59,6 +59,7 @@ LoopStructural.GeologicalModel
    .. autosummary::
    
       ~GeologicalModel.data
+      ~GeologicalModel.dtm
       ~GeologicalModel.faults
       ~GeologicalModel.faults_displacement_magnitude
       ~GeologicalModel.series

@@ -39,6 +39,7 @@ LoopStructural.modelling.features.geological\_feature\_builder
    
       GeologicalFeature
       GeologicalFeatureInterpolator
+      GeologicalInterpolator
       RegionEverywhere
    
    
