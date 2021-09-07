@@ -579,6 +579,7 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             if np.any(np.less(nsteps, 3)):
+                axis_labels = ['x','y','z']
                 for i in range(3):
                     if nsteps[i] < 3:
                         logger.error("Number of steps in direction {} is too small, try increasing nelements".format(axis_labels[i]))
