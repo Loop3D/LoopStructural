@@ -22,19 +22,13 @@ except:
 		 
 import numpy
 import os
-import codecs
-def read(rel_path):
-    here = os.path.abspath(os.path.dirname(__file__))
-    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
-        return fp.read()
 
-def get_version(rel_path):
-    for line in read(rel_path).splitlines():
-        if line.startswith('__version__'):
-            delim = '"' if '"' in line else "'"
-            return line.split(delim)[1]
-    else:
-        raise RuntimeError("Unable to find version string.")
+package_root = os.path.abspath(os.path.dirname(__file__))
+
+version = {}
+with open(os.path.join(package_root, "LoopStructural/version.py")) as fp:
+    exec(fp.read(), version)
+version = version["__version__"]
 
 setup(
 	name="LoopStructural",
@@ -47,7 +41,7 @@ setup(
 	'tqdm',
 	# 'pyamg'
 	],
-	version=get_version("LoopStructural/__init__.py"),
+	version=version,
     packages=find_packages(),
 	ext_modules=cythonize("LoopStructural/interpolators/cython/*.pyx",compiler_directives={"language_level": "3"}),
 	include_dirs=[numpy.get_include()],
