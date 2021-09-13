@@ -40,8 +40,13 @@ class LavaVuModelViewer(BaseModelPlotter):
         if self.bounding_box is None or self.nsteps is None:
             logger.error("Plot area has not been defined.")
         self.bounding_box = np.array(self.bounding_box)
-        self.default_cmap = 'rainbow'
 
+    def _parse_kwargs(self,kwargs):
+        """
+        remove any None kwargs from the list
+        """
+        return {k:v for k,v in kwargs.items() if v is not None}
+ 
     def _add_surface(self,
                     vertices, 
                     faces, 
@@ -49,8 +54,6 @@ class LavaVuModelViewer(BaseModelPlotter):
                     colour='red', 
                     paint_with=None, 
                     paint_with_value=None,
-                    min_property_val=None, 
-                    max_property_val=None,
                     **kwargs
                     ):
         """Virtual function to be overwritten by subclasses for adding surfaces to the viewer
@@ -68,6 +71,7 @@ class LavaVuModelViewer(BaseModelPlotter):
         paint_with : GeologicalFeature, optional
             geological feature to evaluate on vertices, by default None
         """
+        kwargs = self._parse_kwargs(kwargs)
         surf = self.lv.triangles(name)
         surf.vertices(vertices)
         surf.indices(faces)
@@ -81,7 +85,7 @@ class LavaVuModelViewer(BaseModelPlotter):
             # calculate the mode value, just to get the most common value
             surfaceval = np.zeros(vertices.shape[0])
             if isinstance(paint_with,GeologicalFeature):
-                surfaceval[:] = paint_with.evaluate_value(self.model.scale(vertices))
+                surfaceval[:] = paint_with.evaluate_value(self.model.scale(vertices,inplace=False))
                 surf.values(surfaceval, 'paint_with')
             if callable(paint_with):
                 surfaceval[:] = paint_with(self.model.scale(vertices))
@@ -89,11 +93,10 @@ class LavaVuModelViewer(BaseModelPlotter):
             if isinstance(paint_with,(float,int)):
                 surfaceval[:] = paint_with
                 surf.values(surfaceval, 'paint_with')
-             
             surf["colourby"] = 'paint_with'     
             cmap = kwargs.get('cmap', self.default_cmap)          
-            vmin = kwargs.get('vmin', min_property_val)
-            vmax = kwargs.get('vmax', max_property_val)
+            vmin = kwargs.get('vmin', np.nanmin(surfaceval))
+            vmax = kwargs.get('vmax', np.nanmax(surfaceval))
             surf.colourmap(cmap, range=(vmin, vmax)) 
 
     def _add_points(self, points, name, value= None, **kwargs):
@@ -108,6 +111,7 @@ class LavaVuModelViewer(BaseModelPlotter):
         value : np.array, optional
             value to assign to the points
         """
+        kwargs = self._parse_kwargs(kwargs)
         if points.shape[0] < 1:
             raise ValueError("Points array must have at least one element")
         if name is None:
@@ -122,6 +126,7 @@ class LavaVuModelViewer(BaseModelPlotter):
             vmax = kwargs.get('vmax',np.nanmax(value))
 
             logger.info('vmin {} and vmax {}'.format(vmin,vmax))
+            cmap = kwargs.get('cmap', self.default_cmap)
             p.colourmap(cmap, range=(vmin, vmax))
 
     def _add_vector_marker(self, location, vector, name, symbol_type='arrow',**kwargs):
@@ -138,7 +143,8 @@ class LavaVuModelViewer(BaseModelPlotter):
         name : string
             name of the object in the visualisation
         """
-        if location.shape[0] != vectors.shape[0]:
+        kwargs = self._parse_kwargs(kwargs)
+        if location.shape[0] != vector.shape[0]:
             raise ValueError("Location and vector arrays must be the same length")
         if location.shape[0] < 1:
             raise ValueError("Location array must have at least one element")
