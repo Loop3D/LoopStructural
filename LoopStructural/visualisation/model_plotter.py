@@ -651,7 +651,7 @@ class BaseModelPlotter:
             symbol_type = 'disk'
         if vectors:
             symbol_type = 'arrow'
-        if vectors and disk:
+        if vectors and disks:
             logger.warning("Cannot use both disks and arrows, using disks")
             symbol_type = 'disk'
         if grad.shape[0] > 0 and add_grad:
