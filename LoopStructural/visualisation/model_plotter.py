@@ -594,8 +594,11 @@ class BaseModelPlotter:
         -------
 
         """
+        if isinstance(geological_feature,GeologicalFeature):
+            raise ValueError("{} is not a GeologicalFeature".format(type(geological_feature)))
         logger.info("Adding vector field for %s " % (geological_feature.name))
         locations = kwargs.get('locations', None)
+        name = kwargs.get('name', geological_feature.name)
         if locations is None:
             x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
             y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
@@ -606,7 +609,7 @@ class BaseModelPlotter:
         # normalise
         mask = ~np.any(np.isnan(vector), axis=1)
         vector[mask, :] /= np.linalg.norm(vector[mask, :], axis=1)[:, None]
-        self._add_vector_marker(name, location, vector, **kwargs)
+        self._add_vector_marker(name, locations, vector, **kwargs)
         
         return
     
