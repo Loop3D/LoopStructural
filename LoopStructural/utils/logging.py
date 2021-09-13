@@ -15,6 +15,9 @@ def get_levels():
 def getLogger(name):
     logger = logging.getLogger(name)
     logger.addHandler(LoopStructural.ch)
+    # don't pass message back up the chain, what an odd default behavior
+    logger.propagate = False
+    # store the loopstructural loggers so we can change values
     LoopStructural.loggers[name] = logger
     return logger
 
@@ -57,4 +60,7 @@ def log_to_console(level='warning'):
         for hdlr in logger.handlers:
             # both stream and file are base stream, so check if not a filehandler
             if not isinstance(hdlr,logging.FileHandler):
+                logger.removeHandler(hdlr)
+                hdlr = LoopStructural.ch
                 hdlr.setLevel(level)
+                logger.addHandler(hdlr)
