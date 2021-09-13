@@ -23,6 +23,8 @@ class BaseModelPlotter:
         model
         """
         self.model = model
+        self.default_vector_symbol = 'disk'
+        self.default_cmap = 'rainbow'
 
     @property
     def model(self):
@@ -160,9 +162,10 @@ class BaseModelPlotter:
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 2])
             zz[:] = value
+        name = 'nothing'
         if geological_feature == 'model' and self.model is not None:
             name = kwargs.get('name','model_section')
-        else:
+        elif geological_feature is not None:
             name = kwargs.get('name', geological_feature.name)
         name = '{}_section_at_{}_of_{}'.format(axis,value,name)
         colour = kwargs.get('colour', 'red')
@@ -173,7 +176,10 @@ class BaseModelPlotter:
         points[:, 1] = yy
         points[:, 2] = zz
 
-        self._add_surface(points,tri , name, colour=colour, **kwargs)
+        # set the surface to be painted with the geological feature, but if a painter is specified, use that instead
+        # if 'paint_with' not in kwargs:
+        #     kwargs['paint_with'] = geological_feature
+        self._add_surface(self.model.rescale(points,inplace=False),tri , name, colour=colour, **kwargs)
 
     def add_isosurface(self, 
                         geological_feature, 
@@ -243,7 +249,11 @@ class BaseModelPlotter:
         max_val = np.nanmax(val)#geological_feature.max()
         min_val = np.nanmin(val)#geological_feature.min()
         if paint_with is not None and 'vmin' not in kwargs and 'vmax' not in kwargs:
-            paint_val = paint_with.evaluate_value(points)
+            paint_val = np.zeros(points.shape[0])
+            if isinstance(paint_with, GeologicalFeature):
+                paint_val = paint_with.evaluate_value(points)
+            if callable(paint_with):
+                paint_val = paint_with(points)
             # get the stats to check what we are plotting
             kwargs['vmin'] = np.nanmin(paint_val)#geological_feature.min()
             kwargs['vmax'] = np.nanmax(paint_val)#geological_feature.max()
@@ -296,15 +306,17 @@ class BaseModelPlotter:
 
             
             name = geological_feature.name
-            name = kwargs.get('name', name)
+            name = kwargs.pop('name', name)
             name += '_iso_%f' % isovalue
             if names is not None and len(names) == len(slices_):
                 name = names[i]
+            
             if colours is not None and len(colours) == len(slices_):
                 colour = colours[i]
+            paint_with_value = None
             if paint_with == geological_feature:
                 paint_with_value = isovalue
-            self._add_surface(verts, faces, name, colour=colour, opacity=opacity, paint_with=paint_with,paint_with_value=paint_with_value,**kwargs)
+            self._add_surface(verts, faces, name, colour=colour, opacity=opacity, paint_with=paint_with,paint_with_value=paint_with_value,cmap=cmap,**kwargs)
         
     def add_scalar_field(self, 
                         geological_feature, 
@@ -313,6 +325,7 @@ class BaseModelPlotter:
                         vmin=None, 
                         vmax = None, 
                         opacity=None, 
+                        paint_with=None,
                         **kwargs):
         """Add a block the size of the model area painted with the scalar field value
 
@@ -338,7 +351,12 @@ class BaseModelPlotter:
                 name = geological_feature.name + '_scalar_field'
 
         points, tri = create_box(self.bounding_box,self.nsteps)
-        self._add_surface(points, tri, name, paint_with=geological_feature,cmap=cmap, vmin=vmin, vmax=vmax, opacity=opacity, **kwargs)
+        if self.model is None:
+            raise ValueError("Model not set")
+        pts = self.model.rescale(points,inplace=False)
+        if paint_with is None:
+            paint_with = geological_feature
+        self._add_surface(pts, tri, name, paint_with=paint_with,cmap=cmap, vmin=vmin, vmax=vmax, opacity=opacity, **kwargs)
         
 
     def add_box(self,bounding_box,name,colour='red',**kwargs):
@@ -398,10 +416,8 @@ class BaseModelPlotter:
                     colours.append(v['colour'])
                     boundaries.append(v['id'])#print(u,v)
             cmap = colors.ListedColormap(colours).colors
-        
-        vmin = kwargs.get('vmin', np.nanmin(val))
-        vmax = kwargs.get('vmax', np.nanmax(val))
-        self._add_surface(tri, self.model.rescale(points),name, cmap=cmap,range=(vmin, vmax))
+
+        self._add_surface(self.model.rescale(points,inplace=False),tri,name, paint_with= lambda xyz: self.model.evaluate_model(xyz,scale=False),cmap=cmap,**kwargs)
         
 
     def add_fault_displacements(self, cmap = 'rainbow', **kwargs):
@@ -594,7 +610,7 @@ class BaseModelPlotter:
         
         return
     
-    def add_data(self, feature, disks=True, vectors = False,**kwargs):
+    def add_data(self, feature, disks=False, vectors = False,**kwargs):
         """
 
         Plot the data linked to the feature, can choose whether to plot all data types
@@ -630,22 +646,21 @@ class BaseModelPlotter:
         value = feature.builder.get_value_constraints()
         tang = feature.builder.get_tangent_constraints()
         interface = feature.builder.get_interface_constraints()
-
+        symbol_type = self.default_vector_symbol
+        if disks:
+            symbol_type = 'disk'
+        if vectors:
+            symbol_type = 'arrow'
+        if vectors and disk:
+            logger.warning("Cannot use both disks and arrows, using disks")
+            symbol_type = 'disk'
         if grad.shape[0] > 0 and add_grad:
-            if disks:
-                self.add_orientation_disks(self.model.rescale(grad[:, :3],inplace=False), grad[:, 3:6], name + "_grad_cp",
-                                 **kwargs)
-            if vectors:
-                self.add_vector_data(self.model.rescale(grad[:, :3],inplace=False), grad[:, 3:6], name + "_grad_cp",
-                                    **kwargs)
+            self.add_vector_data(self.model.rescale(grad[:, :3],inplace=False), grad[:, 3:6], name + "_grad_cp",
+                                    symbol_type=symbol_type,**kwargs)
 
         if norm.shape[0] > 0 and add_grad:
-            if disks:
-                self.add_orientation_disks(self.model.rescale(norm[:, :3],inplace=False), norm[:, 3:6], name + "_norm_cp",
-                                 **kwargs)
-            if vectors:
-                self.add_vector_data(self.model.rescale(norm[:, :3],inplace=False), norm[:, 3:6], name + "_norm_cp",
-                                    **kwargs)
+            self.add_vector_data(self.model.rescale(norm[:, :3],inplace=False), norm[:, 3:6], name + "_norm_cp",
+                                    symbol_type=symbol_type,**kwargs)
         if value.shape[0] > 0 and add_value:
             kwargs['range'] = [feature.min(), feature.max()]
             self.add_value_data(self.model.rescale(value[:, :3],inplace=False), value[:, 3], name + "_value_cp",
@@ -718,7 +733,7 @@ class BaseModelPlotter:
         triangles[even_mask, :, :] = gi[even_mask, :][:, tri_mask_even]
         triangles[~even_mask, :, :] = gi[~even_mask, :][:, tri_mask_odd]
 
-        triangles.reshape((triangles.shape[0]*triangles.shape[1],triangles.shape[2]))
+        triangles=  triangles.reshape((triangles.shape[0]*triangles.shape[1],triangles.shape[2]))
         points = np.array(np.meshgrid(np.linspace(self.model.origin[0],self.model.maximum[0],self.model.nsteps[0]),
                             np.linspace(self.model.origin[1],self.model.maximum[1],self.model.nsteps[1]))).T.reshape(-1,2)
         points = np.hstack([points,np.zeros((points.shape[0],1))])
@@ -727,7 +742,7 @@ class BaseModelPlotter:
             
 
         
-    def add_vector_data(self, position, vector, name, normalise=True, symbol_type='arrow', **kwargs):
+    def add_vector_data(self, location, vector, name, normalise=True, symbol_type='arrow', **kwargs):
         """
 
         Plot point data with a vector component into the lavavu viewer
@@ -746,10 +761,10 @@ class BaseModelPlotter:
         if 'colour' not in kwargs:
             kwargs['colour'] = 'black'
         # normalise
-        if position.shape[0] > 0:
+        if location.shape[0] > 0:
             if normalise:
                 vector /= np.linalg.norm(vector, axis=1)[:, None]
-            self._add_vector_marker(name,location,vector,symbol_type=symbol_type,**kwargs)
+            self._add_vector_marker(location,vector,name,symbol_type=symbol_type,**kwargs)
             return
     
 
