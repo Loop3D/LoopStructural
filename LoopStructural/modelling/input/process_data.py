@@ -125,6 +125,71 @@ class ProcessInputData:
         stratigraphic_column['faults'] = self.fault_properties.to_dict('index')
         return stratigraphic_column
 
+
+    def stratigraphy_cmap(self, supergroup='supergroup_0'):
+        """create a colour map for the stratigraphy scalar field
+        this is stretched to account for unit thicknesses
+
+        Parameters
+        ----------
+        supergroup : string, optional
+            name of the geological feature to creat this cmap of, by default 'supergroup_0'
+
+        Returns
+        -------
+        dict
+            containing a colourmap, minimum value for the scalar field and maximum value for the scalar field
+        
+        Examples
+        --------
+        Add a isosurfaces to the model coloured by the map colours
+
+        >>> model, processor = GeologicalModel.from_map2loop_directory(directory)
+        >>> view = LavaVuModelViewer(model)
+        >>> view.add_isosurface(model['supergroup_0'],**processor.stratigraphy_cmap('supergroup_0'))
+        >>> view.interactive()
+        
+
+        Raises
+        ------
+        ImportError
+            matplotlib not installed 
+        ValueError
+            supergroup not in stratigraphic column
+        """
+        try:
+            from matplotlib import cm
+            from matplotlib import colors
+        except ImportError:
+            logger.error("matplotlib is needed for creating a custom colourmap")
+            raise ImportError("matplotlib cannot be imported")
+        # define colourmap from stratigraphic column stretching it for the thickness variation
+        if supergroup not in self.stratigraphic_column:
+            raise ValueError("supergroup {} not in stratigraphic column".format(supergroup))
+        colours = []
+        boundaries = []
+        data = []
+        vmax=-99999.
+        vmin=99999.
+        for u, v  in self.stratigraphic_column[supergroup].items():
+            colours.append(v['colour'])
+            boundaries.append(v['min'])
+            vmax = np.max([vmax,v['max']])
+            vmin = np.min([vmin,v['min']])
+        # normalise so between 0,1
+        boundaries = np.array(boundaries)
+        boundaries/=np.max(boundaries)
+        cmap_stretched = colors.LinearSegmentedColormap.from_list("mycmap", list(zip(boundaries, colours)))
+        #lavavu needs a list of colours rather than a mpl segmented colourmap
+        # create a listedcolourmap by sampling from segmented colourmap evenly
+        cmap3 = colors.ListedColormap(cmap_stretched(np.linspace(0,1,40)))
+        cmap= []
+        # convert from rbga to hex for lavavu
+        for i in range(len(cmap3.colors)):
+            cmap.append(colors.to_hex(cmap3.colors[i,:]))
+        return {'cmap':cmap, 'vmin':vmin, 'vmax':vmax}
+
+
     @property
     def foliation_properties(self):
         return self._foliation_properties
@@ -263,7 +328,7 @@ class ProcessInputData:
         """
         stratigraphic_value = {}
         for name, sg in self._stratigraphic_order:
-            value = 0 #reset for each supergroup
+            value = 0. #reset for each supergroup
             for g in reversed(sg):
                 stratigraphic_value[g] = value #+ self._thicknesses[g]
                 value+=self._thicknesses[g]
