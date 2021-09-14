@@ -1627,10 +1627,7 @@ class GeologicalModel:
             buf=0
             for f in self.features:
                 pbar.set_description('Interpolating {}'.format(f.name))
-                f.builder.up_to_date()
-                if f.type == 'fault':
-                    for i in range(3): pbar.update()
-                else: pbar.update()
+                f.builder.up_to_date(callback=pbar.update)
 
             
         if verbose:
