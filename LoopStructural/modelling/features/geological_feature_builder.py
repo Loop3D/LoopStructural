@@ -10,6 +10,7 @@ import pandas as pd
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
+from LoopStructural.interpolators import GeologicalInterpolator
 from LoopStructural.utils.helper import xyz_names, val_name, normal_vec_names, \
     weight_name, gradient_vec_names, tangent_vec_names, interface_name
 from LoopStructural.modelling.features import GeologicalFeature
@@ -34,6 +35,8 @@ class GeologicalFeatureInterpolator:
             defining whether the location (xyz) should be included in the
         kwargs - name of the feature, region to interpolate the feature
         """
+        if issubclass(type(interpolator),GeologicalInterpolator) == False:
+            raise TypeError("interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator)))
         self._interpolator = interpolator
         self._name = name
         self._interpolator.set_property_name(self._name)

@@ -9,4 +9,5 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator
 from LoopStructural.interpolators.structured_tetra import TetMesh
 from LoopStructural.interpolators.structured_grid import StructuredGrid
+from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 

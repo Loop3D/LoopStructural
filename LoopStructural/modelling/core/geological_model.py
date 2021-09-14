@@ -424,6 +424,9 @@ class GeologicalModel:
         if 'type' in self._data:
             logger.warning("'type' is depreciated replace with 'feature_name' \n")
             self._data.rename(columns={'type':'feature_name'},inplace=True)
+        if 'feature_name' not in self._data:
+            logger.error("Data does not contain 'feature_name' column")
+            raise BaseException('Cannot load data')
         for h in all_heading():
             if h not in self._data:
                 self._data[h] = np.nan
@@ -575,6 +578,13 @@ class GeologicalModel:
             # step_vector /= np.array([1,1,2])
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            if np.any(np.less(nsteps, 3)):
+                axis_labels = ['x','y','z']
+                for i in range(3):
+                    if nsteps[i] < 3:
+                        logger.error("Number of steps in direction {} is too small, try increasing nelements".format(axis_labels[i]))
+                logger.error("Cannot create interpolator: number of steps is too small")
+                raise ValueError("Number of steps too small cannot create interpolator")
             # create a structured grid using the origin and number of steps
             if self.reuse_supports:
                 mesh_id = 'mesh_{}'.format(nelements)
@@ -602,7 +612,11 @@ class GeologicalModel:
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             if np.any(np.less(nsteps, 3)):
                 logger.error("Cannot create interpolator: number of steps is too small")
-                return None
+                axis_labels = ['x','y','z']
+                for i in range(3):
+                    if nsteps[i] < 3:
+                        logger.error("Number of steps in direction {} is too small, try increasing nelements".format(axis_labels[i]))
+                raise ValueError("Number of steps too small cannot create interpolator")
             # create a structured grid using the origin and number of steps
             if self.reuse_supports:
                 grid_id = 'grid_{}'.format(nelements)
@@ -644,12 +658,12 @@ class GeologicalModel:
                 surfe = False
             if not surfe:
                 logger.warning("Cannot import Surfe, try another interpolator")
-                raise ImportError
+                raise ImportError('Cannot import surfepy, try pip install surfe')
             method = kwargs.get('method', 'single_surface')
             logger.info("Using surfe interpolator")
             return Surfe(method)
         logger.warning("No interpolator")
-        return interpolator
+        raise BaseException("Could not create interpolator")
 
     def create_and_add_foliation(self, series_surface_data, tol = None, **kwargs):
         """

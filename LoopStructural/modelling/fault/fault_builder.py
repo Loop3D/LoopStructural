@@ -163,8 +163,6 @@ class FaultBuilder(StructuralFrameBuilder):
         self.builders[0].add_equality_constraints(splay, splayregion)
         return splayregion
     
-    
-
     def update(self):
         for i in range(3):
             self.builders[i].update()
