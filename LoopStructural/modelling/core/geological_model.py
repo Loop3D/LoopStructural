@@ -856,9 +856,6 @@ class GeologicalModel:
         else:
             fold_limb_rotation.fit_fourier_series(wl=l_wl,**kwargs)
         fold.fold_limb_rotation = fold_limb_rotation
-        # fold_limb_fitter = kwargs.get("fold_limb_function",
-        # _interpolate_fold_limb_rotation_angle)
-        # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
         kwargs['fold_weights'] = kwargs.get('fold_weights', {})
 
         self._add_faults(series_builder)
