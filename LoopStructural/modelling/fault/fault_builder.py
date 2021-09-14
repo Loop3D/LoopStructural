@@ -166,6 +166,6 @@ class FaultBuilder(StructuralFrameBuilder):
     def update(self):
         for i in range(3):
             self.builders[i].update()
-    def up_to_date(self):
+    def up_to_date(self, callback=None):
         for i in range(3):
-            self.builders[i].up_to_date()
+            self.builders[i].up_to_date(callback=callback)
