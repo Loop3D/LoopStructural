@@ -64,7 +64,12 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
         # gradient not norm, to prevent issues with fold norm constraint
         # TODO folding norm constraint should be minimising the difference in norm
         # not setting the norm
+        print('fold builder build')
+        print(self.data)
         self.add_data_to_interpolator(constrained=True)
+        print(self.interpolator.get_gradient_constraints())
+        print(self.interpolator.get_norm_constraints())
+
         self.set_fold_axis()
         self.set_fold_limb_rotation()
         logger.info("Adding fold to {}".format(self.name))

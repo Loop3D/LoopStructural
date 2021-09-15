@@ -23,7 +23,7 @@ class StructuralFrameBuilder:
 
     [extended_summary]
     """
-    def __init__(self, interpolator=None, interpolators=None, **kwargs):
+    def __init__(self, interpolator=None, interpolators=None, frame=StructuralFrame,**kwargs):
         """
         Class for building a structural frame - has functions to set up the
         interpolator with
@@ -73,10 +73,13 @@ class StructuralFrameBuilder:
             GeologicalFeatureInterpolator(interpolators[2],
                                           name=self.name + '_2',
                                           **kwargs))  # ,region=self.region))
-                                          
-        self._frame = frame(self.name, [gx_feature, gy_feature, gz_feature],fold=fold)
+        
+        self._frame = frame(self.name, [self.builders[0].feature, 
+                                        self.builders[1].feature, 
+                                        self.builders[2].feature],fold=kwargs.get('fold',None))
     @property
-
+    def frame(self):
+        return self._frame
 
     def __getitem__(self, item):
         return self.builders[item]
