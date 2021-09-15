@@ -14,6 +14,7 @@ from LoopStructural.modelling.features.cross_product_geological_feature \
     CrossProductGeologicalFeature
 from LoopStructural.modelling.features import \
     GeologicalFeatureInterpolator
+from LoopStructural.modelling.fold import FoldedFeatureBuilder
 from LoopStructural.modelling.features import StructuralFrame
 
 
@@ -56,8 +57,12 @@ class StructuralFrameBuilder:
             else:
                 raise BaseException("Missing interpolator")
         # self.builders
-        self.builders.append(
-            GeologicalFeatureInterpolator(interpolators[0],
+        if 'fold' in kwargs:
+            self.builders.append(FoldedFeatureBuilder(interpolators[0],
+                                          name=self.name + '_0',
+                                          **kwargs))
+        else:
+            self.builders.append(GeologicalFeatureInterpolator(interpolators[0],
                                           name=self.name + '_0',
                                           **kwargs))  # ,region=self.region))
         self.builders.append(
@@ -68,6 +73,10 @@ class StructuralFrameBuilder:
             GeologicalFeatureInterpolator(interpolators[2],
                                           name=self.name + '_2',
                                           **kwargs))  # ,region=self.region))
+                                          
+        self._frame = frame(self.name, [gx_feature, gy_feature, gz_feature],fold=fold)
+    @property
+
 
     def __getitem__(self, item):
         return self.builders[item]

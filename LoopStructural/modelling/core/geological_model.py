@@ -890,67 +890,27 @@ class GeologicalModel:
         interpolators = [fold_interpolator, gy_fold_interpolator,
                          frame_interpolator.copy()]
         fold_frame_builder = StructuralFrameBuilder(
-            interpolators=interpolators, name=fold_frame_data, **kwargs)
+            interpolators=interpolators, name=fold_frame_data, fold=fold, **kwargs)
         fold_frame_builder.add_data_from_data_frame(
             self.data[self.data['feature_name'] == fold_frame_data])
-
-        ## add the data to the interpolator for the main foliation
-        fold_frame_builder[0].add_data_to_interpolator(True)
-
-        if "fold_axis" in kwargs:
-            logger.info("Using cylindrical fold axis")
-            fold.fold_axis = kwargs['fold_axis']
-        if "av_fold_axis" in kwargs:
-            logger.info("Using average intersection lineation for \n"
-            "fold axis")
-            _calculate_average_intersection(fold_frame_builder[0], fold_frame,
-                                            fold)
-
-        if fold.fold_axis is None:
-            logger.info("Fitting fold axis rotation angle")
-            far, fad = fold_frame.calculate_fold_axis_rotation(
-                fold_frame_builder[0])
-            fold_axis_rotation = FoldRotationAngle(far, fad)
-            a_wl = kwargs.get("axis_wl", None)
-            if 'axis_function' in kwargs:
-                # allow predefined function to be used
-                fold_axis_rotation.set_function(kwargs['axis_function'])
-            else:
-                fold_axis_rotation.fit_fourier_series(wl=a_wl)
-            fold.fold_axis_rotation = fold_axis_rotation
-        # give option of passing own fold limb rotation function
-        flr, fld = fold_frame.calculate_fold_limb_rotation(
-            fold_frame_builder[0])
-        fold_limb_rotation = FoldRotationAngle(flr, fld)
-        l_wl = kwargs.get("limb_wl", None)
-        if 'limb_function' in kwargs:
-            # allow for predefined functions to be used
-            fold_limb_rotation.set_function(kwargs['limb_function'])
-        else:
-            fold_limb_rotation.fit_fourier_series(wl=l_wl)
-        fold.fold_limb_rotation = fold_limb_rotation
-        # fold_limb_fitter = kwargs.get("fold_limb_function",
-        # _interpolate_fold_limb_rotation_angle)
-        # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
-        kwargs['fold_weights'] = kwargs.get('fold_weights', {})
 
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
         # build feature
-        kwargs['fold'] = fold
-        self._add_faults(fold_frame_builder[0])
-        self._add_faults(fold_frame_builder[1])
-        self._add_faults(fold_frame_builder[2])
-        fold_frame = fold_frame_builder.build(**kwargs, tol=tol,frame=FoldFrame)
-        fold_frame.type = 'structuralframe'
+        kwargs['frame'] = FoldFrame
+        kwargs['tol'] = tol
+        fold_frame_builder.build_arguments = kwargs
+        folded_fold_frame = fold_frame_builder.feature
+
+        folded_fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region
         # for i in range(3):
         #     self._add_unconformity_above(fold_frame[i])
 
-        self._add_feature(fold_frame)
+        self._add_feature(folded_fold_frame)
        
 
-        return fold_frame
+        return folded_fold_frame
 
     def _add_faults(self, feature_builder, features=None):
         """Adds all existing faults to a geological feature builder 
