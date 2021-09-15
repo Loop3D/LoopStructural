@@ -21,10 +21,14 @@ from LoopStructural.modelling.fault import FaultBuilder
 from LoopStructural.modelling.features import (GeologicalFeatureInterpolator,
                                                RegionFeature,
                                                StructuralFrameBuilder,
-                                               UnconformityFeature)
-from LoopStructural.modelling.fold import FoldRotationAngle
-from LoopStructural.modelling.fold.fold import FoldEvent
-from LoopStructural.modelling.fold.foldframe import FoldFrame
+                                               UnconformityFeature,
+                                               StructuralFrame,
+                                               GeologicalFeature)
+from LoopStructural.modelling.fold import (FoldRotationAngle, 
+                                            FoldedFeatureBuilder,
+                                            FoldEvent,
+                                            FoldFrame)
+
 from LoopStructural.utils.exceptions import LoopBaseException
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
                                          strike_dip_vector)
@@ -786,7 +790,11 @@ class GeologicalModel:
         
         return fold_frame
 
-    def create_and_add_folded_foliation(self, foliation_data, fold_frame=None, svario=True, tol=None,
+    def create_and_add_folded_foliation(self, 
+                                        foliation_data, 
+                                        fold_frame=None, 
+                                        svario=True, 
+                                        tol=None,
                                         **kwargs):
         """
         Create a folded foliation field from data and a fold frame
@@ -818,51 +826,21 @@ class GeologicalModel:
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame,name='Fold_{}'.format(foliation_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-        series_builder = GeologicalFeatureInterpolator(
+        series_builder = FoldedFeatureBuilder(
             interpolator=fold_interpolator,
+            fold=fold,
+            fold_weights=kwargs.get('fold_weights', {}),
             name=foliation_data)
 
         series_builder.add_data_from_data_frame(
             self.data[self.data['feature_name'] == foliation_data])
         self._add_faults(series_builder)
-        series_builder.add_data_to_interpolator(True)
-        fold_axis = kwargs.get('fold_axis',None)
-        if fold_axis is not None:
-            fold_axis = np.array(fold_axis)
-            if len(fold_axis.shape) == 1:
-                fold.fold_axis = fold_axis
-        
-        if "av_fold_axis" in kwargs:
-            _calculate_average_intersection(series_builder, fold_frame, fold)
-        if fold.fold_axis is None:
-            far, fad = fold_frame.calculate_fold_axis_rotation(
-                series_builder)
-            fold_axis_rotation = FoldRotationAngle(far, fad,svario=svario)
-            a_wl = kwargs.get("axis_wl", None)
-            if 'axis_function' in kwargs:
-                # allow predefined function to be used
-                fold_axis_rotation.set_function(kwargs['axis_function'])
-            else:
-                fold_axis_rotation.fit_fourier_series(wl=a_wl)
-            fold.fold_axis_rotation = fold_axis_rotation
-        # give option of passing own fold limb rotation function
-        flr, fld = fold_frame.calculate_fold_limb_rotation(
-            series_builder, fold.get_fold_axis_orientation)
-        fold_limb_rotation = FoldRotationAngle(flr, fld,svario=svario)
-        l_wl = kwargs.get("limb_wl", None)
-        if 'limb_function' in kwargs:
-            # allow for predefined functions to be used
-            fold_limb_rotation.set_function(kwargs['limb_function'])
-        else:
-            fold_limb_rotation.fit_fourier_series(wl=l_wl,**kwargs)
-        fold.fold_limb_rotation = fold_limb_rotation
-        kwargs['fold_weights'] = kwargs.get('fold_weights', {})
-
+        # series_builder.add_data_to_interpolator(True)
         self._add_faults(series_builder)
         # build feature
-        kwargs['cgw'] = 0.
-        kwargs['fold'] = fold
+        
         kwargs['tol'] = tol
+
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
@@ -1604,6 +1582,9 @@ class GeologicalModel:
         nfeatures = 0
         for f in self.features:
             if f.type=='fault':
+                nfeatures+=3
+                total_dof+=f[0].interpolator.nx*3
+            if isinstance(f,StructuralFrame):
                 nfeatures+=3
                 total_dof+=f[0].interpolator.nx*3
             if f.type == 'series':

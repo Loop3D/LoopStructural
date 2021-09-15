@@ -455,16 +455,7 @@ class GeologicalFeatureInterpolator:
 
                 self.interpolator.support.maximum = newmax
             self.interpolator.set_region(region=region)
-        # moving this to init because it needs to be done before constraints
-        # are added?
-        if fold is not None:
-            logger.info("Adding fold to %s" % self.name)
-            self.interpolator.fold = fold
-            # if we have fold weights use those, otherwise just use default
-            self.interpolator.add_fold_constraints(**fold_weights)
-            if 'cgw' not in kwargs:
-                # try adding very small cg
-                kwargs['cgw'] = 0.0
+
         self.install_gradient_constraint()
         self.install_equality_constraints()
         self.interpolator.setup_interpolator(**kwargs)
