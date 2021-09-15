@@ -1,8 +1,29 @@
 from ..features import GeologicalFeatureInterpolator
 from . import FoldRotationAngle
+import numpy as np
 
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
+
+def _calculate_average_intersection(series_builder, fold_frame, fold,
+                                    **kwargs):
+    """
+
+    Parameters
+    ----------
+    series_builder
+    fold_frame
+    fold
+
+    Returns
+    -------
+
+    """
+    l2 = fold_frame.calculate_intersection_lineation(
+        series_builder)
+    fold.fold_axis = np.mean(l2, axis=0)
+
+
 class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
 
     def __init__(self,interpolator,fold,fold_weights={},name='Feature',region=None,**kwargs):
@@ -23,7 +44,7 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
                 self.fold.fold_axis = fold_axis
         
         if "av_fold_axis" in kwargs:
-            _calculate_average_intersection(series_builder, fold.foldframe, fold)
+            _calculate_average_intersection(self, self.fold.foldframe, self.fold)
         if self.fold.fold_axis is None:
             far, fad = self.fold.foldframe.calculate_fold_axis_rotation(
                 self)

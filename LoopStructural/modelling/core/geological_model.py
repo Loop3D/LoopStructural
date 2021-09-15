@@ -38,25 +38,6 @@ logger = getLogger(__name__)
 
 
 
-def _calculate_average_intersection(series_builder, fold_frame, fold,
-                                    **kwargs):
-    """
-
-    Parameters
-    ----------
-    series_builder
-    fold_frame
-    fold
-
-    Returns
-    -------
-
-    """
-    l2 = fold_frame.calculate_intersection_lineation(
-        series_builder)
-    fold.fold_axis = np.mean(l2, axis=0)
-
-
 class GeologicalModel:
     """
     A geological model is the recipe for building a 3D model and  can include
