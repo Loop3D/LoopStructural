@@ -1239,8 +1239,8 @@ class GeologicalModel:
             fault_frame_builder.add_splay(kwargs['splay'],kwargs['splayregion'])
 
         kwargs['tol'] = tol
-        fault_frame = fault_frame_builder.setup(**kwargs)
-        
+        fault_frame_builder.setup(**kwargs)
+        fault_frame = fault_frame_builder.frame
 
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
                              faultfunction=faultfunction,
