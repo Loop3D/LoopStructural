@@ -12,9 +12,6 @@ logger = getLogger(__name__)
 
 
 class FoldRotationAngle:
-    """
-
-    """
     def __init__(self, rotation_angle, fold_frame_coordinate, svario=False):
         """
 

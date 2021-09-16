@@ -28,7 +28,20 @@ class StructuralFrame:
         self.fold = fold
         self.builder = None
 
-    def __getitem__(self, item):
+    def __getitem__(self, key):
+        """
+
+        Parameters
+        ----------
+        key index of feature to access
+
+        Returns
+        -------
+        the structural frame geological feature
+        """
+        return self.features[key]
+    
+    def __setitem__(self, key, value):
         """
 
         Parameters
@@ -39,7 +52,7 @@ class StructuralFrame:
         -------
         the structural frame geological feature
         """
-        return self.features[item]
+        self.features[key] = value
 
     def set_model(self, model):
         """Link the model that created the frame to the frame
