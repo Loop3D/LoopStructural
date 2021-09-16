@@ -763,7 +763,7 @@ class GeologicalModel:
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
         kwargs['tol'] = tol
-        fold_frame_builder.build_arguments = kwargs
+        fold_frame_builder.setup(**kwargs)
         fold_frame = fold_frame_builder.frame
         # for i in range(3):
         #     self._add_unconformity_above(fold_frame[i])
@@ -876,14 +876,16 @@ class GeologicalModel:
             interpolators=interpolators, name=fold_frame_data, fold=fold, **kwargs)
         fold_frame_builder.add_data_from_data_frame(
             self.data[self.data['feature_name'] == fold_frame_data])
-
+    
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
         # build feature
         kwargs['frame'] = FoldFrame
         kwargs['tol'] = tol
-        fold_frame_builder.build_arguments = kwargs
+        fold_frame_builder.setup(**kwargs)
+        # fold_frame_builder.build_arguments = kwargs
         folded_fold_frame = fold_frame_builder.frame
+        folded_fold_frame.builder = fold_frame_builder
 
         folded_fold_frame.type = 'structuralframe'
         # see if any unconformities are above this feature if so add region
@@ -1237,7 +1239,7 @@ class GeologicalModel:
             fault_frame_builder.add_splay(kwargs['splay'],kwargs['splayregion'])
 
         kwargs['tol'] = tol
-        fault_frame = fault_frame_builder.build(**kwargs)
+        fault_frame = fault_frame_builder.setup(**kwargs)
         
 
         fault = FaultSegment(fault_frame, displacement=displacement_scaled,
