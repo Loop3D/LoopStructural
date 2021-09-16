@@ -5,7 +5,7 @@ import numpy as np
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
-def _calculate_average_intersection(series_builder, fold_frame, fold,
+def _calculate_average_intersection(feature_builder, fold_frame, fold,
                                     **kwargs):
     """
 
@@ -19,9 +19,7 @@ def _calculate_average_intersection(series_builder, fold_frame, fold,
     -------
 
     """
-    l2 = fold_frame.calculate_intersection_lineation(
-        series_builder)
-    fold.fold_axis = np.mean(l2, axis=0)
+    
 
 
 class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
@@ -44,7 +42,8 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
                 self.fold.fold_axis = fold_axis
         
         if "av_fold_axis" in kwargs:
-            _calculate_average_intersection(self, self.fold.foldframe, self.fold)
+            l2 = fold_frame.calculate_intersection_lineation(self)
+            self.fold.fold_axis = np.mean(l2, axis=0)
         if self.fold.fold_axis is None:
             far, fad = self.fold.foldframe.calculate_fold_axis_rotation(
                 self)
@@ -85,11 +84,7 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
         # gradient not norm, to prevent issues with fold norm constraint
         # TODO folding norm constraint should be minimising the difference in norm
         # not setting the norm
-        print('fold builder build')
-        print(self.data)
         self.add_data_to_interpolator(constrained=True)
-        print(self.interpolator.get_gradient_constraints())
-        print(self.interpolator.get_norm_constraints())
 
         self.set_fold_axis()
         self.set_fold_limb_rotation()
