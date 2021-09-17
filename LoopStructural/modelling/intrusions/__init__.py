@@ -1,1 +1,2 @@
 from .intrusion_frame import IntrusionFrame
+from .intrusion_network import IntrusionNetwork
