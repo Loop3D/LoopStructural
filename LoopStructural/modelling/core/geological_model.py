@@ -12,7 +12,7 @@ from LoopStructural.interpolators.finite_difference_interpolator import \
     FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator as PLI
-
+from LoopStructural.interpolators import DiscreteInterpolator
 
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.structured_tetra import TetMesh
@@ -29,7 +29,7 @@ from LoopStructural.modelling.fold import (FoldRotationAngle,
                                             FoldEvent,
                                             FoldFrame)
 
-from LoopStructural.utils.exceptions import LoopException
+from LoopStructural.utils.exceptions import LoopException, InterpolatorError
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
                                          strike_dip_vector)
 
@@ -648,7 +648,7 @@ class GeologicalModel:
             logger.info("Using surfe interpolator")
             return Surfe(method)
         logger.warning("No interpolator")
-        raise BaseException("Could not create interpolator")
+        raise InterpolatorError("Could not create interpolator")
 
     def create_and_add_foliation(self, series_surface_data, tol = None, **kwargs):
         """
@@ -1187,6 +1187,10 @@ class GeologicalModel:
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
+        # faults arent supported for surfe
+        if isinstance(interpolator, DiscreteInterpolator) == False:
+            logger.error("Change interpolator to a discrete interpolation algorithm FDI/PLI")
+            raise InterpolatorError('Faults not supported for {}'.format(kwargs['interpolatortype']))
         fault_frame_builder = FaultBuilder(interpolator,
                                                      name=fault_surface_data,
                                                      model=self,

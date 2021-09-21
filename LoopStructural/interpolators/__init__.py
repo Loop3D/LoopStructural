@@ -10,4 +10,5 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import \
 from LoopStructural.interpolators.structured_tetra import TetMesh
 from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
+from LoopStructural.interpolators.discrete_interpolator import DiscreteInterpolator
 
