@@ -182,6 +182,9 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
+        if len(points) == 0:
+            logger.error("No points to calculate intersection lineation")
+            raise ValueError("No data points associated with {}".format(feature_builder.name))
         points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(points[:, :3], axis=1)[:, None]

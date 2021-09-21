@@ -63,6 +63,9 @@ class GeologicalFeature:
             self.region = 'everywhere'
         self.model = None
 
+    def is_valid(self):
+        return self.interpolator.valid
+        
     def __str__(self):
         return self.name
 
