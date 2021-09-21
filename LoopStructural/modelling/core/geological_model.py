@@ -29,7 +29,7 @@ from LoopStructural.modelling.fold import (FoldRotationAngle,
                                             FoldEvent,
                                             FoldFrame)
 
-from LoopStructural.utils.exceptions import LoopBaseException
+from LoopStructural.utils.exceptions import LoopException
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
                                          strike_dip_vector)
 
@@ -507,13 +507,13 @@ class GeologicalModel:
 
         Raises
         ------
-        LoopBaseException
+        LoopException
             [description]
         """        
         for f in features:
             featuretype = f.pop('featuretype', None)
             if featuretype is None:
-                raise LoopBaseException
+                raise LoopException
             if featuretype == 'strati':
                 self.create_and_add_foliation(f)
             # if featuretype == 'fault':

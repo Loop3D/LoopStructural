@@ -277,7 +277,9 @@ class GeologicalFeatureInterpolator:
         for g in self._orthogonal_features.values():
             feature,w,region,step,B = g
             vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
-            vector /= np.linalg.norm(vector,axis=1)[:,None]
+            norm = np.linalg.norm(vector,axis=1)
+
+            vector[norm>0] /= norm[norm>0,None]
             element_idx = np.arange(self.interpolator.support.n_elements)
             np.random.shuffle(element_idx)
             self.interpolator.add_gradient_orthogonal_constraint(
