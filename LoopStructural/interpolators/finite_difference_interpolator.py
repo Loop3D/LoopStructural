@@ -353,10 +353,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
             #normalise element vector to unit vector for dot product
             T = self.support.calcul_T(points[inside, :3])
-            norm = np.linalg.norm(T,axis=1)
-            T/=norm[:,None,:]
+            # norm = np.linalg.norm(T,axis=1)
+            # T/=norm[:,None,:]
             # normalise vector to unit vector for dot product
-            vector[inside,:3] /= np.linalg.norm(vector[inside,:3],axis=1)[:,None]
+            # nro
+            # # vector[inside,:3] /= np.linalg.norm(vector[inside,:3],axis=1)[:,None]
             # dot product of vector and element gradient 
             A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
             
