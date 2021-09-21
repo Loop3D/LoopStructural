@@ -112,7 +112,6 @@ class SVariogram():
             # find number of steps to cover range in data
             nstep = int(
                 np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
-            print(nstep,step)
             self.lags = np.arange(step / 2., nstep * step, step)
             logger.info("Using average minimum nearest neighbour distance "
                         "as lag distance size {} and using {} lags".format(step,nstep))

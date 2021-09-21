@@ -2,7 +2,7 @@ from ..features import GeologicalFeatureInterpolator
 from . import FoldRotationAngle
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from LoopStructural.utils import getLogger, InterpolatorError
 logger = getLogger(__name__)
 
 def _calculate_average_intersection(feature_builder, fold_frame, fold,
@@ -45,6 +45,8 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
             l2 = self.fold.fold_frame.calculate_intersection_lineation(self)
             self.fold.fold_axis = np.mean(l2, axis=0)
         if self.fold.fold_axis is None:
+            if self.fold.foldframe[1].is_valid() == False:
+                raise InterpolatorError("Fold frame direction coordinate is not valid")
             far, fad = self.fold.foldframe.calculate_fold_axis_rotation(
                 self)
             fold_axis_rotation = FoldRotationAngle(far, fad,svario=self.svario)
@@ -69,6 +71,7 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
             # allow for predefined functions to be used
             fold_limb_rotation.set_function(kwargs['limb_function'])
         else:
+           
             fold_limb_rotation.fit_fourier_series(wl=l_wl,**kwargs)
         self.fold.fold_limb_rotation = fold_limb_rotation
 
@@ -85,7 +88,8 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
         # TODO folding norm constraint should be minimising the difference in norm
         # not setting the norm
         self.add_data_to_interpolator(constrained=True)
-
+        if self.fold.foldframe[0].is_valid() == False:
+            raise InterpolatorError("Fold frame main coordinate is not valid")
         self.set_fold_axis()
         self.set_fold_limb_rotation()
         logger.info("Adding fold to {}".format(self.name))
