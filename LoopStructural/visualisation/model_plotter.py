@@ -124,7 +124,7 @@ class BaseModelPlotter:
             name of the object in the visualisation
         """
         pass
-    def add_section(self, geological_feature=None, axis='x', value=None,  **kwargs):
+    def add_section(self, geological_feature=None, axis='x', value=None,  paint_with=None, **kwargs):
         """
 
         Plot a section/map thru the model and paint with a geological feature
@@ -165,8 +165,11 @@ class BaseModelPlotter:
         name = 'nothing'
         if geological_feature == 'model' and self.model is not None:
             name = kwargs.get('name','model_section')
+            if paint_with == None:
+                paint_with = lambda xyz: self.model.evaluate_model(xyz,scale=False)
         elif geological_feature is not None:
             name = kwargs.get('name', geological_feature.name)
+            paint_with = geological_feature
         name = '{}_section_at_{}_of_{}'.format(axis,value,name)
         colour = kwargs.get('colour', 'red')
 
@@ -179,7 +182,7 @@ class BaseModelPlotter:
         # set the surface to be painted with the geological feature, but if a painter is specified, use that instead
         # if 'paint_with' not in kwargs:
         #     kwargs['paint_with'] = geological_feature
-        self._add_surface(self.model.rescale(points,inplace=False),tri , name, colour=colour, **kwargs)
+        self._add_surface(self.model.rescale(points,inplace=False),tri , name, colour=colour, paint_with=paint_with, **kwargs)
 
     def add_isosurface(self, 
                         geological_feature, 
