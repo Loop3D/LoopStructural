@@ -39,7 +39,8 @@ class GeologicalInterpolator:
         self.constraints = []
         self.propertyname = 'defaultproperty'
         self.__str = 'Base Geological Interpolator'
-
+        self.valid = False
+        
     def __str__(self):
         
         return self.__str

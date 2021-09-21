@@ -531,11 +531,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # check solution is not nan
         # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
+            self.valid = False
             logger.warning("Solver not run, no scalar field")
+            return
         # if solution is all 0, probably didn't work
         if np.all(self.c[self.region] == 0):
+            self.valid = False
             logger.warning("No solution, {} scalar field 0. Add more data.".format(self.propertyname))
-
+            return
+        self.valid = True
     def update(self):
         """
         Check if the solver is up to date, if not rerun interpolation using
