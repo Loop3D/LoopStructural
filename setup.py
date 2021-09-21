@@ -39,7 +39,6 @@ setup(
 	'scikit-image',
 	'scikit-learn',
 	'tqdm',
-	# 'pyamg'
 	],
 	version=version,
     packages=find_packages(),

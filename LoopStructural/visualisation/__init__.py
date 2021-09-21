@@ -17,8 +17,12 @@ try:
 except:
     logger.error('Cannot use sphinx scraper, pip install -r docs/requirements.txt')
 try:
-    from .model_visualisation import LavaVuModelViewer
-except:
+    from .lavavu import LavaVuModelViewer
+except ImportError:
     logger.error("Missing lavavu, can't import LavaVuModelViewer")
 
+try:
+    from .vtk_viewer import VtkExporter
+except ImportError:
+    logger.error("No meshio")
 from ._scalar_field import ScalarField

@@ -87,13 +87,31 @@ class GeologicalFeatureInterpolator:
     def interpolator(self):
         return self._interpolator
 
-    def up_to_date(self):
+    def up_to_date(self,callback=None):
+        """
+        check if the feature is uptodate
+        if its not update.
+
+        Parameters
+        ----------
+        callback : function
+            a function that is called when the feature is updated 
+        
+        """
         #has anything changed in the builder since we built the feature? if so update
         if self._up_to_date == False:
             self.update()
+            if callable(callback):
+                callback()
+            return
         #check if the interpolator is up to date, if not solve
         if self._interpolator.up_to_date == False:
             self.update()
+            if callable(callback):
+                callback()
+            return
+        if callable(callback):
+            callback()
         
         
     def add_fault(self, fault):
