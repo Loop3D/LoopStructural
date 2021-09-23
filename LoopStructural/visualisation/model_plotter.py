@@ -316,6 +316,10 @@ class BaseModelPlotter:
             
             if colours is not None and len(colours) == len(slices_):
                 colour = colours[i]
+
+            if function is not None:
+                function(verts,faces,name)   
+                 
             paint_with_value = None
             if paint_with == geological_feature:
                 paint_with_value = isovalue
