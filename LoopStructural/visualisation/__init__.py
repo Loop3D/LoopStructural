@@ -22,7 +22,7 @@ except ImportError:
     logger.error("Missing lavavu, can't import LavaVuModelViewer")
 
 try:
-    from .vtk_viewer import VtkExporter
-except ImportError:
+    from .vtk_exporter import VtkExporter
+except ImportError as e:
     logger.error("No meshio")
 from ._scalar_field import ScalarField
