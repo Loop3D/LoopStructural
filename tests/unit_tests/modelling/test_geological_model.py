@@ -44,5 +44,4 @@ def test_element_number_FDI():
 def test_buffer():
     model = GeologicalModel([0,0,0],[5,5,5],rescale=True)
     interpolator = model.get_interpolator(interpolatortype='FDI',nelements=1e5,buffer=0.2)
-    print(interpolator.support.origin)
     assert np.sum(interpolator.support.origin + .2) == 0
