@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.3.1](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.0...v1.3.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* updating workflows to run on edited  ([5b051f4](https://www.github.com/Loop3D/LoopStructural/commit/5b051f4b58e56c08a6a0f5f9366733879be7761c))
+
 ## [1.3.0](https://www.github.com/Loop3D/LoopStructural/compare/v1.2.4...v1.3.0) (2021-09-27)
 
 
