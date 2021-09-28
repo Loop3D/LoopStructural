@@ -177,4 +177,248 @@ class LavaVuModelViewer(BaseModelPlotter):
             self.lv.control.Panel()
             self.lv.control.ObjectList()
             self.lv.interactive()      
+    def set_zscale(self,zscale):
+        """ Set the vertical scale for lavavu
 
+        just a simple wrapper for lavavu modelscale([xscale,yscale,zscale])
+
+        Parameters
+        ----------
+        zscale : float
+            vertical scale
+        """
+        self.lv.modelscale([1,1,zscale])
+
+    def set_viewer_rotation(self, rotation):
+        """
+        Set the viewer rotation given a list of rotations x,y,z
+
+        Parameters
+        ----------
+        rotation numpy array of 3 rotation
+
+        Returns
+        -------
+
+        """
+        self.lv.rotate(rotation)
+
+    def save(self, fname, **kwargs):
+        """
+        Calls lavavu.Viewer.image to save the viewer current state as an image
+
+        Parameters
+        ----------
+        fname - file name string including relative path
+        kwargs - optional kwargs to give to lavavu e.g. transparent, resolution
+
+        Returns
+        -------
+
+        """
+        self.lv.image(fname, **kwargs)
+
+    def export_to_webgl(self,fname, **kwargs ):
+        
+        self.lv.webgl(fname,**kwargs)
+    def display(self, fname=None, **kwargs):
+        """
+        Calls the lv object display function. Shows a static image of the viewer inline.
+
+        Returns
+        -------
+
+        """
+        if fname:
+            self.lv.image(fname, **kwargs)
+            
+        self.lv.display()
+
+    def image(self, name, **kwargs):
+        """
+        Calls the lv object image function to save the display state
+
+        Parameters
+        ----------
+        name : string
+            name of the image file to save
+        kwargs
+
+        Returns
+        -------
+
+        """
+        self.lv.image(name)
+    
+    def image_array(self, **kwargs):
+        """Return the current viewer image image data as a numpy array
+
+        Returns
+        -------
+        image : np.array
+            image as a numpy array
+        """
+        return self.lv.rawimage(**kwargs).data
+
+    def rotatex(self, r):
+        """
+        Rotate the viewer in the x plane
+
+        Parameters
+        ----------
+        r : double
+            degrees to rotate, can be +ve or -ve
+
+        Returns
+        -------
+
+        """
+        self.lv.rotatex(r)
+
+    def rotatey(self, r):
+        """
+        Rotate the viewer in the Y plane
+
+        Parameters
+        ----------
+        r : double
+            degrees to rotate, can be +ve or -ve
+
+        Returns
+        -------
+
+        """
+        self.lv.rotatey(r)
+
+    def rotatez(self, r):
+        """
+        Rotate the viewer in the z plane
+
+        Parameters
+        ----------
+        r : double
+            degrees to rotate, can be +ve or -ve
+
+        Returns
+        -------
+
+        """
+        self.lv.rotatez(r)
+
+    def rotate(self, r):
+        """
+        Rotate by a vector of rotation angles
+
+        Parameters
+        ----------
+        r : list/numpy array
+            a vector of rotations
+
+        Returns
+        -------
+
+        """
+        self.lv.rotate(r)
+
+    @property
+    def rotation(self):
+        """Accessor for the viewer rotation
+        Returns
+        -------
+        list
+            x,y,z rotations
+        """
+        return self.lv['xyzrotate']
+    
+    @rotation.setter
+    def rotation(self,xyz):
+        """Set the rotation of the viewer
+
+        Parameters
+        ----------
+        xyz : list like
+            x y z rotations
+        """
+        self.lv.rotation(xyz)
+
+    @property
+    def border(self):
+        """The width of the border around the model area
+
+        Returns
+        -------
+        border : double
+            [description]
+        """
+        return self.lv['border']
+    
+    @border.setter
+    def border(self, border):
+        """Setter for the border
+
+        Parameters
+        ----------
+        border : double
+            set the thickness of the border around objects
+        """
+        self.lv['border'] = border
+
+    def clear(self):
+        """Remove all objects from the viewer
+        """
+        self.lv.clear()
+    @property
+    def camera(self):
+        return self.lv.camera()
+        
+    @camera.setter
+    def camera(self,camera):
+        self.lv.camera(camera)
+        
+    @property
+    def xmin(self):
+        return self.lv['xmin']
+    
+    @xmin.setter
+    def xmin(self, xmin):
+        self.lv['xmin'] = xmin
+
+    @property
+    def xmax(self):
+        return self.lv['xmax']
+    
+    @xmax.setter
+    def xmax(self, xmax):
+        self.lv['xmax'] = xmax
+
+    @property
+    def ymin(self):
+        return self.lv['ymin']
+    
+    @ymin.setter
+    def ymin(self, ymin):
+        self.lv['ymin'] = ymin
+
+    @property
+    def ymax(self):
+        return self.lv['ymax']
+    
+    @ymax.setter
+    def ymax(self, ymax):
+        self.lv['ymax'] = ymax
+    
+    @property
+    def zmin(self):
+        return self.lv['zmax']
+
+    @zmin.setter
+    def zmin(self, zmin):
+        self.lv['zmin'] = zmin
+
+    @property
+    def zmax(self):
+        return self.lv['zmax']
+    
+    @zmax.setter
+    def zmax(self, zmax):
+        self.lv['zmax'] = zmax
