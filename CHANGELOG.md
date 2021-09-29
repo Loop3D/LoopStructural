@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.3.3](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.2...v1.3.3) (2021-09-29)
+
+
+### Bug Fixes
+
+* kernel parameter for surfe wasn't being applied ([4e99bbf](https://www.github.com/Loop3D/LoopStructural/commit/4e99bbf942467d39d82f1ee8acfe52174b45bb7b))
+
 ### [1.3.2](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.1...v1.3.2) (2021-09-28)
 
 
