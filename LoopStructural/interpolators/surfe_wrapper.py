@@ -75,6 +75,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
 
         kernel = kwargs.get("kernel", 'r3')
         logger.info("Setting surfe RBF kernel to %s" % kernel)
+        self.surfe.SetRBFKernel(kernel)
         regression = kwargs.get("regression_smoothing", 0.)
         if regression > 0:
             logger.info("Using regression smoothing %f" % regression)
