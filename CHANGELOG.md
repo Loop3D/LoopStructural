@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.3.2](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.1...v1.3.2) (2021-09-28)
+
+
+### Bug Fixes
+
+* adding missing functions to lavavu wrapper ([8a7b92c](https://www.github.com/Loop3D/LoopStructural/commit/8a7b92ca149c4798a977181c77bbc7338c2d3457))
+* adding tangents to surfepy wrapper ([1c0917e](https://www.github.com/Loop3D/LoopStructural/commit/1c0917e4b821383281fb8b507c44bf55fa9f3103))
+
 ### [1.3.1](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.0...v1.3.1) (2021-09-28)
 
 
