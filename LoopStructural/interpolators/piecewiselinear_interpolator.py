@@ -363,36 +363,76 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         -------
 
         """
-
-        # get elements for points
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
             vertices, c, tetras, inside = self.support.get_tetra_for_location(points[:,:3])
-            # calculate volume of tetras
+            # print(points[inside,:].shape)
+
+            gi = np.zeros(self.support.n_nodes)
+            gi[:] = -1
+            gi[self.region] = np.arange(0, self.nx)
+            idc = np.zeros(tetras.shape)
+            idc[:] = -1
+
+            idc[inside, :] = gi[tetras[inside, :]]
+            inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
+
             vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
             vol = np.abs(np.linalg.det(vecs)) / 6
-            A = c[inside]
-            A *= vol[:,None]
+            a = c[inside]
+            a *= vol[:,None]
             idc = tetras[inside,:]
-            for id in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
-                mask = points[inside,3] == id
-                interface_A = A[None,mask,:] - A[mask,None,:]
-                interface_A = np.sum(interface_A,axis=0)
-                # interface_A = interface_A.reshape((interface_A.shape[0]*interface_A.shape[0],A.shape[1]))
-                interface_idc = idc[mask,:]
 
-                # now map the index from global to region create array size of mesh
-                # initialise as np.nan, then map points inside region to 0->nx
-                gi = np.zeros(self.support.n_nodes).astype(int)
-                gi[:] = -1
+            # a = self.support.position_to_dof_coefs(points[inside, :3]).T
+            # create oversided array for storing constraints
+            A = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2))
+            interface_idc = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2),dtype=int)
+            interface_idc[:] = -1
+            c_i = 0
+            
+            for i in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
+                mask = points[inside,3] == i
+                for p1 in range(points[inside][mask].shape[0]):
+                    for p2 in range(p1+1,points[inside][mask].shape[0]):
+                        A[c_i,:4] = a[mask][p1,:]
+                        A[c_i,4:] -= a[mask][p2,:]
+                        interface_idc[c_i,:4] = idc[inside,:][mask,:][p1,:]
+                        interface_idc[c_i,4:] = idc[inside,:][mask,:][p2,:]
+                        c_i+=1
+            outside = ~np.any(interface_idc == -1, axis=1) 
+            
+            self.add_constraints_to_least_squares(A[outside,:] * w,
+                                                    np.zeros(A[outside,:].shape[0]),
+                                                    interface_idc[outside, :], name='interface')
+        # #get elements for points
+        # points = self.get_interface_constraints()
+        # if points.shape[0] > 1:
+        #     vertices, c, tetras, inside = self.support.get_tetra_for_location(points[:,:3])
+        #     # calculate volume of tetras
+        #     vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
+        #     vol = np.abs(np.linalg.det(vecs)) / 6
+        #     A = c[inside]
+        #     A *= vol[:,None]
+        #     idc = tetras[inside,:]
+        #     for unique_id in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
+        #         mask = points[inside,3] == unique_id
+        #         ij = np.array(np.meshgrid(np.arange(0,A[mask,:].shape[0]),np.arange(0,A[mask,:].shape[0]))).T.reshape(-1,2)
+        #         interface_A = np.hstack([A[mask,:][ij[:,0],:], -A[mask,:][ij[:,1],:] ])
+        #         # interface_A = interface_A.reshape((interface_A.shape[0]*interface_A.shape[0],A.shape[1]))
+        #         interface_idc = np.hstack([idc[mask,:][ij[:,0],:], idc[mask,:][ij[:,1],:] ])
 
-                gi[self.region] = np.arange(0, self.nx)
-                interface_idc = gi[interface_idc]
-                # interface_idc = np.tile(interface_idc,(interface_idc.shape[0],1)).reshape(interface_A.shape)#flatten()
-                outside = ~np.any(interface_idc == -1, axis=1)
-                self.add_constraints_to_least_squares(interface_A[outside,:] * w,
-                                                      np.zeros(interface_A[outside,:].shape[0]),
-                                                      interface_idc[outside, :], name='interface')
+        #         # now map the index from global to region create array size of mesh
+        #         # initialise as np.nan, then map points inside region to 0->nx
+        #         gi = np.zeros(self.support.n_nodes).astype(int)
+        #         gi[:] = -1
+
+        #         gi[self.region] = np.arange(0, self.nx)
+        #         interface_idc = gi[interface_idc]
+        #         # interface_idc = np.tile(interface_idc,(interface_idc.shape[0],1)).reshape(interface_A.shape)#flatten()
+        #         outside = ~np.any(interface_idc == -1, axis=1)
+        #         self.add_constraints_to_least_squares(interface_A[outside,:] * w,
+        #                                               np.zeros(interface_A[outside,:].shape[0]),
+        #                                               interface_idc[outside, :], name='interface_{}'.format(unique_id))
 
     def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
                                            B=0):
