@@ -686,7 +686,7 @@ class BaseModelPlotter:
         if 'name' in kwargs:
             name = kwargs['name']
             del kwargs['name']
-        intersection = feature.fold.foldframe.calculate_intersection_lineation(
+        intersection = feature.builder.fold.foldframe.calculate_intersection_lineation(
             feature.builder)
         gpoints = feature.builder.interpolator.get_gradient_constraints()[:,:6]
         npoints = feature.builder.interpolator.get_norm_constraints()[:,:6]
