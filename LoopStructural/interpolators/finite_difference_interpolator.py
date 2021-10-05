@@ -263,11 +263,13 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
-            norm = np.linalg.norm(T,axis=2)
-            T/=norm[:,:,None]
+            # normalise constraint vector and scale element matrix by this
+            norm = np.linalg.norm(vector,axis=1)
+            vector/=norm[:,None]
+            T/=norm[:,None,None]
+            # calculate two orthogonal vectors to constraint (strike and dip vector)
             strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
-
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient')
             A = np.einsum('ij,ijk->ik', dip_vector.T, T)
@@ -350,17 +352,15 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
-
+            # normalise vector and scale element gradient matrix by norm as well
+            norm = np.linalg.norm(vector,axis=1)
+            vector/=norm[:,None]
             #normalise element vector to unit vector for dot product
             T = self.support.calcul_T(points[inside, :3])
-            # norm = np.linalg.norm(T,axis=1)
-            # T/=norm[:,None,:]
-            # normalise vector to unit vector for dot product
-            # nro
-            # # vector[inside,:3] /= np.linalg.norm(vector[inside,:3],axis=1)[:,None]
-            # dot product of vector and element gradient 
-            A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
+            T/=norm[:,None,None]
             
+            # dot product of vector and element gradient = 0
+            A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient orthogonal')
 

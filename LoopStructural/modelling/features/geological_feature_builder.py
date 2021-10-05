@@ -282,7 +282,7 @@ class GeologicalFeatureInterpolator:
             vector[norm>0] /= norm[norm>0,None]
             element_idx = np.arange(self.interpolator.support.n_elements)
             np.random.shuffle(element_idx)
-            self.interpolator.add_gradient_orthogonal_constraint(
+            self.interpolator.add_gradient_orthogonal_constraints(
                 self.interpolator.support.barycentre()[element_idx[::step],:],
                 vector[element_idx[::step],:],
                 w=w,

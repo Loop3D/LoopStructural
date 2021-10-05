@@ -200,9 +200,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             #nodes = self.support.nodes[self.support.elements[e]]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
-            # d_t = self.support.get_elements_gradients(e)
-            norm = np.linalg.norm(element_gradients, axis=2)
-            element_gradients /= norm[:, :, None]
+            norm = np.linalg.norm(vector,axis=1)
+            vector/=norm[:,None]
+            element_gradients /= norm[:, None, None]
             # d_t *= vol[:,None,None]
             strike_vector, dip_vector = get_vectors(points[:, 3:6])
             A = np.einsum('ji,ijk->ik', strike_vector, element_gradients)
@@ -221,7 +221,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                                   name = 'gradient')
             A = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
             A *= vol[:, None]
-            # A+=A2
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                           B[outside], idc[outside, :],
                                                   name='gradient')
@@ -403,7 +402,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         #                                               np.zeros(interface_A[outside,:].shape[0]),
         #                                               interface_idc[outside, :], name='interface_{}'.format(unique_id))
 
-    def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
+    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0,
                                            B=0):
         """
         constraints scalar field to be orthogonal to a given vector
@@ -423,12 +422,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:,:3])
             #e, inside = self.support.elements_for_array(points[:, :3])
             #nodes = self.support.nodes[self.support.elements[e]]
-            vector /= np.linalg.norm(vector,axis=1)[:,None]
+            norm = np.linalg.norm(vector,axis=1)
+            vector /= norm[:,None]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
-            # d_t = self.support.get_elements_gradients(e)
-            norm = np.linalg.norm(element_gradients, axis=2)
-            element_gradients /= norm[:, :, None]
+            element_gradients /= norm[:,None,None]
 
             A = np.einsum('ij,ijk->ik', vector, element_gradients)
 

@@ -294,7 +294,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         points = self.get_tangent_constraints()
         if points.shape[0] > 1:
-            self.add_gradient_orthogonal_constraint(points[:,:3],points[:,3:6],w)
+            self.add_gradient_orthogonal_constraints(points[:,:3],points[:,3:6],w)
 
     def build_matrix(self, square=True, damp=True):
         """
