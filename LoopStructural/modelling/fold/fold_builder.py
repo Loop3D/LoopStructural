@@ -42,7 +42,7 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
                 self.fold.fold_axis = fold_axis
         
         if "av_fold_axis" in kwargs:
-            l2 = self.fold.fold_frame.calculate_intersection_lineation(self)
+            l2 = self.fold.foldframe.calculate_intersection_lineation(self)
             self.fold.fold_axis = np.mean(l2, axis=0)
         if self.fold.fold_axis is None:
             if self.fold.foldframe[1].is_valid() == False:
