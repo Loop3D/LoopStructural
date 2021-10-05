@@ -1,5 +1,20 @@
 # Changelog
 
+### [1.3.4](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.3...v1.3.4) (2021-10-05)
+
+
+### Bug Fixes
+
+* adding loop specific exceptions and project file ([a7664d2](https://www.github.com/Loop3D/LoopStructural/commit/a7664d261f3c6524c3e29f2c0e082ef6b5512813))
+* adding non-linear constraint template ([03b9e73](https://www.github.com/Loop3D/LoopStructural/commit/03b9e734dd058dc774dc4c755efc0a7e247e5d92))
+* adding non-linear constraint template ([1be8a45](https://www.github.com/Loop3D/LoopStructural/commit/1be8a45473828c90dc56eb23f698e8f20970a609))
+* boolean operator in surfe wrapper ([f11816e](https://www.github.com/Loop3D/LoopStructural/commit/f11816e9d1ed92076e5d9719aead0a4e3ad206a0))
+* bugfix for gradient constraints ([5fbbb08](https://www.github.com/Loop3D/LoopStructural/commit/5fbbb08733c2fbdf2975a143d996ae18a4711959))
+* constant fold axis was referencing fold_frame ([2050b68](https://www.github.com/Loop3D/LoopStructural/commit/2050b68b6ac837cb5113fdce481a78540fc1bdf5))
+* intersection visualisation was using the ([1cf531b](https://www.github.com/Loop3D/LoopStructural/commit/1cf531b51a82228133d47d2be6485d742e180e6d))
+* method names for FDI/PLI are consistent ([aebba23](https://www.github.com/Loop3D/LoopStructural/commit/aebba23b84c894e1bee75200547514793b32b4ae))
+* structural frame weights were being overwritten by ([15e7f23](https://www.github.com/Loop3D/LoopStructural/commit/15e7f23fa4207ce4ded440a99637e0d950010558))
+
 ### [1.3.3](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.2...v1.3.3) (2021-09-29)
 
 
