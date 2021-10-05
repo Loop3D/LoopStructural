@@ -133,19 +133,16 @@ class StructuralFrameBuilder:
         -------
 
         """
-        w1 = 1
-        w2 = 1
-        w3 = 1
         step = kwargs.get('step', 10)
         if 'gxxgy' in kwargs:
             logger.warning('gxxgy depreciated please use w1')
-            gxxgy = kwargs['gxxgy']
+            w1 = kwargs['gxxgy']
         if 'gxxgz' in kwargs:
             logger.warning('gxxgz depreciated please use w2')
-            gxxgz = kwargs['gxxgz']
+            w2 = kwargs['gxxgz']
         if 'gyxgz' in kwargs:
             logger.warning('gyxgz depreciated please use w3')
-            gyxgz = kwargs['gyxgz']
+            w3 = kwargs['gyxgz']
 
         # set regularisation so the the main surface (foliation, fault) is smooth
         # and the fields are allowed to vary more
