@@ -83,13 +83,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                     "%i tangent constraints and %i value constraints"
                     "to %s" % (self.n_g, self.n_n,
                                self.n_t, self.n_i, self.propertyname))
-        self.add_gradient_ctr_pts(self.interpolation_weights['gpw'])
-        self.add_norm_ctr_pts(self.interpolation_weights['npw'])
-        self.add_ctr_pts(self.interpolation_weights['cpw'])
-        self.add_tangent_ctr_pts(self.interpolation_weights['tpw'])
-        self.add_interface_ctr_pts(self.interpolation_weights['ipw'])
-        if 'constant_norm' in kwargs:
-            self.add_constant_norm(w=kwargs['constant_norm'])
+        self.add_gradient_constraints(self.interpolation_weights['gpw'])
+        self.add_norm_constraints(self.interpolation_weights['npw'])
+        self.add_value_constraints(self.interpolation_weights['cpw'])
+        self.add_tangent_constraints(self.interpolation_weights['tpw'])
+        self.add_interface_constraints(self.interpolation_weights['ipw'])
+        
     
     def add_constant_gradient(self, w= 0.1, direction_vector=None, direction_feature=None):
         """
@@ -173,37 +172,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         return
 
 
-    def add_constant_norm(self, w=0.1):
-        """
-        Add the constant gradient regularisation to the system
-
-        Parameters
-        ----------
-        w (double) - weighting of the cg parameter
-
-        Returns
-        -------
-
-        """
-        # iterate over all elements
-        A, idc, B = self.support.get_constant_norm(region=self.region)
-        A = np.array(A)
-        B = np.array(B)
-        idc = np.array(idc)
-
-        gi = np.zeros(self.support.n_nodes)
-        gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
-        idc = gi[idc]
-        outside = ~np.any(idc == -1, axis=1)
-
-        # w/=A.shape[0]
-        self.add_constraints_to_least_squares(A[outside, :] * w,
-                                              B[outside] * w, idc[outside, :],
-                                              name='norm_regularisation')
-        return
-
-    def add_gradient_ctr_pts(self, w=1.0):
+    def add_gradient_constraints(self, w=1.0):
         """
         Adds gradient constraints to the least squares system with a weight
         defined by w
@@ -257,7 +226,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                           B[outside], idc[outside, :],
                                                   name='gradient')
             
-    def add_norm_ctr_pts(self, w=1.0):
+    def add_norm_constraints(self, w=1.0):
         """
         Extracts the norm vectors from the interpolators p_n list and adds
         these to the implicit
@@ -301,19 +270,19 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes).astype(int)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx).astype(int)
-            w /= 3
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=2)
             outside = outside[:, 0]
-            w /= 3
+            w = points[:, 6]*w
+            # w /= 3
 
-            self.add_constraints_to_least_squares(d_t[outside, :, :] * w,
-                                                  points[outside, 3:6] * w *
+            self.add_constraints_to_least_squares(d_t[outside, :, :] * w[:,None,None],
+                                                  points[outside, 3:6] * w[:,None] *
                                                   vol[outside, None],
                                                   idc[outside],
                                                   name='norm')
 
-    def add_ctr_pts(self, w=1.0):  # for now weight all value points the same
+    def add_value_constraints(self, w=1.0):  # for now weight all value points the same
         """
         Adds value constraints to the least squares system
 
@@ -349,7 +318,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                                                   points[inside,:][outside, 3] * w * vol[outside],
                                                   idc[outside, :], name='value')
 
-    def add_interface_ctr_pts(self, w=1.0):  # for now weight all value points the same
+    def add_interface_constraints(self, w=1.0):  # for now weight all value points the same
         """
         Adds a constraint that defines all points with the same 'id' to be the same value
         Sets all P1-P2 = 0 for all pairs of points
@@ -473,6 +442,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             B = np.zeros(idc.shape[0])+B
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :] * w,
-                                                  B[outside], idc[outside, :], name='gradient_orthogonal')
+                                                  B[outside], idc[outside, :], name='gradient orthogonal')
 
 

@@ -124,16 +124,16 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             weight = self.interpolation_weights['dzz'] / \
                              1#self.support.step_vector[2]**2
             self.assemble_inner(operator,weight)
-        self.add_norm_constraint(
+        self.add_norm_constraints(
             self.interpolation_weights['npw'])
-        self.add_gradient_constraint(
+        self.add_gradient_constraints(
              self.interpolation_weights['gpw'])
-        self.add_vaue_constraint(
+        self.add_vaue_constraints(
              self.interpolation_weights['cpw'])
-        self.add_tangent_ctr_pts(
+        self.add_tangent_constraints(
             self.interpolation_weights['tpw']
         )
-        self.add_interface_ctr_pts(
+        self.add_interface_constraints(
             self.interpolation_weights['ipw']
         )
 
@@ -147,7 +147,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         return FiniteDifferenceInterpolator(self.support)
 
-    def add_vaue_constraint(self, w=1.):
+    def add_vaue_constraints(self, w=1.):
         """
 
         Parameters
@@ -181,7 +181,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                                   points[inside, 3] * w,
                                                   idc[inside, :],
                                                   name='value')
-    def add_interface_ctr_pts(self, w=1.0):  # for now weight all value points the same
+    def add_interface_constraints(self, w=1.0):  # for now weight all value points the same
         """
         Adds a constraint that defines all points with the same 'id' to be the same value
         Sets all P1-P2 = 0 for all pairs of points
@@ -232,7 +232,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                                     np.zeros(A[outside,:].shape[0]),
                                                     interface_idc[outside, :], name='interface')
 
-    def add_gradient_constraint(self, w=1.):
+    def add_gradient_constraints(self, w=1.):
         """
 
         Parameters
@@ -273,7 +273,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             A = np.einsum('ij,ijk->ik', dip_vector.T, T)
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient')
 
-    def add_norm_constraint(self, w=1.):
+    def add_norm_constraints(self, w=1.):
         """
         Add constraints to control the norm of the gradient of the scalar field
 
@@ -317,7 +317,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                                   points[inside, 5] * w ,
                                                   idc[inside, :], name='norm')
 
-    def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
+    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0,
                                            B=0):
         """
         constraints scalar field to be orthogonal to a given vector
