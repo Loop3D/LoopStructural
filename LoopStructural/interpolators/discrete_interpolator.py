@@ -47,6 +47,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
+        self.non_linear_constraints = []
         self.constraints = {}
         self.interpolation_weights= {}
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
@@ -177,15 +178,18 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows += self.c_
         constraint_ids = rows.copy()
 
-        if name in self.constraints:            
+        if name in self.constraints:
+            count = 0
+            if '_' in name:
+                count = int(name.split('_')[0])+1
+            name = name + '_{}'.format(count)           
             
-            self.constraints[name]['A'] =  np.vstack([self.constraints[name]['A'],A])
-            self.constraints[name]['B'] =  np.hstack([self.constraints[name]['B'], B])
-            self.constraints[name]['idc'] = np.vstack([self.constraints[name]['idc'],
-                                                idc])
+            # self.constraints[name]['A'] =  A#np.vstack([self.constraints[name]['A'],A])
+            # self.constraints[name]['B'] =  B#np.hstack([self.constraints[name]['B'], B])
+            # self.constraints[name]['idc'] = idc#np.vstack([self.constraints[name]['idc'],
+            #                                     idc])
                                    
-        if name not in self.constraints:
-            self.constraints[name] = {'node_indexes':constraint_ids,'A':A,'B':B.flatten(),'idc':idc}
+        self.constraints[name] = {'node_indexes':constraint_ids,'A':A,'B':B.flatten(),'idc':idc}
         rows = np.tile(rows, (A.shape[-1], 1)).T
 
         self.c_ += nr
@@ -272,8 +276,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_row.extend((np.arange(0, idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += idc[outside].shape[0]
+    
+    def add_non_linear_constraints(self, nonlinear_constraint):
+        self.non_linear_constraints.append(nonlinear_constraint)
 
-    def add_tangent_ctr_pts(self, w=1.0):
+    def add_tangent_constraints(self, w=1.0):
         """
 
         Parameters
