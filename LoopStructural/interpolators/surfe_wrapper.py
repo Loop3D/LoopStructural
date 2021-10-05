@@ -26,7 +26,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         if method == 'single_surface':
             logger.info("Using single surface interpolator")
             self.surfe = surfepy.Surfe_API(1)
-        if method == 'Lajaunie' or method='increments':
+        if method == 'Lajaunie' or method=='increments':
             logger.info("Using Lajaunie method")
             self.surfe = surfepy.Surfe_API(2)
         if method == 'horizons':
