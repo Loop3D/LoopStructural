@@ -200,8 +200,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             #nodes = self.support.nodes[self.support.elements[e]]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
-            norm = np.linalg.norm(vector,axis=1)
-            vector/=norm[:,None]
+            norm = np.linalg.norm(points[:,3:6],axis=1)
+            points[:,3:6]/=norm[:,None]
             element_gradients /= norm[:, None, None]
             # d_t *= vol[:,None,None]
             strike_vector, dip_vector = get_vectors(points[:, 3:6])
@@ -255,11 +255,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             vol = np.zeros(element_gradients.shape[0])
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs))  # / 6
-            # d_t = self.support.get_elements_gradients(e)
-            norm = np.zeros((element_gradients.shape[0],element_gradients.shape[1]))
-            norm[inside,:] = np.linalg.norm(element_gradients[inside,:,:], axis=2)
-            # element_gradients /= norm[:, :, None]
-
             d_t = element_gradients
             d_t[inside,:,:] *= vol[inside, None, None]
             # add in the element gradient matrix into the inte
