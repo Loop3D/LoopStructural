@@ -16,4 +16,9 @@ class LoopImportError(LoopException):
 class InterpolatorError(LoopException):
     pass
 
+class LoopTypeError(LoopException):
+    pass
+
+class LoopValueError(LoopException):
+    pass
 
