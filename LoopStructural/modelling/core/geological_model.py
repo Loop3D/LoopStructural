@@ -160,7 +160,14 @@ class GeologicalModel:
         return self.feature_name_index.keys()
         
     @classmethod
-    def from_map2loop_directory(cls, m2l_directory,foliation_params={},fault_params={},use_thickness=True,vector_scale=1,**kwargs):
+    def from_map2loop_directory(cls, 
+                                m2l_directory,
+                                foliation_params={},
+                                fault_params={},
+                                use_thickness=True,
+                                vector_scale=1,
+                                gradient=False,
+                                **kwargs):
         """Alternate constructor for a geological model using m2l output
 
         Uses the information saved in the map2loop files to build a geological model.
@@ -179,6 +186,7 @@ class GeologicalModel:
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor 
         processor=Map2LoopProcessor(m2l_directory,use_thickness)
+        processor._gradient = gradient
         processor.vector_scale = vector_scale
         for foliation_name in processor.stratigraphic_column.keys():
             if foliation_name != 'faults':
@@ -219,7 +227,8 @@ class GeologicalModel:
                 continue
             splay = False
             if 'angle' in properties:
-                if float(properties['angle']) < 30 and np.abs(processor.stratigraphic_column['faults'][edge[0]]['dip_dir']-processor.stratigraphic_column['faults'][edge[1]]['dip_dir']) <90:
+                if float(properties['angle']) < 30 and np.abs(processor.stratigraphic_column['faults'][edge[0]]['dip_dir']-
+                                                            processor.stratigraphic_column['faults'][edge[1]]['dip_dir']) < 90:
                     # splay
                     region = model[edge[1]].builder.add_splay(model[edge[0]])
 
@@ -419,7 +428,7 @@ class GeologicalModel:
                     self._data[h] = 1.
                 if h == 'coord':
                     self._data[h] = 0
-        
+        self.data.loc[np.isnan(self.data['w']),'w'] = 1.
         if 'strike' in self._data and 'dip' in self._data:
             logger.info('Converting strike and dip to vectors')
             mask = np.all(~np.isnan(self._data.loc[:, ['strike', 'dip']]),

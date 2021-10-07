@@ -43,7 +43,8 @@ class FaultBuilder(StructuralFrameBuilder):
                                 slip_vector,
                                 minor_axis = None,
                                 major_axis = None,
-                                intermediate_axis = None):
+                                intermediate_axis = None,
+                                w=1.):
         """Generate the required data for building a fault frame for a fault with the 
         specified parameters
 
@@ -82,26 +83,26 @@ class FaultBuilder(StructuralFrameBuilder):
                 fault_edges[0,:] = fault_center[:3]+normal_vector*minor_axis
                 fault_edges[1,:] = fault_center[:3]-normal_vector*minor_axis
                 self.update_geometry(fault_edges)
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],self.name,1,0]
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0]
+                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                    [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],self.name,1,0,w]
+                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                    [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0,w]
             if major_axis is not None:
                 fault_tips[0,:] = fault_center[:3]+strike_vector*0.5*major_axis
                 fault_tips[1,:] = fault_center[:3]-strike_vector*0.5*major_axis
                 self.update_geometry(fault_tips)
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_center[0],fault_center[1],fault_center[2],self.name,0,2]
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-.5,2]
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.5,2]
+                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                    [fault_center[0],fault_center[1],fault_center[2],self.name,0,2,w]
+                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                    [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],self.name,-.5,2,w]
+                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                    [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.5,2,w]
                 strike_vector /= major_axis
             if intermediate_axis is not None:
                 fault_depth[0,:] = fault_center[:3]+slip_vector*intermediate_axis
                 fault_depth[1,:] = fault_center[:3]-slip_vector*intermediate_axis
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                    [fault_center[0],fault_center[1],fault_center[2],self.name,0,1]
+                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                    [fault_center[0],fault_center[1],fault_center[2],self.name,0,1,w]
                 # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
                 #     [fault_depth[1,0],fault_depth[1,1],fault_depth[1,2],self.name,-1,1]
                 self.update_geometry(fault_depth)
@@ -109,8 +110,8 @@ class FaultBuilder(StructuralFrameBuilder):
                 # print(np.linalg.norm(slip_vector))
                 slip_vector /= intermediate_axis
                 # print(np.linalg.norm(slip_vector))
-                data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord']] =\
-                    [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1]
+                data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord','w']] =\
+                    [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1,w]
         # add strike vector to constraint fault extent
             # data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
             #     self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
