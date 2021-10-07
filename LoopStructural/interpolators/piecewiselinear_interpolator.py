@@ -212,7 +212,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes).astype(int)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx).astype(int)
-            w /= 3
+            # w /= 3
             idc = gi[tetras]
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
