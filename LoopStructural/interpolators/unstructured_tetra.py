@@ -14,13 +14,58 @@ class TetMesh:
     """
 
     """
-    def __init__(self, nodes, elements, neighbours):
+    def __init__(self, nodes, elements, neighbours,aabb_nsteps=[10,10,10]):
         self.nodes = np.array(nodes)
         self.neighbours = np.array(neighbours,dtype=np.int64)
         self.elements = np.array(elements,dtype=np.int64)
-        
         self.barycentre = np.sum(self.nodes[self.elements][:, :, :],
                                  axis=1) / 4.
+        self.minimum = np.min(self.nodes,axis=0)
+        self.maximum = np.max(self.nodes,axis=0)
+        length = (self.maximum-self.minimum)
+        self.minimum -= length*0.2
+        self.maximum += length*0.2
+
+        aabb_nsteps = np.array(aabb_nsteps,dtype=int)
+        step_vector = (self.maximum-self.minimum)/aabb_nsteps
+        self.aabb_grid = BaseStructuredSupport(self.minimum,nsteps=aabb_nsteps,step_vector=step_vector)
+        # make a big table to store which tetra are in which element.
+        # if this takes up too much memory it could be simplified by using sparse matrices or dict but 
+        # at the expense of speed 
+        self.aabb_table = np.zeros((self.aabb_grid.n_elements,len(self.elements)),dtype=bool)
+        self.aabb_table[:] = False
+    
+    def initialise_aabb(self):
+        # calculate the bounding box for all tetraherdon in the mesh
+        # find the min/max extents for xyz
+        tetra_bb = np.zeros((self.elements.shape[0],8,3))
+        minx = np.min(self.nodes[self.elements,0],axis=1)
+        maxx = np.max(self.nodes[self.elements,0],axis=1)
+        miny = np.min(self.nodes[self.elements,1],axis=1)
+        maxy = np.max(self.nodes[self.elements,1],axis=1)
+        minz = np.min(self.nodes[self.elements,2],axis=1)
+        maxz = np.max(self.nodes[self.elements,2],axis=1)
+        
+        # add the corners of the cube
+        tetra_bb[:,0,:] = np.array([minx,miny,minz]).T
+        tetra_bb[:,1,:] = np.array([maxx,miny,minz]).T
+        tetra_bb[:,2,:] = np.array([maxx,maxy,minz]).T
+        tetra_bb[:,3,:] = np.array([minx,maxy,minz]).T
+        tetra_bb[:,4,:] = np.array([minx,miny,maxz]).T
+        tetra_bb[:,5,:] = np.array([maxx,miny,minz]).T
+        tetra_bb[:,6,:] = np.array([maxx,maxy,maxz]).T
+        tetra_bb[:,7,:] = np.array([minx,maxy,maxz]).T
+
+        # find which 
+        cell_index_ijk = np.array(self.aabb_grid.position_to_cell_index(tetra_bb.reshape((-1,3)))).swapaxes(0,1)
+        cell_index_global = cell_index_ijk[:, 0] + self.aabb_grid.nsteps_cells[ None, 0] \
+               * cell_index_ijk[:, 1] + self.aabb_grid.nsteps_cells[ None, 0] * \
+               self.aabb_grid.nsteps_cells[ None, 1] * cell_index_ijk[:, 2]
+        bbcorners_grid_cell = cell_index_global.reshape((tetra_bb.shape[0],tetra_bb.shape[1]))
+        tetra_index = np.arange(self.elements.shape[0],dtype=int)
+        tetra_index = np.tile(tetra_index,(8,1)).T
+        self.aabb_table[bbcorners_grid_cell,tetra_index] = True
+
     @property
     def ntetra(self):
         return np.product(self.nsteps_cells) * 5
@@ -110,7 +155,7 @@ class TetMesh:
                       self.step_vector[None, i] * self.nsteps_cells[None, i]
         return inside
 
-    def get_tetra_for_location(self, pos):
+    def get_tetra_for_location(self, points):
         """
         Determine the tetrahedron from a numpy array of points
 
@@ -124,74 +169,37 @@ class TetMesh:
         -------
 
         """
-        
+        cell_index = np.array(grid.position_to_cell_index(points)).swapaxes(0,1)
+        global_index = cell_index[:, 0] + grid.nsteps_cells[ None, 0] \
+                    * cell_index[:, 1] + grid.nsteps_cells[ None, 0] * \
+                    grid.nsteps_cells[ None, 1] * cell_index[:, 2]
+        tetra_indices = grid_to_tetra[global_index,:]
+        row, col = np.where(tetra_indices)
+        vertices = nodes[elements[col,:]]
+        pos = points[row,:]
+        vap = pos[:, :] - vertices[:, 0, :]
+        vbp = pos[:, :] - vertices[:, 1, :]
+        #         # vcp = p - points[:, 2, :]
+        #         # vdp = p - points[:, 3, :]
+        vab = vertices[:, 1, :] - vertices[:, 0, :]
+        vac = vertices[:, 2, :] - vertices[:, 0, :]
+        vad = vertices[:, 3, :] - vertices[:, 0, :]
+        vbc = vertices[:, 2, :] - vertices[:, 1, :]
+        vbd = vertices[:, 3, :] - vertices[:, 1, :]
 
-    def get_constant_gradient(self, region, direction=None):
-        """
-        Get the constant gradient for the specified nodes
+        va = np.einsum('ij, ij->i', vbp, np.cross(vbd, vbc, axisa=1, axisb=1)) / 6.
+        vb = np.einsum('ij, ij->i', vap, np.cross(vac, vad, axisa=1, axisb=1)) / 6.
+        vc = np.einsum('ij, ij->i', vap, np.cross(vad, vab, axisa=1, axisb=1)) / 6.
+        vd = np.einsum('ij, ij->i', vap, np.cross(vab, vac, axisa=1, axisb=1)) / 6.
+        v = np.einsum('ij, ij->i', vab, np.cross(vac, vad, axisa=1, axisb=1)) / 6.
+        c = np.zeros((va.shape[0], 4))
+        c[:,  0] = va / v
+        c[:,  1] = vb / v
+        c[:,  2] = vc / v
+        c[:,  3] = vd / v
 
-        Parameters
-        ----------
-        region : np.array(dtype=bool)
-            mask of nodes to calculate cg for
-
-        Returns
-        -------
-
-        """
-        """
-        Add the constant gradient regularisation to the system
-
-        Parameters
-        ----------
-        w (double) - weighting of the cg parameter
-
-        Returns
-        -------
-
-        """
-        if direction is not None:
-            print('using cg direction')
-            logger.info("Running constant gradient")
-            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
-            if elements_gradients.shape[0] != direction.shape[0]:
-                logger.error('Cannot add directional CG, vector field is not the correct length')
-                return
-            region = region.astype('int64')
-
-            neighbours = self.get_neighbours()
-            elements = self.get_elements()
-            idc, c, ncons = fold_cg(elements_gradients, direction, neighbours.astype('int64'), elements.astype('int64'), self.nodes)
-
-            idc = np.array(idc[:ncons, :])
-            c = np.array(c[:ncons, :])
-            B = np.zeros(c.shape[0])
-            return c, idc, B
-        if self.cg is None:
-            logger.info("Running constant gradient")
-            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
-            region = region.astype('int64')
-
-            neighbours = self.get_neighbours()
-            elements = self.get_elements()
-            idc, c, ncons = cg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
-                               region.astype('int64'))
-
-            idc = np.array(idc[:ncons, :])
-            c = np.array(c[:ncons, :])
-            B = np.zeros(c.shape[0])
-            self.cg = (c,idc,B)
-        return self.cg[0], self.cg[1], self.cg[2]
-
-    def get_elements(self):
-        """
-        Get a numpy array of all of the elements in the mesh
-
-        Returns
-        -------
-        numpy array elements
-
-        """
+        mask = np.all(c>0,axis=1)
+        return vertices[mask,:,:], c[mask], col[mask], np.ones(col[inside],dtype=bool)
 
         
 
