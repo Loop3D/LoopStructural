@@ -1,5 +1,26 @@
 # Changelog
 
+### [1.3.5](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.4...v1.3.5) (2021-10-11)
+
+
+### Bug Fixes
+
+* adding aabb ([512f0a3](https://www.github.com/Loop3D/LoopStructural/commit/512f0a3ec2dddfe0032a03a1d5f24c1a039ddc9e))
+* adding gradient option for m2l wrapper ([cdce6e8](https://www.github.com/Loop3D/LoopStructural/commit/cdce6e8887f771d274ef68ad6ad94b25f745a3d5))
+* adding option to define custom mesh builder for pli ([b21fa8c](https://www.github.com/Loop3D/LoopStructural/commit/b21fa8c309590c6dd85ea28f0c456a7acb854df2))
+* changed to boolean logic for aabb ([f5a5f9b](https://www.github.com/Loop3D/LoopStructural/commit/f5a5f9b811220f534c2b667a652d063ad530294f))
+* cleaning up ([262a89d](https://www.github.com/Loop3D/LoopStructural/commit/262a89da9be5aabb3462b5a35dfea830eda6c728))
+* incorrect indexing for FDI grad constraints ([d6b8280](https://www.github.com/Loop3D/LoopStructural/commit/d6b82808e8f2716de313a9695293902b499bc27f))
+* move cg call to interpolator ([53492a2](https://www.github.com/Loop3D/LoopStructural/commit/53492a2436c6b90cf1ebe7a10283a5d8e5e49749))
+* moved generic methods to base class ([23ec788](https://www.github.com/Loop3D/LoopStructural/commit/23ec7889500863bf6f3a43e8b8b5c9a30433a190))
+* names kwarg wasn't used for multiple slices ([daebcf0](https://www.github.com/Loop3D/LoopStructural/commit/daebcf04ca0558c2f19ac60646d2e7adca8ef08a))
+* pli grad constraint weights were divided by 3 ([cedcffb](https://www.github.com/Loop3D/LoopStructural/commit/cedcffb2577257baa3bd30dc5e38ff7c5451b37a))
+* removing old lavavu wrapper, name wasn't ([9226f40](https://www.github.com/Loop3D/LoopStructural/commit/9226f40cdebd2d65ef4d723dfbc5c736a003051c))
+* renaming mesh to support for PLI ([2d07317](https://www.github.com/Loop3D/LoopStructural/commit/2d0731740958bd8ef284aa7f7f8d73f6d45734de))
+* setup.py codec and filename error ([479ae2b](https://www.github.com/Loop3D/LoopStructural/commit/479ae2b9f9805fb2061da9ae9aa7e5dac9c2f49f))
+* unstructured mesh seems to work ([3bd5e24](https://www.github.com/Loop3D/LoopStructural/commit/3bd5e248a2be44812c0d689c60ac0fa33e1c2e31))
+* updating setup.py to include metadata for pypi ([fea4317](https://www.github.com/Loop3D/LoopStructural/commit/fea4317b11a7bdbeffadc8c69f9ffc08ada4b3ca))
+
 ### [1.3.4](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.3...v1.3.4) (2021-10-05)
 
 
