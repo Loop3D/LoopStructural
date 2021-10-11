@@ -38,4 +38,4 @@ def test_get_elements():
     row,col = np.where(np.all(c>=0,axis=2))
     tetra_idx = np.sort(row)
 
-    assert np.sum(tetra_idx-np.sort(tetra)) == 0
+    assert np.all(elements[tetra_idx]-tetra == 0)

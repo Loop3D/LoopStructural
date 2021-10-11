@@ -113,17 +113,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if direction_vector is not None:
             logger.info("Running constant gradient")
             elements_gradients = self.support.get_element_gradients(np.arange(self.ntetra))
-            if elements_gradients.shape[0] != direction.shape[0]:
+            if elements_gradients.shape[0] != direction_vector.shape[0]:
                 logger.error('Cannot add directional CG, vector field is not the correct length')
                 return
-            region = region.astype('int64')
+            region = self.region.astype('int64')
 
             neighbours = self.support.get_neighbours()
             elements = self.support.get_elements()
             idc, c, ncons = fold_cg(elements_gradients, direction_vector, neighbours.astype('int64'), elements.astype('int64'), self.nodes)
 
             idc = np.array(idc[:ncons, :])
-            c = np.array(c[:ncons, :])
+            A = np.array(c[:ncons, :])
             B = np.zeros(c.shape[0])
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
