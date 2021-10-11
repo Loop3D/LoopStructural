@@ -10,11 +10,28 @@ from .base_structured_3d_support import BaseStructuredSupport
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
-class TetMesh:
+class UnStructuredTetMesh:
     """
 
     """
-    def __init__(self, nodes, elements, neighbours,aabb_nsteps=[10,10,10]):
+    def __init__(self, nodes, elements, neighbours,aabb_nsteps=None):
+        """An unstructured mesh defined by nodes, elements and neighbours
+        An axis aligned bounding box (AABB) is used to speed up finding 
+        which tetra a point is in.
+        The aabb grid is calculated so that there are approximately 10 tetra per
+        element. 
+
+        Parameters
+        ----------
+        nodes : array or array like 
+            container of vertex locations
+        elements : array or array like, dtype cast to long
+            container of tetra indicies
+        neighbours : array or array like, dtype cast to long
+            array containing element neighbours
+        aabb_nsteps : list, optional
+            force nsteps for aabb, by default None
+        """
         self.nodes = np.array(nodes)
         self.neighbours = np.array(neighbours,dtype=np.int64)
         self.elements = np.array(elements,dtype=np.int64)
@@ -23,19 +40,27 @@ class TetMesh:
         self.minimum = np.min(self.nodes,axis=0)
         self.maximum = np.max(self.nodes,axis=0)
         length = (self.maximum-self.minimum)
-        self.minimum -= length*0.2
-        self.maximum += length*0.2
+        self.minimum -= length
+        self.maximum += length
 
         aabb_nsteps = np.array(aabb_nsteps,dtype=int)
-        step_vector = (self.maximum-self.minimum)/aabb_nsteps
+        step_vector = (self.maximum-self.minimum)/(aabb_nsteps-1)
         self.aabb_grid = BaseStructuredSupport(self.minimum,nsteps=aabb_nsteps,step_vector=step_vector)
         # make a big table to store which tetra are in which element.
         # if this takes up too much memory it could be simplified by using sparse matrices or dict but 
         # at the expense of speed 
         self.aabb_table = np.zeros((self.aabb_grid.n_elements,len(self.elements)),dtype=bool)
         self.aabb_table[:] = False
+        self.initialise_aabb()
     
-    def initialise_aabb(self):
+    def _initialise_aabb(self):
+        """assigns the tetras to the grid cells where the bounding box
+        of the tetra element overlaps the grid cell. Note this is an approximation
+        and also does not work when the tetra bounding box is bigger than the aabb
+        grid cell. 
+        It could be changed to use the separating axis theorem, however this would require 
+        significantly more calculations... #TODO test timing
+        """
         # calculate the bounding box for all tetraherdon in the mesh
         # find the min/max extents for xyz
         tetra_bb = np.zeros((self.elements.shape[0],8,3))
@@ -68,7 +93,7 @@ class TetMesh:
 
     @property
     def ntetra(self):
-        return np.product(self.nsteps_cells) * 5
+        return self.elements.shape[0]
     
     @property
     def n_elements(self):
@@ -76,7 +101,7 @@ class TetMesh:
 
     @property
     def n_cells(self):
-        return np.product(self.nsteps_cells)
+        return None
 
     def barycentre(self, elements = None):
         """
@@ -94,12 +119,7 @@ class TetMesh:
         """
         np.sum(self.nodes[self.elements][:, :, :],
                                  axis=1) / 4.
-        # if elements is None:
-        #     elements = np.arange(0,self.ntetra)
-        # tetra = self.get_elements()[elements]
-        # barycentre = np.sum(self.nodes[tetra][:, :, :],
-        #                          axis=1) / 4.
-        # return barycentre
+
 
     def evaluate_value(self, pos, property_array):
         """
@@ -169,13 +189,13 @@ class TetMesh:
         -------
 
         """
-        cell_index = np.array(grid.position_to_cell_index(points)).swapaxes(0,1)
-        global_index = cell_index[:, 0] + grid.nsteps_cells[ None, 0] \
-                    * cell_index[:, 1] + grid.nsteps_cells[ None, 0] * \
-                    grid.nsteps_cells[ None, 1] * cell_index[:, 2]
-        tetra_indices = grid_to_tetra[global_index,:]
+        cell_index = np.array(self.aabb_grid.position_to_cell_index(points)).swapaxes(0,1)
+        global_index = cell_index[:, 0] + self.aabb_grid.nsteps_cells[ None, 0] \
+                    * cell_index[:, 1] + self.aabb_grid.nsteps_cells[ None, 0] * \
+                    self.aabb_grid.nsteps_cells[ None, 1] * cell_index[:, 2]
+        tetra_indices = self.aabb_table[global_index,:]
         row, col = np.where(tetra_indices)
-        vertices = nodes[elements[col,:]]
+        vertices = self.nodes[self.elements[col,:]]
         pos = points[row,:]
         vap = pos[:, :] - vertices[:, 0, :]
         vbp = pos[:, :] - vertices[:, 1, :]
@@ -197,9 +217,10 @@ class TetMesh:
         c[:,  1] = vb / v
         c[:,  2] = vc / v
         c[:,  3] = vd / v
+        # inside = np.ones(c.shape[0],dtype=bool)
+        mask = np.all(c>=0,axis=1)
 
-        mask = np.all(c>0,axis=1)
-        return vertices[mask,:,:], c[mask], col[mask], np.ones(col[inside],dtype=bool)
+        return vertices[mask,:,:], c[mask,:], col[mask], np.ones(col[mask].shape,dtype=bool)
 
         
 
@@ -275,151 +296,7 @@ class TetMesh:
 
 
 
-    def global_node_indicies(self, indexes):
-        """
-        Convert from node indexes to global node index
-
-        Parameters
-        ----------
-        indexes
-
-        Returns
-        -------
-
-        """
-        indexes = np.array(indexes).swapaxes(0, 2)
-        return indexes[:, :, 0] + self.nsteps[None, None, 0] \
-               * indexes[:, :, 1] + self.nsteps[None, None, 0] * \
-               self.nsteps[None, None, 1] * indexes[:, :, 2]
-
-    def global_cell_indicies(self, indexes):
-        """
-        Convert from cell indexes to global cell index
-
-        Parameters
-        ----------
-        indexes
-
-        Returns
-        -------
-
-        """
-        indexes = np.array(indexes).swapaxes(0, 2)
-        return indexes[:, :, 0] + self.nsteps_cells[None, None, 0] \
-               * indexes[:, :, 1] + self.nsteps_cells[None, None, 0] * \
-               self.nsteps_cells[None, None, 1] * indexes[:, :, 2]
-
-    def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
-        """
-        Returns the indexes of the corners of a cell given its location xi,
-        yi, zi
-
-        Parameters
-        ----------
-        x_cell_index
-        y_cell_index
-        z_cell_index
-
-        Returns
-        -------
-
-        """
-        x_cell_index = np.array(x_cell_index)
-        y_cell_index = np.array(y_cell_index)
-        z_cell_index = np.array(z_cell_index)
-
-        xcorner = np.array([0, 1, 0, 1, 0, 1, 0, 1])
-        ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
-        zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
-        xcorners = x_cell_index[:, None] + xcorner[None, :]
-        ycorners = y_cell_index[:, None] + ycorner[None, :]
-        zcorners = z_cell_index[:, None] + zcorner[None, :]
-        return xcorners, ycorners, zcorners
-
-    def position_to_cell_corners(self, pos):
-        """
-        Find the nodes that belong to a cell which contains a point
-
-        Parameters
-        ----------
-        pos
-
-        Returns
-        -------
-
-        """
-        inside = self.inside(pos)
-        ix, iy, iz = self.position_to_cell_index(pos)
-        cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
-        globalidx = self.global_cell_indicies(
-            np.dstack([cornersx, cornersy, cornersz]).T)
-        return globalidx, inside
-
-
-    def node_indexes_to_position(self, xindex, yindex, zindex):
-        """
-        Get the xyz position from the node coordinates
-
-        Parameters
-        ----------
-        xindex
-        yindex
-        zindex
-
-        Returns
-        -------
-
-        """
-        x = self.origin[0] + self.step_vector[0] * xindex
-        y = self.origin[1] + self.step_vector[1] * yindex
-        z = self.origin[2] + self.step_vector[2] * zindex
-
-        return np.array([x, y, z])
-
-    def global_index_to_node_index(self, global_index):
-        """
-        Convert from global indexes to xi,yi,zi
-
-        Parameters
-        ----------
-        global_index
-
-        Returns
-        -------
-
-        """
-        # determine the ijk indices for the global index.
-        # remainder when dividing by nx = i
-        # remained when dividing modulus of nx by ny is j
-        x_index = global_index % self.nsteps[0, None]
-        y_index = global_index // self.nsteps[0, None] % \
-                  self.nsteps[1, None]
-        z_index = global_index // self.nsteps[0, None] // \
-                  self.nsteps[1, None]
-        return x_index, y_index, z_index
-
-    def global_index_to_cell_index(self, global_index):
-        """
-        Convert from global indexes to xi,yi,zi
-
-        Parameters
-        ----------
-        global_index
-
-        Returns
-        -------
-
-        """
-        # determine the ijk indices for the global index.
-        # remainder when dividing by nx = i
-        # remained when dividing modulus of nx by ny is j
-
-        x_index = global_index % self.nsteps_cells[0, None]
-        y_index = global_index // self.nsteps_cells[0, None] % \
-                  self.nsteps_cells[1, None]
-        z_index = global_index // self.nsteps_cells[0, None] // \
-                  self.nsteps_cells[1, None]
-        return x_index, y_index, z_index
+    
 
     def get_neighbours(self):
         """
@@ -430,7 +307,7 @@ class TetMesh:
         -------
 
         """
-        
+        self.neighbours
 
 
 
