@@ -279,7 +279,7 @@ class BaseModelPlotter:
             slices_ = np.linspace(min_val + var * 0.05,
                                  max_val - var * 0.05,
                                  nslices)
-        base_name = kwargs.get('name',geological_feature.name)
+        base_name = kwargs.pop('name',geological_feature.name)
 
         region = kwargs.get('region', None)
         if region is not None:
