@@ -588,7 +588,10 @@ class GeologicalModel:
                 if mesh_id not in self.support:
                     self.support[mesh_id] = mesh
             else:
-                mesh = TetMesh(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector)
+                if 'meshbuilder' in kwargs:
+                    mesh = kwargs['meshbuilder'](bb,nelements)
+                else:
+                    mesh = TetMesh(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector)
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using PLI" % (mesh.ntetra))
 
@@ -635,8 +638,11 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             # create a structured grid using the origin and number of steps
-            mesh = kwargs.get('mesh', TetMesh(origin=bb[0, :], nsteps=nsteps,
-                                              step_vector=step_vector))
+            if 'meshbuilder' in kwargs:
+                    mesh = kwargs['meshbuilder'].build(bb,nelements)
+            else:
+                mesh = kwargs.get('mesh', TetMesh(origin=bb[0, :], nsteps=nsteps,
+                                                step_vector=step_vector))
             logger.info("Creating regular tetrahedron mesh with %i elements \n"
                         "for modelling using DFI" % mesh.ntetra)
             return DFI(mesh, kwargs['fold'])
