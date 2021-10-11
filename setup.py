@@ -22,6 +22,7 @@ except:
 		 
 import numpy
 import os
+import codecs
 
 package_root = os.path.abspath(os.path.dirname(__file__))
 
@@ -41,7 +42,7 @@ setup(
 	'tqdm',
 	],
 	description="Open source 3D structural geology modelling",
-          long_description=codecs.open("README.rst", "r", "utf-8").read(),
+          long_description=codecs.open("README.md", "r", "utf-8").read(),
           author="Lachlan Grose",
           author_email="lachlan.grose@monash.edu",
           license=("MIT"),
