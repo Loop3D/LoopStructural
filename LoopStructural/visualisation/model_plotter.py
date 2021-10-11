@@ -279,6 +279,7 @@ class BaseModelPlotter:
             slices_ = np.linspace(min_val + var * 0.05,
                                  max_val - var * 0.05,
                                  nslices)
+        base_name = kwargs.get('name',geological_feature.name)
 
         region = kwargs.get('region', None)
         if region is not None:
@@ -307,10 +308,7 @@ class BaseModelPlotter:
                 logger.warning("Cannot isosurface {} at {}, skipping".format(geological_feature.name,isovalue))
                 continue
 
-            
-            name = geological_feature.name
-            name = kwargs.pop('name', name)
-            name += '_iso_%f' % isovalue
+            name += '{}_{}'.format(basename,isovalue)
             if names is not None and len(names) == len(slices_):
                 name = names[i]
             
