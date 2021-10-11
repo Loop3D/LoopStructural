@@ -308,7 +308,7 @@ class BaseModelPlotter:
                 logger.warning("Cannot isosurface {} at {}, skipping".format(geological_feature.name,isovalue))
                 continue
 
-            name += '{}_{}'.format(basename,isovalue)
+            name = '{}_{}'.format(base_name,isovalue)
             if names is not None and len(names) == len(slices_):
                 name = names[i]
             
