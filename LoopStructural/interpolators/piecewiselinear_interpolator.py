@@ -4,6 +4,7 @@ Piecewise linear interpolator
 import logging
 
 import numpy as np
+from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
 
 from LoopStructural.interpolators.discrete_interpolator import \
     DiscreteInterpolator
@@ -17,7 +18,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     """
 
     """
-    def __init__(self, mesh):
+    def __init__(self, support):
         """
         Piecewise Linear Interpolator
         Approximates scalar field by finding coefficients to a piecewise linear
@@ -25,15 +26,15 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        mesh - TetMesh
+        support - TetMesh
             interpolation support
         """
 
         self.shape = 'rectangular'
-        DiscreteInterpolator.__init__(self, mesh)
+        DiscreteInterpolator.__init__(self, support)
         # whether to assemble a rectangular matrix or a square matrix
         self.interpolator_type = 'PLI'
-        self.support = mesh
+        self.support = support
 
         self.interpolation_weights = {'cgw': 0.1, 'cpw': 1., 'npw': 1.,
                                       'gpw': 1., 'tpw': 1., 'ipw': 1.}
@@ -103,73 +104,58 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         if direction_feature is not None:
-            print('dir fe')
             direction_vector = direction_feature.evaluate_gradient(self.support.barycentre())
         if direction_vector is not None:
             if direction_vector.shape[0] == 1:
                 # if using a constant direction, tile array so it works for cg calc
                 direction_vector = np.tile(direction_vector,(self.support.barycentre().shape[0],1))
+        if direction_vector is not None:
+            logger.info("Running constant gradient")
+            elements_gradients = self.support.get_element_gradients(np.arange(self.ntetra))
+            if elements_gradients.shape[0] != direction_vector.shape[0]:
+                logger.error('Cannot add directional CG, vector field is not the correct length')
+                return
+            region = self.region.astype('int64')
 
-            
-        # iterate over all elements
-        A, idc, B = self.support.get_constant_gradient(region=self.region,direction=direction_vector)
-        A = np.array(A)
-        B = np.array(B)
-        idc = np.array(idc)
+            neighbours = self.support.get_neighbours()
+            elements = self.support.get_elements()
+            idc, c, ncons = fold_cg(elements_gradients, direction_vector, neighbours.astype('int64'), elements.astype('int64'), self.nodes)
 
-        gi = np.zeros(self.support.n_nodes)
-        gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
-        idc = gi[idc]
-        outside = ~np.any(idc == -1, axis=1)
+            idc = np.array(idc[:ncons, :])
+            A = np.array(c[:ncons, :])
+            B = np.zeros(c.shape[0])
+            gi = np.zeros(self.support.n_nodes)
+            gi[:] = -1
+            gi[self.region] = np.arange(0, self.nx)
+            idc = gi[idc]
+            outside = ~np.any(idc == -1, axis=1)
 
-        # w/=A.shape[0]
-        self.add_constraints_to_least_squares(A[outside, :] * w,
-                                              B[outside] * w, idc[outside, :],
-                                              name='regularisation')
-        return
+            # w/=A.shape[0]
+            self.add_constraints_to_least_squares(A[outside, :] * w,
+                                                B[outside] * w, idc[outside, :],
+                                                name='direction_regularisation')
+        else:
+            logger.info("Running constant gradient")
+            elements_gradients = self.support.get_element_gradients(np.arange(self.support.ntetra))
+            region = self.region.astype('int64')
 
-    def add_direction_constant_gradient(self, w= 0.1, direction_vector=None, direction_feature=None):
-        """
-        Add the constant gradient regularisation to the system where regularisation is projected
-        on a vector
+            neighbours = self.support.get_neighbours()
+            elements = self.support.get_elements()
+            idc, c, ncons = cg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.support.nodes,
+                               region.astype('int64'))
 
-        Parameters
-        ----------
-        w (double) - weighting of the cg parameter
-        direction_vector
-        direction_feature
-
-        Returns
-        -------
-
-        """
-        if direction_feature:
-            print('dir fe')
-            direction_vector = direction_feature.evaluate_gradient(self.support.barycentre())
-        if direction_vector:
-            if direction_vector.shape[0] == 1:
-                # if using a constant direction, tile array so it works for cg calc
-                direction_vector = np.tile(direction_vector,(self.support.barycentre().shape[0],1))
-
-            
-        # iterate over all elements
-        A, idc, B = self.support.get_constant_gradient(region=self.region,direction=direction_vector)
-        A = np.array(A)
-        B = np.array(B)
-        idc = np.array(idc)
-
-        gi = np.zeros(self.support.n_nodes)
-        gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
-        idc = gi[idc]
-        outside = ~np.any(idc == -1, axis=1)
-
-        # w/=A.shape[0]
-        self.add_constraints_to_least_squares(A[outside, :] * w,
-                                              B[outside] * w, idc[outside, :],
-                                              name='directional regularisation')
-        return
+            idc = np.array(idc[:ncons, :])
+            A = np.array(c[:ncons, :])
+            B = np.zeros(A.shape[0])
+            gi = np.zeros(self.support.n_nodes)
+            gi[:] = -1
+            gi[self.region] = np.arange(0, self.nx)
+            idc = gi[idc]
+            outside = ~np.any(idc == -1, axis=1)
+            # w/=A.shape[0]
+            self.add_constraints_to_least_squares(A[outside, :] * w,
+                                                B[outside] * w, idc[outside, :],
+                                                name='regularisation')
 
 
     def add_gradient_constraints(self, w=1.0):
@@ -212,7 +198,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi = np.zeros(self.support.n_nodes).astype(int)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx).astype(int)
-            w /= 3
+            # w /= 3
             idc = gi[tetras]
             B = np.zeros(idc.shape[0])
             outside = ~np.any(idc == -1, axis=1)
@@ -329,7 +315,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
             vertices, c, tetras, inside = self.support.get_tetra_for_location(points[:,:3])
-            # print(points[inside,:].shape)
 
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1

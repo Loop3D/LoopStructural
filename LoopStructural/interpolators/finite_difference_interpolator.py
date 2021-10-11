@@ -266,7 +266,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # normalise constraint vector and scale element matrix by this
             norm = np.linalg.norm(points[:,3:6],axis=1)
             points[:,3:6]/=norm[:,None]
-            T/=norm[:,None,None]
+            T/=norm[inside,None,None]
             # calculate two orthogonal vectors to constraint (strike and dip vector)
             strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
