@@ -4,6 +4,7 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 import logging
 
 import numpy as np
+from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
 from .base_structured_3d_support import BaseStructuredSupport
 
 from LoopStructural.utils import getLogger
@@ -148,7 +149,8 @@ class TetMesh(BaseStructuredSupport):
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)  # global_index_to_node_index(gi)
         # convert to node locations
-        nodes = np.array(self.node_indexes_to_position(xi, yi, zi)).T
+        nodes = self.node_indexes_to_position(xi, yi, zi).T
+
         vertices[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
         vertices[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
         # changing order to points, tetra, nodes, coord
@@ -175,7 +177,7 @@ class TetMesh(BaseStructuredSupport):
         c[:, :, 1] = vb / v
         c[:, :, 2] = vc / v
         c[:, :, 3] = vd / v
-        print(c)
+
         # if all coords are +ve then point is inside cell
         mask = np.all(c > 0, axis=2)
 
@@ -185,26 +187,17 @@ class TetMesh(BaseStructuredSupport):
         #create mask to see which cells are even
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # create global node index list
-        # print('nsteps',self.nsteps, 'nsteps_cells', self.nsteps_cells)
-        # print('x',np.min(c_xi),np.max(c_xi),np.min(xi),np.max(xi))
-        # print('y',np.min(c_yi),np.max(c_yi),np.min(yi),np.max(yi))
-        # print('z',np.min(c_zi),np.max(c_zi),np.min(zi),np.max(zi))
-
         gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
         # container for tetras
         tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
 
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
-        # inside = np.logical_and  s(inside,self.inside(pos))
+        inside = np.logical_and(inside,self.inside(pos))
         vertices_return = np.zeros((pos.shape[0],4,3))
         vertices_return[:] = np.nan
         # set all masks not inside to False
         mask[~inside,:] = False
-        print(inside.astype(int)-np.any(mask,axis=1).astype(int))
-        print(vertices_return[inside,:,:].shape)
-        print(vertices[mask,:,:].shape)
-        print(mask)
         vertices_return[inside,:,:] = vertices[mask,:,:]#[mask,:,:]#[inside,:,:]
         c_return = np.zeros((pos.shape[0],4))
         c_return[:] = np.nan
@@ -214,7 +207,89 @@ class TetMesh(BaseStructuredSupport):
         tetra_return[inside,:] = tetras[mask,:]
         return vertices_return, c_return, tetra_return, inside
 
+    def get_constant_gradient(self, region, direction=None):
+        """
+        Get the constant gradient for the specified nodes
 
+        Parameters
+        ----------
+        region : np.array(dtype=bool)
+            mask of nodes to calculate cg for
+
+        Returns
+        -------
+
+        """
+        """
+        Add the constant gradient regularisation to the system
+
+        Parameters
+        ----------
+        w (double) - weighting of the cg parameter
+
+        Returns
+        -------
+
+        """
+        if direction is not None:
+            logger.info("Running constant gradient")
+            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+            if elements_gradients.shape[0] != direction.shape[0]:
+                logger.error('Cannot add directional CG, vector field is not the correct length')
+                return
+            region = region.astype('int64')
+
+            neighbours = self.get_neighbours()
+            elements = self.get_elements()
+            idc, c, ncons = fold_cg(elements_gradients, direction, neighbours.astype('int64'), elements.astype('int64'), self.nodes)
+
+            idc = np.array(idc[:ncons, :])
+            c = np.array(c[:ncons, :])
+            B = np.zeros(c.shape[0])
+            return c, idc, B
+        if self.cg is None:
+            logger.info("Running constant gradient")
+            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+            region = region.astype('int64')
+
+            neighbours = self.get_neighbours()
+            elements = self.get_elements()
+            idc, c, ncons = cg(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
+                               region.astype('int64'))
+
+            idc = np.array(idc[:ncons, :])
+            c = np.array(c[:ncons, :])
+            B = np.zeros(c.shape[0])
+            self.cg = (c,idc,B)
+        return self.cg[0], self.cg[1], self.cg[2]
+    def get_constant_norm(self, region):
+        """
+        Get the constant gradient for the specified nodes
+
+        Parameters
+        ----------
+        region : np.array(dtype=bool)
+            mask of nodes to calculate cg for
+
+        Returns
+        -------
+
+        """
+        
+        logger.info("Running constant gradient")
+        elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
+        region = region.astype('int64')
+
+        neighbours = self.get_neighbours()
+        elements = self.get_elements()
+        idc, c, ncons = constant_norm(elements_gradients, neighbours.astype('int64'), elements.astype('int64'), self.nodes,
+                            region.astype('int64'))
+
+        idc = np.array(idc[:ncons, :])
+        c = np.array(c[:ncons, :])
+        B = np.zeros(c.shape[0])
+        
+        return  c,idc,B
     def get_elements(self):
         """
         Get a numpy array of all of the elements in the mesh
@@ -269,7 +344,7 @@ class TetMesh(BaseStructuredSupport):
         # get cell corners
         xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)  # global_index_to_node_index(gi)
         # convert to node locations
-        nodes = np.array(self.node_indexes_to_position(xi, yi, zi)).T
+        nodes = self.node_indexes_to_position(xi, yi, zi).T
 
         points = np.zeros((5, 4, self.n_cells, 3))
         points[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
@@ -331,11 +406,151 @@ class TetMesh(BaseStructuredSupport):
 
 
 
+    def global_node_indicies(self, indexes):
+        """
+        Convert from node indexes to global node index
+
+        Parameters
+        ----------
+        indexes
+
+        Returns
+        -------
+
+        """
+        indexes = np.array(indexes).swapaxes(0, 2)
+        return indexes[:, :, 0] + self.nsteps[None, None, 0] \
+               * indexes[:, :, 1] + self.nsteps[None, None, 0] * \
+               self.nsteps[None, None, 1] * indexes[:, :, 2]
+
+    def global_cell_indicies(self, indexes):
+        """
+        Convert from cell indexes to global cell index
+
+        Parameters
+        ----------
+        indexes
+
+        Returns
+        -------
+
+        """
+        indexes = np.array(indexes).swapaxes(0, 2)
+        return indexes[:, :, 0] + self.nsteps_cells[None, None, 0] \
+               * indexes[:, :, 1] + self.nsteps_cells[None, None, 0] * \
+               self.nsteps_cells[None, None, 1] * indexes[:, :, 2]
+
+    def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
+        """
+        Returns the indexes of the corners of a cell given its location xi,
+        yi, zi
+
+        Parameters
+        ----------
+        x_cell_index
+        y_cell_index
+        z_cell_index
+
+        Returns
+        -------
+
+        """
+        x_cell_index = np.array(x_cell_index)
+        y_cell_index = np.array(y_cell_index)
+        z_cell_index = np.array(z_cell_index)
+
+        xcorner = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+        ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
+        zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+        xcorners = x_cell_index[:, None] + xcorner[None, :]
+        ycorners = y_cell_index[:, None] + ycorner[None, :]
+        zcorners = z_cell_index[:, None] + zcorner[None, :]
+        return xcorners, ycorners, zcorners
+
+    def position_to_cell_corners(self, pos):
+        """
+        Find the nodes that belong to a cell which contains a point
+
+        Parameters
+        ----------
+        pos
+
+        Returns
+        -------
+
+        """
+        inside = self.inside(pos)
+        ix, iy, iz = self.position_to_cell_index(pos)
+        cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
+        globalidx = self.global_cell_indicies(
+            np.dstack([cornersx, cornersy, cornersz]).T)
+        return globalidx, inside
 
 
-    
- 
+    def node_indexes_to_position(self, xindex, yindex, zindex):
+        """
+        Get the xyz position from the node coordinates
 
+        Parameters
+        ----------
+        xindex
+        yindex
+        zindex
+
+        Returns
+        -------
+
+        """
+        x = self.origin[0] + self.step_vector[0] * xindex
+        y = self.origin[1] + self.step_vector[1] * yindex
+        z = self.origin[2] + self.step_vector[2] * zindex
+
+        return np.array([x, y, z])
+
+    def global_index_to_node_index(self, global_index):
+        """
+        Convert from global indexes to xi,yi,zi
+
+        Parameters
+        ----------
+        global_index
+
+        Returns
+        -------
+
+        """
+        # determine the ijk indices for the global index.
+        # remainder when dividing by nx = i
+        # remained when dividing modulus of nx by ny is j
+        x_index = global_index % self.nsteps[0, None]
+        y_index = global_index // self.nsteps[0, None] % \
+                  self.nsteps[1, None]
+        z_index = global_index // self.nsteps[0, None] // \
+                  self.nsteps[1, None]
+        return x_index, y_index, z_index
+
+    def global_index_to_cell_index(self, global_index):
+        """
+        Convert from global indexes to xi,yi,zi
+
+        Parameters
+        ----------
+        global_index
+
+        Returns
+        -------
+
+        """
+        # determine the ijk indices for the global index.
+        # remainder when dividing by nx = i
+        # remained when dividing modulus of nx by ny is j
+
+        x_index = global_index % self.nsteps_cells[0, None]
+        y_index = global_index // self.nsteps_cells[0, None] % \
+                  self.nsteps_cells[1, None]
+        z_index = global_index // self.nsteps_cells[0, None] // \
+                  self.nsteps_cells[1, None]
+        return x_index, y_index, z_index
 
     def get_neighbours(self):
         """

@@ -104,7 +104,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         if direction_feature is not None:
-            print('dir fe')
             direction_vector = direction_feature.evaluate_gradient(self.support.barycentre())
         if direction_vector is not None:
             if direction_vector.shape[0] == 1:
@@ -153,7 +152,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
-            print(A.shape,B.shape,idc.shape)
             # w/=A.shape[0]
             self.add_constraints_to_least_squares(A[outside, :] * w,
                                                 B[outside] * w, idc[outside, :],
@@ -317,7 +315,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
             vertices, c, tetras, inside = self.support.get_tetra_for_location(points[:,:3])
-            # print(points[inside,:].shape)
 
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
