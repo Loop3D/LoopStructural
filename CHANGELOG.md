@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.3.6](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.5...v1.3.6) (2021-10-12)
+
+
+### Bug Fixes
+
+* removing invalid classifiers ([5d8de87](https://www.github.com/Loop3D/LoopStructural/commit/5d8de8782cbfb41ebf229d5e87ac53f6c06f65c3))
+
 ### [1.3.5](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.4...v1.3.5) (2021-10-11)
 
 
