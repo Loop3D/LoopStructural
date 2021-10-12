@@ -292,7 +292,8 @@ class UnStructuredTetMesh:
         # # changing order to points, tetra, nodes, coord
         # points = points.swapaxes(0, 2)
         # points = points.swapaxes(1, 2)
-
+        if elements is None:
+            elements = np.arange(0,self.n_elements,dtype=int)
         ps = self.nodes[self.elements,:]#points.reshape(points.shape[0] * points.shape[1], points.shape[2], points.shape[3])
         #vertices = self.nodes[self.elements[col,:]]
         m = np.array(

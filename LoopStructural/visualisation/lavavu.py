@@ -20,7 +20,7 @@ def close_all():
 
 
 class LavaVuModelViewer(BaseModelPlotter):
-    def __init__(self,model, bounding_box=None, nsteps=None, **kwargs):
+    def __init__(self,model=None, bounding_box=None, nsteps=None, **kwargs):
         if lavavu is None:
             logger.error("Lavavu isn't installed: pip install lavavu")
             return

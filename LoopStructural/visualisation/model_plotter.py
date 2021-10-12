@@ -15,7 +15,7 @@ from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 class BaseModelPlotter:
-    def __init__(self, model):
+    def __init__(self, model = None):
         """
 
         Parameters
