@@ -22,7 +22,7 @@ class BaseStructuredSupport:
         # we use property decorators to update these when different parts of
         # the geometry need to change
         # inisialise the private attributes
-        self._nsteps = np.array(nsteps)
+        self._nsteps = np.array(nsteps,dtype=int)
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)  
         self.supporttype='Base'
@@ -182,3 +182,124 @@ class BaseStructuredSupport:
             print("Position array needs to be a list of points or a point")
             return False
         return pos
+
+    def global_cell_indicies(self, indexes):
+        """
+        Convert from cell indexes to global cell index
+
+        Parameters
+        ----------
+        indexes
+
+        Returns
+        -------
+
+        """
+        indexes = np.array(indexes).swapaxes(0, 2)
+        return indexes[:, :, 0] + self.nsteps_cells[None, None, 0] \
+               * indexes[:, :, 1] + self.nsteps_cells[None, None, 0] * \
+               self.nsteps_cells[None, None, 1] * indexes[:, :, 2]
+
+    def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
+        """
+        Returns the indexes of the corners of a cell given its location xi,
+        yi, zi
+
+        Parameters
+        ----------
+        x_cell_index
+        y_cell_index
+        z_cell_index
+
+        Returns
+        -------
+
+        """
+        xcorner = np.array([0, 1, 0, 0, 1, 0, 1, 1])
+        ycorner = np.array([0, 0, 1, 0, 0, 1, 1, 1])
+        zcorner = np.array([0, 0, 0, 1, 1, 1, 0, 1])
+        xcorners = x_cell_index[:, None] + xcorner[None, :]
+        ycorners = y_cell_index[:, None] + ycorner[None, :]
+        zcorners = z_cell_index[:, None] + zcorner[None, :]
+        return xcorners, ycorners, zcorners
+
+    def position_to_cell_corners(self, pos):
+
+        inside = self.inside(pos)
+        ix, iy, iz = self.position_to_cell_index(pos)
+        cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
+        globalidx = self.global_indicies(
+            np.dstack([cornersx, cornersy, cornersz]).T)
+        # if global index is not inside the support set to -1
+        globalidx[~inside] = -1
+        return globalidx, inside
+    
+    def node_indexes_to_position(self, xindex, yindex, zindex):
+
+        x = self.origin[0] + self.step_vector[0] * xindex
+        y = self.origin[1] + self.step_vector[1] * yindex
+        z = self.origin[2] + self.step_vector[2] * zindex
+
+        return x, y, z
+        
+    def global_index_to_cell_index(self, global_index):
+        """
+        Convert from global indexes to xi,yi,zi
+
+        Parameters
+        ----------
+        global_index
+
+        Returns
+        -------
+
+        """
+        # determine the ijk indices for the global index.
+        # remainder when dividing by nx = i
+        # remained when dividing modulus of nx by ny is j
+
+        x_index = global_index % self.nsteps_cells[0, None]
+        y_index = global_index // self.nsteps_cells[0, None] % \
+                  self.nsteps_cells[1, None]
+        z_index = global_index // self.nsteps_cells[0, None] // \
+                  self.nsteps_cells[1, None]
+        return x_index, y_index, z_index
+
+
+    def global_index_to_node_index(self, global_index):
+        """
+        Convert from global indexes to xi,yi,zi
+
+        Parameters
+        ----------
+        global_index
+
+        Returns
+        -------
+
+        """
+        # determine the ijk indices for the global index.
+        # remainder when dividing by nx = i
+        # remained when dividing modulus of nx by ny is j
+        x_index = global_index % self.nsteps[0, None]
+        y_index = global_index // self.nsteps[0, None] % \
+                  self.nsteps[1, None]
+        z_index = global_index // self.nsteps[0, None] // \
+                  self.nsteps[1, None]
+        return x_index, y_index, z_index
+    def global_node_indicies(self, indexes):
+        """
+        Convert from node indexes to global node index
+
+        Parameters
+        ----------
+        indexes
+
+        Returns
+        -------
+
+        """
+        indexes = np.array(indexes).swapaxes(0, 2)
+        return indexes[:, :, 0] + self.nsteps[None, None, 0] \
+               * indexes[:, :, 1] + self.nsteps[None, None, 0] * \
+               self.nsteps[None, None, 1] * indexes[:, :, 2]

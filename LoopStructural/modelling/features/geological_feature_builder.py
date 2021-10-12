@@ -87,13 +87,31 @@ class GeologicalFeatureInterpolator:
     def interpolator(self):
         return self._interpolator
 
-    def up_to_date(self):
+    def up_to_date(self,callback=None):
+        """
+        check if the feature is uptodate
+        if its not update.
+
+        Parameters
+        ----------
+        callback : function
+            a function that is called when the feature is updated 
+        
+        """
         #has anything changed in the builder since we built the feature? if so update
         if self._up_to_date == False:
             self.update()
+            if callable(callback):
+                callback()
+            return
         #check if the interpolator is up to date, if not solve
         if self._interpolator.up_to_date == False:
             self.update()
+            if callable(callback):
+                callback()
+            return
+        if callable(callback):
+            callback()
         
         
     def add_fault(self, fault):
@@ -259,10 +277,12 @@ class GeologicalFeatureInterpolator:
         for g in self._orthogonal_features.values():
             feature,w,region,step,B = g
             vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
-            vector /= np.linalg.norm(vector,axis=1)[:,None]
+            norm = np.linalg.norm(vector,axis=1)
+
+            vector[norm>0] /= norm[norm>0,None]
             element_idx = np.arange(self.interpolator.support.n_elements)
             np.random.shuffle(element_idx)
-            self.interpolator.add_gradient_orthogonal_constraint(
+            self.interpolator.add_gradient_orthogonal_constraints(
                 self.interpolator.support.barycentre()[element_idx[::step],:],
                 vector[element_idx[::step],:],
                 w=w,
@@ -437,16 +457,7 @@ class GeologicalFeatureInterpolator:
 
                 self.interpolator.support.maximum = newmax
             self.interpolator.set_region(region=region)
-        # moving this to init because it needs to be done before constraints
-        # are added?
-        if fold is not None:
-            logger.info("Adding fold to %s" % self.name)
-            self.interpolator.fold = fold
-            # if we have fold weights use those, otherwise just use default
-            self.interpolator.add_fold_constraints(**fold_weights)
-            if 'cgw' not in kwargs:
-                # try adding very small cg
-                kwargs['cgw'] = 0.0
+
         self.install_gradient_constraint()
         self.install_equality_constraints()
         self.interpolator.setup_interpolator(**kwargs)

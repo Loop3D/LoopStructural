@@ -187,11 +187,6 @@ class TetMesh(BaseStructuredSupport):
         #create mask to see which cells are even
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # create global node index list
-        # print('nsteps',self.nsteps, 'nsteps_cells', self.nsteps_cells)
-        # print('x',np.min(c_xi),np.max(c_xi),np.min(xi),np.max(xi))
-        # print('y',np.min(c_yi),np.max(c_yi),np.min(yi),np.max(yi))
-        # print('z',np.min(c_zi),np.max(c_zi),np.min(zi),np.max(zi))
-
         gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
         # container for tetras
         tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
@@ -237,7 +232,6 @@ class TetMesh(BaseStructuredSupport):
 
         """
         if direction is not None:
-            print('using cg direction')
             logger.info("Running constant gradient")
             elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
             if elements_gradients.shape[0] != direction.shape[0]:

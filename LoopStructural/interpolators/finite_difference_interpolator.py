@@ -124,16 +124,16 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             weight = self.interpolation_weights['dzz'] / \
                              1#self.support.step_vector[2]**2
             self.assemble_inner(operator,weight)
-        self.add_norm_constraint(
+        self.add_norm_constraints(
             self.interpolation_weights['npw'])
-        self.add_gradient_constraint(
+        self.add_gradient_constraints(
              self.interpolation_weights['gpw'])
-        self.add_vaue_constraint(
+        self.add_vaue_constraints(
              self.interpolation_weights['cpw'])
-        self.add_tangent_ctr_pts(
+        self.add_tangent_constraints(
             self.interpolation_weights['tpw']
         )
-        self.add_interface_ctr_pts(
+        self.add_interface_constraints(
             self.interpolation_weights['ipw']
         )
 
@@ -147,7 +147,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         return FiniteDifferenceInterpolator(self.support)
 
-    def add_vaue_constraint(self, w=1.):
+    def add_vaue_constraints(self, w=1.):
         """
 
         Parameters
@@ -181,7 +181,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                                   points[inside, 3] * w,
                                                   idc[inside, :],
                                                   name='value')
-    def add_interface_ctr_pts(self, w=1.0):  # for now weight all value points the same
+    def add_interface_constraints(self, w=1.0):  # for now weight all value points the same
         """
         Adds a constraint that defines all points with the same 'id' to be the same value
         Sets all P1-P2 = 0 for all pairs of points
@@ -232,7 +232,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                                     np.zeros(A[outside,:].shape[0]),
                                                     interface_idc[outside, :], name='interface')
 
-    def add_gradient_constraint(self, w=1.):
+    def add_gradient_constraints(self, w=1.):
         """
 
         Parameters
@@ -263,17 +263,19 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
             T = self.support.calcul_T(points[inside, :3])
-            norm = np.linalg.norm(T,axis=2)
-            T/=norm[:,:,None]
+            # normalise constraint vector and scale element matrix by this
+            norm = np.linalg.norm(points[:,3:6],axis=1)
+            points[:,3:6]/=norm[:,None]
+            T/=norm[inside,None,None]
+            # calculate two orthogonal vectors to constraint (strike and dip vector)
             strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
-
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient')
             A = np.einsum('ij,ijk->ik', dip_vector.T, T)
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient')
 
-    def add_norm_constraint(self, w=1.):
+    def add_norm_constraints(self, w=1.):
         """
         Add constraints to control the norm of the gradient of the scalar field
 
@@ -317,7 +319,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                                   points[inside, 5] * w ,
                                                   idc[inside, :], name='norm')
 
-    def add_gradient_orthogonal_constraint(self, points, vector, w=1.0,
+    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0,
                                            B=0):
         """
         constraints scalar field to be orthogonal to a given vector
@@ -350,16 +352,15 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
-
+            # normalise vector and scale element gradient matrix by norm as well
+            norm = np.linalg.norm(vector,axis=1)
+            vector/=norm[:,None]
             #normalise element vector to unit vector for dot product
             T = self.support.calcul_T(points[inside, :3])
-            norm = np.linalg.norm(T,axis=1)
-            T/=norm[:,None,:]
-            # normalise vector to unit vector for dot product
-            vector[inside,:3] /= np.linalg.norm(vector[inside,:3],axis=1)[:,None]
-            # dot product of vector and element gradient 
-            A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
+            T/=norm[:,None,None]
             
+            # dot product of vector and element gradient = 0
+            A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient orthogonal')
 

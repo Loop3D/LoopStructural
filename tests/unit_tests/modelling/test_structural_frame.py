@@ -29,3 +29,6 @@ def get_item():
     assert frame[1] == coordinate_0
     assert frame[2] == coordinate_0
 
+def test_structural_frame_cross_product():
+    pass
+

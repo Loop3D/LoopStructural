@@ -14,7 +14,7 @@ class Map2LoopProcessor(ProcessInputData):
         m2l_directory : path
             path to a m2l root directory
         """
-        groups = pd.read_csv(m2l_directory + '/tmp/all_sorts_clean.csv', index_col=0)
+        groups = pd.read_csv(m2l_directory + '/tmp/all_sorts_clean.csv',index_col=0)
         orientations = pd.read_csv(m2l_directory + '/output/orientations_clean.csv')
         formation_thickness = pd.read_csv(m2l_directory+'/output/formation_summary_thicknesses.csv')
         contacts = pd.read_csv(m2l_directory + '/output/contacts_clean.csv')
@@ -58,7 +58,6 @@ class Map2LoopProcessor(ProcessInputData):
             groups['supergroup']='none'
             for i in groups.index:
                 groups.loc[i,'supergroup'] = supergroups[groups.loc[i,'group']]
-
         # create an ordered list of stratigraphic groups for interpolation,
         # name of the scalar field will be the name in 'supergroups' column
         stratigraphic_order = []

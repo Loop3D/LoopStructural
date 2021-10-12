@@ -47,6 +47,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
+        self.non_linear_constraints = []
         self.constraints = {}
         self.interpolation_weights= {}
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
@@ -177,15 +178,18 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows += self.c_
         constraint_ids = rows.copy()
 
-        if name in self.constraints:            
+        if name in self.constraints:
+            count = 0
+            if '_' in name:
+                count = int(name.split('_')[0])+1
+            name = name + '_{}'.format(count)           
             
-            self.constraints[name]['A'] =  np.vstack([self.constraints[name]['A'],A])
-            self.constraints[name]['B'] =  np.hstack([self.constraints[name]['B'], B])
-            self.constraints[name]['idc'] = np.vstack([self.constraints[name]['idc'],
-                                                idc])
+            # self.constraints[name]['A'] =  A#np.vstack([self.constraints[name]['A'],A])
+            # self.constraints[name]['B'] =  B#np.hstack([self.constraints[name]['B'], B])
+            # self.constraints[name]['idc'] = idc#np.vstack([self.constraints[name]['idc'],
+            #                                     idc])
                                    
-        if name not in self.constraints:
-            self.constraints[name] = {'node_indexes':constraint_ids,'A':A,'B':B.flatten(),'idc':idc}
+        self.constraints[name] = {'node_indexes':constraint_ids,'A':A,'B':B.flatten(),'idc':idc}
         rows = np.tile(rows, (A.shape[-1], 1)).T
 
         self.c_ += nr
@@ -272,8 +276,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_row.extend((np.arange(0, idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += idc[outside].shape[0]
+    
+    def add_non_linear_constraints(self, nonlinear_constraint):
+        self.non_linear_constraints.append(nonlinear_constraint)
 
-    def add_tangent_ctr_pts(self, w=1.0):
+    def add_tangent_constraints(self, w=1.0):
         """
 
         Parameters
@@ -287,7 +294,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         points = self.get_tangent_constraints()
         if points.shape[0] > 1:
-            self.add_gradient_orthogonal_constraint(points[:,:3],points[:,3:6],w)
+            self.add_gradient_orthogonal_constraints(points[:,:3],points[:,3:6],w)
 
     def build_matrix(self, square=True, damp=True):
         """
@@ -531,11 +538,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # check solution is not nan
         # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
+            self.valid = False
             logger.warning("Solver not run, no scalar field")
+            return
         # if solution is all 0, probably didn't work
         if np.all(self.c[self.region] == 0):
+            self.valid = False
             logger.warning("No solution, {} scalar field 0. Add more data.".format(self.propertyname))
-
+            return
+        self.valid = True
     def update(self):
         """
         Check if the solver is up to date, if not rerun interpolation using

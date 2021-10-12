@@ -60,8 +60,8 @@ class ProcessInputData:
         The processor will generate the best possible data set given the input data. If you only want to build a fault 
         network then only fault locations, orientations edges and properties are required
         """
-        
-        self._stratigraphic_order = stratigraphic_order
+        self._stratigraphic_order = None
+        self.stratigraphic_order = stratigraphic_order
         self._thicknesses = thicknesses
         self._use_thickness = use_thickness
         if self.thicknesses is None:
@@ -85,7 +85,8 @@ class ProcessInputData:
         self._fault_properties = None
         self.fault_properties = fault_properties
         self._fault_network = None
-        self.set_fault_network(fault_edges,fault_edge_properties)# = fault_graph
+        if fault_edges is not None and fault_edge_properties is not None:
+            self.set_fault_network(fault_edges,fault_edge_properties)# = fault_graph
         self._fault_stratigraphy = fault_stratigraphy
         self._intrusions = intrusions
         self._thicknesses = thicknesses
@@ -96,7 +97,21 @@ class ProcessInputData:
         self._foliation_properties = {} #empty dictionary of foliation parameters
         self.foliation_properties = None
 
+    @property
+    def stratigraphic_order(self):
+        return self._stratigraphic_order
     
+    @stratigraphic_order.setter
+    def stratigraphic_order(self, stratigraphic_order):
+        if isinstance(stratigraphic_order[0][1],list) == False:
+            raise TypeError('Stratigraphic_order must of the format [[(\'group_name\',[\'unit1\',\'unit2\']),(\'group_name2\',[\'unit3\',\'unit4\'])]]')
+        if isinstance(stratigraphic_order,list) == False:
+            raise TypeError('Stratigraphic_order must be a list')
+        if isinstance(stratigraphic_order[0][1][0],str) == False:
+            raise TypeError('Stratigraphic_order elements must be strings')
+        self._stratigraphic_order = stratigraphic_order
+
+
     @property
     def colours(self):
         return self._colours
@@ -119,11 +134,78 @@ class ProcessInputData:
         for name, sg in self._stratigraphic_order:
             stratigraphic_column[name] = {}
             for g in reversed(sg):
-                stratigraphic_column[name][g] = {'max': val[g]+self.thicknesses[g], 'min': val[g] , 'id': unit_id, 'colour':self.colours[g]}
+                if g in self.thicknesses:
+                    stratigraphic_column[name][g] = {'max': val[g]+self.thicknesses[g], 'min': val[g] , 'id': unit_id, 'colour':self.colours[g]}
                 unit_id += 1
         # add faults into the column 
-        stratigraphic_column['faults'] = self.fault_properties.to_dict('index')
+        if self.fault_properties is not None:
+            stratigraphic_column['faults'] = self.fault_properties.to_dict('index')
         return stratigraphic_column
+
+
+    def stratigraphy_cmap(self, supergroup='supergroup_0'):
+        """create a colour map for the stratigraphy scalar field
+        this is stretched to account for unit thicknesses
+
+        Parameters
+        ----------
+        supergroup : string, optional
+            name of the geological feature to creat this cmap of, by default 'supergroup_0'
+
+        Returns
+        -------
+        dict
+            containing a colourmap, minimum value for the scalar field and maximum value for the scalar field
+        
+        Examples
+        --------
+        Add a isosurfaces to the model coloured by the map colours
+
+        >>> model, processor = GeologicalModel.from_map2loop_directory(directory)
+        >>> view = LavaVuModelViewer(model)
+        >>> view.add_isosurface(model['supergroup_0'],**processor.stratigraphy_cmap('supergroup_0'))
+        >>> view.interactive()
+        
+
+        Raises
+        ------
+        ImportError
+            matplotlib not installed 
+        ValueError
+            supergroup not in stratigraphic column
+        """
+        try:
+            from matplotlib import cm
+            from matplotlib import colors
+        except ImportError:
+            logger.error("matplotlib is needed for creating a custom colourmap")
+            raise ImportError("matplotlib cannot be imported")
+        # define colourmap from stratigraphic column stretching it for the thickness variation
+        if supergroup not in self.stratigraphic_column:
+            raise ValueError("supergroup {} not in stratigraphic column".format(supergroup))
+        colours = []
+        boundaries = []
+        data = []
+        vmax=-99999.
+        vmin=99999.
+        for u, v  in self.stratigraphic_column[supergroup].items():
+            colours.append(v['colour'])
+            boundaries.append(v['min'])
+            vmax = np.max([vmax,v['max']])
+            vmin = np.min([vmin,v['min']])
+        # normalise so between 0,1
+        boundaries = np.array(boundaries)
+        boundaries/=np.max(boundaries)
+        cmap_stretched = colors.LinearSegmentedColormap.from_list("mycmap", list(zip(boundaries, colours)))
+        #lavavu needs a list of colours rather than a mpl segmented colourmap
+        # create a listedcolourmap by sampling from segmented colourmap evenly
+        cmap3 = colors.ListedColormap(cmap_stretched(np.linspace(0,1,40)))
+        cmap= []
+        # convert from rbga to hex for lavavu
+        for i in range(len(cmap3.colors)):
+            cmap.append(colors.to_hex(cmap3.colors[i,:]))
+        return {'cmap':cmap, 'vmin':vmin, 'vmax':vmax}
+
 
     @property
     def foliation_properties(self):
@@ -215,8 +297,10 @@ class ProcessInputData:
         before any of the calculated attributes are accessed
         """
         dataframes = []
-        dataframes.append(self.contacts)
-        dataframes.append(self.contact_orientations)
+        if self.contacts is not None:
+            dataframes.append(self.contacts)
+        if self.contact_orientations is not None:
+            dataframes.append(self.contact_orientations)
         if self.fault_orientations is not None:
             dataframes.append(self.fault_orientations)
         if self.fault_locations is not None:
@@ -245,7 +329,7 @@ class ProcessInputData:
     @property
     def stratigraphic_name(self):
         names = []
-        for sg in self._stratigraphic_order:
+        for name, sg in self._stratigraphic_order:
             for g in sg:
                 names.append(g)
         return names
@@ -263,10 +347,14 @@ class ProcessInputData:
         """
         stratigraphic_value = {}
         for name, sg in self._stratigraphic_order:
-            value = 0 #reset for each supergroup
+            value = 0. #reset for each supergroup
             for g in reversed(sg):
-                stratigraphic_value[g] = value #+ self._thicknesses[g]
-                value+=self._thicknesses[g]
+                if g not in self._thicknesses:
+                    logger.warning('No thicknesses for {}'.format(g))
+                    stratigraphic_value[g] = np.nan
+                else:
+                    stratigraphic_value[g] = value #+ self._thicknesses[g]
+                    value+=self._thicknesses[g]
         return stratigraphic_value
 
     def _update_feature_names(self,dataframe):
@@ -321,6 +409,8 @@ class ProcessInputData:
     
     @property
     def contact_orientations(self):
+        if self._contact_orientations is None:
+            return None
         contact_orientations = self._contact_orientations.copy()
         #scale
         contact_orientations.loc[~np.isnan(contact_orientations['nz']),['nx', 'ny', 'nz']]*=self.vector_scale*\

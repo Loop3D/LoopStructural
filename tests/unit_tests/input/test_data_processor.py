@@ -1,20 +1,12 @@
-# from LoopStructural.modelling import ProcessInputData
-# import pandas as pd
-# import numpy as np
+from LoopStructural.modelling import ProcessInputData
+import pandas as pd
+import numpy as np
 
-# contacts - 
-# contacts=None
-# contact_orientations = None
-# stratigraphic_order = None
-# fault_orientations = None 
-# fault_locations = None
-# fault_properties = None 
-# fault_edges = None
-# intrusions = None
-# fault_stratigraphy = None
-# thicknesses = None
-# colours = None
-
-# def test_create_processor():
-#     contacts = np.zeros(
-#     ProcessInputData(
+def test_create_processor():
+    df = pd.DataFrame(np.random.rand(10,3),columns=['X','Y','Z'])
+    df['name'] = ['unit_{}'.format(name%2) for name in range(10)]
+    stratigraphic_order = [('sg',['unit_0','unit_1'])]
+    thicknesses = {'unit_0':1.,'unit_1':0.5}
+    processor = ProcessInputData(contacts=df,stratigraphic_order=stratigraphic_order,thicknesses=thicknesses)
+    assert((processor.data['val'].unique() == np.array([0.5,0])).all())
+    

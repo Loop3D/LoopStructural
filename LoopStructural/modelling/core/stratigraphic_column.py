@@ -3,3 +3,8 @@ class StratigraphicColumn:
         pass
     def add_series(self,feature,name,maximum,minimum,colour):
         pass
+
+    def get_cmap(self):
+        pass
+
+    

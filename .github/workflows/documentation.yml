@@ -2,7 +2,7 @@ name: Build documentation and deploy
 
 on:
   release:
-    types: [published]
+    types: [edited, created]
 
 jobs:
   flake8:
