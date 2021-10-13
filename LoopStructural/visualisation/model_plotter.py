@@ -832,4 +832,4 @@ class BaseModelPlotter:
         paint_with = None
         if paint:
             paint_with = geological_feature
-        self._add_surface(points, tri, name, paint_with=paint_with, **kwargs)
+        self._add_surface(self.model.rescale(points,inplace=False), tri, name, paint_with=paint_with, **kwargs)
