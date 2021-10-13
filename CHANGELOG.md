@@ -1,5 +1,16 @@
 # Changelog
 
+### [1.3.7](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.6...v1.3.7) (2021-10-13)
+
+
+### Bug Fixes
+
+* abutting fault polarity was being calculated inconsistently. ([c77681f](https://www.github.com/Loop3D/LoopStructural/commit/c77681f466070587e235ccaa1ff6f6fd7b87db92))
+* adding folded fold frame creates a fold frame not structural frame ([36aa4b3](https://www.github.com/Loop3D/LoopStructural/commit/36aa4b34adfd625766e5ad61e1212f20fabfcdbf))
+* call to update feature when initialising rotation angle plotter ([b97f017](https://www.github.com/Loop3D/LoopStructural/commit/b97f017e583f0190cce030b940a8a6888d436a35))
+* setting default for viewer to model = none ([8aec0e4](https://www.github.com/Loop3D/LoopStructural/commit/8aec0e493dd16e6725e2eed1ad2b859549580cc1))
+* support box is now rescaled for plot ([6723790](https://www.github.com/Loop3D/LoopStructural/commit/672379059ad97a63edf6ec77740d4d37f8a332b9))
+
 ### [1.3.6](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.5...v1.3.6) (2021-10-12)
 
 
