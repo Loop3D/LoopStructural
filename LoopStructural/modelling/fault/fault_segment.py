@@ -2,7 +2,7 @@ import logging
 
 from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
 from LoopStructural.modelling.fault.fault_function import BaseFault
-from LoopStructural.utils import getLogger
+from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
 logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
@@ -347,19 +347,24 @@ class FaultSegment:
             newp[mask, :] += g
         return newp
     
-    def add_abutting_fault(self,abutting_fault_feature):
-        pts = self.faultframe[0].builder.data[['X','Y','Z']].to_numpy()#get_value_constraints()
+    def add_abutting_fault(self,abutting_fault_feature,positive=None):
         # check whether the fault is on the hanging wall or footwall of abutting fault
-        
-        def abutting_region(pos):
+        abutting_region = None
+        if positive is None:
+            pts = self.faultframe[0].builder.data[['X','Y','Z']].to_numpy()#get_value_constraints()
             abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
-            if abut_value > 0:
-                 ## adding the nan check avoids truncating the fault at the edge of the abutting fault bounding box.
-                    ## it makes the assumption that the abutted fault is not drawn across the abutting fault... but this should be ok
-                return np.logical_or(abutting_fault_feature.evaluate_value(pos) > 0, 
-                                        np.isnan(abutting_fault_feature.evaluate_value(pos)))
-            if abut_value < 0:
-                return np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0, 
-                                        np.isnan(abutting_fault_feature.evaluate_value(pos)))
+            positive = abut_value > 0
+        if positive:
+            abutting_region = PositiveRegion(abutting_fault_feature)
+        if positive ==  False:
+            abutting_region = NegativeRegion(abutting_fault_feature)
+            # if positive == True:
+            #      ## adding the nan check avoids truncating the fault at the edge of the abutting fault bounding box.
+            #         ## it makes the assumption that the abutted fault is not drawn across the abutting fault... but this should be ok
+            #     return np.logical_or(abutting_fault_feature.evaluate_value(pos) > 0, 
+            #                             np.isnan(abutting_fault_feature.evaluate_value(pos)))
+            # if positive == False:
+            #     return np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0, 
+            #                             np.isnan(abutting_fault_feature.evaluate_value(pos)))
         self.abut[abutting_fault_feature.name] = abutting_region
         self.faultframe[0].add_region(abutting_region)
