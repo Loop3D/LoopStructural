@@ -19,10 +19,6 @@ from LoopStructural.utils import get_data_axis_aligned_bounding_box
 from LoopStructural.utils import RegionEverywhere
 
 class GeologicalFeatureInterpolator:
-    """[summary]
-
-    [extended_summary]
-    """
     def __init__(self, interpolator, name='Feature', region=None, **kwargs):
         """
         Constructor for a GeologicalFeatureInterpolator
@@ -199,6 +195,7 @@ class GeologicalFeatureInterpolator:
         for f in self.faults:
             data.loc[:,xyz_names()] = f.apply_to_points(
                 self.get_data_locations())
+        # self.check_interpolation_geometry(data.loc[:,xyz_names()].to_numpy())
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
         # we need at least 2 different value points or a single norm
@@ -416,7 +413,17 @@ class GeologicalFeatureInterpolator:
 
         while self.interpolator.nx < 100:
             self.interpolator.support.step_vector=self.interpolator.support.step_vector*0.9
-            
+    def check_interpolation_geometry(self,data):
+        """Check the interpolation support geometry to data to make sure everything fits """
+        origin = self.interpolator.support.origin 
+        maximum = self.interpolator.support.maximum
+        print(origin,maximum)
+        origin[origin<np.min(data,axis=0)] = np.min(data,axis=0)[origin<np.min(data,axis=0)]
+        maximum[maximum<np.max(data,axis=0)] = np.max(data,axis=0)[maximum<np.max(data,axis=0)]
+        print(origin,maximum)
+
+        self.interpolator.support.origin = origin
+        self.interpolator.support.maximum = maximum
     def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
