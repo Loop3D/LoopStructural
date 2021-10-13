@@ -890,7 +890,7 @@ class GeologicalModel:
         interpolators = [fold_interpolator, gy_fold_interpolator,
                          frame_interpolator.copy()]
         fold_frame_builder = StructuralFrameBuilder(
-            interpolators=interpolators, name=fold_frame_data, fold=fold, **kwargs)
+            interpolators=interpolators, name=fold_frame_data, fold=fold, frame=FoldFrame,**kwargs)
         fold_frame_builder.add_data_from_data_frame(
             self.data[self.data['feature_name'] == fold_frame_data])
     
