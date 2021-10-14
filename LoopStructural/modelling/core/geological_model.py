@@ -826,11 +826,15 @@ class GeologicalModel:
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame,name='Fold_{}'.format(foliation_data))
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+        if 'fold_weights' not in kwargs:
+            kwargs['fold_weights']  =  {}
+
         series_builder = FoldedFeatureBuilder(
             interpolator=fold_interpolator,
             fold=fold,
-            fold_weights=kwargs.get('fold_weights', {}),
-            name=foliation_data)
+            name=foliation_data,
+            **kwargs
+            )
 
         series_builder.add_data_from_data_frame(
             self.data[self.data['feature_name'] == foliation_data])
