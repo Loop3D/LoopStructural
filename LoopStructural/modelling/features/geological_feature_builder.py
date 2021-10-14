@@ -188,6 +188,8 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
+        if self.data_added == True:
+            return 
         # first move the data for the fault
         logger.info("Adding %i faults to %s" % (len(self.faults), self.name))
         data = self.data.copy()
