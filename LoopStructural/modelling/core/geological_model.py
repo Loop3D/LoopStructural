@@ -235,7 +235,9 @@ class GeologicalModel:
                     model[edge[1]].splay[model[edge[0]].name] = region
                     splay = True
             if splay == False:
-                model[edge[1]].add_abutting_fault(model[edge[0]])
+                model[edge[1]].add_abutting_fault(model[edge[0]],np.abs(processor.stratigraphic_column['faults'][edge[0]]['downthrow_dir']-
+                                                            processor.stratigraphic_column['faults'][edge[1]]['downthrow_dir']) < 90)
+                # model[edge[1]].add_abutting_fault(model[edge[0]])
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
                 f = model.create_and_add_foliation(s,**processor.foliation_properties[s])
@@ -888,7 +890,7 @@ class GeologicalModel:
         interpolators = [fold_interpolator, gy_fold_interpolator,
                          frame_interpolator.copy()]
         fold_frame_builder = StructuralFrameBuilder(
-            interpolators=interpolators, name=fold_frame_data, fold=fold, **kwargs)
+            interpolators=interpolators, name=fold_frame_data, fold=fold, frame=FoldFrame,**kwargs)
         fold_frame_builder.add_data_from_data_frame(
             self.data[self.data['feature_name'] == fold_frame_data])
     

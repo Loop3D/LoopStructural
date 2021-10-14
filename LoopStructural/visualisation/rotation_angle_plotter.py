@@ -16,7 +16,7 @@ class RotationAnglePlotter:
         self.ax[0][0].set_ylim(-90, 90)
         self.ax[1][0].set_ylim(-90, 90)
         self.feature = feature
-
+        self.feature.builder.up_to_date()
     def plot(self, x, y, ix, iy, symb,**kwargs):
         """
 
