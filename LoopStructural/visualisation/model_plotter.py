@@ -447,7 +447,7 @@ class BaseModelPlotter:
         
         name = kwargs.get('name', 'fault_displacements')
         points, tri = create_box(self.bounding_box, self.nsteps)
-        self._add_surface(tri, points,name, cmap=cmap) # need to pass colour somehow
+        self._add_surface(tri, points,name, paint_with=self.model.evaluate_fault_displacements,cmap=cmap) # need to pass colour somehow
 
         
     def add_fault(self,fault,step=100):
@@ -599,8 +599,8 @@ class BaseModelPlotter:
         -------
 
         """
-        if isinstance(geological_feature,GeologicalFeature):
-            raise ValueError("{} is not a GeologicalFeature".format(type(geological_feature)))
+        # if isinstance(geological_feature,GeologicalFeature):
+        #     raise ValueError("{} is not a GeologicalFeature".format(type(geological_feature)))
         logger.info("Adding vector field for %s " % (geological_feature.name))
         locations = kwargs.get('locations', None)
         name = kwargs.get('name', geological_feature.name)
@@ -614,7 +614,7 @@ class BaseModelPlotter:
         # normalise
         mask = ~np.any(np.isnan(vector), axis=1)
         vector[mask, :] /= np.linalg.norm(vector[mask, :], axis=1)[:, None]
-        self._add_vector_marker(name, locations, vector, **kwargs)
+        self._add_vector_marker(locations, vector, name, **kwargs)
         
         return
     
