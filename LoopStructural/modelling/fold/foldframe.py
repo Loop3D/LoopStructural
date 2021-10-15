@@ -151,7 +151,7 @@ class FoldFrame(StructuralFrame):
             # and 90
             vv = np.cross(s1g, s0g, axisa=1, axisb=1)
             ds = np.einsum('ij,ij->i', fold_axis, vv)
-            flr = np.where(ds > 0, np.rad2deg(np.arcsin(r2)),
+            flr = np.where(np.abs(ds) > 0.5, np.rad2deg(np.arcsin(r2)),
                            (- np.rad2deg(np.arcsin(r2))))
             flr = np.where(flr < -90, (180. + flr), flr)
             flr = np.where(flr > 90, -(180. - flr), flr)
