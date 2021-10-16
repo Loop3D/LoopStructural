@@ -6,6 +6,7 @@ import os
 from pyevtk.hl import unstructuredGridToVTK, pointsToVTK
 from pyevtk.vtk import VtkTriangle
 import numpy as np
+from skimage.measure import marching_cubes
 
 from LoopStructural.utils.helper import create_box
 from LoopStructural.export.file_formats import FileFormat
@@ -13,6 +14,111 @@ from LoopStructural.export.file_formats import FileFormat
 
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
+
+def write_feat_surfs(model, file_name, file_format=FileFormat.GOCAD, features=[]):
+    """
+    Writes out features from a model as 3d surfaces
+
+    Parameters
+    ----------
+    model : GeologicalModel object
+        Geological model to export
+    file_name : string
+        Name of file that model is exported to, including path, but without the file extension
+    file_format: export.fileformats.FileFormat object
+        Desired format of exported file. Supports VTK
+    labels: OPTIONAL list of feature names to export, if omitted all faults are exported
+
+    Returns
+    -------
+    True if successful
+
+    """
+    if file_format == FileFormat.GOCAD:
+        return _write_feat_surfs_gocad(model, file_name, features)
+
+    logger.warning("Cannot export to surface file - format {} not supported yet".format(str(file_format)))
+
+
+def _write_feat_surfs_gocad(model, file_name, features=[]):
+    for feature in model.features:
+        x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0], model.nsteps[0])
+        y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1], model.nsteps[1])
+        z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2], model.nsteps[2])
+        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        val = feature.evaluate_value(points)
+        slices_ = [0.0]
+
+        step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
+        for i, isovalue in enumerate(slices_):
+            logger.info("Creating isosurface of {feature.name} at {isovalue}")
+
+            if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
+                logger.warning("For {feature.name} isovalue doesn't exist inside bounding box, skipping")
+                continue
+            try:
+                verts, faces, normals, values = marching_cubes(
+                    val.reshape(model.nsteps, order='C'),
+                    isovalue,
+                    spacing=step_vector)
+                verts += np.array([model.bounding_box[0, 0], model.bounding_box[0, 1], model.bounding_box[1, 2]])
+                model.rescale(verts)
+
+            except (ValueError, RuntimeError) as e:
+                print(e)
+                logger.warning(f"Cannot isosurface {feature.name} at {isovalue}, skipping")
+                continue
+            clean_feature = feature.name.replace(' ','-')
+            with open(f"{file_name}_{clean_feature}.TS", "w") as fd:
+                fd.write(f"""GOCAD TSurf 1 
+HEADER {{
+*solid*color: #ffa500
+ivolmap: false
+imap: false
+name: {feature.name}
+}}
+GOCAD_ORIGINAL_COORDINATE_SYSTEM
+NAME Default
+PROJECTION Unknown
+DATUM Unknown
+AXIS_NAME X Y Z
+AXIS_UNIT m m m
+ZPOSITIVE Elevation
+END_ORIGINAL_COORDINATE_SYSTEM
+PROPERTY_CLASS_HEADER X {{
+kind: X
+unit: m
+}}
+PROPERTY_CLASS_HEADER Y {{
+kind: Y
+unit: m
+}}
+PROPERTY_CLASS_HEADER Z {{
+kind: Z
+unit: m
+is_z: on
+}}
+PROPERTY_CLASS_HEADER vector3d {{
+kind: Length
+unit: m
+}}
+TFACE
+""")
+                nan_list = []
+                v_idx = 1
+                v_map = {}
+                for idx, vert in enumerate(verts):
+                    if not np.isnan(vert[0]) and not np.isnan(vert[1]) and not np.isnan(vert[2]):
+                        fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]} \n")
+                        v_map[idx] = v_idx
+                        v_idx += 1
+                for face in faces:
+                    if face[0] in v_map and face[1] in v_map and face[2] in v_map:
+                        fd.write(f"TRGL {v_map[face[0]]} {v_map[face[1]]} {v_map[face[2]]} \n")
+                fd.write("END\n")
+
+    return True
 
 
 def write_cubeface(model, file_name, data_label, nsteps, file_format):
