@@ -277,3 +277,26 @@ def tetra_neighbours(long long [:,:] elements, long long [:,:] neighbours):
                 neighbours[ie,nn] = ne
                 nn+=1
 
+def calculate_pairs(neighbours,elements):
+    ne = len(neighbours)
+    cdef long long [:,:] faces = np.zeros((ne*4,3),dtype=np.int64)
+    cdef long long [:,:] pairs = np.zeros((ne*4,2),dtype=np.int64)    
+    face_n = 0
+    cdef int [:] flag = np.zeros(ne,dtype=np.int32)
+    cdef int e = 0
+    cdef int n =0
+    for e in range(ne):
+        flag[e] = 1
+        idl = elements[e,:]
+        for n in range(4):
+            neigh = neighbours[e][n]
+            idr = elements[neigh,:]
+            if neigh < 0:
+                continue
+            if flag[neigh]== 1:
+                continue
+            pairs[face_n][0] = e
+            pairs[face_n][1] = n
+
+            face_n+=1
+    return pairs
