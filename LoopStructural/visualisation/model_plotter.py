@@ -614,7 +614,7 @@ class BaseModelPlotter:
         # normalise
         mask = ~np.any(np.isnan(vector), axis=1)
         vector[mask, :] /= np.linalg.norm(vector[mask, :], axis=1)[:, None]
-        self._add_vector_marker(locations, vector, name, **kwargs)
+        self._add_vector_marker(self.model.rescale(locations,inplace=False), vector, name, **kwargs)
         
         return
     

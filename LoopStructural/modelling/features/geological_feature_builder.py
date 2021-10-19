@@ -309,8 +309,9 @@ class GeologicalFeatureInterpolator:
                 mask = ~np.isnan(val)
                 self.interpolator.add_equality_constraints(
                     idc[mask], val[mask])
-            except:
-                logger.error("Could not add equality")
+            except as e:
+                logger.error("Could not add equality for {}".format(self.name))
+                logger.error("Exception: {}".format(e))
 
 
     def get_value_constraints(self):

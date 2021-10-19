@@ -67,12 +67,22 @@ class FaultBuilder(StructuralFrameBuilder):
         intermediate_axis : double
             fault volume radius in the slip direction
         """
+        if major_axis is None:
+            fault_trace = data.loc[np.logical_and(data['coord']==0,data['val']==0),['X','Y']].to_numpy()
+            distance = np.linalg.norm(fault_trace[:,None,:]-fault_trace[None,:,:],axis=2)
+            major_axis = np.max(distance)
+            logger.warning('Fault major axis using map length: {}'.format(major_axis))
+
+        if minor_axis is None:
+            minor_axis = major_axis /2.
+        if intermediate_axis is None:
+            intermediate_axis = major_axis
         normal_vector/=np.linalg.norm(normal_vector)
         slip_vector/=np.linalg.norm(slip_vector)
         # check if slip vector is inside fault plane, if not project onto fault plane
-        if not np.isclose(normal_vector @ slip_vector, 0):
-            logger.info("{} : projecting slip vector onto fault plane".format(self.name))
-            slip_vector = np.cross(normal_vector, np.cross(slip_vector ,normal_vector))
+        # if not np.isclose(normal_vector @ slip_vector, 0):
+        #     logger.info("{} : projecting slip vector onto fault plane".format(self.name))
+        #     slip_vector = np.cross(normal_vector, np.cross(slip_vector ,normal_vector))
         strike_vector = np.cross(normal_vector,slip_vector)
         fault_edges = np.zeros((2,3))
         fault_tips = np.zeros((2,3))
