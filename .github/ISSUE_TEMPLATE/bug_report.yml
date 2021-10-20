@@ -8,4 +8,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    attributes:
+      label: Describe your issue
   
