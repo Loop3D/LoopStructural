@@ -24,13 +24,13 @@ body:
     attributes:
       label: Error message
       description: "Paste any error messages that your receive"
-  - type: input
-    attributes:
-      label: Versions
-      description: "Please run the following and paste the results: 
-      `import sys, LoopStructural, lavavu, pandas, scipy, numpy; print(LoopStructural.__version__,sys.__version__,
-      lavavu.__version__,pandas.__version__,scipy.__version__,numpy.__version__)
-   validations:
-      required: true
+#   - type: input
+#     attributes:
+#       label: Versions
+#       description: "Please run the following and paste the results: 
+#       `import sys, LoopStructural, lavavu, pandas, scipy, numpy; print(LoopStructural.__version__,sys.__version__,
+#       lavavu.__version__,pandas.__version__,scipy.__version__,numpy.__version__)
+#    validations:
+#       required: true
    
   
