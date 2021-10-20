@@ -1,0 +1,34 @@
+names: Bug report
+description:
+title: [BUG]"
+labels: [bug]
+
+body:
+ - type: markdown
+ attribues:
+   value: Describe the bug
+ - type: textarea
+ attributes:
+   label: Describe the issue
+ validation:
+   required: true
+ - type: textarea
+    attributes:
+      label: Reproducing Code Example
+      description: 'Paste the Reproducing code example and it will be rendered as a code block.'
+      render: python   
+ validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Error message
+      description: 'If any, paste the *full* error message as above (starting from line Traceback) and it will be rendered as a code block'
+      render: shell
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: version information
+      description: 'Please run the following and paste the result in a code block - `import sys, LoopStructural, lavavu, pandas, scipy, numpy; print(LoopStructural.__version__,    lavavu.__version__, pandas.__version__, scipy.__version__, numpy.__version__, sys.version_info)`'
+    validations:
+      required: true
