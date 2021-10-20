@@ -4,20 +4,20 @@ title: "[BUG] "
 labels: [bug]
 
 body:
- - type: markdown
- attribues:
-   value: Describe the bug
- - type: textarea
- attributes:
-   label: Describe the issue
- validation:
-   required: true
- - type: textarea
+  - type: markdown
+    attribues:
+      value: Describe the bug
+  - type: textarea
+    attributes:
+      label: Describe the issue
+   validation:
+     required: true
+  - type: textarea
     attributes:
       label: Reproducing Code Example
       description: 'Paste the Reproducing code example and it will be rendered as a code block.'
       render: python   
- validations:
+    validations:
       required: true
   - type: textarea
     attributes:
