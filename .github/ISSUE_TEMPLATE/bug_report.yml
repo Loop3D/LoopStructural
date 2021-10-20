@@ -18,12 +18,13 @@ body:
       label: Minimal reproducing code example
       description: "Include a minimal working example to demonstrate this code. Avoid using external datasets and extra dependencies"
       render: python
-#    validations:
-#     required: true
-#   - type: textarea
-#     attributes:
-#       label: Error message
-#       description: "Paste any error messages that your receive"
+   validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Error message
+      description: "Paste any error messages that your receive"
+      render: shell
 #   - type: input
 #     attributes:
 #       label: Versions
