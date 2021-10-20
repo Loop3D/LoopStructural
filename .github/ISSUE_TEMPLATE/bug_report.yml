@@ -18,7 +18,7 @@ body:
       label: Minimal reproducing code example
       description: "Include a minimal working example to demonstrate this code. Avoid using external datasets and extra dependencies"
       render: python
-   validations:
+    validations:
       required: true
 #   - type: textarea
 #     attributes:
