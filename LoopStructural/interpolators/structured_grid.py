@@ -161,7 +161,7 @@ class StructuredGrid(BaseStructuredSupport):
         if "indexes" in kwargs:
             indexes = kwargs['indexes']
         if "indexes" not in kwargs:
-            indexes = np.array(np.meshgrid(np.arange(1,nsteps[0]-1),np.arange(1,nsteps[1]-1),np.arange(1,nsteps[1]-1))).reshape((3,-1))
+            indexes = np.array(np.meshgrid(np.arange(1,self.nsteps[0]-1),np.arange(1,self.nsteps[1]-1),np.arange(1,self.nsteps[2]-1))).reshape((3,-1))
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
             print(indexes.ndim)
@@ -184,13 +184,6 @@ class StructuredGrid(BaseStructuredSupport):
                                                                   :, :] + \
                self.nsteps[0, None, None] * self.nsteps[
                    1, None, None] * neighbours[2, :, :]).astype(np.int64)
-
- 
-
-
-
-
-
 
     def evaluate_value(self, evaluation_points, property_array):
         """
@@ -226,7 +219,7 @@ class StructuredGrid(BaseStructuredSupport):
             raise BaseException
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 3, 8))
-        T[inside, :, :] = self.calcul_T(evaluation_points[inside, :])
+        T[inside, :, :] = self.get_element_gradient_for_location(evaluation_points[inside, :])
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
@@ -237,7 +230,7 @@ class StructuredGrid(BaseStructuredSupport):
             [np.sum(T[:, 0, :], axis=1), np.sum(T[:, 1, :], axis=1) ,
              np.sum(T[:, 2, :], axis=1) ]).T
 
-    def calcul_T(self, pos):
+    def get_element_gradient_for_location(self, pos):
         """
         Calculates the gradient matrix at location pos
         :param pos: numpy array of location Nx3
@@ -256,7 +249,8 @@ class StructuredGrid(BaseStructuredSupport):
         # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
         T = np.zeros((pos.shape[0], 3, 8))
         x, y, z = self.position_to_local_coordinates(pos)
-    
+        vertices, inside = self.position_to_cell_vertices(pos)
+        elements = self.global_node_indicies(np.array(self.position_to_cell_index(pos)))
         T[:, 0, 0] = (1 - z) * (y- 1)  # v000
         T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
         T[:, 0, 2] = -y * (1 - z)  # (pos[:, 1] - y[:, 0]) / div
@@ -285,5 +279,23 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 7] = x * y
         T/=self.step_vector[0]
 
-        return T 
+        return vertices, T, elements, inside 
 
+    def get_element_for_location(self, pos):
+        """Calculate the shape function of elements
+        for a location
+
+        Parameters
+        ----------
+        pos : np.array((N,3))
+            location of points to calculate the shape function
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
+        vertices, inside = self.position_to_cell_vertices(pos)
+        elements = self.global_node_indicies(np.array(self.position_to_cell_index(pos)))
+        a = self.position_to_dof_coefs(pos)
+        return vertices, c_return, elements, inside

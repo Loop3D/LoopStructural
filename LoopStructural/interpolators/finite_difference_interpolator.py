@@ -262,7 +262,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
-            T = self.support.calcul_T(points[inside, :3])
+            vertices, T, elements, inside = self.support.get_element_gradient_for_location(points[inside, :3])
             # normalise constraint vector and scale element matrix by this
             norm = np.linalg.norm(points[:,3:6],axis=1)
             points[:,3:6]/=norm[:,None]
@@ -305,7 +305,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
             # magnitude
-            T = self.support.calcul_T(points[inside, :3])
+            vertices, T, elements, inside = self.support.get_element_gradient_for_location(points[inside, :3])
             # T*=np.product(self.support.step_vector)
             # T/=self.support.step_vector[0]
             w /= 3
@@ -356,7 +356,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             norm = np.linalg.norm(vector,axis=1)
             vector/=norm[:,None]
             #normalise element vector to unit vector for dot product
-            T = self.support.calcul_T(points[inside, :3])
+            vertices, T, elements, inside = self.support.get_element_gradient_for_location(points[inside, :3])
             T/=norm[:,None,None]
             
             # dot product of vector and element gradient = 0

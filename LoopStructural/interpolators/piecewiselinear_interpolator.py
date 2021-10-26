@@ -181,7 +181,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
-            vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:,:3])
+            vertices, element_gradients, tetras, inside = self.support.get_element_gradient_for_location(points[:,:3])
             #e, inside = self.support.elements_for_array(points[:, :3])
             #nodes = self.support.nodes[self.support.elements[e]]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
@@ -235,7 +235,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
-            vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:, :3])
+            vertices, element_gradients, tetras, inside = self.support.get_element_gradient_for_location(points[:, :3])
             # e, inside = self.support.elements_for_array(points[:, :3])
             # nodes = self.support.nodes[self.support.elements[e]]
             vol = np.zeros(element_gradients.shape[0])
@@ -279,7 +279,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         # get elements for points
         points = self.get_value_constraints()
         if points.shape[0] > 1:
-            vertices, c, tetras, inside = self.support.get_tetra_for_location(points[:,:3])
+            vertices, c, tetras, inside = self.support.get_element_for_location(points[:,:3])
             # calculate volume of tetras
             vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
             vol = np.abs(np.linalg.det(vecs)) / 6
@@ -314,7 +314,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
-            vertices, c, tetras, inside = self.support.get_tetra_for_location(points[:,:3])
+            vertices, c, tetras, inside = self.support.get_element_for_location(points[:,:3])
 
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
@@ -399,7 +399,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         """
         if points.shape[0] > 0:
-            vertices, element_gradients, tetras, inside = self.support.get_tetra_gradient_for_location(points[:,:3])
+            vertices, element_gradients, tetras, inside = self.support.get_element_gradient_for_location(points[:,:3])
             #e, inside = self.support.elements_for_array(points[:, :3])
             #nodes = self.support.nodes[self.support.elements[e]]
             norm = np.linalg.norm(vector,axis=1)
