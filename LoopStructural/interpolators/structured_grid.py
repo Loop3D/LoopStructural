@@ -161,16 +161,7 @@ class StructuredGrid(BaseStructuredSupport):
         if "indexes" in kwargs:
             indexes = kwargs['indexes']
         if "indexes" not in kwargs:
-            ii = []
-            jj = []
-            kk = []
-            for i in range(1, self.nsteps[0] - 1):
-                for j in range(1, self.nsteps[1] - 1):
-                    for k in range(1, self.nsteps[2] - 1):
-                        kk.append(k)
-                        ii.append(i)
-                        jj.append(j)
-            indexes = np.array([ii, jj, kk])
+            indexes = np.array(np.meshgrid(np.arange(1,nsteps[0]-1),np.arange(1,nsteps[1]-1),np.arange(1,nsteps[1]-1))).reshape((3,-1))
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
             print(indexes.ndim)
