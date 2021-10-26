@@ -1,4 +1,6 @@
 import numpy as np
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 class BaseStructuredSupport:
     """
 
@@ -325,7 +327,7 @@ class BaseStructuredSupport:
         z_index = global_index // self.nsteps[0, None] // \
                   self.nsteps[1, None]
         return x_index, y_index, z_index
-        
+
     def global_node_indicies(self, indexes):
         """
         Convert from node indexes to global node index

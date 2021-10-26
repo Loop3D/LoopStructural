@@ -219,7 +219,7 @@ class StructuredGrid(BaseStructuredSupport):
             raise BaseException
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 3, 8))
-        T[inside, :, :] = self.get_element_gradient_for_location(evaluation_points[inside, :])
+        T[inside, :, :] = self.get_element_gradient_for_location(evaluation_points[inside, :])[1]
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
@@ -298,4 +298,4 @@ class StructuredGrid(BaseStructuredSupport):
         vertices, inside = self.position_to_cell_vertices(pos)
         elements = self.global_node_indicies(np.array(self.position_to_cell_index(pos)))
         a = self.position_to_dof_coefs(pos)
-        return vertices, c_return, elements, inside
+        return vertices, a, elements, inside
