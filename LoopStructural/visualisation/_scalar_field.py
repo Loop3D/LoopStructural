@@ -3,7 +3,7 @@ import numpy as np
 class ScalarField:
     """A scalar field defined by a regular grid and values
     """
-    def __init__(self,values,step_vector,nsteps, name='scalar field'):
+    def __init__(self,values,step_vector,nsteps, origin = np.zeros(3), name='scalar field'):
         """[summary]
 
         Parameters
@@ -18,7 +18,7 @@ class ScalarField:
             name of the feature for the visualisation
         """
         self.values = values
-        self.grid = StructuredGrid(np.zeros(3),nsteps,step_vector)
+        self.grid = StructuredGrid(origin,nsteps,step_vector)
         self.name = name
         
     @property
