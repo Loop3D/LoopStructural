@@ -201,7 +201,8 @@ class StructuredGrid(BaseStructuredSupport):
         """
         if property_array.shape[0] != self.n_nodes:
             logger.error("Property array does not match grid")
-            raise BaseException
+            raise ValueError("cannot assign {} vlaues to array of shape {}".format(
+                property_array.shape[0], self.n_nodes))
         idc, inside = self.position_to_cell_corners(evaluation_points)
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
@@ -214,9 +215,35 @@ class StructuredGrid(BaseStructuredSupport):
         return np.sum(v, axis=1)
 
     def evaluate_gradient(self, evaluation_points, property_array):
+        """Evaluate the gradient at a location given node values
+
+        Parameters
+        ----------
+        evaluation_points : np.array((N,3))
+            locations 
+        property_array : np.array((self.nx))
+            value node, has to be the same length as the number of nodes
+
+        Returns
+        -------
+        np.array((N,3),dtype=float)
+            gradient of the implicit function at the locations
+
+        Raises
+        ------
+        ValueError
+            if the array is not the same shape as the number of nodes
+
+        Notes
+        -----
+        The implicit function gradient is not normalised, to convert to
+        a unit vector normalise using vector/=np.linalg.norm(vector,axis=1)[:,None]
+        """
         if property_array.shape[0] != self.n_nodes:
             logger.error("Property array does not match grid")
-            raise BaseException
+            raise ValueError("cannot assign {} vlaues to array of shape {}".format(
+                property_array.shape[0], self.n_nodes))
+            
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 3, 8))
         T[inside, :, :] = self.get_element_gradient_for_location(evaluation_points[inside, :])[1]
@@ -232,9 +259,17 @@ class StructuredGrid(BaseStructuredSupport):
 
     def get_element_gradient_for_location(self, pos):
         """
-        Calculates the gradient matrix at location pos
-        :param pos: numpy array of location Nx3
-        :return: Nx3x4 matrix
+        Get the gradient of the element at the locations.
+
+        Parameters
+        ----------
+        pos : np.array((N,3),dtype=float)
+            locations
+
+        Returns
+        -------
+        vertices, gradient, element, inside
+            [description]
         """
         #   6_ _ _ _ 8
         #   /|    /|
@@ -250,7 +285,7 @@ class StructuredGrid(BaseStructuredSupport):
         T = np.zeros((pos.shape[0], 3, 8))
         x, y, z = self.position_to_local_coordinates(pos)
         vertices, inside = self.position_to_cell_vertices(pos)
-        elements = self.global_node_indicies(np.array(self.position_to_cell_index(pos)))
+        elements,inside = self.position_to_cell_corners(pos)
         T[:, 0, 0] = (1 - z) * (y- 1)  # v000
         T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
         T[:, 0, 2] = -y * (1 - z)  # (pos[:, 1] - y[:, 0]) / div
@@ -296,6 +331,6 @@ class StructuredGrid(BaseStructuredSupport):
             [description]
         """
         vertices, inside = self.position_to_cell_vertices(pos)
-        elements = self.global_node_indicies(np.array(self.position_to_cell_index(pos)))
+        elements, inside = self.position_to_cell_corners(pos)
         a = self.position_to_dof_coefs(pos)
-        return vertices, a, elements, inside
+        return vertices, a.T, elements, inside
