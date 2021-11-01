@@ -1,0 +1,37 @@
+name: Bug report
+description: Create a bug report to help develop LoopStructural
+title: "[BUG] "
+labels: [bug]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    attributes:
+      label: Describe your issue
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Minimal reproducing code example
+      description: "Include a minimal working example to demonstrate this code. Avoid using external datasets and extra dependencies"
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Error message
+      description: "Paste any error messages that your receive"
+      render: shell
+#   - type: input
+#     attributes:
+#       label: Versions
+#       description: "Please run the following and paste the results: 
+#       `import sys, LoopStructural, lavavu, pandas, scipy, numpy; print(LoopStructural.__version__,sys.__version__,
+#       lavavu.__version__,pandas.__version__,scipy.__version__,numpy.__version__)
+#    validations:
+#       required: true
+   
+  
