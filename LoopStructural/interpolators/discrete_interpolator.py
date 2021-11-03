@@ -6,10 +6,11 @@ import logging
 import numpy as np
 from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
+from scipy.sparse.linalg import norm
+from sklearn.preprocessing import normalize
 
 from LoopStructural.interpolators.geological_interpolator import \
     GeologicalInterpolator
-
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
@@ -167,6 +168,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
             nr = A.shape[0] * A.shape[1]
             A = A.reshape((A.shape[0]*A.shape[1],A.shape[2]))
             idc = idc.reshape((idc.shape[0]*idc.shape[1],idc.shape[2]))
+        # normalise by rows of A
+        length = norm(A,axis=1)#.getcol(0).norm()
+        B[length>0]/=length[length>0]
+        A = normalize(A,axis=1)
         # going to assume if any are nan they are all nan
         mask = np.any(np.isnan(A),axis=1)
         A[mask,:] = 0
@@ -317,6 +322,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                                            cols)), shape=(self.c_, self.nx),
                        dtype=float)  # .tocsr()
         B = np.array(self.B)
+
         if not square:
             logger.info("Using rectangular matrix, equality constraints are not used")
             return A, B
@@ -379,7 +385,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
-
+        
         lsqrargs = {}
         lsqrargs['btol'] = 1e-12
         lsqrargs['atol'] = 0
@@ -445,7 +451,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         cgargs = {}
         cgargs['tol'] = 1e-12
-        cgargs['atol'] = 0
+        cgargs['atol'] = 1e-10
         if 'maxiter' in kwargs:
             logger.info("Using %i maximum iterations"%kwargs['maxiter'])
             cgargs['maxiter'] = kwargs['maxiter']
