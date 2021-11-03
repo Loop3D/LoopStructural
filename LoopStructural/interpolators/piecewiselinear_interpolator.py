@@ -185,7 +185,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             #e, inside = self.support.elements_for_array(points[:, :3])
             #nodes = self.support.nodes[self.support.elements[e]]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
-            vol = np.abs(np.linalg.det(vecs))  # / 6
+            vol = np.abs(np.linalg.det(vecs))   / 6
             norm = np.linalg.norm(points[:,3:6],axis=1)
             points[:,3:6]/=norm[:,None]
             element_gradients /= norm[:, None, None]
@@ -240,7 +240,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # nodes = self.support.nodes[self.support.elements[e]]
             vol = np.zeros(element_gradients.shape[0])
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
-            vol = np.abs(np.linalg.det(vecs))  # / 6
+            vol = np.abs(np.linalg.det(vecs))   / 6
             d_t = element_gradients
             d_t[inside,:,:] *= vol[inside, None, None]
             # add in the element gradient matrix into the inte
@@ -254,7 +254,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=2)
             outside = outside[:, 0]
             w = points[:, 6]*w
-            points[inside,3:6]*=vol[inside]
+            # points[inside,3:6]*=vol[inside,None]
             # w /= 3
 
             self.add_constraints_to_least_squares(d_t[outside, :, :] * w[:,None,None],
@@ -365,7 +365,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             norm = np.linalg.norm(vector,axis=1)
             vector /= norm[:,None]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
-            vol = np.abs(np.linalg.det(vecs))  # / 6
+            vol = np.abs(np.linalg.det(vecs))   / 6
             element_gradients /= norm[:,None,None]
 
             A = np.einsum('ij,ijk->ik', vector, element_gradients)
