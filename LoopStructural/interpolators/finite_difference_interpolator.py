@@ -100,41 +100,41 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if 'operators' not in kwargs:
             
             operator = Operator.Dxy_mask
-            weight =  self.interpolation_weights['dxy'] / \
-                             1#(4*self.support.step_vector[0]*self.support.step_vector[1])
+            weight =  self.vol*self.interpolation_weights['dxy'] / \
+                             (4*self.support.step_vector[0]*self.support.step_vector[1])
             self.assemble_inner(operator, weight )
             operator = Operator.Dyz_mask
-            weight = self.interpolation_weights['dyz'] / \
-                             1#(4*self.support.step_vector[1]*self.support.step_vector[2])
+            weight = self.vol*self.interpolation_weights['dyz'] / \
+                             (4*self.support.step_vector[1]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxz_mask
-            weight =  self.interpolation_weights['dxz'] / \
-                             1#(4*self.support.step_vector[0]*self.support.step_vector[2])
+            weight =  self.vol*self.interpolation_weights['dxz'] / \
+                             (4*self.support.step_vector[0]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
-            weight = self.interpolation_weights['dxx'] \
-                             / 1#self.support.step_vector[0]**2
+            weight = self.vol*self.interpolation_weights['dxx'] / \
+                             self.support.step_vector[0]**2
             self.assemble_inner(operator,
                                 weight)
             operator = Operator.Dyy_mask
-            weight =  self.interpolation_weights['dyy'] / \
-                             1#self.support.step_vector[1]**2
+            weight =  self.vol*self.interpolation_weights['dyy'] / \
+                             self.support.step_vector[1]**2
             self.assemble_inner(operator,weight)
             operator = Operator.Dzz_mask
-            weight = self.interpolation_weights['dzz'] / \
-                             1#self.support.step_vector[2]**2
+            weight = self.vol*self.interpolation_weights['dzz'] / \
+                             self.support.step_vector[2]**2
             self.assemble_inner(operator,weight)
         self.add_norm_constraints(
-            self.interpolation_weights['npw'])
+            self.vol*self.interpolation_weights['npw'])
         self.add_gradient_constraints(
-             self.interpolation_weights['gpw'])
+             self.vol*self.interpolation_weights['gpw'])
         self.add_vaue_constraints(
-             self.interpolation_weights['cpw'])
+             self.vol*self.interpolation_weights['cpw'])
         self.add_tangent_constraints(
-            self.interpolation_weights['tpw']
+            self.vol*self.interpolation_weights['tpw']
         )
         self.add_interface_constraints(
-            self.interpolation_weights['ipw']
+            self.vol*self.interpolation_weights['ipw']
         )
 
     def copy(self):
