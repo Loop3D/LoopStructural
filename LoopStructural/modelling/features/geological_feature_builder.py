@@ -98,16 +98,16 @@ class GeologicalFeatureInterpolator:
         if self._up_to_date == False:
             self.update()
             if callable(callback):
-                callback()
+                callback(1)
             return
         #check if the interpolator is up to date, if not solve
         if self._interpolator.up_to_date == False:
             self.update()
             if callable(callback):
-                callback()
+                callback(1)
             return
         if callable(callback):
-            callback()
+            callback(1)
         
         
     def add_fault(self, fault):
