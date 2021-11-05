@@ -29,6 +29,11 @@ from LoopStructural.utils.exceptions import LoopBaseException
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
                                          strike_dip_vector)
 
+from LoopStructural.modelling.intrusions import IntrusionNetwork
+from LoopStructural.modelling.intrusions import IntrusionBuilder
+from LoopStructural.modelling.intrusions import IntrusionBody
+from LoopStructural.modelling.intrusions import IntrusionFeature 
+
 from LoopStructural.utils import getLogger, log_to_file
 logger = getLogger(__name__)
 
@@ -976,7 +981,95 @@ class GeologicalModel:
        
 
         return fold_frame
+    
+    def create_and_add_intrusion(self, intrusion_name, intrusion_frame_name = None, intrusion_network_type = None, intrusion_network_contact = None,
+                                contacts_anisotropies = None, structures_anisotropies = None, sequence_anisotropies = None, inet_axis = None, 
+                                intrusion_lateral_extent_model = None, intrusion_vertical_extent_model = None, 
+                                lateral_extent_sgs_parameters = None,
+                                vertical_extent_sgs_parameters = None, 
+                                **kwargs):
+    
+        feature_data = self.data[self.data['feature_name'] == intrusion_name].copy()
+        
+        # Create and build Intrusion Network
+        INet = IntrusionNetwork(feature_data = feature_data,
+                                intrusion_network_contact = intrusion_network_contact,
+                                intrusion_network_type = intrusion_network_type, model = self, **kwargs)
 
+        
+        INet.set_data()
+        INet.set_contact_anisotropies(contacts_anisotropies, **kwargs)
+        INet.set_faults_anisotropies(structures_anisotropies)
+        INet.set_sequence_of_exploited_anisotropies(sequence_anisotropies)
+        INet.set_velocity_parameters()
+        INet.set_sections_axis(inet_axis)
+        print('building intrusion network')
+        INet.build(**kwargs)
+        
+        # Create intrusion frame, using intrusion network points, propagation and inflation direction
+        
+        gxxgz = 0 # weight for orthogonality constraint between coord 0 and coord 2 
+        gxxgy = 0 # weight for orthogonality constraint between coord 0 and coord 1 
+        gyxgz = 0 # weight for orthogonality constraint between coord 1 and coord 2 
+
+        weights = [gxxgz, gxxgy, gyxgz]
+        reg=np.array([1,0.5,1])
+        print('building intrusion frame')
+        interpolator = self.get_interpolator(interpolatortype = 'FDI')
+        frame_data = self.data[self.data['feature_name'] == intrusion_frame_name].copy()
+        IFrame_builder = IntrusionBuilder(interpolator, model = self, feature_name = intrusion_frame_name)
+        IFrame_builder.set_data(frame_data, INet.intrusion_network_outcome)
+        IFrame = IFrame_builder.build(nelements = 1e2, solver = 'lu', gxxgz = weights[0], gxxgy = weights[1], gxygz = weights[2])
+        
+
+        # Create intrusion feature
+        intrusion_feature = IntrusionFeature(intrusion_name, structural_frame = IFrame, model = self)
+
+
+        # Simulate thresholds distances to constraint intrusion body, 
+        # and set threshold to intrusion feature
+        IBody = IntrusionBody(feature_data, name = intrusion_name,
+                              intrusion_network = INet, intrusion_frame = IFrame,
+                              model = self)
+
+        intrusion_feature.set_intrusion_network(INet)
+        intrusion_feature.set_intrusion_frame(IFrame)
+        intrusion_feature.set_intrusion_body(IBody)
+
+        if intrusion_lateral_extent_model == None:
+            logger.error("Specify conceptual model function for intrusion lateral extent")
+            
+        else:
+            print('setting data for s simulation')
+            IBody.set_data_for_s_simulation()
+            IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
+            print('setting GSLIB parameters and variogram')
+            IBody.set_s_simulation_GSLIBparameters()
+            IBody.make_s_simulation_variogram()
+            IBody.create_grid_for_simulation()
+            print('simulating thresholds for lateral extent')
+            IBody.simulate_s_thresholds()
+            
+            intrusion_feature.set_simulation_lateral_data(IBody.simulated_s_thresholds)
+
+        if intrusion_vertical_extent_model == None:
+            logger.error("Specify conceptual model function for intrusion vertical extent")
+        
+        else:
+            print('setting data for g simulation')
+            IBody.set_data_for_g_simulation()
+            IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
+            print('setting GSLIB parameters and variogram')
+            IBody.set_g_simulation_GSLIBparameters()
+            IBody.make_g_simulation_variogram()
+            print('simulating thresholds for vertical extent')
+            IBody.simulate_g_thresholds()
+        
+            intrusion_feature.set_simulation_growth_data(IBody.simulated_g_thresholds)
+
+        return intrusion_feature
+
+    
     def _add_faults(self, feature_builder, features=None):
         """Adds all existing faults to a geological feature builder 
         
