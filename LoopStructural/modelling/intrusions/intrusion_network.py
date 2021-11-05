@@ -2,10 +2,12 @@
 from LoopStructural.utils import getLogger, log_to_file
 logger = getLogger(__name__)
 import skfmm as fmm
+from sklearn.cluster import DBSCAN
 from LoopStructural.modelling.intrusions.intrusion_support_functions import *
 
 import numpy as np
 import pandas as pd
+import ckwrap
 # import random
 # from LoopStructural import GeologicalModel
 
@@ -41,7 +43,6 @@ class IntrusionNetwork:
         Returns
         -------
         """
-
         if self.intrusion_network_contact == 'roof':
             other_contact = 'floor'
         elif self.intrusion_network_contact == 'top':
@@ -71,13 +72,12 @@ class IntrusionNetwork:
         """
         self.model = model
 
-        
-    def set_contact_anisotropies(self, series_list):
+    def set_contact_anisotropies(self, series_list = None, **kwargs):
         """
         Add to the intrusion network the anisotropies likely exploited by the intrusion (series-type geological features)
         Given a list of series-type features, evaluates the contact points on each series and 
-        compute mean value and standard deviation. 
-        These values will be used to identify each feature using the indicator functions.
+        compute mean value and standard deviation. Different contacts of the same series are indentify using clustering algortihm.
+        Mean and std dev values will be used to identify each contact thoughout the model using the indicator functions.
 
         Parameters
         ----------
@@ -85,31 +85,55 @@ class IntrusionNetwork:
 
         Returns
         -------
-
+        assigns to self.anisotropies_series_parameters a list like (for each strtaigraphic contact) =
+        [series_name, mean of scalar field vals, standar dev. of scalar field val]
+        
         """
-        self.anisotropies_series_list = series_list
-        series_parameters = {}
-        for i in range(len(series_list)):
-            sf_series_vals = []
-            sf_series_mean = []
-            sf_series_std = []
-            sf_series_gridpts = []
-            
-            data_temp = self.intrusion_network_data[self.intrusion_network_data['intrusion_anisotropy'] == series_list[i].name].copy()
-            data_array_temp = data_temp.loc[:, ['X','Y','Z']].to_numpy()
-            series_i_vals = series_list[i]['feature'].evaluate_value(self.model.scale(data_array_temp, inplace = False))
-            
-            sf_series_vals.append(series_i_vals)
-            sf_series_mean.append(np.mean(series_i_vals))
-            sf_series_std.append(np.std(series_i_vals))
-            
-            series_parameters[series_list[i].name] = [sf_series_vals, sf_series_mean, sf_series_std]
+        if 'number_contacts' in kwargs:
+            n_clusters = kwargs['number_contacts']
+        else:
+            n_clusters = 1
         
-        #Pending to add clustering
+        if series_list == None:
+            self.anisotropies_series_list = None
         
-        self.anisotropies_series_parameters = series_parameters
+        else:
+            self.anisotropies_series_list = series_list
+            series_parameters = {}
+            for i in range(len(series_list)):
+                
+                data_temp = self.intrusion_network_data[self.intrusion_network_data['intrusion_anisotropy'] == series_list[i].name].copy()
+                data_array_temp = data_temp.loc[:, ['X','Y','Z']].to_numpy()
+                series_i_vals = series_list[i]['feature'].evaluate_value(data_array_temp)
+                
+                series_array = np.zeros([len(data_array_temp),4])
+                series_array[:,:3] = data_array_temp
+                series_array[:,3] = series_i_vals
+
+                # use scalar field values to find different contacts
+                contact_clustering = ckwrap.ckmeans(series_i_vals, n_clusters)
+                
+                contact_buckets = []
+                for j in range(n_clusters):
+                    contact_buckets.append([])
+                    
+                for j in range(len(series_i_vals)):
+                    contact_buckets[contact_clustering.labels[j]].append(series_i_vals[j])
+                
+                series_i_name = series_list[i].name
+
+                for j in range(len(contact_buckets)):
+                    series_ij_name = series_list[i].name + '_' + str(j)
+                    series_ij_vals = np.array(contact_buckets[j])
+                    series_ij_mean = np.mean(series_ij_vals)
+                    series_ij_std = np.std(series_ij_vals)
+
+                    series_parameters[series_ij_name] = [series_list[i], series_ij_mean, series_ij_std]
+        
+           
+            self.anisotropies_series_parameters = series_parameters
     
-    def set_faults_anisotropies(self, fault_list):
+    def set_faults_anisotropies(self, fault_list = None):
         """
         Add to the intrusion network the anisotropies likely exploited by the intrusion (fault-type geological features)
         Given a list of fault features, evaluates the contact points on each fault and 
@@ -124,25 +148,29 @@ class IntrusionNetwork:
         -------
 
         """
-        self.anisotropies_fault_list = fault_list
-        faults_parameters = {}
-        for i in range(len(fault_list)):
-            sf_faults_vals = []
-            sf_faults_mean = []
-            sf_faults_std = []
-            sf_faults_gridpts = []
-            
-            data_temp = self.intrusion_network_data[self.intrusion_network_data['intrusion_anisotropy'] == fault_list[i].name].copy()
-            data_array_temp = data_temp.loc[:, ['X','Y','Z']].to_numpy()
-            fault_i_vals = fault_list[i][0].evaluate_value(self.model.scale(data_array_temp, inplace = False))
+        if fault_list == None:
+            self.anisotropies_fault_list = None
+        else:
+            self.anisotropies_fault_list = fault_list
+            faults_parameters = {}
+            for i in range(len(fault_list)):
+                sf_faults_vals = []
+                sf_faults_mean = []
+                sf_faults_std = []
+                sf_faults_gridpts = []
+                
+                data_temp = self.intrusion_network_data[self.intrusion_network_data['intrusion_anisotropy'] == fault_list[i].name].copy()
+                data_array_temp = data_temp.loc[:, ['X','Y','Z']].to_numpy()
+                # fault_i_vals = fault_list[i][0].evaluate_value(self.model.scale(data_array_temp, inplace = False))
+                fault_i_vals = fault_list[i][0].evaluate_value(data_array_temp)
 
-            sf_faults_vals.append(fault_i_vals)
-            sf_faults_mean.append(np.mean(fault_i_vals))
-            sf_faults_std.append(np.std(fault_i_vals))
-        
-            faults_parameters[fault_list[i].name]  = [sf_faults_vals, sf_faults_mean, sf_faults_std]
-        
-        self.anisotropies_fault_parameters = faults_parameters
+                sf_faults_vals.append(fault_i_vals)
+                sf_faults_mean.append(np.mean(fault_i_vals))
+                sf_faults_std.append(np.std(fault_i_vals))
+            
+                faults_parameters[fault_list[i].name]  = [sf_faults_vals, sf_faults_mean, sf_faults_std]
+            
+            self.anisotropies_fault_parameters = faults_parameters
         
         
     def create_grid_for_indicator_fxs(self, spacing = None):
@@ -172,7 +200,7 @@ class IntrusionNetwork:
         return grid_points, spacing
     
     
-    def set_sequence_of_exploited_anisotropies(self, sequence):
+    def set_sequence_of_exploited_anisotropies(self, sequence = None):
         """
         Add to the intrusion network the sequence of anisotropies to run the search of the shortest path
         The sequence is used to identify the inlet and outlet for the search of the shortest path. 
@@ -188,7 +216,7 @@ class IntrusionNetwork:
         
         self.anisotropies_sequence = sequence
         
-    def set_velocity_parameters(self, velocity_parameters):
+    def set_velocity_parameters(self, velocity_parameters = None):
         """
         Set velocity parameters for the search of the shortest path. 
         The velocities should be provided in the same order of the anisotropies sequence.
@@ -204,7 +232,7 @@ class IntrusionNetwork:
         self.velocity_parameters = velocity_parameters
 
    
-    def indicator_function_contacts(self, delta = 1):
+    def indicator_function_contacts(self, delta = None):
         """
         Function to compute indicator function for list of contacts anisotropies
         For each point of the grid, this function assignes a 1 if contact i is present, 0 otherwise.
@@ -221,29 +249,29 @@ class IntrusionNetwork:
         Ic: array of [len(grid_points),n_contacts], containing indicator function for list of contacts
         """
 
-        n_series = len(self.anisotropies_series_parameters)  #number of contacts
+        n_series = len(self.anisotropies_series_parameters)  #number of series
         grid_points = self.grid_to_evaluate_ifx
         
         Ic = np.zeros([len(self.grid_to_evaluate_ifx),n_series])
         
-        for i in range(n_series):
-            series_id = self.anisotropies_series_list[i]
-            seriesi_mean = self.anisotropies_series_parameters.get(self.anisotropies_series_list[i].name)[1][0]
-            seriesi_std = self.anisotropies_series_parameters.get(self.anisotropies_series_list[i].name)[2][0]
+        for i, contact_id in enumerate(self.anisotropies_series_parameters.keys()):
+            series_id = self.anisotropies_series_parameters[contact_id][0]
+            seriesi_mean = self.anisotropies_series_parameters[contact_id][1]
+            seriesi_std = self.anisotropies_series_parameters[contact_id][2]
             seriesi_values = series_id['feature'].evaluate_value(self.model.scale(grid_points, inplace = False))
             
             # apend associated scalar field values to each anisotropy
-            self.anisotropies_series_parameters.get(self.anisotropies_series_list[i].name).append(seriesi_values)
+            self.anisotropies_series_parameters[contact_id].append(seriesi_values)
             
-            for j in range(len(seriesi_values)):
-                if (seriesi_mean - seriesi_std*delta) <= seriesi_values[j] <= (seriesi_mean + seriesi_std*delta):
-                    Ic[j,i] = 1
+            for n in range(len(seriesi_values)):
+                if (seriesi_mean - seriesi_std*delta[i]) <= seriesi_values[n] <= (seriesi_mean + seriesi_std*delta[i]):
+                    Ic[n,i] = 1
                 else: continue
         
         return Ic
     
     
-    def indicator_function_faults(self, delta = 1):
+    def indicator_function_faults(self, delta = None):
         """
         Function to compute indicator function for list of faults anisotropies
         For each point of the grid, this function assignes a 1 if fault i is present, 0 otherwise.
@@ -275,7 +303,7 @@ class IntrusionNetwork:
             self.anisotropies_fault_parameters.get(self.anisotropies_fault_list[i].name).append(faulti_values)
             
             for j in range(len(faulti_values)):
-                if (faulti_mean - faulti_std*delta) <= faulti_values[j] <= (faulti_mean + faulti_std*delta):
+                if (faulti_mean - faulti_std*delta[i]) <= faulti_values[j] <= (faulti_mean + faulti_std*delta[i]):
                     If[j,i] = 1
                 else: continue
         
@@ -309,19 +337,22 @@ class IntrusionNetwork:
                 velocity_parameters[i] = n
             self.velocity_parameters = velocity_parameters
         else:
-            velocity_parameters = self.velocity_parameters
-            
+            velocity_parameters = self.velocity_parameters.copy()
+   
         # assing velocity parameters k to each anisotropies
         # contacts anisotropies
         IcKc = 0
         IcIc = 0
+        anisotropies_sequence_copy = self.anisotropies_sequence.copy()
         if self.anisotropies_series_list != None:
-            Kc = np.zeros(len(self.anisotropies_series_list))
-            for i in range(len(Kc)):
-                for j in range(len(velocity_parameters)):
-                    if self.anisotropies_series_list[i] == self.anisotropies_sequence[j]:
-                            Kc[i] = velocity_parameters[j]
-                            
+            Kc = np.zeros(len(self.anisotropies_series_parameters))
+            for i, key in enumerate(self.anisotropies_series_parameters.keys()):
+                series_id = self.anisotropies_series_parameters[key][0]
+                for j in range(len(anisotropies_sequence_copy)):
+                    if series_id == anisotropies_sequence_copy[j]:
+                        Kc[i] = velocity_parameters[j]
+                        anisotropies_sequence_copy[j] = None
+                        break
             IcKc = np.dot(indicator_fx_contacts,Kc)
             IcIc = np.zeros(len(indicator_fx_contacts))
             for k in range(len(indicator_fx_contacts[0])):
@@ -341,10 +372,9 @@ class IntrusionNetwork:
 
         
         velocity_field = (IcKc + ((1-IcIc)*IfKf)) + 0.1     
-        
         return velocity_field
     
-    def set_sections_axis(self, axis):
+    def set_sections_axis(self, axis = None):
         """
         Set section's axis for the search of the shortest path. 
         The model volumen in divided in sections parallel to 'axis', and the shortest path is look on each section.
@@ -359,9 +389,8 @@ class IntrusionNetwork:
         
         self.shortestpath_sections_axis = axis
         
-    def build(self, delta_c = 1, delta_f = 1):
-        
-            
+    def build(self, **kwargs):
+       
         # --- check type of intrusion network
         if self.intrusion_network_type == None:
             logger.error("Specify type of intrusion network: 'interpolated' or 'shortest path'")
@@ -374,6 +403,19 @@ class IntrusionNetwork:
             return inet_points
         
         elif self.intrusion_network_type == 'shortest path':
+            
+            if 'number_contacts' in kwargs:
+                n_clusters = kwargs['number_contacts']
+        
+            if 'delta_c' in kwargs:
+                delta_c = kwargs['delta_c']
+            else: 
+                delta_c = [1]*n_clusters
+            
+            if 'delta_f' in kwargs:
+                delta_f = kwargs['delta_f']
+            else: 
+                delta_f = [1]*len(self.anisotropies_fault_list)
             
             grid_points, spacing = self.create_grid_for_indicator_fxs()
             
@@ -393,7 +435,7 @@ class IntrusionNetwork:
             Ic = self.indicator_function_contacts(delta = delta_c)
             If = self.indicator_function_faults(delta = delta_f)
             velocity_field = self.compute_velocity_field(Ic,If)
-            
+   
             # --- find first (inlet) and last (outlet) anisotropies in anisotropies sequence, and compute associated scalar fields
             inlet_anisotropy = self.anisotropies_sequence[0]
             
@@ -502,5 +544,5 @@ class IntrusionNetwork:
                     shortest_path_points[l,3] = shortest_path_coords_temp[k,5] #intrusion network value, must be 0 
                     l=l+1
             self.intrusion_network_outcome = shortest_path_points
-            return shortest_path_points
+            return shortest_path_points, medium_df
 
