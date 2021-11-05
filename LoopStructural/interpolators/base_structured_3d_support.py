@@ -1,4 +1,6 @@
 import numpy as np
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 class BaseStructuredSupport:
     """
 
@@ -124,19 +126,19 @@ class BaseStructuredSupport:
         return np.einsum('ijk,ik->ij', self.rotation_xy[None,:,:], pos)
 
     def position_to_cell_index(self, pos):
-        """[summary]
+        """Get the indexes (i,j,k) of a cell
+        that a point is inside
 
-        [extended_summary]
 
         Parameters
         ----------
-        pos : [type]
-            [description]
+        pos : np.array
+            Nx3 array of xyz locations
 
         Returns
         -------
-        [type]
-            [description]
+        np.array, np.array, np.array
+            i,j,k indexes of the cell that the point is in
         """
 
         pos = self.rotate(pos)
@@ -149,6 +151,9 @@ class BaseStructuredSupport:
         iy = iy // self.step_vector[None, 1]
         iz = iz // self.step_vector[None, 2]
         return ix.astype(int), iy.astype(int), iz.astype(int)
+
+    def position_to_cell_global_index(self,pos):
+        ix,iy,iz = self.position_to_cell_index(pos)
 
     def inside(self, pos):
         pos = self.rotate(pos)
@@ -183,7 +188,7 @@ class BaseStructuredSupport:
             return False
         return pos
 
-    def global_cell_indicies(self, indexes):
+    def _global_indicies(self, indexes, nsteps):
         """
         Convert from cell indexes to global cell index
 
@@ -195,10 +200,28 @@ class BaseStructuredSupport:
         -------
 
         """
-        indexes = np.array(indexes).swapaxes(0, 2)
-        return indexes[:, :, 0] + self.nsteps_cells[None, None, 0] \
-               * indexes[:, :, 1] + self.nsteps_cells[None, None, 0] * \
-               self.nsteps_cells[None, None, 1] * indexes[:, :, 2]
+        if len(indexes.shape) == 1:
+            raise ValueError('Cell indexes needs to be Nx3')
+        if len(indexes.shape) == 2:
+            if indexes.shape[1] != 3 and indexes.shape[0] == 3:
+                indexes = indexes.swapaxes(0,1)
+            if indexes.shape[1] != 3:
+                logger.error('Indexes shape {}'.format(indexes.shape))
+                raise ValueError('Cell indexes needs to be Nx3')
+            return indexes[:, 0] + nsteps[ None, 0] \
+            * indexes[ :, 1] + nsteps[ None, 0] * \
+            nsteps[ None, 1] * indexes[ :, 2]
+        if len(indexes.shape) == 3:
+            if indexes.shape[2] != 3 and indexes.shape[1] == 3:
+                indexes = indexes.swapaxes(1,2)
+            if indexes.shape[2] != 3 and indexes.shape[0] == 3:
+                indexes = indexes.swapaxes(0,2)
+            if indexes.shape[2] != 3:
+                logger.error('Indexes shape {}'.format(indexes.shape))
+                raise ValueError('Cell indexes needs to be NxNx3')
+            return indexes[:, :, 0] + nsteps[None, None, 0] \
+                * indexes[:, :, 1] + nsteps[None, None, 0] * \
+                nsteps[None, None, 1] * indexes[:, :, 2]
 
     def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
         """
@@ -234,6 +257,23 @@ class BaseStructuredSupport:
         globalidx[~inside] = -1
         return globalidx, inside
     
+    def position_to_cell_vertices(self, pos):
+        """Get the vertices of the cell a point is in
+
+        Parameters
+        ----------
+        pos : np.array
+            Nx3 array of xyz locations
+
+        Returns
+        -------
+        np.array((N,3),dtype=float), np.array(N,dtype=int)
+            vertices, inside
+        """
+        gi, inside = self.position_to_cell_corners(pos)
+        ci, cj, ck = self.global_index_to_node_index(gi)
+        return self.node_indexes_to_position(ci, cj, ck), inside
+
     def node_indexes_to_position(self, xindex, yindex, zindex):
 
         x = self.origin[0] + self.step_vector[0] * xindex
@@ -287,6 +327,7 @@ class BaseStructuredSupport:
         z_index = global_index // self.nsteps[0, None] // \
                   self.nsteps[1, None]
         return x_index, y_index, z_index
+
     def global_node_indicies(self, indexes):
         """
         Convert from node indexes to global node index
@@ -299,7 +340,18 @@ class BaseStructuredSupport:
         -------
 
         """
-        indexes = np.array(indexes).swapaxes(0, 2)
-        return indexes[:, :, 0] + self.nsteps[None, None, 0] \
-               * indexes[:, :, 1] + self.nsteps[None, None, 0] * \
-               self.nsteps[None, None, 1] * indexes[:, :, 2]
+        return self._global_indicies(indexes, self.nsteps)
+    
+    def global_cell_indicies(self, indexes):
+        """
+        Convert from cell indexes to global cell index
+
+        Parameters
+        ----------
+        indexes
+
+        Returns
+        -------
+
+        """
+        return self._global_indicies(indexes, self.nsteps_cells)

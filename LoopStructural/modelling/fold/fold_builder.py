@@ -75,7 +75,7 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
             fold_limb_rotation.fit_fourier_series(wl=l_wl,**kwargs)
         self.fold.fold_limb_rotation = fold_limb_rotation
 
-    def build(self, data_region=None, **kwargs):
+    def build(self, data_region=None, constrained=True,**kwargs):
         """[summary]
 
         Parameters
@@ -87,7 +87,7 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
         # gradient not norm, to prevent issues with fold norm constraint
         # TODO folding norm constraint should be minimising the difference in norm
         # not setting the norm
-        self.add_data_to_interpolator(constrained=True)
+        self.add_data_to_interpolator(constrained=constrained)
         if self.fold.foldframe[0].is_valid() == False:
             raise InterpolatorError("Fold frame main coordinate is not valid")
         self.set_fold_axis()

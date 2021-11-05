@@ -85,7 +85,7 @@ class TetMesh(BaseStructuredSupport):
         """
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
-        vertices, c, tetras, inside = self.get_tetra_for_location(pos)
+        vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(c[inside,:]*property_array[tetras[inside,:]],axis=1)
         return values
 
@@ -107,7 +107,7 @@ class TetMesh(BaseStructuredSupport):
         """
         values = np.zeros(pos.shape)
         values[:] = np.nan
-        vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
+        vertices, element_gradients, tetras, inside = self.get_element_gradient_for_location(pos)
         #grads = np.zeros(tetras.shape)
         values[inside,:] = (element_gradients[inside,:,:]*property_array[tetras[inside,None,:]]).sum(2)
         length = np.sum(values[inside,:],axis=1)
@@ -122,7 +122,7 @@ class TetMesh(BaseStructuredSupport):
                       self.step_vector[None, i] * self.nsteps_cells[None, i]
         return inside
 
-    def get_tetra_for_location(self, pos):
+    def get_element_for_location(self, pos):
         """
         Determine the tetrahedron from a numpy array of points
 
@@ -375,7 +375,7 @@ class TetMesh(BaseStructuredSupport):
 
         return element_gradients[elements,:,:]
 
-    def get_tetra_gradient_for_location(self, pos):
+    def get_element_gradient_for_location(self, pos):
         """
         Get the gradient of the tetra for a location
 
@@ -387,7 +387,7 @@ class TetMesh(BaseStructuredSupport):
         -------
 
         """
-        vertices, bc, tetras, inside = self.get_tetra_for_location(pos)
+        vertices, bc, tetras, inside = self.get_element_for_location(pos)
         ps = vertices
         m = np.array(
             [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),(ps[:, 1, 2] - ps[:, 0, 2])],

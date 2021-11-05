@@ -100,41 +100,41 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if 'operators' not in kwargs:
             
             operator = Operator.Dxy_mask
-            weight =  self.interpolation_weights['dxy'] / \
-                             1#(4*self.support.step_vector[0]*self.support.step_vector[1])
+            weight =  self.vol*self.interpolation_weights['dxy'] / \
+                             (4*self.support.step_vector[0]*self.support.step_vector[1])
             self.assemble_inner(operator, weight )
             operator = Operator.Dyz_mask
-            weight = self.interpolation_weights['dyz'] / \
-                             1#(4*self.support.step_vector[1]*self.support.step_vector[2])
+            weight = self.vol*self.interpolation_weights['dyz'] / \
+                             (4*self.support.step_vector[1]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxz_mask
-            weight =  self.interpolation_weights['dxz'] / \
-                             1#(4*self.support.step_vector[0]*self.support.step_vector[2])
+            weight =  self.vol*self.interpolation_weights['dxz'] / \
+                             (4*self.support.step_vector[0]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
-            weight = self.interpolation_weights['dxx'] \
-                             / 1#self.support.step_vector[0]**2
+            weight = self.vol*self.interpolation_weights['dxx'] / \
+                             self.support.step_vector[0]**2
             self.assemble_inner(operator,
                                 weight)
             operator = Operator.Dyy_mask
-            weight =  self.interpolation_weights['dyy'] / \
-                             1#self.support.step_vector[1]**2
+            weight =  self.vol*self.interpolation_weights['dyy'] / \
+                             self.support.step_vector[1]**2
             self.assemble_inner(operator,weight)
             operator = Operator.Dzz_mask
-            weight = self.interpolation_weights['dzz'] / \
-                             1#self.support.step_vector[2]**2
+            weight = self.vol*self.interpolation_weights['dzz'] / \
+                             self.support.step_vector[2]**2
             self.assemble_inner(operator,weight)
         self.add_norm_constraints(
-            self.interpolation_weights['npw'])
+            self.vol*self.interpolation_weights['npw'])
         self.add_gradient_constraints(
-             self.interpolation_weights['gpw'])
+             self.vol*self.interpolation_weights['gpw'])
         self.add_vaue_constraints(
-             self.interpolation_weights['cpw'])
+             self.vol*self.interpolation_weights['cpw'])
         self.add_tangent_constraints(
-            self.interpolation_weights['tpw']
+            self.vol*self.interpolation_weights['tpw']
         )
         self.add_interface_constraints(
-            self.interpolation_weights['ipw']
+            self.vol*self.interpolation_weights['ipw']
         )
 
     def copy(self):
@@ -198,39 +198,68 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # get elements for points
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
-            node_idx, inside = self.support.position_to_cell_corners(
-                            points[:, :3])
-            # print(points[inside,:].shape)
+            vertices, c, tetras, inside = self.support.get_element_for_location(points[:,:3])
+            # calculate volume of tetras
+            # vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
+            # vol = np.abs(np.linalg.det(vecs)) / 6
+            A = c[inside,:]
+            # A *= vol[:,None]
+            idc = tetras[inside,:]
 
-            gi = np.zeros(self.support.n_nodes)
-            gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx)
-            idc = np.zeros(node_idx.shape)
-            idc[:] = -1
+            for unique_id in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
+                mask = points[inside,3] == unique_id
+                ij = np.array(np.meshgrid(np.arange(0,A[mask,:].shape[0]),np.arange(0,A[mask,:].shape[0]))).T.reshape(-1,2)
+                interface_A = np.hstack([A[mask,:][ij[:,0],:], -A[mask,:][ij[:,1],:] ])
+                # interface_A = interface_A.reshape((interface_A.shape[0]*interface_A.shape[0],A.shape[1]))
+                interface_idc = np.hstack([idc[mask,:][ij[:,0],:], idc[mask,:][ij[:,1],:] ])
 
-            idc[inside, :] = gi[node_idx[inside, :]]
-            inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
-            a = self.support.position_to_dof_coefs(points[inside, :3]).T
-            # create oversided array for storing constraints
-            A = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2))
-            interface_idc = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2),dtype=int)
-            interface_idc[:] = -1
-            c_i = 0
+                # now map the index from global to region create array size of mesh
+                # initialise as np.nan, then map points inside region to 0->nx
+                gi = np.zeros(self.support.n_nodes).astype(int)
+                gi[:] = -1
+
+                gi[self.region] = np.arange(0, self.nx)
+                interface_idc = gi[interface_idc]
+                # interface_idc = np.tile(interface_idc,(interface_idc.shape[0],1)).reshape(interface_A.shape)#flatten()
+                outside = ~np.any(interface_idc == -1, axis=1)
+                self.add_constraints_to_least_squares(interface_A[outside,:] * w,
+                                                      np.zeros(interface_A[outside,:].shape[0]),
+                                                      interface_idc[outside, :], name='interface_{}'.format(unique_id))
+
+        # if points.shape[0] > 1:
+        #     node_idx, inside = self.support.position_to_cell_corners(
+        #                     points[:, :3])
+        #     # print(points[inside,:].shape)
+
+        #     gi = np.zeros(self.support.n_nodes)
+        #     gi[:] = -1
+        #     gi[self.region] = np.arange(0, self.nx)
+        #     idc = np.zeros(node_idx.shape)
+        #     idc[:] = -1
+
+        #     idc[inside, :] = gi[node_idx[inside, :]]
+        #     inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
+        #     a = self.support.position_to_dof_coefs(points[inside, :3]).T
+        #     # create oversided array for storing constraints
+        #     A = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2))
+        #     interface_idc = np.zeros((a.shape[0]*a.shape[0],a.shape[1]*2),dtype=int)
+        #     interface_idc[:] = -1
+        #     c_i = 0
             
-            for i in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
-                mask = points[inside,3] == i
-                for p1 in range(points[inside][mask].shape[0]):
-                    for p2 in range(p1+1,points[inside][mask].shape[0]):
-                        A[c_i,:8] = a[mask][p1,:]
-                        A[c_i,8:] -= a[mask][p2,:]
-                        interface_idc[c_i,:8] = idc[inside,:][mask,:][p1,:]
-                        interface_idc[c_i,8:] = idc[inside,:][mask,:][p2,:]
-                        c_i+=1
-            outside = ~np.any(interface_idc == -1, axis=1) 
+        #     for i in np.unique(points[np.logical_and(~np.isnan(points[:,3]),inside),3]):
+        #         mask = points[inside,3] == i
+        #         for p1 in range(points[inside][mask].shape[0]):
+        #             for p2 in range(p1+1,points[inside][mask].shape[0]):
+        #                 A[c_i,:8] = a[mask][p1,:]
+        #                 A[c_i,8:] -= a[mask][p2,:]
+        #                 interface_idc[c_i,:8] = idc[inside,:][mask,:][p1,:]
+        #                 interface_idc[c_i,8:] = idc[inside,:][mask,:][p2,:]
+        #                 c_i+=1
+        #     outside = ~np.any(interface_idc == -1, axis=1) 
             
-            self.add_constraints_to_least_squares(A[outside,:] * w,
-                                                    np.zeros(A[outside,:].shape[0]),
-                                                    interface_idc[outside, :], name='interface')
+        #     self.add_constraints_to_least_squares(A[outside,:] * w,
+        #                                             np.zeros(A[outside,:].shape[0]),
+        #                                             interface_idc[outside, :], name='interface')
 
     def add_gradient_constraints(self, w=1.):
         """
@@ -262,7 +291,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
-            T = self.support.calcul_T(points[inside, :3])
+            vertices, T, elements, inside = self.support.get_element_gradient_for_location(points[inside, :3])
             # normalise constraint vector and scale element matrix by this
             norm = np.linalg.norm(points[:,3:6],axis=1)
             points[:,3:6]/=norm[:,None]
@@ -305,7 +334,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
             # magnitude
-            T = self.support.calcul_T(points[inside, :3])
+            vertices, T, elements, inside = self.support.get_element_gradient_for_location(points[inside, :3])
             # T*=np.product(self.support.step_vector)
             # T/=self.support.step_vector[0]
             w /= 3
@@ -356,7 +385,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             norm = np.linalg.norm(vector,axis=1)
             vector/=norm[:,None]
             #normalise element vector to unit vector for dot product
-            T = self.support.calcul_T(points[inside, :3])
+            vertices, T, elements, inside = self.support.get_element_gradient_for_location(points[inside, :3])
             T/=norm[:,None,None]
             
             # dot product of vector and element gradient = 0

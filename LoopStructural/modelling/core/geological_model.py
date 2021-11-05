@@ -31,7 +31,7 @@ from LoopStructural.modelling.fold import (FoldRotationAngle,
 
 from LoopStructural.utils.exceptions import LoopException, InterpolatorError
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
-                                         strike_dip_vector)
+                                         strike_dip_vector, get_vectors)
 
 from LoopStructural.utils import getLogger, log_to_file
 logger = getLogger(__name__)
@@ -1177,7 +1177,7 @@ class GeologicalModel:
                             major_axis = None, 
                             minor_axis = None, 
                             intermediate_axis = None,
-                            faultfunction=None, 
+                            faultfunction='BaseFault', 
                             **kwargs):
         """
         Parameters
@@ -1226,6 +1226,10 @@ class GeologicalModel:
                 fault_slip_vector = np.array([kwargs['avgSlipDirEasting'],kwargs['avgSlipDirNorthing'],kwargs['avgSlipDirAltitude']],dtype=float)
             else:
                 fault_slip_vector = fault_frame_data.loc[mask,['gx','gy','gz']].mean(axis=0).to_numpy()
+        if np.any(np.isnan(fault_slip_vector)):
+            logger.warning("Fault slip vector is nan, estimating from fault normal")
+            strike_vector, dip_vector = get_vectors(fault_normal_vector[None,:])
+            fault_slip_vector = dip_vector[:,0]
         if fault_center is not None:
             fault_center = self.scale(fault_center,inplace=False)
         if fault_center is None:

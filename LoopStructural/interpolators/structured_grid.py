@@ -161,16 +161,7 @@ class StructuredGrid(BaseStructuredSupport):
         if "indexes" in kwargs:
             indexes = kwargs['indexes']
         if "indexes" not in kwargs:
-            ii = []
-            jj = []
-            kk = []
-            for i in range(1, self.nsteps[0] - 1):
-                for j in range(1, self.nsteps[1] - 1):
-                    for k in range(1, self.nsteps[2] - 1):
-                        kk.append(k)
-                        ii.append(i)
-                        jj.append(j)
-            indexes = np.array([ii, jj, kk])
+            indexes = np.array(np.meshgrid(np.arange(1,self.nsteps[0]-1),np.arange(1,self.nsteps[1]-1),np.arange(1,self.nsteps[2]-1))).reshape((3,-1))
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
             print(indexes.ndim)
@@ -194,13 +185,6 @@ class StructuredGrid(BaseStructuredSupport):
                self.nsteps[0, None, None] * self.nsteps[
                    1, None, None] * neighbours[2, :, :]).astype(np.int64)
 
- 
-
-
-
-
-
-
     def evaluate_value(self, evaluation_points, property_array):
         """
         Evaluate the value of of the property at the locations.
@@ -217,7 +201,8 @@ class StructuredGrid(BaseStructuredSupport):
         """
         if property_array.shape[0] != self.n_nodes:
             logger.error("Property array does not match grid")
-            raise BaseException
+            raise ValueError("cannot assign {} vlaues to array of shape {}".format(
+                property_array.shape[0], self.n_nodes))
         idc, inside = self.position_to_cell_corners(evaluation_points)
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
@@ -230,12 +215,38 @@ class StructuredGrid(BaseStructuredSupport):
         return np.sum(v, axis=1)
 
     def evaluate_gradient(self, evaluation_points, property_array):
+        """Evaluate the gradient at a location given node values
+
+        Parameters
+        ----------
+        evaluation_points : np.array((N,3))
+            locations 
+        property_array : np.array((self.nx))
+            value node, has to be the same length as the number of nodes
+
+        Returns
+        -------
+        np.array((N,3),dtype=float)
+            gradient of the implicit function at the locations
+
+        Raises
+        ------
+        ValueError
+            if the array is not the same shape as the number of nodes
+
+        Notes
+        -----
+        The implicit function gradient is not normalised, to convert to
+        a unit vector normalise using vector/=np.linalg.norm(vector,axis=1)[:,None]
+        """
         if property_array.shape[0] != self.n_nodes:
             logger.error("Property array does not match grid")
-            raise BaseException
+            raise ValueError("cannot assign {} vlaues to array of shape {}".format(
+                property_array.shape[0], self.n_nodes))
+            
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 3, 8))
-        T[inside, :, :] = self.calcul_T(evaluation_points[inside, :])
+        T[inside, :, :] = self.get_element_gradient_for_location(evaluation_points[inside, :])[1]
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
@@ -246,11 +257,19 @@ class StructuredGrid(BaseStructuredSupport):
             [np.sum(T[:, 0, :], axis=1), np.sum(T[:, 1, :], axis=1) ,
              np.sum(T[:, 2, :], axis=1) ]).T
 
-    def calcul_T(self, pos):
+    def get_element_gradient_for_location(self, pos):
         """
-        Calculates the gradient matrix at location pos
-        :param pos: numpy array of location Nx3
-        :return: Nx3x4 matrix
+        Get the gradient of the element at the locations.
+
+        Parameters
+        ----------
+        pos : np.array((N,3),dtype=float)
+            locations
+
+        Returns
+        -------
+        vertices, gradient, element, inside
+            [description]
         """
         #   6_ _ _ _ 8
         #   /|    /|
@@ -265,7 +284,8 @@ class StructuredGrid(BaseStructuredSupport):
         # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
         T = np.zeros((pos.shape[0], 3, 8))
         x, y, z = self.position_to_local_coordinates(pos)
-    
+        vertices, inside = self.position_to_cell_vertices(pos)
+        elements,inside = self.position_to_cell_corners(pos)
         T[:, 0, 0] = (1 - z) * (y- 1)  # v000
         T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
         T[:, 0, 2] = -y * (1 - z)  # (pos[:, 1] - y[:, 0]) / div
@@ -294,5 +314,23 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 7] = x * y
         T/=self.step_vector[0]
 
-        return T 
+        return vertices, T, elements, inside 
 
+    def get_element_for_location(self, pos):
+        """Calculate the shape function of elements
+        for a location
+
+        Parameters
+        ----------
+        pos : np.array((N,3))
+            location of points to calculate the shape function
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
+        vertices, inside = self.position_to_cell_vertices(pos)
+        elements, inside = self.position_to_cell_corners(pos)
+        a = self.position_to_dof_coefs(pos)
+        return vertices, a.T, elements, inside
