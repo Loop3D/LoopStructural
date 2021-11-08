@@ -16,6 +16,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
     ncons = 0
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
+    cdef double [:] areas = np.zeros((len(neighbours)*4))
     cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
     cdef long long [3] common
     cdef double [:] norm = np.zeros((3))
@@ -78,7 +79,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
                 for i in range(3):
-                    c[ncons,itr_left] += norm[i]*e1[i][itr_left]*area
+                    c[ncons,itr_left] += norm[i]*e1[i][itr_left]
             next_available_position = Na
             for itr_right in range(Na):
                 common_index = -1
@@ -94,9 +95,10 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
                     next_available_position+=1
                 idc[ncons,position_to_write] = idr[itr_right]
                 for i in range(3):
-                    c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]*area
+                    c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]
+            areas[ncons] = area
             ncons+=1
-    return idc, c, ncons
+    return idc, c, ncons, areas
 def constant_norm(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes, long long [:] region):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
     Nc = 5 #numer of constraints shared nodes + independent

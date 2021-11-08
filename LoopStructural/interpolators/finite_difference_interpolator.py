@@ -46,8 +46,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                                       'ipw': 1.
                                       })
 
-        self.vol = grid.step_vector[0] * grid.step_vector[1] * \
-                   grid.step_vector[2]
+        self.vol = 1.#grid.step_vector[0] * grid.step_vector[1] * \
+                   #grid.step_vector[2]
         self.type = 'FDI'
         
     def _setup_interpolator(self, **kwargs):
@@ -100,41 +100,41 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if 'operators' not in kwargs:
             
             operator = Operator.Dxy_mask
-            weight =  self.vol*self.interpolation_weights['dxy'] / \
-                             (4*self.support.step_vector[0]*self.support.step_vector[1])
+            weight =  self.interpolation_weights['dxy'] / \
+                             4#(4*self.support.step_vector[0]*self.support.step_vector[1])
             self.assemble_inner(operator, weight )
             operator = Operator.Dyz_mask
-            weight = self.vol*self.interpolation_weights['dyz'] / \
-                             (4*self.support.step_vector[1]*self.support.step_vector[2])
+            weight = self.interpolation_weights['dyz'] / \
+                             4#(4*self.support.step_vector[1]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxz_mask
-            weight =  self.vol*self.interpolation_weights['dxz'] / \
-                             (4*self.support.step_vector[0]*self.support.step_vector[2])
+            weight =  self.interpolation_weights['dxz'] / \
+                             4#(4*self.support.step_vector[0]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
-            weight = self.vol*self.interpolation_weights['dxx'] / \
-                             self.support.step_vector[0]**2
+            weight = self.interpolation_weights['dxx'] / \
+                             1#self.support.step_vector[0]**2
             self.assemble_inner(operator,
                                 weight)
             operator = Operator.Dyy_mask
-            weight =  self.vol*self.interpolation_weights['dyy'] / \
-                             self.support.step_vector[1]**2
+            weight =  self.interpolation_weights['dyy'] / \
+                             1#self.support.step_vector[1]**2
             self.assemble_inner(operator,weight)
-            operator = Operator.Dzz_mask
-            weight = self.vol*self.interpolation_weights['dzz'] / \
-                             self.support.step_vector[2]**2
+            operator = Operator.Dzz_mask 
+            weight = self.interpolation_weights['dzz'] / \
+                             1#self.support.step_vector[2]**2
             self.assemble_inner(operator,weight)
         self.add_norm_constraints(
-            self.vol*self.interpolation_weights['npw'])
+            self.interpolation_weights['npw'])
         self.add_gradient_constraints(
-             self.vol*self.interpolation_weights['gpw'])
+             self.interpolation_weights['gpw'])
         self.add_vaue_constraints(
-             self.vol*self.interpolation_weights['cpw'])
+             self.interpolation_weights['cpw'])
         self.add_tangent_constraints(
-            self.vol*self.interpolation_weights['tpw']
+            self.interpolation_weights['tpw']
         )
         self.add_interface_constraints(
-            self.vol*self.interpolation_weights['ipw']
+            self.interpolation_weights['ipw']
         )
 
     def copy(self):
@@ -177,9 +177,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             a = self.support.position_to_dof_coefs(points[inside, :3])
             # a*=w
             # a/=np.product(self.support.step_vector)
-            self.add_constraints_to_least_squares(a.T * w,
-                                                  points[inside, 3] * w,
+            self.add_constraints_to_least_squares(a.T,
+                                                  points[inside, 3],
                                                   idc[inside, :],
+                                                  w=w,
                                                   name='value')
     def add_interface_constraints(self, w=1.0):  # for now weight all value points the same
         """
@@ -222,9 +223,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 interface_idc = gi[interface_idc]
                 # interface_idc = np.tile(interface_idc,(interface_idc.shape[0],1)).reshape(interface_A.shape)#flatten()
                 outside = ~np.any(interface_idc == -1, axis=1)
-                self.add_constraints_to_least_squares(interface_A[outside,:] * w,
+                self.add_constraints_to_least_squares(interface_A[outside,:],
                                                       np.zeros(interface_A[outside,:].shape[0]),
-                                                      interface_idc[outside, :], name='interface_{}'.format(unique_id))
+                                                      interface_idc[outside, :], w=w*self.vol, name='interface_{}'.format(unique_id))
 
         # if points.shape[0] > 1:
         #     node_idx, inside = self.support.position_to_cell_corners(
@@ -300,9 +301,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum('ij,ijk->ik', strike_vector.T, T)
             B = np.zeros(points[inside, :].shape[0])
-            self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient')
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w*self.vol, name='gradient')
             A = np.einsum('ij,ijk->ik', dip_vector.T, T)
-            self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient')
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w*self.vol, name='gradient')
 
     def add_norm_constraints(self, w=1.):
         """
@@ -338,15 +339,15 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # T*=np.product(self.support.step_vector)
             # T/=self.support.step_vector[0]
             w /= 3
-            self.add_constraints_to_least_squares(T[:, 0, :] * w,
-                                                  points[inside, 3] * w ,
-                                                  idc[inside, :], name='norm')
-            self.add_constraints_to_least_squares(T[:, 1, :] * w,
-                                                  points[inside, 4] * w ,
-                                                  idc[inside, :], name='norm')
-            self.add_constraints_to_least_squares(T[:, 2, :] * w,
-                                                  points[inside, 5] * w ,
-                                                  idc[inside, :], name='norm')
+            self.add_constraints_to_least_squares(T[:, 0, :],
+                                                  points[inside, 3],
+                                                  idc[inside, :], w=w*self.vol,name='norm')
+            self.add_constraints_to_least_squares(T[:, 1, :],
+                                                  points[inside, 4] ,
+                                                  idc[inside, :], w=w*self.vol,name='norm')
+            self.add_constraints_to_least_squares(T[:, 2, :],
+                                                  points[inside, 5],
+                                                  idc[inside, :], w=w*self.vol,name='norm')
 
     def add_gradient_orthogonal_constraints(self, points, vector, w=1.0,
                                            B=0):
@@ -391,7 +392,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # dot product of vector and element gradient = 0
             A = np.einsum('ij,ijk->ik', vector[inside, :3], T)
             B = np.zeros(points[inside, :].shape[0])
-            self.add_constraints_to_least_squares(A * w, B, idc[inside, :], name='gradient orthogonal')
+            self.add_constraints_to_least_squares(A, B, idc[inside, :],w=w*self.vol, name='gradient orthogonal')
 
     def add_regularisation(self, operator, w=0.1):
         """
@@ -436,9 +437,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # a[idc==-1] = 0
         # idc[idc==-1] = 0
         B = np.zeros(global_indexes.shape[1])
-        self.add_constraints_to_least_squares(a[inside, :] * w ,
+        self.add_constraints_to_least_squares(a[inside, :] ,
                                               B[inside],
                                               idc[inside, :],
+                                              w=w*self.vol,
                                               name='regularisation'
                                               )
         return

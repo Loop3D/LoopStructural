@@ -178,7 +178,7 @@ class UnStructuredTetMesh:
         """
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
-        vertices, c, tetras, inside = self.get_tetra_for_location(pos)
+        vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(c[inside,:]*property_array[tetras[inside,:]],axis=1)
         return values
 
@@ -200,7 +200,7 @@ class UnStructuredTetMesh:
         """
         values = np.zeros(pos.shape)
         values[:] = np.nan
-        vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
+        vertices, element_gradients, tetras, inside = self.get_element_gradient_for_location(pos)
         #grads = np.zeros(tetras.shape)
         values[inside,:] = (element_gradients[inside,:,:]*property_array[tetras[inside,None,:]]).sum(2)
         length = np.sum(values[inside,:],axis=1)
@@ -217,7 +217,7 @@ class UnStructuredTetMesh:
 
     def get_elements(self):
         return self.elements
-    def get_tetra_for_location(self, points):
+    def get_element_for_location(self, points):
         """
         Determine the tetrahedron from a numpy array of points
 
@@ -315,7 +315,7 @@ class UnStructuredTetMesh:
 
         return element_gradients[elements,:,:]
 
-    def get_tetra_gradient_for_location(self, pos):
+    def get_element_gradient_for_location(self, pos):
         """
         Get the gradient of the tetra for a location
 
@@ -327,7 +327,7 @@ class UnStructuredTetMesh:
         -------
 
         """
-        vertices, bc, tetras, inside = self.get_tetra_for_location(pos)
+        vertices, bc, tetras, inside = self.get_element_for_location(pos)
         ps = vertices
         m = np.array(
             [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),(ps[:, 1, 2] - ps[:, 0, 2])],
