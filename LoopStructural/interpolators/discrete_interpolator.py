@@ -179,7 +179,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         mask = np.any(np.isnan(A),axis=1)
         A[mask,:] = 0
         A[length>0,:] /= length[length>0,None]
-        if isinstance(w,float):
+        if isinstance(w,(float,int)):
             w = np.ones(A.shape[0])*w
         
         if isinstance(w,np.ndarray) == False:
