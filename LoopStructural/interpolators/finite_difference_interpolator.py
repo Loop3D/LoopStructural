@@ -180,7 +180,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(a.T,
                                                   points[inside, 3],
                                                   idc[inside, :],
-                                                  w=w,
+                                                  w=w*points[inside,4],
                                                   name='value')
     def add_interface_constraints(self, w=1.0):  # for now weight all value points the same
         """
