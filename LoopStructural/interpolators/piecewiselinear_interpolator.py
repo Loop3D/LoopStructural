@@ -208,7 +208,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             w*=points[:,6]
             self.add_constraints_to_least_squares(A[outside, :],
                                                   B[outside], idc[outside, :],
-                                                  w=w*vol[outside],
+                                                  w=w,
                                                   name = 'gradient_strike')
             A = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
             # A *= vol[:, None]
@@ -388,6 +388,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             B = np.zeros(idc.shape[0])+B
             outside = ~np.any(idc == -1, axis=1)
             self.add_constraints_to_least_squares(A[outside, :],
-                                                  B[outside], idc[outside, :], w=w*vol[outside],name='gradient orthogonal')
+                                                  B[outside], idc[outside, :], w=w,name='gradient orthogonal')
 
 
