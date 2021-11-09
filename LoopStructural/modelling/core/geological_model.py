@@ -985,10 +985,33 @@ class GeologicalModel:
     def create_and_add_intrusion(self, intrusion_name, intrusion_frame_name = None, intrusion_network_type = None, intrusion_network_contact = None,
                                 contacts_anisotropies = None, structures_anisotropies = None, sequence_anisotropies = None, inet_axis = None, 
                                 intrusion_lateral_extent_model = None, intrusion_vertical_extent_model = None, 
-                                lateral_extent_sgs_parameters = None,
-                                vertical_extent_sgs_parameters = None, 
+                                lateral_extent_sgs_parameters = {},
+                                vertical_extent_sgs_parameters = {}, 
                                 **kwargs):
-    
+        """
+
+        Parameters
+        ----------
+        intrusion_name :  string, name of intrusion feature in model data
+        intrusion_frame_name :  string, name of intrusion frame in model data
+        intrusion_network_type :  string, algorithm to build intrusion network 'interpolated' or 'shortest path'
+        intrusion_network_contact :  string, name of contact (roof or floor) to be used to build intrusion network
+        contacts_anisotropies : list, name of stratigraphic units where intrusion is emplaced
+        structures_anisotropies : list, name of structures exploited by intrusion
+        sequence_anisotropies = list, name of anisotropies to look for the shortest path. It could be only starting and end point.
+        intrusion_lateral_extent_model = function, geometrical conceptual model for simulation of lateral extent
+        intrusion_vertical_extent_model = function, geometrical conceptual model for simulation of vertical extent
+        lateral_extent_sgs_parameters = dictionary, parameters for sequential gaussian simulation of lateral extent
+        vertical_extent_sgs_parameters = dictionary, parameters for sequential gaussian simulation of vertical extent
+
+        kwargs
+
+        Returns
+        -------
+        intrusion feature
+        
+        """
+
         feature_data = self.data[self.data['feature_name'] == intrusion_name].copy()
         
         # Create and build Intrusion Network
@@ -1044,8 +1067,8 @@ class GeologicalModel:
             IBody.set_data_for_s_simulation()
             IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
             print('setting GSLIB parameters and variogram')
-            IBody.set_s_simulation_GSLIBparameters()
-            IBody.make_s_simulation_variogram()
+            IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
+            IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
             IBody.create_grid_for_simulation()
             print('simulating thresholds for lateral extent')
             IBody.simulate_s_thresholds()
@@ -1060,8 +1083,8 @@ class GeologicalModel:
             IBody.set_data_for_g_simulation()
             IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
             print('setting GSLIB parameters and variogram')
-            IBody.set_g_simulation_GSLIBparameters()
-            IBody.make_g_simulation_variogram()
+            IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
+            IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
             print('simulating thresholds for vertical extent')
             IBody.simulate_g_thresholds()
         
