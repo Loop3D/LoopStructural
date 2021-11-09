@@ -185,17 +185,16 @@ class IntrusionBody():
         self.simulation_grid = [grid_points, grid_points_coord0, grid_points_coord1, grid_points_coord2, spacing]
 
     
-    def set_s_simulation_GSLIBparameters(self, tmin = -999, tmax = 999, itrans = 1, ktype = 0,
-                                         nx = 200, ny = 3, xmn = None, ymn = -0.0001, xsiz = None, ysiz = 0.0001,
-                                         zmin = None , zmax = None, nxdis = 1, nydis = 1,
-                                         ndmin = 0, ndmax = 3, radius=500):
-    
-        
+    def set_s_simulation_GSLIBparameters(self, lateral_simulation_parameters):        
+       
         """
         Simulation parameters for lateral extent simulation
 
         Parameters
         ----------
+
+        lateral_simulation_parameters: python dictionary with the following parameters -->
+
         tmin, tmax : all values, regardless of which variable, strictly less than tmin and greater than or equal to tmax are ignored.
         itrans : 0 - no transformation requiered, data already nscored / 1 - for transformation
         ktype : type of interpolation, 0 for simple kriging - 1 for ordinary kriging
@@ -209,8 +208,61 @@ class IntrusionBody():
         radius : The maximum isotropic search radius.
               
         Returns
+        s_parameters : dictionary of parameters to be used for lateral extent simulation. Parameters definition above
         ----
         """
+        if 'tmin' in lateral_simulation_parameters: tmin = lateral_simulation_parameters['tmin']
+        else: tmin = -999
+        
+        if 'tmax' in lateral_simulation_parameters: tmax = lateral_simulation_parameters['tmax']
+        else: tmax = 999
+
+        if 'itrans' in lateral_simulation_parameters: itrans = lateral_simulation_parameters['itrans']
+        else: itrans = 1
+
+        if 'ktype' in lateral_simulation_parameters: ktype = lateral_simulation_parameters['ktype']
+        else: ktype = 0
+        
+        if 'nx' in lateral_simulation_parameters: nx = lateral_simulation_parameters['nx']
+        else: nx = 200
+        
+        if 'ny' in lateral_simulation_parameters: ny= lateral_simulation_parameters['ny']
+        else: ny = 3
+
+        if 'xmn' in lateral_simulation_parameters: xmn = lateral_simulation_parameters['xmn']
+        else: xmn = None
+
+        if 'ymn' in lateral_simulation_parameters: ymn = lateral_simulation_parameters['ymn']
+        else: ymn = -0.0001
+
+        if 'xsiz' in lateral_simulation_parameters: xsiz = lateral_simulation_parameters['xsiz']
+        else: xsiz = None
+        
+        if 'ysiz' in lateral_simulation_parameters: ysiz = lateral_simulation_parameters['ysiz']
+        else: ysiz = 0.0001
+
+        if 'zmin' in lateral_simulation_parameters: zmin = lateral_simulation_parameters['zmin']
+        else: zmin = None
+
+        if 'zmax' in lateral_simulation_parameters: zmax = lateral_simulation_parameters['zmax']
+        else: zmax = None
+
+        if 'nxdis' in lateral_simulation_parameters: nxdis = lateral_simulation_parameters['nxdis']
+        else: nxdis = 1
+
+        if 'nydis' in lateral_simulation_parameters: nydis = lateral_simulation_parameters['nydis']
+        else: nydis = 1
+
+        if 'ndmin' in lateral_simulation_parameters: ndmin = lateral_simulation_parameters['ndmin']
+        else: ndmin = 0
+
+        if 'ndmax' in lateral_simulation_parameters: ndmax = lateral_simulation_parameters['ndmax']
+        else: ndmax = 3
+
+        if 'radius' in lateral_simulation_parameters: radius= lateral_simulation_parameters['radius']
+        else: radius= 500
+
+
         s_parameters = {'tmin':tmin , 'tmax':tmax, 'itrans':itrans, 'ktype':ktype, 
                         'nx':nx, 'ny':ny, 'xmn':xmn, 'ymn':ymn, 'xsiz' :xsiz, 'ysiz': ysiz,
                         'zmin':zmin, 'zmax':zmax, 'nxdis':nxdis, 'nydis':nydis,
@@ -219,10 +271,7 @@ class IntrusionBody():
         self.simulation_s_parameters = s_parameters
         
         
-    def set_g_simulation_GSLIBparameters(self, tmin = -999, tmax = 999, itrans = 1, ktype = 0,
-                                         nx = None, ny = None, xmn = None, ymn = None, xsiz = None, ysiz = None,
-                                         zmin = None , zmax = None, zmin2 = None , zmax2 = None, nxdis = 1, nydis = 1,
-                                         ndmin = 0, ndmax = 3, radius=500):
+    def set_g_simulation_GSLIBparameters(self, vertical_simulation_parameters):
     
         
         """
@@ -230,6 +279,9 @@ class IntrusionBody():
 
         Parameters
         ----------
+
+        vertical_simulation_parameters: python dictionary with the following parameters -->
+
         tmin, tmax : all values, regardless of which variable, strictly less than tmin and greater than or equal to tmax are ignored.
         itrans : 0 - no transformation requiered, data already nscored / 1 - for transformation
         ktype : type of interpolation, 0 for simple kriging - 1 for ordinary kriging
@@ -237,7 +289,10 @@ class IntrusionBody():
         nx, ny : Numbers of blocks. Grid node indices ix, iy increase from 1 to nx, ny respectively (in the positive x,y direction).
         xmn, ymn :  Centre of the first block (xmn,ymn)
         xsiz, ysiz : Size of blocks
-        zmin, zmax : The minimum and maximum allowable data values. These are used in the back-transformation procedure.
+        zmin, zmax : The minimum and maximum allowable data values for maximum g simulation (contact opposite to intrusion network). 
+                    These are used in the back-transformation procedure.
+        zmin2, zmax2 : The minimum and maximum allowable data values for minimum g simulation (simultion to condition model to intrusion network).
+                    These are used in the back-transformation procedure.
         nxdis, nydis : Number of discretization points for a block. If both nxdis and nydis are set to 1, then point kriging is performed. 
         ndmin, ndmax : The minimum and maximum number of original data that should be used to simulate a grid node. If there are fewer than ndmin data points, the node is not simulated.
         radius : The maximum isotropic search radius.
@@ -245,20 +300,79 @@ class IntrusionBody():
         Returns
         ----
         """
-        s_parameters = {'tmin':tmin , 'tmax':tmax, 'itrans':itrans, 'ktype':ktype, 
+        if 'tmin' in vertical_simulation_parameters: tmin = vertical_simulation_parameters['tmin']
+        else: tmin = -999
+        
+        if 'tmax' in vertical_simulation_parameters: tmax = vertical_simulation_parameters['tmax']
+        else: tmax = 999
+
+        if 'itrans' in vertical_simulation_parameters: itrans = vertical_simulation_parameters['itrans']
+        else: itrans = 1
+
+        if 'ktype' in vertical_simulation_parameters: ktype = vertical_simulation_parameters['ktype']
+        else: ktype = 0
+        
+        if 'nx' in vertical_simulation_parameters: nx = vertical_simulation_parameters['nx']
+        else: nx = None
+        
+        if 'ny' in vertical_simulation_parameters: ny= vertical_simulation_parameters['ny']
+        else: ny = None
+
+        if 'xmn' in vertical_simulation_parameters: xmn = vertical_simulation_parameters['xmn']
+        else: xmn = None
+
+        if 'ymn' in vertical_simulation_parameters: ymn = vertical_simulation_parameters['ymn']
+        else: ymn = None
+
+        if 'xsiz' in vertical_simulation_parameters: xsiz = vertical_simulation_parameters['xsiz']
+        else: xsiz = None
+        
+        if 'ysiz' in vertical_simulation_parameters: ysiz = vertical_simulation_parameters['ysiz']
+        else: ysiz = None
+
+        if 'zmin' in vertical_simulation_parameters: zmin = vertical_simulation_parameters['zmin']
+        else: zmin = None
+
+        if 'zmax' in vertical_simulation_parameters: zmax = vertical_simulation_parameters['zmax']
+        else: zmax = None
+
+        if 'zmin2' in vertical_simulation_parameters: zmin2 = vertical_simulation_parameters['zmin2']
+        else: zmin2 = None
+
+        if 'zmax2' in vertical_simulation_parameters: zmax2 = vertical_simulation_parameters['zmax2']
+        else: zmax2 = None
+
+        if 'nxdis' in vertical_simulation_parameters: xdis = vertical_simulation_parameters['nxdis']
+        else: nxdis = 1
+
+        if 'nydis' in vertical_simulation_parameters: nydis = vertical_simulation_parameters['nydis']
+        else: nydis = 1
+
+        if 'ndmin' in vertical_simulation_parameters: ndmin = vertical_simulation_parameters['ndmin']
+        else: ndmin = 0
+
+        if 'ndmax' in vertical_simulation_parameters: ndmax = vertical_simulation_parameters['ndmax']
+        else: ndmax = 3
+
+        if 'radius' in vertical_simulation_parameters: radius= vertical_simulation_parameters['radius']
+        else: radius= 500
+        
+        g_parameters = {'tmin':tmin , 'tmax':tmax, 'itrans':itrans, 'ktype':ktype, 
                         'nx':nx, 'ny':ny, 'xmn':xmn, 'ymn':ymn, 'xsiz' :xsiz, 'ysiz': ysiz,
                         'zmin':zmin, 'zmax':zmax, 'zmin2':zmin2, 'zmax2':zmax2, 'nxdis':nxdis, 'nydis':nydis,
                         'ndmin':ndmin, 'ndmax':ndmax, 'radius':radius}
         
-        self.simulation_g_parameters = s_parameters
+        self.simulation_g_parameters = g_parameters
     
-    def make_s_simulation_variogram(self, nug = 0, nst = 1, it1 = 1, cc1 = 1, azi1 = 90, hmaj1 = 999999, hmin1 = 999999):
+    def make_s_simulation_variogram(self, lateral_simulation_parameters):
         """
         Make variogram for lateral extent simulation
         By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range
 
         Parameters
         ----------
+        python dictionary with the following parameters -->
+
         nug = 0; nst = 1                   # nugget effect = 0 and 1 nested structure
         it1 = 1                            # nested structure type (1 - spherical, 2 - exponential, 3 - Gaussian)
         cc1 = 1                            # One structure and no nugget 
@@ -267,11 +381,33 @@ class IntrusionBody():
         
         Returns
         ----
-        """        
+        """ 
+        if 'nug' in lateral_simulation_parameters: nug = lateral_simulation_parameters['nug']
+        else: nug = 0
+
+        if 'nst' in lateral_simulation_parameters: nst = lateral_simulation_parameters['nst']
+        else: nst = 1
+
+        if 'it1' in lateral_simulation_parameters: it1 = lateral_simulation_parameters['it1']
+        else: it1 = 1
+
+        if 'cc1' in lateral_simulation_parameters: cc1 = lateral_simulation_parameters['cc1']
+        else: cc1 = 1
+
+        if 'azi1' in lateral_simulation_parameters: azi1 = lateral_simulation_parameters['azi1']
+        else: azi1 = 90
+
+        if 'hmaj1' in lateral_simulation_parameters: hmaj1 = lateral_simulation_parameters['hmaj1']
+        else: hmaj1 = 999999
+
+        if 'hmin1' in lateral_simulation_parameters: hmin1 = lateral_simulation_parameters['hmin1']
+        else: hmin1 = 999999
+            
+
         variogram = GSLIB.make_variogram(nug,nst,it1,cc1,azi1,hmaj1,hmin1)
         self.simulation_s_variogram = variogram
         
-    def make_g_simulation_variogram(self, nug = 0, nst = 1, it1 = 1, cc1 = 1, azi1 = 90, hmaj1 = 999999, hmin1 = 999999):
+    def make_g_simulation_variogram(self, vertical_simulation_parameters):
         """
         Make variogram for vertical extent simulation
         By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range
@@ -286,7 +422,29 @@ class IntrusionBody():
         
         Returns
         ----
-        """        
+        """  
+
+        if 'nug' in vertical_simulation_parameters: nug = vertical_simulation_parameters['nug']
+        else: nug = 0
+
+        if 'nst' in vertical_simulation_parameters: nst = vertical_simulation_parameters['nst']
+        else: nst = 1
+
+        if 'it1' in vertical_simulation_parameters: it1 = vertical_simulation_parameters['it1']
+        else: it1 = 1
+
+        if 'cc1' in vertical_simulation_parameters: cc1 = vertical_simulation_parameters['cc1']
+        else: cc1 = 1
+
+        if 'azi1' in vertical_simulation_parameters: azi1 = vertical_simulation_parameters['azi1']
+        else: azi1 = 90
+
+        if 'hmaj1' in vertical_simulation_parameters: hmaj1 = vertical_simulation_parameters['hmaj1']
+        else: hmaj1 = 999999
+
+        if 'hmin1' in vertical_simulation_parameters: hmin1 = vertical_simulation_parameters['hmin1']
+        else: hmin1 = 999999    
+        
         variogram = GSLIB.make_variogram(nug,nst,it1,cc1,azi1,hmaj1,hmin1)
         self.simulation_g_variogram = variogram
     
@@ -347,7 +505,7 @@ class IntrusionBody():
             self.simulation_s_parameters['xsiz'] = (maxC0-minC0)/nx
             
         # Make variogram
-        self.make_s_simulation_variogram()
+        # self.make_s_simulation_variogram()
         
         # Simulation of lateral extent
         tmin = self.simulation_s_parameters.get('tmin'); tmax = self.simulation_s_parameters.get('tmax')
@@ -485,7 +643,7 @@ class IntrusionBody():
 
             
         # --- make variogram
-        self.make_g_simulation_variogram()
+        # self.make_g_simulation_variogram()
         
         # --- get parameters for simulation
         tmin = self.simulation_g_parameters.get('tmin'); tmax = self.simulation_g_parameters.get('tmax')
