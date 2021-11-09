@@ -346,15 +346,15 @@ class ProcessInputData:
             keys are unit name, value is cumulative thickness/implicit function value
         """
         stratigraphic_value = {}
-        for name, sg in self._stratigraphic_order:
+        for name, sg in self.stratigraphic_order:
             value = 0. #reset for each supergroup
             for g in reversed(sg):
-                if g not in self._thicknesses:
+                if g not in self.thicknesses:
                     logger.warning('No thicknesses for {}'.format(g))
                     stratigraphic_value[g] = np.nan
                 else:
-                    stratigraphic_value[g] = value #+ self._thicknesses[g]
-                    value+=self._thicknesses[g]
+                    stratigraphic_value[g] = value 
+                    value+=self.thicknesses[g]
         return stratigraphic_value
 
     def _update_feature_names(self,dataframe):
@@ -399,11 +399,9 @@ class ProcessInputData:
             self._contacts = contacts.loc[~np.isnan(contacts['val']),['X','Y','Z','feature_name','val']]
         if not self._use_thickness:
             contacts['interface'] = np.nan
-            for sg in self._stratigraphic_order:
-                interface_val = 0
-                for g in reversed(sg):
-                    contacts.loc[contacts['name'] == g,'interface'] = interface_val
-                    interface_val+=1
+            interface_val = 0
+            for k in self._stratigraphic_value().keys():
+                contacts.loc[contacts['name'] == k,'interface'] = interface_val
             self._contacts = contacts.loc[~np.isnan(contacts['interface']),['X','Y','Z','feature_name','interface']]
 
     
