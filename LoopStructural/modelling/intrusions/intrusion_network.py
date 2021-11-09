@@ -544,5 +544,5 @@ class IntrusionNetwork:
                     shortest_path_points[l,3] = shortest_path_coords_temp[k,5] #intrusion network value, must be 0 
                     l=l+1
             self.intrusion_network_outcome = shortest_path_points
-            return shortest_path_points, medium_df
+            return shortest_path_points
 
