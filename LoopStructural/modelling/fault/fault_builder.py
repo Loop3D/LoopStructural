@@ -44,7 +44,8 @@ class FaultBuilder(StructuralFrameBuilder):
                                 minor_axis = None,
                                 major_axis = None,
                                 intermediate_axis = None,
-                                w=1.):
+                                w=1.
+                                points=True):
         """Generate the required data for building a fault frame for a fault with the 
         specified parameters
 
@@ -93,17 +94,22 @@ class FaultBuilder(StructuralFrameBuilder):
         data.reset_index(inplace=True)
         if fault_center is not None:
             if minor_axis is not None:
-                # fault_edges[0,:] = fault_center[:3]+normal_vector*minor_axis
-                # fault_edges[1,:] = fault_center[:3]-normal_vector*minor_axis
+                fault_edges[0,:] = fault_center[:3]+normal_vector*minor_axis
+                fault_edges[1,:] = fault_center[:3]-normal_vector*minor_axis
                 self.update_geometry(fault_edges)
-                # data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
-                #     [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],self.name,1,0,w]
-                # data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
-                #     [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0,w]
-                mask = np.logical_and(data['coord'] == 0,~np.isnan(data['gx']))
-                data.loc[mask,['gx','gy','gz']] /= np.linalg.norm(data.loc[mask,['gx','gy','gz']],axis=1)[:,None]
-                # scale vector so that the distance between -1 and 1 is the minor axis length
-                data.loc[mask,['gx','gy','gz']] /=minor_axis*0.5
+                
+                # choose whether to add points -1,1 to constrain fault frame or a scaled
+                # vector
+                if points == True:
+                    data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                        [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],self.name,1,0,w]
+                    data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                        [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0,w]
+                if points == False:
+                    mask = np.logical_and(data['coord'] == 0,~np.isnan(data['gx']))
+                    data.loc[mask,['gx','gy','gz']] /= np.linalg.norm(data.loc[mask,['gx','gy','gz']],axis=1)[:,None]
+                    # scale vector so that the distance between -1 and 1 is the minor axis length
+                    data.loc[mask,['gx','gy','gz']] /=minor_axis*0.5
             if major_axis is not None:
                 fault_tips[0,:] = fault_center[:3]+strike_vector*0.5*major_axis
                 fault_tips[1,:] = fault_center[:3]-strike_vector*0.5*major_axis
