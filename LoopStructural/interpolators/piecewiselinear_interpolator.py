@@ -209,13 +209,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(A[outside, :],
                                                   B[outside], idc[outside, :],
                                                   w=w,
-                                                  name = 'gradient_strike')
+                                                  name = 'gradient strike')
             A = np.einsum('ji,ijk->ik', dip_vector, element_gradients)
             # A *= vol[:, None]
             self.add_constraints_to_least_squares(A[outside, :],
                                           B[outside], idc[outside, :],
                                           w=w,
-                                                  name='gradient_dip')
+                                                  name='gradient dip')
             
     def add_norm_constraints(self, w=1.0):
         """
@@ -301,11 +301,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
-            w*=points[:,4]
+            w*=points[inside,4]
             self.add_constraints_to_least_squares(A[outside,:],
                                                   points[inside,:][outside, 3]*vol[:],
                                                   idc[outside, :], 
-                                                  w=points[outside,4],name='value')
+                                                  w=w,name='value')
 
     def add_interface_constraints(self, w=1.0):  # for now weight all value points the same
         """
