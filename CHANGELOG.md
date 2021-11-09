@@ -1,5 +1,37 @@
 # Changelog
 
+### [1.3.8](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.7...v1.3.8) (2021-11-08)
+
+
+### Bug Fixes
+
+* adding cython code for getting neighbour pairs ([65a0a44](https://www.github.com/Loop3D/LoopStructural/commit/65a0a44e182adc16b62d6e38bb9cf941b777e3ef))
+* adding origin to scalar field ([8bfeb54](https://www.github.com/Loop3D/LoopStructural/commit/8bfeb54e5475e9d9b15fabe9b291373e9747777f))
+* bugfix for pli weighting ([1ce7380](https://www.github.com/Loop3D/LoopStructural/commit/1ce7380d4ba000bad004bbcbb308b8889b18fe31))
+* faults are more generic ([4fc4627](https://www.github.com/Loop3D/LoopStructural/commit/4fc462736a0d7a8ff5e1ebfa012b116123087933))
+* fold builder was adding data twice ([770e666](https://www.github.com/Loop3D/LoopStructural/commit/770e66656f8aa5ea381130ac3822222bddd2a77b))
+* fold rotation angle calculated incorrectly ([aea51bf](https://www.github.com/Loop3D/LoopStructural/commit/aea51bf2610a4ca284db258d8f6ece2f4b597ac6))
+* generalising support functions for grid and tetra ([761fd03](https://www.github.com/Loop3D/LoopStructural/commit/761fd03671126b3d8200f19126ea12fb5b5e5166))
+* gradient constraints in pli weighted by vol ([9b487fd](https://www.github.com/Loop3D/LoopStructural/commit/9b487fd588830ec008facc922241db46a1e832d2))
+* kwargs weren't being passed to fold builder ([d5135c5](https://www.github.com/Loop3D/LoopStructural/commit/d5135c5642bb25d34406bbc65349725f1d88b60f))
+* matrix assembly based on constraints dict ([20407e4](https://www.github.com/Loop3D/LoopStructural/commit/20407e4a051611cbcdd7a01486a31e2aa9ee45cb))
+* need to put exception type to get message ([16c01ea](https://www.github.com/Loop3D/LoopStructural/commit/16c01eaf971769af6b7c6abe664a002faed42551))
+* nonlinear will replace discrete class ([86816d1](https://www.github.com/Loop3D/LoopStructural/commit/86816d12d1d8b883f2529d9a114c382a005a2bb3))
+* normalise rows of interpolation matrix ([ae315d2](https://www.github.com/Loop3D/LoopStructural/commit/ae315d2122808594863e7903e6be221a5e0a48c1))
+* normalise vector for cg ([f8cf221](https://www.github.com/Loop3D/LoopStructural/commit/f8cf221ce3b707e676f16aa04a634fb3ff45d15b))
+* plot vector field crashing ([e35f6b2](https://www.github.com/Loop3D/LoopStructural/commit/e35f6b214ccf448022f53e7b0d892b9e022c766b))
+* pytest failed ([9136c99](https://www.github.com/Loop3D/LoopStructural/commit/9136c991e7feee6a1e7ffce76745d7c74c9a0357))
+* removing sign change for rotation angle ([7ab33fd](https://www.github.com/Loop3D/LoopStructural/commit/7ab33fd63742f4350bf729537bd5b423d6f84274))
+* speed up ([e5b53d8](https://www.github.com/Loop3D/LoopStructural/commit/e5b53d87d2cd9bf3afa6d1390bcc6d593f885467))
+* speeding up interface constraints ([3f4a845](https://www.github.com/Loop3D/LoopStructural/commit/3f4a845be37fbb85b07260ae8d62dc7b46aaf26c))
+* weighting fdi using volume of element ([665e4fe](https://www.github.com/Loop3D/LoopStructural/commit/665e4fe70bbcd310ca3dfb2b957cfe1f25af2b3c))
+
+
+### Documentation
+
+* adding debugging guide ([540b5ac](https://www.github.com/Loop3D/LoopStructural/commit/540b5ac381bfe3a3b92170f0c1d3b5a2ba5e07de))
+* updating to issue form, using scipy for a template ([70b3a67](https://www.github.com/Loop3D/LoopStructural/commit/70b3a67581d2c3802dbed225c6e7057633d9eff3))
+
 ### [1.3.7](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.6...v1.3.7) (2021-10-13)
 
 
