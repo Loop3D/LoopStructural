@@ -503,7 +503,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs['M'] = precon(A)
         return sla.cg(A, B, **cgargs)[0][:self.nx]
 
-    def _solve_pyamg(self, A, B, tol=1e-12,x0=None,**kwargs):
+    def _solve_pyamg(self, A, B, tol=1e-12,x0=None,verb=False**kwargs):
         """
         Solve least squares system using pyamg algorithmic multigrid solver
 
@@ -518,7 +518,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         import pyamg
         logger.info("Solving using pyamg: tol {}".format(tol))
-        return pyamg.solve(A, B, tol=tol, x0=x0, verb=False)[:self.nx]
+        return pyamg.solve(A, B, tol=tol, x0=x0, verb=verb)[:self.nx]
 
     def _solve(self, solver='cg', **kwargs):
         """
