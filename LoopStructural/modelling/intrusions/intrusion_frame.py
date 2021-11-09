@@ -48,8 +48,8 @@ class IntrusionBuilder(StructuralFrameBuilder):
         
         """
         # Coordinate 0 - Represents growth, isovalue 0 correspond to the intrusion network surface, gradient must be provided (ix,iy,iz):
-        # scaled_inet_points = self.model.scale(intrusion_network_points[:,:3])
-        scaled_inet_points = intrusion_network_points[:,:3]
+        scaled_inet_points = self.model.scale(intrusion_network_points[:,:3])
+        # scaled_inet_points = intrusion_network_points[:,:3]
         coord_0_values = pd.DataFrame(scaled_inet_points, columns = ['X','Y','Z'])
         coord_0_values['val'] = 0
         coord_0_values['coord'] = 0
