@@ -70,6 +70,9 @@ class FaultBuilder(StructuralFrameBuilder):
         if major_axis is None:
             fault_trace = data.loc[np.logical_and(data['coord']==0,data['val']==0),['X','Y']].to_numpy()
             distance = np.linalg.norm(fault_trace[:,None,:]-fault_trace[None,:,:],axis=2)
+            if len(distance)==0:
+                logger.error("There is no fault trace for {}".format(self.name))
+                return
             major_axis = np.max(distance)
             logger.warning('Fault major axis using map length: {}'.format(major_axis))
 
@@ -90,17 +93,22 @@ class FaultBuilder(StructuralFrameBuilder):
         data.reset_index(inplace=True)
         if fault_center is not None:
             if minor_axis is not None:
-                fault_edges[0,:] = fault_center[:3]+normal_vector*minor_axis
-                fault_edges[1,:] = fault_center[:3]-normal_vector*minor_axis
+                # fault_edges[0,:] = fault_center[:3]+normal_vector*minor_axis
+                # fault_edges[1,:] = fault_center[:3]-normal_vector*minor_axis
                 self.update_geometry(fault_edges)
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
-                    [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],self.name,1,0,w]
-                data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
-                    [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0,w]
+                # data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                #     [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],self.name,1,0,w]
+                # data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
+                #     [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],self.name,-1,0,w]
+                mask = np.logical_and(data['coord'] == 0,~np.isnan(data['gx']))
+                data.loc[mask,['gx','gy','gz']] /= np.linalg.norm(data.loc[mask,['gx','gy','gz']],axis=1)[:,None]
+                # scale vector so that the distance between -1 and 1 is the minor axis length
+                data.loc[mask,['gx','gy','gz']] /=minor_axis*0.5
             if major_axis is not None:
                 fault_tips[0,:] = fault_center[:3]+strike_vector*0.5*major_axis
                 fault_tips[1,:] = fault_center[:3]-strike_vector*0.5*major_axis
                 self.update_geometry(fault_tips)
+                # we want the tips of the fault to be -1 and 1
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
                     [fault_center[0],fault_center[1],fault_center[2],self.name,0,2,w]
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
@@ -109,6 +117,7 @@ class FaultBuilder(StructuralFrameBuilder):
                     [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],self.name,.5,2,w]
                 strike_vector /= major_axis
             if intermediate_axis is not None:
+                
                 fault_depth[0,:] = fault_center[:3]+slip_vector*intermediate_axis
                 fault_depth[1,:] = fault_center[:3]-slip_vector*intermediate_axis
                 data.loc[len(data),['X','Y','Z','feature_name','val','coord','w']] = \
@@ -118,7 +127,7 @@ class FaultBuilder(StructuralFrameBuilder):
                 self.update_geometry(fault_depth)
                 #TODO need to add data here
                 # print(np.linalg.norm(slip_vector))
-                slip_vector /= intermediate_axis
+                # slip_vector /= intermediate_axis
                 # print(np.linalg.norm(slip_vector))
                 data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','val','coord','w']] =\
                     [fault_center[0],fault_center[1],fault_center[2],self.name,slip_vector[0],slip_vector[1],slip_vector[2],0,1,w]
