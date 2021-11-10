@@ -1,5 +1,26 @@
 # Changelog
 
+### [1.3.9](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.8...v1.3.9) (2021-11-10)
+
+
+### Bug Fixes
+
+* added points argument to faultframe builder ([4588d3c](https://www.github.com/Loop3D/LoopStructural/commit/4588d3c6436666d951dfc84755701b0b7cb95140))
+* bugfix thickness=False not working for processor ([45e3f8f](https://www.github.com/Loop3D/LoopStructural/commit/45e3f8f12dbae1a7343eda27819b55d48f321cef))
+* fault frame build using scaled vector ([87bc4e2](https://www.github.com/Loop3D/LoopStructural/commit/87bc4e29dff30d234732526c97210c7b3d01ad2b))
+* fdi bug was weigthing grad by volume ([7cd6296](https://www.github.com/Loop3D/LoopStructural/commit/7cd6296fd46b23643fbca66f653e18828632f069))
+* passing verb argument to pyamg solve ([52c277d](https://www.github.com/Loop3D/LoopStructural/commit/52c277d819ab202bb03e5e7116719dbcc3ea2778))
+* reducing default fault buffer from .4 to .2 ([328013e](https://www.github.com/Loop3D/LoopStructural/commit/328013e09210098e38f02ee6fad65f10c54fa067))
+* removing _ from pli constraint names ([08473c3](https://www.github.com/Loop3D/LoopStructural/commit/08473c3d90844e74ba7fb68a3b7bc7290ce56ac8))
+* typos ([c67fc54](https://www.github.com/Loop3D/LoopStructural/commit/c67fc54b3aedd84a48ff709d32d69ba3c5489f99))
+* updating docker image ([ff2becd](https://www.github.com/Loop3D/LoopStructural/commit/ff2becd59c248a461838a5385adcf885edc5f3b5))
+* weight can be float or int ([d2c469f](https://www.github.com/Loop3D/LoopStructural/commit/d2c469fc8e5279de116f066ba61d2833dbc16e7f))
+
+
+### Documentation
+
+* updating docs to use releaseplease changelog ([cbc8690](https://www.github.com/Loop3D/LoopStructural/commit/cbc86909efe5480c6c1d4bcef874c9b2d4dcea1d))
+
 ### [1.3.8](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.7...v1.3.8) (2021-11-08)
 
 
