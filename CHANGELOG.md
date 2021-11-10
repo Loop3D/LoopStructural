@@ -1,5 +1,17 @@
 # Changelog
 
+### [1.3.10](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.9...v1.3.10) (2021-11-10)
+
+
+### Bug Fixes
+
+* conda build for all python ([04757b5](https://www.github.com/Loop3D/LoopStructural/commit/04757b506a095a3d53b914f951305c9f34da1a0d))
+
+
+### Documentation
+
+* fixing documentation autobuild ([54e0bc9](https://www.github.com/Loop3D/LoopStructural/commit/54e0bc934a12cdda56c8d5a2112f7f61b2c68412))
+
 ### [1.3.9](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.8...v1.3.9) (2021-11-10)
 
 
