@@ -44,7 +44,7 @@ class FaultBuilder(StructuralFrameBuilder):
                                 minor_axis = None,
                                 major_axis = None,
                                 intermediate_axis = None,
-                                w=1.
+                                w=1.,
                                 points=True):
         """Generate the required data for building a fault frame for a fault with the 
         specified parameters
