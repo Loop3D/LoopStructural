@@ -22,7 +22,7 @@ jobs:
         run: |
             conda install -c conda-forge theano cython numpy scipy matplotlib  sphinx=3.5.4 sphinx-gallery sphinxcontrib-bibtex sphinx_rtd_theme myst-parser -y
             pip install lavavu-osmesa 
-            pip install .
+            python setup.py install build_ext --inplace
             cd docs
             make html
 
