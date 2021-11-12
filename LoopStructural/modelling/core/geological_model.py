@@ -1255,12 +1255,13 @@ class GeologicalModel:
                                                       fault_slip_vector,
                                                       minor_axis=minor_axis,
                                                       major_axis=major_axis,
-                                                      intermediate_axis=intermediate_axis
+                                                      intermediate_axis=intermediate_axis,
+                                                      points=kwargs.get('points',None)
                                                       )
         
-        if minor_axis == None or major_axis == None or intermediate_axis == None:
-            fault_frame_builder.origin = self.bounding_box[0,:]
-            fault_frame_builder.maximum = self.bounding_box[1,:]
+        # if minor_axis == None or major_axis == None or intermediate_axis == None:
+        #     fault_frame_builder.origin = self.bounding_box[0,:]
+        #     fault_frame_builder.maximum = self.bounding_box[1,:]
         if 'force_mesh_geometry' not in kwargs:
             fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer',0.2),0)#,
                                             #np.rad2deg(np.arccos(np.dot(fault_normal_vector[:2],np.array([0,1])))))

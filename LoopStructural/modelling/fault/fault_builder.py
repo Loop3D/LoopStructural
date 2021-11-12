@@ -142,7 +142,6 @@ class FaultBuilder(StructuralFrameBuilder):
             #     self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
         self.add_data_from_data_frame(data)
         self.update_geometry(data[['X','Y','Z']].to_numpy())
-
     def set_mesh_geometry(self,buffer,rotation):
         """set the mesh geometry
 
