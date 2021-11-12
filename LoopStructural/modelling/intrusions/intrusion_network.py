@@ -398,7 +398,10 @@ class IntrusionNetwork:
         elif self.intrusion_network_type == 'interpolated':
             
             inet_points = np.zeros([len(self.intrusion_network_data),4])
-            inet_points[:,:3] = self.intrusion_network_data.loc[:,['X','Y','Z']]
+            inet_points_scaled = self.intrusion_network_data.loc[:,['X','Y','Z']].to_numpy()
+            inet_points_rescaled =  self.model.rescale(inet_points_scaled)
+            inet_points[:,:3] = inet_points_rescaled
+
             self.intrusion_network_outcome = inet_points
             return inet_points
         
