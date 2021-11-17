@@ -304,7 +304,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if points.shape[0] > 1:
             self.add_gradient_orthogonal_constraints(points[:,:3],points[:,3:6],w)
 
-    def build_matrix(self, square=True, damp=True):
+    def build_matrix(self, square=True, damp=0.):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy
         constraints
@@ -359,8 +359,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if not square:
             logger.info("Using rectangular matrix, equality constraints are not used")
             return A, B
-        AAT = A.T.dot(A)
-        BT = A.T.dot(B)
+        ATA = A.T.dot(A)
+        ATB = A.T.dot(B)
         # add a small number to the matrix diagonal to smooth the results
         # can help speed up solving, but might also introduce some errors
 
@@ -381,12 +381,17 @@ class DiscreteInterpolator(GeologicalInterpolator):
                                              np.array(self.eq_const_col))),
                 shape=(self.eq_const_c_, self.nx))
             d = np.array(self.eq_const_d)
-            AAT = bmat([[AAT, C.T], [C, None]])
-            BT = np.hstack([BT, d])
-        if damp:
+            ATA = bmat([[ATA, C.T], [C, None]])
+            ATB = np.hstack([ATB, d])
+        if isinstance(damp, bool):
+            if damp == True:
+                damp = np.finfo('float').eps
+            if damp == False:
+                damp = 0.
+        if isinstance(damp,float):
             logger.info("Adding eps to matrix diagonal")
-            AAT += eye(AAT.shape[0]) * np.finfo('float').eps
-        return AAT, BT
+            ATA += eye(ATA.shape[0]) * damp
+        return ATA, ATB
 
     def _solve_lu(self, A, B):
         """
