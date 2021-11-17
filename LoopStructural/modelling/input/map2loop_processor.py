@@ -21,7 +21,8 @@ class Map2LoopProcessor(ProcessInputData):
         fault_displacements = pd.read_csv(m2l_directory + '/output/fault_displacements3.csv')
         fault_orientations = pd.read_csv(m2l_directory + '/output/fault_orientations.csv')
         fault_locations = pd.read_csv(m2l_directory + '/output/faults.csv')
-        fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv',index_col='Fault')
+        fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv',
+                                                            index_col='Fault')
         fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
         fault_orientations.rename(columns={'formation':'fault_name'},inplace=True)
         bb = np.loadtxt(m2l_directory + '/tmp/bbox.csv',skiprows=1,delimiter=',')
@@ -37,7 +38,9 @@ class Map2LoopProcessor(ProcessInputData):
             fault_dimensions.loc[fname,'dip_dir'] = fault_orientations.loc[
                 fault_orientations['fault_name']==fname,'DipDirection'].median()
         fault_properties = fault_dimensions.rename(columns={'Fault':'fault_name',
-        'InfluenceDistance':'minor_axis','VerticalRadius':'intermediate_axis','HorizontalRadius':'major_axis'})
+                                                'InfluenceDistance':'minor_axis',
+                                            'VerticalRadius':'intermediate_axis',
+                                                'HorizontalRadius':'major_axis'})
         self.process_downthrow_direction(fault_properties,fault_orientations)
         fault_orientations['strike'] = fault_orientations['DipDirection'] + 90
         fault_edge_properties = []
@@ -78,7 +81,8 @@ class Map2LoopProcessor(ProcessInputData):
         stratigraphic_order.append((supergroup,tmp))
 
         # stratigraphic_order = [list(groups['code'])]
-        thicknesses = dict(zip(list(formation_thickness['formation']),list(formation_thickness['thickness median'])))
+        thicknesses = dict(zip(list(formation_thickness['formation']),
+                            list(formation_thickness['thickness median'])))
         fault_properties['colour'] = 'black'
         if np.sum(orientations['polarity']==0) >0 and np.sum(orientations['polarity']==-1)==0:
             orientations.loc[orientations['polarity']==0,'polarity']=-1
@@ -108,7 +112,8 @@ class Map2LoopProcessor(ProcessInputData):
         Parameters
         ----------
         fault_properties : DataFrame
-            data frame with fault name as index and downthrow direction and average dip_dir as columns 
+            data frame with fault name as index and downthrow direction 
+            and average dip_dir as columns 
         fault_orientations : DataFrame
             orientation data for the faults
         """                
@@ -116,7 +121,9 @@ class Map2LoopProcessor(ProcessInputData):
             if fault_properties.loc[fname,'downthrow_dir'] == 1.0:
                 logger.info("Estimating downthrow direction using fault intersections")
             # fault_intersection_angles[f]
-            if np.abs(fault_properties.loc[fname,'downthrow_dir'] - fault_properties.loc[fname,'dip_dir']) > 90:
-                fault_orientations.loc[fault_orientations['fault_name'] == fname, 'DipDirection'] -= 180#displacements_numpy[
+            if np.abs(fault_properties.loc[fname,'downthrow_dir'] - fault_properties.loc[
+                                                                        fname,'dip_dir']) > 90:
+                fault_orientations.loc[fault_orientations['fault_name'] == fname, 
+                                                                        'DipDirection'] -= 180
                 fault_properties.loc[fname,'dip_dir']-=180
 #         
