@@ -29,10 +29,15 @@ class Map2LoopProcessor(ProcessInputData):
         fault_dimensions['downthrow_dir'] = np.nan
         fault_dimensions['dip_dir'] = np.nan
         for fname in fault_dimensions.index:
-            fault_dimensions.loc[fname,'displacement'] = fault_displacements.loc[fault_displacements['fname']==fname,'vertical_displacement'].max()
-            fault_dimensions.loc[fname,'downthrow_dir'] = fault_displacements.loc[fault_displacements.loc[fault_displacements['fname']==fname,'vertical_displacement'].idxmax(),'downthrow_dir']
-            fault_dimensions.loc[fname,'dip_dir'] = fault_orientations.loc[fault_orientations['fault_name']==fname,'DipDirection'].median()
-        fault_properties = fault_dimensions.rename(columns={'Fault':'fault_name','InfluenceDistance':'minor_axis','VerticalRadius':'intermediate_axis','HorizontalRadius':'major_axis'})
+            fault_dimensions.loc[fname,'displacement'] = fault_displacements.loc[
+                fault_displacements['fname']==fname,'vertical_displacement'].max()
+            fault_dimensions.loc[fname,'downthrow_dir'] = fault_displacements.loc[
+                fault_displacements.loc[fault_displacements['fname']==fname,
+                'vertical_displacement'].idxmax(),'downthrow_dir']
+            fault_dimensions.loc[fname,'dip_dir'] = fault_orientations.loc[
+                fault_orientations['fault_name']==fname,'DipDirection'].median()
+        fault_properties = fault_dimensions.rename(columns={'Fault':'fault_name',
+        'InfluenceDistance':'minor_axis','VerticalRadius':'intermediate_axis','HorizontalRadius':'major_axis'})
         self.process_downthrow_direction(fault_properties,fault_orientations)
         fault_orientations['strike'] = fault_orientations['DipDirection'] + 90
         fault_edge_properties = []
