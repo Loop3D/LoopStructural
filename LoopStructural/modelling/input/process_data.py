@@ -142,6 +142,9 @@ class ProcessInputData:
             stratigraphic_column['faults'] = self.fault_properties.to_dict('index')
         return stratigraphic_column
 
+    @property
+    def fault_stratigraphy(self):
+        return self._fault_stratigraphy
 
     def stratigraphy_cmap(self, supergroup='supergroup_0'):
         """create a colour map for the stratigraphy scalar field

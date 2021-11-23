@@ -21,10 +21,12 @@ class Map2LoopProcessor(ProcessInputData):
         fault_displacements = pd.read_csv(m2l_directory + '/output/fault_displacements3.csv')
         fault_orientations = pd.read_csv(m2l_directory + '/output/fault_orientations.csv')
         fault_locations = pd.read_csv(m2l_directory + '/output/faults.csv')
+        fault_strat = pd.read_csv(f"{m2l_directory}/output/supergroup-fault-relationships.csv")
         fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv',
                                                             index_col='Fault')
         fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
         fault_orientations.rename(columns={'formation':'fault_name'},inplace=True)
+
         bb = np.loadtxt(m2l_directory + '/tmp/bbox.csv',skiprows=1,delimiter=',')
         fault_dimensions['displacement'] = np.nan
         fault_dimensions['downthrow_dir'] = np.nan
@@ -86,6 +88,11 @@ class Map2LoopProcessor(ProcessInputData):
         fault_properties['colour'] = 'black'
         if np.sum(orientations['polarity']==0) >0 and np.sum(orientations['polarity']==-1)==0:
             orientations.loc[orientations['polarity']==0,'polarity']=-1
+        
+        fault_stratigraphy = {}
+        for strat in fault_strat['supergroup'].unique():
+            mask = (fault_strat.loc[fault_strat['supergroup']==strat,:]==1).to_numpy()
+            fault_stratigraphy[strat] = fault_strat.columns[mask[0,:]].tolist()
         ip = super().__init__( 
                     contacts, 
                     orientations, 
@@ -96,7 +103,7 @@ class Map2LoopProcessor(ProcessInputData):
                     fault_properties=fault_properties,
                     fault_edges=list(fault_graph.edges),
                     colours=dict(zip(groups['code'],groups['colour'])),
-                    fault_stratigraphy=None,
+                    fault_stratigraphy=fault_stratigraphy,
                     intrusions=None,
                     use_thickness=use_thickness,
                     fault_edge_properties=fault_edge_properties

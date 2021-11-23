@@ -240,7 +240,10 @@ class GeologicalModel:
                 # model[edge[1]].add_abutting_fault(model[edge[0]])
         for s in processor.stratigraphic_column.keys():
             if s != 'faults':
-                f = model.create_and_add_foliation(s,**processor.foliation_properties[s])
+                faults = None
+                if processor.fault_stratigraphy is not None:
+                    faults = processor.fault_stratigraphy[s]
+                f = model.create_and_add_foliation(s,**processor.foliation_properties[s], faults=faults)
                 model.add_unconformity(f,0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
@@ -667,7 +670,7 @@ class GeologicalModel:
         logger.warning("No interpolator")
         raise InterpolatorError("Could not create interpolator")
 
-    def create_and_add_foliation(self, series_surface_data, tol = None, **kwargs):
+    def create_and_add_foliation(self, series_surface_data, tol = None, faults=None,**kwargs):
         """
         Parameters
         ----------
@@ -696,7 +699,7 @@ class GeologicalModel:
             logger.warning("No data for %s, skipping" % series_surface_data)
             return
         series_builder.add_data_from_data_frame(series_data)
-        self._add_faults(series_builder)
+        self._add_faults(series_builder,features=faults)
 
         # build feature
         # series_feature = series_builder.build(**kwargs)
@@ -934,6 +937,8 @@ class GeologicalModel:
         if features is None:
             features = self.features
         for f in reversed(features):
+            if isinstance(f, str):
+                f = self.__getitem__(f)
             if f.type == 'fault':
                 feature_builder.add_fault(f)
             # if f.type == 'unconformity':
