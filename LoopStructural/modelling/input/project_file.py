@@ -37,7 +37,7 @@ class LoopProjectfileProcessor(ProcessInputData):
         super().__init__( 
                     contacts=contacts,
                     contact_orientations=orientations,
-                    stratigraphic_order=[('sg',list(project.stratigraphicLog.name))],#needs to be updated,
+                    stratigraphic_order=[('sg',list(self.stratigraphicLog.name))],#needs to be updated,
                     thicknesses=thicknesses,
                     fault_orientations=fault_orientations,
                     fault_locations=fault_locations,
