@@ -1014,8 +1014,10 @@ class GeologicalModel:
 
         try:
             from LoopStructural.modelling.intrusions import IntrusionNetwork
+        
+        try:
+            from LoopStructural.modelling.intrusions import IntrusionBody
 
-            
         feature_data = self.data[self.data['feature_name'] == intrusion_name].copy()
         
         # Create and build Intrusion Network
