@@ -9,7 +9,7 @@ import numpy as np
 
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
-
+import datetime
 
 class IntrusionFeature():
     """
@@ -98,6 +98,7 @@ class IntrusionFeature():
         #compute coordinates values for each evaluated point
         intrusion_coord0_pts = intrusion_frame[0].evaluate_value(points)
         intrusion_coord1_pts = intrusion_frame[1].evaluate_value(points)
+        # print('check1',datetime.datetime.now())
         intrusion_coord2_pts = intrusion_frame[2].evaluate_value(points)
         
         #------ lateral extent thresholds for each of the evaluated points -------------
@@ -106,6 +107,8 @@ class IntrusionFeature():
         if simulation_s_data is None:
             print('No simultion for lateral extent')
         else:
+            print('check1',datetime.datetime.now())
+            print('asssigning lateral thresholds')
             simulation_s_data.sort_values(['coord1'], ascending = [True], inplace = True)
             
             # containers for thresholds
@@ -133,6 +136,7 @@ class IntrusionFeature():
             print('No simultion for vertical extent')
         else:
             # containers for thresholds
+            print('asssigning vertical thresholds')
             g_minside_threshold = np.zeros(len(intrusion_coord1_pts))
             g_maxside_threshold = np.zeros(len(intrusion_coord1_pts))
             
@@ -164,48 +168,29 @@ class IntrusionFeature():
         
 
 #         ------- intrusion_sf: final distance scalar field
+        # Transform the scalar fields given by the frame coordinates, using the thresholds. 
+        # This aims to generate a scalar field with its isovalue = 0 on the intrusion contact
+        # print('modifying thresholds')
 
-        #containers for distance scalar field of each coordinate
-        intrusion_sf0_temp = np.zeros(len(intrusion_coord0_pts))
-        intrusion_sf1_temp = np.zeros(len(intrusion_coord1_pts))
-        intrusion_sf2_temp = np.zeros(len(intrusion_coord2_pts))
-        intrusion_sf = np.zeros(len(points))
-#         a = (intrusion_coord2_pts>=s_maxside_threshold).astype('int64')
-#         b = ((0 <= intrusion_coord2_pts)*(intrusion_coord2_pts < s_maxside_threshold)).astype('int64')
-#         c = (intrusion_coord2_pts<=s_minside_threshold).astype('int64')
-#         d = ((0 > intrusion_coord2_pts)*(intrusion_coord2_pts > s_minside_threshold)).astype('int64')
-
-#         intrusion_sf2_temp = (intrusion_coord2_pts - s_maxside_threshold)*(intrusion_coord2_pts>=s_maxside_threshold).astype('int64')
-#         + -1*((0 <= intrusion_coord2_pts)*(intrusion_coord2_pts < s_maxside_threshold))
-#         + abs(intrusion_coord2_pts - s_minside_threshold)*(intrusion_coord2_pts<=s_minside_threshold)
-#         +-1*((0 > intrusion_coord2_pts)*(intrusion_coord2_pts > s_minside_threshold))
+        a = (intrusion_coord2_pts >= s_maxside_threshold)
+        b = (intrusion_coord2_pts <= s_minside_threshold)
+        c = (s_minside_threshold < intrusion_coord2_pts)*(intrusion_coord2_pts < s_maxside_threshold)*(intrusion_coord0_pts <= g_minside_threshold)
+        d = (s_minside_threshold < intrusion_coord2_pts)*(intrusion_coord2_pts < s_maxside_threshold)*(intrusion_coord0_pts >= g_maxside_threshold)
+        e = (s_minside_threshold < intrusion_coord2_pts)*(intrusion_coord2_pts < s_maxside_threshold)*(0 >= intrusion_coord0_pts)* (intrusion_coord0_pts> g_minside_threshold)
+        f = (s_minside_threshold < intrusion_coord2_pts)*(intrusion_coord2_pts < s_maxside_threshold)*(0 < intrusion_coord0_pts)* (intrusion_coord0_pts< g_maxside_threshold)
         
-        for i in range(len(points)): #strike scalar field
-            if intrusion_coord2_pts[i] >= s_maxside_threshold[i]:
-                intrusion_sf2_temp[i] = (intrusion_coord2_pts[i] - s_maxside_threshold[i])
-            elif intrusion_coord2_pts[i] <= s_minside_threshold[i]:
-                intrusion_sf2_temp[i] = abs(intrusion_coord2_pts[i] - s_minside_threshold[i])
-            elif 0 <= intrusion_coord2_pts[i] < s_maxside_threshold[i]:
-                intrusion_sf2_temp[i] = -1 #(intrusion_coord2_pts[i] - s_maxside_threshold[i])
-            elif 0 > intrusion_coord2_pts[i] > s_minside_threshold[i]:
-                intrusion_sf2_temp[i] = -1 #-(intrusion_coord2_pts[i] - s_minside_threshold[i])
-            else: continue
-       
-            
-        for i in range(len(points)): #growth scalar field
-            if intrusion_coord0_pts[i] < g_minside_threshold[i]:
-                intrusion_sf0_temp[i] = abs(intrusion_coord0_pts[i] - g_minside_threshold[i])
-            elif intrusion_coord0_pts[i] >= g_maxside_threshold[i]:
-                intrusion_sf0_temp[i] = abs(intrusion_coord0_pts[i] - g_maxside_threshold[i])
-            else:
-                intrusion_sf0_temp[i] = -1 #*abs(intrusion_coord0_pts[i])
-
-        intrusion_sf = intrusion_sf0_temp + intrusion_sf2_temp
+        mod_Smin_thresholds = intrusion_coord2_pts - s_minside_threshold
+        mod_Smax_thresholds = intrusion_coord2_pts - s_maxside_threshold
+        mod_Gmin_thresholds = intrusion_coord0_pts - g_minside_threshold
+        mod_Gmax_thresholds = intrusion_coord0_pts - g_maxside_threshold
+        
+        intrusion_sf = a*mod_Smax_thresholds + b*abs(mod_Smin_thresholds) + c*abs(mod_Gmin_thresholds) + d*mod_Gmax_thresholds - e*mod_Gmin_thresholds + f*mod_Gmax_thresholds
         
         self.evaluated_points = [points, intrusion_coord0_pts, intrusion_coord1_pts, intrusion_coord2_pts]
         self.intrusion_indicator_function = indicator_fx
+        print('check1',datetime.datetime.now())
 
-        return intrusion_sf #, indicator_fx, intrusion_sf2_temp, intrusion_sf0_temp, 
+        return intrusion_sf   #, indicator_fx, intrusion_sf2_temp, intrusion_sf0_temp, 
 
         
     def evaluate_value2(self, points):
