@@ -1036,7 +1036,7 @@ class GeologicalModel:
         gyxgz = 0 # weight for orthogonality constraint between coord 1 and coord 2 
 
         weights = [gxxgz, gxxgy, gyxgz]
-        reg=np.array([1,0.5,1])
+        # reg=np.array([1,0.5,1])
         print('building intrusion frame')
         interpolator = self.get_interpolator(interpolatortype = 'FDI')
         frame_data = self.data[self.data['feature_name'] == intrusion_frame_name].copy()
@@ -1063,10 +1063,9 @@ class GeologicalModel:
             logger.error("Specify conceptual model function for intrusion lateral extent")
             
         else:
-            print('setting data for s simulation')
+            print('setting data for lateral thresholds simulation')
             IBody.set_data_for_s_simulation()
             IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
-            print('setting GSLIB parameters and variogram')
             IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
             IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
             IBody.create_grid_for_simulation()
@@ -1079,10 +1078,9 @@ class GeologicalModel:
             logger.error("Specify conceptual model function for intrusion vertical extent")
         
         else:
-            print('setting data for g simulation')
+            print('setting data for vertical thresholds simulation')
             IBody.set_data_for_g_simulation()
             IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
-            print('setting GSLIB parameters and variogram')
             IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
             IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
             print('simulating thresholds for vertical extent')
