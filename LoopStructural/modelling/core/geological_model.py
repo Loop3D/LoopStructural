@@ -1014,9 +1014,17 @@ class GeologicalModel:
 
         try:
             from LoopStructural.modelling.intrusions import IntrusionNetwork
+
+        except ImportError:
+            logger.error("skfmm not installed \n"
+                        "pip install skfmm")
         
         try:
             from LoopStructural.modelling.intrusions import IntrusionBody
+
+        except ImportError:
+            logger.error("GeostatPy not installed \n"
+                        "pip install geostatspy")
 
         feature_data = self.data[self.data['feature_name'] == intrusion_name].copy()
         
