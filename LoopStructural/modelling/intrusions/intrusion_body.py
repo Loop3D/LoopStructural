@@ -103,17 +103,13 @@ class IntrusionBody():
         import datetime
 
         data = self.data.copy()
-        data_xyz = data.loc[:,['X','Y','Z']].copy().to_numpy()
+        data_xyz = data.loc[:,['X','Y','Z']].to_numpy()
         # data['coord0'] = self.intrusion_frame[0].evaluate_value(self.model.scale(data_xyz, inplace = False))
         # data['coord1'] = self.intrusion_frame[1].evaluate_value(self.model.scale(data_xyz, inplace = False))
         # data['coord2'] = self.intrusion_frame[2].evaluate_value(self.model.scale(data_xyz, inplace = False))
-        print('check1',datetime.datetime.now())
         data.loc[:,'coord0'] = self.intrusion_frame[0].evaluate_value(data_xyz)
-        print('check2',datetime.datetime.now())
         data.loc[:,'coord1'] = self.intrusion_frame[1].evaluate_value(data_xyz)
-        print('check3',datetime.datetime.now())
         data.loc[:,'coord2'] = self.intrusion_frame[2].evaluate_value(data_xyz)
-        print('check4',datetime.datetime.now())
         data_minside = data[(data['intrusion_side'] == 'yes') & (data['coord2']<=0)].copy()
         data_minside.reset_index(inplace = True)
 
@@ -124,7 +120,6 @@ class IntrusionBody():
         data_sides.reset_index(inplace = True)
         
         self.lateral_contact_data = [data_sides, data_minside, data_maxside]
-        print('check5')
 
         return data_sides, data_minside, data_maxside
     
@@ -473,7 +468,7 @@ class IntrusionBody():
         
         # -- Min side (s<0)
         data_minS = self.lateral_contact_data[1]
-        data_conceptual_minS = self.lateral_extent_model(data_minS, test=1, minP=minP, maxP=maxP, minS=minS, maxS=maxS)
+        data_conceptual_minS = self.lateral_extent_model(data_minS, minP=minP, maxP=maxP, minS=minS, maxS=maxS)
         data_residual_minS = (data_conceptual_minS[:,1] - data_minS.loc[:,'coord2']).to_numpy()
         inputsimdata_minS = data_minS.loc[:, ['X','Y','Z','coord0','coord1','coord2']].copy()
         inputsimdata_minS.loc[:,'s_residual'] = data_residual_minS
@@ -482,7 +477,7 @@ class IntrusionBody():
         
         # -- Max side (s>0)
         data_maxS = self.lateral_contact_data[2]
-        data_conceptual_maxS = self.lateral_extent_model(data_maxS, test = 1, minP=minP, maxP=maxP, minS=minS, maxS=maxS)
+        data_conceptual_maxS = self.lateral_extent_model(data_maxS, minP=minP, maxP=maxP, minS=minS, maxS=maxS)
         data_residual_maxS = (data_conceptual_maxS[:,0] - data_maxS.loc[:,'coord2']).to_numpy()
         inputsimdata_maxS = data_maxS.loc[:, ['X','Y','Z','coord0','coord1','coord2']].copy()
         inputsimdata_maxS.loc[:,'s_residual'] = data_residual_maxS
@@ -615,9 +610,9 @@ class IntrusionBody():
         # Simulation
         # --- compute simulation parameters if not defined
         if self.simulation_g_parameters.get('nx') == None:
-            self.simulation_g_parameters['nx'] = grid_points[4][0]*2 # grid X spacing
+            self.simulation_g_parameters['nx'] = grid_points[4][0] #*2 # grid X spacing
         if self.simulation_g_parameters.get('ny') == None:
-            self.simulation_g_parameters['ny'] = grid_points[4][1]*2 # grid Y spacing
+            self.simulation_g_parameters['ny'] = grid_points[4][1] #*2 # grid Y spacing
         if self.simulation_g_parameters.get('xmn') == None:
             self.simulation_g_parameters['xmn'] = np.nanmin(grid_points_coord1)
         if self.simulation_g_parameters.get('ymn') == None:
