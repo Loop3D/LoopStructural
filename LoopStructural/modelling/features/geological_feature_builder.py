@@ -198,7 +198,7 @@ class GeologicalFeatureInterpolator:
         # convert data locations to numpy array and then update
         for f in self.faults:
             data.loc[:,xyz_names()] = f.apply_to_points(
-                self.get_data_locations())
+                data.loc[:,xyz_names()])
         # self.check_interpolation_geometry(data.loc[:,xyz_names()].to_numpy())
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
