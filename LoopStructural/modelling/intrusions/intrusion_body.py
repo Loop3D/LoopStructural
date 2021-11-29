@@ -1,14 +1,17 @@
 import numpy as np
 import pandas as pd
 
-# from LoopStructural import GeologicalModel
+#GSLIB library        
+try:
+    import geostatspy.GSLIB as GSLIB                          # GSLIB utilities, viz and wrapped functions
+    import geostatspy.geostats as geostats                    # GSLIB converted to Python
 
-#GSLIB library
-import geostatspy.GSLIB as GSLIB                          # GSLIB utilities, viz and wrapped functions
-import geostatspy.geostats as geostats                    # GSLIB converted to Python
+except ImportError:
+    logger.error("GeostatPy not installed \n"
+                "pip install geostatspy")
+
 
 #Geometrical conceptual models functions
-from LoopStructural.modelling.intrusions.geom_conceptual_models import *
 from LoopStructural.modelling.intrusions.intrusion_support_functions import *
 
 class IntrusionBody():
