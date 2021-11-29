@@ -1,5 +1,22 @@
 # Changelog
 
+### [1.3.11](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.10...v1.3.11) (2021-11-29)
+
+
+### Bug Fixes
+
+* added fault stratigraphy relation to processor ([ac864d8](https://www.github.com/Loop3D/LoopStructural/commit/ac864d86b4cd670f00dc60a59782d144536268d4))
+* added project file processor ([855a690](https://www.github.com/Loop3D/LoopStructural/commit/855a69088fb49d18407a2a4404e775b71c2dc0bb))
+* bugfix crash when evaluating feature ([d24f656](https://www.github.com/Loop3D/LoopStructural/commit/d24f656f75f955c46c706619daad5212a3a48160))
+* fault support resized for all faults ([63ea5ec](https://www.github.com/Loop3D/LoopStructural/commit/63ea5ec89e210cc986c02d526cedd4590d374679))
+* formatting ([a2f4fee](https://www.github.com/Loop3D/LoopStructural/commit/a2f4fee13cfd825e9ffd0800f61f6ee452e5bb61))
+* formatting ([06d7e32](https://www.github.com/Loop3D/LoopStructural/commit/06d7e327bf59de23340018d1a842ba1b21deb0e4))
+* missing argument from test + typo ([dee158a](https://www.github.com/Loop3D/LoopStructural/commit/dee158aed45624d8a711a5efb665c9555f1b4712))
+* multiple faults not applied to stratigraphy data ([d7f4689](https://www.github.com/Loop3D/LoopStructural/commit/d7f468944c6300424caefbaf3e59911dde71cae5))
+* only host version built on action ([8c7d058](https://www.github.com/Loop3D/LoopStructural/commit/8c7d058f9526a648e06b2f25c32ecddcc0233bb8))
+* typo in variable names, AAT instead of ATA ([6a1a98f](https://www.github.com/Loop3D/LoopStructural/commit/6a1a98ff7fbf1e16c28cc71f9e167633af429937))
+* updating github ci for conda build ([3525ec1](https://www.github.com/Loop3D/LoopStructural/commit/3525ec1a602d2b3a8b735f2b8d9c8b380f87331f))
+
 ### [1.3.10](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.9...v1.3.10) (2021-11-10)
 
 
