@@ -1,15 +1,20 @@
 # import logging
 from LoopStructural.utils import getLogger, log_to_file
 logger = getLogger(__name__)
-import skfmm as fmm
-from sklearn.cluster import DBSCAN
+
+try:
+    import skfmm as fmm
+
+except ImportError:
+    logger.error("skfmm not installed \n"
+                "pip install skfmm")
+
+# from sklearn.cluster import DBSCAN
 from LoopStructural.modelling.intrusions.intrusion_support_functions import *
 
 import numpy as np
 import pandas as pd
-import ckwrap
-# import random
-# from LoopStructural import GeologicalModel
+# import ckwrap
 
 
 class IntrusionNetwork:
