@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 #GSLIB library        
 try:
     import geostatspy.GSLIB as GSLIB                          # GSLIB utilities, viz and wrapped functions
@@ -516,6 +518,8 @@ class IntrusionBody():
         ndmin = self.simulation_s_parameters.get('ndmin'); ndmax = self.simulation_s_parameters.get('ndmax')         
         radius = self.simulation_s_parameters.get('radius') 
         
+        if geostats is None:
+            raise Exception('geostats is not installed')    
         s_min_simulation = geostats.sgsim(inputsimdata_minS,'coord1','ref_coord','s_residual',wcol=-1,scol=-1,
                                           tmin=tmin,tmax=tmax,itrans=itrans,ismooth=0,dftrans=0,tcol=0,twtcol=0,
                                           zmin=zmin,zmax=zmax,ltail=1,ltpar=0.0,utail=1,utpar=0.3,nsim=1,

@@ -29,11 +29,14 @@ from LoopStructural.utils.exceptions import LoopBaseException
 from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
                                          strike_dip_vector)
 
-from LoopStructural.modelling.intrusions import IntrusionNetwork
-from LoopStructural.modelling.intrusions import IntrusionBuilder
-from LoopStructural.modelling.intrusions import IntrusionBody
-from LoopStructural.modelling.intrusions import IntrusionFeature 
-
+intrusions = True
+try:
+    from LoopStructural.modelling.intrusions import IntrusionNetwork
+    from LoopStructural.modelling.intrusions import IntrusionBuilder
+    from LoopStructural.modelling.intrusions import IntrusionBody
+    from LoopStructural.modelling.intrusions import IntrusionFeature 
+except ImportError:
+     intrusions = False
 from LoopStructural.utils import getLogger, log_to_file
 logger = getLogger(__name__)
 
@@ -1011,6 +1014,9 @@ class GeologicalModel:
         intrusion feature
         
         """
+        if intrusions == False:
+            logger.error("Libraries not installed")
+            raise Exception("Libraries not installed")
         feature_data = self.data[self.data['feature_name'] == intrusion_name].copy()
         
         # Create and build Intrusion Network
