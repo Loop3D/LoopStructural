@@ -3,7 +3,8 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class MapView:
@@ -197,7 +198,19 @@ class MapView:
             if dip:
                 dip_v = np.rad2deg(np.arccos(gradient_data[:,5])).astype(int)
                 for d, xy, v in zip(dip_v,gradient_data[:,:2],gradient_data[:,3:6]):
-                    self.ax.annotate(d,xy,xytext=xy+v[:2]*.03,fontsize='small')
+                    self.ax.annotate(d,xy,xytext=xy+v[:2]*symb_scale*.1,fontsize='small')
+                    
+    def add_fault_ellipse(self, faults=None, **kwargs):
+        from matplotlib.patches import Ellipse
+        for k, f in self.model.stratigraphic_column['faults'].items():
+            center = self.model.rescale(f['FaultCenter'])
+            e = Ellipse((center[0],center[1]),
+                            f['HorizontalRadius']*2,
+                            f['InfluenceDistance']*2,
+                            360-f['FaultDipDirection'],
+                                facecolor='None',edgecolor='k')
+
+        self.ax.add_patch(e)
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """

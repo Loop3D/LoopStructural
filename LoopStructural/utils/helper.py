@@ -1,9 +1,11 @@
 import logging
 
 import numpy as np
+import pandas as pd
 from sklearn.decomposition import PCA
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 def get_data_axis_aligned_bounding_box(xyz, buffer):
@@ -376,3 +378,5 @@ def feature_name():
 def all_heading():
     return xyz_names() + normal_vec_names() + tangent_vec_names() + \
            gradient_vec_names() + weight_name() + val_name() + coord_name() + feature_name() + interface_name()
+def empty_dataframe():
+    return pd.DataFrame(columns=[all_heading()])

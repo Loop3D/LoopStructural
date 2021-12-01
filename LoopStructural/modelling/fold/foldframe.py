@@ -4,7 +4,8 @@ import numpy as np
 
 from LoopStructural.modelling.features.structural_frame import StructuralFrame
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class FoldFrame(StructuralFrame):
@@ -21,7 +22,7 @@ class FoldFrame(StructuralFrame):
         super().__init__(name, features, fold)
         self.model = None
 
-    def calculate_fold_axis_rotation(self, feature_builder):
+    def calculate_fold_axis_rotation(self, feature_builder,fold_axis=None):
         """
         Calculate the fold axis rotation angle by finding the angle between the
         intersection lineation and the gradient to the 1st coordinate of the
@@ -42,6 +43,9 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
+        if fold_axis is not None:
+            if fold_axis.shape[0] > 0 and fold_axis.shape[1] == 6:
+                points.append(fold_axis)
         if len(points) == 0:
             return 0, 0
         points = np.vstack(points)
@@ -147,10 +151,10 @@ class FoldFrame(StructuralFrame):
             # and 90
             vv = np.cross(s1g, s0g, axisa=1, axisb=1)
             ds = np.einsum('ij,ij->i', fold_axis, vv)
-            flr = np.where(ds > 0, np.rad2deg(np.arcsin(r2)),
-                           (- np.rad2deg(np.arcsin(r2))))
-            flr = np.where(flr < -90, (180. + flr), flr)
-            flr = np.where(flr > 90, -(180. - flr), flr)
+            flr = np.rad2deg(np.arcsin(r2))#np.where(np.abs(ds) < 0.5, np.rad2deg(np.arcsin(r2)),
+                          # (- np.rad2deg(np.arcsin(r2))))
+            # flr = np.where(flr < -90, (180. + flr), flr)
+            # flr = np.where(flr > 90, -(180. - flr), flr)
             return flr, s1
 
     def calculate_intersection_lineation(self, feature_builder):
@@ -178,6 +182,9 @@ class FoldFrame(StructuralFrame):
             points.append(gpoints)
         if npoints.shape[0] > 0:
             points.append(npoints)
+        if len(points) == 0:
+            logger.error("No points to calculate intersection lineation")
+            raise ValueError("No data points associated with {}".format(feature_builder.name))
         points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(points[:, :3], axis=1)[:, None]

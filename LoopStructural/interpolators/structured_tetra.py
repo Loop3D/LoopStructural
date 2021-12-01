@@ -5,25 +5,19 @@ import logging
 
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
+from .base_structured_3d_support import BaseStructuredSupport
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
-class TetMesh:
+class TetMesh(BaseStructuredSupport):
     """
 
     """
     def __init__(self, origin = [0,0,0], nsteps = [10,10,10], step_vector = [1,1,1]):
-        self.origin = np.array(origin)
-        self.step_vector = np.array(step_vector)
-        self.nsteps = np.array(nsteps)
-        self.n_nodes = self.nsteps[0]*self.nsteps[1]*self.nsteps[2]
+        BaseStructuredSupport.__init__(self,origin,nsteps,step_vector)
 
-        self.nsteps_cells = self.nsteps - 1
-        self.n_cell_x = self.nsteps[0] - 1
-        self.n_cell_y = self.nsteps[1] - 1
-        self.n_cell_z = self.nsteps[2] - 1
-        self.n_cells = self.n_cell_x * self.n_cell_y * self.n_cell_z
-        self.maximum = origin+self.nsteps*self.step_vector
+        
         self.tetra_mask_even = np.array([
             [7,1,2,4],
             [6,2,4,7],
@@ -39,29 +33,19 @@ class TetMesh:
             [2,0,3,6],
             [1,0,3,5]
         ])
-        self.ntetra = self.n_cells * 5
-        self.properties = {}
-        self.property_gradients = {}
-        self.n_elements = self.ntetra
+        
         self.cg = None
+    @property
+    def ntetra(self):
+        return np.product(self.nsteps_cells) * 5
+    
+    @property
+    def n_elements(self):
+        return self.ntetra
 
     @property
-    def nodes(self):
-        """
-        Gets the nodes of the mesh as a property rather than using a function, accessible as a property! Python magic!
-
-        Returns
-        -------
-        nodes : np.array((N,3))
-            Fortran ordered
-        """
-        max = self.origin + self.nsteps_cells * self.step_vector
-        x = np.linspace(self.origin[0], max[0], self.nsteps[0])
-        y = np.linspace(self.origin[1], max[1], self.nsteps[1])
-        z = np.linspace(self.origin[2], max[2], self.nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        return np.array([xx.flatten(order='F'), yy.flatten(order='F'),
-                               zz.flatten(order='F')]).T
+    def n_cells(self):
+        return np.product(self.nsteps_cells)
 
     def barycentre(self, elements = None):
         """
@@ -84,11 +68,7 @@ class TetMesh:
                                  axis=1) / 4.
         return barycentre
 
-    def update_property(self, name, value):
-
-        self.properties[name] = value
-
-    def evaluate_value(self, pos, prop):
+    def evaluate_value(self, pos, property_array):
         """
         Evaluate value of interpolant
 
@@ -105,11 +85,11 @@ class TetMesh:
         """
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
-        vertices, c, tetras, inside = self.get_tetra_for_location(pos)
-        values[inside] = np.sum(c[inside,:]*self.properties[prop][tetras[inside,:]],axis=1)
+        vertices, c, tetras, inside = self.get_element_for_location(pos)
+        values[inside] = np.sum(c[inside,:]*property_array[tetras[inside,:]],axis=1)
         return values
 
-    def evaluate_gradient(self, pos, prop):
+    def evaluate_gradient(self, pos, property_array):
         """
         Evaluate the gradient of an interpolant at the locations
 
@@ -127,10 +107,9 @@ class TetMesh:
         """
         values = np.zeros(pos.shape)
         values[:] = np.nan
-        vertices, element_gradients, tetras, inside = self.get_tetra_gradient_for_location(pos)
-        vertex_vals = self.properties[prop][tetras]
+        vertices, element_gradients, tetras, inside = self.get_element_gradient_for_location(pos)
         #grads = np.zeros(tetras.shape)
-        values[inside,:] = (element_gradients[inside,:,:]*self.properties[prop][tetras[inside,None,:]]).sum(2)
+        values[inside,:] = (element_gradients[inside,:,:]*property_array[tetras[inside,None,:]]).sum(2)
         length = np.sum(values[inside,:],axis=1)
         # values[inside,:] /= length[:,None]
         return values
@@ -143,7 +122,7 @@ class TetMesh:
                       self.step_vector[None, i] * self.nsteps_cells[None, i]
         return inside
 
-    def get_tetra_for_location(self, pos):
+    def get_element_for_location(self, pos):
         """
         Determine the tetrahedron from a numpy array of points
 
@@ -208,11 +187,6 @@ class TetMesh:
         #create mask to see which cells are even
         even_mask = (c_xi + c_yi + c_zi) % 2 == 0
         # create global node index list
-        # print('nsteps',self.nsteps, 'nsteps_cells', self.nsteps_cells)
-        # print('x',np.min(c_xi),np.max(c_xi),np.min(xi),np.max(xi))
-        # print('y',np.min(c_yi),np.max(c_yi),np.min(yi),np.max(yi))
-        # print('z',np.min(c_zi),np.max(c_zi),np.min(zi),np.max(zi))
-
         gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
         # container for tetras
         tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
@@ -258,7 +232,6 @@ class TetMesh:
 
         """
         if direction is not None:
-            print('using cg direction')
             logger.info("Running constant gradient")
             elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
             if elements_gradients.shape[0] != direction.shape[0]:
@@ -327,9 +300,9 @@ class TetMesh:
 
         """
 
-        x = np.arange(0, self.n_cell_x)
-        y = np.arange(0, self.n_cell_y)
-        z = np.arange(0, self.n_cell_z)
+        x = np.arange(0, self.nsteps_cells[0])
+        y = np.arange(0, self.nsteps_cells[1])
+        z = np.arange(0, self.nsteps_cells[2])
 
         c_xi, c_yi, c_zi = np.meshgrid(x, y, z,indexing='ij')
         c_xi = c_xi.flatten(order='F')
@@ -359,9 +332,9 @@ class TetMesh:
         """
         if elements is None:
             elements = np.arange(0,self.ntetra)
-        x = np.arange(0, self.n_cell_x)
-        y = np.arange(0, self.n_cell_y)
-        z = np.arange(0, self.n_cell_z)
+        x = np.arange(0, self.nsteps_cells[0])
+        y = np.arange(0, self.nsteps_cells[1])
+        z = np.arange(0, self.nsteps_cells[2])
 
         c_xi, c_yi, c_zi = np.meshgrid(x, y, z, indexing='ij')
         c_xi = c_xi.flatten(order='F')
@@ -402,7 +375,7 @@ class TetMesh:
 
         return element_gradients[elements,:,:]
 
-    def get_tetra_gradient_for_location(self, pos):
+    def get_element_gradient_for_location(self, pos):
         """
         Get the gradient of the tetra for a location
 
@@ -414,7 +387,7 @@ class TetMesh:
         -------
 
         """
-        vertices, bc, tetras, inside = self.get_tetra_for_location(pos)
+        vertices, bc, tetras, inside = self.get_element_for_location(pos)
         ps = vertices
         m = np.array(
             [[(ps[:, 1, 0] - ps[:, 0, 0]), (ps[:, 1, 1] - ps[:, 0, 1]),(ps[:, 1, 2] - ps[:, 0, 2])],
@@ -513,25 +486,6 @@ class TetMesh:
             np.dstack([cornersx, cornersy, cornersz]).T)
         return globalidx, inside
 
-    def position_to_cell_index(self, pos):
-        """
-        Find which cell a point is in
-
-        Parameters
-        ----------
-        pos
-
-        Returns
-        -------
-
-        """
-        ix = pos[:, 0] - self.origin[None, 0]
-        iy = pos[:, 1] - self.origin[None, 1]
-        iz = pos[:, 2] - self.origin[None, 2]
-        ix = ix // self.step_vector[None, 0]
-        iy = iy // self.step_vector[None, 1]
-        iz = iz // self.step_vector[None, 2]
-        return ix.astype(int), iy.astype(int), iz.astype(int)
 
     def node_indexes_to_position(self, xindex, yindex, zindex):
         """
@@ -666,17 +620,17 @@ class TetMesh:
             inside = np.logical_and(inside, neigh_cell[:, :, 1] >= 0)
             inside = np.logical_and(inside, neigh_cell[:, :, 2] >= 0)
             inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 0] < self.n_cell_x)
+                                    neigh_cell[:, :, 0] < self.nsteps_cells[0])
             inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 1] < self.n_cell_y)
+                                    neigh_cell[:, :, 1] < self.nsteps_cells[1])
             inside = np.logical_and(inside,
-                                    neigh_cell[:, :, 2] < self.n_cell_z)
+                                    neigh_cell[:, :, 2] < self.nsteps_cells[2])
 
             global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
             global_neighbour_idx = (neigh_cell[:, :, 0] + neigh_cell[:, :, 1] *
-                                    self.n_cell_x + neigh_cell[:, :, 2] *
-                                    self.n_cell_x * self.n_cell_y) * 5 + mask[:, 3]
+                                    self.nsteps_cells[0] + neigh_cell[:, :, 2] *
+                                    self.nsteps_cells[0] * self.nsteps_cells[1]) * 5 + mask[:, 3]
 
             global_neighbour_idx[~inside] = -1
             neighbours[logic, 1:] = global_neighbour_idx

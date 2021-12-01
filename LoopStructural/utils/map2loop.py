@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 import os
 import logging
+import networkx
+from scipy.stats import truncnorm
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 def process_map2loop(m2l_directory, flags={}):
     """
@@ -31,9 +34,17 @@ def process_map2loop(m2l_directory, flags={}):
     fault_fault_relations = pd.read_csv(m2l_directory + '/output/fault-fault-relationships.csv')
     fault_strat_relations = pd.read_csv(m2l_directory + '/output/group-fault-relationships.csv')
     fault_dimensions = pd.read_csv(m2l_directory + '/output/fault_dimensions.csv')
+    fault_graph = networkx.read_gml(m2l_directory + '/tmp/fault_network.gml')
 
+    # whether to simulate thickness variations
+    thickness_probabilities = flags.get('thickness_probabilities',False)
+    orientation_probabilities = flags.get('orientation_probabilities',False)
+    fault_orientation_probabilities = flags.get('fault_orientation_probabilities',False)
+    fault_slip_vector = flags.get('fault_slip_vector',None)
+    ## read supergroups file
     supergroups = {}
     sgi = 0
+    contact_orientations.loc[contact_orientations['polarity']==0,'polarity'] = -1
     try:
         with open(m2l_directory + '/tmp/super_groups.csv') as    f:
             for l in f:
@@ -53,8 +64,24 @@ def process_map2loop(m2l_directory, flags={}):
     except KeyError:
         pass
     
-
+    ## read bounding box
     bb = pd.read_csv(m2l_directory+'/tmp/bbox.csv')
+
+    ## read fault intersection graph
+    fault_intersection_angles = {}
+    with open(m2l_directory+'/graph/fault-fault-intersection.txt','r') as f:
+        for l in f:
+            fault_id = int(l.split(',')[1])
+            fault_intersection_angles['Fault_{}'.format(fault_id)] = []
+            intersections = l[l.find('{')+1:l.find('}')]
+            intersections = intersections.replace('(','')
+            intersections = intersections.replace(')','')
+            intersection_data = intersections.split(',')
+            i = 0
+            while i < len(intersection_data):
+                fault_intersection_angles['Fault_{}'.format(fault_id)].append(['Fault_{}'.format(int(intersection_data[i])),intersection_data[i+1],float(intersection_data[i+2])])
+                i+=3
+
 
     # process tangent data to be tx, ty, tz
     tangents['tz'] = 0
@@ -74,7 +101,17 @@ def process_map2loop(m2l_directory, flags={}):
         for l in file:
             if i>=1:
                 linesplit = l.split(',')
-                thickness[linesplit[0]] = float(linesplit[1])
+                if thickness_probabilities:
+                    std = float(linesplit[2])
+                    mean = float(linesplit[1])
+                    if  np.isnan(std):
+                        std = float(linesplit[1])
+                    a = (0-mean) / std
+                    b = 100.
+                    thickness[linesplit[0]] = (truncnorm.rvs(a,b,size=1)*std)[0]+mean
+                else:
+                    thickness[linesplit[0]] = float(linesplit[1])
+                
                 # normalise the thicknesses
                 if float(linesplit[1]) > max_thickness:
                     max_thickness=float(linesplit[1])
@@ -196,6 +233,9 @@ def process_map2loop(m2l_directory, flags={}):
         max_displacement[f] = displacements_numpy[
             index, 0]
         downthrow_dir[f] = displacements_numpy[index,[1,3,4]]
+        if displacements_numpy[index,1] == 1.0:
+            logger.info("Estimating downthrow direction using fault intersections")
+            # fault_intersection_angles[f]
         if np.abs(displacements_numpy[index, 1] - displacements_numpy[index, 2]) > 90:
             # fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]=-fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]
             fault_orientations.loc[fault_orientations['formation'] == f, 'DipDirection'] -= 180#displacements_numpy[
@@ -205,11 +245,20 @@ def process_map2loop(m2l_directory, flags={}):
         fault_centers[3] = np.mean(fault_orientations.loc[fault_orientations['formation']==f,['DipDirection']])
         fault_centers[4] = fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance']
         fault_centers[5] = fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius']
+        if type(fault_slip_vector) == dict:
+            fault_slip = fault_slip_vector[f]
+        elif type(fault_slip_vector) == np.array:
+            fault_slip = fault_slip_vector
+        else:
+            fault_slip = np.array([0.,0.,-1.]) 
         stratigraphic_column['faults'][f] = {'FaultCenter':fault_centers[:3],
                                             'FaultDipDirection':fault_centers[3],
                                             'InfluenceDistance':fault_dimensions.loc[fault_dimensions['Fault']==f,'InfluenceDistance'].to_numpy(),
                                             'HorizontalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'HorizontalRadius'].to_numpy(),
-                                            'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy()}
+                                            'VerticalRadius':fault_dimensions.loc[fault_dimensions['Fault']==f,'VerticalRadius'].to_numpy(),
+                                            'FaultSlip':fault_slip,
+                                            'FaultNorm':normal_vector}
+
         if 'colour' in fault_dimensions.columns:
             stratigraphic_column['faults'][f]['colour'] = fault_dimensions.loc[fault_dimensions['Fault']==f,'colour'].to_numpy()
         normal_vector[0] = np.sin(np.deg2rad(fault_centers[3]))
@@ -223,19 +272,18 @@ def process_map2loop(m2l_directory, flags={}):
         fault_tips[1,:] = fault_centers[:3]-strike_vector*fault_centers[5]
         # fault_depth[0,:] = fault_centers[:3]+slip_vector*fault_centers[5]
         # fault_depth[1,:] = fault_centers[:3]-slip_vector*fault_centers[5]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
-        fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
-        # add strike vector to constraint fault extent
-        fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','DipDirection','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, fault_centers[3]-90,2]
-        fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','dip','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, 0,2]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
+        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
+        # # add strike vector to constraint fault extent
+        # fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','DipDirection','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, fault_centers[3]-90,2]
+        # fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','dip','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, 0,2]
 
         # print('downthro',displacements_numpy[index, 1])
         
     fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
     fault_orientations[['gx', 'gy', 'gz']] = strike_dip_vector(fault_orientations['strike'], fault_orientations['dip'])
-
     for g in groups['group'].unique():
         groups.loc[groups['group']==g,'group'] = supergroups[g]
     # fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
@@ -247,11 +295,9 @@ def process_map2loop(m2l_directory, flags={}):
     fault_orientations['feature_name'] = fault_orientations['formation']
     fault_locations['feature_name'] = fault_locations['formation']
 
-    
-
     data = pd.concat([tangents, contact_orientations, contacts, fault_orientations, fault_locations])
-    data.reset_index()
-
+    data.reset_index(inplace=True)
+    
     return {'data': data,
             'groups': groups,
             'max_displacement': max_displacement,
@@ -259,9 +305,20 @@ def process_map2loop(m2l_directory, flags={}):
             'stratigraphic_column': stratigraphic_column,
             'bounding_box':bb,
             'strat_va':strat_val,
-            'downthrow_dir':downthrow_dir}
+            'downthrow_dir':downthrow_dir,
+            'fault_graph':fault_graph,
+            'fault_intersection_angles':fault_intersection_angles,
+            'thickness':thickness}
 
-def build_model(m2l_data, skip_faults = False, unconformities=False, fault_params = None, foliation_params=None, rescale = True,**kwargs):
+def build_model(m2l_data, 
+                evaluate = True, 
+                skip_faults = False, 
+                unconformities = False, 
+                fault_params = None, 
+                foliation_params = None, 
+                rescale = True,
+                skip_features = [],
+                **kwargs):
     """[summary]
 
     [extended_summary]
@@ -301,6 +358,8 @@ def build_model(m2l_data, skip_faults = False, unconformities=False, fault_param
         for f in m2l_data['max_displacement'].keys():
             if model.data[model.data['feature_name'] == f].shape[0] == 0:
                 continue
+            if f in skip_features:
+                continue
             fault_id = f
             overprints = []
             try:
@@ -311,14 +370,64 @@ def build_model(m2l_data, skip_faults = False, unconformities=False, fault_param
             except:
                 logger.info('No entry for %s in fault_fault_relations' % f)
         #     continue
+            fault_center = m2l_data['stratigraphic_column']['faults'][f]['FaultCenter']
+            fault_influence = m2l_data['stratigraphic_column']['faults'][f]['InfluenceDistance']
+            fault_extent = m2l_data['stratigraphic_column']['faults'][f]['HorizontalRadius']
+            fault_vertical_radius = m2l_data['stratigraphic_column']['faults'][f]['VerticalRadius']
+            fault_slip_vector=m2l_data['stratigraphic_column']['faults'][f]['FaultSlip'] 
             faults.append(model.create_and_add_fault(f,
                                                     -m2l_data['max_displacement'][f],
                                                     faultfunction='BaseFault',
-                                                    overprints=overprints,
+                                                    fault_slip_vector=fault_slip_vector,
+                                                    fault_center=fault_center,
+                                                    fault_extent=fault_extent,
+                                                    fault_influence=fault_influence,
+                                                    fault_vectical_radius=fault_vertical_radius,
+                                                    # overprints=overprints,
                                                     **fault_params,
                                                     )
                         )
+    # for f in m2l_data['fault_intersection_angles']:
+    #     if f in m2l_data['max_displacement'].keys():
+    #         f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+    #         for intersection in m2l_data['fault_intersection_angles'][f]:
+    #             if intersection[0] in m2l_data['max_displacement'].keys():
+    #                 f2_norm = m2l_data['stratigraphic_column']['faults'][intersection[0]]['FaultNorm']
+    #                 if intersection[2] < 30 and np.dot(f1_norm,f2_norm)>0:
+    #                     logger.info('Adding splay {} to {}'.format(intersection[0],f))
+    #                     if model[f] is None:
+    #                         logger.error('Fault {} does not exist, cannot be added as splay')
+    #                     elif model[intersection[0]] is None:
+    #                         logger.error('Fault {} does not exist')
+    #                     else:
+    #                         model[intersection[0]].builder.add_splay(model[f])
 
+    #                 else:
+    #                     logger.info('Adding abut {} to {}'.format(intersection[0],f))
+    #                     model[intersection[0]].add_abutting_fault(model[f])
+    faults = m2l_data.get('fault_graph',None)
+    if faults:
+        for f in faults.nodes:
+            f1_norm = m2l_data['stratigraphic_column']['faults'][f]['FaultNorm']
+            for e in faults.edges(f):
+                data = faults.get_edge_data(*e)
+                f2_norm =  m2l_data['stratigraphic_column']['faults'][e[1]]['FaultNorm']
+                
+
+                if float(data['angle']) < 30 and np.dot(f1_norm,f2_norm)>0:
+                    if model[f] is None or model[e[1]] is None:
+                        logger.error('Fault {} does not exist, cannot be added as splay')
+                    elif model[e[1]] is None:
+                        logger.error('Fault {} does not exist')
+                    else:
+                        region = model[e[1]].builder.add_splay(model[f])
+                        model[e[1]].splay[model[f].name] = region
+                else:
+                    if model[f] is None or model[e[1]] is None:
+                        continue
+
+                    logger.info('Adding abut {} to {}'.format(e[1],f))
+                    model[e[1]].add_abutting_fault(model[f])
     ## loop through all of the groups and add them to the model in youngest to oldest.
     group_features = []
     for i in np.sort(m2l_data['groups']['group number'].unique()):
@@ -329,4 +438,6 @@ def build_model(m2l_data, skip_faults = False, unconformities=False, fault_param
         if group_features[-1] and unconformities:
             model.add_unconformity(group_features[-1], 0)
     model.set_stratigraphic_column(m2l_data['stratigraphic_column'])
+    if evaluate:
+        model.update(verbose=True)
     return model

@@ -5,7 +5,8 @@ import logging
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class GeologicalFeature:
@@ -47,7 +48,6 @@ class GeologicalFeature:
         self.name = name
         self.interpolator = interpolator
         self.ndim = 1
-        self.data = data
         self.builder = builder
         self.region = region
         self.regions = []
@@ -63,6 +63,9 @@ class GeologicalFeature:
             self.region = 'everywhere'
         self.model = None
 
+    def is_valid(self):
+        return self.interpolator.valid
+        
     def __str__(self):
         return self.name
 
@@ -104,20 +107,6 @@ class GeologicalFeature:
         """
         self.regions.append(region)
 
-    def set_builder(self, builder):
-        """
-
-        Parameters
-        ----------
-        builder : GeologicalFeatureInterpolator
-            the builder associated with this feature
-
-        Returns
-        -------
-
-        """
-        self.builder = builder
-
     def evaluate_value(self, evaluation_points):
         """
         Evaluate the scalar field value of the geological feature at the locations
@@ -134,7 +123,10 @@ class GeologicalFeature:
             numpy array containing evaluated values
 
         """
-
+        #TODO need to add a generic type checker for all methods
+        #if evaluation_points is not a numpy array try and convert
+        #otherwise error
+        self.builder.up_to_date()
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
@@ -142,12 +134,18 @@ class GeologicalFeature:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(evaluation_points))
+            try:
+                mask = np.logical_and(mask, r(evaluation_points))
+            except:
+                logger.error("nan slicing")
         # apply faulting after working out which regions are visible
         if self.faults_enabled:
             for f in self.faults:
                 evaluation_points = f.apply_to_points(evaluation_points)
-        v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
+        if mask.dtype not in [int, bool]:
+            logger.error("Unable to evaluate value for {}".format(self.name))
+        else:        
+            v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         return v
 
     def evaluate_gradient(self, evaluation_points):
@@ -162,19 +160,25 @@ class GeologicalFeature:
         -------
 
         """
+        self.builder.up_to_date()
         v = np.zeros(evaluation_points.shape)
         v[:] = np.nan
         mask = np.zeros(evaluation_points.shape[0]).astype(bool)
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(evaluation_points))
-
+            try:
+                mask = np.logical_and(mask, r(evaluation_points))
+            except:
+                logger.error("nan slicing caught")
         # apply faulting after working out which regions are visible
         if self.faults_enabled:
             for f in self.faults:
                 evaluation_points = f.apply_to_points(evaluation_points)
-        v[mask, :] = self.interpolator.evaluate_gradient(evaluation_points)
+        if mask.dtype not in [int, bool]:
+            logger.error("Unable to evaluate gradient for {}".format(self.name))
+        else:
+            v[mask, :] = self.interpolator.evaluate_gradient(evaluation_points[mask,:])
 
         return v
 
@@ -186,6 +190,7 @@ class GeologicalFeature:
         misfit : np.array(N,dtype=double)
             dot product between interpolated gradient and constraints
         """
+        self.builder.up_to_date()
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
 
@@ -210,6 +215,8 @@ class GeologicalFeature:
         misfit : np.array(N,dtype=double)
             difference between interpolated scalar field and value constraints
         """
+        self.builder.up_to_date()
+
         locations = self.interpolator.get_value_constraints()
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
         diff/=(self.max()-self.min())
@@ -255,32 +262,5 @@ class GeologicalFeature:
             return 0
         return np.nanmax(
             self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-
-    def update(self):
-        """
-        Calculate average of the support values
-
-        Returns
-        -------
-
-        """
-        # re-run the interpolator and update the support.
-        # this is a bit clumsy and not abstract, i think
-        # if evaluating the property doesn't require the dictionary on
-        # the nodes and actually just uses the interpolator values this
-        # would be
-        # much better.
-        self.interpolator.up_to_date = False
-        self.interpolator.update()
-
-    def get_interpolator(self):
-        """
-        Get the interpolator used to build this feature
-
-        Returns
-        -------
-        interpolator : GeologicalInterpolator
-        """
-        return self.interpolator
 
 

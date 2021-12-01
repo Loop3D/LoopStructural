@@ -1,9 +1,24 @@
 import logging
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
-class LoopBaseException(Exception):
+class LoopException(Exception):
     """
     Base loop exception
     """
-    # logger.error("Raising loop base exception")
+    
+class LoopImportError(LoopException):
+    """
+    """
+    pass
+
+class InterpolatorError(LoopException):
+    pass
+
+class LoopTypeError(LoopException):
+    pass
+
+class LoopValueError(LoopException):
+    pass
+

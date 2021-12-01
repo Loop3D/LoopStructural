@@ -30,6 +30,30 @@ Any contributions to the documentation and code for LoopStructural are welcome.
 If you would like to contribute code to LoopStructural please open an `issue <https://github.com/Loop3D/LoopStructural/issues/new/choose>`_ either 
 a bug report or a feature request and then submit a pull request and link it to this issue. 
 
+Commit messages
+---------------
+A changelog is automatically generated from the commit message, the following keywords are identified in the commit log.
+ 
+ * add - defining a new feature that is added to LoopStructural
+ * fix - a bugfix
+ * change - any changes to features 
+ * remove - removing features or code from LoopStructural
+ * merge 
+ * doc - changes to documentation
+
+The commit messages should include a short summary in the first line that will be referenced in the change log.
+ 
+Version numbering
+-----------------
+LoopStructural is versions according to semantic versioning:
+
+Given a version number MAJOR.MINOR.PATCH, increment the:
+
+MAJOR version when you make incompatible API changes,
+MINOR version when you add functionality in a backwards compatible manner, and
+PATCH version when you make backwards compatible bug fixes.
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
 
 Documentation
 ~~~~~~~~~~~~~~

@@ -24,9 +24,6 @@ data.head()
 
 newdata = pd.DataFrame([[5923.504395,4748.135254,3588.621094,'s2',1.0]],columns=['X','Y','Z','feature_name','val'])
 data = pd.concat([data,newdata],sort=False)
-data[np.logical_and(data['feature_name'] == 's2',np.isnan(data['nx']))]
-data.loc[np.logical_and(data['feature_name'] == 's0',~np.isnan(data['val'])),'feature_name'] = 's01'
-
 
 rotation = [-69.11979675292969, 15.704944610595703, 6.00014591217041]
 

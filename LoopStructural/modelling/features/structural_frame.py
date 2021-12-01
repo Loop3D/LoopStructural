@@ -3,7 +3,8 @@ Structural frames
 """
 import logging
 import numpy as np
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class StructuralFrame:
@@ -25,8 +26,22 @@ class StructuralFrame:
         self.features = features
         self.data = None
         self.fold = fold
+        self.builder = None
 
-    def __getitem__(self, item):
+    def __getitem__(self, key):
+        """
+
+        Parameters
+        ----------
+        key index of feature to access
+
+        Returns
+        -------
+        the structural frame geological feature
+        """
+        return self.features[key]
+    
+    def __setitem__(self, key, value):
         """
 
         Parameters
@@ -37,7 +52,7 @@ class StructuralFrame:
         -------
         the structural frame geological feature
         """
-        return self.features[item]
+        self.features[key] = value
 
     def set_model(self, model):
         """Link the model that created the frame to the frame
@@ -106,10 +121,7 @@ class StructuralFrame:
         v[:,1] = self.features[1].evaluate_value(evaluation_points)
         v[:,2] = self.features[2].evaluate_value(evaluation_points)
         return v
-        # return (self.features[0].evaluate_value(evaluation_points),
-        #         self.features[1].evaluate_value(evaluation_points),
-        #         self.features[2].evaluate_value(evaluation_points))
-
+        
     def evaluate_gradient(self, evaluation_points, i=None):
         """
         Evaluate the gradient of the structural frame.

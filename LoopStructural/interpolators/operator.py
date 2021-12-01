@@ -5,7 +5,8 @@ import logging
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class Operator(object):
@@ -32,7 +33,7 @@ class Operator(object):
         [-0.25, 0, 0.25],
         [0, 0, 0],
         [0.25, 0, -0.25]
-    ], z])
+    ], z]) / np.sqrt(2)
     Dxz_mask = Dxy_mask.swapaxes(0, 1)
     Dyz_mask = Dxy_mask.swapaxes(0, 2)
 

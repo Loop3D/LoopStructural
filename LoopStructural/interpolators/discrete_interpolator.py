@@ -6,11 +6,13 @@ import logging
 import numpy as np
 from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
+from scipy.sparse.linalg import norm
+from sklearn.preprocessing import normalize
 
 from LoopStructural.interpolators.geological_interpolator import \
     GeologicalInterpolator
-
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger
+logger = getLogger(__name__)
 
 
 class DiscreteInterpolator(GeologicalInterpolator):
@@ -30,12 +32,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         GeologicalInterpolator.__init__(self)
         self.B = []
         self.support = support
-        self.region_function = None
-        self.region = np.arange(0, support.n_nodes)
-        self.region_map = np.zeros(support.n_nodes).astype(int)
+        self.region_function = lambda xyz : np.ones(xyz.shape[0],dtype=int)
         # self.region_map[self.region] = np.array(range(0,
         # len(self.region_map[self.region])))
-        self.nx = len(self.support.nodes[self.region])
         self.shape = 'rectangular'
         if self.shape == 'square':
             self.B = np.zeros(self.nx)
@@ -43,15 +42,32 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.A = []  # sparse matrix storage coo format
         self.col = []
         self.row = []  # sparse matrix storage
+        self.w = []
         self.solver = None
         self.eq_const_C = []
         self.eq_const_row = []
         self.eq_const_col = []
         self.eq_const_d = []
         self.eq_const_c_ = 0
+        self.non_linear_constraints = []
         self.constraints = {}
         self.interpolation_weights= {}
+        logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
+        self.type = 'discrete'
+    @property
+    def nx(self):
+        return len(self.support.nodes[self.region])
 
+    @property
+    def region(self):
+        return self.region_function(self.support.nodes)
+
+    @property
+    def region_map(self):
+        region_map = np.zeros(self.support.n_nodes).astype(int)
+        region_map[self.region] = np.array(
+            range(0, len(region_map[self.region])))
+        return region_map
     def set_property_name(self, propertyname):
         """
         Set the property name attribute, this is usually used to
@@ -83,12 +99,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # evaluate the region function on the support to determine
         # which nodes are inside update region map and degrees of freedom
         self.region_function = region
-        self.region = region(self.support.nodes)
-        self.region_map = np.zeros(self.support.n_nodes).astype(int)
-        self.region_map[self.region] = np.array(
-            range(0, len(self.region_map[self.region])))
-        self.nx = len(self.support.nodes[self.region])
-        
+        logger.info("Interpolation now uses region and has {} degrees of freedom".format(self.nx))
+
     def set_interpolation_weights(self, weights):
         """
         Set the interpolation weights dictionary
@@ -124,7 +136,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.B = []
         self.n_constraints = 0
 
-    def add_constraints_to_least_squares(self, A, B, idc, name='undefined'):
+    def add_constraints_to_least_squares(self, A, B, idc, w = 1., name='undefined'):
         """
         Adds constraints to the least squares system. Automatically works
         out the row
@@ -147,47 +159,66 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-
         nr = A.shape[0]
+        #logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
+        # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
             logger.error("Cannot add constraints: A and indexes have different shape")
             return
         
         if len(A.shape) > 2:
             nr = A.shape[0] * A.shape[1]
+            w = np.tile(w,(A.shape[1]))
             A = A.reshape((A.shape[0]*A.shape[1],A.shape[2]))
             idc = idc.reshape((idc.shape[0]*idc.shape[1],idc.shape[2]))
+            B = B.reshape((A.shape[0]))
+            # w = w.reshape((A.shape[0]))
+        # normalise by rows of A
+        length = np.linalg.norm(A,axis=1)#.getcol(0).norm()
+        B[length>0]/=length[length>0]
         # going to assume if any are nan they are all nan
         mask = np.any(np.isnan(A),axis=1)
         A[mask,:] = 0
+        A[length>0,:] /= length[length>0,None]
+        if isinstance(w,(float,int)):
+            w = np.ones(A.shape[0])*w
+        
+        if isinstance(w,np.ndarray) == False:
+            raise BaseException('w must be a numpy array')
+        
+        if w.shape[0] != A.shape[0]:
+        #     # make w the same size as A
+        #     w = np.tile(w,(A.shape[1],1)).T
+        # else:
+            raise BaseException('Weight array does not match number of constraints')
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
             logger.warning("Constraints contain nan not adding constraints: {}".format(name))
             # return
-        
         rows = np.arange(0, nr).astype(int)
         rows += self.c_
         constraint_ids = rows.copy()
-
-        if name in self.constraints:
-            self.constraints[name] = np.hstack([self.constraints[name],
-                                                constraint_ids])
-        if name not in self.constraints:
-            self.constraints[name] = constraint_ids
+        base_name=name
+        while name in self.constraints:
+            count = 0
+            if '_' in name:
+                count = int(name.split('_')[1])+1
+            name = base_name + '_{}'.format(count)           
+            
+            # self.constraints[name]['A'] =  A#np.vstack([self.constraints[name]['A'],A])
+            # self.constraints[name]['B'] =  B#np.hstack([self.constraints[name]['B'], B])
+            # self.constraints[name]['idc'] = idc#np.vstack([self.constraints[name]['idc'],
+            #                                     idc])
         rows = np.tile(rows, (A.shape[-1], 1)).T
+        self.constraints[name] = {'node_indexes':constraint_ids,'A':A,'B':B.flatten(),'col':idc,'w':w,'row':rows}
 
         self.c_ += nr
-        if self.shape == 'rectangular':
-            # don't add operator where it is = 0 to the sparse matrix!
-            A = A.flatten()
-            rows = rows.flatten()
-            idc = idc.flatten()
-            B = B.flatten()
-            mask = A == 0
-            self.A.extend(A[~mask].tolist())
-            self.row.extend(rows[~mask].tolist())
-            self.col.extend(idc[~mask].tolist())
-            self.B.extend(B.tolist())
-
+        
+    
+    def calculate_residual_for_constraints(self):
+        residuals = {}
+        for constraint_name, constraint in self.constraints:
+            residuals[constraint_name] = np.einsum('ij,ij->i',constraint['A'],self.c[constraint['idc'].astype(int)]) - constraint['B'].flatten()
+        return residuals
     def remove_constraints_from_least_squares(self, name='undefined',
                                               constraint_ids=None):
         """
@@ -254,8 +285,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_row.extend((np.arange(0, idc[outside].shape[0])))
         self.eq_const_d.extend(values[outside].tolist())
         self.eq_const_c_ += idc[outside].shape[0]
+    
+    def add_non_linear_constraints(self, nonlinear_constraint):
+        self.non_linear_constraints.append(nonlinear_constraint)
 
-    def add_tangent_ctr_pts(self, w=1.0):
+    def add_tangent_constraints(self, w=1.0):
         """
 
         Parameters
@@ -269,9 +303,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         points = self.get_tangent_constraints()
         if points.shape[0] > 1:
-            self.add_gradient_orthogonal_constraint(points[:,:3],points[:,3:6],w)
+            self.add_gradient_orthogonal_constraints(points[:,:3],points[:,3:6],w)
 
-    def build_matrix(self, square=True, damp=True):
+    def build_matrix(self, square=True, damp=0.):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy
         constraints
@@ -288,15 +322,46 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         logger.info("Interpolation matrix is %i x %i"%(self.c_,self.nx))
         cols = np.array(self.col)
-        A = coo_matrix((np.array(self.A), (np.array(self.row), \
+        # To keep the solvers consistent for different model scales the range of the constraints should be similar.
+        # We normalise the row vectors for the interpolation matrix
+        # Each constraint can then be weighted separately for the least squares problem
+        # The weights are normalised so that the max weight is 1.0
+        # This means that the tolerance and other parameters for the solver
+        # are kept the same between iterations.
+        # #TODO currently the element size is not incorporated into the weighting.
+        # For cartesian grids this is probably ok but for tetrahedron could be more problematic if
+        # the tetras have different volumes. Would expect for the size of the element to influence
+        # how much it contributes to the system. 
+        # It could be implemented by multiplying the weight array by the element size.
+        # I am not sure how to integrate regularisation into this framework as my gut feeling is the regularisation
+        # should be weighted by the area of the element face and not element volume, but this means the weight decreases with model scale
+        # which is not ideal. 
+        max_weight = 0
+        for c in self.constraints.values():
+            if c['w'].max() > max_weight:
+                max_weight = c['w'].max()
+        a = []
+        b = []
+        rows = []
+        cols = []
+        for c in self.constraints.values():
+            aa = (c['A']*c['w'][:,None]/max_weight).flatten()
+            b.extend((c['B']*c['w']/max_weight).tolist())
+            mask = aa == 0
+            a.extend(aa[~mask].tolist())
+            rows.extend(c['row'].flatten()[~mask].tolist())
+            cols.extend(c['col'].flatten()[~mask].tolist())
+   
+        A = coo_matrix((np.array(a), (np.array(rows), \
                                            cols)), shape=(self.c_, self.nx),
                        dtype=float)  # .tocsr()
-        B = np.array(self.B)
+        
+        B = np.array(b)
         if not square:
             logger.info("Using rectangular matrix, equality constraints are not used")
             return A, B
-        AAT = A.T.dot(A)
-        BT = A.T.dot(B)
+        ATA = A.T.dot(A)
+        ATB = A.T.dot(B)
         # add a small number to the matrix diagonal to smooth the results
         # can help speed up solving, but might also introduce some errors
 
@@ -317,12 +382,17 @@ class DiscreteInterpolator(GeologicalInterpolator):
                                              np.array(self.eq_const_col))),
                 shape=(self.eq_const_c_, self.nx))
             d = np.array(self.eq_const_d)
-            AAT = bmat([[AAT, C.T], [C, None]])
-            BT = np.hstack([BT, d])
-        if damp:
+            ATA = bmat([[ATA, C.T], [C, None]])
+            ATB = np.hstack([ATB, d])
+        if isinstance(damp, bool):
+            if damp == True:
+                damp = np.finfo('float').eps
+            if damp == False:
+                damp = 0.
+        if isinstance(damp,float):
             logger.info("Adding eps to matrix diagonal")
-            AAT += eye(AAT.shape[0]) * np.finfo('float').eps
-        return AAT, BT
+            ATA += eye(ATA.shape[0]) * damp
+        return ATA, ATB
 
     def _solve_lu(self, A, B):
         """
@@ -354,9 +424,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
-
+        
         lsqrargs = {}
-        # lsqrargs['tol'] = 1e-12
+        lsqrargs['btol'] = 1e-12
+        lsqrargs['atol'] = 0
         if 'iter_lim' in kwargs:
             logger.info("Using %i maximum iterations" % kwargs['iter_lim'])
             lsqrargs['iter_lim'] = kwargs['iter_lim']
@@ -419,7 +490,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         cgargs = {}
         cgargs['tol'] = 1e-12
-        cgargs['atol'] = 0
+        cgargs['atol'] = 1e-10
         if 'maxiter' in kwargs:
             logger.info("Using %i maximum iterations"%kwargs['maxiter'])
             cgargs['maxiter'] = kwargs['maxiter']
@@ -438,7 +509,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs['M'] = precon(A)
         return sla.cg(A, B, **cgargs)[0][:self.nx]
 
-    def _solve_pyamg(self, A, B):
+    def _solve_pyamg(self, A, B, tol=1e-12,x0=None,verb=False,**kwargs):
         """
         Solve least squares system using pyamg algorithmic multigrid solver
 
@@ -452,7 +523,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         import pyamg
-        return pyamg.solve(A, B, verb=False)[:self.nx]
+        logger.info("Solving using pyamg: tol {}".format(tol))
+        return pyamg.solve(A, B, tol=tol, x0=x0, verb=verb)[:self.nx]
 
     def _solve(self, solver='cg', **kwargs):
         """
@@ -473,6 +545,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        logger.info("Solving interpolation for {}".format(self.propertyname))
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         damp = True
@@ -498,7 +571,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if solver == 'pyamg':
             try:
                 logger.info("Solving with pyamg solve")
-                self.c[self.region] = self._solve_pyamg(A, B)
+                self.c[self.region] = self._solve_pyamg(A, B,**kwargs)
             except ImportError:
                 logger.warn("Pyamg not installed using cg instead")
                 self.c[self.region] = self._solve_cg(A, B)
@@ -508,13 +581,17 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.warning("Using external solver")
             self.c[self.region] = kwargs['external'](A, B)[:self.nx]
         # check solution is not nan
-        self.support.properties[self.propertyname] = self.c
+        # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
+            self.valid = False
             logger.warning("Solver not run, no scalar field")
+            return
         # if solution is all 0, probably didn't work
         if np.all(self.c[self.region] == 0):
-            logger.warning("No solution, scalar field 0. Add more data.")
-
+            self.valid = False
+            logger.warning("No solution, {} scalar field 0. Add more data.".format(self.propertyname))
+            return
+        self.valid = True
     def update(self):
         """
         Check if the solver is up to date, if not rerun interpolation using
@@ -541,7 +618,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.support.evaluate_value(
-                evaluation_points[~mask], self.propertyname)
+                evaluation_points[~mask], self.c)
         return evaluated
 
     def evaluate_gradient(self, evaluation_points):
@@ -558,5 +635,5 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         if evaluation_points.shape[0] > 0:
             return self.support.evaluate_gradient(evaluation_points,
-                                                  self.propertyname)
+                                                  self.c)
         return np.zeros((0, 3))
