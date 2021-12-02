@@ -2,16 +2,22 @@
 Interpolators and interpolation supports
 
 """
+# expose interpolators
 from LoopStructural.interpolators.discrete_fold_interpolator import DiscreteFoldInterpolator
 from LoopStructural.interpolators.finite_difference_interpolator import \
     FiniteDifferenceInterpolator
 from LoopStructural.interpolators.piecewiselinear_interpolator import \
     PiecewiseLinearInterpolator
-from LoopStructural.interpolators.structured_tetra import TetMesh
-from LoopStructural.interpolators.structured_grid_3d import StructuredGrid
-from LoopStructural.interpolators.structured_grid_2d import StructuredGrid2D
-from LoopStructural.interpolators.unstructured_tetra import UnStructuredTetMesh
-from LoopStructural.interpolators.structured_grid import StructuredGrid
 from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 from LoopStructural.interpolators.discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators.p1interpolator import P1Interpolator
+from LoopStructural.interpolators.p2interpolator import P2Interpolator
+
+# supports
+from LoopStructural.interpolators.supports.structured_tetra import TetMesh
+from LoopStructural.interpolators.supports.structured_grid_3d import StructuredGrid
+from LoopStructural.interpolators.supports.structured_grid_2d import StructuredGrid2D
+from LoopStructural.interpolators.supports.unstructured_tetra import UnStructuredTetMesh
+from LoopStructural.interpolators.supports.structured_grid import StructuredGrid
+
 

@@ -4,9 +4,8 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 import logging
 
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
-from .base_structured_3d_support import BaseStructuredSupport
 
+from .base_structured_3d_support import BaseStructuredSupport
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
@@ -104,32 +103,8 @@ class UnStructuredTetMesh:
         z_logic = np.logical_or(np.logical_or(a,b),c)
         logic = np.logical_and(x_logic,y_logic)
         logic = np.logical_and(logic,z_logic)
-        # inside_x = 
-        # # add the corners of the cube
-        # tetra_bb[:,0,:] = np.array([minx,miny,minz]).T
-        # tetra_bb[:,1,:] = np.array([maxx,miny,minz]).T
-        # tetra_bb[:,2,:] = np.array([maxx,maxy,minz]).T
-        # tetra_bb[:,3,:] = np.array([minx,maxy,minz]).T
-        # tetra_bb[:,4,:] = np.array([minx,miny,maxz]).T
-        # tetra_bb[:,5,:] = np.array([maxx,miny,minz]).T
-        # tetra_bb[:,6,:] = np.array([maxx,maxy,maxz]).T
-        # tetra_bb[:,7,:] = np.array([minx,maxy,maxz]).T
-        # # add centre
-        # tetra_bb[:,8,:] = np.array([(maxx-minx)/2,(maxy-miny)/2,(maxy-miny)/2]).T
 
-         
-
-
-        # # find which 
-        # cell_index_ijk = np.array(self.aabb_grid.position_to_cell_index(tetra_bb.reshape((-1,3)))).swapaxes(0,1)
-        # cell_index_global = cell_index_ijk[:, 0] + self.aabb_grid.nsteps_cells[ None, 0] \
-        #        * cell_index_ijk[:, 1] + self.aabb_grid.nsteps_cells[ None, 0] * \
-        #        self.aabb_grid.nsteps_cells[ None, 1] * cell_index_ijk[:, 2]
-        # bbcorners_grid_cell = cell_index_global.reshape((tetra_bb.shape[0],tetra_bb.shape[1]))
-        # tetra_index = np.arange(self.elements.shape[0],dtype=int)
-        # tetra_index = np.tile(tetra_index,(9,1)).T
         self.aabb_table = logic
-        #[bbcorners_grid_cell,tetra_index] = True
 
     @property
     def ntetra(self):
