@@ -2,6 +2,8 @@ import theano.tensor as tt
 import numpy as np
 
 from ._gradient_calculator import gradients
+
+
 class LogLikelihood(tt.Op):
     itypes = [tt.dvector]  # expects a vector of parameter values when called
     otypes = [tt.dscalar]  # outputs a single scalar value (normal_likelihood)
@@ -28,6 +30,7 @@ class LogLikelihood(tt.Op):
         self.reltol = 1e-3
         self.epsscale = 0.5
         self.mineps = 1e-9
+
     def perform(self, node, inputs, outputs):
         # the method that is used when calling the Op
         # (theta,) = inputs
@@ -42,6 +45,7 @@ class LogLikelihood(tt.Op):
         # vector-Jacobian product - g[0] is a vector of parameter values
         (theta,) = inputs  # our parameters
         return [g[0] * self.loglikegrad(theta)]
+
 
 class LogLikelihoodGradient(tt.Op):
     """
@@ -69,7 +73,6 @@ class LogLikelihoodGradient(tt.Op):
         # add inputs as class attributes
         self.loglike = normal_loglikelihood
 
-
     def perform(self, node, inputs, outputs):
         (theta,) = inputs
 
@@ -83,6 +86,8 @@ class LogLikelihoodGradient(tt.Op):
         self.reltol = 1e-3
         self.epsscale = 0.5
         self.mineps = 1e-9
-        grads = gradients(theta, lnlike)#,reps=self.reps,mineps=self.mineps,epsscale=self.epsscale,reltol=self.reltol)
+        grads = gradients(
+            theta, lnlike
+        )  # ,reps=self.reps,mineps=self.mineps,epsscale=self.epsscale,reltol=self.reltol)
 
         outputs[0][0] = grads

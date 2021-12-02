@@ -1,10 +1,13 @@
 import numpy as np
 
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
 
-def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1,
-              epsscale=0.5):
+
+def gradients(
+    vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1, epsscale=0.5
+):
     """
     Calculate the partial derivatives of a function at a set of values. The
     derivatives are calculated using the central difference, using an iterative
@@ -38,19 +41,19 @@ def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1,
     grads = np.zeros(len(vals))
 
     # maximum number of times the gradient can change sign
-    flipflopmax = 10.
+    flipflopmax = 10.0
 
     # set steps
     if abseps is None:
         if isinstance(releps, float):
             eps = np.abs(vals) * releps
-            eps[eps == 0.] = releps  # if any values are zero set eps to releps
+            eps[eps == 0.0] = releps  # if any values are zero set eps to releps
             teps = releps * np.ones(len(vals))
         elif isinstance(releps, (list, np.ndarray)):
             if len(releps) != len(vals):
                 raise ValueError("Problem with input relative step sizes")
             eps = np.multiply(np.abs(vals), releps)
-            eps[eps == 0.] = np.array(releps)[eps == 0.]
+            eps[eps == 0.0] = np.array(releps)[eps == 0.0]
             teps = releps
         else:
             raise RuntimeError("Relative step sizes are not a recognised type!")
@@ -91,8 +94,10 @@ def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1,
             cureps *= epsscale
             if cureps < mineps or flipflop > flipflopmax:
                 # if no convergence set flat derivative (TODO: check if there is a better thing to do instead)
-                logger.warn("Derivative calculation did not converge: setting flat derivative.")
-                grads[count] = 0.
+                logger.warn(
+                    "Derivative calculation did not converge: setting flat derivative."
+                )
+                grads[count] = 0.0
                 break
             leps *= epsscale
 
@@ -106,10 +111,10 @@ def gradients(vals, func, releps=1e-3, abseps=None, mineps=1e-9, reltol=1,
                 break
 
             # check whether previous diff and current diff are the same within reltol
-            rat = (cdiff / cdiffnew)
-            if np.isfinite(rat) and rat > 0.:
+            rat = cdiff / cdiffnew
+            if np.isfinite(rat) and rat > 0.0:
                 # gradient has not changed sign
-                if np.abs(1. - rat) < reltol:
+                if np.abs(1.0 - rat) < reltol:
                     grads[count] = cdiffnew
                     break
                 else:

@@ -3,13 +3,13 @@ import logging
 import numpy as np
 
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
 
 
 class FoldRotationAngleFeature:
-    """
+    """ """
 
-    """
     def __init__(self, fold_frame, rotation):
         """
 
