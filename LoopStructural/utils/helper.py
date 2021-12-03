@@ -400,8 +400,10 @@ def interface_name():
 def feature_name():
     return ["feature_name"]
 
+
 def polarity_name():
     return ["polarity"]
+
 
 def all_heading():
     return (
