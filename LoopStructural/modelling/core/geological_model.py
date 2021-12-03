@@ -509,13 +509,17 @@ class GeologicalModel:
                     self._data[h] = 1.0
                 if h == "coord":
                     self._data[h] = 0
+                if h == "polarity":
+                    self._data[h] = 1.
+        # LS wants polarity as -1 or 1, change 0 to -1
+        self._data.loc[self._data["polarity"]==0, "polarity"] = -1.
         self.data.loc[np.isnan(self.data["w"]), "w"] = 1.0
         if "strike" in self._data and "dip" in self._data:
             logger.info("Converting strike and dip to vectors")
             mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
             self._data.loc[mask, gradient_vec_names()] = strike_dip_vector(
                 self._data.loc[mask, "strike"], self._data.loc[mask, "dip"]
-            )
+            )*self._data.loc[mask, "polarity"][:,None]
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
 
     def set_model_data(self, data):
