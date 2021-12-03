@@ -23,8 +23,8 @@ from LoopStructural.interpolators import TetMesh
 from LoopStructural.modelling.fault import FaultSegment
 from LoopStructural.interpolators import DiscreteInterpolator
 
-from LoopStructural.interpolators.structured_grid import StructuredGrid
-from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.fault import FaultBuilder
 from LoopStructural.modelling.features import (

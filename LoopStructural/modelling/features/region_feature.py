@@ -1,6 +1,6 @@
 class RegionFeature:
-    """
-    """
+    """ """
+
     def __init__(self, function):
         """
         Create a GeologicalFeature to represent a region in a model
@@ -10,10 +10,10 @@ class RegionFeature:
         ----------
         function lambda function
             lambda function true inside region, false outside region
-        
+
         """
         self.function = function
-        self.name = 'region'
+        self.name = "region"
 
     def evaluate_value(self, pos):
         return self.function(pos).astype(float)
@@ -29,6 +29,7 @@ class RegionFeature:
 
     def name(self):
         return self.name
+
 
 # class VectorFeature:
 #     def __init__(self, function)

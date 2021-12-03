@@ -1,5 +1,5 @@
 import numpy as np
-from LoopStructural.interpolators.unstructured_tetra import UnStructuredTetMesh
+from LoopStructural.interpolators import UnStructuredTetMesh
 from os.path import dirname
 file_path = dirname(__file__)
 
