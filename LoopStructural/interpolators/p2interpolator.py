@@ -45,18 +45,20 @@ class P2Interpolator(DiscreteInterpolator):
     def add_gradient_ctr_pts(self, w=1.0):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, :2])
-            inside = elements > -1
-            area = self.support.element_area(elements[inside])
-            wt = np.ones(area.shape[0])
-            wt *= w * area
-            A = np.einsum("ikj,ij->ik", grad[:, :], points[:, 3:5])
-            # A = np.einsum('ij,ikj->ik', grad[:,:], points[:,3:5])
-            A *= area[idx, None]
-            # # A *= fold_orientation
-            B = np.zeros(A.shape[0])
-            idc = p2_mesh.elements[idx, :]
-            self.add_constraints_to_least_squares(A, B, elements)
+            raise NotImplementedError
+            
+            # grad, elements = self.support.evaluate_shape_derivatives(points[:, :2])
+            # inside = elements > -1
+            # area = self.support.element_area(elements[inside])
+            # wt = np.ones(area.shape[0])
+            # wt *= w * area
+            # A = np.einsum("ikj,ij->ik", grad[:, :], points[:, 3:5])
+            # # A = np.einsum('ij,ikj->ik', grad[:,:], points[:,3:5])
+            # A *= area[idx, None]
+            # # # A *= fold_orientation
+            # B = np.zeros(A.shape[0])
+            # idc = p2_mesh.elements[idx, :]
+            # self.add_constraints_to_least_squares(A, B, elements)
         # p2.add_constraints_to_least_squares(A, B, idc,'fold ori')
         pass
 
