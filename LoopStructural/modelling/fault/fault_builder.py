@@ -31,9 +31,10 @@ class FaultBuilder(StructuralFrameBuilder):
         """
 
         StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
-        self.origin = np.array([np.nan, np.nan, np.nan])
-        self.maximum = np.array([np.nan, np.nan, np.nan])
-        self.model = model
+        self.model = model  
+        self.origin = self.model.bounding_box[0, :]
+        self.maximum = self.model.bounding_box[1, :]
+        
         # define a maximum area to mesh adding buffer to model
         # buffer = .2
         self.minimum_origin = self.model.bounding_box[

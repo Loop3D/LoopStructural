@@ -521,7 +521,7 @@ class GeologicalModel:
                 strike_dip_vector(
                     self._data.loc[mask, "strike"], self._data.loc[mask, "dip"]
                 )
-                * self._data.loc[mask, "polarity"][:, None]
+                * self._data.loc[mask, "polarity"].to_numpy()[:, None]
             )
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
 
@@ -1459,10 +1459,10 @@ class GeologicalModel:
         #     fault_frame_builder.origin = self.bounding_box[0,:]
         #     fault_frame_builder.maximum = self.bounding_box[1,:]
         if "force_mesh_geometry" not in kwargs:
+
             fault_frame_builder.set_mesh_geometry(
                 kwargs.get("fault_buffer", 0.2), 0
-            )  # ,
-            # np.rad2deg(np.arccos(np.dot(fault_normal_vector[:2],np.array([0,1])))))
+            )  
         if "splay" in kwargs and "splayregion" in kwargs:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])
 
