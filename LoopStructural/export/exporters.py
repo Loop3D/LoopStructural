@@ -3,6 +3,7 @@ Routines to export geological model data to file in a variety of formats
 """
 import logging
 import os
+from types import SimpleNamespace
 from pyevtk.hl import unstructuredGridToVTK, pointsToVTK
 from pyevtk.vtk import VtkTriangle
 import numpy as np
@@ -15,7 +16,7 @@ from LoopStructural.export.file_formats import FileFormat
 from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
-def write_feat_surfs(model, file_name, file_format=FileFormat.GOCAD, features=[]):
+def write_feat_surfs(model, file_name, file_format=FileFormat.NUMPY, target_feats=[], isovalue=0.0):
     """
     Writes out features from a model as 3d surfaces
 
@@ -26,124 +27,194 @@ def write_feat_surfs(model, file_name, file_format=FileFormat.GOCAD, features=[]
     file_name: string
         Name of file that model is exported to, including path, but without the file extension
     file_format: export.fileformats.FileFormat object
-        Desired format of exported file. Supports VTK
-    labels: OPTIONAL list of feature names to export, if omitted all faults are exported
+        OPTIONAL desired format of exported file. Supports GOCAD, VTK & NUMPY. Default is NUMPY
+    target_feats: list
+        OPTIONAL list of feature names to export, if omitted all faults are exported
+    isovalue: float
+        OPTIONAL isovalue point at which surface is generated, default is 0.0
 
     Returns
     -------
-    True if successful
-
+    Tuple of (boolean, [ SimpleNamespace() ...  ])
+    If successful, boolean is True and SimpleNamespace() objects have the following attributes:
+        verts: vertices, numpy ndarray with dtype = float64 & shape = (N,3)
+        faces: faces, numpy ndarray with dtype = int32 & shape = (M,3)
+        values: values, numpy ndarray with dtype = float32 & shape = (N,)
+        normals: normals, numpy ndarray with dtype = float32 & shape = (N,3)
+        name: name of feature e.g. fault or supergroup, string
+    If not successful, it returns (False, [])
     """
     # Set up the type of file writer function
     if file_format == FileFormat.GOCAD:
         write_fn = _write_feat_surfs_gocad
     elif file_format == FileFormat.VTK:
         write_fn = _write_feat_surfs_evtk
+    elif file_format == FileFormat.NUMPY:
+        write_fn = None 
     else:
-        logger.warning("Cannot export to surface file - format {} not supported yet".format(str(file_format)))
-        return False
+        logger.warning(f"Cannot export to surface file - format {file_format} not supported yet")
+        return False, []
 
     # Loop over features, one file for each feature
+    surf_list = []
+    has_feats = False
     for feature in model.features:
+        # Skip if not a requested feature
+        if target_feats != [] and feature.name not in target_feats:
+            continue
+        has_feats = True
         x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0], model.nsteps[0])
         y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1], model.nsteps[1])
         z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2], model.nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         val = feature.evaluate_value(points)
-        slices_ = [0.0]
-
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
-        for i, isovalue in enumerate(slices_):
-            logger.info("Creating isosurface of {feature.name} at {isovalue}")
+        logger.info(f"Creating isosurface of {feature.name} at {isovalue}")
 
-            if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
-                logger.warning("For {feature.name} isovalue doesn't exist inside bounding box, skipping")
-                continue
-            try:
-                verts, faces, normals, values = marching_cubes(
-                    val.reshape(model.nsteps, order='C'),
-                    isovalue,
-                    spacing=step_vector)
-                verts += np.array([model.bounding_box[0, 0], model.bounding_box[0, 1], model.bounding_box[1, 2]])
-                model.rescale(verts)
+        if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
+            logger.warning(f"For {feature.name} isovalue {isovalue} doesn't exist inside bounding box, skipping")
+            continue
+        try:
+            verts, faces, normals, values = marching_cubes(
+                val.reshape(model.nsteps, order='C'),
+                isovalue,
+                spacing=step_vector)
+            verts += np.array([model.bounding_box[0, 0], model.bounding_box[0, 1], model.bounding_box[1, 2]])
+            model.rescale(verts)
+            surf = SimpleNamespace()
+            surf.verts = verts
+            surf.faces = faces
+            surf.normals = normals
+            surf.values = values
+            surf.name = feature.name.replace(' ', '-')
+            surf_list.append(surf)
 
-            except (ValueError, RuntimeError) as e:
-                print(e)
-                logger.warning(f"Cannot isosurface {feature.name} at {isovalue}, skipping")
-                continue
-            # Call the file writer function
-            write_fn(feature, verts, faces, values, file_name)
-        break
-    return True
+        except (ValueError, RuntimeError) as e:
+            logger.debug(f"Exception creating feature surface {feature.name}: {e}")
+            logger.warning(f"Cannot isosurface {feature.name} at {isovalue}, skipping")
+            continue
+
+    if not has_feats:
+        logger.warning("Cannot locate features in model")
+        return False, []
+
+    # Call the file writer function
+    result = True
+    if write_fn is not None:
+        result = write_fn(surf_list, file_name)
+    return result, surf_list
 
 
-def _write_feat_surfs_evtk(feature, verts, faces, values, file_name):
+def _write_feat_surfs_evtk(surf_list, file_name):
     """
     Writes out an unstructured VTK file containing a 2d fault surface
 
     Parameters
     ----------
-    feature:
-    verts:
-    faces:
-    values:
+    surf_list: [ SimpleNamespace() ... ]
+        Details of the surfaces, as a list of SimpleNamespace() objects. Fields are:
+            verts: vertices, numpy ndarray with dtype = float64 & shape = (N,3)
+            faces: faces, numpy ndarray with dtype = int32 & shape = (M,3)
+            values: values, numpy ndarray with dtype = float32 & shape = (N,)
+            normals: normals, numpy ndarray with dtype = float32 & shape = (N,3)
+            name: name of feature e.g. fault or supergroup, string
+ 
     file_name: string
+        file name to be written out without extension
    
     Returns
     -------
     True if successful
 
     """
-    clean_feature = feature.name.replace(' ','-')
-    num_vals = verts.shape[0]
-    x = np.ascontiguousarray(verts[:, 0])
-    y = np.ascontiguousarray(verts[:, 1])
-    z = np.ascontiguousarray(verts[:, 2])
-    # Convert to int 64
-    conn = np.array(faces, dtype=np.int64)
-    # Reshape to 1d
-    conn = conn.reshape(conn.size)
-    # Make offsets into connection array 
-    offset = np.array(list(range(3, len(conn)+1, 3)), dtype=np.int64)
-    # Set VTK datatype as triangles
-    ctype =  np.zeros(offset.size)
-    ctype.fill(VtkTriangle.tid)
+    connectivity = np.zeros(0)
+    offsets = np.zeros(0) 
+    cell_types = np.zeros(0)
+    x = np.zeros(0)
+    y = np.zeros(0)
+    z = np.zeros(0)
+    conn_idx = 0
+    offset_idx = 0
+    pointData = np.zeros(0)
+
+    # Concatenate the geometry of all features into x, y, z, connectivity, offsets & cell_types
+    for surf in surf_list:
+        # Accumulate x,y,z values in 1-d array
+        x = np.append(x, np.ascontiguousarray(surf.verts[:, 0]))
+        y = np.append(y, np.ascontiguousarray(surf.verts[:, 1]))
+        z = np.append(z, np.ascontiguousarray(surf.verts[:, 2]))
+
+        # Convert faces to int64
+        conn = np.array(surf.faces, dtype=np.int64)
+
+        # Reshape connections to 1d
+        conn = conn.reshape(conn.size)
+        conn += conn_idx
+
+        # Make offsets into connection array 
+        offs = np.array(list(range(3 + offset_idx, len(conn) + offset_idx, 3)), dtype=np.int64)
+
+        # Set VTK datatype as triangles
+        ctype =  np.zeros(offs.size)
+        ctype.fill(VtkTriangle.tid)
+
+        # Accumulate values in arrays
+        connectivity = np.append(connectivity, conn)
+
+        offsets = np.append(offsets, offs)
+        cell_types = np.append(cell_types, ctype)
+
+        pointData = np.append(pointData, surf.values.reshape(surf.values.size))
+
+        # Enable connections to point to next set of vertices
+        conn_idx = x.size
+
+        # Enable offsets to point to next set of connections
+        offset_idx = connectivity.size
+
     # Write out file
     try:
-        unstructuredGridToVTK(f"{file_name}_{clean_feature}", x, y, z, connectivity = conn, offsets = offset, cell_types = ctype, pointData = {'values': values.reshape(values.size)})
+        logger.info(f"Writing file {file_name}.vtu")
+        unstructuredGridToVTK(f"{file_name}", x, y, z, connectivity = connectivity, offsets = offsets,
+                              cell_types = cell_types, pointData = {'values': pointData})
     except Exception as e:
-        logger.warning("Cannot export fault surface to VTK file {}: {}".format(file_name, str(e)))
+        logger.warning(f"Cannot export fault surface to VTK file {file_name}: {e}")
         return False
+ 
     return True
 
 
-def _write_feat_surfs_gocad(feature, verts, faces, values, file_name):
+def _write_feat_surfs_gocad(surf_list, file_name):
     """
-    Writes out a GOCAD TSURF file containing a 2d fault surface
+    Writes out a GOCAD TSURF file for each surface in list
 
     Parameters
     ----------
-    feature:
-    verts:
-    faces:
-    values:
+    surf_list: [ SimpleNamespace() ... ]
+        Details of the surfaces, as a list of SimpleNamespace() objects. Fields are:
+            verts: vertices, numpy ndarray with dtype = float64 & shape = (N,3)
+            faces: faces, numpy ndarray with dtype = int32 & shape = (M,3)
+            values: values, numpy ndarray with dtype = float32 & shape = (N,)
+            normals: normals, numpy ndarray with dtype = float32 & shape = (N,3)
+            name: name of feature e.g. fault or supergroup, string
+
     file_name: string
+        Desired filename
    
     Returns
     -------
     True if successful
 
     """
-    clean_feature = feature.name.replace(' ','-')
-    clean_feature = feature.name.replace(' ','-')
-    with open(f"{file_name}_{clean_feature}.TS", "w") as fd:
-        fd.write(f"""GOCAD TSurf 1 
+    for surf in surf_list:
+        with open(f"{file_name}_{surf.name}.TS", "w") as fd:
+            fd.write(f"""GOCAD TSurf 1 
 HEADER {{
 *solid*color: #ffa500
 ivolmap: false
 imap: false
-name: {feature.name}
+name: {surf.name}
 }}
 GOCAD_ORIGINAL_COORDINATE_SYSTEM
 NAME Default
@@ -153,7 +224,7 @@ AXIS_NAME X Y Z
 AXIS_UNIT m m m
 ZPOSITIVE Elevation
 END_ORIGINAL_COORDINATE_SYSTEM
-GEOLOGICAL_FEATURE {clean_feature}
+GEOLOGICAL_FEATURE {surf.name}
 GEOLOGICAL_TYPE fault
 PROPERTY_CLASS_HEADER X {{
 kind: X
@@ -174,18 +245,19 @@ unit: m
 }}
 TFACE
 """)
-        nan_list = []
-        v_idx = 1
-        v_map = {}
-        for idx, vert in enumerate(verts):
-            if not np.isnan(vert[0]) and not np.isnan(vert[1]) and not np.isnan(vert[2]):
-                fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]} \n")
-                v_map[idx] = v_idx
-                v_idx += 1
-        for face in faces:
-            if face[0] in v_map and face[1] in v_map and face[2] in v_map:
-                fd.write(f"TRGL {v_map[face[0]]} {v_map[face[1]]} {v_map[face[2]]} \n")
-        fd.write("END\n")
+            nan_list = []
+            v_idx = 1
+            v_map = {}
+            for idx, vert in enumerate(surf.verts):
+                if not np.isnan(vert[0]) and not np.isnan(vert[1]) and not np.isnan(vert[2]):
+                    fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]} \n")
+                    v_map[idx] = v_idx
+                    v_idx += 1
+            for face in surf.faces:
+                if face[0] in v_map and face[1] in v_map and face[2] in v_map:
+                    fd.write(f"TRGL {v_map[face[0]]} {v_map[face[1]]} {v_map[face[2]]} \n")
+            fd.write("END\n")
+    return True
 
 
 def write_cubeface(model, file_name, data_label, nsteps, file_format):
@@ -213,7 +285,7 @@ def write_cubeface(model, file_name, data_label, nsteps, file_format):
     if file_format == FileFormat.VTK:
         return _write_cubeface_evtk(model, file_name, data_label, nsteps)
 
-    logger.warning("Cannot export to file - format {} not supported yet".format(str(file_format)))
+    logger.warning(f"Cannot export to file - format {file_format} not supported yet")
     return False
 
 
@@ -244,7 +316,7 @@ def write_vol(model, file_name, data_label, nsteps, file_format):
     if file_format == FileFormat.GOCAD:
         return _write_vol_gocad(model, file_name, data_label, nsteps)
 
-    logger.warning("Cannot export to file - format {} not supported yet".format(str(file_format)))
+    logger.warning(f"Cannot export to file - format {file_format} not supported yet")
     return False
 
 
@@ -298,7 +370,7 @@ def _write_cubeface_evtk(model, file_name, data_label, nsteps, real_coords=True)
         unstructuredGridToVTK(file_name, x, y, z, connectivity=conn, offsets=offset, cell_types=ctype,
                               cellData=None, pointData={data_label: val})
     except Exception as e:
-        logger.warning("Cannot export cuboid surface to VTK file {}: {}".format(file_name, str(e)))
+        logger.warning(f"Cannot export cuboid surface to VTK file {file_name}: {e}")
         return False
     return True
 
@@ -347,7 +419,7 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
     try:
         pointsToVTK(file_name, x, y, z, data={data_label: vals})
     except Exception as e:
-        logger.warning("Cannot export volume to VTK file {}: {}".format(file_name, str(e)))
+        logger.warning(f"Cannot export volume to VTK file {file_name}: {e}")
         return False
     return True
 
@@ -404,7 +476,7 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
         prop_esize = 4
         prop_storage_type = "Float"
     else:
-        logger.warning("Cannot export volume to GOCAD VOXET file: Unsupported type {}".format(type(vals[0])))
+        logger.warning(f"Cannot export volume to GOCAD VOXET file: Unsupported type {type(vals[0])}")
         return False
 
     # Write out VOXET file
@@ -412,9 +484,9 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
     data_filename = file_name + "@@"
     try:
         with open(vo_filename, "w") as fp:
-            fp.write("""GOCAD Voxet 1
+            fp.write(f"""GOCAD Voxet 1
 HEADER {{
-name: {name}
+name: {os.path.basename(file_name)}
 }}
 GOCAD_ORIGINAL_COORDINATE_SYSTEM
 NAME Default
@@ -426,33 +498,29 @@ AXIS_O 0.000000 0.000000 0.000000
 AXIS_U 1.000000 0.000000 0.000000
 AXIS_V 0.000000 1.000000 0.000000
 AXIS_W 0.000000 0.000000 1.000000
-AXIS_MIN {axismin1} {axismin2} {axismin3}
-AXIS_MAX {axismax1} {axismax2} {axismax3}
-AXIS_N {nsteps1} {nsteps2} {nsteps3}
+AXIS_MIN {bbox[0, 0]} {bbox[0, 1]} {bbox[0, 2]}
+AXIS_MAX {bbox[1, 0]} {bbox[1, 1]} {bbox[1, 2]}
+AXIS_N {nsteps[0]} {nsteps[1]} {nsteps[2]}
 AXIS_NAME "X" "Y" "Z"
 AXIS_UNIT "m" "m" "m"
 AXIS_TYPE even even even
-PROPERTY 1 {propname}
-PROPERTY_CLASS 1 {propname}
-PROP_UNIT 1 {propname}
-PROPERTY_CLASS_HEADER 1 {propname} {{
+PROPERTY 1 {data_label}
+PROPERTY_CLASS 1 {data_label}
+PROP_UNIT 1 {data_label}
+PROPERTY_CLASS_HEADER 1 {data_label} {{
 }}
 PROPERTY_SUBCLASS 1 QUANTITY {prop_storage_type}
-""".format(name=os.path.basename(file_name),
-                nsteps1=nsteps[0], nsteps2=nsteps[1], nsteps3=nsteps[2],
-                axismin1=bbox[0, 0], axismin2=bbox[0, 1], axismin3=bbox[0, 2],
-                axismax1=bbox[1, 0], axismax2=bbox[1, 1], axismax3=bbox[1, 2],
-                propname=data_label, prop_storage_type=prop_storage_type))
+""")
             if no_data_val is not None:
-                fp.write("PROP_NO_DATA_VALUE 1 {no_data_val}\n".format(no_data_val=no_data_val))
-            fp.write("""PROP_ETYPE 1 IEEE
+                fp.write(f"PROP_NO_DATA_VALUE 1 {no_data_val}\n")
+            fp.write(f"""PROP_ETYPE 1 IEEE
 PROP_FORMAT 1 RAW
 PROP_ESIZE 1 {prop_esize}
 PROP_OFFSET 1 0
-PROP_FILE 1 {prop_file}
-END\n""".format(prop_file=data_filename, prop_esize=prop_esize))
+PROP_FILE 1 {data_filename}
+END\n""")
     except IOError as exc:
-        logger.warning("Cannot export volume to GOCAD VOXET file {}: {}".format(vo_filename, str(exc)))
+        logger.warning(f"Cannot export volume to GOCAD VOXET file {vo_filename}: {exc}")
         return False
 
     # Write out accompanying binary data file
@@ -461,6 +529,6 @@ END\n""".format(prop_file=data_filename, prop_esize=prop_esize))
         with open(data_filename, "wb") as fp:
             export_vals.tofile(fp)
     except IOError as exc:
-        logger.warning("Cannot export volume to GOCAD VOXET data file {}: {}".format(data_filename, str(exc)))
+        logger.warning(f"Cannot export volume to GOCAD VOXET data file {data_filename}: {exc}")
         return False
     return True

@@ -11,3 +11,4 @@ class FileFormat(Enum):
     VTK = 2
     GOCAD = 3
     GLTF = 4  # Not supported yet
+    NUMPY = 5
