@@ -16,6 +16,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
     ncons = 0
     cdef int [:] flag = np.zeros(ne,dtype=np.int32)
     cdef double [:,:] c = np.zeros((len(neighbours)*4,Nc))
+    cdef double [:] areas = np.zeros((len(neighbours)*4))
     cdef long long [:,:] idc = np.zeros((ne*4,5),dtype=np.int64)
     cdef long long [3] common
     cdef double [:] norm = np.zeros((3))
@@ -25,6 +26,7 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
     cdef double [:,:] e1
     cdef double [:,:] e2
     cdef double area = 0
+    cdef double length
     cdef long long [:] idl  = np.zeros(4,dtype=np.int64)
     cdef long long [:] idr = np.zeros(4,dtype=np.int64)
     for e in range(ne):
@@ -67,14 +69,17 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
             norm[1] = v1[2]*v2[0] - v1[0]*v2[2]
             norm[2] = v1[0]*v2[1] - v1[1]*v2[0]
 
+            length = np.linalg.norm(norm)
             # we want to weight the cg by the area of the shared face
             # area of triangle is half area of parallelogram
             # https://math.stackexchange.com/questions/128991/how-to-calculate-the-area-of-a-3d-triangle
-            area = 0.5*sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2])#np.linalg.norm(norm)
+            area = 0.5*length#sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2])#np.linalg.norm(norm)
+            for i in range(3):
+                norm[i]/=length
             for itr_left in range(Na):
                 idc[ncons,itr_left] = idl[itr_left]
                 for i in range(3):
-                    c[ncons,itr_left] += norm[i]*e1[i][itr_left]*area
+                    c[ncons,itr_left] += norm[i]*e1[i][itr_left]
             next_available_position = Na
             for itr_right in range(Na):
                 common_index = -1
@@ -90,9 +95,10 @@ def cg(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,d
                     next_available_position+=1
                 idc[ncons,position_to_write] = idr[itr_right]
                 for i in range(3):
-                    c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]*area
+                    c[ncons,position_to_write] -= norm[i]*e2[i][itr_right]
+            areas[ncons] = area
             ncons+=1
-    return idc, c, ncons
+    return idc, c, ncons, areas
 def constant_norm(double [:,:,:] EG, long long [:,:] neighbours, long long [:,:] elements,double [:,:] nodes, long long [:] region):
     cdef int Nc, Na, i,Ns, j, ne, ncons, e, n, neigh
     Nc = 5 #numer of constraints shared nodes + independent

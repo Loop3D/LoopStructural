@@ -5,7 +5,7 @@ on:
     types: [edited, created]
 
 jobs:
-  flake8:
+  documentation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,13 +20,10 @@ jobs:
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-            conda install cython numpy scipy matplotlib -y
-            conda install -c conda-forge theano -y
+            conda install -c conda-forge theano cython numpy scipy matplotlib  sphinx=3.5.4 sphinx-gallery sphinxcontrib-bibtex sphinx_rtd_theme myst-parser -y
             pip install lavavu-osmesa 
             python setup.py install build_ext --inplace
             cd docs
-            pip install -r requirements.txt
-            git-changelog -o changelog.md ../.
             make html
 
       - name: Deploy 🚀

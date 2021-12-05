@@ -14,6 +14,7 @@ from LoopStructural.export.file_formats import FileFormat
 
 
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
 
 def write_feat_surfs(model, file_name, file_format=FileFormat.NUMPY, target_feats=[], isovalue=0.0):
@@ -356,19 +357,28 @@ def _write_cubeface_evtk(model, file_name, data_label, nsteps, real_coords=True)
     # Define connectivity or vertices that belongs to each element
     conn = np.zeros(tri.shape[0] * 3)
     for i in range(tri.shape[0]):
-        conn[i*3], conn[i*3+1], conn[i*3+2] = tri[i][0], tri[i][1], tri[i][2]
+        conn[i * 3], conn[i * 3 + 1], conn[i * 3 + 2] = tri[i][0], tri[i][1], tri[i][2]
 
     # Define offset of last vertex of each element
     offset = np.zeros(tri.shape[0])
     for i in range(tri.shape[0]):
-        offset[i] = (i+1)*3
+        offset[i] = (i + 1) * 3
 
     # Define cell types
     ctype = np.full(tri.shape[0], VtkTriangle.tid)
 
     try:
-        unstructuredGridToVTK(file_name, x, y, z, connectivity=conn, offsets=offset, cell_types=ctype,
-                              cellData=None, pointData={data_label: val})
+        unstructuredGridToVTK(
+            file_name,
+            x,
+            y,
+            z,
+            connectivity=conn,
+            offsets=offset,
+            cell_types=ctype,
+            cellData=None,
+            pointData={data_label: val},
+        )
     except Exception as e:
         logger.warning(f"Cannot export cuboid surface to VTK file {file_name}: {e}")
         return False
@@ -401,7 +411,7 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
     loop_Z = np.linspace(model.bounding_box[0, 2], model.bounding_box[1, 2], nsteps[2])
 
     # Generate model values in 3d grid
-    xx, yy, zz = np.meshgrid(loop_X, loop_Y, loop_Z, indexing='ij')
+    xx, yy, zz = np.meshgrid(loop_X, loop_Y, loop_Z, indexing="ij")
     # xyz is N x 3 vector array
     xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
     vals = model.evaluate_model(xyz, scale=False)
@@ -450,12 +460,12 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
     loop_Z = np.linspace(model.bounding_box[0, 2], model.bounding_box[1, 2], nsteps[2])
 
     # Generate model values in 3d grid
-    xx, yy, zz = np.meshgrid(loop_X, loop_Y, loop_Z, indexing='ij')
+    xx, yy, zz = np.meshgrid(loop_X, loop_Y, loop_Z, indexing="ij")
     # xyz is N x 3 vector array
     xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
     vals = model.evaluate_model(xyz, scale=False)
     # Use FORTRAN style indexing for GOCAD VOXET
-    vol_vals = np.reshape(vals, nsteps, order='F')
+    vol_vals = np.reshape(vals, nsteps, order="F")
     bbox = model.bounding_box[:]
 
     # Convert bounding box to real world scale coords
@@ -471,7 +481,7 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
 
     # If float values
     elif type(vals[0]) is np.float32:
-        d_type = np.dtype('>f4')
+        d_type = np.dtype(">f4")
         no_data_val = -999999.0
         prop_esize = 4
         prop_storage_type = "Float"

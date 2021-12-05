@@ -11,7 +11,7 @@ def test_get_elements():
     
     mesh = UnStructuredTetMesh(nodes,elements,neighbours)
     points = np.random.random((100,3))
-    verts, c, tetra, inside = mesh.get_tetra_for_location(points)
+    verts, c, tetra, inside = mesh.get_element_for_location(points)
 
     vertices = nodes[elements,:]
     pos = points[:,:]

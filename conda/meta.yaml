@@ -29,6 +29,7 @@ requirements:
     - scikit-image
     - scikit-learn
     - tqdm
+    - python >=3.6
 
 test:
   import:

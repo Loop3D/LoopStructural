@@ -1,7 +1,7 @@
 # class LinearTetrahedron:
 #     def __init__(self):
 #         pass
-    
+
 #     def element_gradient(self, elements):
 #         ps = self.
 #         m = np.array(

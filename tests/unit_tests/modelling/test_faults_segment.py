@@ -8,5 +8,5 @@ def test_create_and_add_fault():
                          [.5,.5,.5,0,0,1,2,'fault',0],],
                          columns=['X','Y','Z','nx','ny','nz','coord','feature_name','val'])
     model.data = data
-    model.create_and_add_fault('fault',1,nelements=1e4)
+    model.create_and_add_fault('fault',1,nelements=1e4,force_mesh_geometry=True)
     assert isinstance(model['fault'],FaultSegment)

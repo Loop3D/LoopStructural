@@ -2,5 +2,4 @@ sphinx==3.5.4
 sphinx_gallery
 sphinxcontrib-bibtex
 sphinx_rtd_theme
-git-changelog
 myst-parser
