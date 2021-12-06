@@ -20,9 +20,9 @@ LoopStructural.modelling.core.geological\_model.FaultBuilder
       ~FaultBuilder.add_data_from_data_frame
       ~FaultBuilder.add_fault
       ~FaultBuilder.add_splay
-      ~FaultBuilder.build
       ~FaultBuilder.create_data_from_geometry
       ~FaultBuilder.set_mesh_geometry
+      ~FaultBuilder.setup
       ~FaultBuilder.up_to_date
       ~FaultBuilder.update
       ~FaultBuilder.update_geometry
@@ -30,5 +30,11 @@ LoopStructural.modelling.core.geological\_model.FaultBuilder
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FaultBuilder.frame
    
    

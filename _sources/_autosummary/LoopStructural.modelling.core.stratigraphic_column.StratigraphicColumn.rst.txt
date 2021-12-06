@@ -18,6 +18,7 @@ LoopStructural.modelling.core.stratigraphic\_column.StratigraphicColumn
    
       ~StratigraphicColumn.__init__
       ~StratigraphicColumn.add_series
+      ~StratigraphicColumn.get_cmap
    
    
 

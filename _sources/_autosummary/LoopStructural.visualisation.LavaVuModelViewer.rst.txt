@@ -27,7 +27,6 @@ LoopStructural.visualisation.LavaVuModelViewer
       ~LavaVuModelViewer.add_isosurface
       ~LavaVuModelViewer.add_model
       ~LavaVuModelViewer.add_model_surfaces
-      ~LavaVuModelViewer.add_orientation_disks
       ~LavaVuModelViewer.add_points
       ~LavaVuModelViewer.add_scalar_field
       ~LavaVuModelViewer.add_section
@@ -36,8 +35,6 @@ LoopStructural.visualisation.LavaVuModelViewer
       ~LavaVuModelViewer.add_vector_data
       ~LavaVuModelViewer.add_vector_field
       ~LavaVuModelViewer.clear
-      ~LavaVuModelViewer.close
-      ~LavaVuModelViewer.deep_clean
       ~LavaVuModelViewer.display
       ~LavaVuModelViewer.export_to_webgl
       ~LavaVuModelViewer.image

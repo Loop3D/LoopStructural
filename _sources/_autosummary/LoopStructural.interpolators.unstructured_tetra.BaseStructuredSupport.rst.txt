@@ -1,0 +1,52 @@
+LoopStructural.interpolators.unstructured\_tetra.BaseStructuredSupport
+======================================================================
+
+.. currentmodule:: LoopStructural.interpolators.unstructured_tetra
+
+.. autoclass:: BaseStructuredSupport
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseStructuredSupport.__init__
+      ~BaseStructuredSupport.cell_corner_indexes
+      ~BaseStructuredSupport.check_position
+      ~BaseStructuredSupport.global_cell_indicies
+      ~BaseStructuredSupport.global_index_to_cell_index
+      ~BaseStructuredSupport.global_index_to_node_index
+      ~BaseStructuredSupport.global_node_indicies
+      ~BaseStructuredSupport.inside
+      ~BaseStructuredSupport.node_indexes_to_position
+      ~BaseStructuredSupport.position_to_cell_corners
+      ~BaseStructuredSupport.position_to_cell_global_index
+      ~BaseStructuredSupport.position_to_cell_index
+      ~BaseStructuredSupport.position_to_cell_vertices
+      ~BaseStructuredSupport.rotate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseStructuredSupport.maximum
+      ~BaseStructuredSupport.n_elements
+      ~BaseStructuredSupport.n_nodes
+      ~BaseStructuredSupport.nodes
+      ~BaseStructuredSupport.nsteps
+      ~BaseStructuredSupport.nsteps_cells
+      ~BaseStructuredSupport.origin
+      ~BaseStructuredSupport.rotation_xy
+      ~BaseStructuredSupport.step_vector
+   
+   

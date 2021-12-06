@@ -18,17 +18,16 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
    
       ~DiscreteFoldInterpolator.__init__
       ~DiscreteFoldInterpolator.add_constant_gradient
-      ~DiscreteFoldInterpolator.add_constant_norm
       ~DiscreteFoldInterpolator.add_constraints_to_least_squares
-      ~DiscreteFoldInterpolator.add_ctr_pts
-      ~DiscreteFoldInterpolator.add_direction_constant_gradient
       ~DiscreteFoldInterpolator.add_equality_constraints
       ~DiscreteFoldInterpolator.add_fold_constraints
-      ~DiscreteFoldInterpolator.add_gradient_ctr_pts
-      ~DiscreteFoldInterpolator.add_gradient_orthogonal_constraint
-      ~DiscreteFoldInterpolator.add_interface_ctr_pts
-      ~DiscreteFoldInterpolator.add_norm_ctr_pts
-      ~DiscreteFoldInterpolator.add_tangent_ctr_pts
+      ~DiscreteFoldInterpolator.add_gradient_constraints
+      ~DiscreteFoldInterpolator.add_gradient_orthogonal_constraints
+      ~DiscreteFoldInterpolator.add_interface_constraints
+      ~DiscreteFoldInterpolator.add_non_linear_constraints
+      ~DiscreteFoldInterpolator.add_norm_constraints
+      ~DiscreteFoldInterpolator.add_tangent_constraints
+      ~DiscreteFoldInterpolator.add_value_constraints
       ~DiscreteFoldInterpolator.build_matrix
       ~DiscreteFoldInterpolator.calculate_residual_for_constraints
       ~DiscreteFoldInterpolator.copy

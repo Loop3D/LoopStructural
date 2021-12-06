@@ -20,6 +20,7 @@ LoopStructural.modelling.input.map2loop\_processor.Map2LoopProcessor
       ~Map2LoopProcessor.fault_interesections_angle
       ~Map2LoopProcessor.process_downthrow_direction
       ~Map2LoopProcessor.set_fault_network
+      ~Map2LoopProcessor.stratigraphy_cmap
    
    
 
@@ -38,9 +39,11 @@ LoopStructural.modelling.input.map2loop\_processor.Map2LoopProcessor
       ~Map2LoopProcessor.fault_network
       ~Map2LoopProcessor.fault_orientations
       ~Map2LoopProcessor.fault_properties
+      ~Map2LoopProcessor.fault_stratigraphy
       ~Map2LoopProcessor.foliation_properties
       ~Map2LoopProcessor.stratigraphic_column
       ~Map2LoopProcessor.stratigraphic_name
+      ~Map2LoopProcessor.stratigraphic_order
       ~Map2LoopProcessor.thicknesses
       ~Map2LoopProcessor.vector_scale
    

@@ -1,0 +1,6 @@
+LoopStructural.modelling.fold.fold\_builder.InterpolatorError
+=============================================================
+
+.. currentmodule:: LoopStructural.modelling.fold.fold_builder
+
+.. autoexception:: InterpolatorError

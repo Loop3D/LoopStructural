@@ -1,73 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Debugging LoopStructural &mdash; LoopStructural 0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Debugging LoopStructural &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> LoopStructural
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -75,18 +36,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
 </ul>
@@ -113,133 +63,149 @@
 <li class="toctree-l1"><a class="reference internal" href="../_autosummary/LoopStructural.html">LoopStructural</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">LoopStructural</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Debugging LoopStructural</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/user_guide/debugging.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="debugging-loopstructural">
 <h1>Debugging LoopStructural<a class="headerlink" href="#debugging-loopstructural" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="interpolation">
+<h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="surfaces-are-not-displaying">
-<h2>Surfaces are not displaying<a class="headerlink" href="#surfaces-are-not-displaying" title="Permalink to this headline">¶</a></h2>
+<h3>Surfaces are not displaying<a class="headerlink" href="#surfaces-are-not-displaying" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>check to see what the scalar field looks linked</p></li>
-<li><p>look at the values of the nodes of the implicit function supports <cite>feature.interpolator.c</cite></p></li>
+<li><p>look at the values of the nodes of the implicit function supports <cite>feature.interpolator.c</cite> if all of the nodes are 0 the interpolator has not solved.</p></li>
+<li><p>Does the scalar field show different colours? <cite>view.add_scalar_field(feature)</cite></p></li>
+<li><p>If the scalar field shows the right geometry, are the surface values correct?</p></li>
 </ul>
 </div>
 <div class="section" id="surface-geometry-is-erroneous">
-<h2>Surface geometry is erroneous<a class="headerlink" href="#surface-geometry-is-erroneous" title="Permalink to this headline">¶</a></h2>
+<h3>Surface geometry is erroneous<a class="headerlink" href="#surface-geometry-is-erroneous" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Try using a different solver</p></li>
-<li><p>Adding more elements</p></li>
+<li><p>Try using a different solver - sometimes <code class="code docutils literal notranslate"><span class="pre">pyamg</span></code> does not work as it tries to pick a pattern in the interpolation matrix indicating the mesh geometry.</p></li>
+<li><p>If the solution doesn’t fit your data points try adding more elements</p></li>
 <li><p>Try using only orientation constraints</p></li>
 <li><p>Try using only value constraints</p></li>
+<li><p>Change gradient norm constraints to gradient direction constraints (rename <code class="code docutils literal notranslate"><span class="pre">nx,ny,nz</span></code> to <code class="code docutils literal notranslate"><span class="pre">gx,gy,gz</span></code>)</p></li>
+<li><p>Try removing some of the data points</p></li>
+<li><p>Try changing to using interface constraints instead of value, to do this rename column <code class="code docutils literal notranslate"><span class="pre">val</span></code> to code:<cite>interface</cite> but only use <code class="code docutils literal notranslate"><span class="pre">FDI</span></code>.</p></li>
 </ul>
+<p>Alternatively use surfe with <cite>method=interface</cite>. Using either of these methods the value of the scalar field will change.
+- The tolerance of the conjugate gradient solver is scaled to the size of the model assuming that the scalar field is interpolated to have a magnitude of the gradient
+norm to be close to 1. The tolerance is saved in <cite>feature.builder.build_arguments[‘tol’]</cite> but can be overwritten using the argument in code:<cite>create_and_add</cite> <cite>tol=val</cite>.
+Smaller values mean the solution will be a closer fit to the data + regularisation.
+- Try changing the relative weighting of the data points and regularisation.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">regularisation</span></code> - changes the weighting of the constant gradient or the finite difference second derivative. 1.0 is equivalent to 0.1 constant gradient.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">npw=1.0</span></code> changes the weighting of the gradient norm constraints</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">gpw=1.0</span></code> changes the weighting of gradient direction constraints</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">cpw=1.0</span></code> changes the weighting of the control points.</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>A good strategy for debugging a model is to lower the weights of the data points until a over smoothed solution is found. Then increase the weights until the model starts to overfit.</p></li>
+<li></li>
+</ul>
+</div>
+<div class="section" id="interpolator-hasn-t-solved">
+<h3>Interpolator hasn’t solved<a class="headerlink" href="#interpolator-hasn-t-solved" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>check that there are sufficient data points to constrain a surface. There needs to be at least two unique value constraints or a single value constraint and a gradient norm constraint.</p></li>
+<li><p>Try using the default solver, <code class="code docutils literal notranslate"><span class="pre">solver=&quot;cg&quot;</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="interpolator-is-taking-a-long-time">
+<h3>Interpolator is taking a long time<a class="headerlink" href="#interpolator-is-taking-a-long-time" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Check how many elements you are using, <code class="code docutils literal notranslate"><span class="pre">1e5</span></code> should take under 5 minutes on a modern laptop</p></li>
+<li><p>How many faults are associated with the feature? <code class="code docutils literal notranslate"><span class="pre">len(feature.faults)</span></code>, you can remove the faults by setting this to an empty list</p></li>
+</ul>
+<ul class="simple">
+<li></li>
+</ul>
+</div>
+</div>
+<div class="section" id="folds">
+<h2>Folds<a class="headerlink" href="#folds" title="Permalink to this headline">¶</a></h2>
+<p>When using the <code class="code docutils literal notranslate"><span class="pre">create_and_add_folded_foliation</span></code> or <code class="code docutils literal notranslate"><span class="pre">create_and_add_folded_fold_frame</span></code> LoopStructural the quality of the results can be dependent on
+the correct parameterisation.</p>
+<div class="section" id="s-plot-doesn-t-fit-the-observations">
+<h3>S-Plot doesn’t fit the observations<a class="headerlink" href="#s-plot-doesn-t-fit-the-observations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Is the fold axis correct? If you expect a constant fold axis check that the calculated fold axis is consistent with your interpretation.</p></li>
+<li><p>Is the wavelength obvious in the s-variogram? If it is, check the guessed wavelength is reasonable Check the s</p></li>
+<li><p>Try specifying the wavelength using <code class="code docutils literal notranslate"><span class="pre">limb_wl</span></code> or <code class="code docutils literal notranslate"><span class="pre">axis_wl</span></code></p></li>
+<li><p>If the data points in the S-Plot do not look correct, check the data points in the model by plotting the axial foliation and the data. The fold geometry</p></li>
+</ul>
+<p>should be visible.
+- If the fold is non-cylindrical, try building a cylindrical fold by removing some data
+- Check the polarity of the datapoints, the fold modelling requires the polarity of the vectors is constant. Check uising vector plots <code class="code docutils literal notranslate"><span class="pre">view.add_data(folded_foliation,vectors=True)</span></code></p>
+</div>
+</div>
+<div class="section" id="faults">
+<h2>Faults<a class="headerlink" href="#faults" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="no-displacement">
+<h3>No displacement<a class="headerlink" href="#no-displacement" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Check that the displacement is large enough that it should be visible. E.g. compare displacement to model bounding box</p></li>
+<li><p>Has the fault frame interpolated correctly? Coordinates 0 and 1 should both have values.</p></li>
+</ul>
+<ul class="simple">
+<li><p>Increase the resolution of the visualisation mesh <code class="code docutils literal notranslate"><span class="pre">view.nelements=1e6</span></code></p></li>
+<li><p>Is the fault parallel to the feature being faulted?</p></li>
+</ul>
+</div>
 </div>
 </div>
 
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Lachlan Grose.
-
-    </p>
+    <p>&#169; Copyright 2020, Lachlan Grose.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

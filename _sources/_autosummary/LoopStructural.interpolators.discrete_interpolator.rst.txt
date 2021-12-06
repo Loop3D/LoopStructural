@@ -18,6 +18,8 @@ LoopStructural.interpolators.discrete\_interpolator
       bmat
       eye
       getLogger
+      norm
+      normalize
    
    
 

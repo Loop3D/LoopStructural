@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoopStructural.visualisation.model_plotter.marching_cubes &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.visualisation.model_plotter.BaseModelPlotter" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html" />
+    <link rel="prev" title="LoopStructural.visualisation.model_plotter.get_vectors" href="LoopStructural.visualisation.model_plotter.get_vectors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">Visualisation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.version.html">LoopStructural.version</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.html#visualisation">Visualisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.html">LoopStructural.visualisation.lavavu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">LoopStructural.visualisation.map_viewer</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.create_box.html">LoopStructural.visualisation.model_plotter.create_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.create_surface.html">LoopStructural.visualisation.model_plotter.create_surface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.getLogger.html">LoopStructural.visualisation.model_plotter.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.get_vectors.html">LoopStructural.visualisation.model_plotter.get_vectors</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.visualisation.model_plotter.marching_cubes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html">LoopStructural.visualisation.model_plotter.BaseModelPlotter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.GeologicalFeature.html">LoopStructural.visualisation.model_plotter.GeologicalFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.LoopImportError.html">LoopStructural.visualisation.model_plotter.LoopImportError</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">LoopStructural.visualisation.rotation_angle_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">LoopStructural.visualisation.sphinx_scraper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">LoopStructural.visualisation.stratigraphic_column</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+          <li><a href="LoopStructural.visualisation.html">LoopStructural.visualisation</a> &raquo;</li>
+          <li><a href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a> &raquo;</li>
+      <li>LoopStructural.visualisation.model_plotter.marching_cubes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/LoopStructural.visualisation.model_plotter.marching_cubes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="loopstructural-visualisation-model-plotter-marching-cubes">
+<h1>LoopStructural.visualisation.model_plotter.marching_cubes<a class="headerlink" href="#loopstructural-visualisation-model-plotter-marching-cubes" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="LoopStructural.visualisation.model_plotter.marching_cubes">
+<code class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.model_plotter.</span></code><code class="sig-name descname"><span class="pre">marching_cubes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradient_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'descent'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_degenerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lewiner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.marching_cubes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Marching cubes algorithm to find surfaces in 3d volumetric data.</p>
+<p>In contrast with Lorensen et al. approach [2], Lewiner et
+al. algorithm is faster, resolves ambiguities, and guarantees
+topologically correct results. Therefore, this algorithm generally
+a better choice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>volume</strong> (<em>(</em><em>M</em><em>, </em><em>N</em><em>, </em><em>P</em><em>) </em><em>array</em>) – Input data volume to find isosurfaces. Will internally be
+converted to float32 if necessary.</p></li>
+<li><p><strong>level</strong> (<em>float</em>) – Contour value to search for isosurfaces in <cite>volume</cite>. If not
+given or None, the average of the min and max of vol is used.</p></li>
+<li><p><strong>spacing</strong> (<em>length-3 tuple of floats</em>) – Voxel spacing in spatial dimensions corresponding to numpy array
+indexing dimensions (M, N, P) as in <cite>volume</cite>.</p></li>
+<li><p><strong>gradient_direction</strong> (<em>string</em>) – Controls if the mesh was generated from an isosurface with gradient
+descent toward objects of interest (the default), or the opposite,
+considering the <em>left-hand</em> rule.
+The two options are:
+* descent : Object was greater than exterior
+* ascent : Exterior was greater than object</p></li>
+<li><p><strong>step_size</strong> (<em>int</em>) – Step size in voxels. Default 1. Larger steps yield faster but
+coarser results. The result will always be topologically correct
+though.</p></li>
+<li><p><strong>allow_degenerate</strong> (<em>bool</em>) – Whether to allow degenerate (i.e. zero-area) triangles in the
+end-result. Default True. If False, degenerate triangles are
+removed, at the cost of making the algorithm slower.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – One of ‘lewiner’, ‘lorensen’ or ‘_lorensen’. Specify witch of
+Lewiner et al. or Lorensen et al. method will be used. The
+‘_lorensen’ flag correspond to an old implementation that will
+be deprecated in version 0.19.</p></li>
+<li><p><strong>mask</strong> (<em>(</em><em>M</em><em>, </em><em>N</em><em>, </em><em>P</em><em>) </em><em>array</em>) – Boolean array. The marching cube algorithm will be computed only on
+True elements. This will save computational time when interfaces
+are located within certain region of the volume M, N, P-e.g. the top
+half of the cube-and also allow to compute finite surfaces-i.e. open
+surfaces that do not end at the border of the cube.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>verts</strong> (<em>(V, 3) array</em>) – Spatial coordinates for V unique mesh vertices. Coordinate order
+matches input <cite>volume</cite> (M, N, P).</p></li>
+<li><p><strong>faces</strong> (<em>(F, 3) array</em>) – Define triangular faces via referencing vertex indices from <code class="docutils literal notranslate"><span class="pre">verts</span></code>.
+This algorithm specifically outputs triangles, so each face has
+exactly three indices.</p></li>
+<li><p><strong>normals</strong> (<em>(V, 3) array</em>) – The normal direction at each vertex, as calculated from the
+data.</p></li>
+<li><p><strong>values</strong> (<em>(V, ) array</em>) – Gives a measure for the maximum value of the data in the local region
+near each vertex. This can be used by visualization tools to apply
+a colormap to the mesh.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The algorithm [1] is an improved version of Chernyaev’s Marching
+Cubes 33 algorithm. It is an efficient algorithm that relies on
+heavy use of lookup tables to handle the many different cases,
+keeping the algorithm relatively easy. This implementation is
+written in Cython, ported from Lewiner’s C++ implementation.</p>
+<p>To quantify the area of an isosurface generated by this algorithm, pass
+verts and faces to <cite>skimage.measure.mesh_surface_area</cite>.</p>
+<p>Regarding visualization of algorithm output, to contour a volume
+named <cite>myvolume</cite> about the level 0.0, using the <code class="docutils literal notranslate"><span class="pre">mayavi</span></code> package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;</span>
+<span class="go">&gt;&gt; from mayavi import mlab</span>
+<span class="go">&gt;&gt; verts, faces, _, _ = marching_cubes(myvolume, 0.0)</span>
+<span class="go">&gt;&gt; mlab.triangular_mesh([vert[0] for vert in verts],</span>
+<span class="go">                        [vert[1] for vert in verts],</span>
+<span class="go">                        [vert[2] for vert in verts],</span>
+<span class="go">                        faces)</span>
+<span class="go">&gt;&gt; mlab.show()</span>
+</pre></div>
+</div>
+<p>Similarly using the <code class="docutils literal notranslate"><span class="pre">visvis</span></code> package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;</span>
+<span class="go">&gt;&gt; import visvis as vv</span>
+<span class="go">&gt;&gt; verts, faces, normals, values = marching_cubes(myvolume, 0.0)</span>
+<span class="go">&gt;&gt; vv.mesh(np.fliplr(verts), faces, normals, values)</span>
+<span class="go">&gt;&gt; vv.use().Run()</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Thomas Lewiner, Helio Lopes, Antonio Wilson Vieira and Geovan
+Tavares. Efficient implementation of Marching Cubes’ cases with
+topological guarantees. Journal of Graphics Tools 8(2)
+pp. 1-15 (december 2003).
+<a href="#id2"><span class="problematic" id="id3">:DOI:`10.1080/10867651.2003.10487582`</span></a></p>
+</dd>
+<dt class="label" id="id4"><span class="brackets">2</span></dt>
+<dd><p>Lorensen, William and Harvey E. Cline. Marching Cubes: A High
+Resolution 3D Surface Construction Algorithm. Computer Graphics
+(SIGGRAPH 87 Proceedings) 21(4) July 1987, p. 163-170).
+<a href="#id5"><span class="problematic" id="id6">:DOI:`10.1145/37401.37422`</span></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">skimage.measure.mesh_surface_area</span></code></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="LoopStructural.visualisation.model_plotter.get_vectors.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.model_plotter.get_vectors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.model_plotter.BaseModelPlotter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Lachlan Grose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

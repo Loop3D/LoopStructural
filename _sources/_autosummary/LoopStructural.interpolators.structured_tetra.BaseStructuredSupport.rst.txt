@@ -17,9 +17,18 @@ LoopStructural.interpolators.structured\_tetra.BaseStructuredSupport
    .. autosummary::
    
       ~BaseStructuredSupport.__init__
+      ~BaseStructuredSupport.cell_corner_indexes
       ~BaseStructuredSupport.check_position
+      ~BaseStructuredSupport.global_cell_indicies
+      ~BaseStructuredSupport.global_index_to_cell_index
+      ~BaseStructuredSupport.global_index_to_node_index
+      ~BaseStructuredSupport.global_node_indicies
       ~BaseStructuredSupport.inside
+      ~BaseStructuredSupport.node_indexes_to_position
+      ~BaseStructuredSupport.position_to_cell_corners
+      ~BaseStructuredSupport.position_to_cell_global_index
       ~BaseStructuredSupport.position_to_cell_index
+      ~BaseStructuredSupport.position_to_cell_vertices
       ~BaseStructuredSupport.rotate
    
    

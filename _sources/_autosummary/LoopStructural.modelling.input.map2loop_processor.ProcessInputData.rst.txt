@@ -19,6 +19,7 @@ LoopStructural.modelling.input.map2loop\_processor.ProcessInputData
       ~ProcessInputData.__init__
       ~ProcessInputData.fault_interesections_angle
       ~ProcessInputData.set_fault_network
+      ~ProcessInputData.stratigraphy_cmap
    
    
 
@@ -37,9 +38,11 @@ LoopStructural.modelling.input.map2loop\_processor.ProcessInputData
       ~ProcessInputData.fault_network
       ~ProcessInputData.fault_orientations
       ~ProcessInputData.fault_properties
+      ~ProcessInputData.fault_stratigraphy
       ~ProcessInputData.foliation_properties
       ~ProcessInputData.stratigraphic_column
       ~ProcessInputData.stratigraphic_name
+      ~ProcessInputData.stratigraphic_order
       ~ProcessInputData.thicknesses
       ~ProcessInputData.vector_scale
    

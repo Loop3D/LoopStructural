@@ -18,16 +18,15 @@ LoopStructural.modelling.core.geological\_model.PLI
    
       ~PLI.__init__
       ~PLI.add_constant_gradient
-      ~PLI.add_constant_norm
       ~PLI.add_constraints_to_least_squares
-      ~PLI.add_ctr_pts
-      ~PLI.add_direction_constant_gradient
       ~PLI.add_equality_constraints
-      ~PLI.add_gradient_ctr_pts
-      ~PLI.add_gradient_orthogonal_constraint
-      ~PLI.add_interface_ctr_pts
-      ~PLI.add_norm_ctr_pts
-      ~PLI.add_tangent_ctr_pts
+      ~PLI.add_gradient_constraints
+      ~PLI.add_gradient_orthogonal_constraints
+      ~PLI.add_interface_constraints
+      ~PLI.add_non_linear_constraints
+      ~PLI.add_norm_constraints
+      ~PLI.add_tangent_constraints
+      ~PLI.add_value_constraints
       ~PLI.build_matrix
       ~PLI.calculate_residual_for_constraints
       ~PLI.copy

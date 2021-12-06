@@ -1,6 +1,0 @@
-LoopStructural.visualisation.model\_visualisation.close\_all
-============================================================
-
-.. currentmodule:: LoopStructural.visualisation.model_visualisation
-
-.. autofunction:: close_all

@@ -9,6 +9,14 @@ LoopStructural.interpolators.base\_structured\_3d\_support
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
    
 
    

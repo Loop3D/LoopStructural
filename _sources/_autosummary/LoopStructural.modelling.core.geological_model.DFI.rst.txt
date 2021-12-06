@@ -18,17 +18,16 @@ LoopStructural.modelling.core.geological\_model.DFI
    
       ~DFI.__init__
       ~DFI.add_constant_gradient
-      ~DFI.add_constant_norm
       ~DFI.add_constraints_to_least_squares
-      ~DFI.add_ctr_pts
-      ~DFI.add_direction_constant_gradient
       ~DFI.add_equality_constraints
       ~DFI.add_fold_constraints
-      ~DFI.add_gradient_ctr_pts
-      ~DFI.add_gradient_orthogonal_constraint
-      ~DFI.add_interface_ctr_pts
-      ~DFI.add_norm_ctr_pts
-      ~DFI.add_tangent_ctr_pts
+      ~DFI.add_gradient_constraints
+      ~DFI.add_gradient_orthogonal_constraints
+      ~DFI.add_interface_constraints
+      ~DFI.add_non_linear_constraints
+      ~DFI.add_norm_constraints
+      ~DFI.add_tangent_constraints
+      ~DFI.add_value_constraints
       ~DFI.build_matrix
       ~DFI.calculate_residual_for_constraints
       ~DFI.copy

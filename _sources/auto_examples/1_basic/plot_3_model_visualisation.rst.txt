@@ -202,9 +202,10 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
     viewer.display()# to add an interactive display
 
 
-.. image:: /auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
-    :alt: plot 3 model visualisation
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
+   :alt: plot 3 model visualisation
+   :srcset: /auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
+   :class: sphx-glr-single-img
 
 
 
@@ -213,7 +214,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.107 seconds)
+   **Total running time of the script:** ( 0 minutes  1.956 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_3_model_visualisation.py:

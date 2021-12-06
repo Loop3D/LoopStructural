@@ -26,9 +26,10 @@ Creating a model with multiple geological features, dealing with unconformities.
 
 
 
-.. image:: /auto_examples/1_basic/images/sphx_glr_plot_3_multiple_groups_001.png
-    :alt: plot 3 multiple groups
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/1_basic/images/sphx_glr_plot_3_multiple_groups_001.png
+   :alt: plot 3 multiple groups
+   :srcset: /auto_examples/1_basic/images/sphx_glr_plot_3_multiple_groups_001.png
+   :class: sphx-glr-single-img
 
 
 
@@ -82,7 +83,7 @@ Creating a model with multiple geological features, dealing with unconformities.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  47.947 seconds)
+   **Total running time of the script:** ( 0 minutes  5.804 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_3_multiple_groups.py:

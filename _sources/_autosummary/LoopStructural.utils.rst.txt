@@ -39,7 +39,10 @@ LoopStructural.utils
       :template: custom-class-template.rst
       :recursive:              
    
+      NegativeRegion
+      PositiveRegion
       RegionEverywhere
+      RegionFunction
    
    
 
@@ -50,8 +53,11 @@ LoopStructural.utils
    .. autosummary::
       :toctree:                                          
    
-      LoopBaseException
+      InterpolatorError
+      LoopException
       LoopImportError
+      LoopTypeError
+      LoopValueError
    
    
 

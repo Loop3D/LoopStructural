@@ -17,6 +17,7 @@ LoopStructural.modelling.core.geological\_model
    
       all_heading
       getLogger
+      get_vectors
       gradient_vec_names
       log_to_file
       normal_vector_headers
@@ -34,16 +35,20 @@ LoopStructural.modelling.core.geological\_model
       :recursive:              
    
       DFI
+      DiscreteInterpolator
       FDI
       FaultBuilder
       FaultSegment
       FoldEvent
       FoldFrame
       FoldRotationAngle
+      FoldedFeatureBuilder
+      GeologicalFeature
       GeologicalFeatureInterpolator
       GeologicalModel
       PLI
       RegionFeature
+      StructuralFrame
       StructuralFrameBuilder
       StructuredGrid
       TetMesh
@@ -58,7 +63,8 @@ LoopStructural.modelling.core.geological\_model
    .. autosummary::
       :toctree:                                          
    
-      LoopBaseException
+      InterpolatorError
+      LoopException
    
    
 

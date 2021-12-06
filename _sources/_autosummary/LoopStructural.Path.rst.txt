@@ -34,7 +34,6 @@ LoopStructural.Path
       ~Path.is_fifo
       ~Path.is_file
       ~Path.is_mount
-      ~Path.is_relative_to
       ~Path.is_reserved
       ~Path.is_socket
       ~Path.is_symlink
@@ -49,7 +48,6 @@ LoopStructural.Path
       ~Path.owner
       ~Path.read_bytes
       ~Path.read_text
-      ~Path.readlink
       ~Path.relative_to
       ~Path.rename
       ~Path.replace
@@ -62,7 +60,6 @@ LoopStructural.Path
       ~Path.touch
       ~Path.unlink
       ~Path.with_name
-      ~Path.with_stem
       ~Path.with_suffix
       ~Path.write_bytes
       ~Path.write_text

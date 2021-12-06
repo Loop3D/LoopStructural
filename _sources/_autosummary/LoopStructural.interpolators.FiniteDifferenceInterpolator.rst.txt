@@ -19,13 +19,14 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.__init__
       ~FiniteDifferenceInterpolator.add_constraints_to_least_squares
       ~FiniteDifferenceInterpolator.add_equality_constraints
-      ~FiniteDifferenceInterpolator.add_gradient_constraint
-      ~FiniteDifferenceInterpolator.add_gradient_orthogonal_constraint
-      ~FiniteDifferenceInterpolator.add_interface_ctr_pts
-      ~FiniteDifferenceInterpolator.add_norm_constraint
+      ~FiniteDifferenceInterpolator.add_gradient_constraints
+      ~FiniteDifferenceInterpolator.add_gradient_orthogonal_constraints
+      ~FiniteDifferenceInterpolator.add_interface_constraints
+      ~FiniteDifferenceInterpolator.add_non_linear_constraints
+      ~FiniteDifferenceInterpolator.add_norm_constraints
       ~FiniteDifferenceInterpolator.add_regularisation
-      ~FiniteDifferenceInterpolator.add_tangent_ctr_pts
-      ~FiniteDifferenceInterpolator.add_vaue_constraint
+      ~FiniteDifferenceInterpolator.add_tangent_constraints
+      ~FiniteDifferenceInterpolator.add_vaue_constraints
       ~FiniteDifferenceInterpolator.assemble_inner
       ~FiniteDifferenceInterpolator.build_matrix
       ~FiniteDifferenceInterpolator.calculate_residual_for_constraints

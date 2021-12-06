@@ -1,0 +1,23 @@
+LoopStructural.interpolators.base\_linear\_tetra
+================================================
+
+.. automodule:: LoopStructural.interpolators.base_linear_tetra
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

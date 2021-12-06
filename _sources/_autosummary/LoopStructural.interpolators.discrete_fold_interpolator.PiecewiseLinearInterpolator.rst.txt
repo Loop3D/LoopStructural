@@ -18,16 +18,15 @@ LoopStructural.interpolators.discrete\_fold\_interpolator.PiecewiseLinearInterpo
    
       ~PiecewiseLinearInterpolator.__init__
       ~PiecewiseLinearInterpolator.add_constant_gradient
-      ~PiecewiseLinearInterpolator.add_constant_norm
       ~PiecewiseLinearInterpolator.add_constraints_to_least_squares
-      ~PiecewiseLinearInterpolator.add_ctr_pts
-      ~PiecewiseLinearInterpolator.add_direction_constant_gradient
       ~PiecewiseLinearInterpolator.add_equality_constraints
-      ~PiecewiseLinearInterpolator.add_gradient_ctr_pts
-      ~PiecewiseLinearInterpolator.add_gradient_orthogonal_constraint
-      ~PiecewiseLinearInterpolator.add_interface_ctr_pts
-      ~PiecewiseLinearInterpolator.add_norm_ctr_pts
-      ~PiecewiseLinearInterpolator.add_tangent_ctr_pts
+      ~PiecewiseLinearInterpolator.add_gradient_constraints
+      ~PiecewiseLinearInterpolator.add_gradient_orthogonal_constraints
+      ~PiecewiseLinearInterpolator.add_interface_constraints
+      ~PiecewiseLinearInterpolator.add_non_linear_constraints
+      ~PiecewiseLinearInterpolator.add_norm_constraints
+      ~PiecewiseLinearInterpolator.add_tangent_constraints
+      ~PiecewiseLinearInterpolator.add_value_constraints
       ~PiecewiseLinearInterpolator.build_matrix
       ~PiecewiseLinearInterpolator.calculate_residual_for_constraints
       ~PiecewiseLinearInterpolator.copy

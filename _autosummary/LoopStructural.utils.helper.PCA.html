@@ -1,45 +1,22 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>LoopStructural.utils.helper.PCA &mdash; LoopStructural 0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>LoopStructural.utils.helper.PCA &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -47,29 +24,13 @@
     <link rel="prev" title="LoopStructural.utils.helper.xyz_names" href="LoopStructural.utils.helper.xyz_names.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> LoopStructural
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -77,18 +38,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
 </ul>
@@ -143,6 +93,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.normal_vec_names.html">LoopStructural.utils.helper.normal_vec_names</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.normal_vector_to_strike_and_dip.html">LoopStructural.utils.helper.normal_vector_to_strike_and_dip</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector.html">LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.polarity_name.html">LoopStructural.utils.helper.polarity_name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.rotation.html">LoopStructural.utils.helper.rotation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.strike_dip_vector.html">LoopStructural.utils.helper.strike_dip_vector</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.tangent_vec_names.html">LoopStructural.utils.helper.tangent_vec_names</a></li>
@@ -164,77 +115,33 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">LoopStructural</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
-        
           <li><a href="LoopStructural.utils.html">LoopStructural.utils</a> &raquo;</li>
-        
           <li><a href="LoopStructural.utils.helper.html">LoopStructural.utils.helper</a> &raquo;</li>
-        
       <li>LoopStructural.utils.helper.PCA</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/_autosummary/LoopStructural.utils.helper.PCA.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="loopstructural-utils-helper-pca">
 <h1>LoopStructural.utils.helper.PCA<a class="headerlink" href="#loopstructural-utils-helper-pca" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
@@ -256,7 +163,7 @@ truncated SVD.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_components</strong> (<em>int</em><em>, </em><em>float</em><em> or </em><em>'mle'</em><em>, </em><em>default=None</em>) – <p>Number of components to keep.
+<li><p><strong>n_components</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><em>None</em><em> or </em><em>str</em>) – <p>Number of components to keep.
 if n_components is not set all components are kept:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_components</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>
 </pre></div>
@@ -277,7 +184,7 @@ strictly less than the minimum of n_features and n_samples.</p>
 <li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If False, data passed to fit are overwritten and running
 fit(X).transform(X) will not yield the expected results,
 use fit_transform(X) instead.</p></li>
-<li><p><strong>whiten</strong> (<em>bool</em><em>, </em><em>default=False</em>) – <p>When True (False by default) the <cite>components_</cite> vectors are multiplied
+<li><p><strong>whiten</strong> (<em>bool</em><em>, </em><em>optional</em><em> (</em><em>default False</em><em>)</em>) – <p>When True (False by default) the <cite>components_</cite> vectors are multiplied
 by the square root of n_samples and then divided by the singular values
 to ensure uncorrelated outputs with unit component-wise variances.</p>
 <p>Whitening will remove some information from the transformed signal
@@ -285,7 +192,7 @@ to ensure uncorrelated outputs with unit component-wise variances.</p>
 improve the predictive accuracy of the downstream estimators by
 making their data respect some hard-wired assumptions.</p>
 </p></li>
-<li><p><strong>svd_solver</strong> (<em>{'auto'</em><em>, </em><em>'full'</em><em>, </em><em>'arpack'</em><em>, </em><em>'randomized'}</em><em>, </em><em>default='auto'</em>) – <dl class="simple">
+<li><p><strong>svd_solver</strong> (<em>str {'auto'</em><em>, </em><em>'full'</em><em>, </em><em>'arpack'</em><em>, </em><em>'randomized'}</em>) – <dl class="simple">
 <dt>If auto :</dt><dd><p>The solver is selected by a default policy based on <cite>X.shape</cite> and
 <cite>n_components</cite>: if the input data is larger than 500x500 and the
 number of components to extract is lower than 80% of the smallest
@@ -307,20 +214,18 @@ optionally truncated afterwards.</p>
 <p><span class="versionmodified added">New in version 0.18.0.</span></p>
 </div>
 </p></li>
-<li><p><strong>tol</strong> (<em>float</em><em>, </em><em>default=0.0</em>) – <p>Tolerance for singular values computed by svd_solver == ‘arpack’.
-Must be of range [0.0, infinity).</p>
+<li><p><strong>tol</strong> (<em>float &gt;= 0</em><em>, </em><em>optional</em><em> (</em><em>default .0</em><em>)</em>) – <p>Tolerance for singular values computed by svd_solver == ‘arpack’.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 0.18.0.</span></p>
 </div>
 </p></li>
-<li><p><strong>iterated_power</strong> (<em>int</em><em> or </em><em>'auto'</em><em>, </em><em>default='auto'</em>) – <p>Number of iterations for the power method computed by
-svd_solver == ‘randomized’.
-Must be of range [0, infinity).</p>
+<li><p><strong>iterated_power</strong> (<em>int &gt;= 0</em><em>, or </em><em>'auto'</em><em>, </em><em>(</em><em>default 'auto'</em><em>)</em>) – <p>Number of iterations for the power method computed by
+svd_solver == ‘randomized’.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 0.18.0.</span></p>
 </div>
 </p></li>
-<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>RandomState instance</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – <p>Used when the ‘arpack’ or ‘randomized’ solvers are used. Pass an int
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>RandomState instance</em><em>, </em><em>default=None</em>) – <p>Used when <code class="docutils literal notranslate"><span class="pre">svd_solver</span></code> == ‘arpack’ or ‘randomized’. Pass an int
 for reproducible results across multiple function calls.
 See <span class="xref std std-term">Glossary</span>.</p>
 <div class="versionadded">
@@ -338,7 +243,7 @@ maximum variance in the data. The components are sorted by
 <code class="docutils literal notranslate"><span class="pre">explained_variance_</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>ndarray of shape (n_components, n_features)</p>
+<dd class="field-odd"><p>array, shape (n_components, n_features)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -346,8 +251,7 @@ maximum variance in the data. The components are sorted by
 <dl class="py attribute">
 <dt id="LoopStructural.utils.helper.PCA.explained_variance_">
 <code class="sig-name descname"><span class="pre">explained_variance_</span></code><a class="headerlink" href="#LoopStructural.utils.helper.PCA.explained_variance_" title="Permalink to this definition">¶</a></dt>
-<dd><p>The amount of variance explained by each of the selected components.
-The variance estimation uses <cite>n_samples - 1</cite> degrees of freedom.</p>
+<dd><p>The amount of variance explained by each of the selected components.</p>
 <p>Equal to n_components largest eigenvalues
 of the covariance matrix of X.</p>
 <div class="versionadded">
@@ -355,7 +259,7 @@ of the covariance matrix of X.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>ndarray of shape (n_components,)</p>
+<dd class="field-odd"><p>array, shape (n_components,)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -368,7 +272,7 @@ of the covariance matrix of X.</p>
 sum of the ratios is equal to 1.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>ndarray of shape (n_components,)</p>
+<dd class="field-odd"><p>array, shape (n_components,)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -384,7 +288,7 @@ variables in the lower-dimensional space.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>ndarray of shape (n_components,)</p>
+<dd class="field-odd"><p>array, shape (n_components,)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -396,7 +300,7 @@ variables in the lower-dimensional space.</p>
 <p>Equal to <cite>X.mean(axis=0)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>ndarray of shape (n_features,)</p>
+<dd class="field-odd"><p>array, shape (n_features,)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -469,24 +373,23 @@ smallest eigenvalues of the covariance matrix of X.</p>
 </dl>
 </div>
 <p class="rubric">References</p>
-<p>For n_components == ‘mle’, this class uses the method from:
-<a class="reference external" href="https://tminka.github.io/papers/pca/minka-pca.pdf">Minka, T. P.. “Automatic choice of dimensionality for PCA”.
-In NIPS, pp. 598-604</a></p>
+<p>For n_components == ‘mle’, this class uses the method of <em>Minka, T. P.
+“Automatic choice of dimensionality for PCA”. In NIPS, pp. 598-604</em></p>
 <p>Implements the probabilistic PCA model from:
-<a class="reference external" href="http://www.miketipping.com/papers/met-mppca.pdf">Tipping, M. E., and Bishop, C. M. (1999). “Probabilistic principal
+Tipping, M. E., and Bishop, C. M. (1999). “Probabilistic principal
 component analysis”. Journal of the Royal Statistical Society:
-Series B (Statistical Methodology), 61(3), 611-622.</a>
-via the score and score_samples methods.</p>
+Series B (Statistical Methodology), 61(3), 611-622.
+via the score and score_samples methods.
+See <a class="reference external" href="http://www.miketipping.com/papers/met-mppca.pdf">http://www.miketipping.com/papers/met-mppca.pdf</a></p>
 <p>For svd_solver == ‘arpack’, refer to <cite>scipy.sparse.linalg.svds</cite>.</p>
 <p>For svd_solver == ‘randomized’, see:
-<a class="reference external" href="https://doi.org/10.1137/090771806">Halko, N., Martinsson, P. G., and Tropp, J. A. (2011).
+<em>Halko, N., Martinsson, P. G., and Tropp, J. A. (2011).
 “Finding structure with randomness: Probabilistic algorithms for
 constructing approximate matrix decompositions”.
-SIAM review, 53(2), 217-288.</a>
-and also
-<a class="reference external" href="https://doi.org/10.1016/j.acha.2010.02.003">Martinsson, P. G., Rokhlin, V., and Tygert, M. (2011).
+SIAM review, 53(2), 217-288.</em> and also
+<em>Martinsson, P. G., Rokhlin, V., and Tygert, M. (2011).
 “A randomized algorithm for the decomposition of matrices”.
-Applied and Computational Harmonic Analysis, 30(1), 47-68</a>.</p>
+Applied and Computational Harmonic Analysis, 30(1), 47-68.</em></p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
@@ -573,9 +476,9 @@ Applied and Computational Harmonic Analysis, 30(1), 47-68</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where n_samples is the number of samples
+<li><p><strong>X</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where n_samples is the number of samples
 and n_features is the number of features.</p></li>
-<li><p><strong>y</strong> (<em>Ignored</em>) – </p></li>
+<li><p><strong>y</strong> (<em>None</em>) – Ignored variable.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -591,13 +494,13 @@ and n_features is the number of features.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where n_samples is the number of samples
+<li><p><strong>X</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where n_samples is the number of samples
 and n_features is the number of features.</p></li>
-<li><p><strong>y</strong> (<em>Ignored</em>) – </p></li>
+<li><p><strong>y</strong> (<em>None</em>) – Ignored variable.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>X_new</strong> (<em>ndarray of shape (n_samples, n_components)</em>) – Transformed values.</p>
+<dd class="field-even"><p><strong>X_new</strong> (<em>array-like, shape (n_samples, n_components)</em>) – Transformed values.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -629,7 +532,7 @@ noise variances.</p>
 contained subobjects that are estimators.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – Parameter names mapped to their values.</p>
+<dd class="field-even"><p><strong>params</strong> (<em>mapping of string to any</em>) – Parameter names mapped to their values.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -676,8 +579,8 @@ or <a class="reference external" href="http://www.miketipping.com/papers/met-mpp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p></li>
-<li><p><strong>y</strong> (<em>Ignored</em>) – </p></li>
+<li><p><strong>X</strong> (<em>array</em><em>, </em><em>shape</em><em>(</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p></li>
+<li><p><strong>y</strong> (<em>None</em>) – Ignored variable.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -695,10 +598,10 @@ by C. Bishop, 12.2.1 p. 574
 or <a class="reference external" href="http://www.miketipping.com/papers/met-mppca.pdf">http://www.miketipping.com/papers/met-mppca.pdf</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p>
+<dd class="field-odd"><p><strong>X</strong> (<em>array</em><em>, </em><em>shape</em><em>(</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>ll</strong> (<em>ndarray of shape (n_samples,)</em>) – Log-likelihood of each sample under the current model.</p>
+<dd class="field-even"><p><strong>ll</strong> (<em>array, shape (n_samples,)</em>) – Log-likelihood of each sample under the current model.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -708,15 +611,15 @@ or <a class="reference external" href="http://www.miketipping.com/papers/met-mpp
 <code class="sig-name descname"><span class="pre">set_params</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.set_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the parameters of this estimator.</p>
 <p>The method works on simple estimators as well as on nested objects
-(such as <code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>). The latter have
-parameters of the form <code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s
-possible to update each component of a nested object.</p>
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>**params</strong> (<em>dict</em>) – Estimator parameters.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>self</strong> (<em>estimator instance</em>) – Estimator instance.</p>
+<dd class="field-even"><p><strong>self</strong> (<em>object</em>) – Estimator instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -736,6 +639,16 @@ and n_features is the number of features.</p>
 <dd class="field-even"><p><strong>X_new</strong> (<em>array-like, shape (n_samples, n_components)</em>)</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">IncrementalPCA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ipca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="go">IncrementalPCA(batch_size=3, n_components=2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ipca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> 
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -744,50 +657,33 @@ and n_features is the number of features.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="LoopStructural.utils.logging.html" class="btn btn-neutral float-right" title="LoopStructural.utils.logging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="LoopStructural.utils.helper.xyz_names.html" class="btn btn-neutral float-left" title="LoopStructural.utils.helper.xyz_names" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.utils.logging.html" class="btn btn-neutral float-right" title="LoopStructural.utils.logging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Lachlan Grose.
-
-    </p>
+    <p>&#169; Copyright 2020, Lachlan Grose.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();

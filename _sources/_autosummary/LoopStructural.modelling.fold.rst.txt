@@ -32,6 +32,7 @@ LoopStructural.modelling.fold
       FoldFrame
       FoldRotationAngle
       FoldRotationAngleFeature
+      FoldedFeatureBuilder
       SVariogram
    
    
@@ -50,6 +51,7 @@ LoopStructural.modelling.fold
    :recursive:
 
    LoopStructural.modelling.fold.fold
+   LoopStructural.modelling.fold.fold_builder
    LoopStructural.modelling.fold.fold_rotation_angle
    LoopStructural.modelling.fold.fold_rotation_angle_feature
    LoopStructural.modelling.fold.foldframe

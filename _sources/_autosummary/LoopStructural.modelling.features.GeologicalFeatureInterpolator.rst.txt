@@ -23,6 +23,7 @@ LoopStructural.modelling.features.GeologicalFeatureInterpolator
       ~GeologicalFeatureInterpolator.add_fault
       ~GeologicalFeatureInterpolator.add_orthogonal_feature
       ~GeologicalFeatureInterpolator.build
+      ~GeologicalFeatureInterpolator.check_interpolation_geometry
       ~GeologicalFeatureInterpolator.get_data_locations
       ~GeologicalFeatureInterpolator.get_gradient_constraints
       ~GeologicalFeatureInterpolator.get_interface_constraints

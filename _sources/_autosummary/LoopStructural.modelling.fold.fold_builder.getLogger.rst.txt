@@ -1,0 +1,6 @@
+LoopStructural.modelling.fold.fold\_builder.getLogger
+=====================================================
+
+.. currentmodule:: LoopStructural.modelling.fold.fold_builder
+
+.. autofunction:: getLogger

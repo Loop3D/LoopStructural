@@ -1,0 +1,44 @@
+LoopStructural.interpolators.unstructured\_tetra
+================================================
+
+.. automodule:: LoopStructural.interpolators.unstructured_tetra
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      cg
+      constant_norm
+      fold_cg
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseStructuredSupport
+      UnStructuredTetMesh
+   
+   
+
+   
+   
+   
+
+
+

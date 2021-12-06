@@ -29,6 +29,7 @@ LoopStructural.modelling.features.structural\_frame\_builder
       :recursive:              
    
       CrossProductGeologicalFeature
+      FoldedFeatureBuilder
       GeologicalFeatureInterpolator
       StructuralFrame
       StructuralFrameBuilder

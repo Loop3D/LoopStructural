@@ -19,13 +19,14 @@ LoopStructural.modelling.core.geological\_model.FDI
       ~FDI.__init__
       ~FDI.add_constraints_to_least_squares
       ~FDI.add_equality_constraints
-      ~FDI.add_gradient_constraint
-      ~FDI.add_gradient_orthogonal_constraint
-      ~FDI.add_interface_ctr_pts
-      ~FDI.add_norm_constraint
+      ~FDI.add_gradient_constraints
+      ~FDI.add_gradient_orthogonal_constraints
+      ~FDI.add_interface_constraints
+      ~FDI.add_non_linear_constraints
+      ~FDI.add_norm_constraints
       ~FDI.add_regularisation
-      ~FDI.add_tangent_ctr_pts
-      ~FDI.add_vaue_constraint
+      ~FDI.add_tangent_constraints
+      ~FDI.add_vaue_constraints
       ~FDI.assemble_inner
       ~FDI.build_matrix
       ~FDI.calculate_residual_for_constraints

@@ -1,0 +1,51 @@
+LoopStructural.visualisation.lavavu.BaseModelPlotter
+====================================================
+
+.. currentmodule:: LoopStructural.visualisation.lavavu
+
+.. autoclass:: BaseModelPlotter
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseModelPlotter.__init__
+      ~BaseModelPlotter.add_box
+      ~BaseModelPlotter.add_data
+      ~BaseModelPlotter.add_dtm
+      ~BaseModelPlotter.add_fault
+      ~BaseModelPlotter.add_fault_displacements
+      ~BaseModelPlotter.add_fold
+      ~BaseModelPlotter.add_intersection_lineation
+      ~BaseModelPlotter.add_isosurface
+      ~BaseModelPlotter.add_model
+      ~BaseModelPlotter.add_model_surfaces
+      ~BaseModelPlotter.add_points
+      ~BaseModelPlotter.add_scalar_field
+      ~BaseModelPlotter.add_section
+      ~BaseModelPlotter.add_support_box
+      ~BaseModelPlotter.add_value_data
+      ~BaseModelPlotter.add_vector_data
+      ~BaseModelPlotter.add_vector_field
+      ~BaseModelPlotter.unfault_grid
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseModelPlotter.model
+      ~BaseModelPlotter.nelements
+      ~BaseModelPlotter.nsteps
+   
+   

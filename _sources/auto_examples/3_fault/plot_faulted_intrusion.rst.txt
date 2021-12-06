@@ -81,9 +81,10 @@ representative of modelling an intrusion.
 
 
 
-.. image:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_001.png
-    :alt: plot faulted intrusion
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_001.png
+   :alt: plot faulted intrusion
+   :srcset: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -93,7 +94,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7f1dfdf32eb0>
+    <matplotlib.contour.QuadContourSet object at 0x7f336ab54760>
 
 
 
@@ -169,14 +170,16 @@ fault frame and an expected displacement model.
 
     *
 
-      .. image:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_002.png
+      .. image-sg:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_002.png
           :alt: plot faulted intrusion
+          :srcset: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_002.png
           :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_003.png
+      .. image-sg:: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_003.png
           :alt: plot faulted intrusion
+          :srcset: /auto_examples/3_fault/images/sphx_glr_plot_faulted_intrusion_003.png
           :class: sphx-glr-multi-img
 
 
@@ -186,7 +189,7 @@ fault frame and an expected displacement model.
 
  .. code-block:: none
 
-      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  25%|##5       | 1/4 [00:00<00:01,  1.95it/s]    Interpolating strati:  75%|#######5  | 3/4 [00:00<00:00,  1.95it/s]    Interpolating strati: 100%|##########| 4/4 [00:06<00:00,  1.75s/it]    Interpolating strati: 100%|##########| 4/4 [00:06<00:00,  1.65s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  50%|#####     | 2/4 [00:00<00:00, 13.53it/s]    Interpolating strati:  75%|#######5  | 3/4 [00:00<00:00, 13.53it/s]    Interpolating strati: : 6it [00:16, 13.53it/s]                         Interpolating strati: : 7it [00:25,  3.97s/it]    Interpolating strati: : 7it [00:25,  3.64s/it]
 
 
 
@@ -194,7 +197,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 11 minutes  57.033 seconds)
+   **Total running time of the script:** ( 0 minutes  41.896 seconds)
 
 
 .. _sphx_glr_download_auto_examples_3_fault_plot_faulted_intrusion.py:

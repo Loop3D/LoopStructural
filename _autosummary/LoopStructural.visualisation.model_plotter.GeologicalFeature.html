@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoopStructural.visualisation.model_plotter.GeologicalFeature &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.visualisation.model_plotter.LoopImportError" href="LoopStructural.visualisation.model_plotter.LoopImportError.html" />
+    <link rel="prev" title="LoopStructural.visualisation.model_plotter.BaseModelPlotter" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">Visualisation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.version.html">LoopStructural.version</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.html#visualisation">Visualisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.html">LoopStructural.visualisation.lavavu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">LoopStructural.visualisation.map_viewer</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.create_box.html">LoopStructural.visualisation.model_plotter.create_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.create_surface.html">LoopStructural.visualisation.model_plotter.create_surface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.getLogger.html">LoopStructural.visualisation.model_plotter.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.get_vectors.html">LoopStructural.visualisation.model_plotter.get_vectors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.marching_cubes.html">LoopStructural.visualisation.model_plotter.marching_cubes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html">LoopStructural.visualisation.model_plotter.BaseModelPlotter</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.visualisation.model_plotter.GeologicalFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.LoopImportError.html">LoopStructural.visualisation.model_plotter.LoopImportError</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">LoopStructural.visualisation.rotation_angle_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">LoopStructural.visualisation.sphinx_scraper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">LoopStructural.visualisation.stratigraphic_column</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+          <li><a href="LoopStructural.visualisation.html">LoopStructural.visualisation</a> &raquo;</li>
+          <li><a href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a> &raquo;</li>
+      <li>LoopStructural.visualisation.model_plotter.GeologicalFeature</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="loopstructural-visualisation-model-plotter-geologicalfeature">
+<h1>LoopStructural.visualisation.model_plotter.GeologicalFeature<a class="headerlink" href="#loopstructural-visualisation-model-plotter-geologicalfeature" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.model_plotter.</span></code><code class="sig-name descname"><span class="pre">GeologicalFeature</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">builder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Geological feature is class that is used to represent a geometrical element in a geological
+model. For example foliations, fault planes, fold rotation angles etc.</p>
+<dl class="py attribute">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.name">
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>should be a unique name for the geological feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.support">
+<code class="sig-name descname"><span class="pre">support</span></code><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.support" title="Permalink to this definition">¶</a></dt>
+<dd><p>holds the property values for the feature and links to the
+support geometry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>a ScalarField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.data">
+<code class="sig-name descname"><span class="pre">data</span></code><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>list containing geological data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.region">
+<code class="sig-name descname"><span class="pre">region</span></code><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.region" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of boolean functions defining whether the feature is
+active</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.faults">
+<code class="sig-name descname"><span class="pre">faults</span></code><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of FaultSegments that affect this feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Default constructor for geological feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – </p></li>
+<li><p><strong>interpolator</strong> (<a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator" title="LoopStructural.interpolators.GeologicalInterpolator"><em>GeologicalInterpolator</em></a>) – </p></li>
+<li><p><strong>builder</strong> (<em>GeologicalFeatureBuilder</em>) – </p></li>
+<li><p><strong>data</strong> – </p></li>
+<li><p><strong>region</strong> – </p></li>
+<li><p><strong>type</strong> – </p></li>
+<li><p><strong>faults</strong> (<em>list</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">builder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default constructor for geological feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – </p></li>
+<li><p><strong>interpolator</strong> (<a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator" title="LoopStructural.interpolators.GeologicalInterpolator"><em>GeologicalInterpolator</em></a>) – </p></li>
+<li><p><strong>builder</strong> (<em>GeologicalFeatureBuilder</em>) – </p></li>
+<li><p><strong>data</strong> – </p></li>
+<li><p><strong>region</strong> – </p></li>
+<li><p><strong>type</strong> – </p></li>
+<li><p><strong>faults</strong> (<em>list</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.__init__" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name, interpolator[, builder, …])</p></td>
+<td><p>Default constructor for geological feature</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.add_region" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.add_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_region</span></code></a>(region)</p></td>
+<td><p>Adds a region where the geological feature is active to the model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(evaluation_points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param locations</dt>
+<dd class="field-odd"><p>location where the gradient is being evaluated</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient_misfit" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient_misfit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient_misfit</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><strong>misfit</strong> (<em>np.array(N,dtype=double)</em>) – dot product between interpolated gradient and constraints</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(evaluation_points)</p></td>
+<td><p>Evaluate the scalar field value of the geological feature at the locations specified</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value_misfit" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value_misfit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value_misfit</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><strong>misfit</strong> (<em>np.array(N,dtype=double)</em>) – difference between interpolated scalar field and value constraints</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.max" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a>()</p></td>
+<td><p>Calculate average of the support values</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.mean" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>()</p></td>
+<td><p>Calculate average of the support values</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.min" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><strong>min</strong> (<em>double</em>) – min value of the feature evaluated on a (10,10,10) grid in model area</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_model</span></code>(model)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.toggle_faults" title="LoopStructural.visualisation.model_plotter.GeologicalFeature.toggle_faults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggle_faults</span></code></a>()</p></td>
+<td><p>Turn the fault off for a feature This function is only really used for debugging or creating methods explanation figures</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.add_region">
+<code class="sig-name descname"><span class="pre">add_region</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.add_region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a region where the geological feature is active to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>region</strong> (<em>boolean function</em><em>(</em><em>x</em><em>,</em><em>y</em><em>,</em><em>z</em><em>)</em>) – returns true if inside region, false if outside
+can be passed as a lambda function e.g.
+lambda pos : feature.evaluate_value(pos) &gt; 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient">
+<code class="sig-name descname"><span class="pre">evaluate_gradient</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluation_points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>locations</strong> (<em>numpy array</em>) – location where the gradient is being evaluated</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient_misfit">
+<code class="sig-name descname"><span class="pre">evaluate_gradient_misfit</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient_misfit" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>misfit</strong> (<em>np.array(N,dtype=double)</em>) – dot product between interpolated gradient and constraints</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value">
+<code class="sig-name descname"><span class="pre">evaluate_value</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluation_points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the scalar field value of the geological feature at the locations
+specified</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>evaluation_points</strong> (<em>numpy array</em>) – location to evaluate the scalar value</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>values</strong> (<em>numpy array</em>) – numpy array containing evaluated values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value_misfit">
+<code class="sig-name descname"><span class="pre">evaluate_value_misfit</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value_misfit" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>misfit</strong> (<em>np.array(N,dtype=double)</em>) – difference between interpolated scalar field and value constraints</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.max">
+<code class="sig-name descname"><span class="pre">max</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate average of the support values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>max</strong> (<em>double</em>) – max value of the feature evaluated on a (10,10,10) grid in model area</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.mean">
+<code class="sig-name descname"><span class="pre">mean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate average of the support values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>mean</strong> (<em>double</em>) – average value of the feature evaluated on a (10,10,10) grid in model area</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.min">
+<code class="sig-name descname"><span class="pre">min</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.min" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>min</strong> (<em>double</em>) – min value of the feature evaluated on a (10,10,10) grid in model area</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.visualisation.model_plotter.GeologicalFeature.toggle_faults">
+<code class="sig-name descname"><span class="pre">toggle_faults</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.model_plotter.GeologicalFeature.toggle_faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn the fault off for a feature
+This function is only really used for debugging or creating methods
+explanation figures</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.model_plotter.BaseModelPlotter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.visualisation.model_plotter.LoopImportError.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.model_plotter.LoopImportError" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Lachlan Grose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

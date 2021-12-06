@@ -19,12 +19,18 @@ LoopStructural.modelling.core.geological\_model.StructuralFrameBuilder
       ~StructuralFrameBuilder.__init__
       ~StructuralFrameBuilder.add_data_from_data_frame
       ~StructuralFrameBuilder.add_fault
-      ~StructuralFrameBuilder.build
+      ~StructuralFrameBuilder.setup
       ~StructuralFrameBuilder.up_to_date
       ~StructuralFrameBuilder.update
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~StructuralFrameBuilder.frame
    
    

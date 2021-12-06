@@ -1,0 +1,6 @@
+LoopStructural.interpolators.piecewiselinear\_interpolator.constant\_norm
+=========================================================================
+
+.. currentmodule:: LoopStructural.interpolators.piecewiselinear_interpolator
+
+.. autofunction:: constant_norm

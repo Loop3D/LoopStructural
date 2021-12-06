@@ -1,0 +1,25 @@
+LoopStructural.modelling.fault.fault\_segment.NegativeRegion
+============================================================
+
+.. currentmodule:: LoopStructural.modelling.fault.fault_segment
+
+.. autoclass:: NegativeRegion
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~NegativeRegion.__init__
+   
+   
+
+   
+   
+   

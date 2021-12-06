@@ -1,0 +1,6 @@
+LoopStructural.interpolators.base\_structured\_3d\_support.getLogger
+====================================================================
+
+.. currentmodule:: LoopStructural.interpolators.base_structured_3d_support
+
+.. autofunction:: getLogger

@@ -1,0 +1,6 @@
+LoopStructural.interpolators.unstructured\_tetra.constant\_norm
+===============================================================
+
+.. currentmodule:: LoopStructural.interpolators.unstructured_tetra
+
+.. autofunction:: constant_norm

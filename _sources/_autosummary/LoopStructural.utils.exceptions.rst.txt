@@ -30,8 +30,11 @@ LoopStructural.utils.exceptions
    .. autosummary::
       :toctree:                                          
    
-      LoopBaseException
+      InterpolatorError
+      LoopException
       LoopImportError
+      LoopTypeError
+      LoopValueError
    
    
 

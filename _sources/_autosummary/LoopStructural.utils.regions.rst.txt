@@ -20,6 +20,9 @@ LoopStructural.utils.regions
       :template: custom-class-template.rst
       :recursive:              
    
+      BaseRegion
+      NegativeRegion
+      PositiveRegion
       RegionEverywhere
       RegionFunction
    

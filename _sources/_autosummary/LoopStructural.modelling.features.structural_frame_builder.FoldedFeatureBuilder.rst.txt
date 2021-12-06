@@ -1,0 +1,54 @@
+LoopStructural.modelling.features.structural\_frame\_builder.FoldedFeatureBuilder
+=================================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.structural_frame_builder
+
+.. autoclass:: FoldedFeatureBuilder
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FoldedFeatureBuilder.__init__
+      ~FoldedFeatureBuilder.add_data_from_data_frame
+      ~FoldedFeatureBuilder.add_data_to_interpolator
+      ~FoldedFeatureBuilder.add_equality_constraints
+      ~FoldedFeatureBuilder.add_fault
+      ~FoldedFeatureBuilder.add_orthogonal_feature
+      ~FoldedFeatureBuilder.build
+      ~FoldedFeatureBuilder.check_interpolation_geometry
+      ~FoldedFeatureBuilder.get_data_locations
+      ~FoldedFeatureBuilder.get_gradient_constraints
+      ~FoldedFeatureBuilder.get_interface_constraints
+      ~FoldedFeatureBuilder.get_norm_constraints
+      ~FoldedFeatureBuilder.get_tangent_constraints
+      ~FoldedFeatureBuilder.get_value_constraints
+      ~FoldedFeatureBuilder.install_equality_constraints
+      ~FoldedFeatureBuilder.install_gradient_constraint
+      ~FoldedFeatureBuilder.set_fold_axis
+      ~FoldedFeatureBuilder.set_fold_limb_rotation
+      ~FoldedFeatureBuilder.set_interpolation_geometry
+      ~FoldedFeatureBuilder.up_to_date
+      ~FoldedFeatureBuilder.update
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FoldedFeatureBuilder.build_arguments
+      ~FoldedFeatureBuilder.feature
+      ~FoldedFeatureBuilder.interpolator
+      ~FoldedFeatureBuilder.name
+   
+   

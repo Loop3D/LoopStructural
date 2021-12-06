@@ -22,6 +22,7 @@ LoopStructural.interpolators.cython.dsi\_helper
       atan
       atan2
       atanh
+      calculate_pairs
       ceil
       cg
       comb
@@ -50,7 +51,6 @@ LoopStructural.interpolators.cython.dsi\_helper
       isinf
       isnan
       isqrt
-      lcm
       ldexp
       lgamma
       log
@@ -58,7 +58,6 @@ LoopStructural.interpolators.cython.dsi\_helper
       log1p
       log2
       modf
-      nextafter
       perm
       pow
       prod
@@ -71,7 +70,6 @@ LoopStructural.interpolators.cython.dsi\_helper
       tanh
       tetra_neighbours
       trunc
-      ulp
    
    
 

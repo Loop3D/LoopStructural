@@ -1,0 +1,6 @@
+LoopStructural.visualisation.model\_plotter.LoopImportError
+===========================================================
+
+.. currentmodule:: LoopStructural.visualisation.model_plotter
+
+.. autoexception:: LoopImportError

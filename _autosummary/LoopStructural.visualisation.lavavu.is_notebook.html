@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoopStructural.visualisation.lavavu.is_notebook &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.visualisation.lavavu.BaseModelPlotter" href="LoopStructural.visualisation.lavavu.BaseModelPlotter.html" />
+    <link rel="prev" title="LoopStructural.visualisation.lavavu.getLogger" href="LoopStructural.visualisation.lavavu.getLogger.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">Visualisation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.version.html">LoopStructural.version</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.html#visualisation">Visualisation</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.visualisation.lavavu.html">LoopStructural.visualisation.lavavu</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.lavavu.close_all.html">LoopStructural.visualisation.lavavu.close_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.lavavu.getLogger.html">LoopStructural.visualisation.lavavu.getLogger</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.visualisation.lavavu.is_notebook</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.lavavu.BaseModelPlotter.html">LoopStructural.visualisation.lavavu.BaseModelPlotter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.lavavu.GeologicalFeature.html">LoopStructural.visualisation.lavavu.GeologicalFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.lavavu.LavaVuModelViewer.html">LoopStructural.visualisation.lavavu.LavaVuModelViewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.visualisation.lavavu.LoopImportError.html">LoopStructural.visualisation.lavavu.LoopImportError</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">LoopStructural.visualisation.map_viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">LoopStructural.visualisation.model_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">LoopStructural.visualisation.rotation_angle_plotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">LoopStructural.visualisation.sphinx_scraper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">LoopStructural.visualisation.stratigraphic_column</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
+          <li><a href="LoopStructural.visualisation.html">LoopStructural.visualisation</a> &raquo;</li>
+          <li><a href="LoopStructural.visualisation.lavavu.html">LoopStructural.visualisation.lavavu</a> &raquo;</li>
+      <li>LoopStructural.visualisation.lavavu.is_notebook</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/LoopStructural.visualisation.lavavu.is_notebook.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="loopstructural-visualisation-lavavu-is-notebook">
+<h1>LoopStructural.visualisation.lavavu.is_notebook<a class="headerlink" href="#loopstructural-visualisation-lavavu-is-notebook" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="LoopStructural.visualisation.lavavu.is_notebook">
+<code class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.lavavu.</span></code><code class="sig-name descname"><span class="pre">is_notebook</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.lavavu.is_notebook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detects if running within an interactive IPython notebook environment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>boolean</em> – True if IPython detected and browser/notebook display capability detected</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="LoopStructural.visualisation.lavavu.getLogger.html" class="btn btn-neutral float-left" title="LoopStructural.visualisation.lavavu.getLogger" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoopStructural.visualisation.lavavu.BaseModelPlotter.html" class="btn btn-neutral float-right" title="LoopStructural.visualisation.lavavu.BaseModelPlotter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Lachlan Grose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

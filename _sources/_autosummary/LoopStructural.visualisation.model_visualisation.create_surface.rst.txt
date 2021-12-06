@@ -1,6 +1,0 @@
-LoopStructural.visualisation.model\_visualisation.create\_surface
-=================================================================
-
-.. currentmodule:: LoopStructural.visualisation.model_visualisation
-
-.. autofunction:: create_surface

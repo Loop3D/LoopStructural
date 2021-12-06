@@ -113,9 +113,10 @@ for the `model.evaluate_model(xyz)` function to be called.
     viewer.display()
 
 
-.. image:: /auto_examples/1_basic/images/sphx_glr_plot_4_using_stratigraphic_column_001.png
-    :alt: plot 4 using stratigraphic column
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/1_basic/images/sphx_glr_plot_4_using_stratigraphic_column_001.png
+   :alt: plot 4 using stratigraphic column
+   :srcset: /auto_examples/1_basic/images/sphx_glr_plot_4_using_stratigraphic_column_001.png
+   :class: sphx-glr-single-img
 
 
 
@@ -124,7 +125,7 @@ for the `model.evaluate_model(xyz)` function to be called.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  46.751 seconds)
+   **Total running time of the script:** ( 0 minutes  4.413 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_4_using_stratigraphic_column.py:

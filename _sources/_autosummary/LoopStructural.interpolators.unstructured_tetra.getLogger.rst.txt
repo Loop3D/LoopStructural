@@ -1,0 +1,6 @@
+LoopStructural.interpolators.unstructured\_tetra.getLogger
+==========================================================
+
+.. currentmodule:: LoopStructural.interpolators.unstructured_tetra
+
+.. autofunction:: getLogger

@@ -22,6 +22,7 @@ LoopStructural.modelling.features.cross\_product\_geological\_feature.Geological
       ~GeologicalFeature.evaluate_gradient_misfit
       ~GeologicalFeature.evaluate_value
       ~GeologicalFeature.evaluate_value_misfit
+      ~GeologicalFeature.is_valid
       ~GeologicalFeature.max
       ~GeologicalFeature.mean
       ~GeologicalFeature.min

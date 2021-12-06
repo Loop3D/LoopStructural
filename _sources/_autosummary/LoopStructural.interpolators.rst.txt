@@ -21,11 +21,13 @@ LoopStructural.interpolators
       :recursive:              
    
       DiscreteFoldInterpolator
+      DiscreteInterpolator
       FiniteDifferenceInterpolator
       GeologicalInterpolator
       PiecewiseLinearInterpolator
       StructuredGrid
       TetMesh
+      UnStructuredTetMesh
    
    
 
@@ -42,6 +44,7 @@ LoopStructural.interpolators
    :template: custom-module-template.rst                 
    :recursive:
 
+   LoopStructural.interpolators.base_linear_tetra
    LoopStructural.interpolators.base_structured_3d_support
    LoopStructural.interpolators.cython
    LoopStructural.interpolators.discrete_fold_interpolator
@@ -53,4 +56,5 @@ LoopStructural.interpolators
    LoopStructural.interpolators.structured_grid
    LoopStructural.interpolators.structured_tetra
    LoopStructural.interpolators.surfe_wrapper
+   LoopStructural.interpolators.unstructured_tetra
 

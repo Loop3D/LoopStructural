@@ -9,13 +9,42 @@ LoopStructural.visualisation.model\_plotter
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      create_box
+      create_surface
+      getLogger
+      get_vectors
+      marching_cubes
+   
    
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseModelPlotter
+      GeologicalFeature
+   
    
 
    
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+      :toctree:                                          
+   
+      LoopImportError
    
    
 

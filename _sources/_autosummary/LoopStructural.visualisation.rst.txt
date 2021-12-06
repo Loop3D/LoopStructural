@@ -48,10 +48,11 @@ LoopStructural.visualisation
    :template: custom-module-template.rst                 
    :recursive:
 
+   LoopStructural.visualisation.lavavu
    LoopStructural.visualisation.map_viewer
    LoopStructural.visualisation.model_plotter
-   LoopStructural.visualisation.model_visualisation
    LoopStructural.visualisation.rotation_angle_plotter
    LoopStructural.visualisation.sphinx_scraper
    LoopStructural.visualisation.stratigraphic_column
+   LoopStructural.visualisation.vtk_exporter
 

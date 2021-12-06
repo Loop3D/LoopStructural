@@ -33,6 +33,7 @@ LoopStructural.utils.helper
       normal_vec_names
       normal_vector_to_strike_and_dip
       plunge_and_plunge_dir_to_vector
+      polarity_name
       rotation
       strike_dip_vector
       tangent_vec_names

@@ -31,6 +31,8 @@ LoopStructural.modelling.fault.fault\_segment
       BaseFault
       FaultDisplacementFeature
       FaultSegment
+      NegativeRegion
+      PositiveRegion
       ThreadPoolExecutor
    
    
