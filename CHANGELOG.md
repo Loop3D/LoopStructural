@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.12...v1.4.0) (2021-12-06)
+
+
+### Features
+
+* bumping version ([e50a35e](https://www.github.com/Loop3D/LoopStructural/commit/e50a35eaef77d873794a1d0efa362601882152ff))
+
 ### [1.3.12](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.11...v1.3.12) (2021-12-05)
 
 
