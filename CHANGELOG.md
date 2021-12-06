@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.4.1](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.0...v1.4.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* updating github workflow  ([84b4017](https://www.github.com/Loop3D/LoopStructural/commit/84b4017030089b51e81b34e2faa52f9526ad6c74))
+* updating version number manually  ([1f11571](https://www.github.com/Loop3D/LoopStructural/commit/1f11571cc743f6b366898471ce4dbd4dbffd337b))
+
 ## [1.4.0](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.12...v1.4.0) (2021-12-06)
 
 
