@@ -103,6 +103,8 @@ class FaultBuilder(StructuralFrameBuilder):
             )
             if len(distance) == 0:
                 logger.error("There is no fault trace for {}".format(self.name))
+                # add any data anyway - usually just orientation data
+                self.add_data_from_data_frame(data)
                 return
             major_axis = np.max(distance)
             logger.warning("Fault major axis using map length: {}".format(major_axis))
