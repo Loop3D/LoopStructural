@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
 
 
@@ -40,9 +41,7 @@ def get_data_axis_aligned_bounding_box(xyz, buffer):
     minz -= length * buffer
     maxz += length * buffer
 
-    bb = np.array([[minx, miny, minz],
-                   [maxx, maxy, maxz]
-                   ])
+    bb = np.array([[minx, miny, minz], [maxx, maxy, maxz]])
 
     def region(xyz):
         """
@@ -67,6 +66,7 @@ def get_data_axis_aligned_bounding_box(xyz, buffer):
         return b
 
     return bb, region
+
 
 def get_data_bounding_box_map(xyz, buffer):
     """
@@ -105,9 +105,7 @@ def get_data_bounding_box_map(xyz, buffer):
     minz -= buffer
     maxz += buffer
 
-    bb = np.array([[minx, miny, minz],
-                   [maxx, maxy, maxz]
-                   ])
+    bb = np.array([[minx, miny, minz], [maxx, maxy, maxz]])
 
     def region(xyz):
         b = np.ones(xyz.shape[0]).astype(bool)
@@ -119,6 +117,8 @@ def get_data_bounding_box_map(xyz, buffer):
         return b
 
     return bb, region
+
+
 def get_data_bounding_box(xyz, buffer):
     """
 
@@ -146,7 +146,7 @@ def get_data_bounding_box(xyz, buffer):
     xlen = maxx - minx
     ylen = maxy - miny
     zlen = maxz - minz
-    length = np.max([xlen,ylen,zlen])
+    length = np.max([xlen, ylen, zlen])
     minx -= length * buffer
     maxx += length * buffer
 
@@ -156,9 +156,7 @@ def get_data_bounding_box(xyz, buffer):
     minz -= length * buffer
     maxz += length * buffer
 
-    bb = np.array([[minx, miny, minz],
-                   [maxx, maxy, maxz]
-                   ])
+    bb = np.array([[minx, miny, minz], [maxx, maxy, maxz]])
 
     def region(xyz):
         b = np.ones(xyz.shape[0]).astype(bool)
@@ -186,7 +184,7 @@ def plunge_and_plunge_dir_to_vector(plunge, plunge_dir):
 def create_surface(bounding_box, nstep):
     x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nstep[0])  #
     y = np.linspace(bounding_box[0, 1], bounding_box[1, 1], nstep[1])
-    xx, yy = np.meshgrid(x, y, indexing='xy')
+    xx, yy = np.meshgrid(x, y, indexing="xy")
 
     def gi(i, j):
         return i + j * nstep[0]
@@ -195,12 +193,27 @@ def create_surface(bounding_box, nstep):
     i = np.arange(0, nstep[0] - 1)
 
     j = np.arange(0, nstep[1] - 1)
-    ii, jj = np.meshgrid(i, j, indexing='ij')
-    corner_gi = gi(ii[:, :, None] + corners[None, None, 0, :, ],
-                   jj[:, :, None] + corners[None, None, 1, :, ])
+    ii, jj = np.meshgrid(i, j, indexing="ij")
+    corner_gi = gi(
+        ii[:, :, None]
+        + corners[
+            None,
+            None,
+            0,
+            :,
+        ],
+        jj[:, :, None]
+        + corners[
+            None,
+            None,
+            1,
+            :,
+        ],
+    )
     corner_gi = corner_gi.reshape((nstep[0] - 1) * (nstep[1] - 1), 4)
     tri = np.vstack([corner_gi[:, :3], corner_gi[:, 1:]])
     return tri, xx.flatten(), yy.flatten()
+
 
 def create_box(bounding_box, nsteps):
     tri, xx, yy = create_surface(bounding_box[0:2, :], nsteps[0:2])
@@ -252,15 +265,18 @@ def create_box(bounding_box, nsteps):
     points[:, 2] = zz
     return points, tri
 
+
 def get_vectors(normal):
-    length =  np.linalg.norm(normal,axis=1)[:,None]
-    normal /= length#np.linalg.norm(normal,axis=1)[:,None]
+    length = np.linalg.norm(normal, axis=1)[:, None]
+    normal /= length  # np.linalg.norm(normal,axis=1)[:,None]
     strikedip = normal_vector_to_strike_and_dip(normal)
     strike_vec = get_strike_vector(strikedip[:, 0])
-    strike_vec /= np.linalg.norm(strike_vec,axis=0)[None,:]
-    dip_vec = np.cross(strike_vec, normal, axisa=0, axisb=1).T  # (strikedip[:, 0], strikedip[:, 1])
-    dip_vec /= np.linalg.norm(dip_vec,axis=0)[None,:]
-    return strike_vec*length.T, dip_vec*length.T
+    strike_vec /= np.linalg.norm(strike_vec, axis=0)[None, :]
+    dip_vec = np.cross(
+        strike_vec, normal, axisa=0, axisb=1
+    ).T  # (strikedip[:, 0], strikedip[:, 1])
+    dip_vec /= np.linalg.norm(dip_vec, axis=0)[None, :]
+    return strike_vec * length.T, dip_vec * length.T
 
 
 def get_strike_vector(strike):
@@ -275,19 +291,25 @@ def get_strike_vector(strike):
 
     """
 
-    v = np.array([np.sin(np.deg2rad(-strike)),
-                  -np.cos(np.deg2rad(-strike)),
-                  np.zeros(strike.shape[0])
-                  ])
+    v = np.array(
+        [
+            np.sin(np.deg2rad(-strike)),
+            -np.cos(np.deg2rad(-strike)),
+            np.zeros(strike.shape[0]),
+        ]
+    )
 
     return v
 
 
 def get_dip_vector(strike, dip):
-    v = np.array([-np.cos(np.deg2rad(-strike)) * np.cos(-np.deg2rad(dip)),
-                  np.sin(np.deg2rad(-strike)) * np.cos(-np.deg2rad(dip)),
-                  np.sin(-np.deg2rad(dip))
-                  ])
+    v = np.array(
+        [
+            -np.cos(np.deg2rad(-strike)) * np.cos(-np.deg2rad(dip)),
+            np.sin(np.deg2rad(-strike)) * np.cos(-np.deg2rad(dip)),
+            np.sin(-np.deg2rad(dip)),
+        ]
+    )
     return v
 
 
@@ -336,47 +358,67 @@ def strike_dip_vector(strike, dip):
 def normal_vector_to_strike_and_dip(normal_vector):
     normal_vector /= np.linalg.norm(normal_vector, axis=1)[:, None]
     dip = np.rad2deg(np.arccos(normal_vector[:, 2]))
-    strike = -np.rad2deg(np.arctan2(normal_vector[:, 1], normal_vector[:,
-                                                         0]))  # atan2(v2[1],v2[0])*rad2deg;
+    strike = -np.rad2deg(
+        np.arctan2(normal_vector[:, 1], normal_vector[:, 0])
+    )  # atan2(v2[1],v2[0])*rad2deg;
 
     return np.array([strike, dip]).T
 
 
 def xyz_names():
-    return ['X', 'Y', 'Z']
+    return ["X", "Y", "Z"]
 
 
 def normal_vec_names():
-    return ['nx', 'ny', 'nz']
+    return ["nx", "ny", "nz"]
 
 
 def tangent_vec_names():
-    return ['tx', 'ty', 'tz']
+    return ["tx", "ty", "tz"]
 
 
 def gradient_vec_names():
-    return ['gx', 'gy', 'gz']
+    return ["gx", "gy", "gz"]
 
 
 def weight_name():
-    return ['w']
+    return ["w"]
 
 
 def val_name():
-    return ['val']
+    return ["val"]
+
 
 def coord_name():
-    return ['coord']
+    return ["coord"]
+
 
 def interface_name():
-    return ['interface']
+    return ["interface"]
 
 
 def feature_name():
-    return ['feature_name']
+    return ["feature_name"]
+
+
+def polarity_name():
+    return ["polarity"]
+
 
 def all_heading():
-    return xyz_names() + normal_vec_names() + tangent_vec_names() + \
-           gradient_vec_names() + weight_name() + val_name() + coord_name() + feature_name() + interface_name()
+    return (
+        xyz_names()
+        + normal_vec_names()
+        + tangent_vec_names()
+        + gradient_vec_names()
+        + weight_name()
+        + val_name()
+        + coord_name()
+        + feature_name()
+        + interface_name()
+        + polarity_name()
+    )
+
+
 def empty_dataframe():
     return pd.DataFrame(columns=[all_heading()])

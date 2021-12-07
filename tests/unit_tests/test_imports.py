@@ -6,8 +6,9 @@ def test_import_model():
         success = False
     assert success == True
 
+
 # def test_import_visualisation():
-#     success = True    
+#     success = True
 #     try:
 #         from LoopStructural.visualisation import LavaVuModelViewer
 #     except ImportError:
@@ -21,6 +22,7 @@ def test_import_model():
 #     except ImportError:
 #         success = False
 #     assert success == True
+
 
 def test_import_geological_feature():
     success = True
