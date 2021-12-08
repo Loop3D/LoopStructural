@@ -11,7 +11,9 @@ Installing from pip or conda
 
     pip install LoopStructural
 
+
 .. code-block::
+
     conda install -c conda-forge -c loop3d loopstructural
 
     

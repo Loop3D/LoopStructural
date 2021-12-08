@@ -2,31 +2,28 @@ name: Build documentation and deploy
 
 on:
   release:
-    types: [created, edited]
+    types: [edited, created]
 
 jobs:
-  flake8:
+  documentation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v2.0.0
         with:
           auto-activate-base: true
           installer-url: https://github.com/conda-forge/miniforge/releases/download/4.10.1-0/Miniforge-pypy3-4.10.1-0-Linux-x86_64.sh
           channels: anaconda,conda-forge,loop3d,conda-forge/label/cf202003
-          python-version: 3.9
+          python-version: 3.8
       - name: Build documentation 
         shell: bash -l {0}
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-            conda install cython numpy scipy matplotlib -y
-            conda install -c conda-forge theano -y
+            conda install -c conda-forge theano cython numpy pandas imageio scipy matplotlib  sphinx=3.5.4 sphinx-gallery sphinxcontrib-bibtex sphinx_rtd_theme myst-parser scikit-learn scikit-image pyamg flake8 pytest networkx -y
             pip install lavavu-osmesa 
             python setup.py install build_ext --inplace
             cd docs
-            pip install -r requirements.txt
-            git-changelog -o changelog.md ../.
             make html
 
       - name: Deploy 🚀

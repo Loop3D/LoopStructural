@@ -3,7 +3,7 @@
 # def extract_isosurface(geologicalfeature, model, isovalue):
 #     xyz=model.regular_grid(shuffle=False)
 #     vals = model.evaluate_model(xyz, scale=False)
-    
+
 #     verts, faces, normals, values = marching_cubes(
 #                     vals.reshape(model.nsteps, order='C'),
 #                     isovalue,
