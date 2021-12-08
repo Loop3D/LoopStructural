@@ -217,10 +217,10 @@ class FaultBuilder(StructuralFrameBuilder):
                     1,
                     w,
                 ]
-
+        
                 self.update_geometry(fault_depth)
                 # TODO need to add data here
-
+                slip_vector/=intermediate_axis
                 data.loc[
                     len(data),
                     [

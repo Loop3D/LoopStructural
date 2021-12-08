@@ -1440,7 +1440,7 @@ class GeologicalModel:
             minor_axis=minor_axis,
             major_axis=major_axis,
             intermediate_axis=intermediate_axis,
-            points=kwargs.get("points", None),
+            points=kwargs.get("points", True),
         )
 
         # if minor_axis == None or major_axis == None or intermediate_axis == None:
