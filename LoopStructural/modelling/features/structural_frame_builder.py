@@ -163,14 +163,14 @@ class StructuralFrameBuilder:
         regularisation = kwargs.pop("regularisation", [1.0, 1.0, 1.0])
         # initialise features as none then where data exists build
         if len(self.builders[0].data) > 0:
-            logger.info("Building %s coordinate 0" % self.name)
+            logger.info(f"Building {self.name} coordinate 0")
             kwargs["regularisation"] = regularisation[0]
             self.builders[0].build_arguments = kwargs
             fold = kwargs.pop("fold", None)
 
         # make sure that all of the coordinates are using the same region
         if len(self.builders[2].data) > 0:
-            logger.info("Building %s coordinate 2" % self.name)
+            logger.info(f"Building {self.name} coordinate 2")
             if w2 > 0:
                 self.builders[2].add_orthogonal_feature(
                     self.builders[0].feature, w2, step=step
@@ -179,7 +179,7 @@ class StructuralFrameBuilder:
             self.builders[2].build_arguments = kwargs
 
         if len(self.builders[1].data) > 0:
-            logger.info("Building %s coordinate 1" % self.name)
+            logger.info(f"Building {self.name} coordinate 1")
             if w1 > 0:
                 self.builders[1].add_orthogonal_feature(
                     self.builders[0].feature, w1, step=step

@@ -17,7 +17,7 @@ class UnconformityFeature:
         self.feature = feature
         self.value = value
         self.type = "unconformity"
-        self.name = "{}_unconformity".format(feature.name)
+        self.name = f"{feature.name}_unconformity"
         self.builder = self.feature.builder
 
     def add_region(self, region):

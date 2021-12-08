@@ -55,15 +55,15 @@ class FoldRotationAngle:
             wl = wl[0]
         guess = np.zeros(4)
         guess[3] = wl  # np.max(limb_wl)
-        logger.info("Guess: %f %f %f %f" % (guess[0], guess[1], guess[2], guess[3]))
+        logger.info(f"Guess: {guess[0]} {guess[1]} {guess[2]} {guess[3]}")
         # mask nans
         mask = np.logical_or(
             ~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle)
         )
         logger.info(
-            "There are %i nans for the fold limb rotation angle and "
-            "%i observations" % (np.sum(~mask), np.sum(mask))
+            f"There are {np.sum(~mask)} nans for the fold limb rotation angle and { np.sum(mask)} observations"
         )
+
         if np.sum(mask) < len(guess):
             logger.error(
                 "Not enough data points to fit Fourier series setting "
@@ -93,7 +93,7 @@ class FoldRotationAngle:
                     # otherwise set the fourier series parameters to 0
                     popt = guess
                     logger.error("Could not fit curve to S-Plot, check the wavelength")
-            logger.info("Fitted: %f %f %f %f" % (popt[0], popt[1], popt[2], popt[3]))
+            logger.info(f"Fitted: {popt[0]} {popt[1]} {popt[2]} {popt[3]}")
             self.fold_rotation_function = lambda x: np.rad2deg(
                 np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3]))
             )

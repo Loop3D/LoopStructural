@@ -1,5 +1,30 @@
 # Changelog
 
+### [1.4.1](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.0...v1.4.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* updating github workflow  ([84b4017](https://www.github.com/Loop3D/LoopStructural/commit/84b4017030089b51e81b34e2faa52f9526ad6c74))
+* updating version number manually  ([1f11571](https://www.github.com/Loop3D/LoopStructural/commit/1f11571cc743f6b366898471ce4dbd4dbffd337b))
+
+## [1.4.0](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.12...v1.4.0) (2021-12-06)
+
+
+### Features
+
+* bumping version ([e50a35e](https://www.github.com/Loop3D/LoopStructural/commit/e50a35eaef77d873794a1d0efa362601882152ff))
+
+### [1.3.12](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.11...v1.3.12) (2021-12-05)
+
+
+### Bug Fixes
+
+* adding polarity to LS datastructure ([61842f0](https://www.github.com/Loop3D/LoopStructural/commit/61842f0b2f4bf72fd53e0d5834a89e2a996e4f1a))
+* error creating mesh for faults ([7efe910](https://www.github.com/Loop3D/LoopStructural/commit/7efe910e3afc716d6cd7de69eb2c534cf9d8a1b0))
+* gradient norm used for folds when fold ([36f9cff](https://www.github.com/Loop3D/LoopStructural/commit/36f9cff04ad6dde5fdefdf3feead3984a21e3fc4))
+* splot not working for overturned folds ([2e185b5](https://www.github.com/Loop3D/LoopStructural/commit/2e185b52a5544723aa8d34f5e87d6449acf39668))
+
 ### [1.3.11](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.10...v1.3.11) (2021-11-29)
 
 
