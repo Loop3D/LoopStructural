@@ -1076,17 +1076,28 @@ class GeologicalModel:
 
         Parameters
         ----------
-        intrusion_name :  string, name of intrusion feature in model data
-        intrusion_frame_name :  string, name of intrusion frame in model data
-        intrusion_network_type :  string, algorithm to build intrusion network 'interpolated' or 'shortest path'
-        intrusion_network_contact :  string, name of contact (roof or floor) to be used to build intrusion network
-        contacts_anisotropies : list, name of stratigraphic units where intrusion is emplaced
-        structures_anisotropies : list, name of structures exploited by intrusion
-        sequence_anisotropies = list, name of anisotropies to look for the shortest path. It could be only starting and end point.
-        intrusion_lateral_extent_model = function, geometrical conceptual model for simulation of lateral extent
-        intrusion_vertical_extent_model = function, geometrical conceptual model for simulation of vertical extent
-        lateral_extent_sgs_parameters = dictionary, parameters for sequential gaussian simulation of lateral extent
-        vertical_extent_sgs_parameters = dictionary, parameters for sequential gaussian simulation of vertical extent
+        intrusion_name :  string, 
+            name of intrusion feature in model data
+        intrusion_frame_name :  string, 
+            name of intrusion frame in model data
+        intrusion_network_type :  string, 
+            algorithm to build intrusion network 'interpolated' or 'shortest path'
+        intrusion_network_contact :  string, 
+            name of contact (roof or floor) to be used to build intrusion network
+        contacts_anisotropies : list, 
+            name of stratigraphic units where intrusion is emplaced
+        structures_anisotropies : list, 
+            name of structures exploited by intrusion
+        sequence_anisotropies = list, 
+            name of anisotropies to look for the shortest path. It could be only starting and end point.
+        intrusion_lateral_extent_model = function, 
+            geometrical conceptual model for simulation of lateral extent
+        intrusion_vertical_extent_model = function, 
+            geometrical conceptual model for simulation of vertical extent
+        lateral_extent_sgs_parameters = dictionary, 
+            parameters for sequential gaussian simulation of lateral extent
+        vertical_extent_sgs_parameters = dictionary, 
+            parameters for sequential gaussian simulation of vertical extent
 
         kwargs
 
@@ -1115,7 +1126,7 @@ class GeologicalModel:
         INet.set_sequence_of_exploited_anisotropies(sequence_anisotropies)
         INet.set_velocity_parameters()
         INet.set_sections_axis(inet_axis)
-        print("building intrusion network")
+        logger.info("building intrusion network")
         INet.build(**kwargs)
 
         # Create intrusion frame, using intrusion network points, propagation and inflation direction
@@ -1126,7 +1137,7 @@ class GeologicalModel:
 
         weights = [gxxgz, gxxgy, gyxgz]
         # reg=np.array([1,0.5,1])
-        print("building intrusion frame")
+        logger.info("building intrusion frame")
         interpolator = self.get_interpolator(interpolatortype="FDI")
         frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
         IFrame_builder = IntrusionBuilder(
@@ -1166,13 +1177,13 @@ class GeologicalModel:
             )
 
         else:
-            print("setting data for lateral thresholds simulation")
+            logger.info("setting data for lateral thresholds simulation")
             IBody.set_data_for_s_simulation()
             IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
             IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
             IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
             IBody.create_grid_for_simulation()
-            print("simulating thresholds for lateral extent")
+            logger.info("simulating thresholds for lateral extent")
             IBody.simulate_s_thresholds()
 
             intrusion_feature.set_simulation_lateral_data(IBody.simulated_s_thresholds)
@@ -1183,12 +1194,12 @@ class GeologicalModel:
             )
 
         else:
-            print("setting data for vertical thresholds simulation")
+            logger.info("setting data for vertical thresholds simulation")
             IBody.set_data_for_g_simulation()
             IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
             IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
             IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
-            print("simulating thresholds for vertical extent")
+            logger.info("simulating thresholds for vertical extent")
             IBody.simulate_g_thresholds()
 
             intrusion_feature.set_simulation_growth_data(IBody.simulated_g_thresholds)
