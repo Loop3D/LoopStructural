@@ -1144,7 +1144,7 @@ class GeologicalModel:
             interpolator, model=self, feature_name=intrusion_frame_name
         )
         IFrame_builder.set_data(frame_data, INet.intrusion_network_outcome)
-        IFrame = IFrame_builder.build(
+        IFrame = IFrame_builder.setup(
             nelements=1e2,
             solver="lu",
             gxxgz=weights[0],
