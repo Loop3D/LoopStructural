@@ -217,7 +217,7 @@ class GeologicalFeatureInterpolator:
         if self.data_added == True:
             return
         # first move the data for the fault
-        logger.info("Adding %i faults to %s" % (len(self.faults), self.name))
+        logger.info(f"Adding {len(self.faults)} faults to {self.name}")
         data = self.data.copy()
         # convert data locations to numpy array and then update
         for f in self.faults:
@@ -269,7 +269,9 @@ class GeologicalFeatureInterpolator:
             self.interpolator.set_value_constraints(value_data)
 
         # add gradient constraints
-        mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()].to_numpy(float)), axis=1)
+        mask = np.all(
+            ~np.isnan(data.loc[:, gradient_vec_names()].to_numpy(float)), axis=1
+        )
         if mask.shape[0] > 0:
             gradient_data = data.loc[
                 mask, xyz_names() + gradient_vec_names() + weight_name()
@@ -277,7 +279,9 @@ class GeologicalFeatureInterpolator:
             self.interpolator.set_gradient_constraints(gradient_data)
 
         # add normal vector data
-        mask = np.all(~np.isnan(data.loc[:, normal_vec_names()].to_numpy(float)), axis=1)
+        mask = np.all(
+            ~np.isnan(data.loc[:, normal_vec_names()].to_numpy(float)), axis=1
+        )
         if mask.shape[0] > 0:
             normal_data = data.loc[
                 mask, xyz_names() + normal_vec_names() + weight_name()
@@ -285,7 +289,9 @@ class GeologicalFeatureInterpolator:
             self.interpolator.set_normal_constraints(normal_data)
 
         # add tangent data
-        mask = np.all(~np.isnan(data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1)
+        mask = np.all(
+            ~np.isnan(data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1
+        )
         if mask.shape[0] > 0:
             tangent_data = data.loc[
                 mask, xyz_names() + tangent_vec_names() + weight_name()
@@ -337,8 +343,8 @@ class GeologicalFeatureInterpolator:
                 mask = ~np.isnan(val)
                 self.interpolator.add_equality_constraints(idc[mask], val[mask])
             except BaseException as e:
-                logger.error("Could not add equality for {}".format(self.name))
-                logger.error("Exception: {}".format(e))
+                logger.error(f"Could not add equality for {self.name}")
+                logger.error(f"Exception: {e}")
 
     def get_value_constraints(self):
         """
@@ -406,7 +412,9 @@ class GeologicalFeatureInterpolator:
             return np.zeros((0, 7))
 
     def get_interface_constraints(self):
-        mask = np.all(~np.isnan(self.data.loc[:, interface_name()].to_numpy(float)), axis=1)
+        mask = np.all(
+            ~np.isnan(self.data.loc[:, interface_name()].to_numpy(float)), axis=1
+        )
         if mask.shape[0] > 0:
             return self.data.loc[
                 mask, xyz_names() + interface_name() + weight_name()
@@ -434,12 +442,8 @@ class GeologicalFeatureInterpolator:
         maximum : np.array(3)
             maximum vector
         """
-        logger.info(
-            "Setting mesh origin: {} {} {} ".format(origin[0], origin[1], origin[2])
-        )
-        logger.info(
-            "Setting mesh maximum: {} {} {}".format(maximum[0], maximum[1], maximum[2])
-        )
+        logger.info(f"Setting mesh origin: {origin[0]} {origin[1]} {origin[2]} ")
+        logger.info(f"Setting mesh maximum: {maximum[0]} {maximum[1]} {maximum[2]}")
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
         self.interpolator.support.rotation_xy = rotation
@@ -492,29 +496,14 @@ class GeologicalFeatureInterpolator:
             if np.any(np.min(bb[0, :]) < self.interpolator.support.origin):
                 neworigin = np.min([self.interpolator.support.origin, bb[0, :]], axis=0)
                 logger.info(
-                    "Changing origin of support for {} from {} {} {} to {} {} {}".format(
-                        self.name,
-                        self.interpolator.support.origin[0],
-                        self.interpolator.support.origin[1],
-                        self.interpolator.support.origin[2],
-                        neworigin[0],
-                        neworigin[1],
-                        neworigin[2],
-                    )
+                    f"Changing origin of support for {self.name} from {self.interpolator.support.origin[0]} {self.interpolator.support.origin[1]} {self.interpolator.support.origin[2]} to {neworigin[0]} {neworigin[1]} {neworigin[2]}"
                 )
+
                 self.interpolator.support.origin = neworigin
             if np.any(np.max(bb[0, :]) < self.interpolator.support.maximum):
                 newmax = np.max([self.interpolator.support.maximum, bb[0, :]], axis=0)
                 logger.info(
-                    "Changing origin of support for {} from {} {} {} to {} {} {}".format(
-                        self.name,
-                        self.interpolator.support.maximum[0],
-                        self.interpolator.support.maximum[1],
-                        self.interpolator.support.maximum[2],
-                        newmax[0],
-                        newmax[1],
-                        newmax[2],
-                    )
+                    "Changing origin of support for {self.name} from {self.interpolator.support.maximum[0]} {self.interpolator.support.maximum[1]} {self.interpolator.support.maximum[2]} to {newmax[0]} {newmax[1]} {newmax[2]}"
                 )
 
                 self.interpolator.support.maximum = newmax

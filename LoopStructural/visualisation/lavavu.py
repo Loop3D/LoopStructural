@@ -107,7 +107,7 @@ class LavaVuModelViewer(BaseModelPlotter):
             vmax = kwargs.get("vmax", np.nanmax(surfaceval))
             surf.colourmap(cmap, range=(vmin, vmax))
 
-    def _add_points(self, points, name, value=None, c = None, **kwargs):
+    def _add_points(self, points, name, value=None, c=None, **kwargs):
         """Virtual function to be overwritten by subclasses for adding points to the viewer
 
         Parameters

@@ -85,18 +85,18 @@ class SVariogram:
         logger.info("Calculating S-Variogram")
         if lag is not None:
             step = lag
-            logger.info("Using lag: %f kwarg for S-variogram" % step)
+            logger.info(f"Using lag: {step} kwarg for S-variogram")
 
         if nlag is not None:
             nstep = nlag
-            logger.info("Using nlag %i kwarg for s-variogram" % nstep)
+            logger.info(f"Using nlag {nstep} kwarg for s-variogram")
 
             self.lags = np.arange(step / 2.0, nstep * step, step)
 
         if nlag is None and lag is not None:
             nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
             logger.info(
-                "Using lag kwarg but calculating nlag as %i for s-variogram" % nstep
+                f"Using lag kwarg but calculating nlag as {nstep} for s-variogram"
             )
 
             self.lags = np.arange(step / 2.0, nstep * step, step)
@@ -115,8 +115,7 @@ class SVariogram:
             nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
             self.lags = np.arange(step / 2.0, nstep * step, step)
             logger.info(
-                "Using average minimum nearest neighbour distance "
-                "as lag distance size {} and using {} lags".format(step, nstep)
+                f"Using average minimum nearest neighbour distance as lag distance size {step} and using {nstep} lags"
             )
         tol = self.lags[1] - self.lags[0]
         self.variogram = np.zeros(self.lags.shape)

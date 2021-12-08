@@ -1,10 +1,5 @@
 import pandas as pd
 import numpy as np
-import os
-import logging
-import networkx
-from scipy.stats import truncnorm
-import copy
 from .fault_network import FaultNetwork
 from LoopStructural.utils import strike_dip_vector
 from LoopStructural.utils import getLogger
@@ -195,9 +190,7 @@ class ProcessInputData:
             raise ImportError("matplotlib cannot be imported")
         # define colourmap from stratigraphic column stretching it for the thickness variation
         if supergroup not in self.stratigraphic_column:
-            raise ValueError(
-                "supergroup {} not in stratigraphic column".format(supergroup)
-            )
+            raise ValueError(f"supergroup {supergroup} not in stratigraphic column")
         colours = []
         boundaries = []
         data = []
@@ -398,7 +391,7 @@ class ProcessInputData:
             value = 0.0  # reset for each supergroup
             for g in reversed(sg):
                 if g not in self.thicknesses:
-                    logger.warning("No thicknesses for {}".format(g))
+                    logger.warning("No thicknesses for {g}")
                     stratigraphic_value[g] = np.nan
                 else:
                     stratigraphic_value[g] = value

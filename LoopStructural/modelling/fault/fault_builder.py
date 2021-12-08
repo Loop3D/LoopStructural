@@ -13,7 +13,7 @@ class FaultBuilder(StructuralFrameBuilder):
         interpolators=None,
         model=None,
         fault_bounding_box_buffer=0.2,
-        **kwargs
+        **kwargs,
     ):
         """A specialised structural frame builder for building a fault
 
@@ -31,9 +31,9 @@ class FaultBuilder(StructuralFrameBuilder):
         """
 
         StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
-        self.model = model  
-        self.origin = np.zeros(3)#self.model.bounding_box[0, :]
-        self.maximum = np.zeros(3)#self.model.bounding_box[1, :]
+        self.model = model
+        self.origin = np.zeros(3)  # self.model.bounding_box[0, :]
+        self.maximum = np.zeros(3)  # self.model.bounding_box[1, :]
         # define a maximum area to mesh adding buffer to model
         # buffer = .2
         self.minimum_origin = self.model.bounding_box[
@@ -217,7 +217,7 @@ class FaultBuilder(StructuralFrameBuilder):
                     1,
                     w,
                 ]
-                
+
                 self.update_geometry(fault_depth)
                 # TODO need to add data here
 
