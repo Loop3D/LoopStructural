@@ -8,6 +8,131 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
+        id: release
         with:
           release-type: python
           package-name: LoopStructural
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+  # if a release is created then run the deploy scripts for github.io, conda, pypi and docker
+  documentation-deploy:
+    runs-on: ubuntu-latest
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2.0.0
+        with:
+          auto-activate-base: true
+          installer-url: https://github.com/conda-forge/miniforge/releases/download/4.10.1-0/Miniforge-pypy3-4.10.1-0-Linux-x86_64.sh
+          channels: anaconda,conda-forge,loop3d,conda-forge/label/cf202003
+          python-version: 3.8
+      - name: Build documentation 
+        shell: bash -l {0}
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+            conda install -c conda-forge theano cython numpy pandas imageio scipy matplotlib  sphinx=3.5.4 sphinx-gallery sphinxcontrib-bibtex sphinx_rtd_theme myst-parser scikit-learn scikit-image pyamg flake8 pytest networkx -y
+            pip install lavavu-osmesa 
+            python setup.py install build_ext --inplace
+            cd docs
+            make html
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.3
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: docs/build/html # The folder the action should deploy.
+          
+  conda-deploy:
+    name: Uploading to Loop3d for python ${{ matrix.os }})
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest",  "windows-latest","macos-latest"]
+        python-version: ["3.9","3.8","3.7"]
+    steps:
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+    
+      - uses: actions/checkout@v2
+      - name: update submodules
+#       shell: bash -l {0}
+        run: |
+            git submodule update --init --recursive
+      - name: Add msbuild to PATH
+        if: matrix.os == 'windows-latest'
+        uses: microsoft/setup-msbuild@v1.0.2  
+      - name: Conda build'
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+        shell: bash -l {0}
+        run: |
+           conda install -c conda-forge conda-build scikit-build numpy=1.20 cython anaconda-client -y
+           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda
+           conda install anaconda-client -y
+      - name: upload windows
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+        if: matrix.os == 'windows-latest'
+        shell: bash -l {0}
+        run: |
+           anaconda upload --label main conda/win-64/*.tar.bz2 
+      - name: upload linux
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash -l {0}
+        run: |
+           anaconda upload --label main conda/linux-64/*.tar.bz2 
+      - name: upload macosx
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+        if: matrix.os == 'macos-latest'
+        shell: bash -l {0}
+        run: |
+            anaconda upload --label main conda/osx-64/*.tar.bz2
+  docker-deploy:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: loop3d/loopstructural
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        dockerfile: Dockerfile
+        tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
+
+  pypi-deploy:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    name: Build wheels
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build wheels
+        uses: joerick/cibuildwheel@v1.10.0
+        env:
+          CIBW_ARCHS_MACOS: x86_64 universal2
+          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+          CIBW_BEFORE_BUILD: "pip install numpy==1.18 cython" #make sure numpy is the same version as required by LS
+
+      - name: Publish wheels to PyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run : |
+          pip install twine
+          python -m twine upload ./wheelhouse/*.whl  
