@@ -59,9 +59,13 @@ def write_feat_surfs(model, file_name, file_format=FileFormat.NUMPY, target_feat
     # Loop over features, one file for each feature
     surf_list = []
     has_feats = False
-    for feature in model.features:
+    # if there are not features provided, export all features
+    if len(target_feats) == 0:
+        target_feats = model.feature_names()
+    for feature_name in target_feats:
         # Skip if not a requested feature
-        if target_feats != [] and feature.name not in target_feats:
+        if feature_name not in model:
+            logger.warning('{feature_name} is not in the model, skipping')
             continue
         has_feats = True
         x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0], model.nsteps[0])
@@ -69,7 +73,7 @@ def write_feat_surfs(model, file_name, file_format=FileFormat.NUMPY, target_feat
         z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2], model.nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        val = feature.evaluate_value(points)
+        val = model[feature_name].evaluate_value(points)
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
         logger.info(f"Creating isosurface of {feature.name} at {isovalue}")
 
