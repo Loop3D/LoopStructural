@@ -75,10 +75,10 @@ def write_feat_surfs(model, file_name, file_format=FileFormat.NUMPY, target_feat
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         val = model[feature_name].evaluate_value(points)
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
-        logger.info(f"Creating isosurface of {feature.name} at {isovalue}")
+        logger.info(f"Creating isosurface of {featurename} at {isovalue}")
 
         if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
-            logger.warning(f"For {feature.name} isovalue {isovalue} doesn't exist inside bounding box, skipping")
+            logger.warning(f"For {featurename} isovalue {isovalue} doesn't exist inside bounding box, skipping")
             continue
         try:
             verts, faces, normals, values = marching_cubes(
@@ -96,8 +96,8 @@ def write_feat_surfs(model, file_name, file_format=FileFormat.NUMPY, target_feat
             surf_list.append(surf)
 
         except (ValueError, RuntimeError) as e:
-            logger.debug(f"Exception creating feature surface {feature.name}: {e}")
-            logger.warning(f"Cannot isosurface {feature.name} at {isovalue}, skipping")
+            logger.debug(f"Exception creating feature surface {featurename}: {e}")
+            logger.warning(f"Cannot isosurface {featurename} at {isovalue}, skipping")
             continue
 
     if not has_feats:
