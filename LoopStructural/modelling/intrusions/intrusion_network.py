@@ -14,7 +14,7 @@ from LoopStructural.modelling.intrusions.intrusion_support_functions import *
 
 import numpy as np
 import pandas as pd
-# import ckwrap
+import ckwrap
 
 
 class IntrusionNetwork:
