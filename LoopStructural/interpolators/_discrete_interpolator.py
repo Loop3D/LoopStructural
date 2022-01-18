@@ -14,7 +14,7 @@ from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
-from .geological_interpolator import GeologicalInterpolator
+from ._geological_interpolator import GeologicalInterpolator
 
 
 class DiscreteInterpolator(GeologicalInterpolator):

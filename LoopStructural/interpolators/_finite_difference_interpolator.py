@@ -6,8 +6,8 @@ import logging
 import numpy as np
 
 from LoopStructural.utils.helper import get_vectors
-from .discrete_interpolator import DiscreteInterpolator
-from .operator import Operator
+from ._discrete_interpolator import DiscreteInterpolator
+from ._operator import Operator
 
 from LoopStructural.utils import getLogger
 
