@@ -217,7 +217,7 @@ class UnStructuredTetMesh:
         ) = self.get_element_gradient_for_location(pos)
         # grads = np.zeros(tetras.shape)
         values[inside, :] = (
-            element_gradients[inside, :, :] * property_array[tetras[inside, None, :]]
+            element_gradients[inside, :, :] * property_array[self.elements[tetras][inside, None, :]]
         ).sum(2)
         length = np.sum(values[inside, :], axis=1)
         # values[inside,:] /= length[:,None]
