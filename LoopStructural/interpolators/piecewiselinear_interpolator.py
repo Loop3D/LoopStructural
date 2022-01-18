@@ -6,7 +6,7 @@ import logging
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
 
-from LoopStructural.interpolators.discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators._discrete_interpolator import DiscreteInterpolator
 from LoopStructural.utils.helper import get_vectors
 
 from LoopStructural.utils import getLogger

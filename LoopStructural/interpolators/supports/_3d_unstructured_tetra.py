@@ -36,7 +36,7 @@ class UnStructuredTetMesh:
         self.n_nodes = self.nodes.shape[0]
         self.neighbours = np.array(neighbours, dtype=np.int64)
         self.elements = np.array(elements, dtype=np.int64)
-        self.barycentre = np.sum(self.nodes[self.elements][:, :, :], axis=1) / 4.0
+        self.barycentre = np.sum(self.nodes[self.elements[:,:4]][:, :, :], axis=1) / 4.0
         self.minimum = np.min(self.nodes, axis=0)
         self.maximum = np.max(self.nodes, axis=0)
         length = self.maximum - self.minimum
@@ -77,12 +77,12 @@ class UnStructuredTetMesh:
         # calculate the bounding box for all tetraherdon in the mesh
         # find the min/max extents for xyz
         tetra_bb = np.zeros((self.elements.shape[0], 19, 3))
-        minx = np.min(self.nodes[self.elements, 0], axis=1)
-        maxx = np.max(self.nodes[self.elements, 0], axis=1)
-        miny = np.min(self.nodes[self.elements, 1], axis=1)
-        maxy = np.max(self.nodes[self.elements, 1], axis=1)
-        minz = np.min(self.nodes[self.elements, 2], axis=1)
-        maxz = np.max(self.nodes[self.elements, 2], axis=1)
+        minx = np.min(self.nodes[self.elements[:,:4], 0], axis=1)
+        maxx = np.max(self.nodes[self.elements[:,:4], 0], axis=1)
+        miny = np.min(self.nodes[self.elements[:,:4], 1], axis=1)
+        maxy = np.max(self.nodes[self.elements[:,:4], 1], axis=1)
+        minz = np.min(self.nodes[self.elements[:,:4], 2], axis=1)
+        maxz = np.max(self.nodes[self.elements[:,:4], 2], axis=1)
         ix, iy, iz = self.aabb_grid.global_index_to_cell_index(
             np.arange(self.aabb_grid.n_elements)
         )
@@ -187,7 +187,7 @@ class UnStructuredTetMesh:
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(
-            c[inside, :] * property_array[tetras[inside, :]], axis=1
+            c[inside, :] * property_array[self.elements[tetras][inside, :]], axis=1
         )
         return values
 
@@ -263,7 +263,7 @@ class UnStructuredTetMesh:
         )
         tetra_indices = self.aabb_table[global_index, :]
         row, col = np.where(tetra_indices)
-        vertices = self.nodes[self.elements[col, :]]
+        vertices = self.nodes[self.elements[col, :4]]
         pos = points[row, :]
         vap = pos[:, :] - vertices[:, 0, :]
         vbp = pos[:, :] - vertices[:, 1, :]
@@ -296,7 +296,7 @@ class UnStructuredTetMesh:
         bc[row[mask], :] = c[mask, :]
         tetras[row[mask]] = col[mask]
         inside[row[mask]] = True
-        return verts, bc, self.elements[tetras], inside
+        return verts, bc, tetras, inside
 
     def get_element_gradients(self, elements=None):
         """
