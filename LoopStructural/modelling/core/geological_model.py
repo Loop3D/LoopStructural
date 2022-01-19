@@ -223,7 +223,8 @@ class GeologicalModel:
             the created geological model and a dictionary of the map2loop data
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
-
+        log_to_file(f"{m2l_directory}/loopstructural_log.txt")
+        logger.info('Creating model from m2l directory')
         processor = Map2LoopProcessor(m2l_directory, use_thickness)
         processor._gradient = gradient
         processor.vector_scale = vector_scale
@@ -255,9 +256,11 @@ class GeologicalModel:
 
     @classmethod
     def from_processor(cls, processor):
+        logger.info('Creating model from processor')
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
         for i in processor.fault_network.faults:
+            logger.info(f"Adding fault {i}")
             model.create_and_add_fault(
                 i,
                 **processor.fault_properties.to_dict("index")[i],
@@ -303,6 +306,7 @@ class GeologicalModel:
                 faults = None
                 if processor.fault_stratigraphy is not None:
                     faults = processor.fault_stratigraphy[s]
+                logger.info(f'Adding foliation {s}')
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
@@ -1335,6 +1339,18 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
+        logger.info(f'Creating fault "{fault_surface_data}"')
+        logger.info(f'Displacement: {displacement}')
+        logger.info(f'Tolerance: {tol}')
+        logger.info(f'Fault function: {faultfunction}')
+        logger.info(f'Fault slip vector: {fault_slip_vector}')
+        logger.info(f'Fault center: {fault_center}')
+        logger.info(f'Major axis: {major_axis}')
+        logger.info(f'Minor axis: {minor_axis}')
+        logger.info(f'Intermediate axis: {intermediate_axis}')
+        for k, v in kwargs.items():
+            logger.info(f'{k}: {v}')
+        
         if tol is None:
             tol = self.tol
         self.parameters["features"].append(
@@ -1365,6 +1381,12 @@ class GeologicalModel:
         fault_frame_data = self.data[
             self.data["feature_name"] == fault_surface_data
         ].copy()
+        trace_mask = np.logical_and(fault_frame_data['coord'] ==0,fault_frame_data['val'] == 0)
+        logger.info(f'There are {np.sum(trace_mask)} points on the fault trace')
+        if np.sum(trace_mask) == 0:
+            logger.error('You cannot model a fault without defining the location of the fault')
+            raise ValueError(f'There are no points on the fault trace')
+
         mask = np.logical_and(
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
         )
@@ -1404,9 +1426,7 @@ class GeologicalModel:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             if (
-                "centreEasting" in kwargs
-                and "centreNorthing" in kwargs
-                and "centreAltitude" in kwargs
+                ~np.isnan(kwargs.get("centreEasting",np.nan)) and ~np.isnan(kwargs.get('centreNorthing',np.nan)) and ~np.isnan(kwargs.get('centreAltitude',np.nan))
             ):
                 fault_center = self.scale(
                     np.array(

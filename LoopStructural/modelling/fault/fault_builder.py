@@ -263,6 +263,7 @@ class FaultBuilder(StructuralFrameBuilder):
         length = np.max(self.maximum - self.origin)
         # for builder in self.builders:
         # all three coordinates share the same support
+        print(self.maximum,self.origin)
         self.builders[0].set_interpolation_geometry(
             self.origin - length * buffer, self.maximum + length * buffer, rotation
         )
