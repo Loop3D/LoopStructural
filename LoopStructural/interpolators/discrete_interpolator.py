@@ -361,6 +361,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # which is not ideal.
         max_weight = 0
         for c in self.constraints.values():
+            if len(c["w"]) == 0:
+                continue
             if c["w"].max() > max_weight:
                 max_weight = c["w"].max()
         a = []
@@ -368,6 +370,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows = []
         cols = []
         for c in self.constraints.values():
+            if len(c["w"]) == 0:
+                continue
             aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
             b.extend((c["B"] * c["w"] / max_weight).tolist())
             mask = aa == 0
