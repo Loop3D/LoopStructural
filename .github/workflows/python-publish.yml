@@ -2,7 +2,7 @@ name: Python package build and publish
 
 on:
   release:
-    types: [created, edited]
+    types: [edited, created]
 
 jobs:
   build_wheels_macos:

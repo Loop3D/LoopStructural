@@ -1,14 +1,14 @@
 import logging
 
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
 
 
 class FaultDisplacementFeature:
-    """
+    """ """
 
-    """
-    def __init__(self, fault_frame, displacement, name = 'fault_displacement'):
+    def __init__(self, fault_frame, displacement, name="fault_displacement"):
         """
         Geological feature representing the fault displacement
 
@@ -19,7 +19,7 @@ class FaultDisplacementFeature:
         """
         self.fault_frame = fault_frame
         self.displacement = displacement
-        self.name = name +'_displacement'
+        self.name = name + "_displacement"
 
     def evaluate_value(self, location):
         """
@@ -34,8 +34,7 @@ class FaultDisplacementFeature:
 
         """
         fault_suface = self.fault_frame.features[0].evaluate_value(location)
-        fault_displacement = self.fault_frame.features[1].evaluate_value(
-            location)
+        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement(fault_suface, fault_displacement, fault_strike)
         return d
@@ -53,8 +52,7 @@ class FaultDisplacementFeature:
 
         """
         fault_suface = self.fault_frame.features[0].evaluate_value(location)
-        fault_displacement = self.fault_frame.features[1].evaluate_value(
-            location)
+        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement(fault_suface, fault_displacement, fault_strike)
         return d
@@ -66,8 +64,7 @@ class FaultDisplacementFeature:
         return 1
 
     def evaluate_on_surface(self, location):
-        fault_displacement = self.fault_frame.features[1].evaluate_value(
-            location)
+        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d

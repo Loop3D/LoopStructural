@@ -1,6 +1,9 @@
-from LoopStructural.visualisation import model_visualisation as model_visualisation
+from LoopStructural.visualisation import lavavu as model_visualisation
+
+
 def _get_loop_visualisation_scraper():
     return Scraper()
+
 
 class Scraper:
     """
@@ -21,14 +24,14 @@ class Scraper:
         try:
             from sphinx_gallery.scrapers import figure_rst
         except ImportError:
-            raise ImportError('You must install `sphinx_gallery`')
+            raise ImportError("You must install `sphinx_gallery`")
         image_names = list()
         image_path_iterator = block_vars["image_path_iterator"]
         figures = model_visualisation._OPEN_VIEWERS
         for address, plotter in figures.items():
-            plotter.lv['background'] = 'white'
+            plotter.lv["background"] = "white"
             fname = next(image_path_iterator)
             plotter.save(fname)
             image_names.append(fname)
-        model_visualisation.close_all() # close and clear all plotters
+        model_visualisation.close_all()  # close and clear all plotters
         return figure_rst(image_names, gallery_conf["src_dir"])

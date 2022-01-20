@@ -1,9 +1,13 @@
 from LoopStructural.interpolators import StructuredGrid
 import numpy as np
+
+
 class ScalarField:
-    """A scalar field defined by a regular grid and values
-    """
-    def __init__(self,values,step_vector,nsteps, name='scalar field'):
+    """A scalar field defined by a regular grid and values"""
+
+    def __init__(
+        self, values, step_vector, nsteps, origin=np.zeros(3), name="scalar field"
+    ):
         """[summary]
 
         Parameters
@@ -18,15 +22,14 @@ class ScalarField:
             name of the feature for the visualisation
         """
         self.values = values
-        self.grid = StructuredGrid(np.zeros(3),nsteps,step_vector)
+        self.grid = StructuredGrid(origin, nsteps, step_vector)
         self.name = name
-        
+
     @property
     def nodes(self):
         return self.grid.nodes
 
-
-    def evaluate_value(self,xyz):
+    def evaluate_value(self, xyz):
         """Evaluate the scalar field at locations
 
         Parameters
@@ -39,10 +42,11 @@ class ScalarField:
         numpy array
             interpolated values
         """
-        v = self.grid.evaluate_value(xyz,self.values)
+        v = self.grid.evaluate_value(xyz, self.values)
         return v
 
     def min(self):
         return np.min(self.values)
+
     def max(self):
-        return np.max(self.values)#14
+        return np.max(self.values)  # 14
