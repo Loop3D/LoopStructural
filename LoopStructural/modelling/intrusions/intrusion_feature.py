@@ -10,7 +10,6 @@ import numpy as np
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
-import datetime
 
 
 class IntrusionFeature:
@@ -98,7 +97,6 @@ class IntrusionFeature:
         # compute coordinates values for each evaluated point
         intrusion_coord0_pts = intrusion_frame[0].evaluate_value(points)
         intrusion_coord1_pts = intrusion_frame[1].evaluate_value(points)
-        # print('check1',datetime.datetime.now())
         intrusion_coord2_pts = intrusion_frame[2].evaluate_value(points)
 
         # ------ lateral extent thresholds for each of the evaluated points -------------
@@ -107,7 +105,6 @@ class IntrusionFeature:
         if simulation_s_data is None:
             print("No simultion for lateral extent")
         else:
-            print("check1", datetime.datetime.now())
             print("asssigning lateral thresholds")
             simulation_s_data.sort_values(["coord1"], ascending=[True], inplace=True)
 
@@ -230,8 +227,7 @@ class IntrusionFeature:
             intrusion_coord2_pts,
         ]
         self.intrusion_indicator_function = indicator_fx
-        print("check1", datetime.datetime.now())
-
+    
         return intrusion_sf  # , indicator_fx, intrusion_sf2_temp, intrusion_sf0_temp,
 
     def evaluate_value2(self, points):
