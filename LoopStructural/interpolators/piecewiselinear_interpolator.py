@@ -1,10 +1,8 @@
 """
 Piecewise linear interpolator
 """
-import logging
-
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
+from LoopStructural.interpolators.cython.dsi_helper import cg, fold_cg
 
 from LoopStructural.interpolators._discrete_interpolator import DiscreteInterpolator
 from LoopStructural.utils.helper import get_vectors
