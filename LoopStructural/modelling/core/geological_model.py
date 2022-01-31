@@ -1073,6 +1073,11 @@ class GeologicalModel:
         **kwargs,
     ):
         """
+        An intrusion in built in two main steps:
+        (1) Intrusion network and intrusion frame: the algorithm first identify the intrusion network, which is a set of points
+        representing the roof or floor contact of the intrusion. Then this set of points is used to contraint the main structural 
+        direction of the structural frame.
+        (2) Intrusion body: simulation of lateral and vertical extent of intrusion, using parameterization provided by the structural frame
 
         Parameters
         ----------
@@ -1130,28 +1135,50 @@ class GeologicalModel:
         INet.build(**kwargs)
 
         # Create intrusion frame, using intrusion network points, propagation and inflation direction
+        if "gxxgz" in kwargs: # weight for orthogonality constraint between coord 0 and coord 2
+                gxxgz = kwargs["gxxgz"]
+        else:
+                gxxgz = 0
 
-        gxxgz = 0  # weight for orthogonality constraint between coord 0 and coord 2
-        gxxgy = 0  # weight for orthogonality constraint between coord 0 and coord 1
-        gyxgz = 0  # weight for orthogonality constraint between coord 1 and coord 2
+        if "gxxgy" in kwargs: # weight for orthogonality constraint between coord 0 and coord 1
+                gxxgy = kwargs["gxxgy"]
+        else:
+                gxxgy = 0
+        
+        if "gyxgz" in kwargs: # weight for orthogonality constraint between coord 1 and coord 2
+                gyxgz = kwargs["gyxgz"]
+        else:
+                gyxgz = 0
+        
+        if "interpolatortype" in kwargs: # number of elements for interpolation
+                interpolatortype = kwargs["interpolatortype"]
+        else:
+                interpolatortype = 'FDI'
+        
+        if "nelements" in kwargs: # number of elements for interpolation
+                nelements = kwargs["nelements"]
+        else:
+                nelements = 1e2
 
         weights = [gxxgz, gxxgy, gyxgz]
-        # reg=np.array([1,0.5,1])
         logger.info("building intrusion frame")
-        interpolator = self.get_interpolator(interpolatortype="FDI")
+        interpolator = self.get_interpolator(interpolatortype=interpolatortype)
         frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
         IFrame_builder = IntrusionBuilder(
-            interpolator, model=self, feature_name=intrusion_frame_name
+            interpolator, 
+            model=self, 
+            feature_name=intrusion_frame_name
         )
         IFrame_builder.set_data(frame_data, INet.intrusion_network_outcome)
-        IFrame = IFrame_builder.build(
-            nelements=1e2,
-            solver="lu",
+        IFrame_builder.setup(
+            nelements = nelements,
+            # solver = solver,
             gxxgz=weights[0],
             gxxgy=weights[1],
             gxygz=weights[2],
         )
 
+        IFrame = IFrame_builder.frame
         # Create intrusion feature
         intrusion_feature = IntrusionFeature(
             intrusion_name, structural_frame=IFrame, model=self
@@ -1171,38 +1198,38 @@ class GeologicalModel:
         intrusion_feature.set_intrusion_frame(IFrame)
         intrusion_feature.set_intrusion_body(IBody)
 
-        if intrusion_lateral_extent_model == None:
-            logger.error(
-                "Specify conceptual model function for intrusion lateral extent"
-            )
+        # if intrusion_lateral_extent_model == None:
+        #     logger.error(
+        #         "Specify conceptual model function for intrusion lateral extent"
+        #     )
 
-        else:
-            logger.info("setting data for lateral thresholds simulation")
-            IBody.set_data_for_s_simulation()
-            IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
-            IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
-            IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
-            IBody.create_grid_for_simulation()
-            logger.info("simulating thresholds for lateral extent")
-            IBody.simulate_s_thresholds()
+        # else:
+        #     logger.info("setting data for lateral thresholds simulation")
+        #     IBody.set_data_for_s_simulation()
+        #     IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
+        #     IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
+        #     IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
+        #     IBody.create_grid_for_simulation()
+        #     logger.info("simulating thresholds for lateral extent")
+        #     IBody.simulate_s_thresholds()
 
-            intrusion_feature.set_simulation_lateral_data(IBody.simulated_s_thresholds)
+        #     intrusion_feature.set_simulation_lateral_data(IBody.simulated_s_thresholds)
 
-        if intrusion_vertical_extent_model == None:
-            logger.error(
-                "Specify conceptual model function for intrusion vertical extent"
-            )
+        # if intrusion_vertical_extent_model == None:
+        #     logger.error(
+        #         "Specify conceptual model function for intrusion vertical extent"
+        #     )
 
-        else:
-            logger.info("setting data for vertical thresholds simulation")
-            IBody.set_data_for_g_simulation()
-            IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
-            IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
-            IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
-            logger.info("simulating thresholds for vertical extent")
-            IBody.simulate_g_thresholds()
+        # else:
+        #     logger.info("setting data for vertical thresholds simulation")
+        #     IBody.set_data_for_g_simulation()
+        #     IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
+        #     IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
+        #     IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
+        #     logger.info("simulating thresholds for vertical extent")
+        #     IBody.simulate_g_thresholds()
 
-            intrusion_feature.set_simulation_growth_data(IBody.simulated_g_thresholds)
+        #     intrusion_feature.set_simulation_growth_data(IBody.simulated_g_thresholds)
 
         return intrusion_feature
 
