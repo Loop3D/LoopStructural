@@ -15,6 +15,8 @@ RUN conda install -c conda-forge folium
 RUN pip install ipyfilechooser
 RUN jupyter nbextension enable --py --sys-prefix ipyleaflet
 RUN pip install lavavu-osmesa
+COPY LoopStructural LoopStructural
+RUN pip install LoopStructural
 
 ENV NB_USER jovyan
 ENV NB_UID 1000
@@ -25,10 +27,9 @@ RUN adduser --disabled-password \
     --uid ${NB_UID} \
     ${NB_USER}
 WORKDIR ${HOME}
+
 USER ${NB_USER}
 
-RUN mkdir notebooks
-RUN mkdir LoopStructural
 
 USER root
 RUN chown -R ${NB_UID} ${HOME}
@@ -46,7 +47,7 @@ ENTRYPOINT ["/tini", "--"]
 USER ${NB_USER}
 
 RUN mkdir notebooks
-
+WORKDIR notebooks
 # RUN pip install -e LoopStructural
 CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token=''", "--no-browser" ]
 

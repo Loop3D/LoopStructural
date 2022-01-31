@@ -2,6 +2,7 @@ from .model_plotter import BaseModelPlotter
 from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopImportError
 from LoopStructural.modelling.features import GeologicalFeature
+
 logger = getLogger(__name__)
 
 import numpy as np
@@ -11,8 +12,9 @@ try:
 except ImportError:
     raise ImportError("Cannot use VtkExporter without meshio")
 
+
 class VtkExporter(BaseModelPlotter):
-    def __init__(self,model, file_name, bounding_box=None, nsteps=None, **kwargs):
+    def __init__(self, model, file_name, bounding_box=None, nsteps=None, **kwargs):
         logger.info("VtkExporter")
         super().__init__(model)
         self.bounding_box = bounding_box
@@ -25,15 +27,17 @@ class VtkExporter(BaseModelPlotter):
             logger.error("Plot area has not been defined.")
         self.bounding_box = np.array(self.bounding_box)
         self.file_name = file_name
-    def _add_surface(self,
-                    vertices, 
-                    faces, 
-                    name,
-                    colour='red', 
-                    paint_with=None, 
-                    paint_with_value=None,
-                    **kwargs
-                    ):
+
+    def _add_surface(
+        self,
+        vertices,
+        faces,
+        name,
+        colour="red",
+        paint_with=None,
+        paint_with_value=None,
+        **kwargs
+    ):
         """Virtual function to be overwritten by subclasses for adding surfaces to the viewer
 
         Parameters
@@ -52,27 +56,29 @@ class VtkExporter(BaseModelPlotter):
         point_data = {}
         if paint_with_value is not None:
             paint_with = paint_with_value
-        if paint_with is not None: 
+        if paint_with is not None:
             # add a property to the surface nodes for visualisation
             # calculate the mode value, just to get the most common value
             surfaceval = np.zeros(vertices.shape[0])
-            if isinstance(paint_with,GeologicalFeature):
-                surfaceval[:] = paint_with.evaluate_value(self.model.scale(vertices,inplace=False))
+            if isinstance(paint_with, GeologicalFeature):
+                surfaceval[:] = paint_with.evaluate_value(
+                    self.model.scale(vertices, inplace=False)
+                )
             if callable(paint_with):
                 surfaceval[:] = paint_with(self.model.scale(vertices))
-            if isinstance(paint_with,(float,int)):
+            if isinstance(paint_with, (float, int)):
                 surfaceval[:] = paint_with
-            point_data = {"surfaceval":surfaceval}
-        # write points to paraview, set the point data to the property being painted. 
+            point_data = {"surfaceval": surfaceval}
+        # write points to paraview, set the point data to the property being painted.
         # TODO allow multiple properties
-        meshio.write_points_cells('{}_{}.vtk'.format(self.file_name,name.split('.')[0]),
-        vertices,
-        [("triangle", faces)],
-        point_data=point_data
+        meshio.write_points_cells(
+            "{}_{}.vtk".format(self.file_name, name.split(".")[0]),
+            vertices,
+            [("triangle", faces)],
+            point_data=point_data,
         )
-        
 
-    def _add_points(self, points, name, value= None, **kwargs):
+    def _add_points(self, points, name, value=None, **kwargs):
         """Virtual function to be overwritten by subclasses for adding points to the viewer
 
         Parameters
@@ -97,7 +103,8 @@ class VtkExporter(BaseModelPlotter):
         # points,
         # point_data=point_data
         # )
-    def _add_vector_marker(self, location, vector, name, symbol_type='arrow',**kwargs):
+
+    def _add_vector_marker(self, location, vector, name, symbol_type="arrow", **kwargs):
         """Virtual function to be overwritten by subclasses for adding vectors to the viewer
 
         Parameters

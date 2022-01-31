@@ -6,6 +6,7 @@ import logging
 import numpy as np
 
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
 
 
@@ -16,6 +17,7 @@ class GeologicalInterpolator:
     data : dict
         a dictionary with np.arrays for gradient, value, normal, tangent data
     """
+
     def __init__(self):
         """
         This class is the base class for a geological interpolator and contains all of the
@@ -23,29 +25,30 @@ class GeologicalInterpolator:
         by using any of these functions. This will enable interpolators to be interchanged.
         """
 
-        self.data = {'gradient': np.zeros((0,7)),
-                     'value' : np.zeros((0,5)),
-                     'normal': np.zeros((0,7)),
-                     'tangent': np.zeros((0,7)),
-                     'interface' : np.zeros((0,5))
-                     }
+        self.data = {
+            "gradient": np.zeros((0, 7)),
+            "value": np.zeros((0, 5)),
+            "normal": np.zeros((0, 7)),
+            "tangent": np.zeros((0, 7)),
+            "interface": np.zeros((0, 5)),
+        }
         self.n_g = 0
         self.n_i = 0
         self.n_n = 0
         self.n_t = 0
 
-        self.type = 'undefined'
+        self.type = "undefined"
         self.up_to_date = False
         self.constraints = []
-        self.propertyname = 'defaultproperty'
-        self.__str = 'Base Geological Interpolator'
+        self.propertyname = "defaultproperty"
+        self.__str = "Base Geological Interpolator"
         self.valid = False
-        
+
     def __str__(self):
-        
+
         return self.__str
 
-    def set_region(self,**kwargs):
+    def set_region(self, **kwargs):
         pass
 
     def set_property_name(self, name):
@@ -74,7 +77,7 @@ class GeologicalInterpolator:
 
         """
 
-        self.data['value'] = points
+        self.data["value"] = points
         self.n_i = points.shape[0]
 
     def set_gradient_constraints(self, points):
@@ -89,7 +92,7 @@ class GeologicalInterpolator:
 
         """
         self.n_g = points.shape[0]
-        self.data['gradient'] = points
+        self.data["gradient"] = points
 
     def set_normal_constraints(self, points):
         """
@@ -103,7 +106,7 @@ class GeologicalInterpolator:
 
         """
         self.n_n = points.shape[0]
-        self.data['normal'] = points
+        self.data["normal"] = points
 
     def set_tangent_constraints(self, points):
         """
@@ -116,10 +119,10 @@ class GeologicalInterpolator:
         -------
 
         """
-        self.data['tangent'] = points
+        self.data["tangent"] = points
 
     def set_interface_constraints(self, points):
-        self.data['interface'] = points
+        self.data["interface"] = points
 
     def get_value_constraints(self):
         """
@@ -128,7 +131,7 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        return self.data['value']
+        return self.data["value"]
 
     def get_gradient_constraints(self):
         """
@@ -137,8 +140,7 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        return self.data['gradient']
-
+        return self.data["gradient"]
 
     def get_tangent_constraints(self):
         """
@@ -148,7 +150,7 @@ class GeologicalInterpolator:
         numpy array
         """
 
-        return self.data['tangent']
+        return self.data["tangent"]
 
     def get_norm_constraints(self):
         """
@@ -157,7 +159,7 @@ class GeologicalInterpolator:
         -------
         numpy array
         """
-        return self.data['normal']
+        return self.data["normal"]
 
     def get_data_locations(self):
         """Get the location of all data points
@@ -170,18 +172,18 @@ class GeologicalInterpolator:
         norm = self.get_norm_constraints()
         grad = self.get_gradient_constraints()
         val = self.get_value_constraints()
-        return np.vstack([norm[:,:3],grad[:,:3],val[:,:3]])
-        
+        return np.vstack([norm[:, :3], grad[:, :3], val[:, :3]])
+
     def get_interface_constraints(self):
         """Get the location of interface constraints
-        
-        Returns 
+
+        Returns
         -------
         numpy array
-            Nx4 - X,Y,Z,id location of all interface constraints            
+            Nx4 - X,Y,Z,id location of all interface constraints
         """
-        return self.data['interface']
-        
+        return self.data["interface"]
+
     def setup_interpolator(self, **kwargs):
         """
         Runs all of the required setting up stuff
@@ -210,4 +212,3 @@ class GeologicalInterpolator:
         self.n_i = 0
         self.n_n = 0
         self.n_t = 0
-

@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
 
 
@@ -47,7 +48,7 @@ def find_peaks_and_troughs(x, y):
     return pairsx, pairsy
 
 
-class SVariogram():
+class SVariogram:
     """
     The SVariogram is an experimental semi-variogram.
     """
@@ -60,7 +61,7 @@ class SVariogram():
         self.lags = None
         self.variogram = None
 
-    def calc_semivariogram(self, lag = None, nlag = None, lags = None):
+    def calc_semivariogram(self, lag=None, nlag=None, lags=None):
         """
         Calculate a semi-variogram for the x and y data for this object.
         You can specify the lags as an array or specify the step size and
@@ -84,20 +85,21 @@ class SVariogram():
         logger.info("Calculating S-Variogram")
         if lag is not None:
             step = lag
-            logger.info("Using lag: %f kwarg for S-variogram"%step)
+            logger.info(f"Using lag: {step} kwarg for S-variogram")
 
         if nlag is not None:
             nstep = nlag
-            logger.info("Using nlag %i kwarg for s-variogram"%nstep)
+            logger.info(f"Using nlag {nstep} kwarg for s-variogram")
 
-            self.lags = np.arange(step / 2., nstep * step, step)
+            self.lags = np.arange(step / 2.0, nstep * step, step)
 
         if nlag is None and lag is not None:
-            nstep = int(
-                np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
-            logger.info("Using lag kwarg but calculating nlag as %i for s-variogram"%nstep)
+            nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
+            logger.info(
+                f"Using lag kwarg but calculating nlag as {nstep} for s-variogram"
+            )
 
-            self.lags = np.arange(step / 2., nstep * step, step)
+            self.lags = np.arange(step / 2.0, nstep * step, step)
 
         if lags is not None:
             self.lags = lags
@@ -108,21 +110,22 @@ class SVariogram():
             d = np.copy(self.dist)
             d[d == 0] = np.nan
 
-            step = np.nanmean(np.nanmin(d, axis=1))*4.
+            step = np.nanmean(np.nanmin(d, axis=1)) * 4.0
             # find number of steps to cover range in data
-            nstep = int(
-                np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
-            self.lags = np.arange(step / 2., nstep * step, step)
-            logger.info("Using average minimum nearest neighbour distance "
-                        "as lag distance size {} and using {} lags".format(step,nstep))
+            nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
+            self.lags = np.arange(step / 2.0, nstep * step, step)
+            logger.info(
+                f"Using average minimum nearest neighbour distance as lag distance size {step} and using {nstep} lags"
+            )
         tol = self.lags[1] - self.lags[0]
         self.variogram = np.zeros(self.lags.shape)
         self.variogram[:] = np.nan
         npairs = np.zeros(self.lags.shape)
         for i in range(len(self.lags)):
-            logic = np.logical_and(self.dist > self.lags[i]
-                                   - tol / 2.,
-                                   self.dist < self.lags[i] + tol / 2.)
+            logic = np.logical_and(
+                self.dist > self.lags[i] - tol / 2.0,
+                self.dist < self.lags[i] + tol / 2.0,
+            )
             npairs[i] = np.sum(logic.astype(int))
             if npairs[i] > 0:
                 self.variogram[i] = np.mean(self.variance_matrix[logic])
@@ -147,34 +150,34 @@ class SVariogram():
         averagex = []
         averagey = []
         for i in range(len(px) - 1):
-            averagex.append((px[i] + px[i + 1]) / 2.)
-            averagey.append((py[i] + py[i + 1]) / 2.)
+            averagex.append((px[i] + px[i + 1]) / 2.0)
+            averagey.append((py[i] + py[i + 1]) / 2.0)
             i += 1  # iterate twice
         # find the extrema of the average curve
         px2, py2 = find_peaks_and_troughs(averagex, averagey)
-        wl1 = 0.
-        wl1py = 0.
+        wl1 = 0.0
+        wl1py = 0.0
         for i in range(len(px)):
             if i > 0 and i < len(px) - 1:
                 if py[i] > 10:
 
-                    if py[i - 1] < py[i] * .7:
-                        if py[i + 1] < py[i] * .7:
+                    if py[i - 1] < py[i] * 0.7:
+                        if py[i + 1] < py[i] * 0.7:
                             wl1 = px[i]
-                            if wl1 > 0.:
+                            if wl1 > 0.0:
                                 wl1py = py[i]
                                 break
-        wl2 = 0.
+        wl2 = 0.0
         for i in range(len(px2)):
             if i > 0 and i < len(px2) - 1:
-                if py2[i - 1] < py2[i] * .90:
-                    if py2[i + 1] < py2[i] * .90:
+                if py2[i - 1] < py2[i] * 0.90:
+                    if py2[i + 1] < py2[i] * 0.90:
                         wl2 = px2[i]
-                        if wl2 > 0. and wl2 > wl1 * 2 and wl1py < py2[i]:
+                        if wl2 > 0.0 and wl2 > wl1 * 2 and wl1py < py2[i]:
                             break
         if wl1 == 0.0 and wl2 == 0.0:
-            return 2 * (np.max(self.xdata) - np.min(self.xdata)), 0.
+            return 2 * (np.max(self.xdata) - np.min(self.xdata)), 0.0
         if np.isclose(wl1, 0.0):
-            return np.array([wl2 * 2., wl1 * 2.])
+            return np.array([wl2 * 2.0, wl1 * 2.0])
         # wavelength is 2x the peak on the curve
-        return np.array([wl1 * 2., wl2 * 2.])
+        return np.array([wl1 * 2.0, wl2 * 2.0])
