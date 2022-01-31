@@ -87,30 +87,29 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         if elements is None:
             verts, c, elements, inside = self.get_element_for_location(locations)
         else:
-            M = np.ones((elements.shape[0], 3, 3))
-            M[:, :, 1:] = self.vertices[self.elements[elements], :][:, :3, :]
-            points_ = np.ones((locations.shape[0], 3))
+            M = np.ones((elements.shape[0], 4, 4))
+            M[:, :, 1:] = self.nodes[self.elements[elements], :][:, :4, :]
+            points_ = np.ones((locations.shape[0], 4))
             points_[:, 1:] = locations
             minv = np.linalg.inv(M)
             c = np.einsum("lij,li->lj", minv, points_)
-        vertices = self.nodes[self.elements[elements][:, :4]]
-        print(vertices.shape)
+            verts = self.nodes[self.elements[elements][:, :4]]
         jac = np.array(
             [
                 [
-                    (vertices[:, 1, 0] - vertices[:, 0, 0]),
-                    (vertices[:, 1, 1] - vertices[:, 0, 1]),
-                    (vertices[:, 1, 2] - vertices[:, 0, 2]),
+                    (verts[:, 1, 0] - verts[:, 0, 0]),
+                    (verts[:, 1, 1] - verts[:, 0, 1]),
+                    (verts[:, 1, 2] - verts[:, 0, 2]),
                 ],
                 [
-                    (vertices[:, 2, 0] - vertices[:, 0, 0]),
-                    (vertices[:, 2, 1] - vertices[:, 0, 1]),
-                    (vertices[:, 2, 2] - vertices[:, 0, 2]),
+                    (verts[:, 2, 0] - verts[:, 0, 0]),
+                    (verts[:, 2, 1] - verts[:, 0, 1]),
+                    (verts[:, 2, 2] - verts[:, 0, 2]),
                 ],
                 [
-                    (vertices[:, 3, 0] - vertices[:, 0, 0]),
-                    (vertices[:, 3, 1] - vertices[:, 0, 1]),
-                    (vertices[:, 3, 2] - vertices[:, 0, 2]),
+                    (verts[:, 3, 0] - verts[:, 0, 0]),
+                    (verts[:, 3, 1] - verts[:, 0, 1]),
+                    (verts[:, 3, 2] - verts[:, 0, 2]),
                 ],
             ]
         )
@@ -120,41 +119,40 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         jac = np.swapaxes(jac, 0, 2) 
         # dN containts the derivatives of the shape functions
         dN = np.zeros((elements.shape[0], 3, 10))
-        
+ 
         dN[:, 0, 0] = 4*r + 4*s + 4*t - 3
         dN[:, 0, 1] =  4*r - 1
         dN[:, 0, 2] = 0
         dN[:, 0, 3] = 0
-        dN[:, 0, 4] = -8*r - 4*s - 4*t + 4
-        dN[:, 0, 5] = 4*s
-        dN[:, 0, 6] = 4*s
-        dN[:, 0, 7] = -4*s
+        dN[:, 0, 4] = 0
+        dN[:, 0, 5] = -4*t
+        dN[:, 0, 6] = -8*r - 4*s - 4*t + 4
+        dN[:, 0, 7] = 4*s
         dN[:, 0, 8] = 4*t
-        dN[:, 0, 9] = 0
+        dN[:, 0, 9] = -4*s
 
         dN[:, 1, 0] = 4*r + 4*s + 4*t - 3
         dN[:, 1, 1] = 0
         dN[:, 1, 2] = 4*s -1 
         dN[:, 1, 3] = 0
-        dN[:, 1, 4] = -4*r
-        dN[:, 1, 5] = 4*r 
-        dN[:, 1, 6] = 4*r
-        dN[:, 1, 7] = -4*r - 8*s - 4*t + 4
+        dN[:, 1, 4] = 4*t
+        dN[:, 1, 5] = -4*t 
+        dN[:, 1, 6] = -4*r 
+        dN[:, 1, 7] = 4*r
         dN[:, 1, 8] = -0
-        dN[:, 1, 9] = 4*t
+        dN[:, 1, 9] = 4*r + 8*s + 4*t +4
 
-        dN[:,2,0] = 4*r + 4*s + 4*t - 3
-        dN[:,2,1] = 0
-        dN[:,2,2] = 0
-        dN[:,2,3] = 4*t-1
-        dN[:,2,4] = -4*r
-        dN[:,2,5] = 0
-        dN[:,2,6] = 0
-        dN[:,2,7] = -4*s
-        dN[:,2,8] = 4*r
-        dN[:,2,9] = 4*s
+        dN[:, 2, 0] = 4*r + 4*s + 4*t - 3
+        dN[:, 2, 1] = 0
+        dN[:, 2, 2] = 0
+        dN[:, 2, 3] = 4*t - 1
+        dN[:, 2, 4] = 4*s
+        dN[:, 2, 5] = -4*r - 4*s - 8*t + 4
+        dN[:, 2, 6] = -4*r
+        dN[:, 2, 7] = 0
+        dN[:, 2, 8] = 4*r
+        dN[:, 2, 9] = -4*s
 
-        print(dN[0,:,:])
         # find the derivatives in x and y by calculating the dot product between the jacobian^-1 and the
         # derivative matrix
         #         d_n = np.einsum('ijk,ijl->ilk',np.linalg.inv(jac),dN)
@@ -257,8 +255,10 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         #     element_gradients[inside, :, :]
         #     * property_array[self.elements[tetra[inside], :, None]]
         # ).sum(1)
-        values[inside, :] = (
-            element_gradients[inside, :, :] * property_array[self.elements[tetra][inside, None,:]]
-        ).sum(2)
+        corners  = property_array[self.elements[tetra[:],:]]
+        values[inside,:] = np.einsum('ijk,ik->ij',element_gradients,corners)
+        # values[inside, :] = (
+        #     element_gradients[inside, :, :] * property_array[self.elements[tetra][inside, None,:]]
+        # ).sum(2)
         # values[inside,:] /= length[:,None]
         return values
