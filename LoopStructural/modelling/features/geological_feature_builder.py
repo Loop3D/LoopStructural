@@ -444,6 +444,14 @@ class GeologicalFeatureInterpolator:
         """
         logger.info(f"Setting mesh origin: {origin[0]} {origin[1]} {origin[2]} ")
         logger.info(f"Setting mesh maximum: {maximum[0]} {maximum[1]} {maximum[2]}")
+        if np.any(np.isnan(origin)):
+            logger.warning("Origin is NaN, not updating")
+            return
+
+        if np.any(np.isnan(maximum)):
+            logger.warning("Maximum is NaN, not updating")
+            return
+
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
         self.interpolator.support.rotation_xy = rotation

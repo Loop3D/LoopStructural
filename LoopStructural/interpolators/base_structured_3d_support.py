@@ -139,6 +139,11 @@ class BaseStructuredSupport:
     @property
     def nodes(self):
         max = self.origin + self.nsteps_cells * self.step_vector
+        if np.any(np.isnan(self.nsteps)):
+            raise ValueError("Cannot resize mesh nsteps is NaN")
+        if  np.any(np.isnan(self.origin)):
+            raise ValueError("Cannot resize mesh origin is NaN")
+
         x = np.linspace(self.origin[0], max[0], self.nsteps[0])
         y = np.linspace(self.origin[1], max[1], self.nsteps[1])
         z = np.linspace(self.origin[2], max[2], self.nsteps[2])

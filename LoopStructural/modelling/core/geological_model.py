@@ -1361,6 +1361,9 @@ class GeologicalModel:
                 **kwargs,
             }
         )
+        if displacement == 0:
+            logger.warning(f"{fault_surface_data} displacement is 0")
+            
         if "data_region" in kwargs:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
