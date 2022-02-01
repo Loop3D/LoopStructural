@@ -31,8 +31,6 @@ with open(os.path.join(package_root, "LoopStructural/version.py")) as fp:
     exec(fp.read(), version)
 version = version["__version__"]
 
-except:
-	raise RuntimeError("'Please install cython to compile LoopStructural'")
 setup(
 	name="LoopStructural",
 	install_requires=[
