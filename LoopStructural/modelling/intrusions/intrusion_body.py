@@ -109,7 +109,6 @@ class IntrusionBody:
 
         data = self.data.copy()
         data_xyz = data.loc[:, ["X", "Y", "Z"]].to_numpy()
-        print(self.intrusion_frame)
         # data['coord0'] = self.intrusion_frame[0].evaluate_value(self.model.scale(data_xyz, inplace = False))
         # data['coord1'] = self.intrusion_frame[1].evaluate_value(self.model.scale(data_xyz, inplace = False))
         # data['coord2'] = self.intrusion_frame[2].evaluate_value(self.model.scale(data_xyz, inplace = False))
@@ -687,12 +686,9 @@ class IntrusionBody:
             .loc[:, ["coord1", "coord2"]]
             .to_numpy()
         )
-        print(coordPS_of_maxG)
         vertex = [coordPS_of_maxG[0][0], coordPS_of_maxG[0][1], maxG]
 
         # --- growth simulation input data (max G, simulation of contact opposite to intrusion network)
-        # print(other_contact_data)
-        # print(minP,maxP,minS,maxS,vertex)
 
         data_conceptual_G = self.vertical_extent_model(
             other_contact_data,
