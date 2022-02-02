@@ -105,10 +105,11 @@ class IntrusionNetwork:
         [series_name, mean of scalar field vals, standar dev. of scalar field val]
 
         """
-        if "number_contacts" in kwargs:
-            n_clusters = kwargs["number_contacts"]
-        else:
-            n_clusters = [1]*len(series_list)
+        if self.intrusion_network_type == 'shortest path':
+            if "number_contacts" in kwargs:
+                n_clusters = kwargs["number_contacts"]
+            else:
+                n_clusters = [1]*len(series_list)
 
         if series_list == None:
             self.anisotropies_series_list = None
