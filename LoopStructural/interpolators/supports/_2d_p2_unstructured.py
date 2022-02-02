@@ -14,7 +14,9 @@ class P2Unstructured2d(BaseUnstructured2d):
 
     def __init__(self, elements, vertices, neighbours):
         BaseUnstructured2d.__init__(self, elements, vertices, neighbours)
-
+        self.hN = np.array([[4, 4, 0, 0, 0, -8], [4, 0, 4, 0, -8, 0]])
+        self.Nst = np.array([4, 0, 0, 4, -4, -4])
+        
     def evaluate_mixed_derivative(self, indexes):
         """
         evaluate partial of N with respect to st (to set u_xy=0)

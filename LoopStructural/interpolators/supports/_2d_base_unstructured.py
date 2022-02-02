@@ -23,8 +23,7 @@ class BaseUnstructured2d:
         self.n_nodes = self.nx
         self.neighbours = neighbours
 
-        self.hN = np.array([[4, 4, 0, 0, 0, -8], [4, 0, 4, 0, -8, 0]])
-        self.Nst = np.array([4, 0, 0, 4, -4, -4])
+        
         self.properties = {}
         # build an array of edges and edge relationships
         self.edges = np.zeros((self.nelements * 3, 2), dtype=int)

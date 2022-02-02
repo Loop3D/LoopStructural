@@ -6,7 +6,17 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
 
     def __init__(self, nodes, elements, neighbours, aabb_nsteps=None):
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
+        self.hessian = np.array([[[4, 4, 0, 0, 0, 0, -8, 0, 0, 0],
+        [4, 0, 0, 0, 0, 0, -4, 4, 0, -4],
+        [4, 0, 0, 0, 0, -4, -4, 0, 4, 0]],
 
+       [[4, 0, 0, 0, 0, 0, -4, 4, 0, -4],
+        [4, 0, 4, 0, 0, 0, 0, 0, 0, -8],
+        [4, 0, 0, 0, 4, -4, 0, 0, 0, -4]],
+
+       [[4, 0, 0, 0, 0, -4, -4, 0, 4, 0],
+        [4, 0, 0, 0, 4, -4, 0, 0, 0, -4],
+        [4, 0, 0, 4, 0, -8, 0, 0, 0, 0]]])
     # def evaluate_mixed_derivative(self, indexes):
     #     """
     #     evaluate partial of N with respect to st (to set u_xy=0)
@@ -34,50 +44,50 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
     #         + self.hN[None, 1, :] * (jac[:, 1, 0] * jac[:, 1, 1])[:, None]
     #     )
 
-    # def evaluate_shape_d2(self, indexes):
-    #     """evaluate second derivatives of shape functions in s and t
+    def evaluate_shape_d2(self, indexes):
+        """evaluate second derivatives of shape functions in s and t
 
-    #     Parameters
-    #     ----------
-    #     M : [type]
-    #         [description]
+        Parameters
+        ----------
+        M : [type]
+            [description]
 
-    #     Returns
-    #     -------
-    #     [type]
-    #         [description]
-    #     """
+        Returns
+        -------
+        [type]
+            [description]
+        """
 
-    #     vertices = self.nodes[self.elements[indexes], :]
+        vertices = self.nodes[self.elements[indexes], :]
 
-    #     jac = np.array(
-    #         [
-    #             [
-    #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
-    #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
-    #                 (vertices[:, 1, 2] - vertices[:, 0, 2]),
-    #             ],
-    #             [
-    #                 (vertices[:, 2, 0] - vertices[:, 0, 0]),
-    #                 (vertices[:, 2, 1] - vertices[:, 0, 1]),
-    #                 (vertices[:, 2, 2] - vertices[:, 0, 2]),
-    #             ],
-    #             [
-    #                 (vertices[:, 3, 0] - verticess[:, 0, 0]),
-    #                 (vertices[:, 3, 1] - vertices[:, 0, 1]),
-    #                 (vertices[:, 3, 2] - vertices[:, 0, 2]),
-    #             ],
-    #         ]
-    #     ).T
-    #     jac = np.linalg.inv(jac)
-    #     jac = jac * jac
+        jac = np.array(
+            [
+                [
+                    (vertices[:, 1, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 1, 1] - vertices[:, 0, 1]),
+                    (vertices[:, 1, 2] - vertices[:, 0, 2]),
+                ],
+                [
+                    (vertices[:, 2, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 2, 1] - vertices[:, 0, 1]),
+                    (vertices[:, 2, 2] - vertices[:, 0, 2]),
+                ],
+                [
+                    (vertices[:, 3, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 3, 1] - vertices[:, 0, 1]),
+                    (vertices[:, 3, 2] - vertices[:, 0, 2]),
+                ],
+            ]
+        ).T
+        jac = np.linalg.inv(jac)
+        jac = jac * jac
 
-    #     d2_prod = np.einsum("lij,ik->lik", jac, self.hN)
-    #     d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
-    #     xxConst = d2_prod[:, 0, :]
-    #     yyConst = d2_prod[:, 1, :]
+        d2_prod = np.einsum("lij,ik->lik", jac, self.hN)
+        d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
+        xxConst = d2_prod[:, 0, :]
+        yyConst = d2_prod[:, 1, :]
 
-    #     return xxConst, yyConst
+        return xxConst, yyConst
 
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
@@ -140,7 +150,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         dN[:, 1, 6] = -4*r 
         dN[:, 1, 7] = 4*r
         dN[:, 1, 8] = -0
-        dN[:, 1, 9] = 4*r + 8*s + 4*t +4
+        dN[:, 1, 9] = -4*r - 8*s - 4*t +4
 
         dN[:, 2, 0] = 4*r + 4*s + 4*t - 3
         dN[:, 2, 1] = 0
@@ -255,8 +265,8 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         #     element_gradients[inside, :, :]
         #     * property_array[self.elements[tetra[inside], :, None]]
         # ).sum(1)
-        corners  = property_array[self.elements[tetra[:],:]]
-        values[inside,:] = np.einsum('ijk,ik->ij',element_gradients,corners)
+        values[inside,:] =  (element_gradients[:,:,:]*property_array[self.elements[tetra[inside],None,:]]).sum(2)
+
         # values[inside, :] = (
         #     element_gradients[inside, :, :] * property_array[self.elements[tetra][inside, None,:]]
         # ).sum(2)
