@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def ellipse_function(
-    lateral_contact_data, test=0, minP=None, maxP=None, minS=None, maxS=None
+    lateral_contact_data, minP=None, maxP=None, minS=None, maxS=None
 ):
     import math
 
