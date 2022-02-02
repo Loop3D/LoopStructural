@@ -1202,38 +1202,38 @@ class GeologicalModel:
         intrusion_feature.set_intrusion_frame(IFrame)
         intrusion_feature.set_intrusion_body(IBody)
 
-        # if intrusion_lateral_extent_model == None:
-        #     logger.error(
-        #         "Specify conceptual model function for intrusion lateral extent"
-        #     )
+        if intrusion_lateral_extent_model == None:
+            logger.error(
+                "Specify conceptual model function for intrusion lateral extent"
+            )
 
-        # else:
-        #     logger.info("setting data for lateral thresholds simulation")
-        #     IBody.set_data_for_s_simulation()
-        #     IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
-        #     IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
-        #     IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
-        #     IBody.create_grid_for_simulation()
-        #     logger.info("simulating thresholds for lateral extent")
-        #     IBody.simulate_s_thresholds()
+        else:
+            logger.info("setting data for lateral thresholds simulation")
+            IBody.set_data_for_s_simulation()
+            IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
+            IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
+            IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
+            IBody.create_grid_for_simulation()
+            logger.info("simulating thresholds for lateral extent")
+            IBody.simulate_s_thresholds()
 
-        #     intrusion_feature.set_simulation_lateral_data(IBody.simulated_s_thresholds)
+            intrusion_feature.set_simulation_lateral_data(IBody.simulated_s_thresholds)
 
-        # if intrusion_vertical_extent_model == None:
-        #     logger.error(
-        #         "Specify conceptual model function for intrusion vertical extent"
-        #     )
+        if intrusion_vertical_extent_model == None:
+            logger.error(
+                "Specify conceptual model function for intrusion vertical extent"
+            )
 
-        # else:
-        #     logger.info("setting data for vertical thresholds simulation")
-        #     IBody.set_data_for_g_simulation()
-        #     IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
-        #     IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
-        #     IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
-        #     logger.info("simulating thresholds for vertical extent")
-        #     IBody.simulate_g_thresholds()
+        else:
+            logger.info("setting data for vertical thresholds simulation")
+            IBody.set_data_for_g_simulation()
+            IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
+            IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
+            IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
+            logger.info("simulating thresholds for vertical extent")
+            IBody.simulate_g_thresholds()
 
-        #     intrusion_feature.set_simulation_growth_data(IBody.simulated_g_thresholds)
+            intrusion_feature.set_simulation_growth_data(IBody.simulated_g_thresholds)
 
         return intrusion_feature
 
