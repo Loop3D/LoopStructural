@@ -63,6 +63,7 @@ class IntrusionBuilder(StructuralFrameBuilder):
         coord_0_values["val"] = 0
         coord_0_values["coord"] = 0
         coord_0_values["feature_name"] = self.name
+        coord_0_values["w"] = 1
         intrusion_frame_data = feature_data.append(coord_0_values, sort=False)
 
         self.add_data_from_data_frame(intrusion_frame_data)
