@@ -31,6 +31,7 @@ class GeologicalInterpolator:
             "normal": np.zeros((0, 7)),
             "tangent": np.zeros((0, 7)),
             "interface": np.zeros((0, 5)),
+            "inequality":np.zeros((0,6))
         }
         self.n_g = 0
         self.n_i = 0
@@ -124,6 +125,9 @@ class GeologicalInterpolator:
     def set_interface_constraints(self, points):
         self.data["interface"] = points
 
+    def set_inequality_constraints(self, points):
+        self.data["inequality"] = points
+
     def get_value_constraints(self):
         """
 
@@ -184,6 +188,10 @@ class GeologicalInterpolator:
         """
         return self.data["interface"]
 
+
+    def get_inequality_constraints(self):
+        return self.data["inequality"]
+        
     def setup_interpolator(self, **kwargs):
         """
         Runs all of the required setting up stuff
