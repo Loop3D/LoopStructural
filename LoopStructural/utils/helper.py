@@ -396,6 +396,8 @@ def coord_name():
 def interface_name():
     return ["interface"]
 
+def inequality_name():
+    return ['l','u']
 
 def feature_name():
     return ["feature_name"]
@@ -417,6 +419,7 @@ def all_heading():
         + feature_name()
         + interface_name()
         + polarity_name()
+        + inequality_name()
     )
 
 

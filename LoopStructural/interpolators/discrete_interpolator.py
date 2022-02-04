@@ -315,8 +315,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         # map from mesh node index to region node index
-        print(A.shape,l.shape,idc.shape,u.shape)
-
         gi = np.zeros(self.support.n_nodes)
         gi[:] = -1
         gi[self.region] = np.arange(0, self.nx)
@@ -400,7 +398,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         A = coo_matrix(
             (np.array(a), (np.array(rows), cols)), shape=(self.c_, self.nx), dtype=float
-        )  # .tocsr()
+        ).tocsc()  # .tocsr()
 
         B = np.array(b)
         if not square:
@@ -434,7 +432,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             C = coo_matrix(
                 
                     (np.array(a), (np.array(rows), cols)), shape=(self.eq_const_c_, self.nx), dtype=float
-                )
+                ).tocsr()
                 
             d = np.array(b)
             ATA = bmat([[ATA, C.T], [C, None]])
@@ -461,16 +459,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 u.extend((c["u"]).tolist())
 
                 mask = aa == 0
-                
                 a.extend(aa[~mask].tolist())
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
             Aie = coo_matrix(
             (np.array(a), (np.array(rows), cols)), shape=(self.ineq_const_c, self.nx), dtype=float
-            )    # .tocsr()
+            ).tocsc()    # .tocsr()
 
             uie = np.array(u)
-            lie = np.array(u)
+            lie = np.array(l)
 
             return ATA, ATB, Aie.T.dot(Aie), Aie.T.dot(uie), Aie.T.dot(lie)
         return ATA, ATB
@@ -483,7 +480,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         # Setup workspace
         # osqp likes csc matrices
-        prob.setup(P.tocsc(), np.array(q), A.tocsc(), np.array(l), np.array(u))
+        prob.setup(P.tocsc(), np.array(q), A.tocsc(), np.array(u), np.array(l))
         res = prob.solve()
         return res.x
 

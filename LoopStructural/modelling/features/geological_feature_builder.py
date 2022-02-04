@@ -20,6 +20,7 @@ from LoopStructural.utils.helper import (
     gradient_vec_names,
     tangent_vec_names,
     interface_name,
+    inequality_name
 )
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import (
@@ -305,6 +306,13 @@ class GeologicalFeatureInterpolator:
                 mask, xyz_names() + interface_name() + weight_name()
             ].to_numpy(float)
             self.interpolator.set_interface_constraints(interface_data)
+        # add inequality constraints
+        mask = np.all(~np.isnan(data.loc[:, inequality_name()].to_numpy(float)), axis=1)
+        if mask.shape[0] > 0:
+            inequality_data = data.loc[
+                mask, xyz_names() + inequality_name()
+            ].to_numpy(float)
+            self.interpolator.set_inequality_constraints(inequality_data)
 
         self.data_added = True
         self._up_to_date = False

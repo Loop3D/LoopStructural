@@ -180,7 +180,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 logger.warning(f"{self.propertyname}: {np.sum(~inside)} value constraints not added: outside of model bounding box")
 
     def add_inequality_constraints(self, w=1.0):
-        points = self.get_value_constraints()
+        points = self.get_inequality_constraints()
         # check that we have added some points
         if points.shape[0] > 0:
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
