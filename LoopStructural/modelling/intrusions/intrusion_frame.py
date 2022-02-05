@@ -9,7 +9,12 @@ logger = getLogger(__name__)
 
 class IntrusionBuilder(StructuralFrameBuilder):
     def __init__(
-        self, interpolator=None, interpolators=None, model=None, feature_name=None
+        self, 
+        interpolator=None, 
+        interpolators=None, 
+        model=None, 
+        # name=None, 
+        **kwargs
     ):
         """A specialised structural frame builder for building an intrusion
 
@@ -23,11 +28,11 @@ class IntrusionBuilder(StructuralFrameBuilder):
             reference to the model containing the fault
         """
 
-        StructuralFrameBuilder.__init__(self, interpolator, interpolators)
+        StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array([np.nan, np.nan, np.nan])
         self.model = model
-        self.name = feature_name
+        # self.name = name
 
         self.minimum_origin = self.model.bounding_box[0, :]
         self.maximum_maximum = self.model.bounding_box[1, :]
@@ -49,7 +54,6 @@ class IntrusionBuilder(StructuralFrameBuilder):
 
         Parameters
         ----------
-        feature_name : string, name of the intrusion frame feature in the dataframe
         feature_data : DataFrame,
                        model data
         intrusion_network_points: numpy array [x,y,z],
@@ -57,8 +61,8 @@ class IntrusionBuilder(StructuralFrameBuilder):
 
         """
         # Coordinate 0 - Represents growth, isovalue 0 correspond to the intrusion network surface, gradient must be provided (ix,iy,iz):
-        scaled_inet_points = self.model.scale(intrusion_network_points[:, :3])
-        # scaled_inet_points = intrusion_network_points[:,:3]
+        # scaled_inet_points = self.model.scale(intrusion_network_points[:, :3])
+        scaled_inet_points = intrusion_network_points[:,:3]
         coord_0_values = pd.DataFrame(scaled_inet_points, columns=["X", "Y", "Z"])
         coord_0_values["val"] = 0
         coord_0_values["coord"] = 0
