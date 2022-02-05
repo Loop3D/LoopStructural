@@ -197,15 +197,12 @@ class IntrusionBody:
 
         grid_points = self.model.regular_grid(spacing, shuffle=False)
 
-        grid_points_coord0 = self.intrusion_frame[0].evaluate_value(
-            self.model.scale(grid_points, inplace=False)
-        )
-        grid_points_coord1 = self.intrusion_frame[1].evaluate_value(
-            self.model.scale(grid_points, inplace=False)
-        )
-        grid_points_coord2 = self.intrusion_frame[2].evaluate_value(
-            self.model.scale(grid_points, inplace=False)
-        )
+        grid_points_coord0 = self.intrusion_frame[0].evaluate_value(grid_points)
+        
+        grid_points_coord1 = self.intrusion_frame[1].evaluate_value(grid_points)
+        
+        grid_points_coord2 = self.intrusion_frame[2].evaluate_value(grid_points)
+        
 
         self.simulation_grid = [
             grid_points,
