@@ -122,12 +122,12 @@ def find_inout_points(velocity_field_array, velocity_parameters):
             break
             
         where_inlet_i = np.where(velocity_field_array[:,i]==inlet_velocity)
-        
+        # print('inlet', where_inlet_i)
         if len(where_inlet_i[0]) > 0:
             inlet_point[0] = where_inlet_i[0][len(where_inlet_i[0])-1]
             inlet_point[1] = i
             k = 1
-        else: 
+        else:
             continue
 
     k = 0
@@ -137,8 +137,7 @@ def find_inout_points(velocity_field_array, velocity_parameters):
             break
             
         where_outlet_i = np.where(velocity_field_array[:,i_]==outlet_velocity)
-        
-        if len(where_outlet_i) > 0:
+        if len(where_outlet_i[0]) > 0:
             outlet_point[0] = where_outlet_i[0][0]
             outlet_point[1] = i_
             k = 1
@@ -156,6 +155,7 @@ def find_inout_points(velocity_field_array, velocity_parameters):
     #             k = 1
     #             break
     # k = 0
+
     # for i in range(len(velocity_field_array[0])):
     #     i_ = len(velocity_field_array[0]) - 1 - i
     #     if k == 1:
@@ -168,7 +168,7 @@ def find_inout_points(velocity_field_array, velocity_parameters):
     #             outlet_point[1] = i_
     #             k = 1
     #             break
-    # print(inlet_point, outlet_point, inlet_velocity, outlet_velocity)
+
     return inlet_point, outlet_point
 
 
@@ -372,6 +372,7 @@ def index_min(array):
             index_array.update({i: array[i]})
 
     minimum_val = min(index_array.values())
+
 
     for key, value in index_array.items():
         if value == minimum_val:
