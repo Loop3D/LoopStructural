@@ -45,6 +45,7 @@ class IntrusionNetwork:
         self.shortestpath_outlet_mean = None
         self.intrusion_network_outcome = None
 
+
     def set_data(self):
         """
         Separate data between roof and floor contacts
@@ -127,7 +128,6 @@ class IntrusionNetwork:
                 series_i_vals = series_list[i]["feature"].evaluate_value(
                     data_array_temp
                 )
-
                 series_array = np.zeros([len(data_array_temp), 4])
                 series_array[:, :3] = data_array_temp
                 series_array[:, 3] = series_i_vals
@@ -174,27 +174,28 @@ class IntrusionNetwork:
             self.anisotropies_fault_list = fault_list
             faults_parameters = {}
             for i in range(len(fault_list)):
-                sf_faults_vals = []
-                sf_faults_mean = []
-                sf_faults_std = []
-                sf_faults_gridpts = []
+                # sf_faults_vals = []
+                # sf_faults_mean = []
+                # sf_faults_std = []
+                # sf_faults_gridpts = []
 
-                data_temp = self.intrusion_network_data[
-                    self.intrusion_network_data["intrusion_anisotropy"]
-                    == fault_list[i].name
-                ].copy()
+                data_temp = self.feature_data[self.feature_data["intrusion_anisotropy"]== fault_list[i].name].copy()
                 data_array_temp = data_temp.loc[:, ["X", "Y", "Z"]].to_numpy()
                 # fault_i_vals = fault_list[i][0].evaluate_value(self.model.scale(data_array_temp, inplace = False))
                 fault_i_vals = fault_list[i][0].evaluate_value(data_array_temp)
+                # print(fault_i_vals)
+                fault_i_mean = np.mean(fault_i_vals)
+                fault_i_std = np.std(fault_i_vals)
 
-                sf_faults_vals.append(fault_i_vals)
-                sf_faults_mean.append(np.mean(fault_i_vals))
-                sf_faults_std.append(np.std(fault_i_vals))
+                # sf_faults_vals.append(fault_i_vals)
+                # sf_faults_mean.append(np.mean(fault_i_vals))
+                # sf_faults_std.append(np.std(fault_i_vals))
 
                 faults_parameters[fault_list[i].name] = [
-                    sf_faults_vals,
-                    sf_faults_mean,
-                    sf_faults_std,
+                    fault_list[i],
+                    # fault_i_vals,
+                    fault_i_mean,
+                    fault_i_std,
                 ]
 
             self.anisotropies_fault_parameters = faults_parameters
@@ -285,9 +286,10 @@ class IntrusionNetwork:
             series_id = self.anisotropies_series_parameters[contact_id][0]
             seriesi_mean = self.anisotropies_series_parameters[contact_id][1]
             seriesi_std = self.anisotropies_series_parameters[contact_id][2]
-            seriesi_values = series_id["feature"].evaluate_value(
-                self.model.scale(grid_points, inplace=False)
-            )
+            seriesi_values = series_id["feature"].evaluate_value(grid_points)
+                
+                # self.model.scale(grid_points, inplace=False))
+            # )
 
             # apend associated scalar field values to each anisotropy
             self.anisotropies_series_parameters[contact_id].append(seriesi_values)
@@ -298,15 +300,12 @@ class IntrusionNetwork:
                 seriesi_values <= (seriesi_mean + seriesi_std * delta_list[i])),i] = 1
 
             # for n in range(len(seriesi_values)):
-            #     if (
-            #         (seriesi_mean - seriesi_std * delta_list[i])
-            #         <= seriesi_values[n]
-            #         <= (seriesi_mean + seriesi_std * delta_list[i])
-            #     ):
+            #     if ((seriesi_mean - seriesi_std * delta_list[i])<= seriesi_values[n]<= (seriesi_mean + seriesi_std * delta_list[i])):
             #         Ic[n, i] = 1
             #     else:
             #         continue
 
+        # self.ic = Ic
         return Ic
 
     def indicator_function_faults(self, delta=None):
@@ -331,18 +330,14 @@ class IntrusionNetwork:
 
         If = np.zeros([len(self.grid_to_evaluate_ifx), n_faults])
 
-        for i in range(n_faults):
-            fault_id = self.anisotropies_fault_list[i]
-            faulti_mean = 0
-            faulti_std = 0.005
-            faulti_values = fault_id[0].evaluate_value(
-                self.model.scale(grid_points, inplace=False)
-            )
+        for i, fault_id in enumerate(self.anisotropies_fault_parameters.keys()):
+            fault_i = self.anisotropies_fault_parameters[fault_id][0]
+            faulti_mean = self.anisotropies_fault_parameters[fault_id][1]
+            faulti_std = self.anisotropies_fault_parameters[fault_id][2]
+            faulti_values = fault_i[0].evaluate_value(grid_points)
 
             # apend associated scalar field values to each anisotropy
-            self.anisotropies_fault_parameters.get(
-                self.anisotropies_fault_list[i].name
-            ).append(faulti_values)
+            self.anisotropies_fault_parameters[fault_id].append(faulti_values)
             
             If[np.logical_and(
                 (faulti_mean - faulti_std * delta[i]) <= faulti_values,
@@ -357,7 +352,7 @@ class IntrusionNetwork:
             #         If[j, i] = 1
             #     else:
             #         continue
-
+        # self.iff = If
         return If
 
     def compute_velocity_field(self, indicator_fx_contacts, indicator_fx_faults):
@@ -416,6 +411,7 @@ class IntrusionNetwork:
             IfKf = np.dot(indicator_fx_faults, Kf)
 
         velocity_field = (IcKc + ((1 - IcIc) * IfKf)) + 0.1
+        # self.velfield = velocity_field
         return velocity_field
 
     def set_sections_axis(self, axis=None):
@@ -463,7 +459,7 @@ class IntrusionNetwork:
             if "delta_c" in kwargs:
                 delta_c = kwargs["delta_c"]
             else:
-                delta_c = [1] * len(self.anisotropies_fault_list)
+                delta_c = [1] * len(self.anisotropies_series_list)
 
             if "delta_f" in kwargs:
                 delta_f = kwargs["delta_f"]
@@ -471,6 +467,8 @@ class IntrusionNetwork:
                 delta_f = [1] * len(self.anisotropies_fault_list)
 
             grid_points, spacing = self.create_grid_for_indicator_fxs()
+            # grid_points = self.grid_to_evaluate_ifx
+            # spacing = self.model.nsteps
 
             # --- check axis
             if self.shortestpath_sections_axis == "X":
@@ -488,33 +486,42 @@ class IntrusionNetwork:
 
             # --- compute indicator functions and velocity field
             Ic = self.indicator_function_contacts(delta=delta_c)
+
+            #--------- check if any anisotropy is indetified by indicator functions:
+            if len(np.where(Ic == 1)[0]) == 0:
+                logger.error(
+                    "No anisotropy identified, increase value of delta_c"
+                )
+
+
             If = self.indicator_function_faults(delta=delta_f)
             velocity_field = self.compute_velocity_field(Ic, If)
 
             # --- find first (inlet) and last (outlet) anisotropies in anisotropies sequence, and compute associated scalar fields
             inlet_anisotropy = self.anisotropies_sequence[0]
 
-            if inlet_anisotropy in self.anisotropies_series_list:
-                sf_inlet_anisotropy = inlet_anisotropy["feature"].evaluate_value(
-                    self.model.scale(grid_points, inplace=False)
-                )
-            else:
-                sf_inlet_anisotropy = inlet_anisotropy[0].evaluate_value(
-                    self.model.scale(grid_points, inplace=False)
-                )
+            if inlet_anisotropy in self.anisotropies_series_list: # if inlet anisotropy type is series
+                sf_inlet_anisotropy = inlet_anisotropy["feature"].evaluate_value(grid_points)
+                #     self.model.scale(grid_points, inplace=False)
+                # )
+            else: #otherwise, it is a fault:
+                sf_inlet_anisotropy = inlet_anisotropy[0].evaluate_value(grid_points)
+                #     self.model.scale(grid_points, inplace=False)
+                # )
 
             outlet_anisotropy = self.anisotropies_sequence[
                 len(self.anisotropies_sequence) - 1
             ]
             if outlet_anisotropy in self.anisotropies_series_list:
-                sf_outlet_anisotropy = outlet_anisotropy["feature"].evaluate_value(
-                    self.model.scale(grid_points, inplace=False)
-                )
+                sf_outlet_anisotropy = outlet_anisotropy["feature"].evaluate_value(grid_points)
+                #     self.model.scale(grid_points, inplace=False)
+                # )
             else:
-                sf_outlet_anisotropy = outlet_anisotropy[0].evaluate_value(
-                    self.model.scale(grid_points, inplace=False)
-                )
+                sf_outlet_anisotropy = outlet_anisotropy[0].evaluate_value(grid_points)
+                #     self.model.scale(grid_points, inplace=False)
+                # )
 
+            
             # create dataframe containing grid points, velocity values
             nodes = np.linspace(0, len(grid_points), len(grid_points))
             medium = np.zeros([len(grid_points), 7])
@@ -550,7 +557,7 @@ class IntrusionNetwork:
                 section_temp[:, 6] = section_df.loc[:, "sf_outlet"]
 
                 medium_sections.append(section_temp)
-
+            
             # Convert each section into arrays containing different set of values
             nodes_arrays = []
             velocity_field_arrays = []
@@ -612,10 +619,17 @@ class IntrusionNetwork:
                 shortest_path_coords_section = grid_from_array(
                     shortest_path_section,
                     [section_axis, axis_values[i]],
-                    self.model.origin,
-                    self.model.maximum,
+                    self.model.bounding_box[0],
+                    self.model.bounding_box[1],
                 )
                 shortest_path_coords.append(shortest_path_coords_section)
+
+            # self.inlet_array = inlet_pt_array
+            # self.outlet_array = outlet_pt_array
+            # self.initial_point_fmm = initial_point_array
+            # self.velocity_field_arrays = velocity_field_arrays
+
+            # self.timemap = time_maps_array
 
             # create array of shortest path points
             shortest_path_coords_temp = shortest_path_coords[0]
