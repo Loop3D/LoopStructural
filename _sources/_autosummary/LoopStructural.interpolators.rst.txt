@@ -24,6 +24,8 @@ LoopStructural.interpolators
       DiscreteInterpolator
       FiniteDifferenceInterpolator
       GeologicalInterpolator
+      IntEnum
+      InterpolatorType
       PiecewiseLinearInterpolator
       StructuredGrid
       TetMesh

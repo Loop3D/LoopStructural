@@ -33,6 +33,7 @@ LoopStructural.interpolators.piecewiselinear\_interpolator
       :recursive:              
    
       DiscreteInterpolator
+      InterpolatorType
       PiecewiseLinearInterpolator
    
    

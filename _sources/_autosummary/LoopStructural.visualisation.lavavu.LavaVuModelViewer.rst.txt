@@ -30,6 +30,7 @@ LoopStructural.visualisation.lavavu.LavaVuModelViewer
       ~LavaVuModelViewer.add_points
       ~LavaVuModelViewer.add_scalar_field
       ~LavaVuModelViewer.add_section
+      ~LavaVuModelViewer.add_structural_frame
       ~LavaVuModelViewer.add_support_box
       ~LavaVuModelViewer.add_value_data
       ~LavaVuModelViewer.add_vector_data

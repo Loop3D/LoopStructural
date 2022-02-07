@@ -31,6 +31,7 @@ LoopStructural.interpolators.finite\_difference\_interpolator
    
       DiscreteInterpolator
       FiniteDifferenceInterpolator
+      InterpolatorType
       Operator
    
    

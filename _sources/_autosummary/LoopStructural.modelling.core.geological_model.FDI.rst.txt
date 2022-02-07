@@ -21,6 +21,7 @@ LoopStructural.modelling.core.geological\_model.FDI
       ~FDI.add_equality_constraints
       ~FDI.add_gradient_constraints
       ~FDI.add_gradient_orthogonal_constraints
+      ~FDI.add_inequality_constraints_to_matrix
       ~FDI.add_interface_constraints
       ~FDI.add_non_linear_constraints
       ~FDI.add_norm_constraints
@@ -31,6 +32,7 @@ LoopStructural.modelling.core.geological\_model.FDI
       ~FDI.build_matrix
       ~FDI.calculate_residual_for_constraints
       ~FDI.copy
+      ~FDI.debug
       ~FDI.evaluate_gradient
       ~FDI.evaluate_value
       ~FDI.get_data_locations

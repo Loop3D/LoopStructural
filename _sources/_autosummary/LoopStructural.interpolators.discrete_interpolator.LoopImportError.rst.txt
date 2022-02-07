@@ -1,0 +1,6 @@
+LoopStructural.interpolators.discrete\_interpolator.LoopImportError
+===================================================================
+
+.. currentmodule:: LoopStructural.interpolators.discrete_interpolator
+
+.. autoexception:: LoopImportError

@@ -30,6 +30,7 @@ LoopStructural.interpolators.discrete\_fold\_interpolator
       :recursive:              
    
       DiscreteFoldInterpolator
+      InterpolatorType
       PiecewiseLinearInterpolator
    
    

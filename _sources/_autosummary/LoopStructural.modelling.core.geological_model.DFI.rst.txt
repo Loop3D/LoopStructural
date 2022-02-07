@@ -23,6 +23,7 @@ LoopStructural.modelling.core.geological\_model.DFI
       ~DFI.add_fold_constraints
       ~DFI.add_gradient_constraints
       ~DFI.add_gradient_orthogonal_constraints
+      ~DFI.add_inequality_constraints_to_matrix
       ~DFI.add_interface_constraints
       ~DFI.add_non_linear_constraints
       ~DFI.add_norm_constraints
@@ -31,6 +32,7 @@ LoopStructural.modelling.core.geological\_model.DFI
       ~DFI.build_matrix
       ~DFI.calculate_residual_for_constraints
       ~DFI.copy
+      ~DFI.debug
       ~DFI.evaluate_gradient
       ~DFI.evaluate_value
       ~DFI.from_piecewise_linear_and_fold

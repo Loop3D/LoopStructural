@@ -30,6 +30,7 @@ LoopStructural.visualisation.lavavu.BaseModelPlotter
       ~BaseModelPlotter.add_points
       ~BaseModelPlotter.add_scalar_field
       ~BaseModelPlotter.add_section
+      ~BaseModelPlotter.add_structural_frame
       ~BaseModelPlotter.add_support_box
       ~BaseModelPlotter.add_value_data
       ~BaseModelPlotter.add_vector_data

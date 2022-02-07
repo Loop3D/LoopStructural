@@ -1,0 +1,19 @@
+LoopStructural.interpolators.IntEnum
+====================================
+
+.. currentmodule:: LoopStructural.interpolators
+
+.. autoclass:: IntEnum
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   
+
+   
+   
+   

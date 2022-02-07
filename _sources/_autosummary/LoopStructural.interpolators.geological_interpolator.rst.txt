@@ -29,6 +29,7 @@ LoopStructural.interpolators.geological\_interpolator
       :recursive:              
    
       GeologicalInterpolator
+      InterpolatorType
    
    
 

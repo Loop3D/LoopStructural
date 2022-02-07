@@ -71,6 +71,8 @@
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.DiscreteInterpolator.html">LoopStructural.interpolators.DiscreteInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html">LoopStructural.interpolators.GeologicalInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.IntEnum.html">LoopStructural.interpolators.IntEnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.InterpolatorType.html">LoopStructural.interpolators.InterpolatorType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">LoopStructural.interpolators.StructuredGrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
@@ -87,7 +89,9 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.normalize.html">LoopStructural.interpolators.discrete_interpolator.normalize</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator.html">LoopStructural.interpolators.discrete_interpolator.GeologicalInterpolator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.InterpolatorType.html">LoopStructural.interpolators.discrete_interpolator.InterpolatorType</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.coo_matrix.html">LoopStructural.interpolators.discrete_interpolator.coo_matrix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.LoopImportError.html">LoopStructural.interpolators.discrete_interpolator.LoopImportError</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
@@ -173,24 +177,30 @@ any interpolator that solves the system using least squares approximation</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_constraints_to_least_squares" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_constraints_to_least_squares"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_constraints_to_least_squares</span></code></a>(A, B, idc)</p></td>
 <td><p>Adds constraints to the least squares system.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_equality_constraints</span></code></a>(node_idx, values)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_equality_constraints</span></code></a>(node_idx, values[, …])</p></td>
 <td><p>Adds hard constraints to the least squares system.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_non_linear_constraints</span></code>(nonlinear_constraint)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_constraints_to_matrix</span></code></a>(A, l, …)</p></td>
+<td><p>Adds constraints for a matrix where the linear function l &lt; Ax &gt; u constrains the objective function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_non_linear_constraints</span></code>(nonlinear_constraint)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_tangent_constraints" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tangent_constraints</span></code></a>([w])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_tangent_constraints" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tangent_constraints</span></code></a>([w])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param w</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_matrix</span></code></a>([square, damp])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_matrix</span></code></a>([square, damp, ie])</p></td>
 <td><p>Assemble constraints into interpolation matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_residual_for_constraints</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_residual_for_constraints</span></code>()</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.debug" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>()</p></td>
+<td><p>Helper function for debugging when the interpolator isn’t working</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.evaluate_gradient" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(evaluation_points)</p></td>
 <td><p>Evaluate the gradient of the scalar field at the evaluation points :param evaluation_points: xyz locations to evaluate the gradient :type evaluation_points: np.array</p></td>
@@ -333,7 +343,7 @@ index given the shape of the input arrays</p>
 
 <dl class="py method">
 <dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints">
-<code class="sig-name descname"><span class="pre">add_equality_constraints</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_equality_constraints</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'undefined'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_equality_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds hard constraints to the least squares system. For now this just
 sets
 the node values to be fixed using a lagrangian.</p>
@@ -342,6 +352,23 @@ the node values to be fixed using a lagrangian.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_idx</strong> (<em>numpy array/list</em>) – int array of node indexes</p></li>
 <li><p><strong>values</strong> (<em>numpy array/list</em>) – array of node values</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix">
+<code class="sig-name descname"><span class="pre">add_inequality_constraints_to_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'undefined'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds constraints for a matrix where the linear function
+l &lt; Ax &gt; u constrains the objective function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>numpy array</em>) – matrix of coefficients</p></li>
+<li><p><strong>l</strong> (<em>numpy array</em>) – lower bounds</p></li>
+<li><p><strong>u</strong> (<em>numpy array</em>) – upper bounds</p></li>
+<li><p><strong>idc</strong> (<em>numpy array</em>) – index of constraints</p></li>
 </ul>
 </dd>
 </dl>
@@ -359,7 +386,7 @@ the node values to be fixed using a lagrangian.</p>
 
 <dl class="py method">
 <dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix">
-<code class="sig-name descname"><span class="pre">build_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">build_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ie</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.build_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assemble constraints into interpolation matrix. Adds equaltiy
 constraints
 using lagrange modifiers if necessary</p>
@@ -371,6 +398,12 @@ using lagrange modifiers if necessary</p>
 <dd class="field-even"><p><em>Interpolation matrix and B</em></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.debug">
+<code class="sig-name descname"><span class="pre">debug</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for debugging when the interpolator isn’t working</p>
 </dd></dl>
 
 <dl class="py method">

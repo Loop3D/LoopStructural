@@ -22,6 +22,7 @@ LoopStructural.interpolators.piecewiselinear\_interpolator.PiecewiseLinearInterp
       ~PiecewiseLinearInterpolator.add_equality_constraints
       ~PiecewiseLinearInterpolator.add_gradient_constraints
       ~PiecewiseLinearInterpolator.add_gradient_orthogonal_constraints
+      ~PiecewiseLinearInterpolator.add_inequality_constraints_to_matrix
       ~PiecewiseLinearInterpolator.add_interface_constraints
       ~PiecewiseLinearInterpolator.add_non_linear_constraints
       ~PiecewiseLinearInterpolator.add_norm_constraints
@@ -30,6 +31,7 @@ LoopStructural.interpolators.piecewiselinear\_interpolator.PiecewiseLinearInterp
       ~PiecewiseLinearInterpolator.build_matrix
       ~PiecewiseLinearInterpolator.calculate_residual_for_constraints
       ~PiecewiseLinearInterpolator.copy
+      ~PiecewiseLinearInterpolator.debug
       ~PiecewiseLinearInterpolator.evaluate_gradient
       ~PiecewiseLinearInterpolator.evaluate_value
       ~PiecewiseLinearInterpolator.get_data_locations

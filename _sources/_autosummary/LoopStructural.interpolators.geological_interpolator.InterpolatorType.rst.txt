@@ -1,0 +1,31 @@
+LoopStructural.interpolators.geological\_interpolator.InterpolatorType
+======================================================================
+
+.. currentmodule:: LoopStructural.interpolators.geological_interpolator
+
+.. autoclass:: InterpolatorType
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~InterpolatorType.BASE
+      ~InterpolatorType.BASE_DATA_SUPPORTED
+      ~InterpolatorType.BASE_DISCRETE
+      ~InterpolatorType.DISCRETE_FOLD
+      ~InterpolatorType.FINITE_DIFFERENCE
+      ~InterpolatorType.PIECEWISE_LINEAR
+      ~InterpolatorType.SURFE
+   
+   

@@ -20,7 +20,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.interpolators.operator" href="LoopStructural.interpolators.operator.html" />
+    <link rel="next" title="LoopStructural.interpolators.geological_interpolator.InterpolatorType" href="LoopStructural.interpolators.geological_interpolator.InterpolatorType.html" />
     <link rel="prev" title="LoopStructural.interpolators.geological_interpolator.getLogger" href="LoopStructural.interpolators.geological_interpolator.getLogger.html" /> 
 </head>
 
@@ -71,6 +71,8 @@
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.DiscreteInterpolator.html">LoopStructural.interpolators.DiscreteInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html">LoopStructural.interpolators.GeologicalInterpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.IntEnum.html">LoopStructural.interpolators.IntEnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.InterpolatorType.html">LoopStructural.interpolators.InterpolatorType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">LoopStructural.interpolators.StructuredGrid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
@@ -84,6 +86,7 @@
 <li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html">LoopStructural.interpolators.geological_interpolator</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.getLogger.html">LoopStructural.interpolators.geological_interpolator.getLogger</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.InterpolatorType.html">LoopStructural.interpolators.geological_interpolator.InterpolatorType</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.operator.html">LoopStructural.interpolators.operator</a></li>
@@ -167,10 +170,13 @@ by using any of these functions. This will enable interpolators to be interchang
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.__init__" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
 <td><p>This class is the base class for a geological interpolator and contains all of the main interface functions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_data_locations" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_data_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_locations</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.debug" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>()</p></td>
+<td><p>Helper function for debugging when the interpolator isn’t working</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_data_locations" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_data_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_locations</span></code></a>()</p></td>
 <td><p>Get the location of all data points</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_gradient_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gradient_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_gradient_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gradient_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -178,10 +184,10 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_interface_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_interface_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
 <td><p>Get the location of interface constraints</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_norm_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_norm_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -189,7 +195,7 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -197,7 +203,7 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_value_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_value_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -205,57 +211,63 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.reset" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.reset" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
 <td><p>Removes all of the data from an interpolator</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param points</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_normal_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_normal_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_normal_constraints</span></code></a>(points)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_normal_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_normal_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_normal_constraints</span></code></a>(points)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param points</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_property_name" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_property_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_property_name</span></code></a>(name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_property_name" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_property_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_property_name</span></code></a>(name)</p></td>
 <td><p>Set the name of the interpolated property :param name: name of the property to be saved on a mesh :type name: string</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_region</span></code>(**kwargs)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_region</span></code>(**kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_tangent_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_tangent_constraints</span></code></a>(points)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_tangent_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_tangent_constraints</span></code></a>(points)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param points</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_value_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_constraints</span></code></a>(points)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_value_constraints" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.set_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_constraints</span></code></a>(points)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param points</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.setup_interpolator" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.setup_interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_interpolator</span></code></a>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.setup_interpolator" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.setup_interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_interpolator</span></code></a>(**kwargs)</p></td>
 <td><p>Runs all of the required setting up stuff</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.solve_system" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.solve_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_system</span></code></a>(**kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.solve_system" title="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.solve_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_system</span></code></a>(**kwargs)</p></td>
 <td><p>Solves the interpolation equations</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt id="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.debug">
+<code class="sig-name descname"><span class="pre">debug</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for debugging when the interpolator isn’t working</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_data_locations">
 <code class="sig-name descname"><span class="pre">get_data_locations</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.geological_interpolator.GeologicalInterpolator.get_data_locations" title="Permalink to this definition">¶</a></dt>
@@ -393,7 +405,7 @@ by using any of these functions. This will enable interpolators to be interchang
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="LoopStructural.interpolators.geological_interpolator.getLogger.html" class="btn btn-neutral float-left" title="LoopStructural.interpolators.geological_interpolator.getLogger" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="LoopStructural.interpolators.operator.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.operator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="LoopStructural.interpolators.geological_interpolator.InterpolatorType.html" class="btn btn-neutral float-right" title="LoopStructural.interpolators.geological_interpolator.InterpolatorType" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

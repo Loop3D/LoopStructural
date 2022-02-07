@@ -34,11 +34,19 @@ LoopStructural.interpolators.discrete\_interpolator
    
       DiscreteInterpolator
       GeologicalInterpolator
+      InterpolatorType
       coo_matrix
    
    
 
    
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+      :toctree:                                          
+   
+      LoopImportError
    
    
 

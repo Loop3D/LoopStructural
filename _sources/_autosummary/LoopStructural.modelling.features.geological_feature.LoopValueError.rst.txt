@@ -1,0 +1,6 @@
+LoopStructural.modelling.features.geological\_feature.LoopValueError
+====================================================================
+
+.. currentmodule:: LoopStructural.modelling.features.geological_feature
+
+.. autoexception:: LoopValueError

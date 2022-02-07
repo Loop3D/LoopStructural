@@ -17,6 +17,7 @@ LoopStructural.modelling.features.geological\_feature\_builder.GeologicalInterpo
    .. autosummary::
    
       ~GeologicalInterpolator.__init__
+      ~GeologicalInterpolator.debug
       ~GeologicalInterpolator.get_data_locations
       ~GeologicalInterpolator.get_gradient_constraints
       ~GeologicalInterpolator.get_interface_constraints

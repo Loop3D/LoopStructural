@@ -19,10 +19,12 @@ LoopStructural.interpolators.piecewiselinear\_interpolator.DiscreteInterpolator
       ~DiscreteInterpolator.__init__
       ~DiscreteInterpolator.add_constraints_to_least_squares
       ~DiscreteInterpolator.add_equality_constraints
+      ~DiscreteInterpolator.add_inequality_constraints_to_matrix
       ~DiscreteInterpolator.add_non_linear_constraints
       ~DiscreteInterpolator.add_tangent_constraints
       ~DiscreteInterpolator.build_matrix
       ~DiscreteInterpolator.calculate_residual_for_constraints
+      ~DiscreteInterpolator.debug
       ~DiscreteInterpolator.evaluate_gradient
       ~DiscreteInterpolator.evaluate_value
       ~DiscreteInterpolator.get_data_locations

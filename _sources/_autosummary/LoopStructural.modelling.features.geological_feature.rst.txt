@@ -34,6 +34,13 @@ LoopStructural.modelling.features.geological\_feature
 
    
    
+   .. rubric:: Exceptions
+
+   .. autosummary::
+      :toctree:                                          
+   
+      LoopValueError
+   
    
 
 
