@@ -1401,7 +1401,7 @@ class GeologicalModel:
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["nz"])
         )
         vector_data = np.vstack([vector_data,fault_frame_data.loc[mask2, ["nx", "ny", "nz"]].to_numpy()])
-        fault_normal_vector = np.mean(vector_data,axis=1)
+        fault_normal_vector = np.mean(vector_data,axis=0)
         logger.info(f'Fault normal vector: {fault_normal_vector}')
 
         mask = np.logical_and(
@@ -1433,9 +1433,9 @@ class GeologicalModel:
             fault_slip_vector = dip_vector[:, 0]
             logger.info(f'Estimated fault slip vector: {fault_slip_vector}')
 
-        if fault_center is not None:
+        if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
-        if fault_center is None:
+        else:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             if (

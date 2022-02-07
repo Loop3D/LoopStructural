@@ -103,7 +103,9 @@ class FaultBuilder(StructuralFrameBuilder):
                 fault_trace[:, None, :] - fault_trace[None, :, :], axis=2
             )
             if len(distance) == 0 or np.sum(distance) == 0:
-                logger.error("There is no fault trace for {}".format(self.name))
+                logger.warning("There is no fault trace for {}".format(self.name))
+                # this can mean there is only a single data point for the fault, its not critical
+                # but probably means the fault isn't well defined. 
                 # add any data anyway - usually just orientation data
                 self.add_data_from_data_frame(data)
                 self.origin = self.model.bounding_box[0, :]
