@@ -105,7 +105,7 @@ class FaultBuilder(StructuralFrameBuilder):
             if len(distance) == 0 or np.sum(distance) == 0:
                 logger.warning("There is no fault trace for {}".format(self.name))
                 # this can mean there is only a single data point for the fault, its not critical
-                # but probably means the fault isn't well defined. 
+                # but probably means the fault isn't well defined.
                 # add any data anyway - usually just orientation data
                 self.add_data_from_data_frame(data)
                 self.origin = self.model.bounding_box[0, :]
@@ -162,10 +162,14 @@ class FaultBuilder(StructuralFrameBuilder):
                     ]
                     logger.warning("Converting fault norm data to gradient data")
                     mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["nx"]))
-                    data.loc[mask, ['gx','gy','gz']] = data.loc[mask,['nx','ny','nz']]
-                    data.loc[mask, ['nx','ny','nz']] = np.nan
+                    data.loc[mask, ["gx", "gy", "gz"]] = data.loc[
+                        mask, ["nx", "ny", "nz"]
+                    ]
+                    data.loc[mask, ["nx", "ny", "nz"]] = np.nan
                 if points == False:
-                    logger.warning("Rescaling fault norm constraint length for fault frame")
+                    logger.warning(
+                        "Rescaling fault norm constraint length for fault frame"
+                    )
                     mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["gx"]))
                     data.loc[mask, ["gx", "gy", "gz"]] /= np.linalg.norm(
                         data.loc[mask, ["gx", "gy", "gz"]], axis=1

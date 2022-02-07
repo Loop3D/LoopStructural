@@ -133,6 +133,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         self.add_interface_constraints(self.interpolation_weights["ipw"])
         self.add_inequality_constraints()
+
     def copy(self):
         """
         Create a new identical interpolator
@@ -161,9 +162,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
             # print(points[inside,:].shape)
 
-            gi = np.zeros(self.support.n_nodes,dtype=int)
+            gi = np.zeros(self.support.n_nodes, dtype=int)
             gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx,dtype=int)
+            gi[self.region] = np.arange(0, self.nx, dtype=int)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
             idc[inside, :] = gi[node_idx[inside, :]]
@@ -178,8 +179,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 w=w * points[inside, 4],
                 name="value",
             )
-            if np.sum(inside)<=0:
-                logger.warning(f"{self.propertyname}: {np.sum(~inside)} value constraints not added: outside of model bounding box")
+            if np.sum(inside) <= 0:
+                logger.warning(
+                    f"{self.propertyname}: {np.sum(~inside)} value constraints not added: outside of model bounding box"
+                )
 
     def add_inequality_constraints(self, w=1.0):
         points = self.get_inequality_constraints()
@@ -188,10 +191,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
             # print(points[inside,:].shape)
 
-            gi = np.zeros(self.support.n_nodes,dtype=int)
+            gi = np.zeros(self.support.n_nodes, dtype=int)
             gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx,dtype=int)
-            idc = np.zeros(node_idx.shape,dtype=int)
+            gi[self.region] = np.arange(0, self.nx, dtype=int)
+            idc = np.zeros(node_idx.shape, dtype=int)
             idc[:] = -1
 
             idc[inside, :] = gi[node_idx[inside, :]]
@@ -206,9 +209,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 idc[inside, :],
                 name="value_inequality",
             )
-            if np.sum(inside)<=0:
-                logger.warning(f"{self.propertyname}: {np.sum(~inside)} value constraints not added: outside of model bounding box")
-
+            if np.sum(inside) <= 0:
+                logger.warning(
+                    f"{self.propertyname}: {np.sum(~inside)} value constraints not added: outside of model bounding box"
+                )
 
     def add_interface_constraints(
         self, w=1.0
@@ -274,8 +278,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                     name="interface_{}".format(unique_id),
                 )
 
-       
-
     def add_gradient_constraints(self, w=1.0):
         """
 
@@ -326,8 +328,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(
                 A, B, idc[inside, :], w=w * self.vol, name="gradient"
             )
-            if np.sum(inside)<=0:
-                logger.warning(f"{self.propertyname}: {np.sum(~inside)} norm constraints not added: outside of model bounding box")
+            if np.sum(inside) <= 0:
+                logger.warning(
+                    f"{self.propertyname}: {np.sum(~inside)} norm constraints not added: outside of model bounding box"
+                )
+
     def add_norm_constraints(self, w=1.0):
         """
         Add constraints to control the norm of the gradient of the scalar field
@@ -387,8 +392,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 w=w * self.vol,
                 name="norm",
             )
-            if np.sum(inside)<=0:
-                logger.warning(f"{self.propertyname}: {np.sum(~inside)} norm constraints not added: outside of model bounding box")
+            if np.sum(inside) <= 0:
+                logger.warning(
+                    f"{self.propertyname}: {np.sum(~inside)} norm constraints not added: outside of model bounding box"
+                )
 
     def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
         """
@@ -439,8 +446,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(
                 A, B, idc[inside, :], w=w * self.vol, name="gradient orthogonal"
             )
-            if np.sum(inside)<=0:
-                logger.warning(f"{self.propertyname}: {np.sum(~inside)} gradient constraints not added: outside of model bounding box")
+            if np.sum(inside) <= 0:
+                logger.warning(
+                    f"{self.propertyname}: {np.sum(~inside)} gradient constraints not added: outside of model bounding box"
+                )
 
     def add_regularisation(self, operator, w=0.1):
         """

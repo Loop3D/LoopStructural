@@ -4,13 +4,15 @@ Interpolators and interpolation supports
 """
 from enum import IntEnum
 
+
 class InterpolatorType(IntEnum):
-    '''
+    """
     Enum for the different interpolator types
-    
+
     1-9 should cover interpolators with supports
     9+ are data supported
-    '''
+    """
+
     BASE = 0
     BASE_DISCRETE = 1
     FINITE_DIFFERENCE = 2
@@ -18,6 +20,8 @@ class InterpolatorType(IntEnum):
     PIECEWISE_LINEAR = 4
     BASE_DATA_SUPPORTED = 10
     SURFE = 11
+
+
 from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
 from LoopStructural.interpolators.discrete_interpolator import DiscreteInterpolator
 from LoopStructural.interpolators.structured_tetra import TetMesh
@@ -32,6 +36,3 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import (
 from LoopStructural.interpolators.discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
-
-
-

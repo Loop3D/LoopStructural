@@ -88,7 +88,7 @@ class GeologicalFeature:
 
     def __call__(self, xyz):
         return self.evaluate_value(xyz)
-        
+
     def set_model(self, model):
         self.model = model
 

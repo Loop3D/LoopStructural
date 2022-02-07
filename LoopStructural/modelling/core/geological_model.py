@@ -223,8 +223,9 @@ class GeologicalModel:
             the created geological model and a dictionary of the map2loop data
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
+
         log_to_file(f"{m2l_directory}/loopstructural_log.txt")
-        logger.info('Creating model from m2l directory')
+        logger.info("Creating model from m2l directory")
         processor = Map2LoopProcessor(m2l_directory, use_thickness)
         processor._gradient = gradient
         processor.vector_scale = vector_scale
@@ -256,7 +257,7 @@ class GeologicalModel:
 
     @classmethod
     def from_processor(cls, processor):
-        logger.info('Creating model from processor')
+        logger.info("Creating model from processor")
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
         for i in processor.fault_network.faults:
@@ -306,7 +307,7 @@ class GeologicalModel:
                 faults = None
                 if processor.fault_stratigraphy is not None:
                     faults = processor.fault_stratigraphy[s]
-                logger.info(f'Adding foliation {s}')
+                logger.info(f"Adding foliation {s}")
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
@@ -1340,20 +1341,20 @@ class GeologicalModel:
             created fault
         """
         logger.info(f'Creating fault "{fault_surface_data}"')
-        logger.info(f'Displacement: {displacement}')
-        logger.info(f'Tolerance: {tol}')
-        logger.info(f'Fault function: {faultfunction}')
-        logger.info(f'Fault slip vector: {fault_slip_vector}')
-        logger.info(f'Fault center: {fault_center}')
-        logger.info(f'Major axis: {major_axis}')
-        logger.info(f'Minor axis: {minor_axis}')
-        logger.info(f'Intermediate axis: {intermediate_axis}')
-        fault_slip_vector = np.array(fault_slip_vector,dtype='float')
-        fault_center = np.array(fault_center,dtype='float')
+        logger.info(f"Displacement: {displacement}")
+        logger.info(f"Tolerance: {tol}")
+        logger.info(f"Fault function: {faultfunction}")
+        logger.info(f"Fault slip vector: {fault_slip_vector}")
+        logger.info(f"Fault center: {fault_center}")
+        logger.info(f"Major axis: {major_axis}")
+        logger.info(f"Minor axis: {minor_axis}")
+        logger.info(f"Intermediate axis: {intermediate_axis}")
+        fault_slip_vector = np.array(fault_slip_vector, dtype="float")
+        fault_center = np.array(fault_center, dtype="float")
 
         for k, v in kwargs.items():
-            logger.info(f'{k}: {v}')
-        
+            logger.info(f"{k}: {v}")
+
         if tol is None:
             tol = self.tol
         self.parameters["features"].append(
@@ -1366,7 +1367,7 @@ class GeologicalModel:
         )
         if displacement == 0:
             logger.warning(f"{fault_surface_data} displacement is 0")
-            
+
         if "data_region" in kwargs:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
@@ -1387,11 +1388,15 @@ class GeologicalModel:
         fault_frame_data = self.data[
             self.data["feature_name"] == fault_surface_data
         ].copy()
-        trace_mask = np.logical_and(fault_frame_data['coord'] ==0,fault_frame_data['val'] == 0)
-        logger.info(f'There are {np.sum(trace_mask)} points on the fault trace')
+        trace_mask = np.logical_and(
+            fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
+        )
+        logger.info(f"There are {np.sum(trace_mask)} points on the fault trace")
         if np.sum(trace_mask) == 0:
-            logger.error('You cannot model a fault without defining the location of the fault')
-            raise ValueError(f'There are no points on the fault trace')
+            logger.error(
+                "You cannot model a fault without defining the location of the fault"
+            )
+            raise ValueError(f"There are no points on the fault trace")
 
         mask = np.logical_and(
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
@@ -1400,9 +1405,11 @@ class GeologicalModel:
         mask2 = np.logical_and(
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["nz"])
         )
-        vector_data = np.vstack([vector_data,fault_frame_data.loc[mask2, ["nx", "ny", "nz"]].to_numpy()])
-        fault_normal_vector = np.mean(vector_data,axis=0)
-        logger.info(f'Fault normal vector: {fault_normal_vector}')
+        vector_data = np.vstack(
+            [vector_data, fault_frame_data.loc[mask2, ["nx", "ny", "nz"]].to_numpy()]
+        )
+        fault_normal_vector = np.mean(vector_data, axis=0)
+        logger.info(f"Fault normal vector: {fault_normal_vector}")
 
         mask = np.logical_and(
             fault_frame_data["coord"] == 1, ~np.isnan(fault_frame_data["gz"])
@@ -1431,7 +1438,7 @@ class GeologicalModel:
             logger.warning("Fault slip vector is nan, estimating from fault normal")
             strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
             fault_slip_vector = dip_vector[:, 0]
-            logger.info(f'Estimated fault slip vector: {fault_slip_vector}')
+            logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
 
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
@@ -1439,7 +1446,9 @@ class GeologicalModel:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             if (
-                ~np.isnan(kwargs.get("centreEasting",np.nan)) and ~np.isnan(kwargs.get('centreNorthing',np.nan)) and ~np.isnan(kwargs.get('centreAltitude',np.nan))
+                ~np.isnan(kwargs.get("centreEasting", np.nan))
+                and ~np.isnan(kwargs.get("centreNorthing", np.nan))
+                and ~np.isnan(kwargs.get("centreAltitude", np.nan))
             ):
                 fault_center = self.scale(
                     np.array(

@@ -158,7 +158,9 @@ class Map2LoopProcessor(ProcessInputData):
         """
         for fname in fault_properties.index:
             if fault_properties.loc[fname, "downthrow_dir"] == 1.0:
-                logger.info(f"{fname}: Estimating downthrow direction using fault intersections")
+                logger.info(
+                    f"{fname}: Estimating downthrow direction using fault intersections"
+                )
             # fault_intersection_angles[f]
             if (
                 np.abs(
