@@ -56,7 +56,6 @@ def test_inequality_FDI():
     xyz = np.hstack([xy,np.zeros((xy.shape[0],1))])
     data = pd.DataFrame(xyz,columns=['X','Y','Z'])
     data['val'] = np.sin(data['X'])
-    print(data['val'].max(),data['val'].min())
     data['w'] = 1
     data['feature_name'] = 'strati'
     data['l'] = -3
@@ -83,8 +82,7 @@ def test_inequality_FDI():
     #                                                 col
     #                                                 )
     interpolator.solve_system(solver='osqp')
-    plt.imshow(interpolator.evaluate_value(xyz).reshape((50,50)).T)
-    plt.savefig('ineq.png')
+
     # print(np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data))
     # assert np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data) < 0.5
 def test_inequality_FDI_nodes():
@@ -119,8 +117,7 @@ def test_inequality_FDI_nodes():
     #                                                 col
     #                                                 )
     interpolator.solve_system(solver='osqp')
-    plt.imshow(interpolator.evaluate_value(xyz).reshape((50,50)).T)
-    plt.savefig('ineq.png')
+
     # print(np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data))
     # assert np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data) < 0.5
 if __name__ == '__main__':
