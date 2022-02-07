@@ -332,6 +332,31 @@ class DiscreteInterpolator(GeologicalInterpolator):
         }
         self.ineq_const_c+=idc.shape[0]
 
+    def add_inequality_feature(self,feature,lower=True,mask=None):
+
+        # add inequality value for the nodes of the mesh
+        # flag lower determines whether the feature is a lower bound or upper bound
+        # mask is just a boolean array determining which nodes to apply it to
+
+        value = feature(self.support.nodes)
+        if mask is None:
+            mask = np.ones(value.shape[0],dtype=bool)
+        l=np.zeros(value.shape[0])-np.inf
+        u=np.zeros(value.shape[0])+np.inf
+        if lower:
+            l[mask] = value[mask]
+        if not lower:
+            u[mask] = value[mask]
+
+        self.add_inequality_constraints_to_matrix(
+        np.ones((value.shape[0],1)),
+        l,
+        u,
+        np.arange(0, self.nx,dtype=int),
+
+        )
+
+
     def add_tangent_constraints(self, w=1.0):
         """
 
