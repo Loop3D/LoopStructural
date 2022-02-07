@@ -12,6 +12,7 @@ from LoopStructural.interpolators import InterpolatorType
 
 from LoopStructural.interpolators import GeologicalInterpolator
 from LoopStructural.utils import getLogger
+from LoopStructural.utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 
@@ -474,8 +475,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         return ATA, ATB
     def _solve_osqp(self, P, A, q, l, u):
         
-        
-        # import osqp
+        try:
+            import osqp
+        except ImportError:
+            raise LoopImportError("Missing osqp pip install osqp")
         # m = A.shape[0]
         # n = A.shape[1]
         # Ad = sparse.random(m, n, density=0.7, format='csc')
