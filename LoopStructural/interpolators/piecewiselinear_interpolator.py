@@ -435,10 +435,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # e, inside = self.support.elements_for_array(points[:, :3])
             # nodes = self.support.nodes[self.support.elements[e]]
             norm = np.linalg.norm(vector, axis=1)
-            vector /= norm[:, None]
+            mask = ~np.isnan(norm)
+            vector /= norm[mask, None]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
             vol = np.abs(np.linalg.det(vecs)) / 6
-            element_gradients /= norm[:, None, None]
+            element_gradients /= norm[mask, None, None]
 
             A = np.einsum("ij,ijk->ik", vector, element_gradients)
 
