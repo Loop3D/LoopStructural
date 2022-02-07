@@ -6,7 +6,9 @@ import logging
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
 
-from LoopStructural.interpolators.discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators import DiscreteInterpolator
+from LoopStructural.interpolators import InterpolatorType
+
 from LoopStructural.utils.helper import get_vectors
 
 from LoopStructural.utils import getLogger
@@ -32,7 +34,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.shape = "rectangular"
         DiscreteInterpolator.__init__(self, support)
         # whether to assemble a rectangular matrix or a square matrix
-        self.interpolator_type = "PLI"
+        self.interpolator_type = InterpolatorType.PIECEWISE_LINEAR
         self.support = support
 
         self.interpolation_weights = {
@@ -44,7 +46,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             "ipw": 1.0,
         }
         self.__str = "Piecewise Linear Interpolator with %i unknowns. \n" % self.nx
-        self.type = "PLI"
+        self.type = InterpolatorType.PIECEWISE_LINEAR
 
     def __str__(self):
         return self.__str

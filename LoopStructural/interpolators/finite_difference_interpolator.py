@@ -7,6 +7,8 @@ import numpy as np
 
 from LoopStructural.utils.helper import get_vectors
 from .discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators import InterpolatorType
+
 from .operator import Operator
 
 from LoopStructural.utils import getLogger
@@ -50,7 +52,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         self.vol = 1.0  # grid.step_vector[0] * grid.step_vector[1] * \
         # grid.step_vector[2]
-        self.type = "FDI"
+        self.type = InterpolatorType.FINITE_DIFFERENCE
 
     def _setup_interpolator(self, **kwargs):
         """
