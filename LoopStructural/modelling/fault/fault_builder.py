@@ -158,13 +158,24 @@ class FaultBuilder(StructuralFrameBuilder):
                         0,
                         w,
                     ]
+                    logger.warning("Converting fault norm data to gradient data")
+                    mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["nx"]))
+                    data.loc[mask, ['gx','gy','gz']] = data.loc[mask,['nx','ny','nz']]
+                    data.loc[mask, ['nx','ny','nz']] = np.nan
                 if points == False:
+                    logger.warning("Rescaling fault norm constraint length for fault frame")
                     mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["gx"]))
                     data.loc[mask, ["gx", "gy", "gz"]] /= np.linalg.norm(
                         data.loc[mask, ["gx", "gy", "gz"]], axis=1
                     )[:, None]
                     # scale vector so that the distance between -1 and 1 is the minor axis length
                     data.loc[mask, ["gx", "gy", "gz"]] /= minor_axis * 0.5
+                    mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["nx"]))
+                    data.loc[mask, ["nx", "ny", "nz"]] /= np.linalg.norm(
+                        data.loc[mask, ["nx", "ny", "nz"]], axis=1
+                    )[:, None]
+                    # scale vector so that the distance between -1 and 1 is the minor axis length
+                    data.loc[mask, ["nx", "ny", "nz"]] /= minor_axis * 0.5
             if major_axis is not None:
                 fault_tips[0, :] = fault_center[:3] + strike_vector * 0.5 * major_axis
                 fault_tips[1, :] = fault_center[:3] - strike_vector * 0.5 * major_axis
