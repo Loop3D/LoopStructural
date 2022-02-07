@@ -3,6 +3,7 @@ Base geological interpolator
 """
 import logging
 
+from LoopStructural.interpolators import InterpolatorType
 import numpy as np
 
 from LoopStructural.utils import getLogger
@@ -38,7 +39,7 @@ class GeologicalInterpolator:
         self.n_n = 0
         self.n_t = 0
 
-        self.type = "undefined"
+        self.type = InterpolatorType.BASE
         self.up_to_date = False
         self.constraints = []
         self.propertyname = "defaultproperty"
@@ -220,3 +221,27 @@ class GeologicalInterpolator:
         self.n_i = 0
         self.n_n = 0
         self.n_t = 0
+    
+    def debug(self):
+        """Helper function for debugging when the interpolator isn't working
+        """
+        error_string = ''
+        error_code = 0
+        if self.type > InterpolatorType.BASE_DISCRETE and self.type < InterpolatorType.BASE_DATA_SUPPORTED:
+            mask = lambda xyz : self.support.inside(xyz)
+        else:
+            mask = lambda xyz : np.ones(xyz.shape[0],dtype=bool)
+        if len(np.unique(self.get_value_constraints()[mask(self.get_value_constraints()[:,:3]),3])) == 1:
+            error_code+=1
+            error_string+='There is only one unique value in the model interpolation support \n'
+            error_string+='Try increasing the model bounding box \n'
+        if len(self.get_norm_constraints()[mask(self.get_norm_constraints()[:,:3]),:]) == 0:
+            error_code+=1
+            error_string+='There are no norm constraints in the model interpolation support \n'
+            error_string+='Try increasing the model bounding box or adding more data\n'
+        if error_code > 1:
+            print(error_string)
+
+        
+
+

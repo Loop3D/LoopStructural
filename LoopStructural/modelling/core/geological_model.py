@@ -1348,6 +1348,9 @@ class GeologicalModel:
         logger.info(f'Major axis: {major_axis}')
         logger.info(f'Minor axis: {minor_axis}')
         logger.info(f'Intermediate axis: {intermediate_axis}')
+        fault_slip_vector = np.array(fault_slip_vector,dtype='float')
+        fault_center = np.array(fault_center,dtype='float')
+
         for k, v in kwargs.items():
             logger.info(f'{k}: {v}')
         
@@ -1393,9 +1396,14 @@ class GeologicalModel:
         mask = np.logical_and(
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
         )
-        fault_normal_vector = (
-            fault_frame_data.loc[mask, ["gx", "gy", "gz"]].mean(axis=0).to_numpy()
+        vector_data = fault_frame_data.loc[mask, ["gx", "gy", "gz"]].to_numpy()
+        mask2 = np.logical_and(
+            fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["nz"])
         )
+        vector_data = np.vstack([vector_data,fault_frame_data.loc[mask2, ["nx", "ny", "nz"]].to_numpy()])
+        fault_normal_vector = np.mean(vector_data,axis=0)
+        logger.info(f'Fault normal vector: {fault_normal_vector}')
+
         mask = np.logical_and(
             fault_frame_data["coord"] == 1, ~np.isnan(fault_frame_data["gz"])
         )
@@ -1423,9 +1431,11 @@ class GeologicalModel:
             logger.warning("Fault slip vector is nan, estimating from fault normal")
             strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
             fault_slip_vector = dip_vector[:, 0]
-        if fault_center is not None:
+            logger.info(f'Estimated fault slip vector: {fault_slip_vector}')
+
+        if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
-        if fault_center is None:
+        else:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             if (

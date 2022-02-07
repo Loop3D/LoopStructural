@@ -8,9 +8,11 @@ from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
 from scipy.sparse.linalg import norm
 from sklearn.preprocessing import normalize
+from LoopStructural.interpolators import InterpolatorType
 
-from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
+from LoopStructural.interpolators import GeologicalInterpolator
 from LoopStructural.utils import getLogger
+from LoopStructural.utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 
@@ -60,7 +62,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         logger.info(
             "Creating discrete interpolator with {} degrees of freedom".format(self.nx)
         )
-        self.type = "discrete"
+        self.type = InterpolatorType.BASE_DISCRETE
 
     @property
     def nx(self):
@@ -473,8 +475,34 @@ class DiscreteInterpolator(GeologicalInterpolator):
         return ATA, ATB
     def _solve_osqp(self, P, A, q, l, u):
         
-        
-        import osqp
+        try:
+            import osqp
+        except ImportError:
+            raise LoopImportError("Missing osqp pip install osqp")
+        # m = A.shape[0]
+        # n = A.shape[1]
+        # Ad = sparse.random(m, n, density=0.7, format='csc')
+        # b = np.random.randn(m)
+
+        # # OSQP data
+        # P = sparse.block_diag([sparse.csc_matrix((n, n)), sparse.eye(m)], format='csc')
+        # q = np.zeros(n+m)
+        # A = sparse.vstack([
+        #         sparse.hstack([Ad, -sparse.eye(m)]),
+        #         sparse.hstack([sparse.eye(n), sparse.csc_matrix((n, m))])], format='csc')
+        # l = np.hstack([b, np.zeros(n)])
+        # u = np.hstack([b, np.ones(n)])
+
+        # # Create an OSQP object
+        # prob = osqp.OSQP()
+
+        # # Setup workspace
+        # prob.setup(P, q, A, l, u)
+
+        # # Solve problem
+        # res = prob.solve()
+
+
         # Create an OSQP object
         prob = osqp.OSQP()
 

@@ -5,7 +5,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from LoopStructural.utils import getLogger, LoopValueError
 
 logger = getLogger(__name__)
 
@@ -134,6 +134,8 @@ class GeologicalFeature:
             numpy array containing evaluated values
 
         """
+        if evaluation_points.shape[1] != 3:
+            raise LoopValueError("Need Nx3 array of xyz points to evaluate value")
         # TODO need to add a generic type checker for all methods
         # if evaluation_points is not a numpy array try and convert
         # otherwise error
@@ -171,6 +173,8 @@ class GeologicalFeature:
         -------
 
         """
+        if evaluation_points.shape[1] != 3:
+            raise LoopValueError("Need Nx3 array of xyz points to evaluate gradient")
         self.builder.up_to_date()
         v = np.zeros(evaluation_points.shape)
         v[:] = np.nan

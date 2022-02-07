@@ -27,6 +27,8 @@ class BaseStructuredSupport:
         # we use property decorators to update these when different parts of
         # the geometry need to change
         # inisialise the private attributes
+        if np.any(step_vector==0):
+            logger.warning(f"Step vector {step_vector} has zero values")
         self._nsteps = np.array(nsteps, dtype=int)
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
@@ -72,7 +74,7 @@ class BaseStructuredSupport:
         newsteps = self._nsteps / change_factor
         self._nsteps = np.ceil(newsteps).astype(int)
         self._step_vector = step_vector
-
+        
     @property
     def origin(self):
         return self._origin

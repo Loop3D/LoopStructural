@@ -6,8 +6,8 @@ import logging
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import fold_cg
 
-from LoopStructural.interpolators.piecewiselinear_interpolator import (
-    PiecewiseLinearInterpolator,
+from LoopStructural.interpolators import (
+    PiecewiseLinearInterpolator, InterpolatorType
 )
 
 from LoopStructural.utils import getLogger
@@ -31,7 +31,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         """
 
         PiecewiseLinearInterpolator.__init__(self, support)
-        self.type = ["foldinterpolator"]
+        self.type = InterpolatorType.FINITE_DIFFERENCE
         self.fold = fold
 
     @classmethod
