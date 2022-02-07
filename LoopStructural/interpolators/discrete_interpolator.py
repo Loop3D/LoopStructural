@@ -475,29 +475,29 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def _solve_osqp(self, P, A, q, l, u):
         
         
-        import osqp
-        m = A.shape[0]
-        n = A.shape[1]
-        Ad = sparse.random(m, n, density=0.7, format='csc')
-        b = np.random.randn(m)
+        # import osqp
+        # m = A.shape[0]
+        # n = A.shape[1]
+        # Ad = sparse.random(m, n, density=0.7, format='csc')
+        # b = np.random.randn(m)
 
-        # OSQP data
-        P = sparse.block_diag([sparse.csc_matrix((n, n)), sparse.eye(m)], format='csc')
-        q = np.zeros(n+m)
-        A = sparse.vstack([
-                sparse.hstack([Ad, -sparse.eye(m)]),
-                sparse.hstack([sparse.eye(n), sparse.csc_matrix((n, m))])], format='csc')
-        l = np.hstack([b, np.zeros(n)])
-        u = np.hstack([b, np.ones(n)])
+        # # OSQP data
+        # P = sparse.block_diag([sparse.csc_matrix((n, n)), sparse.eye(m)], format='csc')
+        # q = np.zeros(n+m)
+        # A = sparse.vstack([
+        #         sparse.hstack([Ad, -sparse.eye(m)]),
+        #         sparse.hstack([sparse.eye(n), sparse.csc_matrix((n, m))])], format='csc')
+        # l = np.hstack([b, np.zeros(n)])
+        # u = np.hstack([b, np.ones(n)])
 
-        # Create an OSQP object
-        prob = osqp.OSQP()
+        # # Create an OSQP object
+        # prob = osqp.OSQP()
 
-        # Setup workspace
-        prob.setup(P, q, A, l, u)
+        # # Setup workspace
+        # prob.setup(P, q, A, l, u)
 
-        # Solve problem
-        res = prob.solve()
+        # # Solve problem
+        # res = prob.solve()
 
 
         # Create an OSQP object
