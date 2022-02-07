@@ -335,6 +335,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             mask = np.ones(value.shape[0], dtype=bool)
         l = np.zeros(value.shape[0]) - np.inf
         u = np.zeros(value.shape[0]) + np.inf
+        mask = np.logical_and(mask, ~np.isnan(value))
         if lower:
             l[mask] = value[mask]
         if not lower:
