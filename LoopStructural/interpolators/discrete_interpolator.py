@@ -493,7 +493,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return ATA, ATB, Aie.T.dot(Aie), Aie.T.dot(uie), Aie.T.dot(lie)
         return ATA, ATB
 
-    def _solve_osqp(self, P, A, q, l, u):
+    def _solve_osqp(self, P, A, q, l, u,mkl=False):
 
         try:
             import osqp
@@ -527,7 +527,16 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         # Setup workspace
         # osqp likes csc matrices
-        prob.setup(P.tocsc(), np.array(q), A.tocsc(), np.array(u), np.array(l))
+        linsys_solver='qdldl'
+        if mkl:
+            linsys_solver='mkl pardiso'
+        
+        try:
+            prob.setup(P.tocsc(), np.array(q), A.tocsc(), np.array(u), np.array(l),linsys_solver=linsys_solver)
+        except ValueError:
+            if mkl:
+                logger.error('MKL solver library path not correct. Please add to LD_LIBRARY_PATH') 
+                raise LoopImportError("Cannot import MKL pardiso")
         res = prob.solve()
         return res.x
 
