@@ -21,9 +21,10 @@ Goals and Non-Goals
 ~~~~~~~~~~~~~~~~~~~
 
 The aim of LoopStructural are:
+
 * to provide an easy to use python API for building 3D geological models from data.
-* a platform for developing 3D modelling ideas
-*  
+* a platform for developing 3D modelling ideas, remove the requirement for boiler plate code.
+* A framework for 
 
 Existing Solutions
 ~~~~~~~~~~~~~~~~~~
@@ -69,45 +70,56 @@ When creating a commit use the conventional commit style e.g. ``fix: bug fix``, 
 A new patch pull request will be created when a bug fix is applied and passes the tests. 
 A new feature pull request will be created when a new feature is added and passes the tests.
 When the new release is merged the library will be deployed to pypi, loop3d conda channel and dockerhub. 
-The documentation is automatically built when a new release is created and will be uploaded to `loop3d.github.io/LoopStructural`_.
+The documentation is automatically built when a new release is created and will be uploaded.
 
 
 1. interpolators
 ----------------
-The interpolation module contains the tools necessary for approximating a function given the constraints. 
-LoopStructural uses a generic design for the interpolation algorithm implemented in the base class **GeologicalInterpolator**.
-**GeologicalInterpolator** implements all of the functions required to interact with the interpolator (adding data, solving, evaluating).
+The interpolation module contains different interpolators and associated supports used by LoopStructural.
+The purpose of the interpolator is to build a 2D/3D scalar field from constraints (e.g. orientation, contact, fold).
+The base of the interpolation module is the **GeologicalInterpolator** class.
+The **GeologicalInterpolator** class contains the entry point for all interpolators and the functions for accessing constraints.
+All implementations of interpolators are subclassed from the **GeologicalInterpolator**. 
+This module should include all interpolators and associated classes (e.g. mesh, grid, operators).
 
-Different interpolation algorithms can be implemented by inhertiting from the **GeologicalInterpolator**.
 
 2. modelling
 ------------
 
-The modelling module contains the main 
+The modelling is the main entry point to LoopStructural and includes the **GeologicalModel** class.
+A **GeologicalModel** consists of **GeologicalFeatures** which define a particular geological phenomenon.
+For example, a **GeologicalFeature** can be a stratigraphic sequence, a fault, a foliation, an unconformity, an intrusion.
+The **GeologicalFeature** is something that can be evaluated within the model for a value, or gradient. 
+
+In LoopStructural the **GeologicalFeature** is built by a **GeologicalFeatureBuilder**.
+The **GeologicalFeatureBuilder** is a class that manages the assembly of the interpolation constraints.
+The builder is in charge of keeping track of whether the interpolator has been run and whether the data/constraints have changed.
+The builder could also be used to build a **GeologicalFeature** without an interpolator.
+
 
 3. visualisation
 ----------------
 
+The visualisation module is in charge of creating 2D/3D visualisations for the GeolgicalModel and GeologicalFeatures.
+
+3D visualisation
+****************
+
+The 3D visualisation module for LoopStructural has been written using an abstract base class.
+**BaseModelPlotter** contains all of the methods for plotting the various different attributes for a GeologicalModel.
+A visualisation module can be implemented by simply subclassing the **BaseModelPlotter** and implementing the following methods:
+
+* `_add_surface(self,vertices,face,name)` to add a triangular surface to the plot.
+* `_add_points(self,points,name,value=None)` to add xyz points with an optional value attribute to colour by. 
+* `_add_vector_marker(self, location, vector, name symbol_type=arrow)` to add a vector marker to the plot.
+
+
 4. utils
 ---------
 
-
-Versioning
------------
-LoopStructural uses schemantic versioning to 
+The utils module is a container for utility functions that are used throughout the library.
 
 
 
-Continuous integration
-----------------------
 
-LoopStructural uses github actions to automatically run tests and checks for every 
-Unit tests
-**********
-
-Integration tests
-******************
-
-Linting
-*******
 
