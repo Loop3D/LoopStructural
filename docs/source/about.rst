@@ -3,7 +3,7 @@ About
 LoopStructural is the 3D geological modelling library for Loop (Loop3d.org). 
 The development of LoopStructural is lead by Lachlan Grose as an ARC (LP170100985) post-doc at Monash University. 
 Laurent Ailleres and Gautier Laurent have made significant contributions to the conceptual design and integration of geological concepts into the geological modelling workflow. 
-Roy Thompspon and Yohan de Rose have contributed to the implementation and integration of LoopStructural into the Loop workflow.
+Roy Thomson and Yohan de Rose have contributed to the implementation and integration of LoopStructural into the Loop workflow.
 
 Background of Implicit Surface Modelling
 -----------------------------------------
