@@ -731,7 +731,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.warning("Using external solver")
             self.c[self.region] = kwargs["external"](A, B)[: self.nx]
         if solver == "osqp":
-            self.c[self.region] = self._solve_osqp(P, A, q, l, u)  # , **kwargs)
+            self.c[self.region] = self._solve_osqp(P, A, q, l, u,mkl=kwargs.get('mkl',False))  # , **kwargs)
         # check solution is not nan
         # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
