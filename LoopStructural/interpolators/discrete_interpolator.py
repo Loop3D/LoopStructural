@@ -315,9 +315,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         # map from mesh node index to region node index
-        gi = np.zeros(self.support.n_nodes)
+        gi = np.zeros(self.support.n_nodes,dtype=int)
         gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
+        gi[self.region] = np.arange(0, self.nx,dtype=int)
         idc = gi[idc]
         rows = np.arange(self.ineq_const_c, self.ineq_const_c + idc.shape[0])
         rows = np.tile(rows, (A.shape[-1], 1)).T
@@ -338,7 +338,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         mask = np.logical_and(mask, ~np.isnan(value))
         if lower:
             l[mask] = value[mask]
-        if not lower:
+        if lower == False:
             u[mask] = value[mask]
 
         self.add_inequality_constraints_to_matrix(
