@@ -1,10 +1,11 @@
 """
 
 """
+
+
 class UnconformityFeature:
-    """
-    
-    """
+    """ """
+
     def __init__(self, feature, value):
         """
 
@@ -15,16 +16,18 @@ class UnconformityFeature:
         """
         self.feature = feature
         self.value = value
-        self.type = 'unconformity'
-        self.name = '{}_unconformity'.format(feature.name)
+        self.type = "unconformity"
+        self.name = "{}_unconformity".format(feature.name)
         self.builder = self.feature.builder
+
     def add_region(self, region):
         # self.feature.add_region(region)
         pass
+
     def set_model(self, model):
         self.model = model
 
-    def evaluate(self,pos):
+    def evaluate(self, pos):
         """
 
         Parameters
@@ -39,7 +42,7 @@ class UnconformityFeature:
         """
         return self.feature.evaluate_value(pos) < self.value
 
-    def evaluate_value(self,pos):
+    def evaluate_value(self, pos):
         """
 
         Parameters
@@ -53,7 +56,7 @@ class UnconformityFeature:
         """
         return self.feature.evaluate_value(pos)
 
-    def evaluate_gradient(self,pos):
+    def evaluate_gradient(self, pos):
         """
 
         Parameters
@@ -69,6 +72,6 @@ class UnconformityFeature:
 
     def min(self):
         return self.feature.min()
-    
+
     def max(self):
         return self.feature.max()

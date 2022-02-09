@@ -1,5 +1,6 @@
 from LoopStructural.modelling.features import StructuralFrame, StructuralFrameBuilder, GeologicalFeature
 from LoopStructural import GeologicalModel
+import numpy as np
 def test_structural_frame():
     coordinate_0 = GeologicalFeature('coord0',None)
     coordinate_1 = GeologicalFeature('coord1',None)
@@ -8,7 +9,7 @@ def test_structural_frame():
     assert (frame != None)
     assert frame.name == 'structural_frame'
 def set_model():
-    model = GeologicalModel(np.zeros(),np.ones())
+    model = GeologicalModel(np.zeros(3),np.ones(3))
     coordinate_0 = GeologicalFeature('coord0',None)
     coordinate_1 = GeologicalFeature('coord1',None)
     coordinate_2 = GeologicalFeature('coord2',None)
@@ -27,4 +28,7 @@ def get_item():
     assert frame[0] == coordinate_0
     assert frame[1] == coordinate_0
     assert frame[2] == coordinate_0
+
+def test_structural_frame_cross_product():
+    pass
 

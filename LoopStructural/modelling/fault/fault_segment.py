@@ -1,10 +1,16 @@
 import logging
 
-from LoopStructural.modelling.fault.fault_function_feature import FaultDisplacementFeature
+from LoopStructural.modelling.fault.fault_function_feature import (
+    FaultDisplacementFeature,
+)
 from LoopStructural.modelling.fault.fault_function import BaseFault
-logger = logging.getLogger(__name__)
+from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
+
+logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
+
+use_threads = True
 
 
 class FaultSegment:
@@ -12,11 +18,9 @@ class FaultSegment:
     Class for representing a slip event of a fault
     """
 
-    def __init__(self, faultframe,
-                 faultfunction = None,
-                 steps = 3,
-                 displacement=1.,
-                 **kwargs):
+    def __init__(
+        self, faultframe, faultfunction=None, steps=3, displacement=1.0, **kwargs
+    ):
         """
         A slip event of a fault
 
@@ -31,11 +35,11 @@ class FaultSegment:
         kwargs
         """
         self.faultframe = faultframe
-        self.type = 'fault'
-        self.name = kwargs.get('name', self.faultframe.name)
+        self.type = "fault"
+        self.name = kwargs.get("name", self.faultframe.name)
         self.displacement = displacement
         self.faultfunction = faultfunction
-        if faultfunction == 'BaseFault':
+        if faultfunction == "BaseFault":
             self.faultfunction = BaseFault.fault_displacement
         self.steps = steps
         self.regions = []
@@ -44,7 +48,22 @@ class FaultSegment:
         self.model = None
         if self.faultframe is not None:
             self.displacementfeature = FaultDisplacementFeature(
-                self.faultframe, self.faultfunction, name = self.name)
+                self.faultframe, self.faultfunction, name=self.name
+            )
+        self.builder = None
+        self.splay = {}
+        self.abut = {}
+
+    def __str__(self):
+        _str = "FaultSegment - {} \n".format(self.name)
+        _str += "Interpolator: {} \n".format(self.faultframe[0].interpolator.type)
+        _str += "Degrees of freedom: {}\n".format(self.faultframe[0].interpolator.nx)
+        _str += "Displacement magnitude: {}\n".format(self.displacement)
+        for name in self.splay.keys():
+            _str += "Splays from {}\n".format(name)
+        for name in self.abut.keys():
+            _str += "Abuts {}\n".format(name)
+        return _str
 
     def __getitem__(self, item):
         """
@@ -73,7 +92,7 @@ class FaultSegment:
         """
         self.model = model
 
-    def set_displacement(self, displacement, scale = True):
+    def set_displacement(self, displacement, scale=True):
         """
         Set the fault displacement to a new value
 
@@ -89,7 +108,7 @@ class FaultSegment:
         if scale and self.model is not None:
             self.displacement = displacement / self.model.scale_factor
         elif not scale:
-                self.displacement = displacement
+            self.displacement = displacement
         else:
             logger.warning("Displacement not updated")
 
@@ -135,12 +154,17 @@ class FaultSegment:
             boolean array true if on hanging wall, false if on footwall
 
         """
+        v = self.faultframe.features[0].evaluate_value(locations)
+        v[~np.isnan(v)] = v[~np.isnan(v)] > 0
+        v[np.isnan(v)] = 0
+        return v.astype(bool)
 
-        return self.faultframe.features[0].evaluate_value(locations) > 0
-
-    def inside_volume(self,locations):
-        v = self.faultframe.evaluate_value(locations)
-        return np.all(np.logical_and(v > -1,v<1),axis=1)
+    def inside_volume(self, locations, threshold=0.001):
+        # v = self.faultframe.evaluate_value(locations)
+        v = self.evaluate_displacement(locations) / self.displacement
+        v[np.isnan(v)] = 0
+        return np.abs(v) > threshold
+        # return np.all(np.logical_and(v > -1,v<1),axis=1)
 
     def evaluate_value(self, locations):
         """
@@ -161,8 +185,12 @@ class FaultSegment:
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(locations))
-        return self.faultframe[0].evaluate_value(locations[mask, :])
+            try:
+                mask = np.logical_and(mask, r(locations))
+            except:
+                logger.error("nan slicing")
+        v[mask] = self.faultframe[0].evaluate_value(locations[mask, :])
+        return v
 
     def mean(self):
         return self.faultframe[0].mean()
@@ -186,37 +214,56 @@ class FaultSegment:
         -------
 
         """
-        v = np.zeros(locations.shape[0])
-        v[:] = np.nan
+        v = np.zeros(locations.shape)
+        v[:, :] = np.nan
         mask = np.zeros(locations.shape[0]).astype(bool)
         mask[:] = True
         # check regions
         for r in self.regions:
-            mask = np.logical_and(mask, r(locations))
+            try:
+                mask = np.logical_and(mask, r(locations))
+            except:
+                logger.error("nan slicing ")
         # need to scale with fault displacement
-        return self.faultframe[1].evaluate_gradient(locations[mask, :])
+        v[mask, :] = self.faultframe[1].evaluate_gradient(locations[mask, :])
+        return v
 
     def evaluate_displacement(self, points):
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points then define mask for only points affected by fault
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            # all of these operations should be independent so just run as different threads
-            gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
-            gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
-            gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
-            gx = gx_future.result()
-            gy = gy_future.result()
-            gz = gz_future.result()
+        gx = None
+        gy = None
+        gz = None
+        if use_threads:
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                # all of these operations should be independent so just run as different threads
+                gx_future = executor.submit(
+                    self.faultframe.features[0].evaluate_value, newp
+                )
+                gy_future = executor.submit(
+                    self.faultframe.features[1].evaluate_value, newp
+                )
+                gz_future = executor.submit(
+                    self.faultframe.features[2].evaluate_value, newp
+                )
+                gx = gx_future.result()
+                gy = gy_future.result()
+                gz = gz_future.result()
+        else:
+            gx = self.faultframe.features[0].evaluate_value(newp)
+            gy = self.faultframe.features[1].evaluate_value(newp)
+            gz = self.faultframe.features[2].evaluate_value(newp)
         d = np.zeros(gx.shape)
-        mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
-        mask = np.logical_and(mask,~np.isnan(gz))
+        mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
+        mask = np.logical_and(mask, ~np.isnan(gz))
         d[~mask] = 0
-        gx_mask = np.zeros_like(mask,dtype=bool)
+        gx_mask = np.zeros_like(mask, dtype=bool)
         gx_mask[mask] = gx[mask] > 0
-        d[gx_mask] = 1.
+        d[gx_mask] = 1.0
         if self.faultfunction is not None:
             d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
-        return d
+        return d * self.displacement
+
     def apply_to_points(self, points):
         """
         Unfault the array of points
@@ -232,38 +279,70 @@ class FaultSegment:
         steps = self.steps
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points then define mask for only points affected by fault
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            # all of these operations should be independent so just run as different threads
-            gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp)
-            gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp)
-            gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp)
-            gx = gx_future.result()
-            gy = gy_future.result()
-            gz = gz_future.result()
+        gx = None
+        gy = None
+        gz = None
+        if use_threads:
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                # all of these operations should be independent so just run as different threads
+                gx_future = executor.submit(
+                    self.faultframe.features[0].evaluate_value, newp
+                )
+                gy_future = executor.submit(
+                    self.faultframe.features[1].evaluate_value, newp
+                )
+                gz_future = executor.submit(
+                    self.faultframe.features[2].evaluate_value, newp
+                )
+                gx = gx_future.result()
+                gy = gy_future.result()
+                gz = gz_future.result()
+        else:
+            gx = self.faultframe.features[0].evaluate_value(newp)
+            gy = self.faultframe.features[1].evaluate_value(newp)
+            gz = self.faultframe.features[2].evaluate_value(newp)
         d = np.zeros(gx.shape)
-        mask = np.logical_and(~np.isnan(gx),~np.isnan(gy))
-        mask = np.logical_and(mask,~np.isnan(gz))
+        mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
+        mask = np.logical_and(mask, ~np.isnan(gz))
         d[~mask] = 0
-        gx_mask = np.zeros_like(mask,dtype=bool)
+        gx_mask = np.zeros_like(mask, dtype=bool)
         gx_mask[mask] = gx[mask] > 0
-        d[gx_mask] = 1.
+        d[gx_mask] = 1.0
         if self.faultfunction is not None:
             d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
-        mask = np.abs(d) > 0.
+        mask = np.abs(d) > 0.0
 
         d *= self.displacement
         # calculate the fault frame for the evaluation points
         for i in range(steps):
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be independent so just run as different threads
-                gx_future = executor.submit(self.faultframe.features[0].evaluate_value, newp[mask, :])
-                g_future = executor.submit(self.faultframe.features[1].evaluate_gradient, newp[mask, :])
-                gy_future = executor.submit(self.faultframe.features[1].evaluate_value, newp[mask, :])
-                gz_future = executor.submit(self.faultframe.features[2].evaluate_value, newp[mask, :])
-                gx = gx_future.result()
-                g = g_future.result()
-                gy = gy_future.result()
-                gz = gz_future.result()
+            gx = None
+            gy = None
+            gz = None
+            g = None
+            if use_threads:
+                with ThreadPoolExecutor(max_workers=8) as executor:
+                    # all of these operations should be independent so just run as different threads
+                    gx_future = executor.submit(
+                        self.faultframe.features[0].evaluate_value, newp[mask, :]
+                    )
+                    g_future = executor.submit(
+                        self.faultframe.features[1].evaluate_gradient, newp[mask, :]
+                    )
+                    gy_future = executor.submit(
+                        self.faultframe.features[1].evaluate_value, newp[mask, :]
+                    )
+                    gz_future = executor.submit(
+                        self.faultframe.features[2].evaluate_value, newp[mask, :]
+                    )
+                    gx = gx_future.result()
+                    g = g_future.result()
+                    gy = gy_future.result()
+                    gz = gz_future.result()
+            else:
+                gx = self.faultframe.features[0].evaluate_value(newp[mask, :])
+                gy = self.faultframe.features[1].evaluate_value(newp[mask, :])
+                gz = self.faultframe.features[2].evaluate_value(newp[mask, :])
+                g = self.faultframe.features[1].evaluate_gradient(newp[mask, :])
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
@@ -271,10 +350,10 @@ class FaultSegment:
             mask2 = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
             mask2 = np.logical_and(mask2, ~np.isnan(gz))
             d[~mask2] = 0
-            gx_mask2 = np.zeros_like(mask2,dtype=bool)
+            gx_mask2 = np.zeros_like(mask2, dtype=bool)
             gx_mask2[mask2] = gx[mask2] > 0
             # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-            d[gx_mask2] = 1.
+            d[gx_mask2] = 1.0
             # d[mask2][gx[mask2] < 0] = 0.
             # d[gx < 0] = 0.
             if self.faultfunction is not None:
@@ -284,12 +363,35 @@ class FaultSegment:
             g_mag = np.zeros(g.shape[0])
             g_mag[mask2] = np.linalg.norm(g[mask2], axis=1)
             # g_mag = np.linalg.norm(g[mask2], axis=1)
-            g[g_mag > 0.] /= g_mag[g_mag > 0, None]
+            g[g_mag > 0.0] /= g_mag[g_mag > 0, None]
             # multiply displacement vector by the displacement magnitude for
             # step
-            g *= (1. / steps) * d[:, None]
+            g *= (1.0 / steps) * d[:, None]
 
             # apply displacement
             newp[mask, :] += g
         return newp
 
+    def add_abutting_fault(self, abutting_fault_feature, positive=None):
+        # check whether the fault is on the hanging wall or footwall of abutting fault
+        abutting_region = None
+        if positive is None:
+            pts = (
+                self.faultframe[0].builder.data[["X", "Y", "Z"]].to_numpy()
+            )  # get_value_constraints()
+            abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
+            positive = abut_value > 0
+        if positive:
+            abutting_region = PositiveRegion(abutting_fault_feature)
+        if positive == False:
+            abutting_region = NegativeRegion(abutting_fault_feature)
+            # if positive == True:
+            #      ## adding the nan check avoids truncating the fault at the edge of the abutting fault bounding box.
+            #         ## it makes the assumption that the abutted fault is not drawn across the abutting fault... but this should be ok
+            #     return np.logical_or(abutting_fault_feature.evaluate_value(pos) > 0,
+            #                             np.isnan(abutting_fault_feature.evaluate_value(pos)))
+            # if positive == False:
+            #     return np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0,
+            #                             np.isnan(abutting_fault_feature.evaluate_value(pos)))
+        self.abut[abutting_fault_feature.name] = abutting_region
+        self.faultframe[0].add_region(abutting_region)

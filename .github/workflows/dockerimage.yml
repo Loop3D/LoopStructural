@@ -1,7 +1,7 @@
 name: Publish Docker Hub
 on:
   release:
-    types: [created]
+    types: [edited,created]
 
 jobs:
   build:
@@ -15,3 +15,4 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
         dockerfile: Dockerfile
+        tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
