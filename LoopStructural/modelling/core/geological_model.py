@@ -1202,14 +1202,17 @@ class GeologicalModel:
         intrusion_feature.set_intrusion_frame(IFrame)
         intrusion_feature.set_intrusion_body(IBody)
 
+        #set data for simulations
+        logger.info("setting data for lateral thresholds simulation")
+        IBody.set_data_for_s_simulation()
+        logger.info("setting data for vertical thresholds simulation")
+        IBody.set_data_for_g_simulation()
+
         if intrusion_lateral_extent_model == None:
             logger.error(
                 "Specify conceptual model function for intrusion lateral extent"
             )
-
-        else:
-            logger.info("setting data for lateral thresholds simulation")
-            IBody.set_data_for_s_simulation()
+        else:            
             IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
             IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
             IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
@@ -1223,10 +1226,7 @@ class GeologicalModel:
             logger.error(
                 "Specify conceptual model function for intrusion vertical extent"
             )
-
-        else:
-            logger.info("setting data for vertical thresholds simulation")
-            IBody.set_data_for_g_simulation()
+        else:           
             IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
             IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
             IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)

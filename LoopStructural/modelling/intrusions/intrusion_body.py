@@ -109,9 +109,6 @@ class IntrusionBody:
 
         data = self.data.copy()
         data_xyz = data.loc[:, ["X", "Y", "Z"]].to_numpy()
-        # data['coord0'] = self.intrusion_frame[0].evaluate_value(self.model.scale(data_xyz, inplace = False))
-        # data['coord1'] = self.intrusion_frame[1].evaluate_value(self.model.scale(data_xyz, inplace = False))
-        # data['coord2'] = self.intrusion_frame[2].evaluate_value(self.model.scale(data_xyz, inplace = False))
         data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(data_xyz)
         data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(data_xyz)
         data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(data_xyz)
@@ -428,10 +425,27 @@ class IntrusionBody:
 
         # generate data frame containing input data for simulation
         data_sides = self.lateral_contact_data[0]
-        minP = data_sides["coord1"].min()
-        maxP = data_sides["coord1"].max()
-        minS = data_sides["coord2"].min()
-        maxS = data_sides["coord2"].max()
+        # minP = data_sides["coord1"].min()
+        # maxP = data_sides["coord1"].max()
+        # minS = data_sides["coord2"].min()
+        # maxS = data_sides["coord2"].max()
+
+        minP = min(
+            self.vertical_contact_data[0]['coord1'].min(),
+            self.vertical_contact_data[1]['coord1'].min(),
+            self.lateral_contact_data[0]['coord1'].min())
+        maxP = max(
+            self.vertical_contact_data[0]['coord1'].max(),
+            self.vertical_contact_data[1]['coord1'].max(),
+            self.lateral_contact_data[0]['coord1'].max())
+        minS = min(
+            self.vertical_contact_data[0]['coord2'].min(),
+            self.vertical_contact_data[1]['coord2'].min(),
+            self.lateral_contact_data[0]['coord2'].min())
+        maxS = max(
+            self.vertical_contact_data[0]['coord2'].max(),
+            self.vertical_contact_data[1]['coord2'].max(),
+            self.lateral_contact_data[0]['coord2'].max())
 
         # -- Min side (s<0)
         data_minS = self.lateral_contact_data[1]
@@ -632,15 +646,25 @@ class IntrusionBody:
         simulation_s_thresholds.sort_values(["coord1"], ascending=[True], inplace=True)
 
         # Ignore simulated data outside area covered by input data
-        for j in range(len(simulation_s_thresholds)):
-            if simulation_s_thresholds.loc[j, "coord1"] < minP:
-                simulation_s_thresholds.loc[
-                    j, ["min_s_threshold", "max_s_threshold"]
-                ] = [0.00001, 0.00001]
-            if simulation_s_thresholds.loc[j, "coord1"] > maxP:
-                simulation_s_thresholds.loc[
-                    j, ["min_s_threshold", "max_s_threshold"]
-                ] = [0.00001, 0.00001]
+
+        simulation_s_thresholds.loc[
+            simulation_s_thresholds.coord1 < minP,["min_s_threshold", "max_s_threshold"]
+            ] = [0.00001, 0.00001]
+
+        simulation_s_thresholds.loc[
+            simulation_s_thresholds.coord1 > maxP,["min_s_threshold", "max_s_threshold"]
+            ] = [0.00001, 0.00001]
+
+
+        # for j in range(len(simulation_s_thresholds)):
+        #     if simulation_s_thresholds.loc[j, "coord1"] < minP:
+        #         simulation_s_thresholds.loc[
+        #             j, ["min_s_threshold", "max_s_threshold"]
+        #         ] = [0.00001, 0.00001]
+        #     if simulation_s_thresholds.loc[j, "coord1"] > maxP:
+        #         simulation_s_thresholds.loc[
+        #             j, ["min_s_threshold", "max_s_threshold"]
+        #         ] = [0.00001, 0.00001]
 
         self.simulated_s_thresholds = simulation_s_thresholds
 
@@ -732,10 +756,10 @@ class IntrusionBody:
             maxC1 = np.nanmax(grid_points_coord1)
             self.simulation_g_parameters["xsiz"] = (maxC1 - minC1) / nx
         if self.simulation_g_parameters.get("ysiz") == None:
-            yx = self.simulation_g_parameters.get("yx")
+            ny = self.simulation_g_parameters.get("ny")
             minC2 = np.nanmin(grid_points_coord2)
             maxC2 = np.nanmax(grid_points_coord2)
-            self.simulation_g_parameters["ysiz"] = (maxC2 - minC2) / nx
+            self.simulation_g_parameters["ysiz"] = (maxC2 - minC2) / ny
         if self.simulation_g_parameters.get("zmin") == None:
             self.simulation_g_parameters["zmin"] = inputsimdata_maxG["g_residual"].min()
         if self.simulation_g_parameters.get("zmax") == None:
