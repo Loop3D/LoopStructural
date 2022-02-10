@@ -19,12 +19,10 @@ def ellipse_function(
 
     a = (maxP - minP) / 2
     b = (maxS - minS) / 10
-    #     b = abs(minS)
 
     po = minP + (maxP - minP) / 2
 
     p_locations = lateral_contact_data.loc[:, "coord1"].copy().to_numpy()
-    #     s_values = lateral_contact_data.loc[:,'coord2'].copy().to_numpy()
 
     s = np.zeros([len(p_locations), 2])
     

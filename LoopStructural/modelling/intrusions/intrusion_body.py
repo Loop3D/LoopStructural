@@ -4,7 +4,8 @@ import pandas as pd
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
-# GSLIB library
+
+# import GSLIB library
 try:
     import geostatspy.GSLIB as GSLIB  # GSLIB utilities, viz and wrapped functions
     import geostatspy.geostats as geostats  # GSLIB converted to Python
@@ -655,20 +656,7 @@ class IntrusionBody:
             simulation_s_thresholds.coord1 > maxP,["min_s_threshold", "max_s_threshold"]
             ] = [0.00001, 0.00001]
 
-
-        # for j in range(len(simulation_s_thresholds)):
-        #     if simulation_s_thresholds.loc[j, "coord1"] < minP:
-        #         simulation_s_thresholds.loc[
-        #             j, ["min_s_threshold", "max_s_threshold"]
-        #         ] = [0.00001, 0.00001]
-        #     if simulation_s_thresholds.loc[j, "coord1"] > maxP:
-        #         simulation_s_thresholds.loc[
-        #             j, ["min_s_threshold", "max_s_threshold"]
-        #         ] = [0.00001, 0.00001]
-
         self.simulated_s_thresholds = simulation_s_thresholds
-
-    #         return simulation_s_thresholds
 
     def simulate_g_thresholds(self):
         """
@@ -741,11 +729,11 @@ class IntrusionBody:
         if self.simulation_g_parameters.get("nx") == None:
             self.simulation_g_parameters["nx"] = grid_points[4][
                 0
-            ]  # *2 # grid X spacing
+            ]  
         if self.simulation_g_parameters.get("ny") == None:
             self.simulation_g_parameters["ny"] = grid_points[4][
                 1
-            ]  # *2 # grid Y spacing
+            ]  
         if self.simulation_g_parameters.get("xmn") == None:
             self.simulation_g_parameters["xmn"] = np.nanmin(grid_points_coord1)
         if self.simulation_g_parameters.get("ymn") == None:
@@ -927,6 +915,3 @@ class IntrusionBody:
         simulation_g_threshold.loc[:, "g_maximum"] = g_maximum
 
         self.simulated_g_thresholds = simulation_g_threshold
-
-
-#         return simulation_g_threshold

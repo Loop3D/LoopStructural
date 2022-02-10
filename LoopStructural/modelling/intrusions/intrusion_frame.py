@@ -12,8 +12,7 @@ class IntrusionBuilder(StructuralFrameBuilder):
         self, 
         interpolator=None, 
         interpolators=None, 
-        model=None, 
-        # name=None, 
+        model=None,
         **kwargs
     ):
         """A specialised structural frame builder for building an intrusion
@@ -32,7 +31,6 @@ class IntrusionBuilder(StructuralFrameBuilder):
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array([np.nan, np.nan, np.nan])
         self.model = model
-        # self.name = name
 
         self.minimum_origin = self.model.bounding_box[0, :]
         self.maximum_maximum = self.model.bounding_box[1, :]
