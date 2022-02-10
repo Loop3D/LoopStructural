@@ -25,7 +25,7 @@ def test_intrusion_network():
                             intrusion_network_type='shortest path',
                             model=model,
                             )
-    delta_c = 1e10
+    delta_c = 2
     INet.set_data()
     INet.set_contact_anisotropies([conformable_feature])
     INet.set_sequence_of_exploited_anisotropies([conformable_feature])
@@ -40,7 +40,7 @@ def test_intrusion_network():
     stdv = INet.anisotropies_series_parameters['stratigraphy_0'][2]
     evaluated_inet_points =  conformable_feature['feature'].evaluate_value(model.scale(intrusion_network_points))
 
-    assert np.all(np.logical_and((mean - stdv*delta_c)<= evaluated_inet_points,(mean + stdv*delta_c)>= evaluated_inet_points)), 'should it print sth?'
+    assert np.all(np.logical_and((mean - stdv*delta_c)<= evaluated_inet_points,(mean + stdv*delta_c)>= evaluated_inet_points))
 
 
 def test_intrusion_body(lateral_conceptual_model, vertical_conceptual_model):
@@ -78,7 +78,7 @@ def test_intrusion_body(lateral_conceptual_model, vertical_conceptual_model):
 
     IFrame = IFrame_builder.frame
     
-    assert isinstance(IFrame, StructuralFrame), 'print sth??'
+    assert isinstance(IFrame, StructuralFrame)
     
     IBody = IntrusionBody(
         intrusion_data,
@@ -96,7 +96,7 @@ def test_intrusion_body(lateral_conceptual_model, vertical_conceptual_model):
     IBody.create_grid_for_simulation()
     IBody.simulate_s_thresholds()
     
-    assert len(IBody.simulated_s_thresholds) > 0, 'simulation of lateral thresholds incomplete'
+    assert len(IBody.simulated_s_thresholds) > 0
 
     IBody.set_data_for_g_simulation()
     IBody.set_vertical_extent_conceptual_model(vertical_conceptual_model)
@@ -104,5 +104,5 @@ def test_intrusion_body(lateral_conceptual_model, vertical_conceptual_model):
     IBody.make_g_simulation_variogram({})
     IBody.simulate_g_thresholds()
     
-    assert len(IBody.simulated_g_thresholds) > 0, 'simulation of growth thresholds incomplete'
+    assert len(IBody.simulated_g_thresholds) > 0
     
