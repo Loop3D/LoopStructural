@@ -17,32 +17,8 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
        [[4, 0, 0, 0, 0, -4, -4, 0, 4, 0],
         [4, 0, 0, 0, 4, -4, 0, 0, 0, -4],
         [4, 0, 0, 4, 0, -8, 0, 0, 0, 0]]])
-    # def evaluate_mixed_derivative(self, indexes):
-    #     """
-    #     evaluate partial of N with respect to st (to set u_xy=0)
-    #     """
 
-    #     vertices = self.nodes[self.elements[indexes], :]
-    #     jac = np.array(
-    #         [
-    #             [
-    #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
-    #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
-    #             ],
-    #             [
-    #                 vertices[:, 2, 0] - vertices[:, 0, 0],
-    #                 vertices[:, 2, 1] - vertices[:, 0, 1],
-    #             ],
-    #         ]
-    #     ).T
-    #     Nst_coeff = jac[:, 0, 0] * jac[:, 1, 1] + jac[:, 0, 1] * jac[:, 1, 0]
-
-    #     Nst = self.Nst[None, :] * Nst_coeff[:, None]
-    #     return (
-    #         Nst
-    #         + self.hN[None, 0, :] * (jac[:, 0, 0] * jac[:, 1, 0])[:, None]
-    #         + self.hN[None, 1, :] * (jac[:, 1, 0] * jac[:, 1, 1])[:, None]
-    #     )
+  
 
     def evaluate_shape_d2(self, indexes):
         """evaluate second derivatives of shape functions in s and t
@@ -78,16 +54,17 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                     (vertices[:, 3, 2] - vertices[:, 0, 2]),
                 ],
             ]
-        ).T
+        )
         jac = np.linalg.inv(jac)
-        jac = jac * jac
-
-        d2_prod = np.einsum("lij,ik->lik", jac, self.hN)
-        d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
-        xxConst = d2_prod[:, 0, :]
-        yyConst = d2_prod[:, 1, :]
-
-        return xxConst, yyConst
+        # calculate derivative by summation
+        d2 = np.zeros((vertices.shape[0],6,self.elements.shape[1]))
+        ii = 0
+        for i in range(3):
+            for j in range(i,3):
+                for k in range(3):
+                    for l in range(3):
+                        d2[:,ii,:]+=jac[:,i,k]*jac[:,j,l]*self.hessian[None,k,l,:]
+        return d2
 
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
@@ -192,42 +169,46 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         inside = np.all(c>0,axis=1)
         return N, elements, inside
 
-    # def evaluate_d2(self, pos, prop):
-    #     """
-    #     Evaluate value of interpolant
+    def evaluate_d2(self, pos, prop):
+        """
+        Evaluate value of interpolant
 
-    #     Parameters
-    #     ----------
-    #     pos - numpy array
-    #         locations
-    #     prop - numpy array
-    #         property values at nodes
+        Parameters
+        ----------
+        pos - numpy array
+            locations
+        prop - numpy array
+            property values at nodes
 
-    #     Returns
-    #     -------
+        Returns
+        -------
 
-    #     """
-    #     values = np.zeros(pos.shape[0])
-    #     values[:] = np.nan
-    #     c, tri = self.evaluate_shape(pos[:, :2])
-    #     xxConst, yyConst = self.evaluate_shape_d2(tri)
-    #     xyConst = self.evaluate_mixed_derivative(tri)
-    #     inside = tri > 0
-    #     # vertices, c, elements, inside = self.get_elements_for_location(pos)
-    #     values[inside] = np.sum(
-    #         xxConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
-    #         axis=1,
-    #     )
-    #     values[inside] += np.sum(
-    #         yyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
-    #         axis=1,
-    #     )
-    #     values[inside] += np.sum(
-    #         xyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
-    #         axis=1,
-    #     )
+        """
+        values = np.zeros(pos.shape[0])
+        values[:] = np.nan
+        c, tri = self.evaluate_shape(pos[:, :2])
+        d2 = self.evaluate_shape_d2(tri)
+        inside = tri > 0
+        for i in range(d2.shape[1]):
+            values[inside] += np.sum(
+            d2[inside, i,:] * self.properties[prop][self.elements[tri[inside], :]],
+            axis=1,
+            )
+        # # vertices, c, elements, inside = self.get_elements_for_location(pos)
+        # values[inside] = np.sum(
+        #     xxConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
+        #     axis=1,
+        # )
+        # values[inside] += np.sum(
+        #     yyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
+        #     axis=1,
+        # )
+        # values[inside] += np.sum(
+        #     xyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
+        #     axis=1,
+        # )
 
-    #     return values
+        return values
 
     def evaluate_value(self, pos, property_array):
         """
