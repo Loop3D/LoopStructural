@@ -30,7 +30,6 @@ class P2Interpolator(DiscreteInterpolator):
         DiscreteInterpolator.__init__(self, mesh)
         # whether to assemble a rectangular matrix or a square matrix
         self.interpolator_type = "P2"
-        self.nx = len(self.support.nodes[self.region])
         self.support = mesh
 
         self.interpolation_weights = {
@@ -131,19 +130,19 @@ class P2Interpolator(DiscreteInterpolator):
     def add_ctr_pts(self, w=1.0):
         points = self.get_value_constraints()
         if points.shape[0] > 1:
-            N, tri = self.support.evaluate_shape(points[:, :2])
-            mask = tri > 0
-            area = self.support.element_area(tri[mask])
-            wt = np.ones(area.shape[0])
-            wt *= w * area
+            N, elements, mask = self.support.evaluate_shape(points[:, :3])
+            # mask = elements > 0
+            size = self.support.element_size[elements[mask]]
+            wt = np.ones(size.shape[0])
+            wt *= w 
             self.add_constraints_to_least_squares(
                 N[mask, :] * wt[:, None],
                 points[mask, 3] * wt,
-                self.support.elements[tri[mask], :],
+                self.support.elements[elements[mask], :],
                 name="value",
             )
 
-    def minimise_grad_steepness(self, stren=0.0, w=0.1, maskall=False, wtfunc=None):
+    def minimise_grad_steepness(self, stren=0.0, w=0.1, maskall=True, wtfunc=None):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions
         It is not added on the borders
@@ -158,79 +157,53 @@ class P2Interpolator(DiscreteInterpolator):
         elements = np.arange(0, len(self.support.elements))
         mask = np.ones(self.support.neighbours.shape[0], dtype=bool)
         if maskall == False:
-            mask[:] = np.all(self.support.neighbours > 0, axis=1)
-        vertices = self.support.nodes[self.support.elements[elements[mask], :], :]
-        barycentre = np.mean(vertices, axis=1)
-        M_t = np.ones((vertices.shape[0], 3, 3))
-        M_t[:, :, 1:] = vertices[:, :3, :]
-        area = np.abs(np.linalg.det(M_t)) * 0.5
+            mask[:] = np.all(self.support.neighbours > 3, axis=1)
+        # vertices = self.support.nodes[self.support.elements[elements[mask], :], :]
+        # barycentre = np.mean(vertices, axis=1)
+        # M_t = np.ones((vertices.shape[0], 3, 3))
+        # M_t[:, :, 1:] = vertices[:, :3, :]
+        # area = np.abs(np.linalg.det(M_t)) * 0.5
         d2 = self.support.evaluate_shape_d2(elements[mask])
-        wt = np.ones(vertices.shape[0])
-        wt *= w * area
-
-        d = np.linalg.norm(
-            (self.get_data_locations()[:, None, :2] - barycentre[None, :, :]), axis=2
-        )
-        min_dist = np.min(d, axis=0)
-        min_dist /= np.max(min_dist)
-        wt *= (1 + stren * min_dist) * area
+        # d2 is [ele_idx, deriv, node]
+        wt = np.ones(d2.shape[0])
+        
+        wt *= w #* self.support.element_size[mask]
         if wtfunc:
-            wt = wtfunc(barycentre) * area
+            wt = wtfunc(self.support.barycentre) * self.support.element_size[mask]
         idc = self.support.elements[elements[mask]]
-        self.add_constraints_to_least_squares(
-            xyConst * 4 * wt[:, None], np.zeros(xyConst.shape[0]), idc
-        )
-
-        self.add_constraints_to_least_squares(
-            xxConst * wt[:, None], np.zeros(xxConst.shape[0]), idc
-        )
-        self.add_constraints_to_least_squares(
-            yyConst * wt[:, None], np.zeros(yyConst.shape[0]), idc
-        )
-
+        for i in range(d2.shape[1]):
+            self.add_constraints_to_least_squares(
+                d2[:, i, :] * wt[i, None, None],
+                np.zeros(d2.shape[0]),
+                idc[:, :],
+                name=f"grad_steepness_{i}",
+            )
+ 
     def minimize_edge_jumps(
-        self, stren, w=0.1, maxmdDist=None, wtfunc=None, vector_func=None
+        self, w=0.1, wtfunc=None, vector_func=None
     ):  # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
-        # flag inidicate which triangles have had all their relationships added
-        # v1 = self.support.nodes[self.support.edges][:, 0, :]
-        # v2 = self.support.nodes[self.support.edges][:, 1, :]
-        # ncp = 2
-        # cp = np.zeros((v1.shape[0], ncp, 2))
-        # cp[:, 0] = 0.25 * v1 + 0.75 * v2
-        # cp[:, 1] = 0.75 * v1 + 0.25 * v2
-        cp = self.support.get_quadrature_points(ncp=2)
-        d = np.linalg.norm(
-            (self.get_data_locations()[:, None, :2] - cp[None, :, 0, :]), axis=2
-        )
-        cp1_min_dist = np.min(d, axis=0)
+        
+        cp, weight = self.support.get_quadrature_points(3)
 
-        d = np.linalg.norm(
-            (self.get_data_locations()[:, None, :2] - cp[None, :, 1, :]), axis=2
-        )
-        cp2_min_dist = np.min(d, axis=0)
-
-        cp1_min_dist /= np.max([cp1_min_dist, cp2_min_dist])
-        cp2_min_dist /= np.max([cp1_min_dist, cp2_min_dist])
-
-        normal = self.support.get_normal()
-        edge_length = self.support.get_edge_length()
+        norm = self.support.shared_element_norm
+        shared_element_size = self.support.shared_element_size
+        
         # evaluate normal if using vector func for cp1
-
-        for i in range(cp.shape[0]):
+        for i in range(cp.shape[1]):
             if callable(vector_func):
-                normal = vector_func(cp[i,:])
+                norm = vector_func(cp[:,i,:])
             # evaluate the shape function for the edges for each neighbouring triangle
             cp_Dt, cp_tri1 = self.support.evaluate_shape_derivatives(
-                cp[i, 0], elements=self.support.edge_relationships[:, 0]
+                cp[:,i, :], elements=self.support.shared_element_relationships[:, 0]
             )
             cp_Dn, cp_tri2 = self.support.evaluate_shape_derivatives(
-                cp[i, 0], elements=self.support.edge_relationships[:, 1]
+                cp[:,i, :], elements=self.support.shared_element_relationships[:, 1]
             )
-
             # constraint for each cp is triangle - neighbour create a Nx12 matrix
-            const_t_cp = np.einsum("ij,ikj->ik", normal, cp_Dt)
-            const_n_cp = -np.einsum("ij,ikj->ik", normal, cp_Dn)
+            const_t_cp = np.einsum("ij,ijk->ik", norm, cp_Dt)
+            const_n_cp = -np.einsum("ij,ijk->ik", norm, cp_Dn)
+           
             const_cp = np.hstack([const_t_cp, const_n_cp])
             tri_cp = np.hstack(
                         [self.support.elements[cp_tri1], self.support.elements[cp_tri2]]
@@ -240,10 +213,10 @@ class P2Interpolator(DiscreteInterpolator):
             if wtfunc:
                 wt = wtfunc(tri_cp)
             self.add_constraints_to_least_squares(
-                const_cp * edge_length[:, None] * wt[:, None],
+                const_cp * wt[:, None],
                 np.zeros(const_cp.shape[0]),
                 tri_cp,
-                name=f"edge jump cp{i}",
+                name=f"shared element jump cp{i}",
             )
         
 
