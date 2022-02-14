@@ -66,8 +66,38 @@ class UnStructuredTetMesh:
             (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
         )
         self.aabb_table[:] = False
+        self.shared_element_relationships = np.zeros((self.elements.shape[0]*3,2),dtype=int)
+        self.shared_elements = np.zeros((self.elements.shape[0]*3,3),dtype=int)
+        self._init_face_table()
         self._initialise_aabb()
 
+    def _init_face_table(self):
+        """
+        Fill table containing elements that share a face, and another
+        table that contains the nodes for a face. 
+        """
+        flag = np.zeros(self.elements.shape[0])
+        face_index =0
+        for i, t in enumerate(self.elements):
+            flag[i] = True
+            for n in self.neighbours[i]:
+                if n < 0:
+                    continue
+                if flag[n]:
+                    continue
+                face_node_index = 0
+                self.shared_element_relationships[face_index, 0] = i
+                self.shared_element_relationships[face_index, 1] = n
+                for v in t:
+                    if v in self.elements[n, :4]:
+                        self.shared_elements[face_index, face_node_index] = v
+                        face_node_index += 1
+
+                face_index += 1
+        self.shared_elements = self.shared_elements[:face_index, :]
+        self.shared_element_relationships = self.shared_element_relationships[:face_index, :]
+
+    
     def _initialise_aabb(self):
         """assigns the tetras to the grid cells where the bounding box
         of the tetra element overlaps the grid cell.
@@ -151,23 +181,100 @@ class UnStructuredTetMesh:
     @property
     def n_cells(self):
         return None
-
-    def barycentre(self, elements=None):
+    @property
+    def shared_element_norm(self):
         """
-        Return the barycentres of all tetrahedrons or of specified tetras using
-        global index
+        Get the normal to all of the shared elements
+        """
+        elements = self.shared_elements
+        v1 = self.nodes[elements[:, 1], :] - self.nodes[elements[:, 0], :]
+        v2 = self.nodes[elements[:, 2], :] - self.nodes[elements[:, 0], :]
+        return np.cross(v1, v2,axisa=1,axisb=1)
+    
+    @property
+    def shared_element_size(self):
+        """
+        Get the area of the share triangle
+        """
+        norm = self.shared_element_norm
+        return 0.5*np.linalg.norm(norm,axis=1)
+    
+    @property
+    def element_size(self):
+        """Calculate the volume of a tetrahedron using the 4 corners
+        volume = abs(det(A))/6 where A is the jacobian of the corners
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        vecs = self.nodes[self.elements[:,:4],:][:, 1:, :] - self.nodes[self.elements[:,:4],:][:, 0, None, :]
+        return np.abs(np.linalg.det(vecs)) / 6
+   
+    def evaluate_shape_derivatives(self, locations, elements=None):
+        """
+        Get the gradients of all tetras
 
         Parameters
         ----------
-        elements - numpy array
-            global index
+        elements
 
         Returns
         -------
 
         """
-        np.sum(self.nodes[self.elements][:, :, :], axis=1) / 4.0
+        # points = np.zeros((5, 4, self.n_cells, 3))
+        # points[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
+        # points[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
 
+        # # changing order to points, tetra, nodes, coord
+        # points = points.swapaxes(0, 2)
+        # points = points.swapaxes(1, 2)
+        if elements is None:
+            elements = np.arange(0, self.n_elements, dtype=int)
+        ps = self.nodes[
+            self.elements, :
+        ]  # points.reshape(points.shape[0] * points.shape[1], points.shape[2], points.shape[3])
+        # vertices = self.nodes[self.elements[col,:]]
+        m = np.array(
+            [
+                [
+                    (ps[:, 1, 0] - ps[:, 0, 0]),
+                    (ps[:, 1, 1] - ps[:, 0, 1]),
+                    (ps[:, 1, 2] - ps[:, 0, 2]),
+                ],
+                [
+                    (ps[:, 2, 0] - ps[:, 0, 0]),
+                    (ps[:, 2, 1] - ps[:, 0, 1]),
+                    (ps[:, 2, 2] - ps[:, 0, 2]),
+                ],
+                [
+                    (ps[:, 3, 0] - ps[:, 0, 0]),
+                    (ps[:, 3, 1] - ps[:, 0, 1]),
+                    (ps[:, 3, 2] - ps[:, 0, 2]),
+                ],
+            ]
+        )
+        I = np.array(
+            [[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]]
+        )
+        m = np.swapaxes(m, 0, 2)
+        element_gradients = np.linalg.inv(m)
+
+        element_gradients = element_gradients.swapaxes(1, 2)
+        element_gradients = element_gradients @ I
+
+        return element_gradients[elements, :, :], elements
+    def evaluate_shape(self, locations):
+        """
+        Convenience function returning barycentric coords
+        
+        """
+        locations = np.array(locations)
+        verts, c, elements, inside = self.get_element_for_location(locations)
+        return c, elements, inside
+    
     def evaluate_value(self, pos, property_array):
         """
         Evaluate value of interpolant
