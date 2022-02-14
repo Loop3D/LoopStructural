@@ -19,6 +19,43 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         [4, 0, 0, 4, 0, -8, 0, 0, 0, 0]]])
 
   
+    def get_quadrature_points(self, npts=3):
+        """Calculate the quadrature points for the triangle using 3 points
+        these points are at the barycentric coordinates of (1/6,1/6), (1/6,2/3), (2/3,1/6)
+        All points are weighted equally at 1/6
+
+        Parameters
+        ----------
+        npts : int, optional
+            _description_, by default 3
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        if npts == 3:
+            vertices = self.nodes[self.shared_elements]
+            cp = np.zeros((vertices.shape[0], 3, 3))
+            reference_points = np.array([[1/6,2/3,1/6],[1/6,1/6,2/3]])
+
+            cp[:,0,:] = vertices[:,0,:]*(1-reference_points[0,0]-reference_points[1,0])+vertices[:,1,:]*(reference_points[0,0])+vertices[:,2,:]*(reference_points[1,0])
+            cp[:,1,:] = vertices[:,0,:]*(1-reference_points[0,1]-reference_points[1,1])+vertices[:,1,:]*(reference_points[0,1])+vertices[:,2,:]*(reference_points[1,1])
+            cp[:,2,:] = vertices[:,0,:]*(1-reference_points[0,2]-reference_points[1,2])+vertices[:,1,:]*(reference_points[0,2])+vertices[:,2,:]*(reference_points[1,2])
+            weights = np.zeros((vertices.shape[0], 3))
+            weights[:,:] = 1/6
+            return cp, weights
+        if npts == 1:
+            vertices = self.nodes[self.shared_elements]
+            cp = np.zeros((vertices.shape[0], 1, 3))
+            reference_points = np.array([[1/3],[1/3]])
+
+            cp[:,0,:] = vertices[:,0,:]*(1-reference_points[0,0]-reference_points[1,0])+vertices[:,1,:]*(reference_points[0,0])+vertices[:,2,:]*(reference_points[1,0])
+            # cp[:,1,:] = vertices[:,0,:]*(1-reference_points[0,1]-reference_points[1,1])+vertices[:,1,:]*(reference_points[0,1])+vertices[:,2,:]*(reference_points[1,1])
+            # cp[:,2,:] = vertices[:,0,:]*(1-reference_points[0,2]-reference_points[1,2])+vertices[:,1,:]*(reference_points[0,2])+vertices[:,2,:]*(reference_points[1,2])
+            weights = np.zeros((vertices.shape[0], 1))
+            weights[:,:] = 1/2
+            return cp, weights
 
     def evaluate_shape_d2(self, indexes):
         """evaluate second derivatives of shape functions in s and t
@@ -55,6 +92,8 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 ],
             ]
         )
+        jac = jac.swapaxes(0,2)
+        jac = jac.swapaxes(1,2)
         jac = np.linalg.inv(jac)
         # calculate derivative by summation
         d2 = np.zeros((vertices.shape[0],6,self.elements.shape[1]))
@@ -63,7 +102,8 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
             for j in range(i,3):
                 for k in range(3):
                     for l in range(3):
-                        d2[:,ii,:]+=jac[:,i,k]*jac[:,j,l]*self.hessian[None,k,l,:]
+                        d2[:,ii,:]+=jac[:,i,k,None]*jac[:,j,l,None]*self.hessian[None,k,l,:]
+                ii+=1
         return d2
 
     def evaluate_shape_derivatives(self, locations, elements=None):
@@ -157,21 +197,24 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         N = np.zeros(
             (c.shape[0], 10)
         )  # evaluate shape functions at barycentric coordinates
+
+
         for i in range(c.shape[1]):
             N[:, i] = (2*c[:,i]-1)*c[:,i]
         
-        N[:,4] = 4*c[:,1]*c[:,2]
-        N[:,5] = 4*c[:,0]*c[:,2]
+        N[:,4] = 4*c[:,3]*c[:,2]
+        N[:,5] = 4*c[:,0]*c[:,3]
         N[:,6] = 4*c[:,0]*c[:,1]
-        N[:,7] = 4*c[:,0]*c[:,3]
+        N[:,7] = 4*c[:,1]*c[:,2]
         N[:,8] = 4*c[:,1]*c[:,3]
-        N[:,9] = 4*c[:,2]*c[:,3]
-        inside = np.all(c>0,axis=1)
+        N[:,9] = 4*c[:,0]*c[:,2]
+        # inside = np.all(c>0,axis=1)
         return N, elements, inside
 
     def evaluate_d2(self, pos, prop):
         """
-        Evaluate value of interpolant
+        Evaluate the second derivative of the interpolant
+        d2x, dxdy, d2y, dxdz dydz d2dz
 
         Parameters
         ----------
@@ -184,29 +227,17 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         -------
 
         """
-        values = np.zeros(pos.shape[0])
-        values[:] = np.nan
-        c, tri = self.evaluate_shape(pos[:, :2])
+        c, tri, inside = self.evaluate_shape(pos)
         d2 = self.evaluate_shape_d2(tri)
-        inside = tri > 0
+        # print(prop[self.elements[tri[inside], :]])
+        values = np.zeros((pos.shape[0],d2.shape[1]))
+        values[:] = np.nan
+
         for i in range(d2.shape[1]):
-            values[inside] += np.sum(
-            d2[inside, i,:] * self.properties[prop][self.elements[tri[inside], :]],
+            values[inside,i] = np.sum(
+            d2[inside, i,:] * prop[self.elements[tri[inside], :]],
             axis=1,
             )
-        # # vertices, c, elements, inside = self.get_elements_for_location(pos)
-        # values[inside] = np.sum(
-        #     xxConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
-        #     axis=1,
-        # )
-        # values[inside] += np.sum(
-        #     yyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
-        #     axis=1,
-        # )
-        # values[inside] += np.sum(
-        #     xyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
-        #     axis=1,
-        # )
 
         return values
 
