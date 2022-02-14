@@ -64,7 +64,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     @property
     def region(self):
-        return self.region_function(self.support.nodes)
+        return self.region_function(self.support.nodes).astype(bool)
 
     @property
     def region_map(self):
@@ -598,7 +598,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_chol(A, B)
         if solver == "lu":
             logger.info("Solving using scipy LU")
+            print(self.region)
             self.c[self.region] = self._solve_lu(A, B)
+            print(self.c)
         if solver == "pyamg":
             try:
                 logger.info("Solving with pyamg solve")
