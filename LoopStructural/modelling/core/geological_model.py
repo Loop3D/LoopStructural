@@ -9,7 +9,7 @@ from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
-
+from LoopStructural.interpolators import P2Interpolator
 try:
     from LoopStructural.surfe_wrapper import SurfeRBFInterpolator as Surfe
 
@@ -700,7 +700,25 @@ class GeologicalModel:
             )
 
             return PLI(mesh)
-
+        if interpolatortype == 'P2':
+            if element_volume is None:
+                # nelements /= 5
+                element_volume = box_vol / nelements
+            # calculate the step vector of a regular cube
+            step_vector = np.zeros(3)
+            step_vector[:] = element_volume ** (1.0 / 3.0)
+            # step_vector /= np.array([1,1,2])
+            # number of steps is the length of the box / step vector
+            nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            if "meshbuilder" in kwargs:
+                    mesh = kwargs["meshbuilder"](bb, nelements)
+            else:
+                raise NotImplementedError('Cannot use P2 interpolator without external mesh')
+            logger.info(
+                "Creating regular tetrahedron mesh with %i elements \n"
+                "for modelling using P2" % (mesh.ntetra)
+            )
+            return P2Interpolator(mesh)
         if interpolatortype == "FDI":
 
             # find the volume of one element

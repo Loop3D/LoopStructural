@@ -40,46 +40,86 @@ class P2Interpolator(DiscreteInterpolator):
             "tpw": 1.0,
             "ipw": 1.0,
         }
+    def _setup_interpolator(self, **kwargs):
+        """
+        Searches through kwargs for any interpolation weights and updates
+        the dictionary.
+        Then adds the constraints to the linear system using the
+        interpolation weights values
+        Parameters
+        ----------
+        kwargs -
+            interpolation weights
 
-    def add_gradient_ctr_pts(self, w=1.0):
+        Returns
+        -------
+
+        """
+        # can't reset here, clears fold constraints
+        # self.reset()
+        logger.info("Setting up PLI interpolator for %s" % self.propertyname)
+        for key in kwargs:
+            if "regularisation" in kwargs:
+                self.interpolation_weights["cgw"] = 0.1 * kwargs["regularisation"]
+            self.up_to_date = False
+            self.interpolation_weights[key] = kwargs[key]
+        if self.interpolation_weights["cgw"] > 0.0:
+            self.up_to_date = False
+            self.minimise_edge_jumps(
+                 self.interpolation_weights["cgw"])
+            #     direction_feature=kwargs.get("direction_feature", None),
+            #     direction_vector=kwargs.get("direction_vector", None),
+            # )
+            self.minimise_grad_steepness(w=self.interpolation_weights.get('steepness_weight',.01),wtfunc=self.interpolation_weights.get('steepness_wtfunc',None))
+            logger.info(
+                "Using constant gradient regularisation w = %f"
+                % self.interpolation_weights["cgw"]
+            )
+        
+        logger.info(
+            "Added %i gradient constraints, %i normal constraints,"
+            "%i tangent constraints and %i value constraints"
+            "to %s" % (self.n_g, self.n_n, self.n_t, self.n_i, self.propertyname)
+        )
+        self.add_gradient_constraints(self.interpolation_weights["gpw"])
+        self.add_norm_constraints(self.interpolation_weights["npw"])
+        self.add_value_constraints(self.interpolation_weights["cpw"])
+        self.add_tangent_constraints(self.interpolation_weights["tpw"])
+        # self.add_interface_constraints(self.interpolation_weights["ipw"])
+    def add_gradient_constraints(self, w=1.0):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
-            raise NotImplementedError
-            
-            # grad, elements = self.support.evaluate_shape_derivatives(points[:, :2])
-            # inside = elements > -1
-            # area = self.support.element_area(elements[inside])
-            # wt = np.ones(area.shape[0])
-            # wt *= w * area
-            # A = np.einsum("ikj,ij->ik", grad[:, :], points[:, 3:5])
-            # # A = np.einsum('ij,ikj->ik', grad[:,:], points[:,3:5])
-            # A *= area[idx, None]
-            # # # A *= fold_orientation
-            # B = np.zeros(A.shape[0])
-            # idc = p2_mesh.elements[idx, :]
-            # self.add_constraints_to_least_squares(A, B, elements)
-        # p2.add_constraints_to_least_squares(A, B, idc,'fold ori')
-        pass
+            grad, elements = self.support.evaluate_shape_derivatives(points[:, :3])
+            inside = elements > -1
+            area = self.support.element_size[elements[inside]]
+            wt = np.ones(area.shape[0])
+            wt *= w * area
+            A = np.einsum("ikj,ij->ik", grad[inside, :], points[inside, 3:6])
+            B = np.zeros(A.shape[0])
+            elements = self.support[elements[inside]]
+            self.add_constraints_to_least_squares(
+                A*wt[:,None], B, elements, name="gradient")
+         
+        
 
-    def add_norm_ctr_pts(self, w=1.0):
+    def add_norm_constraints(self, w=1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, :2])
+            grad, elements = self.support.evaluate_shape_derivatives(points[:, :3])
             inside = elements > -1
-            area = self.support.element_area(elements[inside])
+            area = self.support.element_size[elements[inside]]
             wt = np.ones(area.shape[0])
             wt *= w * area
             # print(grad[inside,:,:].shape)
             # print(self.support.elements[elements[inside]].shape)
-            elements = np.tile(self.support.elements[elements[inside]], (2, 1, 1))
+            elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
 
             elements = elements.swapaxes(0, 1)
             # elements = elements.swapaxes(0,2)
-            grad = grad.swapaxes(1, 2)
-
+            # grad = grad.swapaxes(1, 2)
             self.add_constraints_to_least_squares(
                 grad[inside, :, :] * wt[:, None, None],
-                points[inside, 3:5] * wt[:, None],
+                points[inside, 3:6] * wt[:, None],
                 elements,
                 name="norm",
             )
@@ -127,7 +167,7 @@ class P2Interpolator(DiscreteInterpolator):
         #     self.add_constraints_to_least_squares(A[outside, :] * w,
         #                                           B[outside], idc[outside, :])
 
-    def add_ctr_pts(self, w=1.0):
+    def add_value_constraints(self, w=1.0):
         points = self.get_value_constraints()
         if points.shape[0] > 1:
             N, elements, mask = self.support.evaluate_shape(points[:, :3])
@@ -142,7 +182,7 @@ class P2Interpolator(DiscreteInterpolator):
                 name="value",
             )
 
-    def minimise_grad_steepness(self, stren=0.0, w=0.1, maskall=True, wtfunc=None):
+    def minimise_grad_steepness(self, w=0.1, maskall=True, wtfunc=None):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions
         It is not added on the borders
@@ -168,7 +208,8 @@ class P2Interpolator(DiscreteInterpolator):
         wt = np.ones(d2.shape[0])
         
         wt *= w #* self.support.element_size[mask]
-        if wtfunc:
+        if callable(wtfunc):
+            logger.info('Using function to weight gradient steepness')
             wt = wtfunc(self.support.barycentre) * self.support.element_size[mask]
         idc = self.support.elements[elements[mask]]
         for i in range(d2.shape[1]):
@@ -179,7 +220,7 @@ class P2Interpolator(DiscreteInterpolator):
                 name=f"grad_steepness_{i}",
             )
  
-    def minimize_edge_jumps(
+    def minimise_edge_jumps(
         self, w=0.1, wtfunc=None, vector_func=None
     ):  # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles

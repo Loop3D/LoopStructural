@@ -176,7 +176,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         if len(A.shape) > 2:
             nr = A.shape[0] * A.shape[1]
-            w = np.tile(w, (A.shape[1]))
+            if isinstance(w,np.ndarray):
+                w = np.tile(w, (A.shape[1]))
             A = A.reshape((A.shape[0] * A.shape[1], A.shape[2]))
             idc = idc.reshape((idc.shape[0] * idc.shape[1], idc.shape[2]))
             B = B.reshape((A.shape[0]))
@@ -190,7 +191,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A[length > 0, :] /= length[length > 0, None]
         if isinstance(w, (float, int)):
             w = np.ones(A.shape[0]) * w
-
         if isinstance(w, np.ndarray) == False:
             raise BaseException("w must be a numpy array")
 
