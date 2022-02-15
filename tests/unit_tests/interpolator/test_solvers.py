@@ -48,8 +48,6 @@ def test_FDI():
     interpolator.set_value_constraints(data[['X','Y','Z','val','w']].to_numpy())
     interpolator._setup_interpolator()
     interpolator.solve_system()
-    plt.imshow(interpolator.evaluate_value(xyz).reshape((50,50)).T)
-    plt.savefig('normal.png')
     assert np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data) < 0.5
 def test_inequality_FDI():
     xy = np.array(np.meshgrid(np.linspace(0,1,50),np.linspace(0,1,50))).T.reshape(-1,2)
@@ -90,7 +88,6 @@ def test_inequality_FDI_nodes():
     xyz = np.hstack([xy,np.zeros((xy.shape[0],1))])
     data = pd.DataFrame(xyz,columns=['X','Y','Z'])
     data['val'] = np.sin(data['X'])
-    print(data['val'].max(),data['val'].min())
     data['w'] = 1
     data['feature_name'] = 'strati'
     data['l'] = -3

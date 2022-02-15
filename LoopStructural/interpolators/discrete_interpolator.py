@@ -285,7 +285,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             "row": np.arange(self.eq_const_c, self.eq_const_c + idc[outside].shape[0]),
         }
         self.eq_const_c += idc[outside].shape[0]
-        
 
     def add_non_linear_constraints(self, nonlinear_constraint):
         self.non_linear_constraints.append(nonlinear_constraint)
@@ -310,9 +309,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         # map from mesh node index to region node index
-        gi = np.zeros(self.support.n_nodes,dtype=int)
+        gi = np.zeros(self.support.n_nodes, dtype=int)
         gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx,dtype=int)
+        gi[self.region] = np.arange(0, self.nx, dtype=int)
         idc = gi[idc]
         rows = np.arange(self.ineq_const_c, self.ineq_const_c + idc.shape[0])
         rows = np.tile(rows, (A.shape[-1], 1)).T
@@ -438,7 +437,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             for c in self.equal_constraints.values():
                 b.extend((c["B"]).tolist())
                 mask = aa == 0
-                a.extend(c["A"]).flatten()[~mask].tolist())
+                a.extend(c["A"].flatten()[~mask].tolist())
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
             C = coo_matrix(
@@ -487,7 +486,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return ATA, ATB, Aie.T.dot(Aie), Aie.T.dot(uie), Aie.T.dot(lie)
         return ATA, ATB
 
-    def _solve_osqp(self, P, A, q, l, u,mkl=False):
+    def _solve_osqp(self, P, A, q, l, u, mkl=False):
 
         try:
             import osqp
@@ -521,15 +520,24 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         # Setup workspace
         # osqp likes csc matrices
-        linsys_solver='qdldl'
+        linsys_solver = "qdldl"
         if mkl:
-            linsys_solver='mkl pardiso'
-        
+            linsys_solver = "mkl pardiso"
+
         try:
-            prob.setup(P.tocsc(), np.array(q), A.tocsc(), np.array(u), np.array(l),linsys_solver=linsys_solver)
+            prob.setup(
+                P.tocsc(),
+                np.array(q),
+                A.tocsc(),
+                np.array(u),
+                np.array(l),
+                linsys_solver=linsys_solver,
+            )
         except ValueError:
             if mkl:
-                logger.error('MKL solver library path not correct. Please add to LD_LIBRARY_PATH') 
+                logger.error(
+                    "MKL solver library path not correct. Please add to LD_LIBRARY_PATH"
+                )
                 raise LoopImportError("Cannot import MKL pardiso")
         res = prob.solve()
         return res.x
@@ -725,7 +733,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.warning("Using external solver")
             self.c[self.region] = kwargs["external"](A, B)[: self.nx]
         if solver == "osqp":
-            self.c[self.region] = self._solve_osqp(P, A, q, l, u,mkl=kwargs.get('mkl',False))  # , **kwargs)
+            self.c[self.region] = self._solve_osqp(
+                P, A, q, l, u, mkl=kwargs.get("mkl", False)
+            )  # , **kwargs)
         # check solution is not nan
         # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
