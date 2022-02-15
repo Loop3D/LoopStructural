@@ -51,7 +51,6 @@ class AnalyticalGeologicalFeature:
         xyz2 = np.zeros(xyz.shape)
 
         for f in self.faults:
-            print("applying fault")
             xyz2[:] = f.apply_to_points(xyz)
         xyz2[:] = self.model.rescale(xyz2, inplace=False)
         xyz2[:] = xyz2 - self.origin

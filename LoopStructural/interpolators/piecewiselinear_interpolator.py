@@ -4,7 +4,9 @@ Piecewise linear interpolator
 import numpy as np
 from LoopStructural.interpolators.cython.dsi_helper import cg, fold_cg
 
-from LoopStructural.interpolators._discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators import DiscreteInterpolator
+from LoopStructural.interpolators import InterpolatorType
+
 from LoopStructural.utils.helper import get_vectors
 
 from LoopStructural.utils import getLogger
@@ -30,7 +32,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self.shape = "rectangular"
         DiscreteInterpolator.__init__(self, support)
         # whether to assemble a rectangular matrix or a square matrix
-        self.interpolator_type = "PLI"
+        self.interpolator_type = InterpolatorType.PIECEWISE_LINEAR
         self.support = support
 
         self.interpolation_weights = {
@@ -42,7 +44,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             "ipw": 1.0,
         }
         self.__str = "Piecewise Linear Interpolator with %i unknowns. \n" % self.nx
-        self.type = "PLI"
+        self.type = InterpolatorType.PIECEWISE_LINEAR
 
     def __str__(self):
         return self.__str
@@ -433,10 +435,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # e, inside = self.support.elements_for_array(points[:, :3])
             # nodes = self.support.nodes[self.support.elements[e]]
             norm = np.linalg.norm(vector, axis=1)
-            vector /= norm[:, None]
+            mask = np.isnan(norm)
+            mask = ~np.logical_or(mask, norm == 0)
+            vector[mask, :] /= norm[mask, None]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
-            vol = np.abs(np.linalg.det(vecs)) / 6
-            element_gradients /= norm[:, None, None]
+            # vol = np.abs(np.linalg.det(vecs)) / 6
+            element_gradients[mask, :, :] /= norm[mask, None, None]
 
             A = np.einsum("ij,ijk->ik", vector, element_gradients)
 

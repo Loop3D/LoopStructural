@@ -13,7 +13,7 @@ class FaultBuilder(StructuralFrameBuilder):
         interpolators=None,
         model=None,
         fault_bounding_box_buffer=0.2,
-        **kwargs
+        **kwargs,
     ):
         """A specialised structural frame builder for building a fault
 
@@ -31,9 +31,11 @@ class FaultBuilder(StructuralFrameBuilder):
         """
 
         StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
-        self.origin = np.array([np.nan, np.nan, np.nan])
-        self.maximum = np.array([np.nan, np.nan, np.nan])
         self.model = model
+        self.origin = np.array([np.nan, np.nan, np.nan])
+        self.maximum = np.array(
+            [np.nan, np.nan, np.nan]
+        )  # self.model.bounding_box[1, :]
         # define a maximum area to mesh adding buffer to model
         # buffer = .2
         self.minimum_origin = self.model.bounding_box[
@@ -100,11 +102,17 @@ class FaultBuilder(StructuralFrameBuilder):
             distance = np.linalg.norm(
                 fault_trace[:, None, :] - fault_trace[None, :, :], axis=2
             )
-            if len(distance) == 0:
-                logger.error("There is no fault trace for {}".format(self.name))
+            if len(distance) == 0 or np.sum(distance) == 0:
+                logger.warning("There is no fault trace for {}".format(self.name))
+                # this can mean there is only a single data point for the fault, its not critical
+                # but probably means the fault isn't well defined.
+                # add any data anyway - usually just orientation data
+                self.add_data_from_data_frame(data)
+                self.origin = self.model.bounding_box[0, :]
+                self.maximum = self.model.bounding_box[1, :]
                 return
             major_axis = np.max(distance)
-            logger.warning("Fault major axis using map length: {}".format(major_axis))
+            logger.warning(f"Fault major axis using map length: {major_axis}")
 
         if minor_axis is None:
             minor_axis = major_axis / 2.0
@@ -152,13 +160,28 @@ class FaultBuilder(StructuralFrameBuilder):
                         0,
                         w,
                     ]
+                    logger.warning("Converting fault norm data to gradient data")
+                    mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["nx"]))
+                    data.loc[mask, ["gx", "gy", "gz"]] = data.loc[
+                        mask, ["nx", "ny", "nz"]
+                    ]
+                    data.loc[mask, ["nx", "ny", "nz"]] = np.nan
                 if points == False:
+                    logger.warning(
+                        "Rescaling fault norm constraint length for fault frame"
+                    )
                     mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["gx"]))
                     data.loc[mask, ["gx", "gy", "gz"]] /= np.linalg.norm(
                         data.loc[mask, ["gx", "gy", "gz"]], axis=1
                     )[:, None]
                     # scale vector so that the distance between -1 and 1 is the minor axis length
                     data.loc[mask, ["gx", "gy", "gz"]] /= minor_axis * 0.5
+                    mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["nx"]))
+                    data.loc[mask, ["nx", "ny", "nz"]] /= np.linalg.norm(
+                        data.loc[mask, ["nx", "ny", "nz"]], axis=1
+                    )[:, None]
+                    # scale vector so that the distance between -1 and 1 is the minor axis length
+                    data.loc[mask, ["nx", "ny", "nz"]] /= minor_axis * 0.5
             if major_axis is not None:
                 fault_tips[0, :] = fault_center[:3] + strike_vector * 0.5 * major_axis
                 fault_tips[1, :] = fault_center[:3] - strike_vector * 0.5 * major_axis
@@ -213,13 +236,10 @@ class FaultBuilder(StructuralFrameBuilder):
                     1,
                     w,
                 ]
-                # data.loc[len(data),['X','Y','Z','feature_name','val','coord']] = \
-                #     [fault_depth[1,0],fault_depth[1,1],fault_depth[1,2],self.name,-1,1]
+
                 self.update_geometry(fault_depth)
                 # TODO need to add data here
-                # print(np.linalg.norm(slip_vector))
-                # slip_vector /= intermediate_axis
-                # print(np.linalg.norm(slip_vector))
+                slip_vector /= intermediate_axis
                 data.loc[
                     len(data),
                     [
@@ -246,9 +266,6 @@ class FaultBuilder(StructuralFrameBuilder):
                     1,
                     w,
                 ]
-        # add strike vector to constraint fault extent
-        # data.loc[len(data),['X','Y','Z','feature_name','nx','ny','nz','coord']] = [fault_center[0],fault_center[1],fault_center[2],\
-        #     self.name, strike_vector[0], strike_vector[1], strike_vector[2], 2]
         self.add_data_from_data_frame(data)
         self.update_geometry(data[["X", "Y", "Z"]].to_numpy())
 
@@ -261,13 +278,6 @@ class FaultBuilder(StructuralFrameBuilder):
             percentage of length to add to edges
         """
         length = np.max(self.maximum - self.origin)
-        # origin = self.builders[0].interpolator.support.origin
-        # maximum = self.builders[0].interpolator.support.maximum#set_interpolation_geometry
-        # if origin[2]>self.origin[2]:
-        #     origin[2]=self.origin[2]
-        # if maximum[2]<self.maximum[2]:
-        #     maximum[2]=self.maximum[2]
-        # self.builders[0].set_interpolation_geometry(origin,maximum)
         # for builder in self.builders:
         # all three coordinates share the same support
         self.builders[0].set_interpolation_geometry(
@@ -298,9 +308,7 @@ class FaultBuilder(StructuralFrameBuilder):
                     return mask
                 else:
                     logger.warning(
-                        "Not adding splay, cannot identify splay overlap region for {} and {}".format(
-                            self.name, splay.name
-                        )
+                        f"Not adding splay, cannot identify splay overlap region for {self.name} and {splay.name}"
                     )
                     return mask
 

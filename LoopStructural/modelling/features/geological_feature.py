@@ -5,7 +5,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from LoopStructural.utils import getLogger, LoopValueError
 
 logger = getLogger(__name__)
 
@@ -86,6 +86,9 @@ class GeologicalFeature:
     def __setitem__(self, key, item):
         self._attributes[key] = item
 
+    def __call__(self, xyz):
+        return self.evaluate_value(xyz)
+
     def set_model(self, model):
         self.model = model
 
@@ -134,6 +137,8 @@ class GeologicalFeature:
             numpy array containing evaluated values
 
         """
+        if evaluation_points.shape[1] != 3:
+            raise LoopValueError("Need Nx3 array of xyz points to evaluate value")
         # TODO need to add a generic type checker for all methods
         # if evaluation_points is not a numpy array try and convert
         # otherwise error
@@ -154,7 +159,7 @@ class GeologicalFeature:
             for f in self.faults:
                 evaluation_points = f.apply_to_points(evaluation_points)
         if mask.dtype not in [int, bool]:
-            logger.error("Unable to evaluate value for {}".format(self.name))
+            logger.error(f"Unable to evaluate value for {self.name}")
         else:
             v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         return v
@@ -171,6 +176,8 @@ class GeologicalFeature:
         -------
 
         """
+        if evaluation_points.shape[1] != 3:
+            raise LoopValueError("Need Nx3 array of xyz points to evaluate gradient")
         self.builder.up_to_date()
         v = np.zeros(evaluation_points.shape)
         v[:] = np.nan
@@ -187,7 +194,7 @@ class GeologicalFeature:
             for f in self.faults:
                 evaluation_points = f.apply_to_points(evaluation_points)
         if mask.dtype not in [int, bool]:
-            logger.error("Unable to evaluate gradient for {}".format(self.name))
+            logger.error(f"Unable to evaluate gradient for {self.name}")
         else:
             v[mask, :] = self.interpolator.evaluate_gradient(evaluation_points[mask, :])
 

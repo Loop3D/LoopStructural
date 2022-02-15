@@ -5,14 +5,13 @@ import logging
 
 import numpy as np
 
+from LoopStructural.interpolators import PiecewiseLinearInterpolator, InterpolatorType
 
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
 from .cython.dsi_helper import fold_cg
-
-from .piecewiselinear_interpolator import PiecewiseLinearInterpolator
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
@@ -31,7 +30,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         """
 
         PiecewiseLinearInterpolator.__init__(self, support)
-        self.type = ["foldinterpolator"]
+        self.type = InterpolatorType.DISCRETE_FOLD
         self.fold = fold
 
     @classmethod
@@ -142,8 +141,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             np.random.shuffle(element_idx)
 
             logger.info(
-                "Adding fold orientation constraint to %s w = %f"
-                % (self.propertyname, fold_orientation)
+                f"Adding fold orientation constraint to {self.propertyname} w = {fold_orientation}"
             )
             A = np.einsum(
                 "ij,ijk->ik",
@@ -164,8 +162,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             np.random.shuffle(element_idx)
 
             logger.info(
-                "Adding fold axis constraint to %s w = %f"
-                % (self.propertyname, fold_axis_w)
+                f"Adding fold axis constraint to {self.propertyname} w = {fold_axis_w}"
             )
             A = np.einsum(
                 "ij,ijk->ik",
@@ -187,8 +184,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             np.random.shuffle(element_idx)
 
             logger.info(
-                "Adding fold normalisation constraint to %s w = %f"
-                % (self.propertyname, fold_normalisation)
+                f"Adding fold normalisation constraint to {self.propertyname} w = {fold_normalisation}"
             )
             A = np.einsum(
                 "ij,ijk->ik", dgz[element_idx[::step], :], eg[element_idx[::step], :, :]
@@ -212,12 +208,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             fold constant gradient
             """
             logger.info(
-                "Adding fold regularisation constraint to {} w = {} {} {}".format(
-                    self.propertyname,
-                    fold_regularisation[0],
-                    fold_regularisation[1],
-                    fold_regularisation[1],
-                )
+                f"Adding fold regularisation constraint to {self.propertyname} w = {fold_regularisation[0]} {fold_regularisation[1]} {fold_regularisation[2]}"
             )
 
             idc, c, ncons = fold_cg(

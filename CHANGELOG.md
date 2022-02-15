@@ -1,5 +1,54 @@
 # Changelog
 
+### [1.4.2](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.1...v1.4.2) (2022-02-07)
+
+
+### Bug Fixes
+
+* actually fixing divide by zero ([ef4d7d0](https://www.github.com/Loop3D/LoopStructural/commit/ef4d7d036a24730a5c296f8e7779d76e405b98ce))
+* added function for plotting structural frames ([69dbc6d](https://www.github.com/Loop3D/LoopStructural/commit/69dbc6d12999952d6266d003e8e7bda37551670c))
+* adding mpl syntax for 3d view points ([cc7788f](https://www.github.com/Loop3D/LoopStructural/commit/cc7788f62f82b4bdc4bba242c394212ed94e6d5d))
+* bug where data is not float ([e6f7e1f](https://www.github.com/Loop3D/LoopStructural/commit/e6f7e1fb6c09d4702bc49218d5b7b4e73385de7a))
+* bug with calculating average fault ori ([a2099cd](https://www.github.com/Loop3D/LoopStructural/commit/a2099cd0477a18a6448d5e556795b0e40a1f05a6))
+* commenting out osqp ([c2fd2da](https://www.github.com/Loop3D/LoopStructural/commit/c2fd2da4c5f6b84424cbd0fa0f3e940b7cadeb4f))
+* crashing when all constraints of a type outside of box ([7907f58](https://www.github.com/Loop3D/LoopStructural/commit/7907f5814a4e2a0672c3fb73616325e533549809))
+* extra checks ([ba6f391](https://www.github.com/Loop3D/LoopStructural/commit/ba6f39134e02daf996e59fd321d2698ce1dee040))
+* fault interpolation taking a long time ([78fa916](https://www.github.com/Loop3D/LoopStructural/commit/78fa9163bc0b5fd84ef93302541dbf2da474749b))
+* faults interpolation mesh was not being adjusted ([33722f6](https://www.github.com/Loop3D/LoopStructural/commit/33722f6c103701a7c7bf5dadb88c3bd422752622))
+* faults not rescaling when incorrect norm vectors used ([9706f25](https://www.github.com/Loop3D/LoopStructural/commit/9706f255c612af4ea702c89f870826eed380167b))
+* faults not visible in model ([32cbb2a](https://www.github.com/Loop3D/LoopStructural/commit/32cbb2a849c7f0c87da4adc2485013973eb2380b))
+* faults with no value data not interpolating ([bf55ec6](https://www.github.com/Loop3D/LoopStructural/commit/bf55ec684cd4635f7396a4245a79b2e9adf81697))
+* interpolator type is now an enum ([8197552](https://www.github.com/Loop3D/LoopStructural/commit/81975524f9ee487d8de489501b5fd2455150d20f))
+* norm constraint out of model cause crash ([20692e2](https://www.github.com/Loop3D/LoopStructural/commit/20692e21dd7b97911e1b38f66ba405dfc152cb5f))
+* number of constraints warning message ([9abcc04](https://www.github.com/Loop3D/LoopStructural/commit/9abcc042947b06f80db121aa48f9a9c1f0648b81))
+* removed divide by 0 error ([9f17489](https://www.github.com/Loop3D/LoopStructural/commit/9f17489cf8f233651778e817f7fd9c3258bc7d9f))
+* updating logging ([f77f915](https://www.github.com/Loop3D/LoopStructural/commit/f77f9156dfae6a58ea4a31b4b577dd2f207d2b8a))
+
+### [1.4.1](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.0...v1.4.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* updating github workflow  ([84b4017](https://www.github.com/Loop3D/LoopStructural/commit/84b4017030089b51e81b34e2faa52f9526ad6c74))
+* updating version number manually  ([1f11571](https://www.github.com/Loop3D/LoopStructural/commit/1f11571cc743f6b366898471ce4dbd4dbffd337b))
+
+## [1.4.0](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.12...v1.4.0) (2021-12-06)
+
+
+### Features
+
+* bumping version ([e50a35e](https://www.github.com/Loop3D/LoopStructural/commit/e50a35eaef77d873794a1d0efa362601882152ff))
+
+### [1.3.12](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.11...v1.3.12) (2021-12-05)
+
+
+### Bug Fixes
+
+* adding polarity to LS datastructure ([61842f0](https://www.github.com/Loop3D/LoopStructural/commit/61842f0b2f4bf72fd53e0d5834a89e2a996e4f1a))
+* error creating mesh for faults ([7efe910](https://www.github.com/Loop3D/LoopStructural/commit/7efe910e3afc716d6cd7de69eb2c534cf9d8a1b0))
+* gradient norm used for folds when fold ([36f9cff](https://www.github.com/Loop3D/LoopStructural/commit/36f9cff04ad6dde5fdefdf3feead3984a21e3fc4))
+* splot not working for overturned folds ([2e185b5](https://www.github.com/Loop3D/LoopStructural/commit/2e185b52a5544723aa8d34f5e87d6449acf39668))
+
 ### [1.3.11](https://www.github.com/Loop3D/LoopStructural/compare/v1.3.10...v1.3.11) (2021-11-29)
 
 

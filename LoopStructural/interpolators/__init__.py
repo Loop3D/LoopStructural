@@ -2,25 +2,40 @@
 Interpolators and interpolation supports
 
 """
-# expose interpolators
-from ._discrete_fold_interpolator import (
-    DiscreteFoldInterpolator,
-)
-from ._finite_difference_interpolator import (
+from enum import IntEnum
+
+
+class InterpolatorType(IntEnum):
+    """
+    Enum for the different interpolator types
+
+    1-9 should cover interpolators with supports
+    9+ are data supported
+    """
+
+    BASE = 0
+    BASE_DISCRETE = 1
+    FINITE_DIFFERENCE = 2
+    DISCRETE_FOLD = 3
+    PIECEWISE_LINEAR = 4
+    PIECEWISE_QUADRATIC = 5
+    BASE_DATA_SUPPORTED = 10
+    SURFE = 11
+
+
+from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
+from LoopStructural.interpolators.discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.interpolators.unstructured_tetra import UnStructuredTetMesh
+from LoopStructural.interpolators.structured_grid import StructuredGrid
+from LoopStructural.interpolators.finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
-from .piecewiselinear_interpolator import (
+from LoopStructural.interpolators.piecewiselinear_interpolator import (
     PiecewiseLinearInterpolator,
 )
-from ._geological_interpolator import GeologicalInterpolator
-from ._discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators.discrete_fold_interpolator import (
+    DiscreteFoldInterpolator,
+)
 from ._p1interpolator import P1Interpolator
 from ._p2interpolator import P2Interpolator
-
-# supports
-from .supports import TetMesh
-from .supports import StructuredGrid
-from .supports import StructuredGrid2D
-from .supports import UnStructuredTetMesh
-from .supports import StructuredGrid
-from .supports import P2UnstructuredTetMesh

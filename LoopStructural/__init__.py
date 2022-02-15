@@ -1,6 +1,4 @@
 """
-
-
 LoopStructural API
 =======================
 
@@ -14,7 +12,7 @@ from .version import __version__
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter(
-    "%(asctime)s ~ %(name)-12s ~ %(levelname)-10s ~ %(message)s"
+    "%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d -- %(message)s"
 )
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
