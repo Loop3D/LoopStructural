@@ -499,10 +499,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def _solve_osqp(self, P, A, q, l, u, mkl=False):
 
-        # try:
-        #     import osqp
-        # except ImportError:
-        #     raise LoopImportError("Missing osqp pip install osqp")      
+        try:
+            import osqp
+        except ImportError:
+            raise LoopImportError("Missing osqp pip install osqp")      
         prob = osqp.OSQP()
 
         # Setup workspace

@@ -23,18 +23,18 @@ class InterpolatorType(IntEnum):
     SURFE = 11
 
 
-from LoopStructural.interpolators.geological_interpolator import GeologicalInterpolator
-from LoopStructural.interpolators.discrete_interpolator import DiscreteInterpolator
-from LoopStructural.interpolators.structured_tetra import TetMesh
-from LoopStructural.interpolators.unstructured_tetra import UnStructuredTetMesh
-from LoopStructural.interpolators.structured_grid import StructuredGrid
-from LoopStructural.interpolators.finite_difference_interpolator import (
+from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
+from LoopStructural.interpolators._discrete_interpolator import DiscreteInterpolator
+from LoopStructural.interpolators.supports import TetMesh, StructuredGrid, UnStructuredTetMesh, P1Unstructured2d, P2Unstructured2d, StructuredGrid2D, P2UnstructuredTetMesh
+
+
+from LoopStructural.interpolators._finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
 from LoopStructural.interpolators.piecewiselinear_interpolator import (
     PiecewiseLinearInterpolator,
 )
-from LoopStructural.interpolators.discrete_fold_interpolator import (
+from LoopStructural.interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
 from ._p1interpolator import P1Interpolator
