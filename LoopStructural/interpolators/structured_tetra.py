@@ -458,7 +458,7 @@ class TetMesh(BaseStructuredSupport):
         m = np.swapaxes(m, 0, 2)
         element_gradients = np.zeros_like(m)
         element_gradients[:] = np.nan
-        element_gradients[inside,:,:] = np.linalg.inv(m[inside,:,:])
+        element_gradients[inside, :, :] = np.linalg.inv(m[inside, :, :])
         # element_gradients = np.linalg.inv(m)
 
         element_gradients = element_gradients.swapaxes(1, 2)

@@ -138,7 +138,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         logger.debug("Resetting interpolation constraints")
-        
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):
         """
@@ -255,7 +254,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         pass
 
-    def add_equality_constraints(self, node_idx, values,name="undefined"):
+    def add_equality_constraints(self, node_idx, values, name="undefined"):
         """
         Adds hard constraints to the least squares system. For now this just
         sets
@@ -283,8 +282,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             "B": values[outside].tolist(),
             "col": idc[outside].tolist(),
             # "w": w,
-            "row": np.arange(self.eq_const_c, self.eq_const_c+idc[outside].shape[0])
-            
+            "row": np.arange(self.eq_const_c, self.eq_const_c + idc[outside].shape[0]),
         }
         self.eq_const_c += idc[outside].shape[0]
         # ,'C':np.ones(idc[outside].shape[0]).tolist(),}
@@ -317,20 +315,38 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         # map from mesh node index to region node index
-        gi = np.zeros(self.support.n_nodes)
+        gi = np.zeros(self.support.n_nodes,dtype=int)
         gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
+        gi[self.region] = np.arange(0, self.nx,dtype=int)
         idc = gi[idc]
-        rows = np.arange(self.ineq_const_c, self.ineq_const_c+idc.shape[0])
-        rows =  np.tile(rows, (A.shape[-1], 1)).T
-        self.ineq_constraints[name] = {
-            "A": A,
-            "l": l,
-            "col": idc,
-            "u": u,
-            "row": rows
-        }
-        self.ineq_const_c+=idc.shape[0]
+        rows = np.arange(self.ineq_const_c, self.ineq_const_c + idc.shape[0])
+        rows = np.tile(rows, (A.shape[-1], 1)).T
+        self.ineq_constraints[name] = {"A": A, "l": l, "col": idc, "u": u, "row": rows}
+        self.ineq_const_c += idc.shape[0]
+
+    def add_inequality_feature(self, feature, lower=True, mask=None):
+
+        # add inequality value for the nodes of the mesh
+        # flag lower determines whether the feature is a lower bound or upper bound
+        # mask is just a boolean array determining which nodes to apply it to
+
+        value = feature(self.support.nodes)
+        if mask is None:
+            mask = np.ones(value.shape[0], dtype=bool)
+        l = np.zeros(value.shape[0]) - np.inf
+        u = np.zeros(value.shape[0]) + np.inf
+        mask = np.logical_and(mask, ~np.isnan(value))
+        if lower:
+            l[mask] = value[mask]
+        if lower == False:
+            u[mask] = value[mask]
+
+        self.add_inequality_constraints_to_matrix(
+            np.ones((value.shape[0], 1)),
+            l,
+            u,
+            np.arange(0, self.nx, dtype=int),
+        )
 
     def add_tangent_constraints(self, w=1.0):
         """
@@ -426,20 +442,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
             nc = 0
             for c in self.equal_constraints.values():
                 aa = (c["A"]).flatten()
-                b.extend((c["B"] ).tolist())
+                b.extend((c["B"]).tolist())
                 mask = aa == 0
                 a.extend(aa[~mask].tolist())
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
             C = coo_matrix(
-                
-                    (np.array(a), (np.array(rows), cols)), shape=(self.eq_const_c, self.nx), dtype=float
-                ).tocsr()
-                
+                (np.array(a), (np.array(rows), cols)),
+                shape=(self.eq_const_c_, self.nx),
+                dtype=float,
+            ).tocsr()
+
             d = np.array(b)
             ATA = bmat([[ATA, C.T], [C, None]])
             ATB = np.hstack([ATB, d])
-        
+
         if isinstance(damp, bool):
             if damp == True:
                 damp = np.finfo("float").eps
@@ -449,7 +466,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.info("Adding eps to matrix diagonal")
             ATA += eye(ATA.shape[0]) * damp
         if len(self.ineq_constraints) > 0 and ie:
-            print('using inequality constraints')
+            print("using inequality constraints")
             a = []
             l = []
             u = []
@@ -465,16 +482,19 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
             Aie = coo_matrix(
-            (np.array(a), (np.array(rows), cols)), shape=(self.ineq_const_c, self.nx), dtype=float
-            ).tocsc()    # .tocsr()
+                (np.array(a), (np.array(rows), cols)),
+                shape=(self.ineq_const_c, self.nx),
+                dtype=float,
+            ).tocsc()  # .tocsr()
 
             uie = np.array(u)
             lie = np.array(l)
 
             return ATA, ATB, Aie.T.dot(Aie), Aie.T.dot(uie), Aie.T.dot(lie)
         return ATA, ATB
-    def _solve_osqp(self, P, A, q, l, u):
-        
+
+    def _solve_osqp(self, P, A, q, l, u,mkl=False):
+
         try:
             import osqp
         except ImportError:
@@ -502,13 +522,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # # Solve problem
         # res = prob.solve()
 
-
         # Create an OSQP object
         prob = osqp.OSQP()
 
         # Setup workspace
         # osqp likes csc matrices
-        prob.setup(P.tocsc(), np.array(q), A.tocsc(), np.array(u), np.array(l))
+        linsys_solver='qdldl'
+        if mkl:
+            linsys_solver='mkl pardiso'
+        
+        try:
+            prob.setup(P.tocsc(), np.array(q), A.tocsc(), np.array(u), np.array(l),linsys_solver=linsys_solver)
+        except ValueError:
+            if mkl:
+                logger.error('MKL solver library path not correct. Please add to LD_LIBRARY_PATH') 
+                raise LoopImportError("Cannot import MKL pardiso")
         res = prob.solve()
         return res.x
 
@@ -676,8 +704,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             damp = True
         if solver == "lsqr":
             A, B = self.build_matrix(False)
-        elif solver =='osqp':
-            P, q, A, l, u = self.build_matrix(True,ie=True)
+        elif solver == "osqp":
+            P, q, A, l, u = self.build_matrix(True, ie=True)
         else:
             A, B = self.build_matrix(damp=damp)
 
@@ -702,8 +730,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if solver == "external":
             logger.warning("Using external solver")
             self.c[self.region] = kwargs["external"](A, B)[: self.nx]
-        if solver == 'osqp':
-            self.c[self.region] = self._solve_osqp(P, A, q, l, u)#, **kwargs)
+        if solver == "osqp":
+            self.c[self.region] = self._solve_osqp(P, A, q, l, u,mkl=kwargs.get('mkl',False))  # , **kwargs)
         # check solution is not nan
         # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
