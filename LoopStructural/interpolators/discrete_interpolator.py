@@ -277,6 +277,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         gi[self.region] = np.arange(0, self.nx)
         idc = gi[node_idx]
         outside = ~(idc == -1)
+        
         self.equal_constraints[name] = {
             "A": np.ones(idc[outside].shape[0]),
             "B": values[outside],
@@ -434,15 +435,22 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # c are the node values and y are the
             # lagrange multipliers#
             nc = 0
+            a = []
+            rows = []
+            cols = []
+            b = []
             for c in self.equal_constraints.values():
                 b.extend((c["B"]).tolist())
+                aa = c["A"].flatten()
                 mask = aa == 0
-                a.extend(c["A"].flatten()[~mask].tolist())
+                a.extend(aa[~mask].tolist())
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
+
             C = coo_matrix(
+
                 (np.array(a), (np.array(rows), cols)),
-                shape=(self.eq_const_c_, self.nx),
+                shape=(self.eq_const_c, self.nx),
                 dtype=float,
             ).tocsr()
 
