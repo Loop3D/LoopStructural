@@ -412,7 +412,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # can help speed up solving, but might also introduce some errors
 
         if len(self.equal_constraints) > 0:
-            logger.info("Equality block is %i x %i" % (self.eq_const_c_, self.nx))
+            logger.info("Equality block is %i x %i" % (self.eq_const_c, self.nx))
             # solving constrained least squares using
             # | ATA CT | |c| = b
             # | C   0  | |y|   d
@@ -433,7 +433,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 cols.extend(c["col"].flatten()[~mask].tolist())
             C = coo_matrix(
                 
-                    (np.array(a), (np.array(rows), cols)), shape=(self.eq_const_c_, self.nx), dtype=float
+                    (np.array(a), (np.array(rows), cols)), shape=(self.eq_const_c, self.nx), dtype=float
                 ).tocsr()
                 
             d = np.array(b)
