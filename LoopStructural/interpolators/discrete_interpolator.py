@@ -278,19 +278,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         idc = gi[node_idx]
         outside = ~(idc == -1)
         self.equal_constraints[name] = {
-            "A": np.ones(idc[outside].shape[0]).tolist(),
-            "B": values[outside].tolist(),
-            "col": idc[outside].tolist(),
+            "A": np.ones(idc[outside].shape[0]),
+            "B": values[outside],
+            "col": idc[outside],
             # "w": w,
             "row": np.arange(self.eq_const_c, self.eq_const_c + idc[outside].shape[0]),
         }
         self.eq_const_c += idc[outside].shape[0]
-        # ,'C':np.ones(idc[outside].shape[0]).tolist(),}
-        # self.eq_const_C.extend(np.ones(idc[outside].shape[0]).tolist())
-        # self.eq_const_col.extend(idc[outside].tolist())
-        # self.eq_const_row.extend((np.arange(0, idc[outside].shape[0])))
-        # self.eq_const_d.extend(values[outside].tolist())
-        # self.eq_const_c_ += idc[outside].shape[0]
+        
 
     def add_non_linear_constraints(self, nonlinear_constraint):
         self.non_linear_constraints.append(nonlinear_constraint)
@@ -441,10 +436,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # lagrange multipliers#
             nc = 0
             for c in self.equal_constraints.values():
-                aa = (c["A"]).flatten()
                 b.extend((c["B"]).tolist())
                 mask = aa == 0
-                a.extend(aa[~mask].tolist())
+                a.extend(c["A"]).flatten()[~mask].tolist())
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
             C = coo_matrix(
