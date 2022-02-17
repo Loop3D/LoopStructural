@@ -1340,6 +1340,13 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
+        if 'fault_extent' in kwargs and major_axis == None:
+            major_axis = kwargs['fault_extent']
+        if 'fault_influence' in kwargs and minor_axis == None:
+            minor_axis = kwargs['fault_influence']
+        if 'fault_vectical_radius' in kwargs and intermediate_axis == None:
+            intermediate_axis = kwargs['fault_vectical_radius']
+
         logger.info(f'Creating fault "{fault_surface_data}"')
         logger.info(f"Displacement: {displacement}")
         logger.info(f"Tolerance: {tol}")
@@ -1484,10 +1491,6 @@ class GeologicalModel:
             intermediate_axis=intermediate_axis,
             points=kwargs.get("points", True),
         )
-
-        # if minor_axis == None or major_axis == None or intermediate_axis == None:
-        #     fault_frame_builder.origin = self.bounding_box[0,:]
-        #     fault_frame_builder.maximum = self.bounding_box[1,:]
         if "force_mesh_geometry" not in kwargs:
 
             fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
