@@ -1645,11 +1645,11 @@ class GeologicalModel:
                         nsteps[2])
         >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(xyz,scale=False)
 
         Evaluate on points defined by regular grid function
 
-        >>> model.evaluate_model(model.regular_grid())
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
 
 
         Evaluate on a map
@@ -1661,7 +1661,10 @@ class GeologicalModel:
         >>> xx, yy = np.meshgrid(x, y, indexing='ij')
         >>> zz = np.zeros_like(yy)
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
+
+        Evaluate on points in reference coordinate system
+        >>> model.evaluate_model(xyz,scale=True)
 
         """
         xyz = np.array(xyz)
