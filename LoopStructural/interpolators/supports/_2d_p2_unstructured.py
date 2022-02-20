@@ -261,7 +261,7 @@ class P2Unstructured2d(BaseUnstructured2d):
 
             v1 = self.nodes[self.edges][:, 0, :]
             v2 = self.nodes[self.edges][:, 1, :]
-            cp = np.zeros((v1.shape[0], ncp, 2))
+            cp = np.zeros((v1.shape[0], self.ncps, 2))
             cp[:, 0] = 0.25 * v1 + 0.75 * v2
             cp[:, 1] = 0.75 * v1 + 0.25 * v2
             return cp

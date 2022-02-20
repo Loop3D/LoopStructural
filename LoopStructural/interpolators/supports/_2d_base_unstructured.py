@@ -50,6 +50,12 @@ class BaseUnstructured2d:
         self.edge_relationships = self.edge_relationships[:edge_index, :]
 
     @property
+    def ncps(self):
+        """
+        Returns the number of nodes for an element in the mesh
+        """
+        return self.elements.shape[1]
+    @property
     def nodes(self):
         """
         Gets the nodes of the mesh as a property rather than using a function, accessible as a property! Python magic!
