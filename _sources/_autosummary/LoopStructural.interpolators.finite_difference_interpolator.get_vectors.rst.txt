@@ -1,6 +1,0 @@
-LoopStructural.interpolators.finite\_difference\_interpolator.get\_vectors
-==========================================================================
-
-.. currentmodule:: LoopStructural.interpolators.finite_difference_interpolator
-
-.. autofunction:: get_vectors

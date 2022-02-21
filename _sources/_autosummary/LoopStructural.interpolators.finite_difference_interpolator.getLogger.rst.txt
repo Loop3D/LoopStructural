@@ -1,6 +1,0 @@
-LoopStructural.interpolators.finite\_difference\_interpolator.getLogger
-=======================================================================
-
-.. currentmodule:: LoopStructural.interpolators.finite_difference_interpolator
-
-.. autofunction:: getLogger

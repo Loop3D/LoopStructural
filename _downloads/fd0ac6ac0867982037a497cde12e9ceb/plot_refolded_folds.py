@@ -123,7 +123,7 @@ s1_s0_splot.add_fold_limb_curve()
 viewer = LavaVuModelViewer(model)
 viewer.add_isosurface(s0,nslices=10,paint_with=s0,cmap='tab20')
 # viewer.add_data(s0)
-# viewer.add_fold(s0['fold'],locations=s0['support'].barycentre()[::80])
+# viewer.add_fold(s0['fold'],locations=s0['support'].barycentre[::80])
 viewer.rotate([-69.11979675292969, 15.704944610595703, 6.00014591217041])
 viewer.display()
 

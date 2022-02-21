@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
@@ -183,10 +182,13 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_interface_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_interface_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
 <td><p>Get the location of interface constraints</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_norm_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_norm_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -194,7 +196,7 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_tangent_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_tangent_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -202,7 +204,7 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_value_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_value_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -210,15 +212,18 @@ by using any of these functions. This will enable interpolators to be interchang
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.reset" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.reset" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
 <td><p>Removes all of the data from an interpolator</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.set_gradient_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.set_gradient_constraints" title="LoopStructural.modelling.features.geological_feature_builder.GeologicalInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param points</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_constraints</span></code>(points)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
 <td><p></p></td>

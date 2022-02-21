@@ -24,6 +24,7 @@ LoopStructural.modelling.core.geological\_model.DFI
       ~DFI.add_gradient_constraints
       ~DFI.add_gradient_orthogonal_constraints
       ~DFI.add_inequality_constraints_to_matrix
+      ~DFI.add_inequality_feature
       ~DFI.add_interface_constraints
       ~DFI.add_non_linear_constraints
       ~DFI.add_norm_constraints
@@ -38,6 +39,7 @@ LoopStructural.modelling.core.geological\_model.DFI
       ~DFI.from_piecewise_linear_and_fold
       ~DFI.get_data_locations
       ~DFI.get_gradient_constraints
+      ~DFI.get_inequality_constraints
       ~DFI.get_interface_constraints
       ~DFI.get_norm_constraints
       ~DFI.get_tangent_constraints
@@ -45,6 +47,7 @@ LoopStructural.modelling.core.geological\_model.DFI
       ~DFI.remove_constraints_from_least_squares
       ~DFI.reset
       ~DFI.set_gradient_constraints
+      ~DFI.set_inequality_constraints
       ~DFI.set_interface_constraints
       ~DFI.set_interpolation_weights
       ~DFI.set_normal_constraints

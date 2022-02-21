@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoopStructural.interpolators.supports.TetMesh &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> LoopStructural
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">Visualisation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.html">LoopStructural</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LoopStructural</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>LoopStructural.interpolators.supports.TetMesh</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/LoopStructural.interpolators.supports.TetMesh.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="loopstructural-interpolators-supports-tetmesh">
+<h1>LoopStructural.interpolators.supports.TetMesh<a class="headerlink" href="#loopstructural-interpolators-supports-tetmesh" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="LoopStructural.interpolators.supports.TetMesh">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.supports.</span></code><code class="sig-name descname"><span class="pre">TetMesh</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[10,</span> <span class="pre">10,</span> <span class="pre">10]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.supports._3d_base_structured.BaseStructuredSupport</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array</strong> (<em>origin</em>) – </p></li>
+<li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array of ints</strong> (<em>nsteps</em>) – </p></li>
+<li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array of int</strong> (<em>step_vector</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[10,</span> <span class="pre">10,</span> <span class="pre">10]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array</strong> (<em>origin</em>) – </p></li>
+<li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array of ints</strong> (<em>nsteps</em>) – </p></li>
+<li><p><strong>- 3d list</strong><strong> or </strong><strong>numpy array of int</strong> (<em>step_vector</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.__init__" title="LoopStructural.interpolators.supports.TetMesh.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([origin, nsteps, step_vector])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param origin - 3d list or numpy array</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.cell_corner_indexes" title="LoopStructural.interpolators.supports.TetMesh.cell_corner_indexes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell_corner_indexes</span></code></a>(x_cell_index, …)</p></td>
+<td><p>Returns the indexes of the corners of a cell given its location xi, yi, zi</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.check_position" title="LoopStructural.interpolators.supports.TetMesh.check_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_position</span></code></a>(pos)</p></td>
+<td><p>[summary]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.evaluate_gradient" title="LoopStructural.interpolators.supports.TetMesh.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(pos, property_array)</p></td>
+<td><p>Evaluate the gradient of an interpolant at the locations</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.evaluate_value" title="LoopStructural.interpolators.supports.TetMesh.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(pos, property_array)</p></td>
+<td><p>Evaluate value of interpolant</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.get_element_for_location" title="LoopStructural.interpolators.supports.TetMesh.get_element_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_for_location</span></code></a>(pos)</p></td>
+<td><p>Determine the tetrahedron from a numpy array of points</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.get_element_gradient_for_location" title="LoopStructural.interpolators.supports.TetMesh.get_element_gradient_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_gradient_for_location</span></code></a>(pos)</p></td>
+<td><p>Get the gradient of the tetra for a location</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.get_element_gradients" title="LoopStructural.interpolators.supports.TetMesh.get_element_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_gradients</span></code></a>([elements])</p></td>
+<td><p>Get the gradients of all tetras</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.get_elements" title="LoopStructural.interpolators.supports.TetMesh.get_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_elements</span></code></a>()</p></td>
+<td><p>Get a numpy array of all of the elements in the mesh</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.get_neighbours" title="LoopStructural.interpolators.supports.TetMesh.get_neighbours"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_neighbours</span></code></a>()</p></td>
+<td><p>This function goes through all of the elements in the mesh and assembles a numpy array with the neighbours for each element</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.global_cell_indicies" title="LoopStructural.interpolators.supports.TetMesh.global_cell_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_cell_indicies</span></code></a>(indexes)</p></td>
+<td><p>Convert from cell indexes to global cell index</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.global_index_to_cell_index" title="LoopStructural.interpolators.supports.TetMesh.global_index_to_cell_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_index_to_cell_index</span></code></a>(global_index)</p></td>
+<td><p>Convert from global indexes to xi,yi,zi</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.global_index_to_node_index" title="LoopStructural.interpolators.supports.TetMesh.global_index_to_node_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_index_to_node_index</span></code></a>(global_index)</p></td>
+<td><p>Convert from global indexes to xi,yi,zi</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.global_node_indicies" title="LoopStructural.interpolators.supports.TetMesh.global_node_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_node_indicies</span></code></a>(indexes)</p></td>
+<td><p>Convert from node indexes to global node index</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inside</span></code>(pos)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.node_indexes_to_position" title="LoopStructural.interpolators.supports.TetMesh.node_indexes_to_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">node_indexes_to_position</span></code></a>(xindex, yindex, zindex)</p></td>
+<td><p>Get the xyz position from the node coordinates</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.position_to_cell_corners" title="LoopStructural.interpolators.supports.TetMesh.position_to_cell_corners"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_corners</span></code></a>(pos)</p></td>
+<td><p>Find the nodes that belong to a cell which contains a point</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_global_index</span></code>(pos)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.position_to_cell_index" title="LoopStructural.interpolators.supports.TetMesh.position_to_cell_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_index</span></code></a>(pos)</p></td>
+<td><p>Get the indexes (i,j,k) of a cell that a point is inside</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.position_to_cell_vertices" title="LoopStructural.interpolators.supports.TetMesh.position_to_cell_vertices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_vertices</span></code></a>(pos)</p></td>
+<td><p>Get the vertices of the cell a point is in</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.rotate" title="LoopStructural.interpolators.supports.TetMesh.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(pos)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.TetMesh.barycentre" title="LoopStructural.interpolators.supports.TetMesh.barycentre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">barycentre</span></code></a></p></td>
+<td><p>Return the barycentres of all tetrahedrons or of specified tetras using global index</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_cells</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps_cells</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ntetra</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_xy</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_vector</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.barycentre">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">barycentre</span></code><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.barycentre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the barycentres of all tetrahedrons or of specified tetras using
+global index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>- numpy array</strong> (<em>elements</em>) – global index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.cell_corner_indexes">
+<code class="sig-name descname"><span class="pre">cell_corner_indexes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_cell_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_cell_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_cell_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.cell_corner_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the indexes of the corners of a cell given its location xi,
+yi, zi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_cell_index</strong> – </p></li>
+<li><p><strong>y_cell_index</strong> – </p></li>
+<li><p><strong>z_cell_index</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.check_position">
+<code class="sig-name descname"><span class="pre">check_position</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.check_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>[type]</em> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.evaluate_gradient">
+<code class="sig-name descname"><span class="pre">evaluate_gradient</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.evaluate_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the gradient of an interpolant at the locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- numpy array</strong> (<em>pos</em>) – locations</p></li>
+<li><p><strong>- string</strong> (<em>prop</em>) – property to evaluate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.evaluate_value">
+<code class="sig-name descname"><span class="pre">evaluate_value</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.evaluate_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate value of interpolant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- numpy array</strong> (<em>pos</em>) – locations</p></li>
+<li><p><strong>- string</strong> (<em>prop</em>) – property name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.get_element_for_location">
+<code class="sig-name descname"><span class="pre">get_element_for_location</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.get_element_for_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the tetrahedron from a numpy array of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>np.array</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.get_element_gradient_for_location">
+<code class="sig-name descname"><span class="pre">get_element_gradient_for_location</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.get_element_gradient_for_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the gradient of the tetra for a location</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.get_element_gradients">
+<code class="sig-name descname"><span class="pre">get_element_gradients</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.get_element_gradients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the gradients of all tetras</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>elements</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.get_elements">
+<code class="sig-name descname"><span class="pre">get_elements</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.get_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a numpy array of all of the elements in the mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array elements</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.get_neighbours">
+<code class="sig-name descname"><span class="pre">get_neighbours</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.get_neighbours" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function goes through all of the elements in the mesh and assembles a numpy array
+with the neighbours for each element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.global_cell_indicies">
+<code class="sig-name descname"><span class="pre">global_cell_indicies</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indexes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.global_cell_indicies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from cell indexes to global cell index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indexes</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.global_index_to_cell_index">
+<code class="sig-name descname"><span class="pre">global_index_to_cell_index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.global_index_to_cell_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from global indexes to xi,yi,zi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>global_index</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.global_index_to_node_index">
+<code class="sig-name descname"><span class="pre">global_index_to_node_index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.global_index_to_node_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from global indexes to xi,yi,zi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>global_index</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.global_node_indicies">
+<code class="sig-name descname"><span class="pre">global_node_indicies</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indexes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.global_node_indicies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from node indexes to global node index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indexes</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.node_indexes_to_position">
+<code class="sig-name descname"><span class="pre">node_indexes_to_position</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xindex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yindex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zindex</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.node_indexes_to_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the xyz position from the node coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xindex</strong> – </p></li>
+<li><p><strong>yindex</strong> – </p></li>
+<li><p><strong>zindex</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.position_to_cell_corners">
+<code class="sig-name descname"><span class="pre">position_to_cell_corners</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.position_to_cell_corners" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the nodes that belong to a cell which contains a point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.position_to_cell_index">
+<code class="sig-name descname"><span class="pre">position_to_cell_index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.position_to_cell_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the indexes (i,j,k) of a cell
+that a point is inside</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>np.array</em>) – Nx3 array of xyz locations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array, np.array, np.array</em> – i,j,k indexes of the cell that the point is in</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.position_to_cell_vertices">
+<code class="sig-name descname"><span class="pre">position_to_cell_vertices</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.position_to_cell_vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the vertices of the cell a point is in</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>np.array</em>) – Nx3 array of xyz locations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array((N,3),dtype=float), np.array(N,dtype=int)</em> – vertices, inside</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="LoopStructural.interpolators.supports.TetMesh.rotate">
+<code class="sig-name descname"><span class="pre">rotate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.TetMesh.rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Lachlan Grose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+
+</body>
+</html>

@@ -17,13 +17,10 @@ LoopStructural.interpolators.TetMesh
    .. autosummary::
    
       ~TetMesh.__init__
-      ~TetMesh.barycentre
       ~TetMesh.cell_corner_indexes
       ~TetMesh.check_position
       ~TetMesh.evaluate_gradient
       ~TetMesh.evaluate_value
-      ~TetMesh.get_constant_gradient
-      ~TetMesh.get_constant_norm
       ~TetMesh.get_element_for_location
       ~TetMesh.get_element_gradient_for_location
       ~TetMesh.get_element_gradients
@@ -49,6 +46,7 @@ LoopStructural.interpolators.TetMesh
 
    .. autosummary::
    
+      ~TetMesh.barycentre
       ~TetMesh.maximum
       ~TetMesh.n_cells
       ~TetMesh.n_elements

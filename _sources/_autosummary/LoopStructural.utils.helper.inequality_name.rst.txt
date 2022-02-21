@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.inequality\_name
+============================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: inequality_name

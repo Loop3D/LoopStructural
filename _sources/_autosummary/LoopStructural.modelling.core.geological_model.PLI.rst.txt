@@ -23,6 +23,7 @@ LoopStructural.modelling.core.geological\_model.PLI
       ~PLI.add_gradient_constraints
       ~PLI.add_gradient_orthogonal_constraints
       ~PLI.add_inequality_constraints_to_matrix
+      ~PLI.add_inequality_feature
       ~PLI.add_interface_constraints
       ~PLI.add_non_linear_constraints
       ~PLI.add_norm_constraints
@@ -36,6 +37,7 @@ LoopStructural.modelling.core.geological\_model.PLI
       ~PLI.evaluate_value
       ~PLI.get_data_locations
       ~PLI.get_gradient_constraints
+      ~PLI.get_inequality_constraints
       ~PLI.get_interface_constraints
       ~PLI.get_norm_constraints
       ~PLI.get_tangent_constraints
@@ -43,6 +45,7 @@ LoopStructural.modelling.core.geological\_model.PLI
       ~PLI.remove_constraints_from_least_squares
       ~PLI.reset
       ~PLI.set_gradient_constraints
+      ~PLI.set_inequality_constraints
       ~PLI.set_interface_constraints
       ~PLI.set_interpolation_weights
       ~PLI.set_normal_constraints

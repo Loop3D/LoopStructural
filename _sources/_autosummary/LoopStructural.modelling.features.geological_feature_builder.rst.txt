@@ -19,6 +19,7 @@ LoopStructural.modelling.features.geological\_feature\_builder
       get_data_axis_aligned_bounding_box
       get_data_bounding_box
       gradient_vec_names
+      inequality_name
       interface_name
       normal_vec_names
       tangent_vec_names

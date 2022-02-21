@@ -21,6 +21,27 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="1a. Advanced least squares">
+
+.. only:: html
+
+ .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_6_least_squares_thumb.png
+     :alt: 1a. Advanced least squares
+
+     :ref:`sphx_glr_auto_examples_1_basic_plot_6_least_squares.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/1_basic/plot_6_least_squares
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="1a. Getting started">
 
 .. only:: html

@@ -9,6 +9,14 @@ LoopStructural.interpolators
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
    
 
    
@@ -26,8 +34,12 @@ LoopStructural.interpolators
       GeologicalInterpolator
       IntEnum
       InterpolatorType
+      P1Unstructured2d
+      P2Unstructured2d
+      P2UnstructuredTetMesh
       PiecewiseLinearInterpolator
       StructuredGrid
+      StructuredGrid2D
       TetMesh
       UnStructuredTetMesh
    
@@ -46,17 +58,7 @@ LoopStructural.interpolators
    :template: custom-module-template.rst                 
    :recursive:
 
-   LoopStructural.interpolators.base_linear_tetra
-   LoopStructural.interpolators.base_structured_3d_support
    LoopStructural.interpolators.cython
-   LoopStructural.interpolators.discrete_fold_interpolator
-   LoopStructural.interpolators.discrete_interpolator
-   LoopStructural.interpolators.finite_difference_interpolator
-   LoopStructural.interpolators.geological_interpolator
-   LoopStructural.interpolators.operator
    LoopStructural.interpolators.piecewiselinear_interpolator
-   LoopStructural.interpolators.structured_grid
-   LoopStructural.interpolators.structured_tetra
-   LoopStructural.interpolators.surfe_wrapper
-   LoopStructural.interpolators.unstructured_tetra
+   LoopStructural.interpolators.supports
 

@@ -17,7 +17,6 @@ LoopStructural.modelling.core.geological\_model.StructuredGrid
    .. autosummary::
    
       ~StructuredGrid.__init__
-      ~StructuredGrid.barycentre
       ~StructuredGrid.cell_centres
       ~StructuredGrid.cell_corner_indexes
       ~StructuredGrid.check_position
@@ -50,6 +49,7 @@ LoopStructural.modelling.core.geological\_model.StructuredGrid
 
    .. autosummary::
    
+      ~StructuredGrid.barycentre
       ~StructuredGrid.maximum
       ~StructuredGrid.n_elements
       ~StructuredGrid.n_nodes

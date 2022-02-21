@@ -1,0 +1,37 @@
+LoopStructural.interpolators.supports.BaseUnstructured2d
+========================================================
+
+.. currentmodule:: LoopStructural.interpolators.supports
+
+.. autoclass:: BaseUnstructured2d
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseUnstructured2d.__init__
+      ~BaseUnstructured2d.element_area
+      ~BaseUnstructured2d.evaluate_gradient
+      ~BaseUnstructured2d.evaluate_value
+      ~BaseUnstructured2d.get_element_for_location
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseUnstructured2d.barycentre
+      ~BaseUnstructured2d.ncps
+      ~BaseUnstructured2d.nodes
+   
+   

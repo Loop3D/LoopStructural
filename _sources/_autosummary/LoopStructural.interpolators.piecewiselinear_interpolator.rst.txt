@@ -16,7 +16,6 @@ LoopStructural.interpolators.piecewiselinear\_interpolator
       :recursive:
    
       cg
-      constant_norm
       fold_cg
       getLogger
       get_vectors

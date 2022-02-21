@@ -21,7 +21,9 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.add_equality_constraints
       ~FiniteDifferenceInterpolator.add_gradient_constraints
       ~FiniteDifferenceInterpolator.add_gradient_orthogonal_constraints
+      ~FiniteDifferenceInterpolator.add_inequality_constraints
       ~FiniteDifferenceInterpolator.add_inequality_constraints_to_matrix
+      ~FiniteDifferenceInterpolator.add_inequality_feature
       ~FiniteDifferenceInterpolator.add_interface_constraints
       ~FiniteDifferenceInterpolator.add_non_linear_constraints
       ~FiniteDifferenceInterpolator.add_norm_constraints
@@ -37,6 +39,7 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.evaluate_value
       ~FiniteDifferenceInterpolator.get_data_locations
       ~FiniteDifferenceInterpolator.get_gradient_constraints
+      ~FiniteDifferenceInterpolator.get_inequality_constraints
       ~FiniteDifferenceInterpolator.get_interface_constraints
       ~FiniteDifferenceInterpolator.get_norm_constraints
       ~FiniteDifferenceInterpolator.get_tangent_constraints
@@ -44,6 +47,7 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.remove_constraints_from_least_squares
       ~FiniteDifferenceInterpolator.reset
       ~FiniteDifferenceInterpolator.set_gradient_constraints
+      ~FiniteDifferenceInterpolator.set_inequality_constraints
       ~FiniteDifferenceInterpolator.set_interface_constraints
       ~FiniteDifferenceInterpolator.set_interpolation_weights
       ~FiniteDifferenceInterpolator.set_normal_constraints

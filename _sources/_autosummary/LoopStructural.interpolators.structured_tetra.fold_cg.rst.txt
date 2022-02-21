@@ -1,6 +1,0 @@
-LoopStructural.interpolators.structured\_tetra.fold\_cg
-=======================================================
-
-.. currentmodule:: LoopStructural.interpolators.structured_tetra
-
-.. autofunction:: fold_cg

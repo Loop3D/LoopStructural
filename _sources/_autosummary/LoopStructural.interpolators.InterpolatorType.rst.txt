@@ -26,6 +26,7 @@ LoopStructural.interpolators.InterpolatorType
       ~InterpolatorType.DISCRETE_FOLD
       ~InterpolatorType.FINITE_DIFFERENCE
       ~InterpolatorType.PIECEWISE_LINEAR
+      ~InterpolatorType.PIECEWISE_QUADRATIC
       ~InterpolatorType.SURFE
    
    

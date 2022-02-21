@@ -94,6 +94,14 @@ Modelling S2
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    [ True  True  True ...  True  True  True]
+
 
 
 
@@ -132,6 +140,14 @@ Modelling S1
    :srcset: /auto_examples/2_fold/images/sphx_glr_plot_refolded_folds_002.png
    :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    [ True  True  True ...  True  True  True]
 
 
 
@@ -172,7 +188,7 @@ S2/S1 S-Plots
  .. code-block:: none
 
 
-    [<matplotlib.lines.Line2D object at 0x7f515f276880>]
+    [<matplotlib.lines.Line2D object at 0x7f6fc81ca3a0>]
 
 
 
@@ -211,6 +227,14 @@ Modelling S0
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    [ True  True  True ...  True  True  True]
+
 
 
 
@@ -237,7 +261,7 @@ S1/S0 S-Plots
     viewer = LavaVuModelViewer(model)
     viewer.add_isosurface(s0,nslices=10,paint_with=s0,cmap='tab20')
     # viewer.add_data(s0)
-    # viewer.add_fold(s0['fold'],locations=s0['support'].barycentre()[::80])
+    # viewer.add_fold(s0['fold'],locations=s0['support'].barycentre[::80])
     viewer.rotate([-69.11979675292969, 15.704944610595703, 6.00014591217041])
     viewer.display()
 
@@ -261,7 +285,7 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  25.781 seconds)
+   **Total running time of the script:** ( 0 minutes  22.526 seconds)
 
 
 .. _sphx_glr_download_auto_examples_2_fold_plot_refolded_folds.py:

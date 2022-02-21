@@ -1,6 +1,0 @@
-LoopStructural.analysis.displacement\_missfit
-=============================================
-
-.. currentmodule:: LoopStructural.analysis
-
-.. autofunction:: displacement_missfit

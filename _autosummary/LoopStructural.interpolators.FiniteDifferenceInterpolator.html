@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
@@ -67,28 +66,21 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.getLogger.html">LoopStructural.interpolators.getLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.DiscreteInterpolator.html">LoopStructural.interpolators.DiscreteInterpolator</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html">LoopStructural.interpolators.GeologicalInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.IntEnum.html">LoopStructural.interpolators.IntEnum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.InterpolatorType.html">LoopStructural.interpolators.InterpolatorType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.P1Unstructured2d.html">LoopStructural.interpolators.P1Unstructured2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.P2Unstructured2d.html">LoopStructural.interpolators.P2Unstructured2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.P2UnstructuredTetMesh.html">LoopStructural.interpolators.P2UnstructuredTetMesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">LoopStructural.interpolators.StructuredGrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid2D.html">LoopStructural.interpolators.StructuredGrid2D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.UnStructuredTetMesh.html">LoopStructural.interpolators.UnStructuredTetMesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.base_linear_tetra.html">LoopStructural.interpolators.base_linear_tetra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.base_structured_3d_support.html">LoopStructural.interpolators.base_structured_3d_support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.cython.html">LoopStructural.interpolators.cython</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_fold_interpolator.html">LoopStructural.interpolators.discrete_fold_interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.html">LoopStructural.interpolators.discrete_interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.html">LoopStructural.interpolators.finite_difference_interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.geological_interpolator.html">LoopStructural.interpolators.geological_interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.operator.html">LoopStructural.interpolators.operator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.piecewiselinear_interpolator.html">LoopStructural.interpolators.piecewiselinear_interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.structured_grid.html">LoopStructural.interpolators.structured_grid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.structured_tetra.html">LoopStructural.interpolators.structured_tetra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.interpolators.unstructured_tetra.html">LoopStructural.interpolators.unstructured_tetra</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
@@ -131,7 +123,7 @@
 <dl class="py class">
 <dt id="LoopStructural.interpolators.FiniteDifferenceInterpolator">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></code><code class="sig-name descname"><span class="pre">FiniteDifferenceInterpolator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator.html#LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator" title="LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.discrete_interpolator.DiscreteInterpolator</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators._discrete_interpolator.DiscreteInterpolator</span></code></p>
 <p>Finite difference interpolation on a regular cartesian grid</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -175,8 +167,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_gradient_orthogonal_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_gradient_orthogonal_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gradient_orthogonal_constraints</span></code></a>(points, …)</p></td>
 <td><p>constraints scalar field to be orthogonal to a given vector</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_inequality_constraints_to_matrix" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_inequality_constraints_to_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_constraints_to_matrix</span></code></a>(A, l, …)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_inequality_constraints_to_matrix" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_inequality_constraints_to_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_constraints_to_matrix</span></code></a>(A, l, …)</p></td>
 <td><p>Adds constraints for a matrix where the linear function l &lt; Ax &gt; u constrains the objective function</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_feature</span></code>(feature[, lower, mask])</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_interface_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_interface_constraints</span></code></a>([w])</p></td>
 <td><p>Adds a constraint that defines all points with the same ‘id’ to be the same value Sets all P1-P2 = 0 for all pairs of points</p></td>
@@ -244,10 +242,13 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
 <td><p>Get the location of interface constraints</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -255,7 +256,7 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -263,7 +264,7 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns</dt>
 <dd class="field-odd"><p><em>numpy array</em></p>
@@ -271,18 +272,21 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.remove_constraints_from_least_squares" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.remove_constraints_from_least_squares"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_constraints_from_least_squares</span></code></a>([…])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.remove_constraints_from_least_squares" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.remove_constraints_from_least_squares"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_constraints_from_least_squares</span></code></a>([…])</p></td>
 <td><p>Remove constraints from the least squares system using the constraint ids which corresponds to the rows in the interpolation matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.reset" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.reset" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
 <td><p>Reset the interpolation constraints</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param points</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_constraints</span></code>(points)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
 <td><p></p></td>
@@ -487,7 +491,7 @@ Sets all P1-P2 = 0 for all pairs of points</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>operator</strong> (<a class="reference internal" href="LoopStructural.interpolators.finite_difference_interpolator.Operator.html#LoopStructural.interpolators.finite_difference_interpolator.Operator" title="LoopStructural.interpolators.finite_difference_interpolator.Operator"><em>Operator</em></a>) – </p></li>
+<li><p><strong>operator</strong> (<em>Operator</em>) – </p></li>
 <li><p><strong>w</strong> (<em>double</em>) – </p></li>
 </ul>
 </dd>

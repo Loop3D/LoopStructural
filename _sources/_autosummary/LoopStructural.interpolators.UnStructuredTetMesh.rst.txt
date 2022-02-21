@@ -17,8 +17,9 @@ LoopStructural.interpolators.UnStructuredTetMesh
    .. autosummary::
    
       ~UnStructuredTetMesh.__init__
-      ~UnStructuredTetMesh.barycentre
       ~UnStructuredTetMesh.evaluate_gradient
+      ~UnStructuredTetMesh.evaluate_shape
+      ~UnStructuredTetMesh.evaluate_shape_derivatives
       ~UnStructuredTetMesh.evaluate_value
       ~UnStructuredTetMesh.get_element_for_location
       ~UnStructuredTetMesh.get_element_gradient_for_location
@@ -35,8 +36,11 @@ LoopStructural.interpolators.UnStructuredTetMesh
 
    .. autosummary::
    
+      ~UnStructuredTetMesh.element_size
       ~UnStructuredTetMesh.n_cells
       ~UnStructuredTetMesh.n_elements
       ~UnStructuredTetMesh.ntetra
+      ~UnStructuredTetMesh.shared_element_norm
+      ~UnStructuredTetMesh.shared_element_size
    
    

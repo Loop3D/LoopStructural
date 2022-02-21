@@ -29,6 +29,7 @@ LoopStructural.utils.helper
       get_strike_vector
       get_vectors
       gradient_vec_names
+      inequality_name
       interface_name
       normal_vec_names
       normal_vector_to_strike_and_dip

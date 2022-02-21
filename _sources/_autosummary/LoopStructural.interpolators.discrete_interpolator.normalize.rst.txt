@@ -1,6 +1,0 @@
-LoopStructural.interpolators.discrete\_interpolator.normalize
-=============================================================
-
-.. currentmodule:: LoopStructural.interpolators.discrete_interpolator
-
-.. autofunction:: normalize

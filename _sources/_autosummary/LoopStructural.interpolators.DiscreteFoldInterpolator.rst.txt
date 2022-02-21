@@ -24,6 +24,7 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.add_gradient_constraints
       ~DiscreteFoldInterpolator.add_gradient_orthogonal_constraints
       ~DiscreteFoldInterpolator.add_inequality_constraints_to_matrix
+      ~DiscreteFoldInterpolator.add_inequality_feature
       ~DiscreteFoldInterpolator.add_interface_constraints
       ~DiscreteFoldInterpolator.add_non_linear_constraints
       ~DiscreteFoldInterpolator.add_norm_constraints
@@ -38,6 +39,7 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.from_piecewise_linear_and_fold
       ~DiscreteFoldInterpolator.get_data_locations
       ~DiscreteFoldInterpolator.get_gradient_constraints
+      ~DiscreteFoldInterpolator.get_inequality_constraints
       ~DiscreteFoldInterpolator.get_interface_constraints
       ~DiscreteFoldInterpolator.get_norm_constraints
       ~DiscreteFoldInterpolator.get_tangent_constraints
@@ -45,6 +47,7 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.remove_constraints_from_least_squares
       ~DiscreteFoldInterpolator.reset
       ~DiscreteFoldInterpolator.set_gradient_constraints
+      ~DiscreteFoldInterpolator.set_inequality_constraints
       ~DiscreteFoldInterpolator.set_interface_constraints
       ~DiscreteFoldInterpolator.set_interpolation_weights
       ~DiscreteFoldInterpolator.set_normal_constraints

@@ -121,8 +121,8 @@ Create model
 
  .. code-block:: none
 
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.48s/it]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.48s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 67.42it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.02s/it]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.02s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 75.81it/s]
 
 
 
@@ -211,8 +211,8 @@ It is also possible to change the logging level for the console log.
 
  .. code-block:: none
 
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.55s/it]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.55s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 66.00it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.01s/it]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.01s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 74.49it/s]
 
 
 
@@ -220,7 +220,7 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.874 seconds)
+   **Total running time of the script:** ( 0 minutes  7.619 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_5_using_logging.py:

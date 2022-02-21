@@ -1,6 +1,0 @@
-LoopStructural.interpolators.geological\_interpolator.getLogger
-===============================================================
-
-.. currentmodule:: LoopStructural.interpolators.geological_interpolator
-
-.. autofunction:: getLogger

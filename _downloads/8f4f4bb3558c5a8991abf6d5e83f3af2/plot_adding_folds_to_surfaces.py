@@ -224,7 +224,7 @@ viewer.add_isosurface(fold_frame[0],
                       alpha=0.5)
 viewer.add_data(stratigraphy)
 # viewer.add_isosurface(fold_frame[1],colour='green',alpha=0.5)
-# viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre())
+# viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre)
 # viewer.add_data(fold_frame[1])
 
 # viewer.add_data(stratigraphy)

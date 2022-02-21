@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
@@ -121,7 +120,7 @@
 <dl class="py class">
 <dt id="LoopStructural.modelling.core.geological_model.StructuredGrid">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.core.geological_model.</span></code><code class="sig-name descname"><span class="pre">StructuredGrid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.,</span> <span class="pre">0.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([10,</span> <span class="pre">10,</span> <span class="pre">10])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([1.,</span> <span class="pre">1.,</span> <span class="pre">1.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.core.geological_model.StructuredGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.base_structured_3d_support.BaseStructuredSupport.html#LoopStructural.interpolators.base_structured_3d_support.BaseStructuredSupport" title="LoopStructural.interpolators.base_structured_3d_support.BaseStructuredSupport"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.base_structured_3d_support.BaseStructuredSupport</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.supports._3d_base_structured.BaseStructuredSupport</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -159,76 +158,73 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">barycentre</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.cell_centres" title="LoopStructural.modelling.core.geological_model.StructuredGrid.cell_centres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell_centres</span></code></a>(global_index)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.cell_centres" title="LoopStructural.modelling.core.geological_model.StructuredGrid.cell_centres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell_centres</span></code></a>(global_index)</p></td>
 <td><p>get the centre of specified cells</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.cell_corner_indexes" title="LoopStructural.modelling.core.geological_model.StructuredGrid.cell_corner_indexes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell_corner_indexes</span></code></a>(x_cell_index, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.cell_corner_indexes" title="LoopStructural.modelling.core.geological_model.StructuredGrid.cell_corner_indexes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell_corner_indexes</span></code></a>(x_cell_index, …)</p></td>
 <td><p>Returns the indexes of the corners of a cell given its location xi, yi, zi</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.check_position" title="LoopStructural.modelling.core.geological_model.StructuredGrid.check_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_position</span></code></a>(pos)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.check_position" title="LoopStructural.modelling.core.geological_model.StructuredGrid.check_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_position</span></code></a>(pos)</p></td>
 <td><p>[summary]</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_gradient" title="LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(evaluation_points, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_gradient" title="LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(evaluation_points, …)</p></td>
 <td><p>Evaluate the gradient at a location given node values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_value" title="LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(evaluation_points, property_array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_value" title="LoopStructural.modelling.core.geological_model.StructuredGrid.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(evaluation_points, property_array)</p></td>
 <td><p>Evaluate the value of of the property at the locations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_for_location" title="LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_for_location</span></code></a>(pos)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_for_location" title="LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_for_location</span></code></a>(pos)</p></td>
 <td><p>Calculate the shape function of elements for a location</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_gradient_for_location" title="LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_gradient_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_gradient_for_location</span></code></a>(pos)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_gradient_for_location" title="LoopStructural.modelling.core.geological_model.StructuredGrid.get_element_gradient_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_gradient_for_location</span></code></a>(pos)</p></td>
 <td><p>Get the gradient of the element at the locations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_cell_indicies" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_cell_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_cell_indicies</span></code></a>(indexes)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_cell_indicies" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_cell_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_cell_indicies</span></code></a>(indexes)</p></td>
 <td><p>Convert from cell indexes to global cell index</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_cell_index" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_cell_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_index_to_cell_index</span></code></a>(global_index)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_cell_index" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_cell_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_index_to_cell_index</span></code></a>(global_index)</p></td>
 <td><p>Convert from global indexes to xi,yi,zi</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_node_index" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_node_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_index_to_node_index</span></code></a>(global_index)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_node_index" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_index_to_node_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_index_to_node_index</span></code></a>(global_index)</p></td>
 <td><p>Convert from global indexes to xi,yi,zi</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_indicies" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_indicies</span></code></a>(indexes)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_indicies" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_indicies</span></code></a>(indexes)</p></td>
 <td><p>xi, yi, zi to global index</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_node_indicies" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_node_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_node_indicies</span></code></a>(indexes)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.global_node_indicies" title="LoopStructural.modelling.core.geological_model.StructuredGrid.global_node_indicies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_node_indicies</span></code></a>(indexes)</p></td>
 <td><p>Convert from node indexes to global node index</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inside</span></code>(pos)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inside</span></code>(pos)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.neighbour_global_indexes" title="LoopStructural.modelling.core.geological_model.StructuredGrid.neighbour_global_indexes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbour_global_indexes</span></code></a>([mask])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.neighbour_global_indexes" title="LoopStructural.modelling.core.geological_model.StructuredGrid.neighbour_global_indexes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbour_global_indexes</span></code></a>([mask])</p></td>
 <td><p>Get neighbour indexes</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">node_indexes_to_position</span></code>(xindex, yindex, zindex)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">node_indexes_to_position</span></code>(xindex, yindex, zindex)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_corners</span></code>(pos)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_corners</span></code>(pos)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_global_index</span></code>(pos)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_global_index</span></code>(pos)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_index" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_index</span></code></a>(pos)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_index" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_index</span></code></a>(pos)</p></td>
 <td><p>Get the indexes (i,j,k) of a cell that a point is inside</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_vertices" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_vertices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_vertices</span></code></a>(pos)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_vertices" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_cell_vertices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_vertices</span></code></a>(pos)</p></td>
 <td><p>Get the vertices of the cell a point is in</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_dof_coefs" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_dof_coefs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_dof_coefs</span></code></a>(pos)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_dof_coefs" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_dof_coefs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_dof_coefs</span></code></a>(pos)</p></td>
 <td><p>global posotion to interpolation coefficients :param pos:</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_local_coordinates" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_local_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_local_coordinates</span></code></a>(pos)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_local_coordinates" title="LoopStructural.modelling.core.geological_model.StructuredGrid.position_to_local_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_local_coordinates</span></code></a>(pos)</p></td>
 <td><p>Convert from global to local coordinates within a cel :param pos - array of positions inside:</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.rotate" title="LoopStructural.modelling.core.geological_model.StructuredGrid.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(pos)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.rotate" title="LoopStructural.modelling.core.geological_model.StructuredGrid.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(pos)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.trilinear" title="LoopStructural.modelling.core.geological_model.StructuredGrid.trilinear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trilinear</span></code></a>(x, y, z)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.core.geological_model.StructuredGrid.trilinear" title="LoopStructural.modelling.core.geological_model.StructuredGrid.trilinear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trilinear</span></code></a>(x, y, z)</p></td>
 <td><p>returns the trilinear interpolation for the local coordinates :param x - double: :param array of doubles: :param y - double: :param array of doubles: :param z - double: :param array of doubles:</p></td>
 </tr>
 </tbody>
@@ -240,31 +236,34 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">barycentre</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps_cells</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps_cells</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_xy</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_vector</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_xy</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_vector</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>

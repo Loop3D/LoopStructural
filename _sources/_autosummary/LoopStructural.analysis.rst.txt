@@ -15,9 +15,7 @@ LoopStructural.analysis
       :toctree:
       :recursive:
    
-      calculate_fault_intersections
-      calculate_fault_topology_matrix
-      displacement_missfit
+      getLogger
    
    
 

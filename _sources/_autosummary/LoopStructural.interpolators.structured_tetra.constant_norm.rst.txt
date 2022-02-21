@@ -1,6 +1,0 @@
-LoopStructural.interpolators.structured\_tetra.constant\_norm
-=============================================================
-
-.. currentmodule:: LoopStructural.interpolators.structured_tetra
-
-.. autofunction:: constant_norm
