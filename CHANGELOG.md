@@ -1,5 +1,35 @@
 # Changelog
 
+### [1.4.3](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.2...v1.4.3) (2022-02-21)
+
+
+### Bug Fixes
+
+* :ambulance: added scale parameter for calculate_topo matrix. ([839e0e0](https://www.github.com/Loop3D/LoopStructural/commit/839e0e07fd8333c70ca71c0d8cf356ccd2e9e604))
+* :bug: adding experimental flag for loopstructural ([f810479](https://www.github.com/Loop3D/LoopStructural/commit/f810479f6d057d21f9229ae645d39257b051d906))
+* :bug: changes support barycentre to property ([d2e1f0b](https://www.github.com/Loop3D/LoopStructural/commit/d2e1f0b54d71eb2cdae3a92e9fcbce9a7e189d26))
+* :bug: fixing bugs for flake8 ([9dce30c](https://www.github.com/Loop3D/LoopStructural/commit/9dce30c012ba6543a7936275a4452c25d30412fc))
+* :bug: small changes to pass tests. ([14c7580](https://www.github.com/Loop3D/LoopStructural/commit/14c758044d36962b6b63d7af7dd6783638539023))
+* :zap: changing aabb to sparse matrix ([2cbdab7](https://www.github.com/Loop3D/LoopStructural/commit/2cbdab7feb1cafe4491766f056b3fe58e32ac706))
+* adding isnan to inequality check ([d780300](https://www.github.com/Loop3D/LoopStructural/commit/d7803005971e8e72663ebe2538251407079cb30b))
+* adding node inequality constraints ([de33914](https://www.github.com/Loop3D/LoopStructural/commit/de3391403a7012895f7bf1bf170862ca2cfa6ed7))
+* adding option to use mkl ([22883ba](https://www.github.com/Loop3D/LoopStructural/commit/22883ba59c13476ff77f91265268d10e56cd8a84))
+* adding p2 interpolator for 3d :) ([5d0acfb](https://www.github.com/Loop3D/LoopStructural/commit/5d0acfb99458f2cacfbbfe099164e32ebe2a6d3b))
+* bug with equality constraints ([b192cff](https://www.github.com/Loop3D/LoopStructural/commit/b192cff05987b6ad9350ade53208943afca18823))
+* changing base unstructred support to work ([50ca16b](https://www.github.com/Loop3D/LoopStructural/commit/50ca16b70ddafd29ead061e153fe2b0652ca0e2b))
+* correct ordering of shape functions ([6f2f113](https://www.github.com/Loop3D/LoopStructural/commit/6f2f113abb42a14c4b5278a635066f1696bf062d))
+* minor fix to variogram saving wavelength guess as attribute ([2dbc29e](https://www.github.com/Loop3D/LoopStructural/commit/2dbc29e0696fe25bc3f55afb6cee1bea7bb9d9f1))
+* modifying for 3d/generic case. ([c6a8ea3](https://www.github.com/Loop3D/LoopStructural/commit/c6a8ea3dcfdb7098d9e77df83f87e0f50036b670))
+* norm constraints p2 ([93d3165](https://www.github.com/Loop3D/LoopStructural/commit/93d31654a9403f285a5ce3e4cfc3c6b4f91becf5))
+* region funct type incorrect causing ([a5d27f1](https://www.github.com/Loop3D/LoopStructural/commit/a5d27f1569e0337971cc4997c673333ff1842d83))
+* storing constraints as numpy array ([6c75379](https://www.github.com/Loop3D/LoopStructural/commit/6c753799019e19bb69d8621d5020787d5c42339f))
+
+
+### Documentation
+
+* :memo: adding warning that analysis module is experimental ([0574e57](https://www.github.com/Loop3D/LoopStructural/commit/0574e57bc639fe809b3e9b02531ce0e10742ea36))
+* :memo: updating documentation for evaluate model ([1dcc716](https://www.github.com/Loop3D/LoopStructural/commit/1dcc716c6ae5cb0c77a54bf794ee14e077a874ce))
+
 ### [1.4.2](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.1...v1.4.2) (2022-02-07)
 
 
