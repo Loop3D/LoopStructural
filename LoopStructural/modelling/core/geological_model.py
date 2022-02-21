@@ -5,11 +5,13 @@ import logging
 
 import numpy as np
 import pandas as pd
+import LoopStructural
 from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
-from LoopStructural.interpolators import P2Interpolator
+if LoopStructural.experimental:
+    from LoopStructural.interpolators import P2Interpolator
 try:
     from LoopStructural.surfe_wrapper import SurfeRBFInterpolator as Surfe
 

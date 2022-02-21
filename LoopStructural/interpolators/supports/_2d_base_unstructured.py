@@ -66,8 +66,8 @@ class BaseUnstructured2d:
             Fortran ordered
         """
         return self.vertices
-
-    def barycentre(self, element_idx=None):
+    @property
+    def barycentre(self):
         """
         Return the barycentres of all tetrahedrons or of specified tetras using
         global index
@@ -81,8 +81,7 @@ class BaseUnstructured2d:
         -------
 
         """
-        if element_idx is None:
-            element_idx = np.arange(0, self.nelements)
+        element_idx = np.arange(0, self.nelements)
         elements = self.elements[element_idx]
         barycentre = np.sum(self.nodes[elements][:, :3, :], axis=1) / 3.0
         return barycentre

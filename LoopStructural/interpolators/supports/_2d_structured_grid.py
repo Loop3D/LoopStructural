@@ -57,6 +57,7 @@ class StructuredGrid2D:
         xx, yy = np.meshgrid(x, y, indexing="ij")
         return np.array([xx.flatten(order="F"), yy.flatten(order="F")]).T
 
+    @property
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))
 

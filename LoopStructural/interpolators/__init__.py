@@ -4,7 +4,9 @@ Interpolators and interpolation supports
 """
 from enum import IntEnum
 
+from LoopStructural.utils import getLogger
 import LoopStructural
+logger = getLogger(__name__)
 class InterpolatorType(IntEnum):
     """
     Enum for the different interpolator types
