@@ -60,7 +60,7 @@ class SVariogram:
         self.variance_matrix = (self.ydata[:, None] - self.ydata[None, :]) ** 2
         self.lags = None
         self.variogram = None
-
+        self.wavelength_guess = [None, None]
     def calc_semivariogram(self, lag=None, nlag=None, lags=None):
         """
         Calculate a semi-variogram for the x and y data for this object.
@@ -113,6 +113,11 @@ class SVariogram:
             step = np.nanmean(np.nanmin(d, axis=1)) * 4.0
             # find number of steps to cover range in data
             nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
+            if nstep > 200:
+                logger.warning(f'Variogram has too many steps: {nstep}, using 200')
+                maximum = step*nstep
+                nstep = 200
+                step = maximum/nstep
             self.lags = np.arange(step / 2.0, nstep * step, step)
             logger.info(
                 f"Using average minimum nearest neighbour distance as lag distance size {step} and using {nstep} lags"
@@ -176,8 +181,11 @@ class SVariogram:
                         if wl2 > 0.0 and wl2 > wl1 * 2 and wl1py < py2[i]:
                             break
         if wl1 == 0.0 and wl2 == 0.0:
-            return 2 * (np.max(self.xdata) - np.min(self.xdata)), 0.0
+            self.wavelength_guess = [2 * (np.max(self.xdata) - np.min(self.xdata)), 0.0]
+            return self.wavelength_guess
         if np.isclose(wl1, 0.0):
-            return np.array([wl2 * 2.0, wl1 * 2.0])
+            self.wavelength_guess =  np.array([wl2 * 2.0, wl1 * 2.0])
+            return self.wavelength_guess
         # wavelength is 2x the peak on the curve
-        return np.array([wl1 * 2.0, wl2 * 2.0])
+        self.wavelength_guess =  np.array([wl1 * 2.0, wl2 * 2.0])
+        return self.wavelength_guess

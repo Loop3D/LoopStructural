@@ -250,5 +250,5 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0])
             idc = np.array(idc[:ncons, :])
             self.add_constraints_to_least_squares(
-                A, B, fold_regularisation[1], idc, name="fold regularisation 3"
+                A, B, fold_regularisation[2], idc, name="fold regularisation 3"
             )
