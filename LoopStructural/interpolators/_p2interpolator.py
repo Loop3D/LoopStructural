@@ -86,6 +86,11 @@ class P2Interpolator(DiscreteInterpolator):
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         # self.add_interface_constraints(self.interpolation_weights["ipw"])
+
+
+    def copy(self):
+        return P2Interpolator(self.support)
+
     def add_gradient_constraints(self, w=1.0):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
@@ -100,7 +105,32 @@ class P2Interpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(
                 A*wt[:,None], B, elements, name="gradient")
          
-        
+    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
+        """
+        constraints scalar field to be orthogonal to a given vector
+
+        Parameters
+        ----------
+        position
+        normals
+        w
+        B
+
+        Returns
+        -------
+
+        """
+        if points.shape[0] > 0:
+            grad, elements = self.support.evaluate_shape_derivatives(points[:, :3])
+            inside = elements > -1
+            area = self.support.element_size[elements[inside]]
+            wt = np.ones(area.shape[0])
+            wt *= w * area
+            A = np.einsum("ijk,ij->ik", grad[inside, :], vector[inside, :])
+            B = np.zeros(A.shape[0])
+            elements = self.support.elements[elements[inside]]
+            self.add_constraints_to_least_squares(
+                A*wt[:,None], B, elements, name="gradient orthogonal")
 
     def add_norm_constraints(self, w=1.0):
         points = self.get_norm_constraints()

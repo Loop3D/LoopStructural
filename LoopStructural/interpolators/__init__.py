@@ -4,7 +4,7 @@ Interpolators and interpolation supports
 """
 from enum import IntEnum
 
-
+import LoopStructural
 class InterpolatorType(IntEnum):
     """
     Enum for the different interpolator types
@@ -37,5 +37,7 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import (
 from LoopStructural.interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
-from ._p1interpolator import P1Interpolator
-from ._p2interpolator import P2Interpolator
+if LoopStructural.experimental:
+    logger.warning("Using experimental interpolators: P1Interpolator and P2Interpolator")
+    from ._p1interpolator import P1Interpolator
+    from ._p2interpolator import P2Interpolator

@@ -22,3 +22,4 @@ from .utils import log_to_console, log_to_file, getLogger
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")
+experimental = False
