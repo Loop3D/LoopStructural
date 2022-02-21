@@ -46,7 +46,9 @@ class P1Interpolator(DiscreteInterpolator):
     def add_norm_ctr_pts(self, w=1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
-            grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, :3]
+            )
             size = self.support.element_size[inside]
             wt = np.ones(size.shape[0])
             wt *= w * size
@@ -123,5 +125,3 @@ class P1Interpolator(DiscreteInterpolator):
             name="edge jump",
         )
         # p2.add_constraints_to_least_squares(const_cp2*e_len[:,None]*w,np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
-
-   

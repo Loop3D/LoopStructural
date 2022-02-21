@@ -40,6 +40,7 @@ class P2Interpolator(DiscreteInterpolator):
             "tpw": 1.0,
             "ipw": 1.0,
         }
+
     def _setup_interpolator(self, **kwargs):
         """
         Searches through kwargs for any interpolation weights and updates
@@ -65,17 +66,19 @@ class P2Interpolator(DiscreteInterpolator):
             self.interpolation_weights[key] = kwargs[key]
         if self.interpolation_weights["cgw"] > 0.0:
             self.up_to_date = False
-            self.minimise_edge_jumps(
-                 self.interpolation_weights["cgw"])
+            self.minimise_edge_jumps(self.interpolation_weights["cgw"])
             #     direction_feature=kwargs.get("direction_feature", None),
             #     direction_vector=kwargs.get("direction_vector", None),
             # )
-            self.minimise_grad_steepness(w=self.interpolation_weights.get('steepness_weight',.01),wtfunc=self.interpolation_weights.get('steepness_wtfunc',None))
+            self.minimise_grad_steepness(
+                w=self.interpolation_weights.get("steepness_weight", 0.01),
+                wtfunc=self.interpolation_weights.get("steepness_wtfunc", None),
+            )
             logger.info(
                 "Using constant gradient regularisation w = %f"
                 % self.interpolation_weights["cgw"]
             )
-        
+
         logger.info(
             "Added %i gradient constraints, %i normal constraints,"
             "%i tangent constraints and %i value constraints"
@@ -86,7 +89,6 @@ class P2Interpolator(DiscreteInterpolator):
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         # self.add_interface_constraints(self.interpolation_weights["ipw"])
-
 
     def copy(self):
         return P2Interpolator(self.support)
@@ -103,8 +105,9 @@ class P2Interpolator(DiscreteInterpolator):
             B = np.zeros(A.shape[0])
             elements = self.support[elements[inside]]
             self.add_constraints_to_least_squares(
-                A*wt[:,None], B, elements, name="gradient")
-         
+                A * wt[:, None], B, elements, name="gradient"
+            )
+
     def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
         """
         constraints scalar field to be orthogonal to a given vector
@@ -130,7 +133,8 @@ class P2Interpolator(DiscreteInterpolator):
             B = np.zeros(A.shape[0])
             elements = self.support.elements[elements[inside]]
             self.add_constraints_to_least_squares(
-                A*wt[:,None], B, elements, name="gradient orthogonal")
+                A * wt[:, None], B, elements, name="gradient orthogonal"
+            )
 
     def add_norm_constraints(self, w=1.0):
         points = self.get_norm_constraints()
@@ -156,8 +160,6 @@ class P2Interpolator(DiscreteInterpolator):
 
         pass
 
-     
-
     def add_value_constraints(self, w=1.0):
         points = self.get_value_constraints()
         if points.shape[0] > 1:
@@ -165,7 +167,7 @@ class P2Interpolator(DiscreteInterpolator):
             # mask = elements > 0
             size = self.support.element_size[elements[mask]]
             wt = np.ones(size.shape[0])
-            wt *= w 
+            wt *= w
             self.add_constraints_to_least_squares(
                 N[mask, :] * wt[:, None],
                 points[mask, 3] * wt,
@@ -197,10 +199,10 @@ class P2Interpolator(DiscreteInterpolator):
         d2 = self.support.evaluate_shape_d2(elements[mask])
         # d2 is [ele_idx, deriv, node]
         wt = np.ones(d2.shape[0])
-        
-        wt *= w #* self.support.element_size[mask]
+
+        wt *= w  # * self.support.element_size[mask]
         if callable(wtfunc):
-            logger.info('Using function to weight gradient steepness')
+            logger.info("Using function to weight gradient steepness")
             wt = wtfunc(self.support.barycentre) * self.support.element_size[mask]
         idc = self.support.elements[elements[mask]]
         for i in range(d2.shape[1]):
@@ -210,36 +212,36 @@ class P2Interpolator(DiscreteInterpolator):
                 idc[:, :],
                 name=f"grad_steepness_{i}",
             )
- 
+
     def minimise_edge_jumps(
         self, w=0.1, wtfunc=None, vector_func=None
     ):  # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
-        
+
         cp, weight = self.support.get_quadrature_points(3)
 
         norm = self.support.shared_element_norm
         shared_element_size = self.support.shared_element_size
-        
+
         # evaluate normal if using vector func for cp1
         for i in range(cp.shape[1]):
             if callable(vector_func):
-                norm = vector_func(cp[:,i,:])
+                norm = vector_func(cp[:, i, :])
             # evaluate the shape function for the edges for each neighbouring triangle
             cp_Dt, cp_tri1 = self.support.evaluate_shape_derivatives(
-                cp[:,i, :], elements=self.support.shared_element_relationships[:, 0]
+                cp[:, i, :], elements=self.support.shared_element_relationships[:, 0]
             )
             cp_Dn, cp_tri2 = self.support.evaluate_shape_derivatives(
-                cp[:,i, :], elements=self.support.shared_element_relationships[:, 1]
+                cp[:, i, :], elements=self.support.shared_element_relationships[:, 1]
             )
             # constraint for each cp is triangle - neighbour create a Nx12 matrix
             const_t_cp = np.einsum("ij,ijk->ik", norm, cp_Dt)
             const_n_cp = -np.einsum("ij,ijk->ik", norm, cp_Dn)
-           
+
             const_cp = np.hstack([const_t_cp, const_n_cp])
             tri_cp = np.hstack(
-                        [self.support.elements[cp_tri1], self.support.elements[cp_tri2]]
-                    )
+                [self.support.elements[cp_tri1], self.support.elements[cp_tri2]]
+            )
             wt = np.zeros(tri_cp.shape[0])
             wt[:] = w
             if wtfunc:
@@ -250,9 +252,6 @@ class P2Interpolator(DiscreteInterpolator):
                 tri_cp,
                 name=f"shared element jump cp{i}",
             )
-        
-
-    
 
     def evaluate_d2(self, evaluation_points):
         evaluation_points = np.array(evaluation_points)

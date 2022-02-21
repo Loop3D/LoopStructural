@@ -3,7 +3,6 @@ import LoopStructural
 import os
 
 
-
 def get_levels():
     """dict for converting to logger levels from string
 

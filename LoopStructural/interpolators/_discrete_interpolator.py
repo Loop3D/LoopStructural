@@ -173,7 +173,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         if len(A.shape) > 2:
             nr = A.shape[0] * A.shape[1]
-            if isinstance(w,np.ndarray):
+            if isinstance(w, np.ndarray):
                 w = np.tile(w, (A.shape[1]))
             A = A.reshape((A.shape[0] * A.shape[1], A.shape[2]))
             idc = idc.reshape((idc.shape[0] * idc.shape[1], idc.shape[2]))
@@ -280,7 +280,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         gi[self.region] = np.arange(0, self.nx)
         idc = gi[node_idx]
         outside = ~(idc == -1)
-        
+
         self.equal_constraints[name] = {
             "A": np.ones(idc[outside].shape[0]),
             "B": values[outside],
@@ -451,7 +451,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 cols.extend(c["col"].flatten()[~mask].tolist())
 
             C = coo_matrix(
-
                 (np.array(a), (np.array(rows), cols)),
                 shape=(self.eq_const_c, self.nx),
                 dtype=float,
@@ -502,7 +501,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         try:
             import osqp
         except ImportError:
-            raise LoopImportError("Missing osqp pip install osqp")      
+            raise LoopImportError("Missing osqp pip install osqp")
         prob = osqp.OSQP()
 
         # Setup workspace

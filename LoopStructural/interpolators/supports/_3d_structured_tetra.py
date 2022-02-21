@@ -54,7 +54,7 @@ class TetMesh(BaseStructuredSupport):
         -------
 
         """
-        
+
         tetra = self.get_elements()
         barycentre = np.sum(self.nodes[tetra][:, :, :], axis=1) / 4.0
         return barycentre

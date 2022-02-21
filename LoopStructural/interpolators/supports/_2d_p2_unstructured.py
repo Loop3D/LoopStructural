@@ -15,8 +15,12 @@ class P2Unstructured2d(BaseUnstructured2d):
     def __init__(self, elements, vertices, neighbours):
         BaseUnstructured2d.__init__(self, elements, vertices, neighbours)
         # hessian of shape functions
-        self.H = np.array([[[4, 4, 0, 0, 0, -8], [4, 0, 0, 4, -4, -4]],
-                            [[4, 0, 0, 4, -4, -4], [4, 0, 4, 0, -8, 0]]])
+        self.H = np.array(
+            [
+                [[4, 4, 0, 0, 0, -8], [4, 0, 0, 4, -4, -4]],
+                [[4, 0, 0, 4, -4, -4], [4, 0, 4, 0, -8, 0]],
+            ]
+        )
 
     def evaluate_d2_shape(self, indexes):
         vertices = self.nodes[self.elements[indexes], :]
@@ -33,12 +37,23 @@ class P2Unstructured2d(BaseUnstructured2d):
             ]
         )
         jac = np.linalg.inv(jac)
-        dxy = self.H[None,0,1,:]*jac[:,0,0]*jac[:,1,1]+self.H[None,0,1,:]*jac[:,1,0]*jac[:,0,1] + self.H[None,0,0,:]*jac[:,0,0]*jac[:,0,1]+self.H[None,1,1,:]*jac[:,1,0]*jac[:,1,1]
-        dxx = self.H[None,0,0,:]*jac[:,0,0]*jac[:,0,0]+jac[:,0,0]*jac[:,1,0]*self.H[None,0,1,:]+jac[:,1,0]*jac[:,1,0]*self.H[None,1,1]
-        dyy = self.H[None,0,0,:]*jac[:,1,0]*jac[:,1,0]+jac[:,1,0]*jac[:,1,1]*self.H[None,0,1,:]+jac[:,1,1]*jac[:,1,1]*self.H[None,1,1]
+        dxy = (
+            self.H[None, 0, 1, :] * jac[:, 0, 0] * jac[:, 1, 1]
+            + self.H[None, 0, 1, :] * jac[:, 1, 0] * jac[:, 0, 1]
+            + self.H[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 1]
+            + self.H[None, 1, 1, :] * jac[:, 1, 0] * jac[:, 1, 1]
+        )
+        dxx = (
+            self.H[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 0]
+            + jac[:, 0, 0] * jac[:, 1, 0] * self.H[None, 0, 1, :]
+            + jac[:, 1, 0] * jac[:, 1, 0] * self.H[None, 1, 1]
+        )
+        dyy = (
+            self.H[None, 0, 0, :] * jac[:, 1, 0] * jac[:, 1, 0]
+            + jac[:, 1, 0] * jac[:, 1, 1] * self.H[None, 0, 1, :]
+            + jac[:, 1, 1] * jac[:, 1, 1] * self.H[None, 1, 1]
+        )
         return dxx, dyy, dxy
-
-    
 
     #     vertices = np.zeros((3,2))
     #     vertices[0,:] = [M[0,1],M[0,2]]
@@ -47,19 +62,18 @@ class P2Unstructured2d(BaseUnstructured2d):
     #     jac  = np.array([[(vertices[1,0]-vertices[0,0]),(vertices[1,1]-vertices[0,1])],
     #         [vertices[2,0]-vertices[0,0],vertices[2,1]-vertices[0,1]]])
     #     Nst_coeff = jac[0,0]*jac[1,1]+jac[0,1]*jac[1,0]
-        
+
     #     #N_st
     #     Nst = np.zeros(6)
     #     Nst[0] = 4
     #     Nst[1] = 0
-    #     Nst[2] = 0 
+    #     Nst[2] = 0
     #     Nst[3] = 4
     #     Nst[4] = -4
     #     Nst[5] = -4
-        
-        
+
     #     hN = np.zeros((2,6))
-        
+
     #     #N_ss
     #     hN[0,0] = 4
     #     hN[0,1] = 4
@@ -67,25 +81,24 @@ class P2Unstructured2d(BaseUnstructured2d):
     #     hN[0,3] = 0
     #     hN[0,4] = 0
     #     hN[0,5] = -8
-        
+
     #     #N_tt
-    #     hN[1,0] = 4        
+    #     hN[1,0] = 4
     #     hN[1,1] = 0
     #     hN[1,2] = 4
     #     hN[1,3] = 0
     #     hN[1,4] = -8
     #     hN[1,5] = 0
-        
 
     #     xyConst = Nst*Nst_coeff + hN[0] * jac[0,0]*jac[1,0] + hN[1] * jac[1,0]*jac[1,1]
     #     jac = np.linalg.inv(jac)
     #     jac = jac*jac
-        
+
     #     d2_prod = np.dot(jac,hN)
     #     d2Const = d2_prod[0] + d2_prod[1]
     #     xxConst = d2_prod[0]
     #     yyConst = d2_prod[1]
-        
+
     #     return xxConst,yyConst,xyConstz
     # def evaluate_mixed_derivative(self, indexes):
     #     """
@@ -256,7 +269,7 @@ class P2Unstructured2d(BaseUnstructured2d):
 
         return values
 
-    def get_quadrature_points(self,npts=2):
+    def get_quadrature_points(self, npts=2):
         if npts == 2:
 
             v1 = self.nodes[self.edges][:, 0, :]

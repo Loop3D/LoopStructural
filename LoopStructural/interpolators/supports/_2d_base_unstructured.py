@@ -23,7 +23,6 @@ class BaseUnstructured2d:
         self.n_nodes = self.nx
         self.neighbours = neighbours
 
-        
         self.properties = {}
         # build an array of edges and edge relationships
         self.edges = np.zeros((self.nelements * 3, 2), dtype=int)
@@ -55,6 +54,7 @@ class BaseUnstructured2d:
         Returns the number of nodes for an element in the mesh
         """
         return self.elements.shape[1]
+
     @property
     def nodes(self):
         """
@@ -66,6 +66,7 @@ class BaseUnstructured2d:
             Fortran ordered
         """
         return self.vertices
+
     @property
     def barycentre(self):
         """

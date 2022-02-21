@@ -37,7 +37,9 @@ class UnStructuredTetMesh:
         self.n_nodes = self.nodes.shape[0]
         self.neighbours = np.array(neighbours, dtype=np.int64)
         self.elements = np.array(elements, dtype=np.int64)
-        self.barycentre = np.sum(self.nodes[self.elements[:,:4]][:, :, :], axis=1) / 4.0
+        self.barycentre = (
+            np.sum(self.nodes[self.elements[:, :4]][:, :, :], axis=1) / 4.0
+        )
         self.minimum = np.min(self.nodes, axis=0)
         self.maximum = np.max(self.nodes, axis=0)
         length = self.maximum - self.minimum
@@ -66,18 +68,20 @@ class UnStructuredTetMesh:
         self.aabb_table = csr_matrix(
             (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
         )
-        self.shared_element_relationships = np.zeros((self.elements.shape[0]*3,2),dtype=int)
-        self.shared_elements = np.zeros((self.elements.shape[0]*3,3),dtype=int)
+        self.shared_element_relationships = np.zeros(
+            (self.elements.shape[0] * 3, 2), dtype=int
+        )
+        self.shared_elements = np.zeros((self.elements.shape[0] * 3, 3), dtype=int)
         self._init_face_table()
         self._initialise_aabb()
 
     def _init_face_table(self):
         """
         Fill table containing elements that share a face, and another
-        table that contains the nodes for a face. 
+        table that contains the nodes for a face.
         """
         flag = np.zeros(self.elements.shape[0])
-        face_index =0
+        face_index = 0
         for i, t in enumerate(self.elements):
             flag[i] = True
             for n in self.neighbours[i]:
@@ -95,9 +99,10 @@ class UnStructuredTetMesh:
 
                 face_index += 1
         self.shared_elements = self.shared_elements[:face_index, :]
-        self.shared_element_relationships = self.shared_element_relationships[:face_index, :]
+        self.shared_element_relationships = self.shared_element_relationships[
+            :face_index, :
+        ]
 
-    
     def _initialise_aabb(self):
         """assigns the tetras to the grid cells where the bounding box
         of the tetra element overlaps the grid cell.
@@ -107,12 +112,12 @@ class UnStructuredTetMesh:
         # calculate the bounding box for all tetraherdon in the mesh
         # find the min/max extents for xyz
         tetra_bb = np.zeros((self.elements.shape[0], 19, 3))
-        minx = np.min(self.nodes[self.elements[:,:4], 0], axis=1)
-        maxx = np.max(self.nodes[self.elements[:,:4], 0], axis=1)
-        miny = np.min(self.nodes[self.elements[:,:4], 1], axis=1)
-        maxy = np.max(self.nodes[self.elements[:,:4], 1], axis=1)
-        minz = np.min(self.nodes[self.elements[:,:4], 2], axis=1)
-        maxz = np.max(self.nodes[self.elements[:,:4], 2], axis=1)
+        minx = np.min(self.nodes[self.elements[:, :4], 0], axis=1)
+        maxx = np.max(self.nodes[self.elements[:, :4], 0], axis=1)
+        miny = np.min(self.nodes[self.elements[:, :4], 1], axis=1)
+        maxy = np.max(self.nodes[self.elements[:, :4], 1], axis=1)
+        minz = np.min(self.nodes[self.elements[:, :4], 2], axis=1)
+        maxz = np.max(self.nodes[self.elements[:, :4], 2], axis=1)
         ix, iy, iz = self.aabb_grid.global_index_to_cell_index(
             np.arange(self.aabb_grid.n_elements)
         )
@@ -181,6 +186,7 @@ class UnStructuredTetMesh:
     @property
     def n_cells(self):
         return None
+
     @property
     def shared_element_norm(self):
         """
@@ -189,16 +195,16 @@ class UnStructuredTetMesh:
         elements = self.shared_elements
         v1 = self.nodes[elements[:, 1], :] - self.nodes[elements[:, 0], :]
         v2 = self.nodes[elements[:, 2], :] - self.nodes[elements[:, 0], :]
-        return np.cross(v1, v2,axisa=1,axisb=1)
-    
+        return np.cross(v1, v2, axisa=1, axisb=1)
+
     @property
     def shared_element_size(self):
         """
         Get the area of the share triangle
         """
         norm = self.shared_element_norm
-        return 0.5*np.linalg.norm(norm,axis=1)
-    
+        return 0.5 * np.linalg.norm(norm, axis=1)
+
     @property
     def element_size(self):
         """Calculate the volume of a tetrahedron using the 4 corners
@@ -209,9 +215,12 @@ class UnStructuredTetMesh:
         _type_
             _description_
         """
-        vecs = self.nodes[self.elements[:,:4],:][:, 1:, :] - self.nodes[self.elements[:,:4],:][:, 0, None, :]
+        vecs = (
+            self.nodes[self.elements[:, :4], :][:, 1:, :]
+            - self.nodes[self.elements[:, :4], :][:, 0, None, :]
+        )
         return np.abs(np.linalg.det(vecs)) / 6
-   
+
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
         Get the gradients of all tetras
@@ -266,15 +275,16 @@ class UnStructuredTetMesh:
         element_gradients = element_gradients @ I
 
         return element_gradients[elements, :, :], elements
+
     def evaluate_shape(self, locations):
         """
         Convenience function returning barycentric coords
-        
+
         """
         locations = np.array(locations)
         verts, c, elements, inside = self.get_element_for_location(locations)
         return c, elements, inside
-    
+
     def evaluate_value(self, pos, property_array):
         """
         Evaluate value of interpolant
@@ -324,7 +334,8 @@ class UnStructuredTetMesh:
         ) = self.get_element_gradient_for_location(pos)
         # grads = np.zeros(tetras.shape)
         values[inside, :] = (
-            element_gradients[inside, :, :] * property_array[self.elements[tetras][inside, None, :]]
+            element_gradients[inside, :, :]
+            * property_array[self.elements[tetras][inside, None, :]]
         ).sum(2)
         length = np.sum(values[inside, :], axis=1)
         # values[inside,:] /= length[:,None]
@@ -332,9 +343,9 @@ class UnStructuredTetMesh:
 
     def inside(self, pos):
         if pos.shape[1] > 3:
-            logger.warning(f'Converting {pos.shape[1]} to 3d using first 3 columns')
+            logger.warning(f"Converting {pos.shape[1]} to 3d using first 3 columns")
             pos = pos[:, :3]
-            
+
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
             inside *= pos[:, i] > self.origin[None, i]
@@ -362,7 +373,7 @@ class UnStructuredTetMesh:
         -------
 
         """
-    
+
         cell_index = np.array(self.aabb_grid.position_to_cell_index(points)).swapaxes(
             0, 1
         )
@@ -374,7 +385,7 @@ class UnStructuredTetMesh:
             * self.aabb_grid.nsteps_cells[None, 1]
             * cell_index[:, 2]
         )
-        
+
         tetra_indices = self.aabb_table[global_index[inside], :].tocoo()
         # tetra_indices[:] = -1
         row = tetra_indices.row

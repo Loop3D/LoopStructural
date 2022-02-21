@@ -10,6 +10,7 @@ from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+
 if LoopStructural.experimental:
     from LoopStructural.interpolators import P2Interpolator
 try:
@@ -705,7 +706,7 @@ class GeologicalModel:
             )
 
             return PLI(mesh)
-        if interpolatortype == 'P2':
+        if interpolatortype == "P2":
             if element_volume is None:
                 # nelements /= 5
                 element_volume = box_vol / nelements
@@ -716,9 +717,11 @@ class GeologicalModel:
             # number of steps is the length of the box / step vector
             nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
             if "meshbuilder" in kwargs:
-                    mesh = kwargs["meshbuilder"](bb, nelements)
+                mesh = kwargs["meshbuilder"](bb, nelements)
             else:
-                raise NotImplementedError('Cannot use P2 interpolator without external mesh')
+                raise NotImplementedError(
+                    "Cannot use P2 interpolator without external mesh"
+                )
             logger.info(
                 "Creating regular tetrahedron mesh with %i elements \n"
                 "for modelling using P2" % (mesh.ntetra)
