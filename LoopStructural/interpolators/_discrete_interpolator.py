@@ -16,6 +16,8 @@ from LoopStructural.utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 
+from ._geological_interpolator import GeologicalInterpolator
+
 
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
@@ -70,7 +72,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     @property
     def region(self):
-        return self.region_function(self.support.nodes)
+        return self.region_function(self.support.nodes).astype(bool)
 
     @property
     def region_map(self):
@@ -166,11 +168,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
         # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
+            logger.error("Cannot add constraints: A and indexes have different shape")
             return
 
         if len(A.shape) > 2:
             nr = A.shape[0] * A.shape[1]
-            w = np.tile(w, (A.shape[1]))
+            if isinstance(w, np.ndarray):
+                w = np.tile(w, (A.shape[1]))
             A = A.reshape((A.shape[0] * A.shape[1], A.shape[2]))
             idc = idc.reshape((idc.shape[0] * idc.shape[1], idc.shape[2]))
             B = B.reshape((A.shape[0]))
@@ -184,7 +188,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A[length > 0, :] /= length[length > 0, None]
         if isinstance(w, (float, int)):
             w = np.ones(A.shape[0]) * w
-
         if isinstance(w, np.ndarray) == False:
             raise BaseException("w must be a numpy array")
 
@@ -277,7 +280,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         gi[self.region] = np.arange(0, self.nx)
         idc = gi[node_idx]
         outside = ~(idc == -1)
-        
+
         self.equal_constraints[name] = {
             "A": np.ones(idc[outside].shape[0]),
             "B": values[outside],
@@ -423,7 +426,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # can help speed up solving, but might also introduce some errors
 
         if len(self.equal_constraints) > 0:
-            logger.info("Equality block is %i x %i" % (self.eq_const_c, self.nx))
+            logger.info(f"Equality block is {self.eq_const_c} x {self.nx}")
             # solving constrained least squares using
             # | ATA CT | |c| = b
             # | C   0  | |y|   d
@@ -448,7 +451,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 cols.extend(c["col"].flatten()[~mask].tolist())
 
             C = coo_matrix(
-
                 (np.array(a), (np.array(rows), cols)),
                 shape=(self.eq_const_c, self.nx),
                 dtype=float,
@@ -500,30 +502,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             import osqp
         except ImportError:
             raise LoopImportError("Missing osqp pip install osqp")
-        # m = A.shape[0]
-        # n = A.shape[1]
-        # Ad = sparse.random(m, n, density=0.7, format='csc')
-        # b = np.random.randn(m)
-
-        # # OSQP data
-        # P = sparse.block_diag([sparse.csc_matrix((n, n)), sparse.eye(m)], format='csc')
-        # q = np.zeros(n+m)
-        # A = sparse.vstack([
-        #         sparse.hstack([Ad, -sparse.eye(m)]),
-        #         sparse.hstack([sparse.eye(n), sparse.csc_matrix((n, m))])], format='csc')
-        # l = np.hstack([b, np.zeros(n)])
-        # u = np.hstack([b, np.ones(n)])
-
-        # # Create an OSQP object
-        # prob = osqp.OSQP()
-
-        # # Setup workspace
-        # prob.setup(P, q, A, l, u)
-
-        # # Solve problem
-        # res = prob.solve()
-
-        # Create an OSQP object
         prob = osqp.OSQP()
 
         # Setup workspace
@@ -727,6 +705,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_chol(A, B)
         if solver == "lu":
             logger.info("Solving using scipy LU")
+            print(self.region)
             self.c[self.region] = self._solve_lu(A, B)
         if solver == "pyamg":
             try:

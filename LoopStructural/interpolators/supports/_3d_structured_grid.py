@@ -6,7 +6,7 @@ import logging
 
 import numpy as np
 
-from .base_structured_3d_support import BaseStructuredSupport
+from ._3d_base_structured import BaseStructuredSupport
 
 
 from LoopStructural.utils import getLogger
@@ -37,6 +37,7 @@ class StructuredGrid(BaseStructuredSupport):
         self.regions["everywhere"] = np.ones(self.n_nodes).astype(bool)
         self.name = name
 
+    @property
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))
 

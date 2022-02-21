@@ -1,5 +1,5 @@
 import numpy as np
-from LoopStructural.interpolators.unstructured_tetra import UnStructuredTetMesh
+from LoopStructural.interpolators import UnStructuredTetMesh
 from os.path import dirname
 
 file_path = dirname(__file__)
@@ -50,4 +50,4 @@ def test_get_elements():
     # check if the calculated tetra from the mesh method using aabb
     # is the same as using the barycentric coordinates on all elelemts for
     # all points
-    assert np.all(elements[tetra_idx] - tetra == 0)
+    assert np.all(elements[tetra_idx] - elements[tetra] == 0)
