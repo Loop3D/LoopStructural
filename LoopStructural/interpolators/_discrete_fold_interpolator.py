@@ -127,7 +127,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         ]
         # calculate the fold geometry for the elements barycentre
         deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(
-            self.support.barycentre()
+            self.support.barycentre
         )
         element_idx = np.arange(self.support.n_elements)
         np.random.shuffle(element_idx)

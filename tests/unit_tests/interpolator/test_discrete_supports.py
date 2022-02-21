@@ -27,8 +27,8 @@ def test_evaluate_value():
     grid = StructuredGrid()
     assert (
         np.sum(
-            grid.barycentre()[:, 0]
-            - grid.evaluate_value(grid.barycentre(), grid.nodes[:, 0])
+            grid.barycentre[:, 0]
+            - grid.evaluate_value(grid.barycentre, grid.nodes[:, 0])
         )
         == 0
     )
@@ -37,12 +37,12 @@ def test_evaluate_value():
 def test_evaluate_gradient():
     grid = StructuredGrid()
     # test by setting the scalar field to the y coordinate
-    vector = grid.evaluate_gradient(grid.barycentre(), grid.nodes[:, 1])
+    vector = grid.evaluate_gradient(grid.barycentre, grid.nodes[:, 1])
     assert np.sum(vector - np.array([0, 1, 0])) == 0
 
     # same test but for a bigger grid, making sure scaling for cell is ok
     grid = StructuredGrid(step_vector=np.array([100, 100, 100]))
-    vector = grid.evaluate_gradient(grid.barycentre(), grid.nodes[:, 1])
+    vector = grid.evaluate_gradient(grid.barycentre, grid.nodes[:, 1])
     assert np.sum(vector - np.array([0, 1, 0])) == 0
 
 
@@ -68,7 +68,7 @@ def test_evaluate_gradient2():
 
 def test_get_element():
     grid = StructuredGrid()
-    point = grid.barycentre()[[0], :]
+    point = grid.barycentre[[0], :]
     idc, inside = grid.position_to_cell_corners(point)
     bary = np.mean(grid.nodes[idc, :], axis=0)
     assert np.sum(point - bary) == 0
@@ -108,19 +108,19 @@ def test_create_structured_grid2d_origin_nsteps():
 def test_evaluate_value_2d():
     grid = StructuredGrid2D()
     grid.update_property('X',grid.nodes[:,0])
-    assert np.sum(grid.barycentre()[:,0] - 
-    grid.evaluate_value(grid.barycentre(),'X')) ==0
+    assert np.sum(grid.barycentre[:,0] - 
+    grid.evaluate_value(grid.barycentre,'X')) ==0
 
 def test_evaluate_gradient_2d():
     grid = StructuredGrid2D()
     grid.update_property('Y',grid.nodes[:,1])
-    vector = np.mean(grid.evaluate_gradient(grid.barycentre(),'Y'),axis=0)
+    vector = np.mean(grid.evaluate_gradient(grid.barycentre,'Y'),axis=0)
     # vector/=np.linalg.norm(vector)
     assert np.sum(vector-np.array([0,grid.step_vector[1]])) == 0
     
 def test_get_element_2d():
     grid = StructuredGrid2D()
-    point = grid.barycentre()[[0],:]
+    point = grid.barycentre[[0],:]
     idc, inside = grid.position_to_cell_corners(point)
     bary = np.mean(grid.nodes[idc,:],axis=0)
     assert np.sum(point-bary) == 0  
@@ -169,8 +169,8 @@ def test_evaluate_value_tetmesh():
     grid = TetMesh()
     assert (
         np.sum(
-            grid.barycentre()[:, 0]
-            - grid.evaluate_value(grid.barycentre(), grid.nodes[:, 0])
+            grid.barycentre[:, 0]
+            - grid.evaluate_value(grid.barycentre, grid.nodes[:, 0])
         )
         == 0
     )
@@ -179,7 +179,7 @@ def test_evaluate_value_tetmesh():
 def test_evaluate_gradient_tetmesh():
     grid = TetMesh()
     vector = np.mean(
-        grid.evaluate_gradient(grid.barycentre(), grid.nodes[:, 1]), axis=0
+        grid.evaluate_gradient(grid.barycentre, grid.nodes[:, 1]), axis=0
     )
     # vector/=np.linalg.norm(vector)
     assert np.sum(vector - np.array([0, grid.step_vector[1], 0])) == 0

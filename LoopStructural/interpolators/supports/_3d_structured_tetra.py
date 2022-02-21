@@ -39,7 +39,8 @@ class TetMesh(BaseStructuredSupport):
     def n_cells(self):
         return np.product(self.nsteps_cells)
 
-    def barycentre(self, elements=None):
+    @property
+    def barycentre(self):
         """
         Return the barycentres of all tetrahedrons or of specified tetras using
         global index
@@ -53,8 +54,7 @@ class TetMesh(BaseStructuredSupport):
         -------
 
         """
-        if elements is None:
-            elements = np.arange(0, self.ntetra)
+        
         tetra = self.get_elements()[elements]
         barycentre = np.sum(self.nodes[tetra][:, :, :], axis=1) / 4.0
         return barycentre
