@@ -4,6 +4,7 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 import logging
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from ._3d_base_structured import BaseStructuredSupport
 from LoopStructural.utils import getLogger
@@ -62,10 +63,9 @@ class UnStructuredTetMesh:
         # make a big table to store which tetra are in which element.
         # if this takes up too much memory it could be simplified by using sparse matrices or dict but
         # at the expense of speed
-        self.aabb_table = np.zeros(
+        self.aabb_table = csr_matrix(
             (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
         )
-        self.aabb_table[:] = False
         self.shared_element_relationships = np.zeros((self.elements.shape[0]*3,2),dtype=int)
         self.shared_elements = np.zeros((self.elements.shape[0]*3,3),dtype=int)
         self._init_face_table()
@@ -168,7 +168,7 @@ class UnStructuredTetMesh:
         logic = np.logical_and(x_logic, y_logic)
         logic = np.logical_and(logic, z_logic)
 
-        self.aabb_table = logic
+        self.aabb_table = csr_matrix(logic)
 
     @property
     def ntetra(self):
@@ -331,6 +331,10 @@ class UnStructuredTetMesh:
         return values
 
     def inside(self, pos):
+        if pos.shape[1] > 3:
+            logger.warning(f'Converting {pos.shape[1]} to 3d using first 3 columns')
+            pos = pos[:, :3]
+            
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
             inside *= pos[:, i] > self.origin[None, i]
@@ -358,9 +362,11 @@ class UnStructuredTetMesh:
         -------
 
         """
+    
         cell_index = np.array(self.aabb_grid.position_to_cell_index(points)).swapaxes(
             0, 1
         )
+        inside = self.aabb_grid.inside(points)
         global_index = (
             cell_index[:, 0]
             + self.aabb_grid.nsteps_cells[None, 0] * cell_index[:, 1]
@@ -368,8 +374,12 @@ class UnStructuredTetMesh:
             * self.aabb_grid.nsteps_cells[None, 1]
             * cell_index[:, 2]
         )
-        tetra_indices = self.aabb_table[global_index, :]
-        row, col = np.where(tetra_indices)
+        
+        tetra_indices = self.aabb_table[global_index[inside], :].tocoo()
+        # tetra_indices[:] = -1
+        row = tetra_indices.row
+        col = tetra_indices.col
+        # using returned indexes calculate barycentric coords to determine which tetra the points are in
         vertices = self.nodes[self.elements[col, :4]]
         pos = points[row, :]
         vap = pos[:, :] - vertices[:, 0, :]
