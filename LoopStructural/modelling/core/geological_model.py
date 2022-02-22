@@ -5,20 +5,29 @@ import logging
 
 import numpy as np
 import pandas as pd
+import LoopStructural
 from LoopStructural.datasets import normal_vector_headers
-from LoopStructural.interpolators.discrete_fold_interpolator import (
-    DiscreteFoldInterpolator as DFI,
-)
-from LoopStructural.interpolators.finite_difference_interpolator import (
-    FiniteDifferenceInterpolator as FDI,
-)
-from LoopStructural.interpolators.piecewiselinear_interpolator import (
-    PiecewiseLinearInterpolator as PLI,
-)
+from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
+from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+
+if LoopStructural.experimental:
+    from LoopStructural.interpolators import P2Interpolator
+try:
+    from LoopStructural.surfe_wrapper import SurfeRBFInterpolator as Surfe
+
+    surfe = True
+
+except ImportError:
+    surfe = False
+
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
+from LoopStructural.modelling.fault import FaultSegment
 from LoopStructural.interpolators import DiscreteInterpolator
 
-from LoopStructural.interpolators.structured_grid import StructuredGrid
-from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.fault import FaultBuilder
 from LoopStructural.modelling.features import (
@@ -692,12 +701,32 @@ class GeologicalModel:
                         origin=bb[0, :], nsteps=nsteps, step_vector=step_vector
                     )
             logger.info(
-                f"Creating regular tetrahedron mesh with {mesh.ntetra} elements \n"
-                "for modelling using PLI"
+                "Creating regular tetrahedron mesh with %i elements \n"
+                "for modelling using PLI" % (mesh.ntetra)
             )
 
             return PLI(mesh)
-
+        if interpolatortype == "P2":
+            if element_volume is None:
+                # nelements /= 5
+                element_volume = box_vol / nelements
+            # calculate the step vector of a regular cube
+            step_vector = np.zeros(3)
+            step_vector[:] = element_volume ** (1.0 / 3.0)
+            # step_vector /= np.array([1,1,2])
+            # number of steps is the length of the box / step vector
+            nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            if "meshbuilder" in kwargs:
+                mesh = kwargs["meshbuilder"](bb, nelements)
+            else:
+                raise NotImplementedError(
+                    "Cannot use P2 interpolator without external mesh"
+                )
+            logger.info(
+                "Creating regular tetrahedron mesh with %i elements \n"
+                "for modelling using P2" % (mesh.ntetra)
+            )
+            return P2Interpolator(mesh)
         if interpolatortype == "FDI":
 
             # find the volume of one element
@@ -1624,11 +1653,11 @@ class GeologicalModel:
                         nsteps[2])
         >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(xyz,scale=False)
 
         Evaluate on points defined by regular grid function
 
-        >>> model.evaluate_model(model.regular_grid())
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
 
 
         Evaluate on a map
@@ -1640,7 +1669,10 @@ class GeologicalModel:
         >>> xx, yy = np.meshgrid(x, y, indexing='ij')
         >>> zz = np.zeros_like(yy)
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
+
+        Evaluate on points in reference coordinate system
+        >>> model.evaluate_model(xyz,scale=True)
 
         """
         xyz = np.array(xyz)

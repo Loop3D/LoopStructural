@@ -1,10 +1,8 @@
 """
 Piecewise linear interpolator
 """
-import logging
-
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
+from LoopStructural.interpolators.cython.dsi_helper import cg, fold_cg
 
 from LoopStructural.interpolators import DiscreteInterpolator
 from LoopStructural.interpolators import InterpolatorType
@@ -115,13 +113,13 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         if direction_feature is not None:
             direction_vector = direction_feature.evaluate_gradient(
-                self.support.barycentre()
+                self.support.barycentre
             )
         if direction_vector is not None:
             if direction_vector.shape[0] == 1:
                 # if using a constant direction, tile array so it works for cg calc
                 direction_vector = np.tile(
-                    direction_vector, (self.support.barycentre().shape[0], 1)
+                    direction_vector, (self.support.barycentre.shape[0], 1)
                 )
         if direction_vector is not None:
             logger.info("Running constant gradient")

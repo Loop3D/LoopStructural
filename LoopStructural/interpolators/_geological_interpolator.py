@@ -47,8 +47,13 @@ class GeologicalInterpolator:
         self.valid = False
 
     def __str__(self):
-
-        return self.__str
+        name = f"{self.type} \n"
+        name += f"{self.n_g} gradient points\n"
+        name += f"{self.n_i} interface points\n"
+        name += f"{self.n_n} normal points\n"
+        name += f"{self.n_t} tangent points\n"
+        name += f"{self.n_g + self.n_i + self.n_n + self.n_t} total points\n"
+        return name
 
     def set_region(self, **kwargs):
         pass
