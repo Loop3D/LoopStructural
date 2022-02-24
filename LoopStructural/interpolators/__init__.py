@@ -50,10 +50,11 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import (
 from LoopStructural.interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
+from LoopStructural.interpolators._surfe_wrapper import SurfeRBFInterpolator
 
-if LoopStructural.experimental:
-    logger.warning(
-        "Using experimental interpolators: P1Interpolator and P2Interpolator"
-    )
-    from ._p1interpolator import P1Interpolator
-    from ._p2interpolator import P2Interpolator
+
+logger.warning(
+    "Using experimental interpolators: P1Interpolator and P2Interpolator"
+)
+from ._p1interpolator import P1Interpolator
+from ._p2interpolator import P2Interpolator

@@ -11,10 +11,10 @@ from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
 from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
 
-if LoopStructural.experimental:
-    from LoopStructural.interpolators import P2Interpolator
+# if LoopStructural.experimental:
+from LoopStructural.interpolators import P2Interpolator
 try:
-    from LoopStructural.surfe_wrapper import SurfeRBFInterpolator as Surfe
+    from LoopStructural.interpolators import SurfeRBFInterpolator as Surfe
 
     surfe = True
 
@@ -791,15 +791,6 @@ class GeologicalModel:
             return DFI(mesh, kwargs["fold"])
         if interpolatortype == "Surfe" or interpolatortype == "surfe":
             # move import of surfe to where we actually try and use it
-            try:
-                from LoopStructural.interpolators.surfe_wrapper import (
-                    SurfeRBFInterpolator as Surfe,
-                )
-
-                surfe = True
-
-            except ImportError:
-                surfe = False
             if not surfe:
                 logger.warning("Cannot import Surfe, try another interpolator")
                 raise ImportError("Cannot import surfepy, try pip install surfe")
