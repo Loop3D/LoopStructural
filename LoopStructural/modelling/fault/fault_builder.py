@@ -32,8 +32,10 @@ class FaultBuilder(StructuralFrameBuilder):
 
         StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
         self.model = model
-        self.origin = np.zeros(3)  # self.model.bounding_box[0, :]
-        self.maximum = np.zeros(3)  # self.model.bounding_box[1, :]
+        self.origin = np.array([np.nan, np.nan, np.nan])
+        self.maximum = np.array(
+            [np.nan, np.nan, np.nan]
+        )  # self.model.bounding_box[1, :]
         # define a maximum area to mesh adding buffer to model
         # buffer = .2
         self.minimum_origin = self.model.bounding_box[
@@ -220,7 +222,7 @@ class FaultBuilder(StructuralFrameBuilder):
 
                 self.update_geometry(fault_depth)
                 # TODO need to add data here
-
+                slip_vector /= intermediate_axis
                 data.loc[
                     len(data),
                     [

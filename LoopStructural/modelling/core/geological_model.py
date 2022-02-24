@@ -231,7 +231,8 @@ class GeologicalModel:
             the created geological model and a dictionary of the map2loop data
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
-
+        log_to_file(f"{m2l_directory}/loopstructural_log.txt")
+        logger.info('Creating model from m2l directory')
         processor = Map2LoopProcessor(m2l_directory, use_thickness)
         processor._gradient = gradient
         processor.vector_scale = vector_scale
@@ -263,9 +264,11 @@ class GeologicalModel:
 
     @classmethod
     def from_processor(cls, processor):
+        logger.info('Creating model from processor')
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
         for i in processor.fault_network.faults:
+            logger.info(f"Adding fault {i}")
             model.create_and_add_fault(
                 i,
                 **processor.fault_properties.to_dict("index")[i],
@@ -311,6 +314,7 @@ class GeologicalModel:
                 faults = None
                 if processor.fault_stratigraphy is not None:
                     faults = processor.fault_stratigraphy[s]
+                logger.info(f'Adding foliation {s}')
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
@@ -1073,6 +1077,11 @@ class GeologicalModel:
         **kwargs,
     ):
         """
+        An intrusion in built in two main steps:
+        (1) Intrusion network and intrusion frame: the algorithm first identify the intrusion network, which is a set of points
+        representing the roof or floor contact of the intrusion. Then this set of points is used to contraint the main structural 
+        direction of the structural frame.
+        (2) Intrusion body: simulation of lateral and vertical extent of intrusion, using parameterization provided by the structural frame
 
         Parameters
         ----------
@@ -1130,28 +1139,50 @@ class GeologicalModel:
         INet.build(**kwargs)
 
         # Create intrusion frame, using intrusion network points, propagation and inflation direction
+        if "gxxgz" in kwargs: # weight for orthogonality constraint between coord 0 and coord 2
+                gxxgz = kwargs["gxxgz"]
+        else:
+                gxxgz = 0
 
-        gxxgz = 0  # weight for orthogonality constraint between coord 0 and coord 2
-        gxxgy = 0  # weight for orthogonality constraint between coord 0 and coord 1
-        gyxgz = 0  # weight for orthogonality constraint between coord 1 and coord 2
+        if "gxxgy" in kwargs: # weight for orthogonality constraint between coord 0 and coord 1
+                gxxgy = kwargs["gxxgy"]
+        else:
+                gxxgy = 0
+        
+        if "gyxgz" in kwargs: # weight for orthogonality constraint between coord 1 and coord 2
+                gyxgz = kwargs["gyxgz"]
+        else:
+                gyxgz = 0
+        
+        if "interpolatortype" in kwargs: # number of elements for interpolation
+                interpolatortype = kwargs["interpolatortype"]
+        else:
+                interpolatortype = 'FDI'
+        
+        if "nelements" in kwargs: # number of elements for interpolation
+                nelements = kwargs["nelements"]
+        else:
+                nelements = 1e2
 
         weights = [gxxgz, gxxgy, gyxgz]
-        # reg=np.array([1,0.5,1])
         logger.info("building intrusion frame")
-        interpolator = self.get_interpolator(interpolatortype="FDI")
+        interpolator = self.get_interpolator(interpolatortype=interpolatortype)
         frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
         IFrame_builder = IntrusionBuilder(
-            interpolator, model=self, feature_name=intrusion_frame_name
+            interpolator, 
+            model=self, 
+            name=intrusion_frame_name
         )
         IFrame_builder.set_data(frame_data, INet.intrusion_network_outcome)
-        IFrame = IFrame_builder.setup(
-            nelements=1e2,
-            solver="lu",
-            gxxgz=weights[0],
-            gxxgy=weights[1],
+        IFrame_builder.setup(
+            nelements = nelements,
+            # solver = solver,
+            w2=weights[0],
+            w1=weights[1],
             gxygz=weights[2],
         )
 
+        IFrame = IFrame_builder.frame
         # Create intrusion feature
         intrusion_feature = IntrusionFeature(
             intrusion_name, structural_frame=IFrame, model=self
@@ -1171,14 +1202,17 @@ class GeologicalModel:
         intrusion_feature.set_intrusion_frame(IFrame)
         intrusion_feature.set_intrusion_body(IBody)
 
+        #set data for simulations
+        logger.info("setting data for lateral thresholds simulation")
+        IBody.set_data_for_s_simulation()
+        logger.info("setting data for vertical thresholds simulation")
+        IBody.set_data_for_g_simulation()
+
         if intrusion_lateral_extent_model == None:
             logger.error(
                 "Specify conceptual model function for intrusion lateral extent"
             )
-
-        else:
-            logger.info("setting data for lateral thresholds simulation")
-            IBody.set_data_for_s_simulation()
+        else:            
             IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
             IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
             IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
@@ -1192,10 +1226,7 @@ class GeologicalModel:
             logger.error(
                 "Specify conceptual model function for intrusion vertical extent"
             )
-
-        else:
-            logger.info("setting data for vertical thresholds simulation")
-            IBody.set_data_for_g_simulation()
+        else:           
             IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
             IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
             IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
@@ -1493,6 +1524,18 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
+        logger.info(f'Creating fault "{fault_surface_data}"')
+        logger.info(f'Displacement: {displacement}')
+        logger.info(f'Tolerance: {tol}')
+        logger.info(f'Fault function: {faultfunction}')
+        logger.info(f'Fault slip vector: {fault_slip_vector}')
+        logger.info(f'Fault center: {fault_center}')
+        logger.info(f'Major axis: {major_axis}')
+        logger.info(f'Minor axis: {minor_axis}')
+        logger.info(f'Intermediate axis: {intermediate_axis}')
+        for k, v in kwargs.items():
+            logger.info(f'{k}: {v}')
+        
         if tol is None:
             tol = self.tol
         self.parameters["features"].append(
@@ -1523,6 +1566,12 @@ class GeologicalModel:
         fault_frame_data = self.data[
             self.data["feature_name"] == fault_surface_data
         ].copy()
+        trace_mask = np.logical_and(fault_frame_data['coord'] ==0,fault_frame_data['val'] == 0)
+        logger.info(f'There are {np.sum(trace_mask)} points on the fault trace')
+        if np.sum(trace_mask) == 0:
+            logger.error('You cannot model a fault without defining the location of the fault')
+            raise ValueError(f'There are no points on the fault trace')
+
         mask = np.logical_and(
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
         )
@@ -1562,9 +1611,7 @@ class GeologicalModel:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             if (
-                "centreEasting" in kwargs
-                and "centreNorthing" in kwargs
-                and "centreAltitude" in kwargs
+                ~np.isnan(kwargs.get("centreEasting",np.nan)) and ~np.isnan(kwargs.get('centreNorthing',np.nan)) and ~np.isnan(kwargs.get('centreAltitude',np.nan))
             ):
                 fault_center = self.scale(
                     np.array(
@@ -1598,7 +1645,7 @@ class GeologicalModel:
             minor_axis=minor_axis,
             major_axis=major_axis,
             intermediate_axis=intermediate_axis,
-            points=kwargs.get("points", None),
+            points=kwargs.get("points", True),
         )
 
         # if minor_axis == None or major_axis == None or intermediate_axis == None:

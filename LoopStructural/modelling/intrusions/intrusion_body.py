@@ -4,7 +4,8 @@ import pandas as pd
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
-# GSLIB library
+
+# import GSLIB library
 try:
     import geostatspy.GSLIB as GSLIB  # GSLIB utilities, viz and wrapped functions
     import geostatspy.geostats as geostats  # GSLIB converted to Python
@@ -27,8 +28,9 @@ class IntrusionBody:
         model=None,
     ):
         """
-        Simulates the intrusion lateral and vertical extent,
-        the intrusion structural frame and conceptual geometrical models.
+        Simulates threshold distances along structural frame coordinates,
+        to constraint intrusion lateral and vertical extent.
+        Conceptual geometrical models are used to restrict simulated values.
 
         Parameters
         ----------
@@ -55,16 +57,15 @@ class IntrusionBody:
         # parameters for each simulation and container for simulated values within the model
         self.simulation_s_parameters = None  # input parameters for simulation
         self.simulation_s_variogram = None  # inout variogram
-        self.simulation_sdata = (
-            None  # list [data of all sides, data of side S<0, data of side S>0]
-        )
+        # self.simulation_sdata = (None)  # list [data of all sides, data of side S<0, data of side S>0]
+
         self.simulation_s_inputdata = []  # residual values
         self.simulationGSLIB_s_outcome = []
         self.simulated_s_thresholds = None  # compute thresholds
 
         self.simulation_g_parameters = None
         self.simulation_g_variogram = None
-        self.simulation_gdata = None  # list [all data, data of intrusion network contact, data of other contact]
+        # self.simulation_gdata = None  # list [all data, data of intrusion network contact, data of other contact]
         self.simulation_g_inputdata = []
         self.simulationGSLIB_g_outcome = []
         self.simulated_g_thresholds = None
@@ -77,8 +78,6 @@ class IntrusionBody:
         ----------
         function : function name
 
-        Returns
-        ----------
         """
         if function == None:
             logger.error("Specify function of lateral extent conceptual model")
@@ -93,8 +92,6 @@ class IntrusionBody:
         ----------
         function : function name
 
-        Returns
-        ----------
         """
         if function == None:
             logger.error("Specify function of vertical extent conceptual model")
@@ -102,33 +99,27 @@ class IntrusionBody:
             self.vertical_extent_model = function
 
     def set_data_for_s_simulation(self):
-        """Set data for lateral extent (distances in L axis) simulation
-        Evaluate data points in the intrusion frame coodinates,
-        and separates data between sides (> or <0)
+        """Set data for lateral extent (distances in L axis) simulation.
+        Data points are evaluated in the intrusion frame coordinates,
+        and separated between each sides (> or <0). Evaluated data points are then used to simulate thresholds distances
 
         Parameters
         ----------
 
-        Returns
-        ----------
         """
-        import datetime
 
         data = self.data.copy()
         data_xyz = data.loc[:, ["X", "Y", "Z"]].to_numpy()
-        # data['coord0'] = self.intrusion_frame[0].evaluate_value(self.model.scale(data_xyz, inplace = False))
-        # data['coord1'] = self.intrusion_frame[1].evaluate_value(self.model.scale(data_xyz, inplace = False))
-        # data['coord2'] = self.intrusion_frame[2].evaluate_value(self.model.scale(data_xyz, inplace = False))
         data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(data_xyz)
         data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(data_xyz)
         data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(data_xyz)
         data_minside = data[
-            (data["intrusion_side"] == "yes") & (data["coord2"] <= 0)
+            (data["intrusion_side"] == True) & (data["coord2"] <= 0)
         ].copy()
         data_minside.reset_index(inplace=True)
 
         data_maxside = data[
-            (data["intrusion_side"] == "yes") & (data["coord2"] > 0)
+            (data["intrusion_side"] == True) & (data["coord2"] > 0)
         ].copy()
         data_maxside.reset_index(inplace=True)
 
@@ -141,8 +132,9 @@ class IntrusionBody:
 
     def set_data_for_g_simulation(self):
         """Set data for vertical extent (distances in G axis) simulation
-        Evaluate data points in the intrusion frame coodinates,
-        and separate data between intrusion network contact data and other contact data.
+        Data points are evaluated in the intrusion frame coordinates,
+        and separated between roof and floor contact. 
+        Evaluated data points are then used to simulate thresholds distances.
 
         Parameters
         ----------
@@ -201,22 +193,14 @@ class IntrusionBody:
         if spacing == None:
             spacing = self.model.nsteps
 
-        x = np.linspace(self.model.origin[0], self.model.maximum[0], spacing[0])
-        y = np.linspace(self.model.origin[1], self.model.maximum[1], spacing[1])
-        z = np.linspace(self.model.origin[2], self.model.maximum[2], spacing[2])
+        grid_points = self.model.regular_grid(spacing, shuffle=False)
 
-        xx, yy, zz = np.meshgrid(x, y, z)
-        grid_points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-
-        grid_points_coord0 = self.intrusion_frame[0].evaluate_value(
-            self.model.scale(grid_points, inplace=False)
-        )
-        grid_points_coord1 = self.intrusion_frame[1].evaluate_value(
-            self.model.scale(grid_points, inplace=False)
-        )
-        grid_points_coord2 = self.intrusion_frame[2].evaluate_value(
-            self.model.scale(grid_points, inplace=False)
-        )
+        grid_points_coord0 = self.intrusion_frame[0].evaluate_value(grid_points)
+        
+        grid_points_coord1 = self.intrusion_frame[1].evaluate_value(grid_points)
+        
+        grid_points_coord2 = self.intrusion_frame[2].evaluate_value(grid_points)
+        
 
         self.simulation_grid = [
             grid_points,
@@ -252,90 +236,25 @@ class IntrusionBody:
         s_parameters : dictionary of parameters to be used for lateral extent simulation. Parameters definition above
         ----
         """
-        if "tmin" in lateral_simulation_parameters:
-            tmin = lateral_simulation_parameters["tmin"]
-        else:
-            tmin = -999
 
-        if "tmax" in lateral_simulation_parameters:
-            tmax = lateral_simulation_parameters["tmax"]
-        else:
-            tmax = 999
+        tmin = lateral_simulation_parameters.get("tmin", -999)
+        tmax = lateral_simulation_parameters.get("tmax", 999)
+        itrans = lateral_simulation_parameters.get("itrans", 1) 
+        ktype = lateral_simulation_parameters.get("ktype", 0) 
+        nx = lateral_simulation_parameters.get("nx", 200) 
+        ny = lateral_simulation_parameters.get("ny", 3) 
+        xmn = lateral_simulation_parameters.get("xmn", None) 
+        ymn = lateral_simulation_parameters.get("ymn", -0.0001) 
+        xsiz = lateral_simulation_parameters.get("xsiz", None) 
+        ysiz = lateral_simulation_parameters.get("ysiz", 0.0001)
+        zmin = lateral_simulation_parameters.get("zmin", None)
+        zmax = lateral_simulation_parameters.get("zmax", None)
+        nxdis = lateral_simulation_parameters.get("nxdis", 1)
+        nydis = lateral_simulation_parameters.get("nydis", 1)
+        ndmin = lateral_simulation_parameters.get("ndmin", 0)
+        ndmax = lateral_simulation_parameters.get("ndmax", 3)
+        radius = lateral_simulation_parameters.get("radius", 500)
 
-        if "itrans" in lateral_simulation_parameters:
-            itrans = lateral_simulation_parameters["itrans"]
-        else:
-            itrans = 1
-
-        if "ktype" in lateral_simulation_parameters:
-            ktype = lateral_simulation_parameters["ktype"]
-        else:
-            ktype = 0
-
-        if "nx" in lateral_simulation_parameters:
-            nx = lateral_simulation_parameters["nx"]
-        else:
-            nx = 200
-
-        if "ny" in lateral_simulation_parameters:
-            ny = lateral_simulation_parameters["ny"]
-        else:
-            ny = 3
-
-        if "xmn" in lateral_simulation_parameters:
-            xmn = lateral_simulation_parameters["xmn"]
-        else:
-            xmn = None
-
-        if "ymn" in lateral_simulation_parameters:
-            ymn = lateral_simulation_parameters["ymn"]
-        else:
-            ymn = -0.0001
-
-        if "xsiz" in lateral_simulation_parameters:
-            xsiz = lateral_simulation_parameters["xsiz"]
-        else:
-            xsiz = None
-
-        if "ysiz" in lateral_simulation_parameters:
-            ysiz = lateral_simulation_parameters["ysiz"]
-        else:
-            ysiz = 0.0001
-
-        if "zmin" in lateral_simulation_parameters:
-            zmin = lateral_simulation_parameters["zmin"]
-        else:
-            zmin = None
-
-        if "zmax" in lateral_simulation_parameters:
-            zmax = lateral_simulation_parameters["zmax"]
-        else:
-            zmax = None
-
-        if "nxdis" in lateral_simulation_parameters:
-            nxdis = lateral_simulation_parameters["nxdis"]
-        else:
-            nxdis = 1
-
-        if "nydis" in lateral_simulation_parameters:
-            nydis = lateral_simulation_parameters["nydis"]
-        else:
-            nydis = 1
-
-        if "ndmin" in lateral_simulation_parameters:
-            ndmin = lateral_simulation_parameters["ndmin"]
-        else:
-            ndmin = 0
-
-        if "ndmax" in lateral_simulation_parameters:
-            ndmax = lateral_simulation_parameters["ndmax"]
-        else:
-            ndmax = 3
-
-        if "radius" in lateral_simulation_parameters:
-            radius = lateral_simulation_parameters["radius"]
-        else:
-            radius = 500
 
         s_parameters = {
             "tmin": tmin,
@@ -387,100 +306,25 @@ class IntrusionBody:
         Returns
         ----
         """
-        if "tmin" in vertical_simulation_parameters:
-            tmin = vertical_simulation_parameters["tmin"]
-        else:
-            tmin = -999
-
-        if "tmax" in vertical_simulation_parameters:
-            tmax = vertical_simulation_parameters["tmax"]
-        else:
-            tmax = 999
-
-        if "itrans" in vertical_simulation_parameters:
-            itrans = vertical_simulation_parameters["itrans"]
-        else:
-            itrans = 1
-
-        if "ktype" in vertical_simulation_parameters:
-            ktype = vertical_simulation_parameters["ktype"]
-        else:
-            ktype = 0
-
-        if "nx" in vertical_simulation_parameters:
-            nx = vertical_simulation_parameters["nx"]
-        else:
-            nx = None
-
-        if "ny" in vertical_simulation_parameters:
-            ny = vertical_simulation_parameters["ny"]
-        else:
-            ny = None
-
-        if "xmn" in vertical_simulation_parameters:
-            xmn = vertical_simulation_parameters["xmn"]
-        else:
-            xmn = None
-
-        if "ymn" in vertical_simulation_parameters:
-            ymn = vertical_simulation_parameters["ymn"]
-        else:
-            ymn = None
-
-        if "xsiz" in vertical_simulation_parameters:
-            xsiz = vertical_simulation_parameters["xsiz"]
-        else:
-            xsiz = None
-
-        if "ysiz" in vertical_simulation_parameters:
-            ysiz = vertical_simulation_parameters["ysiz"]
-        else:
-            ysiz = None
-
-        if "zmin" in vertical_simulation_parameters:
-            zmin = vertical_simulation_parameters["zmin"]
-        else:
-            zmin = None
-
-        if "zmax" in vertical_simulation_parameters:
-            zmax = vertical_simulation_parameters["zmax"]
-        else:
-            zmax = None
-
-        if "zmin2" in vertical_simulation_parameters:
-            zmin2 = vertical_simulation_parameters["zmin2"]
-        else:
-            zmin2 = None
-
-        if "zmax2" in vertical_simulation_parameters:
-            zmax2 = vertical_simulation_parameters["zmax2"]
-        else:
-            zmax2 = None
-
-        if "nxdis" in vertical_simulation_parameters:
-            xdis = vertical_simulation_parameters["nxdis"]
-        else:
-            nxdis = 1
-
-        if "nydis" in vertical_simulation_parameters:
-            nydis = vertical_simulation_parameters["nydis"]
-        else:
-            nydis = 1
-
-        if "ndmin" in vertical_simulation_parameters:
-            ndmin = vertical_simulation_parameters["ndmin"]
-        else:
-            ndmin = 0
-
-        if "ndmax" in vertical_simulation_parameters:
-            ndmax = vertical_simulation_parameters["ndmax"]
-        else:
-            ndmax = 3
-
-        if "radius" in vertical_simulation_parameters:
-            radius = vertical_simulation_parameters["radius"]
-        else:
-            radius = 500
+        tmin = vertical_simulation_parameters.get("tmin", -999)
+        tmax = vertical_simulation_parameters.get("tmax", 999)
+        itrans = vertical_simulation_parameters.get("itrans", 1) 
+        ktype = vertical_simulation_parameters.get("ktype", 0) 
+        nx = vertical_simulation_parameters.get("nx", None) 
+        ny = vertical_simulation_parameters.get("ny", None) 
+        xmn = vertical_simulation_parameters.get("xmn", None) 
+        ymn = vertical_simulation_parameters.get("ymn", None) 
+        xsiz = vertical_simulation_parameters.get("xsiz", None) 
+        ysiz = vertical_simulation_parameters.get("ysiz", None)
+        zmin = vertical_simulation_parameters.get("zmin", None)
+        zmax = vertical_simulation_parameters.get("zmax", None)
+        zmin2 = vertical_simulation_parameters.get("zmin2", None)
+        zmax2 = vertical_simulation_parameters.get("zmax2", None)      
+        nxdis = vertical_simulation_parameters.get("nxdis", 1)
+        nydis = vertical_simulation_parameters.get("nydis", 1)
+        ndmin = vertical_simulation_parameters.get("ndmin", 0)
+        ndmax = vertical_simulation_parameters.get("ndmax", 3)
+        radius = vertical_simulation_parameters.get("radius", 500)
 
         g_parameters = {
             "tmin": tmin,
@@ -515,7 +359,7 @@ class IntrusionBody:
         ----------
         python dictionary with the following parameters -->
 
-        nug = 0; nst = 1                   # nugget effect = 0 and 1 nested structure
+        nugget = 0; nst = 1                # nugget effect = 0 and 1 nested structure
         it1 = 1                            # nested structure type (1 - spherical, 2 - exponential, 3 - Gaussian)
         cc1 = 1                            # One structure and no nugget
         azi1 = 90                          # azimuth of this nested structure
@@ -524,42 +368,15 @@ class IntrusionBody:
         Returns
         ----
         """
-        if "nug" in lateral_simulation_parameters:
-            nug = lateral_simulation_parameters["nug"]
-        else:
-            nug = 0
+        nugget = lateral_simulation_parameters.get("nugget", 0)
+        nst = lateral_simulation_parameters.get("nst", 1)
+        it1 = lateral_simulation_parameters.get("it1", 1)
+        cc1 = lateral_simulation_parameters.get("cc1", 1)
+        azi1 = lateral_simulation_parameters.get("azi1", 90)
+        hmaj1 = lateral_simulation_parameters.get("hmaj1", 999999)
+        hmin1 = lateral_simulation_parameters.get("hmin1", 999999)
 
-        if "nst" in lateral_simulation_parameters:
-            nst = lateral_simulation_parameters["nst"]
-        else:
-            nst = 1
-
-        if "it1" in lateral_simulation_parameters:
-            it1 = lateral_simulation_parameters["it1"]
-        else:
-            it1 = 1
-
-        if "cc1" in lateral_simulation_parameters:
-            cc1 = lateral_simulation_parameters["cc1"]
-        else:
-            cc1 = 1
-
-        if "azi1" in lateral_simulation_parameters:
-            azi1 = lateral_simulation_parameters["azi1"]
-        else:
-            azi1 = 90
-
-        if "hmaj1" in lateral_simulation_parameters:
-            hmaj1 = lateral_simulation_parameters["hmaj1"]
-        else:
-            hmaj1 = 999999
-
-        if "hmin1" in lateral_simulation_parameters:
-            hmin1 = lateral_simulation_parameters["hmin1"]
-        else:
-            hmin1 = 999999
-
-        variogram = GSLIB.make_variogram(nug, nst, it1, cc1, azi1, hmaj1, hmin1)
+        variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
         self.simulation_s_variogram = variogram
 
     def make_g_simulation_variogram(self, vertical_simulation_parameters):
@@ -569,7 +386,7 @@ class IntrusionBody:
 
         Parameters
         ----------
-        nug = 0; nst = 1                   # nugget effect = 0 and 1 nested structure
+        nugget = 0; nst = 1                # nugget effect = 0 and 1 nested structure
         it1 = 1                            # nested structure type (1 - spherical, 2 - exponential, 3 - Gaussian)
         cc1 = 1                            # One structure and no nugget
         azi1 = 90                          # azimuth of this nested structure
@@ -579,42 +396,15 @@ class IntrusionBody:
         ----
         """
 
-        if "nug" in vertical_simulation_parameters:
-            nug = vertical_simulation_parameters["nug"]
-        else:
-            nug = 0
+        nugget = vertical_simulation_parameters.get("nugget", 0)
+        nst = vertical_simulation_parameters.get("nst", 1)
+        it1 = vertical_simulation_parameters.get("it1", 1)
+        cc1 = vertical_simulation_parameters.get("cc1", 1)
+        azi1 = vertical_simulation_parameters.get("azi1", 90)
+        hmaj1 = vertical_simulation_parameters.get("hmaj1", 999999)
+        hmin1 = vertical_simulation_parameters.get("hmin1", 999999)
 
-        if "nst" in vertical_simulation_parameters:
-            nst = vertical_simulation_parameters["nst"]
-        else:
-            nst = 1
-
-        if "it1" in vertical_simulation_parameters:
-            it1 = vertical_simulation_parameters["it1"]
-        else:
-            it1 = 1
-
-        if "cc1" in vertical_simulation_parameters:
-            cc1 = vertical_simulation_parameters["cc1"]
-        else:
-            cc1 = 1
-
-        if "azi1" in vertical_simulation_parameters:
-            azi1 = vertical_simulation_parameters["azi1"]
-        else:
-            azi1 = 90
-
-        if "hmaj1" in vertical_simulation_parameters:
-            hmaj1 = vertical_simulation_parameters["hmaj1"]
-        else:
-            hmaj1 = 999999
-
-        if "hmin1" in vertical_simulation_parameters:
-            hmin1 = vertical_simulation_parameters["hmin1"]
-        else:
-            hmin1 = 999999
-
-        variogram = GSLIB.make_variogram(nug, nst, it1, cc1, azi1, hmaj1, hmin1)
+        variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
         self.simulation_g_variogram = variogram
 
     def simulate_s_thresholds(self):
@@ -636,10 +426,27 @@ class IntrusionBody:
 
         # generate data frame containing input data for simulation
         data_sides = self.lateral_contact_data[0]
-        minP = data_sides["coord1"].min()
-        maxP = data_sides["coord1"].max()
-        minS = data_sides["coord2"].min()
-        maxS = data_sides["coord2"].max()
+        # minP = data_sides["coord1"].min()
+        # maxP = data_sides["coord1"].max()
+        # minS = data_sides["coord2"].min()
+        # maxS = data_sides["coord2"].max()
+
+        minP = min(
+            self.vertical_contact_data[0]['coord1'].min(),
+            self.vertical_contact_data[1]['coord1'].min(),
+            self.lateral_contact_data[0]['coord1'].min())
+        maxP = max(
+            self.vertical_contact_data[0]['coord1'].max(),
+            self.vertical_contact_data[1]['coord1'].max(),
+            self.lateral_contact_data[0]['coord1'].max())
+        minS = min(
+            self.vertical_contact_data[0]['coord2'].min(),
+            self.vertical_contact_data[1]['coord2'].min(),
+            self.lateral_contact_data[0]['coord2'].min())
+        maxS = max(
+            self.vertical_contact_data[0]['coord2'].max(),
+            self.vertical_contact_data[1]['coord2'].max(),
+            self.lateral_contact_data[0]['coord2'].max())
 
         # -- Min side (s<0)
         data_minS = self.lateral_contact_data[1]
@@ -840,19 +647,16 @@ class IntrusionBody:
         simulation_s_thresholds.sort_values(["coord1"], ascending=[True], inplace=True)
 
         # Ignore simulated data outside area covered by input data
-        for j in range(len(simulation_s_thresholds)):
-            if simulation_s_thresholds.loc[j, "coord1"] < minP:
-                simulation_s_thresholds.loc[
-                    j, ["min_s_threshold", "max_s_threshold"]
-                ] = [0.00001, 0.00001]
-            if simulation_s_thresholds.loc[j, "coord1"] > maxP:
-                simulation_s_thresholds.loc[
-                    j, ["min_s_threshold", "max_s_threshold"]
-                ] = [0.00001, 0.00001]
+
+        simulation_s_thresholds.loc[
+            simulation_s_thresholds.coord1 < minP,["min_s_threshold", "max_s_threshold"]
+            ] = [0.00001, 0.00001]
+
+        simulation_s_thresholds.loc[
+            simulation_s_thresholds.coord1 > maxP,["min_s_threshold", "max_s_threshold"]
+            ] = [0.00001, 0.00001]
 
         self.simulated_s_thresholds = simulation_s_thresholds
-
-    #         return simulation_s_thresholds
 
     def simulate_g_thresholds(self):
         """
@@ -894,8 +698,6 @@ class IntrusionBody:
         vertex = [coordPS_of_maxG[0][0], coordPS_of_maxG[0][1], maxG]
 
         # --- growth simulation input data (max G, simulation of contact opposite to intrusion network)
-        # print(other_contact_data)
-        # print(minP,maxP,minS,maxS,vertex)
 
         data_conceptual_G = self.vertical_extent_model(
             other_contact_data,
@@ -927,11 +729,11 @@ class IntrusionBody:
         if self.simulation_g_parameters.get("nx") == None:
             self.simulation_g_parameters["nx"] = grid_points[4][
                 0
-            ]  # *2 # grid X spacing
+            ]  
         if self.simulation_g_parameters.get("ny") == None:
             self.simulation_g_parameters["ny"] = grid_points[4][
                 1
-            ]  # *2 # grid Y spacing
+            ]  
         if self.simulation_g_parameters.get("xmn") == None:
             self.simulation_g_parameters["xmn"] = np.nanmin(grid_points_coord1)
         if self.simulation_g_parameters.get("ymn") == None:
@@ -942,10 +744,10 @@ class IntrusionBody:
             maxC1 = np.nanmax(grid_points_coord1)
             self.simulation_g_parameters["xsiz"] = (maxC1 - minC1) / nx
         if self.simulation_g_parameters.get("ysiz") == None:
-            yx = self.simulation_g_parameters.get("yx")
+            ny = self.simulation_g_parameters.get("ny")
             minC2 = np.nanmin(grid_points_coord2)
             maxC2 = np.nanmax(grid_points_coord2)
-            self.simulation_g_parameters["ysiz"] = (maxC2 - minC2) / nx
+            self.simulation_g_parameters["ysiz"] = (maxC2 - minC2) / ny
         if self.simulation_g_parameters.get("zmin") == None:
             self.simulation_g_parameters["zmin"] = inputsimdata_maxG["g_residual"].min()
         if self.simulation_g_parameters.get("zmax") == None:
@@ -1113,6 +915,3 @@ class IntrusionBody:
         simulation_g_threshold.loc[:, "g_maximum"] = g_maximum
 
         self.simulated_g_thresholds = simulation_g_threshold
-
-
-#         return simulation_g_threshold

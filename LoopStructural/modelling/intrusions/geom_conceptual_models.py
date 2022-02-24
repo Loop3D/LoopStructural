@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def ellipse_function(
-    lateral_contact_data, test=0, minP=None, maxP=None, minS=None, maxS=None
+    lateral_contact_data, minP=None, maxP=None, minS=None, maxS=None
 ):
     import math
 
@@ -19,23 +19,16 @@ def ellipse_function(
 
     a = (maxP - minP) / 2
     b = (maxS - minS) / 10
-    #     b = abs(minS)
 
     po = minP + (maxP - minP) / 2
 
     p_locations = lateral_contact_data.loc[:, "coord1"].copy().to_numpy()
-    #     s_values = lateral_contact_data.loc[:,'coord2'].copy().to_numpy()
 
     s = np.zeros([len(p_locations), 2])
-
-    for i in range(len(p_locations)):
-        if minP < p_locations[i] < maxP:
-            s[i, 0] = b * math.sqrt(1 - pow((p_locations[i] - po) / a, 2))  # max side
-            s[i, 1] = -b * math.sqrt(1 - pow((p_locations[i] - po) / a, 2))  # min side
-        #         elif test == 1:
-        #             s[i,:] = lateral_contact_data.loc[i,'coord2']
-        else:
-            s[i, :] = 0
+    
+    s[np.logical_and(p_locations>minP, p_locations<maxP),0] =  b * np.sqrt(1 - np.power((p_locations[i] - po) / a, 2)) 
+    s[np.logical_and(p_locations>minP, p_locations<maxP),1] =  -b * np.sqrt(1 - np.power((p_locations[i] - po) / a, 2)) 
+    
 
     return s
 
@@ -57,12 +50,8 @@ def rectangle_function(
     p_locations = lateral_contact_data.loc[:, "coord1"].copy().to_numpy()
     s = np.zeros([len(p_locations), 2])
 
-    for i in range(len(p_locations)):
-        if minP < p_locations[i] < maxP:
-            s[i, 0] = maxS  # max side
-            s[i, 1] = minS  # min side
-        else:
-            s[i, :] = 0
+    s[np.logical_and(p_locations>minP, p_locations<maxP),0] =  maxS 
+    s[np.logical_and(p_locations>minP, p_locations<maxP),1] =  minS 
 
     return s
 

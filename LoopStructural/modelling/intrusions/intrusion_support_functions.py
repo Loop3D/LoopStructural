@@ -5,6 +5,18 @@ import random
 
 
 def sort_2_arrays(main_array, array):
+    """
+    Sort two arrays, considering values of only the main array
+
+    Parameters
+    ----------
+    main array: numpy array, considered to sort secondary array
+    array: numpy aray, array to be sorted
+
+    Returns
+    -------
+    sorted arrays
+    """
     # function to sort 2 arrays, considering values of only the main array
 
     for i in range(len(main_array)):
@@ -16,25 +28,46 @@ def sort_2_arrays(main_array, array):
 
 
 def findMinDiff(arr, n):
+    """
+    Find the min diff by comparing difference of all possible pairs in given array
+
+    Parameters
+    ----------
+    arr: numpy array with values to compare and fin the minimum difference
+
+    Returns
+    -------
+    minimum difference between values in arr
+        
+    """
     # Initialize difference as infinite
     diff = 10 ** 20
 
-    # Find the min diff by comparing difference
-    # of all possible pairs in given array
     for i in range(n - 1):
         for j in range(i + 1, n):
             if abs(arr[i] - arr[j]) < diff:
                 diff = abs(arr[i] - arr[j])
 
-    # Return min diff
     return diff
 
 
 def array_from_coords(df, section_axis, df_axis):
-    import numpy as np
+    """
+    Create numpy array representing a section of the model
+    from a dataframe containing coordinates and values
 
-    # for a given dataframe with coordinates and value, create an array of the value data
-    # n refers to the column where the data is
+    Parameters
+    ----------
+    df: pandas dataframe, should have at least ['X', 'Y', 'Z', 'val_1'] columns
+    section_axis: string 'X' or 'Y', the cross section represented by the arrays is along the section_axis
+    df_axis: number of the column where the value on interest is
+
+    Returns
+    -------
+    array: numpy array, contains values (e.g. velocities at each point, scalar field value at each point, etc)
+        
+    """
+
     if section_axis == "X":
         other_axis = "Y"
     elif section_axis == "Y":
@@ -42,7 +75,8 @@ def array_from_coords(df, section_axis, df_axis):
 
     col = len(df.columns)
     if col < df_axis:
-        return "Dataframe axis out of range"
+        logger.error("Finding shortest path, dataframe axis out of range")
+
     else:
         df.sort_values([other_axis, "Z"], ascending=[True, False], inplace=True)
         xys = df[other_axis].unique()
@@ -59,43 +93,80 @@ def array_from_coords(df, section_axis, df_axis):
 
 
 def find_inout_points(velocity_field_array, velocity_parameters):
+    """
+    Looks for the indexes of the inlet and outle in an array.
+    Velocity parameters of anisotropies are used to find the indexes of inlet and outlet. 
+    It is assumed that velocity_parameter[0] correspond to the inlet anisotropy and
+    velocity_parameter[len(velocity_parameter)-1] corresponds to the outlet anisotropy
+
+    Parameters
+    ----------
+    velocity_field_array: numpy array, containing values of the velocity field used to find the shortest path
+    velocity_parameters: list of numbers, each value correspond to a velocity assign to an anisotropy involved in intrusion emplacement
+
+    Returns
+    -------
+    inlet: list of indexes, [row index in array, column index in array]
+    outlet: list of indexes, [row index in array, column index in array]
+        
+    """
     inlet_point = [0, 0]
     outlet_point = [0, 0]
+
+    inlet_velocity = velocity_parameters[0] + 0.1
+    outlet_velocity = velocity_parameters[len(velocity_parameters) - 1] + 0.1
+
     k = 0
     for i in range(len(velocity_field_array[0])):
         if k == 1:
             break
-        for j in range(len(velocity_field_array)):
-            if velocity_field_array[j, i] == (velocity_parameters[0] + 0.1):
-                inlet_point[0] = j
-                inlet_point[1] = i
-                k = 1
-                break
+            
+        where_inlet_i = np.where(velocity_field_array[:,i]==inlet_velocity)
+
+        if len(where_inlet_i[0]) > 0:
+            inlet_point[0] = where_inlet_i[0][len(where_inlet_i[0])-1]
+            inlet_point[1] = i
+            k = 1
+        else:
+            continue
+
     k = 0
     for i in range(len(velocity_field_array[0])):
         i_ = len(velocity_field_array[0]) - 1 - i
         if k == 1:
             break
-        for j in range(len(velocity_field_array)):
-            if velocity_field_array[j, i_] == (
-                velocity_parameters[len(velocity_parameters) - 1] + 0.1
-            ):
-                outlet_point[0] = j
-                outlet_point[1] = i_
-                k = 1
-                break
+            
+        where_outlet_i = np.where(velocity_field_array[:,i_]==outlet_velocity)
+        if len(where_outlet_i[0]) > 0:
+            outlet_point[0] = where_outlet_i[0][0]
+            outlet_point[1] = i_
+            k = 1
+        else: 
+            continue
 
     return inlet_point, outlet_point
 
 
 def shortest_path(inlet, outlet, time_map):
-    # Look for the shortest path between inlet and outlet. returns a matrix with 0's showing the intrusion network (shortest path).
-    # parameters: 'inlet' and 'oulet' --> array of indexes of inlet and outlet of the system
-    # parameters: 'time_map' --> array with time map
-    # returns an array with 0s showing the intrusion network, 1s above it, and -1s below it
+    """
+    Look for the shortest path between inlet and outlet, using a time map.
+    In practice, for a given point looks for the neighbour elements which is closer in time. 
+    The search starts in the inlet, until it reaches the outlet.
 
+    Parameters
+    ----------
+    inlet: list of indexes (row and column) of inlet point. 
+    outlet: list of indexes (row and column) of outlet point. 
+    time_map: numpy array, contains values of time, computed using the fast-marching method.
+
+    Returns
+    -------
+    inet: (intrusion network) numpy array of same shape of time_map array. 
+        0 where the intrusion network is found, 1 above it, and -1 below it
+        
+    """
     inet = np.ones_like(time_map)  # array to save shortest path with zeros
-    temp_inlet = inlet
+    temp_inlet = inlet #temporary inlet
     inet[temp_inlet[0], temp_inlet[1]] = 0
     i = 0
 
@@ -120,33 +191,40 @@ def shortest_path(inlet, outlet, time_map):
             break
         else:
             continue
+
+    # Assing -1 to points below intrusion network
     for j in range(len(inet[0])):  # columns
         for h in range(len(inet)):  # rows
             if inet[h, j] == 0:
-                index = h
                 break
+        
+        inet[(h+1):,j] = -1
 
-        for g in range(len(inet)):
-            if g > h:
-                inet[g, j] = -1
-            else:
-                continue
 
     return inet
 
 
-def element_neighbour(
-    index, array, inet
-):  # return an array 1x5 with the values of the neighbours of a particular element
-    # parameters: 'index' --> array 1x2 with indexes of point of interes [row, col].
-    # parameters: 'array' --> array with values of interest
-    # parameters: 'inet' --> array of current intrusion network. If one of the elements is already inet=0, the assign -1.
+def element_neighbour(index, array, inet):  
+    """
+    Identify the value of neighbours elements for a given element. 
+
+    Parameters
+    ----------
+    index: list of indexes (row and column) of elements. 
+    array: numpy array, containing values
+    inet: numpy array, temporal intrusion network. If one of the elements is already inet=0, the assign -1.
+
+    Returns
+    -------
+    values: numpy array, 1x5 with the values of the neighbours of a particular element 
+        
+    """    
 
     rows = len(array) - 1  # max index of rows of time_map array
     cols = len(array[0]) - 1  # max index of columns of time_map arrays
     values = np.zeros(
         9
-    )  # array to save the values (element above, element to the left, element to the right)
+    )  # array to save values (element above, element to the left, element to the right)
     values[8] = 10
     index_row = index[0]
     index_col = index[1]
@@ -233,7 +311,21 @@ def element_neighbour(
     return values
 
 
-def index_min(array):  # return the index value of the minimum value in an array of 1x8
+def index_min(array):
+    """
+    Given an array of 1x8, dentify the index of the minimum value within the array. 
+
+    Parameters
+    ----------
+    array: numpy array, 1x8 
+
+    Returns
+    -------
+    index_min: integer, index of minimum value in array
+        
+    """  
+    
+    # return the index value of the minimum value in an array of 1x8
     index_array = {}
 
     for i in range(
@@ -245,6 +337,7 @@ def index_min(array):  # return the index value of the minimum value in an array
 
     minimum_val = min(index_array.values())
 
+
     for key, value in index_array.items():
         if value == minimum_val:
             index_min = key
@@ -253,8 +346,19 @@ def index_min(array):  # return the index value of the minimum value in an array
 
 
 def new_inlet(inlet, direction):
-    # outlet is an array of the outlet position
-    # direction in a number--> 0: above-left, 1: above, 2: above right, 3: left, 4: right, 5: below left, 6: below, 7:below right
+    """
+    Determine new inlet indexes, given current inlet and direction of minimum difference in time map.  
+
+    Parameters
+    ----------
+    inlet: list of indexes [row, column] 
+    direction: integers e[0,7] (0: above-left, 1: above, 2: above right, 3: left, 4: right, 5: below left, 6: below, 7:below right)
+
+    Returns
+    -------
+    new_inlet: list of indexes [row, column] 
+        
+    """  
     pot_new_inlets = {}
 
     pot_new_inlets.update({"0": np.array([inlet[0] - 1, inlet[1] - 1])})
@@ -274,10 +378,27 @@ def new_inlet(inlet, direction):
 
 
 def grid_from_array(array, fixed_coord, lower_extent, upper_extent):
-    # to a specific array, this function assigns coordinates for each array element of index [i,j].
-    # returns a matrix of [i,j,x,y,z,values in array]
-    # fixed_coord --> array of 1x2 with coordinate fixed and value,
-    # ie, [0,2] means section is in x=2, or [1, .45] means sections is in y= 0.45
+
+    """
+    Create an numpy matrix of [i,j,x,y,z,values in array], given an array of 2 dimensions (any combination between x, y an z)
+
+    Parameters
+    ----------
+    array: numpy array, two dimension. Represents a cross section of the model, and its values could be any property
+    fixed_coord: list, containing coordinate and value, 
+            ie, [0,2] means section is in x=2, or [1, .45] means sections is in y= 0.45
+            the cross section is along this coordinate
+    lower_extent: numpy array 1x3, lower extent of the model
+    upper_extent: numpy array 1x3, upper extent of the model
+
+    Returns
+    -------
+    values: numpy matrix of [i,j,x,y,z,values in array]
+            (i,j) indexed in array
+            (x,y,z) coordinates considering lower and upper extent of model
+            values, from array
+        
+    """ 
 
     spacing_i = len(array)  # number of rows
     spacing_j = len(array[0])  # number of columns
