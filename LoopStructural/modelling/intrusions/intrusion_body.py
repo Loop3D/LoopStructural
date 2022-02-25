@@ -123,7 +123,8 @@ class IntrusionBody:
         ].copy()
         data_maxside.reset_index(inplace=True)
 
-        data_sides = data_minside.append(data_maxside)
+        # data_sides = data_minside.append(data_maxside)
+        data_sides = pd.concat([data_minside, data_maxside])
         data_sides.reset_index(inplace=True)
 
         self.lateral_contact_data = [data_sides, data_minside, data_maxside]
@@ -237,8 +238,8 @@ class IntrusionBody:
         ----
         """
 
-        tmin = lateral_simulation_parameters.get("tmin", -999)
-        tmax = lateral_simulation_parameters.get("tmax", 999)
+        tmin = lateral_simulation_parameters.get("tmin", -9999)
+        tmax = lateral_simulation_parameters.get("tmax", 9999)
         itrans = lateral_simulation_parameters.get("itrans", 1) 
         ktype = lateral_simulation_parameters.get("ktype", 0) 
         nx = lateral_simulation_parameters.get("nx", 200) 
@@ -306,8 +307,8 @@ class IntrusionBody:
         Returns
         ----
         """
-        tmin = vertical_simulation_parameters.get("tmin", -999)
-        tmax = vertical_simulation_parameters.get("tmax", 999)
+        tmin = vertical_simulation_parameters.get("tmin", -9999)
+        tmax = vertical_simulation_parameters.get("tmax", 9999)
         itrans = vertical_simulation_parameters.get("itrans", 1) 
         ktype = vertical_simulation_parameters.get("ktype", 0) 
         nx = vertical_simulation_parameters.get("nx", None) 

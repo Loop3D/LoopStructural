@@ -66,7 +66,8 @@ class IntrusionBuilder(StructuralFrameBuilder):
         coord_0_values["coord"] = 0
         coord_0_values["feature_name"] = self.name
         coord_0_values["w"] = 1
-        intrusion_frame_data = feature_data.append(coord_0_values, sort=False)
+        # intrusion_frame_data = feature_data.append(coord_0_values, sort=False)
+        intrusion_frame_data = pd.concat([feature_data,coord_0_values])
 
         self.add_data_from_data_frame(intrusion_frame_data)
         self.update_geometry(intrusion_frame_data[["X", "Y", "Z"]].to_numpy())
