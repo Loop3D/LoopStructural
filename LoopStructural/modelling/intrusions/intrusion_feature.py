@@ -134,7 +134,7 @@ class IntrusionFeature:
             indicator_fxS = indicator_fxS_boolean.astype("int64")
 
         if simulation_g_data is None:
-            print("No simultion for vertical extent")
+            print("No simulation for vertical extent")
         else:
             # containers for thresholds
             print("Assigning vertical thresholds")
@@ -180,6 +180,8 @@ class IntrusionFeature:
         # Transform the scalar fields given by the frame coordinates, using the thresholds.
         # This aims to generate a scalar field with its isovalue = 0 on the intrusion contact
 
+        mid_point = g_minside_threshold + ((g_maxside_threshold - g_minside_threshold)/2)
+
         a = intrusion_coord2_pts >= s_maxside_threshold
         b = intrusion_coord2_pts <= s_minside_threshold
         c = (
@@ -195,13 +197,13 @@ class IntrusionFeature:
         e = (
             (s_minside_threshold < intrusion_coord2_pts)
             * (intrusion_coord2_pts < s_maxside_threshold)
-            * (0 >= intrusion_coord0_pts)
+            * (mid_point >= intrusion_coord0_pts)
             * (intrusion_coord0_pts > g_minside_threshold)
         )
         f = (
             (s_minside_threshold < intrusion_coord2_pts)
             * (intrusion_coord2_pts < s_maxside_threshold)
-            * (0 < intrusion_coord0_pts)
+            * (mid_point < intrusion_coord0_pts)
             * (intrusion_coord0_pts < g_maxside_threshold)
         )
 
