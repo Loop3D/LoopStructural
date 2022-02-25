@@ -7,7 +7,7 @@ try:
     import skfmm as fmm
 
 except ImportError:
-    logger.error("skfmm not installed \n" "pip install skfmm")
+    logger.error("skfmm not installed \n" "pip install scikit-fmm")
 
 # from sklearn.cluster import DBSCAN
 from LoopStructural.modelling.intrusions.intrusion_support_functions import *
@@ -286,6 +286,7 @@ class IntrusionNetwork:
                 (seriesi_mean - seriesi_std * delta_list[i]) <= seriesi_values, 
                 seriesi_values <= (seriesi_mean + seriesi_std * delta_list[i])),i] = 1
 
+
         return Ic
 
     def indicator_function_faults(self, delta=None):
@@ -322,7 +323,8 @@ class IntrusionNetwork:
             If[np.logical_and(
                 (faulti_mean - faulti_std * delta[i]) <= faulti_values,
                 faulti_values <= (faulti_mean + faulti_std * delta[i])),i] = 1
-            
+
+
         return If
 
     def compute_velocity_field(self, indicator_fx_contacts, indicator_fx_faults):
