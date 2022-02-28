@@ -373,57 +373,63 @@ class UnStructuredTetMesh:
         -------
 
         """
-
-        cell_index = np.array(self.aabb_grid.position_to_cell_index(points)).swapaxes(
-            0, 1
-        )
-        inside = self.aabb_grid.inside(points)
-        global_index = (
-            cell_index[:, 0]
-            + self.aabb_grid.nsteps_cells[None, 0] * cell_index[:, 1]
-            + self.aabb_grid.nsteps_cells[None, 0]
-            * self.aabb_grid.nsteps_cells[None, 1]
-            * cell_index[:, 2]
-        )
-
-        tetra_indices = self.aabb_table[global_index[inside], :].tocoo()
-        # tetra_indices[:] = -1
-        row = tetra_indices.row
-        col = tetra_indices.col
-        # using returned indexes calculate barycentric coords to determine which tetra the points are in
-        vertices = self.nodes[self.elements[col, :4]]
-        pos = points[row, :]
-        vap = pos[:, :] - vertices[:, 0, :]
-        vbp = pos[:, :] - vertices[:, 1, :]
-        #         # vcp = p - points[:, 2, :]
-        #         # vdp = p - points[:, 3, :]
-        vab = vertices[:, 1, :] - vertices[:, 0, :]
-        vac = vertices[:, 2, :] - vertices[:, 0, :]
-        vad = vertices[:, 3, :] - vertices[:, 0, :]
-        vbc = vertices[:, 2, :] - vertices[:, 1, :]
-        vbd = vertices[:, 3, :] - vertices[:, 1, :]
-
-        va = np.einsum("ij, ij->i", vbp, np.cross(vbd, vbc, axisa=1, axisb=1)) / 6.0
-        vb = np.einsum("ij, ij->i", vap, np.cross(vac, vad, axisa=1, axisb=1)) / 6.0
-        vc = np.einsum("ij, ij->i", vap, np.cross(vad, vab, axisa=1, axisb=1)) / 6.0
-        vd = np.einsum("ij, ij->i", vap, np.cross(vab, vac, axisa=1, axisb=1)) / 6.0
-        v = np.einsum("ij, ij->i", vab, np.cross(vac, vad, axisa=1, axisb=1)) / 6.0
-        c = np.zeros((va.shape[0], 4))
-        c[:, 0] = va / v
-        c[:, 1] = vb / v
-        c[:, 2] = vc / v
-        c[:, 3] = vd / v
-        # inside = np.ones(c.shape[0],dtype=bool)
-        mask = np.all(c >= 0, axis=1)
         verts = np.zeros((points.shape[0], 4, 3))
         bc = np.zeros((points.shape[0], 4))
         tetras = np.zeros(points.shape[0], dtype="int64")
         inside = np.zeros(points.shape[0], dtype=bool)
+        npts = 0
+        npts_step = int(1e4)
+        # break into blocks of 10k points
+        while npts<points.shape[0]:
+            
+            cell_index = np.array(self.aabb_grid.position_to_cell_index(points[:npts+npts_step,:])).swapaxes(
+                0, 1
+            )
+            inside = self.aabb_grid.inside(points[:npts+npts_step,:])
+            global_index = (
+                cell_index[:, 0]
+                + self.aabb_grid.nsteps_cells[None, 0] * cell_index[:, 1]
+                + self.aabb_grid.nsteps_cells[None, 0]
+                * self.aabb_grid.nsteps_cells[None, 1]
+                * cell_index[:, 2]
+            )
 
-        verts[row[mask], :, :] = vertices[mask, :, :]
-        bc[row[mask], :] = c[mask, :]
-        tetras[row[mask]] = col[mask]
-        inside[row[mask]] = True
+            tetra_indices = self.aabb_table[global_index[inside], :].tocoo()
+            # tetra_indices[:] = -1
+            row = tetra_indices.row
+            col = tetra_indices.col
+            # using returned indexes calculate barycentric coords to determine which tetra the points are in
+            vertices = self.nodes[self.elements[col, :4]]
+            pos = points[row, :]
+            vap = pos[:, :] - vertices[:, 0, :]
+            vbp = pos[:, :] - vertices[:, 1, :]
+            #         # vcp = p - points[:, 2, :]
+            #         # vdp = p - points[:, 3, :]
+            vab = vertices[:, 1, :] - vertices[:, 0, :]
+            vac = vertices[:, 2, :] - vertices[:, 0, :]
+            vad = vertices[:, 3, :] - vertices[:, 0, :]
+            vbc = vertices[:, 2, :] - vertices[:, 1, :]
+            vbd = vertices[:, 3, :] - vertices[:, 1, :]
+
+            va = np.einsum("ij, ij->i", vbp, np.cross(vbd, vbc, axisa=1, axisb=1)) / 6.0
+            vb = np.einsum("ij, ij->i", vap, np.cross(vac, vad, axisa=1, axisb=1)) / 6.0
+            vc = np.einsum("ij, ij->i", vap, np.cross(vad, vab, axisa=1, axisb=1)) / 6.0
+            vd = np.einsum("ij, ij->i", vap, np.cross(vab, vac, axisa=1, axisb=1)) / 6.0
+            v = np.einsum("ij, ij->i", vab, np.cross(vac, vad, axisa=1, axisb=1)) / 6.0
+            c = np.zeros((va.shape[0], 4))
+            c[:, 0] = va / v
+            c[:, 1] = vb / v
+            c[:, 2] = vc / v
+            c[:, 3] = vd / v
+            # inside = np.ones(c.shape[0],dtype=bool)
+            mask = np.all(c >= 0, axis=1)
+        
+
+            verts[:npts+npts_step,:,:][row[mask], :, :] = vertices[mask, :, :]
+            bc[:npts+npts_step,:][row[mask], :] = c[mask, :]
+            tetras[:npts+npts_step][row[mask]] = col[mask]
+            inside[:npts+npts_step][row[mask]] = True
+            npts+=npts_step
         return verts, bc, tetras, inside
 
     def get_element_gradients(self, elements=None):
