@@ -169,9 +169,10 @@ class P2Interpolator(DiscreteInterpolator):
             wt = np.ones(size.shape[0])
             wt *= w
             self.add_constraints_to_least_squares(
-                N[mask, :] * wt[:, None],
-                points[mask, 3] * wt,
+                N[mask, :],
+                points[mask, 3],
                 self.support.elements[elements[mask], :],
+                w=wt,
                 name="value",
             )
 
@@ -199,7 +200,6 @@ class P2Interpolator(DiscreteInterpolator):
         d2 = self.support.evaluate_shape_d2(elements[mask])
         # d2 is [ele_idx, deriv, node]
         wt = np.ones(d2.shape[0])
-
         wt *= w  # * self.support.element_size[mask]
         if callable(wtfunc):
             logger.info("Using function to weight gradient steepness")
@@ -207,9 +207,10 @@ class P2Interpolator(DiscreteInterpolator):
         idc = self.support.elements[elements[mask]]
         for i in range(d2.shape[1]):
             self.add_constraints_to_least_squares(
-                d2[:, i, :] * wt[i, None, None],
+                d2[:, i, :],
                 np.zeros(d2.shape[0]),
                 idc[:, :],
+                w=wt,
                 name=f"grad_steepness_{i}",
             )
 
@@ -247,9 +248,10 @@ class P2Interpolator(DiscreteInterpolator):
             if wtfunc:
                 wt = wtfunc(tri_cp)
             self.add_constraints_to_least_squares(
-                const_cp * wt[:, None],
+                const_cp,
                 np.zeros(const_cp.shape[0]),
                 tri_cp,
+                w=wt,
                 name=f"shared element jump cp{i}",
             )
 
