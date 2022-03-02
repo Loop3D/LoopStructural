@@ -133,7 +133,7 @@ class ProcessInputData:
         val = self._stratigraphic_value()
         for name, sg in self._stratigraphic_order:
             stratigraphic_column[name] = {}
-            for g in reversed(sg):
+            for i, g in enumerate(reversed(sg)):
                 if g in self.thicknesses:
                     stratigraphic_column[name][g] = {
                         "max": val[g] + self.thicknesses[g],
@@ -141,6 +141,11 @@ class ProcessInputData:
                         "id": unit_id,
                         "colour": self.colours[g],
                     }
+                    if i==0:
+                        stratigraphic_column[name][g]["min"] = -np.inf
+                    if i==len(sg)-1:
+                        stratigraphic_column[name][g]["max"] = np.inf
+
                 unit_id += 1
         # add faults into the column
         if self.fault_properties is not None:
