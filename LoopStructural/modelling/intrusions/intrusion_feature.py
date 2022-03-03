@@ -19,6 +19,9 @@ from LoopStructural.modelling.intrusions.intrusion_support_functions import *
 class IntrusionFeature:
     """
     Intrusion feature is a class to represent an intrusion, using a distance scalar field to the intrusion contact.
+    Threshold distances are simulated along the intrusion frame coordinates, and simulation are constrained 
+    with conceptual geometrical model of the lateral and vertical intrusion extent. 
+
     """
 
     def __init__(self, name, model=None):
@@ -27,11 +30,13 @@ class IntrusionFeature:
         Parameters
         ----------
         name: string
-        simulation_gdata: dataframe containing thresholds distances to constraint lateral extent of intrusion
-        simulation_sdata: dataframe containing thresholds distances to constraint vertical extent of intrusion
-        inet_plygon: only if lateral extent is provided using a polygon
-        structural_frame: StructuralFrame
+
         model: GeologicalModel
+
+        Returns
+        ----------
+        intrusion_feature :  IntrusionFeature
+    
         """
 
         self.name = name
@@ -39,15 +44,15 @@ class IntrusionFeature:
         self.intrusion_frame = None
         self.builder = None
 
-        # conceptual models
+        # conceptual models:
         self.lateral_extent_model = None
         self.vertical_extent_model = None
 
-        # contact data
+        # contact data:
         self.lateral_contact_data = None
         self.vertical_contact_data = None
 
-        # sequential gaussian simulation parameters
+        # sequential gaussian simulation parameters:
         self.lateral_sgs_parameters = None
         self.vertical_sgs_parameters = None
 
@@ -57,20 +62,12 @@ class IntrusionFeature:
         self.lateral_sgs_input_data = None
         self.vertical_sgs_input_data = None
 
-        # simulated thresholds
+        # simulated thresholds:
         self.lateral_simulated_thresholds = None
-
-        # self.simulation_growth_data = None
-        # self.simulation_lateral_data = None
-        # self.inet_poly = inet_polygon
-
-        # self.intrusion_feature_network = None
-        # self.intrusion_feature_frame = None
-        # self.intrusion_feature_body = None
-        # self.intrusion_builder = None
-
-        # self.intrusion_indicator_function = None
-        # self.evaluated_points = None
+        self.growth_simulated_thresholds = None
+        
+        # grid points for simulation:
+        self.simulation_grid = None
 
     def min(self):
 
@@ -91,36 +88,52 @@ class IntrusionFeature:
             return 0
         return np.nanmax(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
 
-    def set_simulation_growth_data(self, simulation_gdata):
-        self.simulation_growth_data = simulation_gdata
-
-    def set_simulation_lateral_data(self, simulation_sdata):
-        self.simulation_lateral_data = simulation_sdata
-
     def set_intrusion_builder(self, builder):
         self.intrusion_builder = builder
-
-    def set_intrusion_network(self, intrusion_network):
-        self.intrusion_feature_network = intrusion_network
 
     def set_intrusion_frame(self, intrusion_frame):
         self.intrusion_feature_frame = intrusion_frame
 
-    def set_intrusion_body(self, intrusion_body):
-        self.intrusion_feature_body = intrusion_body
-
-    def set_data_for_extent_simulation(self, intrusion_data):
-        """Set data for lateral extent (distances in L axis) simulation.
-        Data points are evaluated in the intrusion frame coordinates,
-        and separated between each sides (> or <0). Evaluated data points are then used to simulate thresholds distances
-
-        Set data for vertical extent (distances in G axis) simulation
-        Data points are evaluated in the intrusion frame coordinates,
-        and separated between roof and floor contact. 
-        Evaluated data points are then used to simulate thresholds distances.
-
+    def create_grid_for_simulation(self, spacing=None):
+        """
+        Create the grid points in which to simulate vertical and lateral
 
         Parameters
+        ----------
+        spacing = list/array with spacing value for X,Y,Z
+
+        Returns
+        -------
+        """
+
+        if spacing == None:
+            spacing = self.model.nsteps
+
+        grid_points = self.model.regular_grid(spacing, shuffle=False)
+
+        grid_points_coord0 = self.intrusion_frame[0].evaluate_value(grid_points)
+        
+        grid_points_coord1 = self.intrusion_frame[1].evaluate_value(grid_points)
+        
+        grid_points_coord2 = self.intrusion_frame[2].evaluate_value(grid_points)
+        
+
+        self.simulation_grid = [
+            grid_points,
+            grid_points_coord0,
+            grid_points_coord1,
+            grid_points_coord2,
+            spacing,
+        ]
+
+    def set_data_for_extent_simulation(self, intrusion_data):
+        """Set data for lateral extent (distances in L axis)  and vertical extent (distances in G axis) simulation.
+
+        Parameters
+        ----------
+        intrusion_data : DataFrame
+
+        Returns
         ----------
 
         """
@@ -184,8 +197,7 @@ class IntrusionFeature:
         radius : The maximum isotropic search radius.
 
         Returns
-        s_parameters : dictionary of parameters to be used for lateral extent simulation. Parameters definition above
-        ----
+        ------------
         """
 
         tmin = lateral_simulation_parameters.get("tmin", -9999)
@@ -257,6 +269,7 @@ class IntrusionFeature:
         Returns
         ----
         """
+
         tmin = vertical_simulation_parameters.get("tmin", -9999)
         tmax = vertical_simulation_parameters.get("tmax", 9999)
         itrans = vertical_simulation_parameters.get("itrans", 1) 
@@ -360,7 +373,8 @@ class IntrusionFeature:
 
     def simulate_lateral_thresholds(self):
         """
-        Simulate s residual values and compute s thresholds for each point of a pre-defined grid
+        Simulate residual values along L frame axis,
+        and compute l thresholds for each point of a pre-defined grid
 
         Parameters
         ----------
@@ -370,10 +384,10 @@ class IntrusionFeature:
         """
 
         # get grid points and evaluated values in the intrusion frame
-        grid_points = self.simulation_grid
-        grid_points_coord0 = self.simulation_grid[1]
+        # grid_points = self.simulation_grid
+        # grid_points_coord0 = self.simulation_grid[1]
         grid_points_coord1 = self.simulation_grid[2]
-        grid_points_coord2 = self.simulation_grid[3]
+        # grid_points_coord2 = self.simulation_grid[3]
 
         # generate data frame containing input data for simulation
         data_sides = self.lateral_contact_data[0]
@@ -395,32 +409,20 @@ class IntrusionFeature:
             self.vertical_contact_data[1]['coord2'].max(),
             self.lateral_contact_data[0]['coord2'].max())
 
-        # -- Min side (s<0)
+        # -- Side of intrusion with coord2<0 (l<0)
         data_minL = self.lateral_contact_data[1]
-        data_conceptual_minL = self.lateral_extent_model(
-            data_minL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
-        )
-        data_residual_minL = (
-            data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
-        ).to_numpy()
-        inputsimdata_minL = data_minL.loc[
-            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-        ].copy()
+        data_conceptual_minL = self.lateral_extent_model(data_minL, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+        data_residual_minL = (data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]).to_numpy()
+        inputsimdata_minL = data_minL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
         inputsimdata_minL.loc[:, "l_residual"] = data_residual_minL
         inputsimdata_minL.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
         inputsimdata_minL.loc[:, "ref_coord"] = 0
 
-        # -- Max side (s>0)
+        # -- Side of intrusion with coord2>0 (l>0)
         data_maxL = self.lateral_contact_data[2]
-        data_conceptual_maxL = self.lateral_extent_model(
-            data_maxL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
-        )
-        data_residual_maxL = (
-            data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
-        ).to_numpy()
-        inputsimdata_maxL = data_maxL.loc[
-            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-        ].copy()
+        data_conceptual_maxL = self.lateral_extent_model(data_maxL, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+        data_residual_maxL = (data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]).to_numpy()
+        inputsimdata_maxL = data_maxL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
         inputsimdata_maxL.loc[:, "l_residual"] = data_residual_maxL
         inputsimdata_maxL.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
         inputsimdata_maxL.loc[:, "ref_coord"] = 0
@@ -602,7 +604,7 @@ class IntrusionFeature:
 
         self.lateral_simulated_thresholds = lateral_thresholds
 
-    def simulate_vertical_thresholds(self):
+    def simulate_growth_thresholds(self):
         """
         Simulate g residual values and compute g thresholds for each point of a pre-defined grid.
         Computes two sets of g thresholds: one to constraint the contact opposite to the intrusion network (using residual values),
@@ -629,17 +631,17 @@ class IntrusionFeature:
         meanG = other_contact_data.loc[:, "coord0"].mean()
         minP = min(inet_data["coord1"].min(), other_contact_data["coord1"].min())
         maxP = max(inet_data["coord1"].max(), other_contact_data["coord1"].max())
-        minS = min(inet_data["coord2"].min(), other_contact_data["coord2"].min())
-        maxS = max(inet_data["coord2"].max(), other_contact_data["coord2"].max())
+        minL = min(inet_data["coord2"].min(), other_contact_data["coord2"].min())
+        maxL = max(inet_data["coord2"].max(), other_contact_data["coord2"].max())
         maxG = other_contact_data["coord0"].max()
-        coordPS_of_maxG = (
+        coordPL_of_maxG = (
             other_contact_data[
                 other_contact_data.coord0 == other_contact_data.coord0.max()
             ]
             .loc[:, ["coord1", "coord2"]]
             .to_numpy()
         )
-        vertex = [coordPS_of_maxG[0][0], coordPS_of_maxG[0][1], maxG]
+        vertex = [coordPL_of_maxG[0][0], coordPL_of_maxG[0][1], maxG]
 
         # --- growth simulation input data (max G, simulation of contact opposite to intrusion network)
 
@@ -648,8 +650,8 @@ class IntrusionFeature:
             mean_growth=meanG,
             minP=minP,
             maxP=maxP,
-            minS=minS,
-            maxS=maxS,
+            minS=minL,
+            maxS=maxL,
             vertex=vertex,
         )
         data_residual_G = (
@@ -666,64 +668,64 @@ class IntrusionFeature:
             :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
         ].copy()
 
-        self.simulation_g_inputdata = [inputsimdata_maxG, inputsimdata_inetG]
+        self.vertical_sgs_input_data = [inputsimdata_maxG, inputsimdata_inetG]
 
         # Simulation
         # --- compute simulation parameters if not defined
-        if self.simulation_g_parameters.get("nx") == None:
-            self.simulation_g_parameters["nx"] = grid_points[4][
+        if self.vertical_sgs_parameters.get("nx") == None:
+            self.vertical_sgs_parameters["nx"] = grid_points[4][
                 0
             ]  
-        if self.simulation_g_parameters.get("ny") == None:
-            self.simulation_g_parameters["ny"] = grid_points[4][
+        if self.vertical_sgs_parameters.get("ny") == None:
+            self.vertical_sgs_parameters["ny"] = grid_points[4][
                 1
             ]  
-        if self.simulation_g_parameters.get("xmn") == None:
-            self.simulation_g_parameters["xmn"] = np.nanmin(grid_points_coord1)
-        if self.simulation_g_parameters.get("ymn") == None:
-            self.simulation_g_parameters["ymn"] = np.nanmin(grid_points_coord2)
-        if self.simulation_g_parameters.get("xsiz") == None:
-            nx = self.simulation_g_parameters.get("nx")
+        if self.vertical_sgs_parameters.get("xmn") == None:
+            self.vertical_sgs_parameters["xmn"] = np.nanmin(grid_points_coord1)
+        if self.vertical_sgs_parameters.get("ymn") == None:
+            self.vertical_sgs_parameters["ymn"] = np.nanmin(grid_points_coord2)
+        if self.vertical_sgs_parameters.get("xsiz") == None:
+            nx = self.vertical_sgs_parameters.get("nx")
             minC1 = np.nanmin(grid_points_coord1)
             maxC1 = np.nanmax(grid_points_coord1)
-            self.simulation_g_parameters["xsiz"] = (maxC1 - minC1) / nx
-        if self.simulation_g_parameters.get("ysiz") == None:
-            ny = self.simulation_g_parameters.get("ny")
+            self.vertical_sgs_parameters["xsiz"] = (maxC1 - minC1) / nx
+        if self.vertical_sgs_parameters.get("ysiz") == None:
+            ny = self.vertical_sgs_parameters.get("ny")
             minC2 = np.nanmin(grid_points_coord2)
             maxC2 = np.nanmax(grid_points_coord2)
-            self.simulation_g_parameters["ysiz"] = (maxC2 - minC2) / ny
-        if self.simulation_g_parameters.get("zmin") == None:
-            self.simulation_g_parameters["zmin"] = inputsimdata_maxG["g_residual"].min()
-        if self.simulation_g_parameters.get("zmax") == None:
-            self.simulation_g_parameters["zmax"] = inputsimdata_maxG["g_residual"].max()
-        if self.simulation_g_parameters.get("zmin2") == None:
-            self.simulation_g_parameters["zmin2"] = inputsimdata_inetG["coord0"].min()
-        if self.simulation_g_parameters.get("zmax2") == None:
-            self.simulation_g_parameters["zmax2"] = inputsimdata_inetG["coord0"].max()
+            self.vertical_sgs_parameters["ysiz"] = (maxC2 - minC2) / ny
+        if self.vertical_sgs_parameters.get("zmin") == None:
+            self.vertical_sgs_parameters["zmin"] = inputsimdata_maxG["g_residual"].min()
+        if self.vertical_sgs_parameters.get("zmax") == None:
+            self.vertical_sgs_parameters["zmax"] = inputsimdata_maxG["g_residual"].max()
+        if self.vertical_sgs_parameters.get("zmin2") == None:
+            self.vertical_sgs_parameters["zmin2"] = inputsimdata_inetG["coord0"].min()
+        if self.vertical_sgs_parameters.get("zmax2") == None:
+            self.vertical_sgs_parameters["zmax2"] = inputsimdata_inetG["coord0"].max()
 
         # --- make variogram
         # self.make_g_simulation_variogram()
 
         # --- get parameters for simulation
-        tmin = self.simulation_g_parameters.get("tmin")
-        tmax = self.simulation_g_parameters.get("tmax")
-        itrans = self.simulation_g_parameters.get("itrans")
-        ktype = self.simulation_g_parameters.get("ktype")
-        nx = self.simulation_g_parameters.get("nx")
-        ny = self.simulation_g_parameters.get("ny")
-        xmn = self.simulation_g_parameters.get("xmn")
-        ymn = self.simulation_g_parameters.get("ymn")
-        xsiz = self.simulation_g_parameters.get("xsiz")
-        ysiz = self.simulation_g_parameters.get("ysiz")
-        zmin = self.simulation_g_parameters.get("zmin")
-        zmax = self.simulation_g_parameters.get("zmax")
-        zmin2 = self.simulation_g_parameters.get("zmin2")
-        zmax2 = self.simulation_g_parameters.get("zmax2")
-        nxdis = self.simulation_g_parameters.get("nxdis")
-        nydis = self.simulation_g_parameters.get("nydis")
-        ndmin = self.simulation_g_parameters.get("ndmin")
-        ndmax = self.simulation_g_parameters.get("ndmax")
-        radius = self.simulation_g_parameters.get("radius")
+        tmin = self.vertical_sgs_parameters.get("tmin")
+        tmax = self.vertical_sgs_parameters.get("tmax")
+        itrans = self.vertical_sgs_parameters.get("itrans")
+        ktype = self.vertical_sgs_parameters.get("ktype")
+        nx = self.vertical_sgs_parameters.get("nx")
+        ny = self.vertical_sgs_parameters.get("ny")
+        xmn = self.vertical_sgs_parameters.get("xmn")
+        ymn = self.vertical_sgs_parameters.get("ymn")
+        xsiz = self.vertical_sgs_parameters.get("xsiz")
+        ysiz = self.vertical_sgs_parameters.get("ysiz")
+        zmin = self.vertical_sgs_parameters.get("zmin")
+        zmax = self.vertical_sgs_parameters.get("zmax")
+        zmin2 = self.vertical_sgs_parameters.get("zmin2")
+        zmax2 = self.vertical_sgs_parameters.get("zmax2")
+        nxdis = self.vertical_sgs_parameters.get("nxdis")
+        nydis = self.vertical_sgs_parameters.get("nydis")
+        ndmin = self.vertical_sgs_parameters.get("ndmin")
+        ndmax = self.vertical_sgs_parameters.get("ndmax")
+        radius = self.vertical_sgs_parameters.get("radius")
 
         # --- simulation of residual values related to other contact( opposite to intrusion network)
         g_max_simulation = geostats.sgsim(
@@ -768,7 +770,7 @@ class IntrusionFeature:
             ktype=ktype,
             colocorr=0.0,
             sec_map=0,
-            vario=self.simulation_g_variogram,
+            vario=self.vertical_sgs_variogram,
         )
 
         # --- simulation to improve conditioning of intrusion network contact
@@ -814,21 +816,21 @@ class IntrusionFeature:
             ktype=ktype,
             colocorr=0.0,
             sec_map=0,
-            vario=self.simulation_g_variogram,
+            vario=self.vertical_sgs_variogram,
         )
 
-        self.simulationGSLIB_g_outcome = [g_min_simulation, g_max_simulation]
+        # self.simulationGSLIB_g_outcome = [g_min_simulation, g_max_simulation]
         # Create dataframe containing S threshold for each grid point
-        lower_extent_gps = [0, xmn, ymn]
-        upper_extent_gps = [0, xmn + xsiz * nx, ymn + ysiz * ny]
+        lower_extent_gpl = [0, xmn, ymn]
+        upper_extent_gpl = [0, xmn + xsiz * nx, ymn + ysiz * ny]
 
         # -- transform SGS output array to Intrusion Frame coordinates
         # -- grid_from_array returns a matrix of [node_i,node_j,g,p,s,values in array]
         g_residual = grid_from_array(
-            g_max_simulation, ["X", 0], lower_extent_gps, upper_extent_gps
+            g_max_simulation, ["X", 0], lower_extent_gpl, upper_extent_gpl
         )
         g_minimum = grid_from_array(
-            g_min_simulation, ["X", 0], lower_extent_gps, upper_extent_gps
+            g_min_simulation, ["X", 0], lower_extent_gpl, upper_extent_gpl
         )
 
         simulation_g_threshold = pd.DataFrame(
@@ -851,27 +853,32 @@ class IntrusionFeature:
             mean_growth=meanG,
             minP=minP,
             maxP=maxP,
-            minS=minS,
-            maxS=maxS,
+            minS=minL,
+            maxS=maxL,
             vertex=vertex,
         )
         g_maximum = conceptual_maxg[:, 1] - g_residual[:, 5]
         simulation_g_threshold.loc[:, "g_maximum"] = g_maximum
 
-        self.simulated_g_thresholds = simulation_g_threshold
-
+        self.growth_simulated_thresholds = simulation_g_threshold
 
     def evaluate_value(self, points):
 
         """
-        points : array (x,y,z),  points where the intrusion is evaluated.
+        Computes a distance scalar field to the intrusion contact (isovalue = 0).
+
+        Parameters
+        ------------
+        points : numpy array (x,y,z),  points where the IntrusionFeature is evaluated.
+
+        Returns
+        ------------
+        intrusion_sf : numpy array, constains distance to intrusion contact
 
         """
 
-        simulation_g_data = self.simulation_growth_data
+        simulation_g_data = self.growth_simulated_thresholds
         simulation_s_data = self.lateral_simulated_thresholds
-        # inet_polygon = None
-        # intrusion_frame = self.intrusion_frame
         model = self.model
 
         # ---> returns indicator function and scalar field with isovalue 0 = intrusion boundary
@@ -896,8 +903,8 @@ class IntrusionFeature:
 
             # simulated values (datframe to array)
             simulation_s_data_coord1 = simulation_s_data["coord1"].to_numpy()
-            simulated_smin_values = simulation_s_data["min_s_threshold"].to_numpy()
-            simulated_smax_values = simulation_s_data["max_s_threshold"].to_numpy()
+            simulated_smin_values = simulation_s_data["min_l_threshold"].to_numpy()
+            simulated_smax_values = simulation_s_data["max_l_threshold"].to_numpy()
 
             # find index of closest value to each point being evaluated, and assign simulated s thresholds
             pi_p = abs(

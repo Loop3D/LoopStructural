@@ -22,11 +22,20 @@ class IntrusionBuilder(StructuralFrameBuilder):
         model = None,
         **kwargs
         ):
-        """IntrusionBuilder set up the intrusion frame to build an intrusion, and simulated the thresholds distances
-            along the intrusion frame coordinate to constrain the lateral and vertical extent of the intrusion
+        """IntrusionBuilder set up the intrusion frame to build an intrusion
+            The intrusion frame is curvilinear coordinate system of the intrusion that controls the simulation of the intrusion extent.
+            The object is constrained with intrusion network points (computed) and flow and inflation measurements (provided by the user).
+            The intrusion network is a representation of the approximated location of roof (or floor) contact of the intrusion. 
+            The intrusion network be constrained using the anisotropies of the host rock if the roof (or floor) contact is not well constrained.
 
-        parameters: 
-
+        Parameters
+        ----------
+        interpolator : GeologicalInterpolator, optional
+            the interpolator to use for building the fault frame, by default None
+        interpolators : [GeologicalInterpolator, GeologicalInterpolator, GeologicalInterpolator], optional
+            a list of interpolators to use for building the fault frame, by default None
+        model : GeologicalModel
+            reference to the model containing the fault
         """
 
         StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
@@ -37,34 +46,29 @@ class IntrusionBuilder(StructuralFrameBuilder):
         self.minimum_origin = self.model.bounding_box[0, :]
         self.maximum_maximum = self.model.bounding_box[1, :]
 
-        # self.feature_data = feature_data
-        # self.shortestpath_inlet_mean = None   
-        # self.shortestpath_outlet_mean = None   
-
-        # intrusion network input data
+        # -- intrusion network input data
         self.intrusion_network_contact = None
         self.intrusion_network_type = None
-        self.intrusion_network_data = None   #OK
-        self.other_contact_data = None    #OK
-        self.grid_to_evaluate_ifx = np.zeros([1, 1])   #OK 
+        self.intrusion_network_data = None   
+        self.other_contact_data = None   
+        self.grid_to_evaluate_ifx = np.zeros([1, 1])   
             
-        self.anisotropies_series_list = [] #OK
-        self.anisotropies_series_parameters = {} #OK
-        self.anisotropies_fault_list = [] #OK
-        self.anisotropies_fault_parameters = {} #OK
+        self.anisotropies_series_list = [] 
+        self.anisotropies_series_parameters = {}
+        self.anisotropies_fault_list = [] 
+        self.anisotropies_fault_parameters = {} 
             
-        self.anisotropies_sequence = None #OK 
-        self.velocity_parameters = None #OK 
-        self.shortestpath_sections_axis = None #OK
+        self.anisotropies_sequence = None 
+        self.velocity_parameters = None 
+        self.shortestpath_sections_axis = None 
         self.number_of_contacts = None
         self.delta_contacts = None
         self.delta_faults = None 
-        self.intrusion_network_points = None #OK
+        self.intrusion_network_points = None 
 
-
-        self.velocity_field_arrays = None #BORRAR
-        self.IFf = None #borrar
-        self.IFc = None #borrar
+        self.velocity_field_arrays = None 
+        self.IFf = None #delete?
+        self.IFc = None #delete?
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
@@ -252,6 +256,25 @@ class IntrusionBuilder(StructuralFrameBuilder):
 
     def set_intrusion_network_parameters(self, intrusion_data, intrusion_network_input, **kwargs):
 
+        """
+        Set variables to create intrusion network.
+
+        Parameters
+        ----------
+        intrusion_data = DataFrame, intrusion contact data
+        intrusion_network_input = Dictionary, 
+            contact : string, contact of the intrusion to be used to create the network (roof or floor)
+            type : string, type of algorithm to create the intrusion network (interpolated or shortest path). 
+                    Shortest path is recommended when intrusion contact is not well constrained
+            contacts_anisotropies : list of series-type features involved in intrusion emplacement
+            structures_anisotropies : list of fault-type features involved in intrusion emplacement
+            sequence_anisotropies : list of anisotropies to look for the shortest path. It could be only starting and end point.
+
+        Returns
+        -------
+
+        """
+
         self.intrusion_network_contact = intrusion_network_input.get("contact", 'floor')
         
         self.intrusion_network_type = intrusion_network_input.get("type", 'interpolated')
@@ -428,6 +451,17 @@ class IntrusionBuilder(StructuralFrameBuilder):
         return velocity_field
 
     def create_intrusion_network(self, **kwargs):
+
+        """
+        Created a numpy array containing (x,y,z) coordinates of intrusion network points
+        
+        Parameters
+        ----------    
+
+        Returns
+        -------
+        intrusion_network_points = numpy array
+        """
         
         # --- check type of intrusion network
         if self.intrusion_network_type == None:
@@ -633,6 +667,30 @@ class IntrusionBuilder(StructuralFrameBuilder):
 
             self.velocity_field_arrays = velocity_field_arrays
             return shortest_path_points
+
+    def get_indicator_function_points(self, ifx_type = 'contacts'):
+
+        if ifx_type == 'contacts':
+            IF = self.IFc
+        else:
+            IF = self.IFf
+
+        if_mod = np.sum(IF,axis = 1)
+
+        grid_points = self.grid_to_evaluate_ifx
+
+        counta = sum(1 for i in range(len(IF[:,0])) if if_mod[i]>= 1)
+        points = np.zeros([counta, 4])
+        l = 0
+        for i in range(len(IF[:,0])):
+            if if_mod[i]>= 1:
+                points[l,0] = grid_points[i,0] #node
+                points[l,1] = grid_points[i,1] #X coordinate
+                points[l,2] = grid_points[i,2] #Y coordinate
+                points[l,3] = IF[i,0] #Z coordinate
+                l=l+1
+
+        return points
 
     def set_intrusion_frame_data(self, intrusion_frame_data, intrusion_network_points):
 

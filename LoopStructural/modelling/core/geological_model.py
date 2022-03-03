@@ -46,9 +46,9 @@ from LoopStructural.utils.helper import (
 
 intrusions = True
 try:
-    from LoopStructural.modelling.intrusions import IntrusionNetwork
+    # from LoopStructural.modelling.intrusions import IntrusionNetwork
     from LoopStructural.modelling.intrusions import IntrusionBuilder
-    from LoopStructural.modelling.intrusions import IntrusionBody
+    # from LoopStructural.modelling.intrusions import IntrusionBody
     from LoopStructural.modelling.intrusions import IntrusionFeature
 except ImportError:
     intrusions = False
@@ -1063,25 +1063,25 @@ class GeologicalModel:
     def create_and_add_intrusion(
         self,
         intrusion_name,
-        intrusion_frame_name=None,
-        intrusion_network_type=None,
-        intrusion_network_contact=None,
-        contacts_anisotropies=None,
-        structures_anisotropies=None,
-        sequence_anisotropies=None,
-        inet_axis=None,
+        intrusion_frame_name,
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
+        intrusion_network_parameters={},
         lateral_extent_sgs_parameters={},
         vertical_extent_sgs_parameters={},
         **kwargs,
     ):
         """
         An intrusion in built in two main steps:
-        (1) Intrusion network and intrusion frame: the algorithm first identify the intrusion network, which is a set of points
-        representing the roof or floor contact of the intrusion. Then this set of points is used to contraint the main structural 
-        direction of the structural frame.
-        (2) Intrusion body: simulation of lateral and vertical extent of intrusion, using parameterization provided by the structural frame
+        (1) Intrusion builder: intrusion builder creates the intrusion structural frame. 
+            This object is curvilinear coordinate system of the intrusion constrained with intrusion network points, 
+            and flow and inflation measurements (provided by the user).
+            The intrusion network is a representation of the approximated location of roof or floor contact of the intrusion. 
+            This object might be constrained using the anisotropies of the host rock if the roof (or floor) contact is not well constrained.
+    
+        (2) Intrusion feature: simulation of lateral and vertical extent of intrusion within the model volume. 
+            The simulations outcome consist in thresholds distances along the structural frame coordinates
+            that are used to constrained the extent of the intrusion.
 
         Parameters
         ----------
@@ -1089,23 +1089,20 @@ class GeologicalModel:
             name of intrusion feature in model data
         intrusion_frame_name :  string, 
             name of intrusion frame in model data
-        intrusion_network_type :  string, 
-            algorithm to build intrusion network 'interpolated' or 'shortest path'
-        intrusion_network_contact :  string, 
-            name of contact (roof or floor) to be used to build intrusion network
-        contacts_anisotropies : list, 
-            name of stratigraphic units where intrusion is emplaced
-        structures_anisotropies : list, 
-            name of structures exploited by intrusion
-        sequence_anisotropies = list, 
-            name of anisotropies to look for the shortest path. It could be only starting and end point.
         intrusion_lateral_extent_model = function, 
             geometrical conceptual model for simulation of lateral extent
         intrusion_vertical_extent_model = function, 
             geometrical conceptual model for simulation of vertical extent
-        lateral_extent_sgs_parameters = dictionary, 
+        intrusion_network_parameters : dictionary, optional
+            contact : string, contact of the intrusion to be used to create the network (roof or floor)
+            type : string, type of algorithm to create the intrusion network (interpolated or shortest path). 
+                    Shortest path is recommended when intrusion contact is not well constrained
+            contacts_anisotropies : list of series-type features involved in intrusion emplacement
+            structures_anisotropies : list of fault-type features involved in intrusion emplacement
+            sequence_anisotropies : list of anisotropies to look for the shortest path. It could be only starting and end point.
+        lateral_extent_sgs_parameters = dictionary, optional
             parameters for sequential gaussian simulation of lateral extent
-        vertical_extent_sgs_parameters = dictionary, 
+        vertical_extent_sgs_parameters = dictionary, optional
             parameters for sequential gaussian simulation of vertical extent
 
         kwargs
@@ -1118,27 +1115,11 @@ class GeologicalModel:
         if intrusions == False:
             logger.error("Libraries not installed")
             raise Exception("Libraries not installed")
-        feature_data = self.data[self.data["feature_name"] == intrusion_name].copy()
+        
+        intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
+        intrusion_frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
 
-        # Create and build Intrusion Network
-        INet = IntrusionNetwork(
-            feature_data=feature_data,
-            intrusion_network_contact=intrusion_network_contact,
-            intrusion_network_type=intrusion_network_type,
-            model=self,
-            **kwargs,
-        )
-
-        INet.set_data()
-        INet.set_contact_anisotropies(contacts_anisotropies, **kwargs)
-        INet.set_faults_anisotropies(structures_anisotropies)
-        INet.set_sequence_of_exploited_anisotropies(sequence_anisotropies)
-        INet.set_velocity_parameters()
-        INet.set_sections_axis(inet_axis)
-        logger.info("building intrusion network")
-        INet.build(**kwargs)
-
-        # Create intrusion frame, using intrusion network points, propagation and inflation direction
+        # -- get variables for intrusion frame interpolation
         if "gxxgz" in kwargs: # weight for orthogonality constraint between coord 0 and coord 2
                 gxxgz = kwargs["gxxgz"]
         else:
@@ -1165,75 +1146,64 @@ class GeologicalModel:
                 nelements = 1e2
 
         weights = [gxxgz, gxxgy, gyxgz]
-        logger.info("building intrusion frame")
         interpolator = self.get_interpolator(interpolatortype=interpolatortype)
-        frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
-        IFrame_builder = IntrusionBuilder(
-            interpolator, 
-            model=self, 
-            name=intrusion_frame_name
-        )
-        IFrame_builder.set_data(frame_data, INet.intrusion_network_outcome)
-        IFrame_builder.setup(
+
+        intrusion_builder = IntrusionBuilder(
+            interpolator,
+            name=intrusion_frame_name,
+            model = self,
+            **kwargs)
+        
+        # -- create intrusion network
+        intrusion_builder.set_intrusion_network_parameters(intrusion_data, intrusion_network_parameters)        
+        intrusion_network_geometry = intrusion_builder.create_intrusion_network()
+
+        # -- create intrusion frame using intrusion network points and flow/inflation measurements
+        intrusion_builder.set_intrusion_frame_data(intrusion_frame_data, intrusion_network_geometry) 
+
+        ## -- create intrusion frame
+        intrusion_builder.setup(
             nelements = nelements,
-            # solver = solver,
             w2=weights[0],
             w1=weights[1],
             gxygz=weights[2],
         )
 
-        IFrame = IFrame_builder.frame
-        # Create intrusion feature
+        intrusion_frame = intrusion_builder.frame
+
+        # -- Create intrusion feature
         intrusion_feature = IntrusionFeature(
-            intrusion_name, structural_frame=IFrame, model=self
+            intrusion_name, model=self
         )
-
-        # Simulate thresholds distances to constraint intrusion body,
-        # and set threshold to intrusion feature
-        IBody = IntrusionBody(
-            feature_data,
-            name=intrusion_name,
-            intrusion_network=INet,
-            intrusion_frame=IFrame,
-            model=self,
-        )
-
-        intrusion_feature.set_intrusion_network(INet)
-        intrusion_feature.set_intrusion_frame(IFrame)
-        intrusion_feature.set_intrusion_body(IBody)
-
-        #set data for simulations
-        logger.info("setting data for lateral thresholds simulation")
-        IBody.set_data_for_s_simulation()
-        logger.info("setting data for vertical thresholds simulation")
-        IBody.set_data_for_g_simulation()
-
+        
+        intrusion_feature.builder = intrusion_builder
+        intrusion_feature.intrusion_frame = intrusion_frame
+        
         if intrusion_lateral_extent_model == None:
             logger.error(
                 "Specify conceptual model function for intrusion lateral extent"
             )
-        else:            
-            IBody.set_lateral_extent_conceptual_model(intrusion_lateral_extent_model)
-            IBody.set_s_simulation_GSLIBparameters(lateral_extent_sgs_parameters)
-            IBody.make_s_simulation_variogram(lateral_extent_sgs_parameters)
-            IBody.create_grid_for_simulation()
-            logger.info("simulating thresholds for lateral extent")
-            IBody.simulate_s_thresholds()
-
-            intrusion_feature.set_simulation_lateral_data(IBody.simulated_s_thresholds)
-
+        else:
+            intrusion_feature.lateral_extent_model = intrusion_lateral_extent_model
+        
         if intrusion_vertical_extent_model == None:
             logger.error(
                 "Specify conceptual model function for intrusion vertical extent"
             )
-        else:           
-            IBody.set_vertical_extent_conceptual_model(intrusion_vertical_extent_model)
-            IBody.set_g_simulation_GSLIBparameters(vertical_extent_sgs_parameters)
-            IBody.make_g_simulation_variogram(vertical_extent_sgs_parameters)
-            logger.info("simulating thresholds for vertical extent")
-            IBody.simulate_g_thresholds()
+        else: 
+            intrusion_feature.vertical_extent_model = intrusion_vertical_extent_model
+        
+        logger.info("setting data for thresholds simulation")
+        intrusion_feature.set_data_for_extent_simulation(intrusion_data)
+        intrusion_feature.create_grid_for_simulation()
+        intrusion_feature.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
+        intrusion_feature.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
+        intrusion_feature.make_l_sgs_variogram(lateral_extent_sgs_parameters)
+        intrusion_feature.make_g_sgs_variogram(vertical_extent_sgs_parameters)
 
-            intrusion_feature.set_simulation_growth_data(IBody.simulated_g_thresholds)
+        logger.info("simulating thresholds for intrusion lateral and vertical extent")
+        intrusion_feature.simulate_lateral_thresholds()
+        intrusion_feature.simulate_growth_thresholds()
 
         return intrusion_feature
 

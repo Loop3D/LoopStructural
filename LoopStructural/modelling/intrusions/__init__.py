@@ -1,5 +1,3 @@
-from .intrusion_frame import IntrusionBuilder
-from .intrusion_network import IntrusionNetwork
-from .intrusion_body import IntrusionBody
 from .intrusion_feature import IntrusionFeature
+from .intrusion_builder import IntrusionBuilder
 from .geom_conceptual_models import *
