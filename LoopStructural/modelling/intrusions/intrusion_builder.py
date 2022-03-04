@@ -5,7 +5,7 @@ logger = getLogger(__name__)
 
 import numpy as np
 import pandas as pd
-import ckwrap
+from sklearn.cluster import KMeans
 
 try:
     import skfmm as fmm
@@ -165,12 +165,7 @@ class IntrusionBuilder(StructuralFrameBuilder):
         """
         if self.intrusion_network_type == 'shortest path':
             n_clusters = self.number_of_contacts
-            
-            # if "number_contacts" in kwargs:
-            #     n_clusters = kwargs["number_contacts"]
-            # else:
-            #     n_clusters = [1]*len(series_list)
-
+         
         if series_list == None:
             self.anisotropies_series_list = None
 
@@ -194,15 +189,20 @@ class IntrusionBuilder(StructuralFrameBuilder):
                 n_contacts = n_clusters[i]
 
                 # use scalar field values to find different contacts
-                contact_clustering = ckwrap.ckmeans(series_i_vals, n_contacts)
+                # contact_clustering = ckwrap.ckmeans(series_i_vals, n_contacts)
+                series_i_vals_mod = series_i_vals.reshape(len(series_i_vals),1)
+                contact_clustering = KMeans(n_clusters = n_contacts, random_state=0).fit(series_i_vals_mod)
+
+
 
                 for j in range(n_contacts):
-                    series_ij_name = series_list[i].name + "_" + str(j)
-                    z = np.ma.masked_not_equal(contact_clustering.labels, j)
+                    
+                    z = np.ma.masked_not_equal(contact_clustering.labels_, j)
                     y = np.ma.masked_array(series_i_vals,z.mask)
                     series_ij_vals = np.ma.compressed(y)
                     series_ij_mean = np.mean(series_ij_vals)
                     series_ij_std = np.std(series_ij_vals)
+                    series_ij_name = series_list[i].name + "_" + str(series_ij_mean)
                     
                     series_parameters[series_ij_name] = [
                         series_list[i],
@@ -338,7 +338,8 @@ class IntrusionBuilder(StructuralFrameBuilder):
         #         delta_list.append(delta[i])
 
 
-        for i, contact_id in enumerate(self.anisotropies_series_parameters.keys()):
+        # for i, contact_id in enumerate(self.anisotropies_series_parameters.keys()):
+        for i, contact_id in enumerate(sorted(self.anisotropies_series_parameters)):
             series_id = self.anisotropies_series_parameters[contact_id][0]
             seriesi_mean = self.anisotropies_series_parameters[contact_id][1]
             seriesi_std = self.anisotropies_series_parameters[contact_id][2]
