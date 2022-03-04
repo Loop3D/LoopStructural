@@ -27,6 +27,8 @@ class BaseStructuredSupport:
         # we use property decorators to update these when different parts of
         # the geometry need to change
         # inisialise the private attributes
+        if np.any(step_vector == 0):
+            logger.warning(f"Step vector {step_vector} has zero values")
         self._nsteps = np.array(nsteps, dtype=int)
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
@@ -139,6 +141,11 @@ class BaseStructuredSupport:
     @property
     def nodes(self):
         max = self.origin + self.nsteps_cells * self.step_vector
+        if np.any(np.isnan(self.nsteps)):
+            raise ValueError("Cannot resize mesh nsteps is NaN")
+        if np.any(np.isnan(self.origin)):
+            raise ValueError("Cannot resize mesh origin is NaN")
+
         x = np.linspace(self.origin[0], max[0], self.nsteps[0])
         y = np.linspace(self.origin[1], max[1], self.nsteps[1])
         z = np.linspace(self.origin[2], max[2], self.nsteps[2])

@@ -5,20 +5,29 @@ import logging
 
 import numpy as np
 import pandas as pd
+import LoopStructural
 from LoopStructural.datasets import normal_vector_headers
-from LoopStructural.interpolators.discrete_fold_interpolator import (
-    DiscreteFoldInterpolator as DFI,
-)
-from LoopStructural.interpolators.finite_difference_interpolator import (
-    FiniteDifferenceInterpolator as FDI,
-)
-from LoopStructural.interpolators.piecewiselinear_interpolator import (
-    PiecewiseLinearInterpolator as PLI,
-)
+from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
+from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+
+# if LoopStructural.experimental:
+from LoopStructural.interpolators import P2Interpolator
+try:
+    from LoopStructural.interpolators import SurfeRBFInterpolator as Surfe
+
+    surfe = True
+
+except ImportError:
+    surfe = False
+
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
+from LoopStructural.modelling.fault import FaultSegment
 from LoopStructural.interpolators import DiscreteInterpolator
 
-from LoopStructural.interpolators.structured_grid import StructuredGrid
-from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
 from LoopStructural.modelling.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.fault import FaultBuilder
 from LoopStructural.modelling.features import (
@@ -231,8 +240,9 @@ class GeologicalModel:
             the created geological model and a dictionary of the map2loop data
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
+
         log_to_file(f"{m2l_directory}/loopstructural_log.txt")
-        logger.info('Creating model from m2l directory')
+        logger.info("Creating model from m2l directory")
         processor = Map2LoopProcessor(m2l_directory, use_thickness)
         processor._gradient = gradient
         processor.vector_scale = vector_scale
@@ -264,7 +274,7 @@ class GeologicalModel:
 
     @classmethod
     def from_processor(cls, processor):
-        logger.info('Creating model from processor')
+        logger.info("Creating model from processor")
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
         for i in processor.fault_network.faults:
@@ -314,7 +324,7 @@ class GeologicalModel:
                 faults = None
                 if processor.fault_stratigraphy is not None:
                     faults = processor.fault_stratigraphy[s]
-                logger.info(f'Adding foliation {s}')
+                logger.info(f"Adding foliation {s}")
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
@@ -699,12 +709,32 @@ class GeologicalModel:
                         origin=bb[0, :], nsteps=nsteps, step_vector=step_vector
                     )
             logger.info(
-                f"Creating regular tetrahedron mesh with {mesh.ntetra} elements \n"
-                "for modelling using PLI"
+                "Creating regular tetrahedron mesh with %i elements \n"
+                "for modelling using PLI" % (mesh.ntetra)
             )
 
             return PLI(mesh)
-
+        if interpolatortype == "P2":
+            if element_volume is None:
+                # nelements /= 5
+                element_volume = box_vol / nelements
+            # calculate the step vector of a regular cube
+            step_vector = np.zeros(3)
+            step_vector[:] = element_volume ** (1.0 / 3.0)
+            # step_vector /= np.array([1,1,2])
+            # number of steps is the length of the box / step vector
+            nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            if "meshbuilder" in kwargs:
+                mesh = kwargs["meshbuilder"](bb, nelements)
+            else:
+                raise NotImplementedError(
+                    "Cannot use P2 interpolator without external mesh"
+                )
+            logger.info(
+                "Creating regular tetrahedron mesh with %i elements \n"
+                "for modelling using P2" % (mesh.ntetra)
+            )
+            return P2Interpolator(mesh)
         if interpolatortype == "FDI":
 
             # find the volume of one element
@@ -769,15 +799,6 @@ class GeologicalModel:
             return DFI(mesh, kwargs["fold"])
         if interpolatortype == "Surfe" or interpolatortype == "surfe":
             # move import of surfe to where we actually try and use it
-            try:
-                from LoopStructural.interpolators.surfe_wrapper import (
-                    SurfeRBFInterpolator as Surfe,
-                )
-
-                surfe = True
-
-            except ImportError:
-                surfe = False
             if not surfe:
                 logger.warning("Cannot import Surfe, try another interpolator")
                 raise ImportError("Cannot import surfepy, try pip install surfe")
@@ -1494,18 +1515,28 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
+        if 'fault_extent' in kwargs and major_axis == None:
+            major_axis = kwargs['fault_extent']
+        if 'fault_influence' in kwargs and minor_axis == None:
+            minor_axis = kwargs['fault_influence']
+        if 'fault_vectical_radius' in kwargs and intermediate_axis == None:
+            intermediate_axis = kwargs['fault_vectical_radius']
+
         logger.info(f'Creating fault "{fault_surface_data}"')
-        logger.info(f'Displacement: {displacement}')
-        logger.info(f'Tolerance: {tol}')
-        logger.info(f'Fault function: {faultfunction}')
-        logger.info(f'Fault slip vector: {fault_slip_vector}')
-        logger.info(f'Fault center: {fault_center}')
-        logger.info(f'Major axis: {major_axis}')
-        logger.info(f'Minor axis: {minor_axis}')
-        logger.info(f'Intermediate axis: {intermediate_axis}')
+        logger.info(f"Displacement: {displacement}")
+        logger.info(f"Tolerance: {tol}")
+        logger.info(f"Fault function: {faultfunction}")
+        logger.info(f"Fault slip vector: {fault_slip_vector}")
+        logger.info(f"Fault center: {fault_center}")
+        logger.info(f"Major axis: {major_axis}")
+        logger.info(f"Minor axis: {minor_axis}")
+        logger.info(f"Intermediate axis: {intermediate_axis}")
+        fault_slip_vector = np.array(fault_slip_vector, dtype="float")
+        fault_center = np.array(fault_center, dtype="float")
+
         for k, v in kwargs.items():
-            logger.info(f'{k}: {v}')
-        
+            logger.info(f"{k}: {v}")
+
         if tol is None:
             tol = self.tol
         self.parameters["features"].append(
@@ -1516,6 +1547,9 @@ class GeologicalModel:
                 **kwargs,
             }
         )
+        if displacement == 0:
+            logger.warning(f"{fault_surface_data} displacement is 0")
+
         if "data_region" in kwargs:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
@@ -1536,18 +1570,29 @@ class GeologicalModel:
         fault_frame_data = self.data[
             self.data["feature_name"] == fault_surface_data
         ].copy()
-        trace_mask = np.logical_and(fault_frame_data['coord'] ==0,fault_frame_data['val'] == 0)
-        logger.info(f'There are {np.sum(trace_mask)} points on the fault trace')
+        trace_mask = np.logical_and(
+            fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
+        )
+        logger.info(f"There are {np.sum(trace_mask)} points on the fault trace")
         if np.sum(trace_mask) == 0:
-            logger.error('You cannot model a fault without defining the location of the fault')
-            raise ValueError(f'There are no points on the fault trace')
+            logger.error(
+                "You cannot model a fault without defining the location of the fault"
+            )
+            raise ValueError(f"There are no points on the fault trace")
 
         mask = np.logical_and(
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
         )
-        fault_normal_vector = (
-            fault_frame_data.loc[mask, ["gx", "gy", "gz"]].mean(axis=0).to_numpy()
+        vector_data = fault_frame_data.loc[mask, ["gx", "gy", "gz"]].to_numpy()
+        mask2 = np.logical_and(
+            fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["nz"])
         )
+        vector_data = np.vstack(
+            [vector_data, fault_frame_data.loc[mask2, ["nx", "ny", "nz"]].to_numpy()]
+        )
+        fault_normal_vector = np.mean(vector_data, axis=0)
+        logger.info(f"Fault normal vector: {fault_normal_vector}")
+
         mask = np.logical_and(
             fault_frame_data["coord"] == 1, ~np.isnan(fault_frame_data["gz"])
         )
@@ -1575,13 +1620,17 @@ class GeologicalModel:
             logger.warning("Fault slip vector is nan, estimating from fault normal")
             strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
             fault_slip_vector = dip_vector[:, 0]
-        if fault_center is not None:
+            logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
+
+        if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
-        if fault_center is None:
+        else:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             if (
-                ~np.isnan(kwargs.get("centreEasting",np.nan)) and ~np.isnan(kwargs.get('centreNorthing',np.nan)) and ~np.isnan(kwargs.get('centreAltitude',np.nan))
+                ~np.isnan(kwargs.get("centreEasting", np.nan))
+                and ~np.isnan(kwargs.get("centreNorthing", np.nan))
+                and ~np.isnan(kwargs.get("centreAltitude", np.nan))
             ):
                 fault_center = self.scale(
                     np.array(
@@ -1617,10 +1666,6 @@ class GeologicalModel:
             intermediate_axis=intermediate_axis,
             points=kwargs.get("points", True),
         )
-
-        # if minor_axis == None or major_axis == None or intermediate_axis == None:
-        #     fault_frame_builder.origin = self.bounding_box[0,:]
-        #     fault_frame_builder.maximum = self.bounding_box[1,:]
         if "force_mesh_geometry" not in kwargs:
 
             fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
@@ -1754,11 +1799,11 @@ class GeologicalModel:
                         nsteps[2])
         >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(xyz,scale=False)
 
         Evaluate on points defined by regular grid function
 
-        >>> model.evaluate_model(model.regular_grid())
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
 
 
         Evaluate on a map
@@ -1770,7 +1815,10 @@ class GeologicalModel:
         >>> xx, yy = np.meshgrid(x, y, indexing='ij')
         >>> zz = np.zeros_like(yy)
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
+
+        Evaluate on points in reference coordinate system
+        >>> model.evaluate_model(xyz,scale=True)
 
         """
         xyz = np.array(xyz)

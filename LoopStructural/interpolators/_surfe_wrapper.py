@@ -4,7 +4,7 @@ Wrapper for using surfepy
 import sys, os
 
 from LoopStructural.utils.helper import get_vectors
-from .geological_interpolator import GeologicalInterpolator
+from LoopStructural.interpolators import GeologicalInterpolator
 
 import logging
 import numpy as np
@@ -12,7 +12,6 @@ import numpy as np
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
-
 import surfepy
 
 
