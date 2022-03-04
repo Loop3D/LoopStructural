@@ -50,8 +50,10 @@ from LoopStructural.interpolators.piecewiselinear_interpolator import (
 from LoopStructural.interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
-from LoopStructural.interpolators._surfe_wrapper import SurfeRBFInterpolator
-
+try:
+    from LoopStructural.interpolators._surfe_wrapper import SurfeRBFInterpolator
+except ImportError:
+    logger.warning("Can't import surfepy - to install \"pip install surfe\"")
 
 logger.warning(
     "Using experimental interpolators: P1Interpolator and P2Interpolator"
