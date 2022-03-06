@@ -8,11 +8,15 @@ logger = getLogger(__name__)
 # import GSLIB library
 try:
     import geostatspy.GSLIB as GSLIB  # GSLIB utilities, viz and wrapped functions
-    import geostatspy.geostats as geostats  # GSLIB converted to Python
 
 except ImportError:
     logger.error("GeostatPy not installed \n" "pip install geostatspy")
-
+    raise ImportError('GSLIB')
+try:
+    import geostatspy.geostats as geostats  # GSLIB converted to Python
+except ImportError:
+    logger.error("GeostatPy not installed \n" "pip install geostatspy")
+    raise ImportError('geostats')
 from LoopStructural.modelling.intrusions.intrusion_support_functions import *
 
 
@@ -467,8 +471,8 @@ class IntrusionFeature:
         ndmax = self.lateral_sgs_parameters.get("ndmax")
         radius = self.lateral_sgs_parameters.get("radius")
 
-        if geostats is None:
-            raise Exception("geostats is not installed, pip install geostatspy")
+        # if geostats is None:
+        #     raise Exception("geostats is not installed, pip install geostatspy")
         l_min_simulation = geostats.sgsim(
             inputsimdata_minL,
             "coord1",
@@ -945,10 +949,10 @@ class IntrusionFeature:
             )
 
             s_min = np.around(
-                si_s / si_s.min(axis=1)[:, None], 2
+                si_s / (si_s.min(axis=1)[:, None]+np.finfo('float').eps), 2
             )  # flag with 1 the minimum value
             p_min = np.around(
-                pi_p / pi_p.min(axis=1)[:, None], 2
+                pi_p / (pi_p.min(axis=1)[:, None]+np.finfo('float').eps), 2
             )  # flag with 1 the minimum value
 
             indexG = np.argmin(abs(1 - (s_min * p_min)), axis=1)

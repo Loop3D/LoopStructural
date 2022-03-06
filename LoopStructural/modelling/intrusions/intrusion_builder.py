@@ -12,7 +12,7 @@ try:
 
 except ImportError:
     logger.error("skfmm not installed \n" "pip install scikit-fmm")
-
+    
 
 class IntrusionBuilder(StructuralFrameBuilder):
     def __init__(
