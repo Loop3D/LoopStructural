@@ -59,7 +59,8 @@ try:
     from LoopStructural.modelling.intrusions import IntrusionBuilder
     # from LoopStructural.modelling.intrusions import IntrusionBody
     from LoopStructural.modelling.intrusions import IntrusionFeature
-except ImportError:
+except ImportError as e:
+    print(e)
     intrusions = False
 from LoopStructural.utils import getLogger, log_to_file
 
@@ -1141,30 +1142,12 @@ class GeologicalModel:
         intrusion_frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
 
         # -- get variables for intrusion frame interpolation
-        if "gxxgz" in kwargs: # weight for orthogonality constraint between coord 0 and coord 2
-                gxxgz = kwargs["gxxgz"]
-        else:
-                gxxgz = 0
+        gxxgz = kwargs.get('gxxgz', 0)
+        gxxgy = kwargs.get('gxxgy', 0)
+        gyxgz = kwargs.get('gyxgz', 0)
 
-        if "gxxgy" in kwargs: # weight for orthogonality constraint between coord 0 and coord 1
-                gxxgy = kwargs["gxxgy"]
-        else:
-                gxxgy = 0
-        
-        if "gyxgz" in kwargs: # weight for orthogonality constraint between coord 1 and coord 2
-                gyxgz = kwargs["gyxgz"]
-        else:
-                gyxgz = 0
-        
-        if "interpolatortype" in kwargs: # number of elements for interpolation
-                interpolatortype = kwargs["interpolatortype"]
-        else:
-                interpolatortype = 'FDI'
-        
-        if "nelements" in kwargs: # number of elements for interpolation
-                nelements = kwargs["nelements"]
-        else:
-                nelements = 1e2
+        interpolatortype = kwargs.get('interpolatortype', 'FDI')
+        nelements = kwargs.get('nelements', 1e2)
 
         weights = [gxxgz, gxxgy, gyxgz]
         interpolator = self.get_interpolator(interpolatortype=interpolatortype)
