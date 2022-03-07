@@ -58,7 +58,7 @@ try:
     # from LoopStructural.modelling.intrusions import IntrusionNetwork
     from LoopStructural.modelling.intrusions import IntrusionBuilder
     # from LoopStructural.modelling.intrusions import IntrusionBody
-    from LoopStructural.modelling.intrusions import IntrusionFeature
+    from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
 except ImportError as e:
     print(e)
     intrusions = False
@@ -1152,62 +1152,62 @@ class GeologicalModel:
         weights = [gxxgz, gxxgy, gyxgz]
         interpolator = self.get_interpolator(interpolatortype=interpolatortype)
 
-        intrusion_builder = IntrusionBuilder(
+        intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator,
             name=intrusion_frame_name,
             model = self,
             **kwargs)
         
         # -- create intrusion network
-        intrusion_builder.set_intrusion_network_parameters(intrusion_data, intrusion_network_parameters)        
-        intrusion_network_geometry = intrusion_builder.create_intrusion_network()
+        intrusion_frame_builder.set_intrusion_network_parameters(intrusion_data, intrusion_network_parameters)        
+        intrusion_network_geometry = intrusion_frame_builder.create_intrusion_network()
 
         # -- create intrusion frame using intrusion network points and flow/inflation measurements
-        intrusion_builder.set_intrusion_frame_data(intrusion_frame_data, intrusion_network_geometry) 
+        intrusion_frame_builder.set_intrusion_frame_data(intrusion_frame_data, intrusion_network_geometry) 
 
         ## -- create intrusion frame
-        intrusion_builder.setup(
+        intrusion_frame_builder.setup(
             nelements = nelements,
             w2=weights[0],
             w1=weights[1],
             gxygz=weights[2],
         )
 
-        intrusion_frame = intrusion_builder.frame
+        intrusion_frame = intrusion_frame_builder.frame
+        intrusion_builder = IntrusionBuilder(intrusion_frame,model=self,name=f'{intrusion_frame_name}_feature')
+        intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
+        intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
 
-        # -- Create intrusion feature
-        intrusion_feature = IntrusionFeature(
-            intrusion_name, model=self
-        )
-        
-        intrusion_feature.builder = intrusion_builder
-        intrusion_feature.intrusion_frame = intrusion_frame
-        
-        if intrusion_lateral_extent_model == None:
-            logger.error(
-                "Specify conceptual model function for intrusion lateral extent"
-            )
-        else:
-            intrusion_feature.lateral_extent_model = intrusion_lateral_extent_model
-        
-        if intrusion_vertical_extent_model == None:
-            logger.error(
-                "Specify conceptual model function for intrusion vertical extent"
-            )
-        else: 
-            intrusion_feature.vertical_extent_model = intrusion_vertical_extent_model
-        
-        logger.info("setting data for thresholds simulation")
-        intrusion_feature.set_data_for_extent_simulation(intrusion_data)
-        intrusion_feature.create_grid_for_simulation()
-        intrusion_feature.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
-        intrusion_feature.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
-        intrusion_feature.make_l_sgs_variogram(lateral_extent_sgs_parameters)
-        intrusion_feature.make_g_sgs_variogram(vertical_extent_sgs_parameters)
 
-        logger.info("simulating thresholds for intrusion lateral and vertical extent")
-        intrusion_feature.simulate_lateral_thresholds()
-        intrusion_feature.simulate_growth_thresholds()
+        # # -- Create intrusion feature
+        # intrusion_feature = IntrusionFeature(
+        #     intrusion_name, model=self
+        # )
+        
+
+        
+        # if intrusion_lateral_extent_model == None:
+        #     logger.error(
+        #         "Specify conceptual model function for intrusion lateral extent"
+        #     )
+        # else:
+        #     intrusion_feature.lateral_extent_model = intrusion_lateral_extent_model
+        
+        # if intrusion_vertical_extent_model == None:
+        #     logger.error(
+        #         "Specify conceptual model function for intrusion vertical extent"
+        #     )
+        # else: 
+        #     intrusion_feature.vertical_extent_model = intrusion_vertical_extent_model
+        
+        # logger.info("setting data for thresholds simulation")
+        intrusion_builder.set_data_for_extent_simulation(intrusion_data)
+        intrusion_builder.vertical_extent_sgs_parameters = vertical_extent_sgs_parameters
+        intrusion_builder.lateral_extent_sgs_parameters = lateral_extent_sgs_parameters
+        intrusion_builder.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
+        intrusion_builder.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
+        intrusion_feature = intrusion_builder.feature
+        self._add_feature(intrusion_feature)
 
         return intrusion_feature
 

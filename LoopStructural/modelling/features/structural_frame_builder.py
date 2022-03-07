@@ -90,6 +90,7 @@ class StructuralFrameBuilder:
             ],
             fold=kwargs.get("fold", None),
         )
+        self._frame.builder=self
 
     @property
     def frame(self):
