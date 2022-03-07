@@ -1202,10 +1202,12 @@ class GeologicalModel:
         
         # logger.info("setting data for thresholds simulation")
         intrusion_builder.set_data_for_extent_simulation(intrusion_data)
-        intrusion_builder.vertical_extent_sgs_parameters = vertical_extent_sgs_parameters
-        intrusion_builder.lateral_extent_sgs_parameters = lateral_extent_sgs_parameters
-        intrusion_builder.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
-        intrusion_builder.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
+        intrusion_builder.build_arguments = {'lateral_extent_sgs_parameters':lateral_extent_sgs_parameters,
+        'vertical_extent_sgs_parameters':vertical_extent_sgs_parameters}
+        # intrusion_builder.vertical_extent_sgs_parameters = vertical_extent_sgs_parameters
+        # intrusion_builder.lateral_extent_sgs_parameters = lateral_extent_sgs_parameters
+        # intrusion_builder.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
+        # intrusion_builder.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
         intrusion_feature = intrusion_builder.feature
         self._add_feature(intrusion_feature)
 

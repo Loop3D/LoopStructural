@@ -43,6 +43,8 @@ class IntrusionFeature:
 
     @property
     def lateral_simulated_thresholds(self):
+        self.builder.up_to_date()
+
         return self._lateral_simulated_thresholds
 
     @lateral_simulated_thresholds.setter
@@ -52,6 +54,7 @@ class IntrusionFeature:
 
     @property
     def growth_simulated_threshold(self):
+        self.builder.up_to_date()
         return self._growth_simulated_thresholds
     
     @growth_simulated_threshold.setter
@@ -61,12 +64,15 @@ class IntrusionFeature:
 
     @property
     def lateral_sgs_input_data(self):
+        self.builder.up_to_date()
         return self.builder.lateral_sgs_input_data
     @property
     def growth_simulated_thresholds(self):
+        self.builder.up_to_date()
         return self.builder.growth_simulated_thresholds
     @property
     def vertical_sgs_input_data(self):
+        self.builder.up_to_date()
         return self.builder.vertical_sgs_input_data
 
     

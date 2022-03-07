@@ -49,6 +49,31 @@ class IntrusionBuilder:
         self.data = None
         self.data_prepared = False
         self.model = model
+        self._build_arguments = {}
+    
+    @property
+    def feature(self):
+        return self._feature
+        
+    @property
+    def build_arguments(self):
+        return self._build_arguments
+    
+    @build_arguments.setter
+    def build_arguments(self, arguments):
+        """Set the build arguments and flag that
+        up to date is False
+
+        Parameters
+        ----------
+        arguments : dictionary
+            dictionary containing keys for variogram arguments
+        """
+        if type(arguments) == dict:
+            self._up_to_date = False
+            self._build_arguments = arguments
+        else:
+            logger.error(f"Cannot update build arguments with {type(arguments)}, must be a dictionary")
 
     def create_grid_for_simulation(self, spacing=None):
         """
@@ -162,7 +187,7 @@ class IntrusionBuilder:
         Returns
         ------------
         """
-
+        self._up_to_date = False
         tmin = lateral_simulation_parameters.get("tmin", -9999)
         tmax = lateral_simulation_parameters.get("tmax", 9999)
         itrans = lateral_simulation_parameters.get("itrans", 1) 
@@ -232,7 +257,7 @@ class IntrusionBuilder:
         Returns
         ----
         """
-
+        self._up_to_date = False
         tmin = vertical_simulation_parameters.get("tmin", -9999)
         tmax = vertical_simulation_parameters.get("tmax", 9999)
         itrans = vertical_simulation_parameters.get("itrans", 1) 
@@ -295,6 +320,7 @@ class IntrusionBuilder:
         Returns
         ----
         """
+
         nugget = lateral_simulation_parameters.get("nugget", 0)
         nst = lateral_simulation_parameters.get("nst", 1)
         it1 = lateral_simulation_parameters.get("it1", 1)
@@ -302,9 +328,7 @@ class IntrusionBuilder:
         azi1 = lateral_simulation_parameters.get("azi1", 90)
         hmaj1 = lateral_simulation_parameters.get("hmaj1", 999999)
         hmin1 = lateral_simulation_parameters.get("hmin1", 999999)
-
-        variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
-        self.lateral_sgs_variogram = variogram
+        self.lateral_sgs_variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
 
     def make_g_sgs_variogram(self, vertical_simulation_parameters):
         """
@@ -331,8 +355,7 @@ class IntrusionBuilder:
         hmaj1 = vertical_simulation_parameters.get("hmaj1", 999999)
         hmin1 = vertical_simulation_parameters.get("hmin1", 999999)
 
-        variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
-        self.vertical_sgs_variogram = variogram
+        self.vertical_sgs_variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
 
     def simulate_lateral_thresholds(self):
         """
@@ -824,24 +847,31 @@ class IntrusionBuilder:
         simulation_g_threshold.loc[:, "g_maximum"] = g_maximum
 
         self.growth_simulated_thresholds = simulation_g_threshold
-    @property
-    def feature(self):
-        return self._feature
 
-    def build(self):
+    def build(self,vertical_extent_sgs_parameters={},lateral_extent_sgs_parameters={},**kwargs ):
+        """Main building function for intrusion. Calculates variogram and thresholds
+
+        Parameters
+        ----------
+        vertical_extent_sgs_parameters : dict, optional
+            parameters for the vertical sequential gaussian simulation, by default {}
+        lateral_extent_sgs_parameters : dict, optional
+            parameters for the vertical sequential gaussian simulation, by default {}
+        """
         self.prepare_data()
         # self.set_data_for_extent_simulation(intrusion_data)
         self.create_grid_for_simulation()
-        # self.set_l_sgs_GSLIBparameters(self.lateral_extent_sgs_parameters)
-        # self.set_g_sgs_GSLIBparameters(self.vertical_extent_sgs_parameters)
-        self.make_l_sgs_variogram(self.lateral_extent_sgs_parameters)
-        self.make_g_sgs_variogram(self.vertical_extent_sgs_parameters)
+        self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
+        self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
+        self.make_l_sgs_variogram(lateral_extent_sgs_parameters)
+        self.make_g_sgs_variogram(vertical_extent_sgs_parameters)
         self.simulate_lateral_thresholds()
         self.simulate_growth_thresholds()
         self.feature.growth_simulated_threshold = self.growth_simulated_thresholds
         self.feature.lateral_simulated_thresholds = self.lateral_simulated_thresholds
+
     def update(self):
-        self.build()
+        self.build(**self.build_arguments)
         self._up_to_date = True
 
     def up_to_date(self, callback=None):
