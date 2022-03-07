@@ -160,7 +160,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         if self.intrusion_network_type == "shortest path":
             n_clusters = self.number_of_contacts
 
-
         if series_list == None:
             self.anisotropies_series_list = None
 
@@ -184,8 +183,10 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 n_contacts = n_clusters[i]
 
                 # use scalar field values to find different contacts
-                series_i_vals_mod = series_i_vals.reshape(len(series_i_vals),1)
-                contact_clustering = KMeans(n_clusters = n_contacts, random_state=0).fit(series_i_vals_mod)
+                series_i_vals_mod = series_i_vals.reshape(len(series_i_vals), 1)
+                contact_clustering = KMeans(n_clusters=n_contacts, random_state=0).fit(
+                    series_i_vals_mod
+                )
 
                 for j in range(n_contacts):
                     z = np.ma.masked_not_equal(contact_clustering.labels_, j)
