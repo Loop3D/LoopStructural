@@ -11,6 +11,7 @@ from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     index_min,
     new_inlet,
 )
+logger = getLogger(__name__)
 
 # import GSLIB library
 try:
@@ -25,7 +26,6 @@ except ImportError:
     logger.error("GeostatPy not installed \n" "pip install geostatspy")
     raise ImportError("geostats")
 
-logger = getLogger(__name__)
 
 
 class IntrusionBuilder:
