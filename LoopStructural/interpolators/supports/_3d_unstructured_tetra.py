@@ -380,12 +380,12 @@ class UnStructuredTetMesh:
         npts = 0
         npts_step = int(1e4)
         # break into blocks of 10k points
-        while npts<points.shape[0]:
-            
-            cell_index = np.array(self.aabb_grid.position_to_cell_index(points[:npts+npts_step,:])).swapaxes(
-                0, 1
-            )
-            inside = self.aabb_grid.inside(points[:npts+npts_step,:])
+        while npts < points.shape[0]:
+
+            cell_index = np.array(
+                self.aabb_grid.position_to_cell_index(points[: npts + npts_step, :])
+            ).swapaxes(0, 1)
+            inside = self.aabb_grid.inside(points[: npts + npts_step, :])
             global_index = (
                 cell_index[:, 0]
                 + self.aabb_grid.nsteps_cells[None, 0] * cell_index[:, 1]
@@ -423,13 +423,12 @@ class UnStructuredTetMesh:
             c[:, 3] = vd / v
             # inside = np.ones(c.shape[0],dtype=bool)
             mask = np.all(c >= 0, axis=1)
-        
 
-            verts[:npts+npts_step,:,:][row[mask], :, :] = vertices[mask, :, :]
-            bc[:npts+npts_step,:][row[mask], :] = c[mask, :]
-            tetras[:npts+npts_step][row[mask]] = col[mask]
-            inside[:npts+npts_step][row[mask]] = True
-            npts+=npts_step
+            verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
+            bc[: npts + npts_step, :][row[mask], :] = c[mask, :]
+            tetras[: npts + npts_step][row[mask]] = col[mask]
+            inside[: npts + npts_step][row[mask]] = True
+            npts += npts_step
         return verts, bc, tetras, inside
 
     def get_element_gradients(self, elements=None):
