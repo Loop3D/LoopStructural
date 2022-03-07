@@ -705,7 +705,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.c[self.region] = self._solve_chol(A, B)
         if solver == "lu":
             logger.info("Solving using scipy LU")
-            print(self.region)
             self.c[self.region] = self._solve_lu(A, B)
         if solver == "pyamg":
             try:
