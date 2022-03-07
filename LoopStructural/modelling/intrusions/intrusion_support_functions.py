@@ -2,7 +2,9 @@
 import numpy as np
 import pandas as pd
 import random
+from LoopStructural.utils import getLogger
 
+logger = getLogger(__name__)
 
 def sort_2_arrays(main_array, array):
     """
