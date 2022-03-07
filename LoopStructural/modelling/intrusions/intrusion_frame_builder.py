@@ -1,6 +1,11 @@
 from LoopStructural.modelling.features import StructuralFrameBuilder
-from LoopStructural.modelling.intrusions.intrusion_support_functions import *
-from LoopStructural.utils import getLogger, log_to_file
+from LoopStructural.modelling.intrusions.intrusion_support_functions import (
+    grid_from_array,
+    shortest_path,
+    array_from_coords,
+    find_inout_points
+)
+from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
