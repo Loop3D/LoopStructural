@@ -13,6 +13,7 @@ from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
 
 # if LoopStructural.experimental:
 from LoopStructural.interpolators import P2Interpolator
+
 try:
     from LoopStructural.interpolators import SurfeRBFInterpolator as Surfe
 
@@ -57,6 +58,7 @@ intrusions = True
 try:
     # from LoopStructural.modelling.intrusions import IntrusionNetwork
     from LoopStructural.modelling.intrusions import IntrusionBuilder
+
     # from LoopStructural.modelling.intrusions import IntrusionBody
     from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
 except ImportError as e:
@@ -1095,29 +1097,29 @@ class GeologicalModel:
     ):
         """
         An intrusion in built in two main steps:
-        (1) Intrusion builder: intrusion builder creates the intrusion structural frame. 
-            This object is curvilinear coordinate system of the intrusion constrained with intrusion network points, 
+        (1) Intrusion builder: intrusion builder creates the intrusion structural frame.
+            This object is curvilinear coordinate system of the intrusion constrained with intrusion network points,
             and flow and inflation measurements (provided by the user).
-            The intrusion network is a representation of the approximated location of roof or floor contact of the intrusion. 
+            The intrusion network is a representation of the approximated location of roof or floor contact of the intrusion.
             This object might be constrained using the anisotropies of the host rock if the roof (or floor) contact is not well constrained.
-    
-        (2) Intrusion feature: simulation of lateral and vertical extent of intrusion within the model volume. 
+
+        (2) Intrusion feature: simulation of lateral and vertical extent of intrusion within the model volume.
             The simulations outcome consist in thresholds distances along the structural frame coordinates
             that are used to constrained the extent of the intrusion.
 
         Parameters
         ----------
-        intrusion_name :  string, 
+        intrusion_name :  string,
             name of intrusion feature in model data
-        intrusion_frame_name :  string, 
+        intrusion_frame_name :  string,
             name of intrusion frame in model data
-        intrusion_lateral_extent_model = function, 
+        intrusion_lateral_extent_model = function,
             geometrical conceptual model for simulation of lateral extent
-        intrusion_vertical_extent_model = function, 
+        intrusion_vertical_extent_model = function,
             geometrical conceptual model for simulation of vertical extent
         intrusion_network_parameters : dictionary, optional
             contact : string, contact of the intrusion to be used to create the network (roof or floor)
-            type : string, type of algorithm to create the intrusion network (interpolated or shortest path). 
+            type : string, type of algorithm to create the intrusion network (interpolated or shortest path).
                     Shortest path is recommended when intrusion contact is not well constrained
             contacts_anisotropies : list of series-type features involved in intrusion emplacement
             structures_anisotropies : list of fault-type features involved in intrusion emplacement
@@ -1137,73 +1139,78 @@ class GeologicalModel:
         if intrusions == False:
             logger.error("Libraries not installed")
             raise Exception("Libraries not installed")
-        
+
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
-        intrusion_frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
+        intrusion_frame_data = self.data[
+            self.data["feature_name"] == intrusion_frame_name
+        ].copy()
 
         # -- get variables for intrusion frame interpolation
-        gxxgz = kwargs.get('gxxgz', 0)
-        gxxgy = kwargs.get('gxxgy', 0)
-        gyxgz = kwargs.get('gyxgz', 0)
+        gxxgz = kwargs.get("gxxgz", 0)
+        gxxgy = kwargs.get("gxxgy", 0)
+        gyxgz = kwargs.get("gyxgz", 0)
 
-        interpolatortype = kwargs.get('interpolatortype', 'FDI')
-        nelements = kwargs.get('nelements', 1e2)
+        interpolatortype = kwargs.get("interpolatortype", "FDI")
+        nelements = kwargs.get("nelements", 1e2)
 
         weights = [gxxgz, gxxgy, gyxgz]
         interpolator = self.get_interpolator(interpolatortype=interpolatortype)
 
         intrusion_frame_builder = IntrusionFrameBuilder(
-            interpolator,
-            name=intrusion_frame_name,
-            model = self,
-            **kwargs)
-        
+            interpolator, name=intrusion_frame_name, model=self, **kwargs
+        )
+
         # -- create intrusion network
-        intrusion_frame_builder.set_intrusion_network_parameters(intrusion_data, intrusion_network_parameters)        
+        intrusion_frame_builder.set_intrusion_network_parameters(
+            intrusion_data, intrusion_network_parameters
+        )
         intrusion_network_geometry = intrusion_frame_builder.create_intrusion_network()
 
         # -- create intrusion frame using intrusion network points and flow/inflation measurements
-        intrusion_frame_builder.set_intrusion_frame_data(intrusion_frame_data, intrusion_network_geometry) 
+        intrusion_frame_builder.set_intrusion_frame_data(
+            intrusion_frame_data, intrusion_network_geometry
+        )
 
         ## -- create intrusion frame
         intrusion_frame_builder.setup(
-            nelements = nelements,
+            nelements=nelements,
             w2=weights[0],
             w1=weights[1],
             gxygz=weights[2],
         )
 
         intrusion_frame = intrusion_frame_builder.frame
-        intrusion_builder = IntrusionBuilder(intrusion_frame,model=self,name=f'{intrusion_frame_name}_feature')
+        intrusion_builder = IntrusionBuilder(
+            intrusion_frame, model=self, name=f"{intrusion_frame_name}_feature"
+        )
         intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
         intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
-
 
         # # -- Create intrusion feature
         # intrusion_feature = IntrusionFeature(
         #     intrusion_name, model=self
         # )
-        
 
-        
         # if intrusion_lateral_extent_model == None:
         #     logger.error(
         #         "Specify conceptual model function for intrusion lateral extent"
         #     )
         # else:
         #     intrusion_feature.lateral_extent_model = intrusion_lateral_extent_model
-        
+
         # if intrusion_vertical_extent_model == None:
         #     logger.error(
         #         "Specify conceptual model function for intrusion vertical extent"
         #     )
-        # else: 
+        # else:
         #     intrusion_feature.vertical_extent_model = intrusion_vertical_extent_model
-        
+
         # logger.info("setting data for thresholds simulation")
         intrusion_builder.set_data_for_extent_simulation(intrusion_data)
-        intrusion_builder.build_arguments = {'lateral_extent_sgs_parameters':lateral_extent_sgs_parameters,
-        'vertical_extent_sgs_parameters':vertical_extent_sgs_parameters}
+        intrusion_builder.build_arguments = {
+            "lateral_extent_sgs_parameters": lateral_extent_sgs_parameters,
+            "vertical_extent_sgs_parameters": vertical_extent_sgs_parameters,
+        }
         # intrusion_builder.vertical_extent_sgs_parameters = vertical_extent_sgs_parameters
         # intrusion_builder.lateral_extent_sgs_parameters = lateral_extent_sgs_parameters
         # intrusion_builder.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
@@ -1500,12 +1507,12 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
-        if 'fault_extent' in kwargs and major_axis == None:
-            major_axis = kwargs['fault_extent']
-        if 'fault_influence' in kwargs and minor_axis == None:
-            minor_axis = kwargs['fault_influence']
-        if 'fault_vectical_radius' in kwargs and intermediate_axis == None:
-            intermediate_axis = kwargs['fault_vectical_radius']
+        if "fault_extent" in kwargs and major_axis == None:
+            major_axis = kwargs["fault_extent"]
+        if "fault_influence" in kwargs and minor_axis == None:
+            minor_axis = kwargs["fault_influence"]
+        if "fault_vectical_radius" in kwargs and intermediate_axis == None:
+            intermediate_axis = kwargs["fault_vectical_radius"]
 
         logger.info(f'Creating fault "{fault_surface_data}"')
         logger.info(f"Displacement: {displacement}")

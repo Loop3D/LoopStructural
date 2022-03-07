@@ -134,7 +134,7 @@ class IntrusionBody:
     def set_data_for_g_simulation(self):
         """Set data for vertical extent (distances in G axis) simulation
         Data points are evaluated in the intrusion frame coordinates,
-        and separated between roof and floor contact. 
+        and separated between roof and floor contact.
         Evaluated data points are then used to simulate thresholds distances.
 
         Parameters
@@ -197,11 +197,10 @@ class IntrusionBody:
         grid_points = self.model.regular_grid(spacing, shuffle=False)
 
         grid_points_coord0 = self.intrusion_frame[0].evaluate_value(grid_points)
-        
+
         grid_points_coord1 = self.intrusion_frame[1].evaluate_value(grid_points)
-        
+
         grid_points_coord2 = self.intrusion_frame[2].evaluate_value(grid_points)
-        
 
         self.simulation_grid = [
             grid_points,
@@ -240,13 +239,13 @@ class IntrusionBody:
 
         tmin = lateral_simulation_parameters.get("tmin", -9999)
         tmax = lateral_simulation_parameters.get("tmax", 9999)
-        itrans = lateral_simulation_parameters.get("itrans", 1) 
-        ktype = lateral_simulation_parameters.get("ktype", 0) 
-        nx = lateral_simulation_parameters.get("nx", 200) 
-        ny = lateral_simulation_parameters.get("ny", 3) 
-        xmn = lateral_simulation_parameters.get("xmn", None) 
-        ymn = lateral_simulation_parameters.get("ymn", -0.0001) 
-        xsiz = lateral_simulation_parameters.get("xsiz", None) 
+        itrans = lateral_simulation_parameters.get("itrans", 1)
+        ktype = lateral_simulation_parameters.get("ktype", 0)
+        nx = lateral_simulation_parameters.get("nx", 200)
+        ny = lateral_simulation_parameters.get("ny", 3)
+        xmn = lateral_simulation_parameters.get("xmn", None)
+        ymn = lateral_simulation_parameters.get("ymn", -0.0001)
+        xsiz = lateral_simulation_parameters.get("xsiz", None)
         ysiz = lateral_simulation_parameters.get("ysiz", 0.0001)
         zmin = lateral_simulation_parameters.get("zmin", None)
         zmax = lateral_simulation_parameters.get("zmax", None)
@@ -255,7 +254,6 @@ class IntrusionBody:
         ndmin = lateral_simulation_parameters.get("ndmin", 0)
         ndmax = lateral_simulation_parameters.get("ndmax", 3)
         radius = lateral_simulation_parameters.get("radius", 500)
-
 
         s_parameters = {
             "tmin": tmin,
@@ -309,18 +307,18 @@ class IntrusionBody:
         """
         tmin = vertical_simulation_parameters.get("tmin", -9999)
         tmax = vertical_simulation_parameters.get("tmax", 9999)
-        itrans = vertical_simulation_parameters.get("itrans", 1) 
-        ktype = vertical_simulation_parameters.get("ktype", 0) 
-        nx = vertical_simulation_parameters.get("nx", None) 
-        ny = vertical_simulation_parameters.get("ny", None) 
-        xmn = vertical_simulation_parameters.get("xmn", None) 
-        ymn = vertical_simulation_parameters.get("ymn", None) 
-        xsiz = vertical_simulation_parameters.get("xsiz", None) 
+        itrans = vertical_simulation_parameters.get("itrans", 1)
+        ktype = vertical_simulation_parameters.get("ktype", 0)
+        nx = vertical_simulation_parameters.get("nx", None)
+        ny = vertical_simulation_parameters.get("ny", None)
+        xmn = vertical_simulation_parameters.get("xmn", None)
+        ymn = vertical_simulation_parameters.get("ymn", None)
+        xsiz = vertical_simulation_parameters.get("xsiz", None)
         ysiz = vertical_simulation_parameters.get("ysiz", None)
         zmin = vertical_simulation_parameters.get("zmin", None)
         zmax = vertical_simulation_parameters.get("zmax", None)
         zmin2 = vertical_simulation_parameters.get("zmin2", None)
-        zmax2 = vertical_simulation_parameters.get("zmax2", None)      
+        zmax2 = vertical_simulation_parameters.get("zmax2", None)
         nxdis = vertical_simulation_parameters.get("nxdis", 1)
         nydis = vertical_simulation_parameters.get("nydis", 1)
         ndmin = vertical_simulation_parameters.get("ndmin", 0)
@@ -433,21 +431,25 @@ class IntrusionBody:
         # maxS = data_sides["coord2"].max()
 
         minP = min(
-            self.vertical_contact_data[0]['coord1'].min(),
-            self.vertical_contact_data[1]['coord1'].min(),
-            self.lateral_contact_data[0]['coord1'].min())
+            self.vertical_contact_data[0]["coord1"].min(),
+            self.vertical_contact_data[1]["coord1"].min(),
+            self.lateral_contact_data[0]["coord1"].min(),
+        )
         maxP = max(
-            self.vertical_contact_data[0]['coord1'].max(),
-            self.vertical_contact_data[1]['coord1'].max(),
-            self.lateral_contact_data[0]['coord1'].max())
+            self.vertical_contact_data[0]["coord1"].max(),
+            self.vertical_contact_data[1]["coord1"].max(),
+            self.lateral_contact_data[0]["coord1"].max(),
+        )
         minS = min(
-            self.vertical_contact_data[0]['coord2'].min(),
-            self.vertical_contact_data[1]['coord2'].min(),
-            self.lateral_contact_data[0]['coord2'].min())
+            self.vertical_contact_data[0]["coord2"].min(),
+            self.vertical_contact_data[1]["coord2"].min(),
+            self.lateral_contact_data[0]["coord2"].min(),
+        )
         maxS = max(
-            self.vertical_contact_data[0]['coord2'].max(),
-            self.vertical_contact_data[1]['coord2'].max(),
-            self.lateral_contact_data[0]['coord2'].max())
+            self.vertical_contact_data[0]["coord2"].max(),
+            self.vertical_contact_data[1]["coord2"].max(),
+            self.lateral_contact_data[0]["coord2"].max(),
+        )
 
         # -- Min side (s<0)
         data_minS = self.lateral_contact_data[1]
@@ -650,12 +652,14 @@ class IntrusionBody:
         # Ignore simulated data outside area covered by input data
 
         simulation_s_thresholds.loc[
-            simulation_s_thresholds.coord1 < minP,["min_s_threshold", "max_s_threshold"]
-            ] = [0.00001, 0.00001]
+            simulation_s_thresholds.coord1 < minP,
+            ["min_s_threshold", "max_s_threshold"],
+        ] = [0.00001, 0.00001]
 
         simulation_s_thresholds.loc[
-            simulation_s_thresholds.coord1 > maxP,["min_s_threshold", "max_s_threshold"]
-            ] = [0.00001, 0.00001]
+            simulation_s_thresholds.coord1 > maxP,
+            ["min_s_threshold", "max_s_threshold"],
+        ] = [0.00001, 0.00001]
 
         self.simulated_s_thresholds = simulation_s_thresholds
 
@@ -728,13 +732,9 @@ class IntrusionBody:
         # Simulation
         # --- compute simulation parameters if not defined
         if self.simulation_g_parameters.get("nx") == None:
-            self.simulation_g_parameters["nx"] = grid_points[4][
-                0
-            ]  
+            self.simulation_g_parameters["nx"] = grid_points[4][0]
         if self.simulation_g_parameters.get("ny") == None:
-            self.simulation_g_parameters["ny"] = grid_points[4][
-                1
-            ]  
+            self.simulation_g_parameters["ny"] = grid_points[4][1]
         if self.simulation_g_parameters.get("xmn") == None:
             self.simulation_g_parameters["xmn"] = np.nanmin(grid_points_coord1)
         if self.simulation_g_parameters.get("ymn") == None:

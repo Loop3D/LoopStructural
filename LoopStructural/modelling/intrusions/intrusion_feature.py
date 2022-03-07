@@ -3,20 +3,19 @@ import pandas as pd
 
 # import logging
 from LoopStructural.utils import getLogger
+
 logger = getLogger(__name__)
-
-
 
 
 class IntrusionFeature:
     """
     Intrusion feature is a class to represent an intrusion, using a distance scalar field to the intrusion contact.
-    Threshold distances are simulated along the intrusion frame coordinates, and simulation are constrained 
-    with conceptual geometrical model of the lateral and vertical intrusion extent. 
+    Threshold distances are simulated along the intrusion frame coordinates, and simulation are constrained
+    with conceptual geometrical model of the lateral and vertical intrusion extent.
 
     """
 
-    def __init__(self, frame, builder, name = 'UnnamedIntrusion',model=None):
+    def __init__(self, frame, builder, name="UnnamedIntrusion", model=None):
 
         """
         Parameters
@@ -28,18 +27,17 @@ class IntrusionFeature:
         Returns
         ----------
         intrusion_feature :  IntrusionFeature
-    
+
         """
 
         self.name = name
         self.model = model
         self.intrusion_frame = frame
         self.builder = builder
-        self.type = 'intrusion'
+        self.type = "intrusion"
         # simulated thresholds:
         self._lateral_simulated_thresholds = None
         self._growth_simulated_thresholds = None
-        
 
     @property
     def lateral_simulated_thresholds(self):
@@ -49,33 +47,34 @@ class IntrusionFeature:
 
     @lateral_simulated_thresholds.setter
     def lateral_simulated_thresholds(self, lateral_simulated_thresholds):
-        #TODO check type is correct and will work?
+        # TODO check type is correct and will work?
         self._lateral_simulated_thresholds = lateral_simulated_thresholds
 
     @property
     def growth_simulated_threshold(self):
         self.builder.up_to_date()
         return self._growth_simulated_thresholds
-    
+
     @growth_simulated_threshold.setter
     def growth_simulated_threshold(self, growth_simulated_threshold):
-        #TODO check type is correct and will work?
+        # TODO check type is correct and will work?
         self._growth_simulated_thresholds = growth_simulated_threshold
 
     @property
     def lateral_sgs_input_data(self):
         self.builder.up_to_date()
         return self.builder.lateral_sgs_input_data
+
     @property
     def growth_simulated_thresholds(self):
         self.builder.up_to_date()
         return self.builder.growth_simulated_thresholds
+
     @property
     def vertical_sgs_input_data(self):
         self.builder.up_to_date()
         return self.builder.vertical_sgs_input_data
 
-    
     def min(self):
 
         if self.model is None:
@@ -100,8 +99,10 @@ class IntrusionFeature:
 
     def set_intrusion_frame(self, intrusion_frame):
         self.intrusion_feature_frame = intrusion_frame
+
     def set_model(self, model):
         self.model = model
+
     def evaluate_value(self, points):
 
         """
@@ -185,10 +186,10 @@ class IntrusionFeature:
             )
 
             s_min = np.around(
-                si_s / (si_s.min(axis=1)[:, None]+np.finfo('float').eps), 2
+                si_s / (si_s.min(axis=1)[:, None] + np.finfo("float").eps), 2
             )  # flag with 1 the minimum value
             p_min = np.around(
-                pi_p / (pi_p.min(axis=1)[:, None]+np.finfo('float').eps), 2
+                pi_p / (pi_p.min(axis=1)[:, None] + np.finfo("float").eps), 2
             )  # flag with 1 the minimum value
 
             indexG = np.argmin(abs(1 - (s_min * p_min)), axis=1)
@@ -209,7 +210,9 @@ class IntrusionFeature:
         # Transform the scalar fields given by the frame coordinates, using the thresholds.
         # This aims to generate a scalar field with its isovalue = 0 on the intrusion contact
 
-        mid_point = g_minside_threshold + ((g_maxside_threshold - g_minside_threshold)/2)
+        mid_point = g_minside_threshold + (
+            (g_maxside_threshold - g_minside_threshold) / 2
+        )
 
         a = intrusion_coord2_pts >= s_maxside_threshold
         b = intrusion_coord2_pts <= s_minside_threshold
@@ -257,5 +260,5 @@ class IntrusionFeature:
             intrusion_coord2_pts,
         ]
         self.intrusion_indicator_function = indicator_fx
-    
-        return intrusion_sf 
+
+        return intrusion_sf

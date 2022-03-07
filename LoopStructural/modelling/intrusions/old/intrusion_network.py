@@ -45,7 +45,6 @@ class IntrusionNetwork:
         self.shortestpath_outlet_mean = None
         self.intrusion_network_outcome = None
 
-
     def set_data(self):
         """
         Separate data between roof and floor contacts
@@ -106,11 +105,11 @@ class IntrusionNetwork:
         [series_name, mean of scalar field vals, standar dev. of scalar field val]
 
         """
-        if self.intrusion_network_type == 'shortest path':
+        if self.intrusion_network_type == "shortest path":
             if "number_contacts" in kwargs:
                 n_clusters = kwargs["number_contacts"]
             else:
-                n_clusters = [1]*len(series_list)
+                n_clusters = [1] * len(series_list)
 
         if series_list == None:
             self.anisotropies_series_list = None
@@ -140,17 +139,17 @@ class IntrusionNetwork:
                 for j in range(n_contacts):
                     series_ij_name = series_list[i].name + "_" + str(j)
                     z = np.ma.masked_not_equal(contact_clustering.labels, j)
-                    y = np.ma.masked_array(series_i_vals,z.mask)
+                    y = np.ma.masked_array(series_i_vals, z.mask)
                     series_ij_vals = np.ma.compressed(y)
                     series_ij_mean = np.mean(series_ij_vals)
                     series_ij_std = np.std(series_ij_vals)
-                    
+
                     series_parameters[series_ij_name] = [
                         series_list[i],
                         series_ij_mean,
                         series_ij_std,
                     ]
-                    
+
             self.anisotropies_series_parameters = series_parameters
 
     def set_faults_anisotropies(self, fault_list=None):
@@ -175,7 +174,9 @@ class IntrusionNetwork:
             faults_parameters = {}
             for i in range(len(fault_list)):
 
-                data_temp = self.feature_data[self.feature_data["intrusion_anisotropy"]== fault_list[i].name].copy()
+                data_temp = self.feature_data[
+                    self.feature_data["intrusion_anisotropy"] == fault_list[i].name
+                ].copy()
                 data_array_temp = data_temp.loc[:, ["X", "Y", "Z"]].to_numpy()
 
                 fault_i_vals = fault_list[i][0].evaluate_value(data_array_temp)
@@ -252,7 +253,7 @@ class IntrusionNetwork:
 
         Parameters
         ----------
-        delta : list of numbers, same lenght as number of anisotropies (series). 
+        delta : list of numbers, same lenght as number of anisotropies (series).
             delta multiplies the standard deviation to increase probability of finding the contact on a grid point.
 
         Returns
@@ -271,7 +272,6 @@ class IntrusionNetwork:
             for j in range(len(self.anisotropies_series_parameters)):
                 delta_list.append(delta[i])
 
-
         for i, contact_id in enumerate(self.anisotropies_series_parameters.keys()):
             series_id = self.anisotropies_series_parameters[contact_id][0]
             seriesi_mean = self.anisotropies_series_parameters[contact_id][1]
@@ -282,10 +282,13 @@ class IntrusionNetwork:
             self.anisotropies_series_parameters[contact_id].append(seriesi_values)
 
             # evaluate indicator function in contact (i)
-            Ic[np.logical_and(
-                (seriesi_mean - seriesi_std * delta_list[i]) <= seriesi_values, 
-                seriesi_values <= (seriesi_mean + seriesi_std * delta_list[i])),i] = 1
-
+            Ic[
+                np.logical_and(
+                    (seriesi_mean - seriesi_std * delta_list[i]) <= seriesi_values,
+                    seriesi_values <= (seriesi_mean + seriesi_std * delta_list[i]),
+                ),
+                i,
+            ] = 1
 
         return Ic
 
@@ -319,11 +322,14 @@ class IntrusionNetwork:
 
             # apend associated scalar field values to each anisotropy
             self.anisotropies_fault_parameters[fault_id].append(faulti_values)
-            
-            If[np.logical_and(
-                (faulti_mean - faulti_std * delta[i]) <= faulti_values,
-                faulti_values <= (faulti_mean + faulti_std * delta[i])),i] = 1
 
+            If[
+                np.logical_and(
+                    (faulti_mean - faulti_std * delta[i]) <= faulti_values,
+                    faulti_values <= (faulti_mean + faulti_std * delta[i]),
+                ),
+                i,
+            ] = 1
 
         return If
 
@@ -457,11 +463,9 @@ class IntrusionNetwork:
             # --- compute indicator functions and velocity field
             Ic = self.indicator_function_contacts(delta=delta_c)
 
-            #--------- check if any anisotropy is indetified by indicator functions:
+            # --------- check if any anisotropy is indetified by indicator functions:
             if len(np.where(Ic == 1)[0]) == 0:
-                logger.error(
-                    "No anisotropy identified, increase value of delta_c"
-                )
+                logger.error("No anisotropy identified, increase value of delta_c")
 
             If = self.indicator_function_faults(delta=delta_f)
             velocity_field = self.compute_velocity_field(Ic, If)
@@ -469,21 +473,27 @@ class IntrusionNetwork:
             # --- find first (inlet) and last (outlet) anisotropies in anisotropies sequence, and compute associated scalar fields
             inlet_anisotropy = self.anisotropies_sequence[0]
 
-            if inlet_anisotropy in self.anisotropies_series_list: # if inlet anisotropy type is series
-                sf_inlet_anisotropy = inlet_anisotropy["feature"].evaluate_value(grid_points)
-   
-            else: #otherwise, it is a fault:
+            if (
+                inlet_anisotropy in self.anisotropies_series_list
+            ):  # if inlet anisotropy type is series
+                sf_inlet_anisotropy = inlet_anisotropy["feature"].evaluate_value(
+                    grid_points
+                )
+
+            else:  # otherwise, it is a fault:
                 sf_inlet_anisotropy = inlet_anisotropy[0].evaluate_value(grid_points)
 
             outlet_anisotropy = self.anisotropies_sequence[
                 len(self.anisotropies_sequence) - 1
             ]
             if outlet_anisotropy in self.anisotropies_series_list:
-                sf_outlet_anisotropy = outlet_anisotropy["feature"].evaluate_value(grid_points)
+                sf_outlet_anisotropy = outlet_anisotropy["feature"].evaluate_value(
+                    grid_points
+                )
 
             else:
                 sf_outlet_anisotropy = outlet_anisotropy[0].evaluate_value(grid_points)
-            
+
             # create dataframe containing grid points, velocity values
             nodes = np.linspace(0, len(grid_points), len(grid_points))
             medium = np.zeros([len(grid_points), 7])
@@ -519,7 +529,7 @@ class IntrusionNetwork:
                 section_temp[:, 6] = section_df.loc[:, "sf_outlet"]
 
                 medium_sections.append(section_temp)
-            
+
             # Convert each section into arrays containing different set of values
             nodes_arrays = []
             velocity_field_arrays = []
@@ -593,12 +603,20 @@ class IntrusionNetwork:
                     [shortest_path_coords_temp, shortest_path_coords[i + 1]]
                 )
 
-            mask = np.ma.masked_not_equal(shortest_path_coords_temp[:,5], 0)
-            x = np.ma.compressed(np.ma.masked_array(shortest_path_coords_temp[:,2],mask.mask))
-            y = np.ma.compressed(np.ma.masked_array(shortest_path_coords_temp[:,3],mask.mask))
-            z = np.ma.compressed(np.ma.masked_array(shortest_path_coords_temp[:,4],mask.mask))
-            i = np.ma.compressed(np.ma.masked_array(shortest_path_coords_temp[:,5],mask.mask))
-            shortest_path_points = np.array([x,y,z,i]).T
-            
+            mask = np.ma.masked_not_equal(shortest_path_coords_temp[:, 5], 0)
+            x = np.ma.compressed(
+                np.ma.masked_array(shortest_path_coords_temp[:, 2], mask.mask)
+            )
+            y = np.ma.compressed(
+                np.ma.masked_array(shortest_path_coords_temp[:, 3], mask.mask)
+            )
+            z = np.ma.compressed(
+                np.ma.masked_array(shortest_path_coords_temp[:, 4], mask.mask)
+            )
+            i = np.ma.compressed(
+                np.ma.masked_array(shortest_path_coords_temp[:, 5], mask.mask)
+            )
+            shortest_path_points = np.array([x, y, z, i]).T
+
             self.intrusion_network_outcome = shortest_path_points
             return shortest_path_points

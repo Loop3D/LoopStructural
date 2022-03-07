@@ -4,7 +4,13 @@ import pandas as pd
 from LoopStructural.utils import getLogger
 from .intrusion_feature import IntrusionFeature
 
-from LoopStructural.modelling.intrusions.intrusion_support_functions import grid_from_array, shortest_path, element_neighbour, index_min, new_inlet
+from LoopStructural.modelling.intrusions.intrusion_support_functions import (
+    grid_from_array,
+    shortest_path,
+    element_neighbour,
+    index_min,
+    new_inlet,
+)
 
 # import GSLIB library
 try:
@@ -12,21 +18,22 @@ try:
 
 except ImportError:
     logger.error("GeostatPy not installed \n" "pip install geostatspy")
-    raise ImportError('GSLIB')
+    raise ImportError("GSLIB")
 try:
     import geostatspy.geostats as geostats  # GSLIB converted to Python
 except ImportError:
     logger.error("GeostatPy not installed \n" "pip install geostatspy")
-    raise ImportError('geostats')
+    raise ImportError("geostats")
 
 logger = getLogger(__name__)
 
+
 class IntrusionBuilder:
-    def __init__(self, frame, model = None, name='intrusion'):
+    def __init__(self, frame, model=None, name="intrusion"):
         self.name = name
         self.intrusion_frame = frame
         self._up_to_date = False
-        self._feature = IntrusionFeature(frame=frame,builder=self,name=name)
+        self._feature = IntrusionFeature(frame=frame, builder=self, name=name)
 
         # contact data:
         self.lateral_contact_data = None
@@ -41,7 +48,7 @@ class IntrusionBuilder:
 
         self.lateral_sgs_input_data = None
         self.vertical_sgs_input_data = None
-        
+
         self.lateral_extent_sgs_parameters = None
         self.vertical_extent_sgs_parameters = None
         # grid points for simulation:
@@ -50,15 +57,15 @@ class IntrusionBuilder:
         self.data_prepared = False
         self.model = model
         self._build_arguments = {}
-    
+
     @property
     def feature(self):
         return self._feature
-        
+
     @property
     def build_arguments(self):
         return self._build_arguments
-    
+
     @build_arguments.setter
     def build_arguments(self, arguments):
         """Set the build arguments and flag that
@@ -73,7 +80,9 @@ class IntrusionBuilder:
             self._up_to_date = False
             self._build_arguments = arguments
         else:
-            logger.error(f"Cannot update build arguments with {type(arguments)}, must be a dictionary")
+            logger.error(
+                f"Cannot update build arguments with {type(arguments)}, must be a dictionary"
+            )
 
     def create_grid_for_simulation(self, spacing=None):
         """
@@ -93,11 +102,10 @@ class IntrusionBuilder:
         grid_points = self.model.regular_grid(spacing, shuffle=False)
 
         grid_points_coord0 = self.intrusion_frame[0].evaluate_value(grid_points)
-        
+
         grid_points_coord1 = self.intrusion_frame[1].evaluate_value(grid_points)
-        
+
         grid_points_coord2 = self.intrusion_frame[2].evaluate_value(grid_points)
-        
 
         self.simulation_grid = [
             grid_points,
@@ -122,9 +130,7 @@ class IntrusionBuilder:
         self.data = intrusion_data.copy()
 
     def prepare_data(self):
-        """
-        
-        """
+        """ """
         if self.data is None or self.data.shape[0] == 0:
             raise ValueError("Cannot create intrusion with no data")
         data_xyz = self.data.loc[:, ["X", "Y", "Z"]].to_numpy()
@@ -146,18 +152,42 @@ class IntrusionBuilder:
 
         self.lateral_contact_data = [data_sides, data_minside, data_maxside]
         # return data_sides, data_minside, data_maxside
-        intrusion_network_data_xyz = self.intrusion_frame.builder.intrusion_network_data.loc[:, ["X", "Y", "Z"]].to_numpy()
-        intrusion_network_data = self.intrusion_frame.builder.intrusion_network_data.loc[:, ["X", "Y", "Z"]].copy()
-        intrusion_network_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(intrusion_network_data_xyz)
-        intrusion_network_data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(intrusion_network_data_xyz)
-        intrusion_network_data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(intrusion_network_data_xyz)
+        intrusion_network_data_xyz = (
+            self.intrusion_frame.builder.intrusion_network_data.loc[
+                :, ["X", "Y", "Z"]
+            ].to_numpy()
+        )
+        intrusion_network_data = (
+            self.intrusion_frame.builder.intrusion_network_data.loc[
+                :, ["X", "Y", "Z"]
+            ].copy()
+        )
+        intrusion_network_data.loc[:, "coord0"] = self.intrusion_frame[
+            0
+        ].evaluate_value(intrusion_network_data_xyz)
+        intrusion_network_data.loc[:, "coord1"] = self.intrusion_frame[
+            1
+        ].evaluate_value(intrusion_network_data_xyz)
+        intrusion_network_data.loc[:, "coord2"] = self.intrusion_frame[
+            2
+        ].evaluate_value(intrusion_network_data_xyz)
         intrusion_network_data.reset_index(inplace=True)
 
-        other_contact_data_xyz = self.intrusion_frame.builder.other_contact_data.loc[:, ["X", "Y", "Z"]].to_numpy()
-        other_contact_data = self.intrusion_frame.builder.other_contact_data.loc[:, ["X", "Y", "Z"]].copy()
-        other_contact_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(other_contact_data_xyz)
-        other_contact_data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(other_contact_data_xyz)
-        other_contact_data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(other_contact_data_xyz)
+        other_contact_data_xyz = self.intrusion_frame.builder.other_contact_data.loc[
+            :, ["X", "Y", "Z"]
+        ].to_numpy()
+        other_contact_data = self.intrusion_frame.builder.other_contact_data.loc[
+            :, ["X", "Y", "Z"]
+        ].copy()
+        other_contact_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(
+            other_contact_data_xyz
+        )
+        other_contact_data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(
+            other_contact_data_xyz
+        )
+        other_contact_data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(
+            other_contact_data_xyz
+        )
         other_contact_data.reset_index(inplace=True)
 
         self.vertical_contact_data = [intrusion_network_data, other_contact_data]
@@ -190,13 +220,13 @@ class IntrusionBuilder:
         self._up_to_date = False
         tmin = lateral_simulation_parameters.get("tmin", -9999)
         tmax = lateral_simulation_parameters.get("tmax", 9999)
-        itrans = lateral_simulation_parameters.get("itrans", 1) 
-        ktype = lateral_simulation_parameters.get("ktype", 0) 
-        nx = lateral_simulation_parameters.get("nx", 200) 
-        ny = lateral_simulation_parameters.get("ny", 3) 
-        xmn = lateral_simulation_parameters.get("xmn", None) 
-        ymn = lateral_simulation_parameters.get("ymn", -0.0001) 
-        xsiz = lateral_simulation_parameters.get("xsiz", None) 
+        itrans = lateral_simulation_parameters.get("itrans", 1)
+        ktype = lateral_simulation_parameters.get("ktype", 0)
+        nx = lateral_simulation_parameters.get("nx", 200)
+        ny = lateral_simulation_parameters.get("ny", 3)
+        xmn = lateral_simulation_parameters.get("xmn", None)
+        ymn = lateral_simulation_parameters.get("ymn", -0.0001)
+        xsiz = lateral_simulation_parameters.get("xsiz", None)
         ysiz = lateral_simulation_parameters.get("ysiz", 0.0001)
         zmin = lateral_simulation_parameters.get("zmin", None)
         zmax = lateral_simulation_parameters.get("zmax", None)
@@ -205,7 +235,6 @@ class IntrusionBuilder:
         ndmin = lateral_simulation_parameters.get("ndmin", 0)
         ndmax = lateral_simulation_parameters.get("ndmax", 3)
         radius = lateral_simulation_parameters.get("radius", 500)
-
 
         l_parameters = {
             "tmin": tmin,
@@ -260,18 +289,18 @@ class IntrusionBuilder:
         self._up_to_date = False
         tmin = vertical_simulation_parameters.get("tmin", -9999)
         tmax = vertical_simulation_parameters.get("tmax", 9999)
-        itrans = vertical_simulation_parameters.get("itrans", 1) 
-        ktype = vertical_simulation_parameters.get("ktype", 0) 
-        nx = vertical_simulation_parameters.get("nx", None) 
-        ny = vertical_simulation_parameters.get("ny", None) 
-        xmn = vertical_simulation_parameters.get("xmn", None) 
-        ymn = vertical_simulation_parameters.get("ymn", None) 
-        xsiz = vertical_simulation_parameters.get("xsiz", None) 
+        itrans = vertical_simulation_parameters.get("itrans", 1)
+        ktype = vertical_simulation_parameters.get("ktype", 0)
+        nx = vertical_simulation_parameters.get("nx", None)
+        ny = vertical_simulation_parameters.get("ny", None)
+        xmn = vertical_simulation_parameters.get("xmn", None)
+        ymn = vertical_simulation_parameters.get("ymn", None)
+        xsiz = vertical_simulation_parameters.get("xsiz", None)
         ysiz = vertical_simulation_parameters.get("ysiz", None)
         zmin = vertical_simulation_parameters.get("zmin", None)
         zmax = vertical_simulation_parameters.get("zmax", None)
         zmin2 = vertical_simulation_parameters.get("zmin2", None)
-        zmax2 = vertical_simulation_parameters.get("zmax2", None)      
+        zmax2 = vertical_simulation_parameters.get("zmax2", None)
         nxdis = vertical_simulation_parameters.get("nxdis", 1)
         nydis = vertical_simulation_parameters.get("nydis", 1)
         ndmin = vertical_simulation_parameters.get("ndmin", 0)
@@ -301,7 +330,7 @@ class IntrusionBuilder:
         }
 
         self.vertical_sgs_parameters = g_parameters
-    
+
     def make_l_sgs_variogram(self, lateral_simulation_parameters):
         """
         Make variogram for lateral extent simulation
@@ -328,7 +357,9 @@ class IntrusionBuilder:
         azi1 = lateral_simulation_parameters.get("azi1", 90)
         hmaj1 = lateral_simulation_parameters.get("hmaj1", 999999)
         hmin1 = lateral_simulation_parameters.get("hmin1", 999999)
-        self.lateral_sgs_variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
+        self.lateral_sgs_variogram = GSLIB.make_variogram(
+            nugget, nst, it1, cc1, azi1, hmaj1, hmin1
+        )
 
     def make_g_sgs_variogram(self, vertical_simulation_parameters):
         """
@@ -355,7 +386,9 @@ class IntrusionBuilder:
         hmaj1 = vertical_simulation_parameters.get("hmaj1", 999999)
         hmin1 = vertical_simulation_parameters.get("hmin1", 999999)
 
-        self.vertical_sgs_variogram = GSLIB.make_variogram(nugget, nst, it1, cc1, azi1, hmaj1, hmin1)
+        self.vertical_sgs_variogram = GSLIB.make_variogram(
+            nugget, nst, it1, cc1, azi1, hmaj1, hmin1
+        )
 
     def simulate_lateral_thresholds(self):
         """
@@ -379,36 +412,52 @@ class IntrusionBuilder:
         data_sides = self.lateral_contact_data[0]
 
         minP = min(
-            self.vertical_contact_data[0]['coord1'].min(),
-            self.vertical_contact_data[1]['coord1'].min(),
-            self.lateral_contact_data[0]['coord1'].min())
+            self.vertical_contact_data[0]["coord1"].min(),
+            self.vertical_contact_data[1]["coord1"].min(),
+            self.lateral_contact_data[0]["coord1"].min(),
+        )
         maxP = max(
-            self.vertical_contact_data[0]['coord1'].max(),
-            self.vertical_contact_data[1]['coord1'].max(),
-            self.lateral_contact_data[0]['coord1'].max())
+            self.vertical_contact_data[0]["coord1"].max(),
+            self.vertical_contact_data[1]["coord1"].max(),
+            self.lateral_contact_data[0]["coord1"].max(),
+        )
         minL = min(
-            self.vertical_contact_data[0]['coord2'].min(),
-            self.vertical_contact_data[1]['coord2'].min(),
-            self.lateral_contact_data[0]['coord2'].min())
+            self.vertical_contact_data[0]["coord2"].min(),
+            self.vertical_contact_data[1]["coord2"].min(),
+            self.lateral_contact_data[0]["coord2"].min(),
+        )
         maxL = max(
-            self.vertical_contact_data[0]['coord2'].max(),
-            self.vertical_contact_data[1]['coord2'].max(),
-            self.lateral_contact_data[0]['coord2'].max())
+            self.vertical_contact_data[0]["coord2"].max(),
+            self.vertical_contact_data[1]["coord2"].max(),
+            self.lateral_contact_data[0]["coord2"].max(),
+        )
 
         # -- Side of intrusion with coord2<0 (l<0)
         data_minL = self.lateral_contact_data[1]
-        data_conceptual_minL = self.lateral_extent_model(data_minL, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
-        data_residual_minL = (data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]).to_numpy()
-        inputsimdata_minL = data_minL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
+        data_conceptual_minL = self.lateral_extent_model(
+            data_minL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
+        )
+        data_residual_minL = (
+            data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
+        ).to_numpy()
+        inputsimdata_minL = data_minL.loc[
+            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+        ].copy()
         inputsimdata_minL.loc[:, "l_residual"] = data_residual_minL
         inputsimdata_minL.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
         inputsimdata_minL.loc[:, "ref_coord"] = 0
 
         # -- Side of intrusion with coord2>0 (l>0)
         data_maxL = self.lateral_contact_data[2]
-        data_conceptual_maxL = self.lateral_extent_model(data_maxL, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
-        data_residual_maxL = (data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]).to_numpy()
-        inputsimdata_maxL = data_maxL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
+        data_conceptual_maxL = self.lateral_extent_model(
+            data_maxL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
+        )
+        data_residual_maxL = (
+            data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
+        ).to_numpy()
+        inputsimdata_maxL = data_maxL.loc[
+            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+        ].copy()
         inputsimdata_maxL.loc[:, "l_residual"] = data_residual_maxL
         inputsimdata_maxL.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
         inputsimdata_maxL.loc[:, "ref_coord"] = 0
@@ -581,12 +630,12 @@ class IntrusionBuilder:
         # Ignore simulated data outside area covered by input data
 
         lateral_thresholds.loc[
-            lateral_thresholds.coord1 < minP,["min_l_threshold", "max_l_threshold"]
-            ] = [0.00001, 0.00001]
+            lateral_thresholds.coord1 < minP, ["min_l_threshold", "max_l_threshold"]
+        ] = [0.00001, 0.00001]
 
         lateral_thresholds.loc[
-            lateral_thresholds.coord1 > maxP,["min_l_threshold", "max_l_threshold"]
-            ] = [0.00001, 0.00001]
+            lateral_thresholds.coord1 > maxP, ["min_l_threshold", "max_l_threshold"]
+        ] = [0.00001, 0.00001]
 
         self.lateral_simulated_thresholds = lateral_thresholds
 
@@ -659,13 +708,9 @@ class IntrusionBuilder:
         # Simulation
         # --- compute simulation parameters if not defined
         if self.vertical_sgs_parameters.get("nx") == None:
-            self.vertical_sgs_parameters["nx"] = grid_points[4][
-                0
-            ]  
+            self.vertical_sgs_parameters["nx"] = grid_points[4][0]
         if self.vertical_sgs_parameters.get("ny") == None:
-            self.vertical_sgs_parameters["ny"] = grid_points[4][
-                1
-            ]  
+            self.vertical_sgs_parameters["ny"] = grid_points[4][1]
         if self.vertical_sgs_parameters.get("xmn") == None:
             self.vertical_sgs_parameters["xmn"] = np.nanmin(grid_points_coord1)
         if self.vertical_sgs_parameters.get("ymn") == None:
@@ -848,7 +893,12 @@ class IntrusionBuilder:
 
         self.growth_simulated_thresholds = simulation_g_threshold
 
-    def build(self,vertical_extent_sgs_parameters={},lateral_extent_sgs_parameters={},**kwargs ):
+    def build(
+        self,
+        vertical_extent_sgs_parameters={},
+        lateral_extent_sgs_parameters={},
+        **kwargs,
+    ):
         """Main building function for intrusion. Calculates variogram and thresholds
 
         Parameters
@@ -885,7 +935,7 @@ class IntrusionBuilder:
             a function that is called when the feature is updated
 
         """
-        
+
         # for f in self.ts:
         #     f.builder.up_to_date(callback=callback)
         # has anything changed in the builder since we built the feature? if so update

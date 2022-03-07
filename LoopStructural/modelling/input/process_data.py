@@ -141,9 +141,9 @@ class ProcessInputData:
                         "id": unit_id,
                         "colour": self.colours[g],
                     }
-                    if i==0:
+                    if i == 0:
                         stratigraphic_column[name][g]["min"] = -np.inf
-                    if i==len(sg)-1:
+                    if i == len(sg) - 1:
                         stratigraphic_column[name][g]["max"] = np.inf
 
                 unit_id += 1

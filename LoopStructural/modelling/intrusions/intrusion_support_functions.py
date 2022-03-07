@@ -38,10 +38,10 @@ def findMinDiff(arr, n):
     Returns
     -------
     minimum difference between values in arr
-        
+
     """
     # Initialize difference as infinite
-    diff = 10 ** 20
+    diff = 10**20
 
     for i in range(n - 1):
         for j in range(i + 1, n):
@@ -65,7 +65,7 @@ def array_from_coords(df, section_axis, df_axis):
     Returns
     -------
     array: numpy array, contains values (e.g. velocities at each point, scalar field value at each point, etc)
-        
+
     """
 
     if section_axis == "X":
@@ -95,7 +95,7 @@ def array_from_coords(df, section_axis, df_axis):
 def find_inout_points(velocity_field_array, velocity_parameters):
     """
     Looks for the indexes of the inlet and outle in an array.
-    Velocity parameters of anisotropies are used to find the indexes of inlet and outlet. 
+    Velocity parameters of anisotropies are used to find the indexes of inlet and outlet.
     It is assumed that velocity_parameter[0] correspond to the inlet anisotropy and
     velocity_parameter[len(velocity_parameter)-1] corresponds to the outlet anisotropy
 
@@ -108,7 +108,7 @@ def find_inout_points(velocity_field_array, velocity_parameters):
     -------
     inlet: list of indexes, [row index in array, column index in array]
     outlet: list of indexes, [row index in array, column index in array]
-        
+
     """
     inlet_point = [0, 0]
     outlet_point = [0, 0]
@@ -120,11 +120,11 @@ def find_inout_points(velocity_field_array, velocity_parameters):
     for i in range(len(velocity_field_array[0])):
         if k == 1:
             break
-            
-        where_inlet_i = np.where(velocity_field_array[:,i]==inlet_velocity)
+
+        where_inlet_i = np.where(velocity_field_array[:, i] == inlet_velocity)
 
         if len(where_inlet_i[0]) > 0:
-            inlet_point[0] = where_inlet_i[0][len(where_inlet_i[0])-1]
+            inlet_point[0] = where_inlet_i[0][len(where_inlet_i[0]) - 1]
             inlet_point[1] = i
             k = 1
         else:
@@ -135,13 +135,13 @@ def find_inout_points(velocity_field_array, velocity_parameters):
         i_ = len(velocity_field_array[0]) - 1 - i
         if k == 1:
             break
-            
-        where_outlet_i = np.where(velocity_field_array[:,i_]==outlet_velocity)
+
+        where_outlet_i = np.where(velocity_field_array[:, i_] == outlet_velocity)
         if len(where_outlet_i[0]) > 0:
             outlet_point[0] = where_outlet_i[0][0]
             outlet_point[1] = i_
             k = 1
-        else: 
+        else:
             continue
 
     return inlet_point, outlet_point
@@ -150,23 +150,23 @@ def find_inout_points(velocity_field_array, velocity_parameters):
 def shortest_path(inlet, outlet, time_map):
     """
     Look for the shortest path between inlet and outlet, using a time map.
-    In practice, for a given point looks for the neighbour elements which is closer in time. 
+    In practice, for a given point looks for the neighbour elements which is closer in time.
     The search starts in the inlet, until it reaches the outlet.
 
     Parameters
     ----------
-    inlet: list of indexes (row and column) of inlet point. 
-    outlet: list of indexes (row and column) of outlet point. 
+    inlet: list of indexes (row and column) of inlet point.
+    outlet: list of indexes (row and column) of outlet point.
     time_map: numpy array, contains values of time, computed using the fast-marching method.
 
     Returns
     -------
-    inet: (intrusion network) numpy array of same shape of time_map array. 
+    inet: (intrusion network) numpy array of same shape of time_map array.
         0 where the intrusion network is found, 1 above it, and -1 below it
-        
+
     """
     inet = np.ones_like(time_map)  # array to save shortest path with zeros
-    temp_inlet = inlet #temporary inlet
+    temp_inlet = inlet  # temporary inlet
     inet[temp_inlet[0], temp_inlet[1]] = 0
     i = 0
 
@@ -197,28 +197,27 @@ def shortest_path(inlet, outlet, time_map):
         for h in range(len(inet)):  # rows
             if inet[h, j] == 0:
                 break
-        
-        inet[(h+1):,j] = -1
 
+        inet[(h + 1) :, j] = -1
 
     return inet
 
 
-def element_neighbour(index, array, inet):  
+def element_neighbour(index, array, inet):
     """
-    Identify the value of neighbours elements for a given element. 
+    Identify the value of neighbours elements for a given element.
 
     Parameters
     ----------
-    index: list of indexes (row and column) of elements. 
+    index: list of indexes (row and column) of elements.
     array: numpy array, containing values
     inet: numpy array, temporal intrusion network. If one of the elements is already inet=0, the assign -1.
 
     Returns
     -------
-    values: numpy array, 1x5 with the values of the neighbours of a particular element 
-        
-    """    
+    values: numpy array, 1x5 with the values of the neighbours of a particular element
+
+    """
 
     rows = len(array) - 1  # max index of rows of time_map array
     cols = len(array[0]) - 1  # max index of columns of time_map arrays
@@ -313,18 +312,18 @@ def element_neighbour(index, array, inet):
 
 def index_min(array):
     """
-    Given an array of 1x8, dentify the index of the minimum value within the array. 
+    Given an array of 1x8, dentify the index of the minimum value within the array.
 
     Parameters
     ----------
-    array: numpy array, 1x8 
+    array: numpy array, 1x8
 
     Returns
     -------
     index_min: integer, index of minimum value in array
-        
-    """  
-    
+
+    """
+
     # return the index value of the minimum value in an array of 1x8
     index_array = {}
 
@@ -337,7 +336,6 @@ def index_min(array):
 
     minimum_val = min(index_array.values())
 
-
     for key, value in index_array.items():
         if value == minimum_val:
             index_min = key
@@ -347,18 +345,18 @@ def index_min(array):
 
 def new_inlet(inlet, direction):
     """
-    Determine new inlet indexes, given current inlet and direction of minimum difference in time map.  
+    Determine new inlet indexes, given current inlet and direction of minimum difference in time map.
 
     Parameters
     ----------
-    inlet: list of indexes [row, column] 
+    inlet: list of indexes [row, column]
     direction: integers e[0,7] (0: above-left, 1: above, 2: above right, 3: left, 4: right, 5: below left, 6: below, 7:below right)
 
     Returns
     -------
-    new_inlet: list of indexes [row, column] 
-        
-    """  
+    new_inlet: list of indexes [row, column]
+
+    """
     pot_new_inlets = {}
 
     pot_new_inlets.update({"0": np.array([inlet[0] - 1, inlet[1] - 1])})
@@ -385,7 +383,7 @@ def grid_from_array(array, fixed_coord, lower_extent, upper_extent):
     Parameters
     ----------
     array: numpy array, two dimension. Represents a cross section of the model, and its values could be any property
-    fixed_coord: list, containing coordinate and value, 
+    fixed_coord: list, containing coordinate and value,
             ie, [0,2] means section is in x=2, or [1, .45] means sections is in y= 0.45
             the cross section is along this coordinate
     lower_extent: numpy array 1x3, lower extent of the model
@@ -397,8 +395,8 @@ def grid_from_array(array, fixed_coord, lower_extent, upper_extent):
             (i,j) indexed in array
             (x,y,z) coordinates considering lower and upper extent of model
             values, from array
-        
-    """ 
+
+    """
 
     spacing_i = len(array)  # number of rows
     spacing_j = len(array[0])  # number of columns
