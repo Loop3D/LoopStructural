@@ -143,6 +143,7 @@ def strike_dip_headers():
 def normal_vector_headers():
     return ["X", "Y", "Z", "nx", "ny", "nz"]
 
+
 def load_tabular_intrusion():
     """Model dataset sampled for a model of a tabular intrusion
 
@@ -154,5 +155,5 @@ def load_tabular_intrusion():
     """
     module_path = dirname(__file__)
     data = pd.read_csv(join(module_path, Path("data/tabular_intrusion.csv")))
-    bb = np.array([[0, 0, 0], [5,5,5]])
+    bb = np.array([[0, 0, 0], [5, 5, 5]])
     return data, bb

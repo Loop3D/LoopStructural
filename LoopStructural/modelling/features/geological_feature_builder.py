@@ -1,9 +1,6 @@
 """
 Feature builder
 """
-import copy
-import logging
-
 import numpy as np
 import pandas as pd
 
@@ -20,6 +17,7 @@ from LoopStructural.utils.helper import (
     gradient_vec_names,
     tangent_vec_names,
     interface_name,
+    inequality_name,
 )
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import (
@@ -305,6 +303,13 @@ class GeologicalFeatureInterpolator:
                 mask, xyz_names() + interface_name() + weight_name()
             ].to_numpy(float)
             self.interpolator.set_interface_constraints(interface_data)
+        # add inequality constraints
+        mask = np.all(~np.isnan(data.loc[:, inequality_name()].to_numpy(float)), axis=1)
+        if mask.shape[0] > 0:
+            inequality_data = data.loc[mask, xyz_names() + inequality_name()].to_numpy(
+                float
+            )
+            self.interpolator.set_inequality_constraints(inequality_data)
 
         self.data_added = True
         self._up_to_date = False
@@ -312,14 +317,14 @@ class GeologicalFeatureInterpolator:
     def install_gradient_constraint(self):
         for g in self._orthogonal_features.values():
             feature, w, region, step, B = g
-            vector = feature.evaluate_gradient(self.interpolator.support.barycentre())
+            vector = feature.evaluate_gradient(self.interpolator.support.barycentre)
             norm = np.linalg.norm(vector, axis=1)
 
             vector[norm > 0] /= norm[norm > 0, None]
             element_idx = np.arange(self.interpolator.support.n_elements)
             np.random.shuffle(element_idx)
             self.interpolator.add_gradient_orthogonal_constraints(
-                self.interpolator.support.barycentre()[element_idx[::step], :],
+                self.interpolator.support.barycentre[element_idx[::step], :],
                 vector[element_idx[::step], :],
                 w=w,
                 B=B,
@@ -444,6 +449,14 @@ class GeologicalFeatureInterpolator:
         """
         logger.info(f"Setting mesh origin: {origin[0]} {origin[1]} {origin[2]} ")
         logger.info(f"Setting mesh maximum: {maximum[0]} {maximum[1]} {maximum[2]}")
+        if np.any(np.isnan(origin)):
+            logger.warning("Origin is NaN, not updating")
+            return
+
+        if np.any(np.isnan(maximum)):
+            logger.warning("Maximum is NaN, not updating")
+            return
+
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
         self.interpolator.support.rotation_xy = rotation

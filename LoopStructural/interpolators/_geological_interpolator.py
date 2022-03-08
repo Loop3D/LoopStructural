@@ -3,6 +3,7 @@ Base geological interpolator
 """
 import logging
 
+from LoopStructural.interpolators import InterpolatorType
 import numpy as np
 
 from LoopStructural.utils import getLogger
@@ -31,13 +32,14 @@ class GeologicalInterpolator:
             "normal": np.zeros((0, 7)),
             "tangent": np.zeros((0, 7)),
             "interface": np.zeros((0, 5)),
+            "inequality": np.zeros((0, 6)),
         }
         self.n_g = 0
         self.n_i = 0
         self.n_n = 0
         self.n_t = 0
 
-        self.type = "undefined"
+        self.type = InterpolatorType.BASE
         self.up_to_date = False
         self.constraints = []
         self.propertyname = "defaultproperty"
@@ -45,8 +47,13 @@ class GeologicalInterpolator:
         self.valid = False
 
     def __str__(self):
-
-        return self.__str
+        name = f"{self.type} \n"
+        name += f"{self.n_g} gradient points\n"
+        name += f"{self.n_i} interface points\n"
+        name += f"{self.n_n} normal points\n"
+        name += f"{self.n_t} tangent points\n"
+        name += f"{self.n_g + self.n_i + self.n_n + self.n_t} total points\n"
+        return name
 
     def set_region(self, **kwargs):
         pass
@@ -124,6 +131,9 @@ class GeologicalInterpolator:
     def set_interface_constraints(self, points):
         self.data["interface"] = points
 
+    def set_inequality_constraints(self, points):
+        self.data["inequality"] = points
+
     def get_value_constraints(self):
         """
 
@@ -184,6 +194,9 @@ class GeologicalInterpolator:
         """
         return self.data["interface"]
 
+    def get_inequality_constraints(self):
+        return self.data["inequality"]
+
     def setup_interpolator(self, **kwargs):
         """
         Runs all of the required setting up stuff
@@ -212,3 +225,45 @@ class GeologicalInterpolator:
         self.n_i = 0
         self.n_n = 0
         self.n_t = 0
+
+    def debug(self):
+        """Helper function for debugging when the interpolator isn't working"""
+        error_string = ""
+        error_code = 0
+        if (
+            self.type > InterpolatorType.BASE_DISCRETE
+            and self.type < InterpolatorType.BASE_DATA_SUPPORTED
+        ):
+            mask = lambda xyz: self.support.inside(xyz)
+        else:
+            mask = lambda xyz: np.ones(xyz.shape[0], dtype=bool)
+        if (
+            len(
+                np.unique(
+                    self.get_value_constraints()[
+                        mask(self.get_value_constraints()[:, :3]), 3
+                    ]
+                )
+            )
+            == 1
+        ):
+            error_code += 1
+            error_string += (
+                "There is only one unique value in the model interpolation support \n"
+            )
+            error_string += "Try increasing the model bounding box \n"
+        if (
+            len(
+                self.get_norm_constraints()[mask(self.get_norm_constraints()[:, :3]), :]
+            )
+            == 0
+        ):
+            error_code += 1
+            error_string += (
+                "There are no norm constraints in the model interpolation support \n"
+            )
+            error_string += (
+                "Try increasing the model bounding box or adding more data\n"
+            )
+        if error_code > 1:
+            print(error_string)

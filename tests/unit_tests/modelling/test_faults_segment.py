@@ -8,6 +8,8 @@ def test_create_and_add_fault():
     data = pd.DataFrame(
         [
             [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
+            # [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
+
             [0.5, 0.5, 0.5, 1, 0, 0, 1, "fault", 0],
             [0.5, 0.5, 0.5, 0, 0, 1, 2, "fault", 0],
         ],
@@ -21,3 +23,6 @@ def test_create_and_add_fault():
         # force_mesh_geometry=True
     )
     assert isinstance(model["fault"], FaultSegment)
+
+if __name__ == "__main__":
+    test_create_and_add_fault()
