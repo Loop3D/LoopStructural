@@ -220,7 +220,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         """
         if fault_list == None:
-            self.anisotropies_fault_list = None
+            self.anisotropies_fault_list = []
         else:
             self.anisotropies_fault_list = fault_list
             faults_parameters = {}
