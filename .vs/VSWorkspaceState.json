@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\LoopStructural",
+    "\\LoopStructural\\modelling",
+    "\\LoopStructural\\modelling\\core",
+    "\\LoopStructural\\modelling\\fault",
+    "\\LoopStructural\\modelling\\intrusions",
+    "\\LoopStructural\\modelling\\intrusions\\old"
+  ],
+  "SelectedNode": "\\LoopStructural\\modelling\\intrusions\\old\\intrusion_frame.py",
+  "PreviewInSolutionExplorer": false
+}

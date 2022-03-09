@@ -67,8 +67,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.intrusion_network_points = None
 
         self.velocity_field_arrays = None
-        self.IFf = None  # delete?
-        self.IFc = None  # delete?
+        self.IFf = None  
+        self.IFc = None  
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
@@ -225,7 +225,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         """
         if fault_list == None:
-            self.anisotropies_fault_list = None
+            self.anisotropies_fault_list = []
         else:
             self.anisotropies_fault_list = fault_list
             faults_parameters = {}
@@ -287,7 +287,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         if self.intrusion_network_type == "shortest path":
 
-            # set the sequence of anisotropies to follor by the shortest path algorithm
+            # set the sequence of anisotropies to follow by the shortest path algorithm
             self.anisotropies_sequence = intrusion_network_input.get(
                 "shortest_path_sequence", None
             )
@@ -353,9 +353,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         delta_list = delta
 
-        # for i in range(len(delta)):
-        #     for j in range(len(self.anisotropies_series_parameters)):
-        #         delta_list.append(delta[i])
 
         for i, contact_id in enumerate(sorted(self.anisotropies_series_parameters)):
             series_id = self.anisotropies_series_parameters[contact_id][0]
@@ -512,23 +509,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         elif self.intrusion_network_type == "shortest path":
 
-            # if "number_contacts" in kwargs:
-            #     print('number contact ok')
-            #     n_clusters = kwargs["number_contacts"]
-            # else:
-            #     n_clusters = 1
-
-            # if "delta_c" in kwargs:
-            #     print('delta_c ok')
-            #     delta_c = kwargs["delta_c"]
-            # else:
-            #     delta_c = [1] * len(self.anisotropies_series_list)
-
-            # if "delta_f" in kwargs:
-            #     print('delta f ok')
-            #     delta_f = kwargs["delta_f"]
-            # else:
-            #     delta_f = [1] * len(self.anisotropies_fault_list)
 
             grid_points, spacing = self.create_grid_for_indicator_fxs()
 

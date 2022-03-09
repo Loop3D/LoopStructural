@@ -42,7 +42,7 @@ class IntrusionFeature:
     @property
     def lateral_simulated_thresholds(self):
         self.builder.up_to_date()
-
+        
         return self._lateral_simulated_thresholds
 
     @lateral_simulated_thresholds.setter
@@ -51,25 +51,22 @@ class IntrusionFeature:
         self._lateral_simulated_thresholds = lateral_simulated_thresholds
 
     @property
-    def growth_simulated_threshold(self):
+    def growth_simulated_thresholds(self):
         self.builder.up_to_date()
+
         return self._growth_simulated_thresholds
 
-    @growth_simulated_threshold.setter
-    def growth_simulated_threshold(self, growth_simulated_threshold):
+    @growth_simulated_thresholds.setter
+    def growth_simulated_thresholds(self, growth_simulated_threshold):
         # TODO check type is correct and will work?
         self._growth_simulated_thresholds = growth_simulated_threshold
 
+   
     @property
     def lateral_sgs_input_data(self):
         self.builder.up_to_date()
         return self.builder.lateral_sgs_input_data
-
-    @property
-    def growth_simulated_thresholds(self):
-        self.builder.up_to_date()
-        return self.builder.growth_simulated_thresholds
-
+    
     @property
     def vertical_sgs_input_data(self):
         self.builder.up_to_date()
@@ -114,7 +111,7 @@ class IntrusionFeature:
 
         Returns
         ------------
-        intrusion_sf : numpy array, constains distance to intrusion contact
+        intrusion_sf : numpy array, contains distance to intrusion contact
 
         """
         self.builder.up_to_date()
@@ -133,9 +130,9 @@ class IntrusionFeature:
 
         # if lateral extent values were simulated
         if simulation_s_data is None:
-            print("No simultion for lateral extent")
+            print("No simulation for lateral extent")
         else:
-            print("Assigning lateral thresholds")
+            # print("Assigning lateral thresholds")
             simulation_s_data.sort_values(["coord1"], ascending=[True], inplace=True)
 
             # containers for thresholds
@@ -167,7 +164,7 @@ class IntrusionFeature:
             print("No simulation for vertical extent")
         else:
             # containers for thresholds
-            print("Assigning vertical thresholds")
+            # print("Assigning vertical thresholds")
             g_minside_threshold = np.zeros(len(intrusion_coord1_pts))
             g_maxside_threshold = np.zeros(len(intrusion_coord1_pts))
 
