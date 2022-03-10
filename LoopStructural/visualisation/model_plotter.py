@@ -535,6 +535,12 @@ class BaseModelPlotter:
         self.add_isosurface(fault, value=0, name=fault.name)
         self.add_vector_field(fault, locations=self.model.regular_grid()[::step])
 
+    def add_structural_frame(self, frame, step=100, data=True, **kwargs):
+        for i in range(3):
+            self.add_isosurface(frame[i], slices=[-1, 0, 1], **kwargs)
+            if data:
+                self.add_data(frame[i])
+
     def unfault_grid(self, feature, grid=None):
         if grid is None:
             grid = self.model.regular_grid()

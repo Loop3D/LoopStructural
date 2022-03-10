@@ -2,6 +2,7 @@ import logging
 import LoopStructural
 import os
 
+
 def get_levels():
     """dict for converting to logger levels from string
 
@@ -42,7 +43,9 @@ def log_to_file(filename, overwrite=True, level="info"):
     """
     logger = getLogger(__name__)
     if os.path.isfile(filename):
-        logger.warning('Overwriting existing logfile. To avoid this, set overwrite=False')
+        logger.warning(
+            "Overwriting existing logfile. To avoid this, set overwrite=False"
+        )
         os.remove(filename)
     levels = get_levels()
     level = levels.get(level, logging.WARNING)

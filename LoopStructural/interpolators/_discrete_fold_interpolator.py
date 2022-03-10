@@ -4,15 +4,14 @@ Piecewise linear interpolator using folds
 import logging
 
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import fold_cg
 
-from LoopStructural.interpolators.piecewiselinear_interpolator import (
-    PiecewiseLinearInterpolator,
-)
+from LoopStructural.interpolators import PiecewiseLinearInterpolator, InterpolatorType
 
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
+
+from .cython.dsi_helper import fold_cg
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
@@ -31,7 +30,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         """
 
         PiecewiseLinearInterpolator.__init__(self, support)
-        self.type = ["foldinterpolator"]
+        self.type = InterpolatorType.DISCRETE_FOLD
         self.fold = fold
 
     @classmethod
@@ -128,7 +127,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         ]
         # calculate the fold geometry for the elements barycentre
         deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(
-            self.support.barycentre()
+            self.support.barycentre
         )
         element_idx = np.arange(self.support.n_elements)
         np.random.shuffle(element_idx)
@@ -251,5 +250,5 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0])
             idc = np.array(idc[:ncons, :])
             self.add_constraints_to_least_squares(
-                A, B, fold_regularisation[1], idc, name="fold regularisation 3"
+                A, B, fold_regularisation[2], idc, name="fold regularisation 3"
             )

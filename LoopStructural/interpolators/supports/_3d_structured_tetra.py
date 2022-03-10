@@ -4,8 +4,7 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 import logging
 
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg, constant_norm, fold_cg
-from .base_structured_3d_support import BaseStructuredSupport
+from ._3d_base_structured import BaseStructuredSupport
 
 from LoopStructural.utils import getLogger
 
@@ -40,7 +39,8 @@ class TetMesh(BaseStructuredSupport):
     def n_cells(self):
         return np.product(self.nsteps_cells)
 
-    def barycentre(self, elements=None):
+    @property
+    def barycentre(self):
         """
         Return the barycentres of all tetrahedrons or of specified tetras using
         global index
@@ -54,9 +54,8 @@ class TetMesh(BaseStructuredSupport):
         -------
 
         """
-        if elements is None:
-            elements = np.arange(0, self.ntetra)
-        tetra = self.get_elements()[elements]
+
+        tetra = self.get_elements()
         barycentre = np.sum(self.nodes[tetra][:, :, :], axis=1) / 4.0
         return barycentre
 
@@ -215,109 +214,6 @@ class TetMesh(BaseStructuredSupport):
         tetra_return[inside, :] = tetras[mask, :]
         return vertices_return, c_return, tetra_return, inside
 
-    def get_constant_gradient(self, region, direction=None):
-        """
-        Get the constant gradient for the specified nodes
-
-        Parameters
-        ----------
-        region : np.array(dtype=bool)
-            mask of nodes to calculate cg for
-
-        Returns
-        -------
-
-        """
-        """
-        Add the constant gradient regularisation to the system
-
-        Parameters
-        ----------
-        w (double) - weighting of the cg parameter
-
-        Returns
-        -------
-
-        """
-        if direction is not None:
-            logger.info("Running constant gradient")
-            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
-            if elements_gradients.shape[0] != direction.shape[0]:
-                logger.error(
-                    "Cannot add directional CG, vector field is not the correct length"
-                )
-                return
-            region = region.astype("int64")
-
-            neighbours = self.get_neighbours()
-            elements = self.get_elements()
-            idc, c, ncons = fold_cg(
-                elements_gradients,
-                direction,
-                neighbours.astype("int64"),
-                elements.astype("int64"),
-                self.nodes,
-            )
-
-            idc = np.array(idc[:ncons, :])
-            c = np.array(c[:ncons, :])
-            B = np.zeros(c.shape[0])
-            return c, idc, B
-        if self.cg is None:
-            logger.info("Running constant gradient")
-            elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
-            region = region.astype("int64")
-
-            neighbours = self.get_neighbours()
-            elements = self.get_elements()
-            idc, c, ncons = cg(
-                elements_gradients,
-                neighbours.astype("int64"),
-                elements.astype("int64"),
-                self.nodes,
-                region.astype("int64"),
-            )
-
-            idc = np.array(idc[:ncons, :])
-            c = np.array(c[:ncons, :])
-            B = np.zeros(c.shape[0])
-            self.cg = (c, idc, B)
-        return self.cg[0], self.cg[1], self.cg[2]
-
-    def get_constant_norm(self, region):
-        """
-        Get the constant gradient for the specified nodes
-
-        Parameters
-        ----------
-        region : np.array(dtype=bool)
-            mask of nodes to calculate cg for
-
-        Returns
-        -------
-
-        """
-
-        logger.info("Running constant gradient")
-        elements_gradients = self.get_element_gradients(np.arange(self.ntetra))
-        region = region.astype("int64")
-
-        neighbours = self.get_neighbours()
-        elements = self.get_elements()
-        idc, c, ncons = constant_norm(
-            elements_gradients,
-            neighbours.astype("int64"),
-            elements.astype("int64"),
-            self.nodes,
-            region.astype("int64"),
-        )
-
-        idc = np.array(idc[:ncons, :])
-        c = np.array(c[:ncons, :])
-        B = np.zeros(c.shape[0])
-
-        return c, idc, B
-
     def get_elements(self):
         """
         Get a numpy array of all of the elements in the mesh
@@ -458,7 +354,7 @@ class TetMesh(BaseStructuredSupport):
         m = np.swapaxes(m, 0, 2)
         element_gradients = np.zeros_like(m)
         element_gradients[:] = np.nan
-        element_gradients[inside,:,:] = np.linalg.inv(m[inside,:,:])
+        element_gradients[inside, :, :] = np.linalg.inv(m[inside, :, :])
         # element_gradients = np.linalg.inv(m)
 
         element_gradients = element_gradients.swapaxes(1, 2)
