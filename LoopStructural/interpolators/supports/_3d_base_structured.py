@@ -174,7 +174,6 @@ class BaseStructuredSupport:
             i,j,k indexes of the cell that the point is in
         """
 
-        pos = self.rotate(pos)
         pos = self.check_position(pos)
 
         ix = pos[:, 0] - self.origin[None, 0]
@@ -189,7 +188,6 @@ class BaseStructuredSupport:
         ix, iy, iz = self.position_to_cell_index(pos)
 
     def inside(self, pos):
-        pos = self.rotate(pos)
         # check whether point is inside box
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
