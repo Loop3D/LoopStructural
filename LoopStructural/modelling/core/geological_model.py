@@ -1178,19 +1178,20 @@ class GeologicalModel:
         )
 
         intrusion_frame = intrusion_frame_builder.frame
+
+        # -- create intrusion builder to simulate distance thresholds along frame coordinates
         intrusion_builder = IntrusionBuilder(
-            intrusion_frame, model=self, name=f"{intrusion_frame_name}_feature"
+            intrusion_frame, model=self, name=f"{intrusion_name}_feature"
         )
         intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
         intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
 
-    
+        # logger.info("setting data for thresholds simulation")
         intrusion_builder.set_data_for_extent_simulation(intrusion_data)
         intrusion_builder.build_arguments = {
             "lateral_extent_sgs_parameters": lateral_extent_sgs_parameters,
             "vertical_extent_sgs_parameters": vertical_extent_sgs_parameters,
         }
-        
         intrusion_feature = intrusion_builder.feature
         self._add_feature(intrusion_feature)
 
