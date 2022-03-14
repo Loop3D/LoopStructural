@@ -49,9 +49,9 @@ class IntrusionBuilder:
         self.lateral_sgs_input_data = None
         self.vertical_sgs_input_data = None
 
-        self.lateral_extent_sgs_parameters = None
-        self.vertical_extent_sgs_parameters = None
-        # grid points for simulation:
+        # self.lateral_extent_sgs_parameters = None
+        # self.vertical_extent_sgs_parameters = None
+
         self.simulation_grid = None
         self.data = None
         self.data_prepared = False
@@ -235,6 +235,13 @@ class IntrusionBuilder:
         ndmin = lateral_simulation_parameters.get("ndmin", 0)
         ndmax = lateral_simulation_parameters.get("ndmax", 3)
         radius = lateral_simulation_parameters.get("radius", 500)
+        nugget = lateral_simulation_parameters.get("nugget", 0)
+        nst = lateral_simulation_parameters.get("nst", 1)
+        it1 = lateral_simulation_parameters.get("it1", 1)
+        cc1 = lateral_simulation_parameters.get("cc1", 1)
+        azi1 = lateral_simulation_parameters.get("azi1", 90)
+        hmaj1 = lateral_simulation_parameters.get("hmaj1", 999999)
+        hmin1 = lateral_simulation_parameters.get("hmin1", 999999)
 
         l_parameters = {
             "tmin": tmin,
@@ -254,6 +261,14 @@ class IntrusionBuilder:
             "ndmin": ndmin,
             "ndmax": ndmax,
             "radius": radius,
+            "nugget" : nugget,
+            "nst" : nst,
+            "it1" : it1,
+            "cc1" : cc1,
+            "azi1" : azi1,
+            "hmaj1" : hmaj1,
+            "hmin1" : hmin1
+
         }
 
         self.lateral_sgs_parameters = l_parameters
@@ -306,6 +321,13 @@ class IntrusionBuilder:
         ndmin = vertical_simulation_parameters.get("ndmin", 0)
         ndmax = vertical_simulation_parameters.get("ndmax", 3)
         radius = vertical_simulation_parameters.get("radius", 500)
+        nugget = vertical_simulation_parameters.get("nugget", 0)
+        nst = vertical_simulation_parameters.get("nst", 1)
+        it1 = vertical_simulation_parameters.get("it1", 1)
+        cc1 = vertical_simulation_parameters.get("cc1", 1)
+        azi1 = vertical_simulation_parameters.get("azi1", 90)
+        hmaj1 = vertical_simulation_parameters.get("hmaj1", 999999)
+        hmin1 = vertical_simulation_parameters.get("hmin1", 999999)
 
         g_parameters = {
             "tmin": tmin,
@@ -327,11 +349,18 @@ class IntrusionBuilder:
             "ndmin": ndmin,
             "ndmax": ndmax,
             "radius": radius,
+            "nugget" : nugget,
+            "nst" : nst,
+            "it1" : it1,
+            "cc1" : cc1,
+            "azi1" : azi1,
+            "hmaj1" : hmaj1,
+            "hmin1" : hmin1
         }
 
         self.vertical_sgs_parameters = g_parameters
 
-    def make_l_sgs_variogram(self, lateral_simulation_parameters):
+    def make_l_sgs_variogram(self):
         """
         Make variogram for lateral extent simulation
         By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range
@@ -350,18 +379,19 @@ class IntrusionBuilder:
         ----
         """
 
-        nugget = lateral_simulation_parameters.get("nugget", 0)
-        nst = lateral_simulation_parameters.get("nst", 1)
-        it1 = lateral_simulation_parameters.get("it1", 1)
-        cc1 = lateral_simulation_parameters.get("cc1", 1)
-        azi1 = lateral_simulation_parameters.get("azi1", 90)
-        hmaj1 = lateral_simulation_parameters.get("hmaj1", 999999)
-        hmin1 = lateral_simulation_parameters.get("hmin1", 999999)
+        nugget = self.lateral_sgs_parameters.get("nugget")
+        nst = self.lateral_sgs_parameters.get("nst")
+        it1 = self.lateral_sgs_parameters.get("it1")
+        cc1 = self.lateral_sgs_parameters.get("cc1")
+        azi1 = self.lateral_sgs_parameters.get("azi1")
+        hmaj1 = self.lateral_sgs_parameters.get("hmaj1")
+        hmin1 = self.lateral_sgs_parameters.get("hmin1")
+        
         self.lateral_sgs_variogram = GSLIB.make_variogram(
             nugget, nst, it1, cc1, azi1, hmaj1, hmin1
         )
 
-    def make_g_sgs_variogram(self, vertical_simulation_parameters):
+    def make_g_sgs_variogram(self):
         """
         Make variogram for vertical extent simulation
         By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range
@@ -378,13 +408,13 @@ class IntrusionBuilder:
         ----
         """
 
-        nugget = vertical_simulation_parameters.get("nugget", 0)
-        nst = vertical_simulation_parameters.get("nst", 1)
-        it1 = vertical_simulation_parameters.get("it1", 1)
-        cc1 = vertical_simulation_parameters.get("cc1", 1)
-        azi1 = vertical_simulation_parameters.get("azi1", 90)
-        hmaj1 = vertical_simulation_parameters.get("hmaj1", 999999)
-        hmin1 = vertical_simulation_parameters.get("hmin1", 999999)
+        nugget = self.vertical_sgs_parameters.get("nugget")
+        nst = self.vertical_sgs_parameters.get("nst")
+        it1 = self.vertical_sgs_parameters.get("it1")
+        cc1 = self.vertical_sgs_parameters.get("cc1")
+        azi1 = self.vertical_sgs_parameters.get("azi1")
+        hmaj1 = self.vertical_sgs_parameters.get("hmaj1")
+        hmin1 = self.vertical_sgs_parameters.get("hmin1")
 
         self.vertical_sgs_variogram = GSLIB.make_variogram(
             nugget, nst, it1, cc1, azi1, hmaj1, hmin1
@@ -408,7 +438,7 @@ class IntrusionBuilder:
         grid_points_coord1 = self.simulation_grid[2]
         # grid_points_coord2 = self.simulation_grid[3]
 
-        # generate data frame containing input data for simulation
+        # -- generate data frame containing input data for simulation
         data_sides = self.lateral_contact_data[0]
 
         minP = min(
@@ -464,7 +494,7 @@ class IntrusionBuilder:
 
         self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
 
-        # Compute simulation parameters if not defined
+        # -- Compute simulation parameters if not defined
         if self.lateral_sgs_parameters.get("zmin") == None:
             self.lateral_sgs_parameters["zmin"] = min(
                 inputsimdata_maxL["l_residual"].min(),
@@ -483,7 +513,7 @@ class IntrusionBuilder:
             maxC0 = np.nanmax(grid_points_coord1)
             self.lateral_sgs_parameters["xsiz"] = (maxC0 - minC0) / nx
 
-        # Simulation of lateral extent
+        # -- Simulation of lateral extent
         tmin = self.lateral_sgs_parameters.get("tmin")
         tmax = self.lateral_sgs_parameters.get("tmax")
         itrans = self.lateral_sgs_parameters.get("itrans")
@@ -596,7 +626,7 @@ class IntrusionBuilder:
 
         # self.simulationGSLIB_s_outcome = [s_min_simulation, s_max_simulation]
 
-        # Create dataframe containing S threshold for each grid point
+        # -- Create dataframe containing S threshold for each grid point
 
         propagation_grid_model = np.linspace(xmn, xmn + (nx * xsiz), nx)
 
@@ -652,13 +682,13 @@ class IntrusionBuilder:
         -------
         """
 
-        # Get grid points and evaluated values in the intrusion frame
+        # -- Get grid points and evaluated values in the intrusion frame
         grid_points = self.simulation_grid
         grid_points_coord0 = self.simulation_grid[1]
         grid_points_coord1 = self.simulation_grid[2]
         grid_points_coord2 = self.simulation_grid[3]
 
-        # Generate data frame containing input data for simulation
+        # -- Generate data frame containing input data for simulation
         inet_data = self.vertical_contact_data[0]
         other_contact_data = self.vertical_contact_data[1]
 
@@ -733,9 +763,6 @@ class IntrusionBuilder:
             self.vertical_sgs_parameters["zmin2"] = inputsimdata_inetG["coord0"].min()
         if self.vertical_sgs_parameters.get("zmax2") == None:
             self.vertical_sgs_parameters["zmax2"] = inputsimdata_inetG["coord0"].max()
-
-        # --- make variogram
-        # self.make_g_simulation_variogram()
 
         # --- get parameters for simulation
         tmin = self.vertical_sgs_parameters.get("tmin")
@@ -851,7 +878,7 @@ class IntrusionBuilder:
         )
 
         # self.simulationGSLIB_g_outcome = [g_min_simulation, g_max_simulation]
-        # Create dataframe containing S threshold for each grid point
+        # -- Create dataframe containing S threshold for each grid point
         lower_extent_gpl = [0, xmn, ymn]
         upper_extent_gpl = [0, xmn + xsiz * nx, ymn + ysiz * ny]
 
@@ -899,7 +926,7 @@ class IntrusionBuilder:
         lateral_extent_sgs_parameters={},
         **kwargs,
     ):
-        """Main building function for intrusion. Calculates variogram and thresholds
+        """Main building function for intrusion. Calculates variogram and simulate thresholds along frame axes
 
         Parameters
         ----------
@@ -909,16 +936,16 @@ class IntrusionBuilder:
             parameters for the vertical sequential gaussian simulation, by default {}
         """
         self.prepare_data()
-        # self.set_data_for_extent_simulation(intrusion_data)
         self.create_grid_for_simulation()
         self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
         self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
-        self.make_l_sgs_variogram(lateral_extent_sgs_parameters)
-        self.make_g_sgs_variogram(vertical_extent_sgs_parameters)
+        self.make_l_sgs_variogram()
+        self.make_g_sgs_variogram()
         self.simulate_lateral_thresholds()
         self.simulate_growth_thresholds()
-        self.feature.growth_simulated_threshold = self.growth_simulated_thresholds
+        self.feature.growth_simulated_thresholds = self.growth_simulated_thresholds
         self.feature.lateral_simulated_thresholds = self.lateral_simulated_thresholds
+      
 
     def update(self):
         self.build(**self.build_arguments)
