@@ -11,6 +11,8 @@ from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     index_min,
     new_inlet,
 )
+
+from .geometric_scaling_functions import *
 logger = getLogger(__name__)
 
 # import GSLIB library
@@ -129,7 +131,7 @@ class IntrusionBuilder:
 
         self.data = intrusion_data.copy()
 
-    def prepare_data(self):
+    def prepare_data(self, geometric_scaling_parameters):
         """ """
         if self.data is None or self.data.shape[0] == 0:
             raise ValueError("Cannot create intrusion with no data")
@@ -137,21 +139,39 @@ class IntrusionBuilder:
         self.data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(data_xyz)
         self.data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(data_xyz)
         self.data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(data_xyz)
+
+        # -- separate data between both sides of the intrusion, using intrusion axis (i.e. coord2 = 0)
+        
         data_minside = self.data[
             (self.data["intrusion_side"] == True) & (self.data["coord2"] <= 0)
         ].copy()
         data_minside.reset_index(inplace=True)
-
+        
         data_maxside = self.data[
             (self.data["intrusion_side"] == True) & (self.data["coord2"] > 0)
         ].copy()
         data_maxside.reset_index(inplace=True)
 
+        if data_minside.shape[0] <= 3 and data_maxside.shape[0] > 0:
+            data_minside_ = data_maxside.copy()
+            data_minside = pd.concat([data_minside_, data_minside])
+            data_minside.loc[:,"coord2"] = data_minside.loc[:,"coord2"]*(-1)
+
+        if data_maxside.shape[0] == 0 and data_minside.shape[0] > 0:
+            data_maxside_ = data_minside.copy()
+            data_maxside = pd.concat([data_maxside, data_maxside_])
+            data_maxside.loc[:,"coord2"] = data_maxside.loc[:,"coord2"]*(-1)
+
+        if data_maxside.shape[0] == 0 and data_minside.shape[0] == 0:
+            raise ValueError("Cannot create intrusion with no lateral data")
+
         data_sides = pd.concat([data_minside, data_maxside])
         data_sides.reset_index(inplace=True)
 
         self.lateral_contact_data = [data_sides, data_minside, data_maxside]
-        # return data_sides, data_minside, data_maxside
+        
+        # -- separate data between roof and floor data
+
         intrusion_network_data_xyz = (
             self.intrusion_frame.builder.intrusion_network_data.loc[
                 :, ["X", "Y", "Z"]
@@ -173,12 +193,39 @@ class IntrusionBuilder:
         ].evaluate_value(intrusion_network_data_xyz)
         intrusion_network_data.reset_index(inplace=True)
 
-        other_contact_data_xyz = self.intrusion_frame.builder.other_contact_data.loc[
-            :, ["X", "Y", "Z"]
-        ].to_numpy()
-        other_contact_data = self.intrusion_frame.builder.other_contact_data.loc[
-            :, ["X", "Y", "Z"]
-        ].copy()
+        if self.intrusion_frame.builder.other_contact_data.shape[0] == 0:
+            intrusion_type = geometric_scaling_parameters.get('intrusion_type', None)
+            intrusion_length = geometric_scaling_parameters.get('intrusion_length', None)
+            inflation_vector = geometric_scaling_parameters.get('inflation_vector', np.array([[0,0,1]]))
+
+            if self.intrusion_frame.builder.intrusion_network_contact == 'floor' or self.intrusion_frame.builder.intrusion_network_contact == 'base':
+                inflation_vector = geometric_scaling_parameters.get('inflation_vector', np.array([[0,0,1]]))
+            else:
+                inflation_vector = geometric_scaling_parameters.get('inflation_vector', np.array([[0,0,-1]]))
+
+
+            if intrusion_type == None or intrusion_length == None:
+                raise ValueError(
+                    "No {} data. Add intrusion_type and intrusion_length to geometric_scaling_parameters dictionary".format(
+                        self.intrusion_frame.builder.intrusion_network_contact)
+                        )
+
+            else: #create data using geometric scaling
+                estimated_thickness = thickness_from_geometric_scaling(intrusion_length, intrusion_type)
+                other_contact_data, other_contact_data_xyz = contact_pts_using_geometric_scaling(
+                    estimated_thickness, 
+                    intrusion_network_data, 
+                    inflation_vector)
+
+
+        else: 
+            other_contact_data_xyz = self.intrusion_frame.builder.other_contact_data.loc[
+                :, ["X", "Y", "Z"]
+            ].to_numpy()
+            other_contact_data = self.intrusion_frame.builder.other_contact_data.loc[
+                :, ["X", "Y", "Z"]
+            ].copy()
+        
         other_contact_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(
             other_contact_data_xyz
         )
@@ -495,16 +542,16 @@ class IntrusionBuilder:
         self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
 
         # -- Compute simulation parameters if not defined
+        # ---- compute lower and uper fence of simulated values using quartiles
+        lateral_data = pd.concat(
+            [inputsimdata_minL, inputsimdata_maxL])
+        p25 = np.percentile(lateral_data.l_residual, 25)
+        p75 = np.percentile(lateral_data.l_residual, 75)
+
         if self.lateral_sgs_parameters.get("zmin") == None:
-            self.lateral_sgs_parameters["zmin"] = min(
-                inputsimdata_maxL["l_residual"].min(),
-                inputsimdata_minL["l_residual"].min(),
-            )
+            self.lateral_sgs_parameters["zmin"] = p25 - 1.5*(p75 - p25)
         if self.lateral_sgs_parameters.get("zmax") == None:
-            self.lateral_sgs_parameters["zmax"] = max(
-                inputsimdata_maxL["l_residual"].max(),
-                inputsimdata_minL["l_residual"].max(),
-            )
+            self.lateral_sgs_parameters["zmax"] = p75 + 1.5*(p75 - p25)
         if self.lateral_sgs_parameters.get("xmn") == None:
             self.lateral_sgs_parameters["xmn"] = np.nanmin(grid_points_coord1)
         if self.lateral_sgs_parameters.get("xsiz") == None:
@@ -924,6 +971,7 @@ class IntrusionBuilder:
         self,
         vertical_extent_sgs_parameters={},
         lateral_extent_sgs_parameters={},
+        geometric_scaling_parameters = {},
         **kwargs,
     ):
         """Main building function for intrusion. Calculates variogram and simulate thresholds along frame axes
@@ -935,7 +983,7 @@ class IntrusionBuilder:
         lateral_extent_sgs_parameters : dict, optional
             parameters for the vertical sequential gaussian simulation, by default {}
         """
-        self.prepare_data()
+        self.prepare_data(geometric_scaling_parameters)
         self.create_grid_for_simulation()
         self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
         self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)

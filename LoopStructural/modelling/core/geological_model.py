@@ -1093,6 +1093,7 @@ class GeologicalModel:
         intrusion_network_parameters={},
         lateral_extent_sgs_parameters={},
         vertical_extent_sgs_parameters={},
+        geometric_scaling_parameters = {},
         **kwargs,
     ):
         """
@@ -1193,6 +1194,7 @@ class GeologicalModel:
         intrusion_builder.build_arguments = {
             "lateral_extent_sgs_parameters": lateral_extent_sgs_parameters,
             "vertical_extent_sgs_parameters": vertical_extent_sgs_parameters,
+            "geometric_scaling_parameters" : geometric_scaling_parameters
         }
 
         intrusion_feature = intrusion_builder.feature
