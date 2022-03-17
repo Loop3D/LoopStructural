@@ -112,6 +112,9 @@ def test_intrusion_builder():
     intrusion_feature = intrusion_builder.feature
     intrusion_builder.update()
 
-    assert len(intrusion_feature._lateral_simulated_thresholds) > 0
-    assert len(intrusion_feature._growth_simulated_thresholds) > 0
+    assert len(intrusion_feature.lateral_simulated_thresholds) > 0
+    assert len(intrusion_feature.growth_simulated_thresholds) > 0
     
+if __name__ == "__main__":
+    test_intrusion_freame_builder()
+    test_intrusion_builder()
