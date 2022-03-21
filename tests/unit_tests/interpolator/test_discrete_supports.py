@@ -220,21 +220,21 @@ def test_change_origin():
 def test_change_maximum():
     grid = StructuredGrid(origin=np.zeros(3), nsteps=np.array([5, 5, 5]))
     grid.maximum = np.array([7, 7, 7])
-    assert np.all(grid.nsteps == np.array([7, 7, 7]))
-    assert np.all(grid.maximum == np.array([7, 7, 7]))
-    assert np.all(grid.step_vector == np.ones(3))
+    assert np.all(np.isclose(grid.nsteps,np.array([8, 8, 8])))
+    assert np.all(np.isclose(grid.maximum, np.array([7, 7, 7])))
+    assert np.all(np.isclose(grid.step_vector,np.ones(3)))
 
 
 def test_change_maximum_and_origin():
     grid = StructuredGrid(origin=np.zeros(3), nsteps=np.array([5, 5, 5]))
     grid.origin = np.array([-1.0, -1.0, -1.0])
-    assert np.all(grid.origin == np.array([-1, -1, -1]))
-    assert np.all(grid.nsteps == np.array([6, 6, 6]))
-    assert np.all(grid.step_vector == np.ones(3))
+    assert np.all(np.isclose(grid.origin,np.array([-1, -1, -1])))
+    assert np.all(np.isclose(grid.nsteps, np.array([6, 6, 6])))
+    assert np.all(np.isclose(grid.step_vector, np.ones(3)))
     grid.maximum = np.array([7.0, 7.0, 7.0])
-    assert np.all(grid.nsteps == np.array([8, 8, 8]))
-    assert np.all(grid.maximum == np.array([7.0, 7.0, 7.0]))
-    assert np.all(grid.step_vector == np.ones(3))
+    assert np.all(np.isclose(grid.nsteps, np.array([9, 9, 9])))
+    assert np.all(np.isclose(grid.maximum, np.array([7.0, 7.0, 7.0])))
+    assert np.all(np.isclose(grid.step_vector,np.ones(3)))
 
 if __name__ == "__main__":
     test_create_structured_grid()

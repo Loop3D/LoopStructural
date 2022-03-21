@@ -29,7 +29,7 @@ class BaseStructuredSupport:
         # inisialise the private attributes
         if np.any(step_vector == 0):
             logger.warning(f"Step vector {step_vector} has zero values")
-        self._nsteps = np.array(nsteps+1, dtype=int)
+        self._nsteps = np.array(nsteps, dtype=int) + 1
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
         self.supporttype = "Base"
@@ -103,7 +103,7 @@ class BaseStructuredSupport:
         maximum = np.array(maximum, dtype=float)
         length = maximum - self.origin
         length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(int)+1
+        self._nsteps = np.ceil(length).astype(int) + 1
 
     @property
     def n_nodes(self):
@@ -192,10 +192,7 @@ class BaseStructuredSupport:
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
             inside *= pos[:, i] > self.origin[None, i]
-            inside *= (
-                pos[:, i]
-                < self.maximum[None,i]
-            )
+            inside *= pos[:, i] < self.maximum[None, i]
         return inside
 
     def check_position(self, pos):
