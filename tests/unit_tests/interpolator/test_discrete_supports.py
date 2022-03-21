@@ -45,6 +45,30 @@ def test_evaluate_gradient():
     vector = grid.evaluate_gradient(grid.barycentre, grid.nodes[:, 1])
     assert np.sum(vector - np.array([0, 1, 0])) == 0
 
+def test_outside_box():
+    grid = StructuredGrid()
+    # test by setting the scalar field to the y coordinate
+    inside = grid.inside(grid.barycentre+5)
+    assert np.all(~inside == np.any((grid.barycentre+5) > grid.maximum,axis=1))
+    inside = grid.inside(grid.barycentre-5)
+    assert np.all(~inside == np.any((grid.barycentre-5) < grid.origin,axis=1))
+
+    cix, ciy, ciz = grid.position_to_cell_index(grid.barycentre-5)
+    assert np.all(cix[inside] < grid.nsteps_cells[0])
+    assert np.all(ciy[inside] < grid.nsteps_cells[1])
+    assert np.all(ciz[inside] < grid.nsteps_cells[2])
+    cornersx, cornersy, cornersz = grid.cell_corner_indexes(cix, ciy, ciz)
+    assert np.all(cornersx[inside] < grid.nsteps[0])
+    assert np.all(cornersy[inside] < grid.nsteps[1])
+    assert np.all(cornersz[inside] < grid.nsteps[2])
+    globalidx = grid.global_indicies(np.dstack([cornersx, cornersy, cornersz]).T)
+    # print(globalidx[inside],grid.n_nodes,inside)
+    assert np.all(globalidx[inside] < grid.n_nodes)
+    inside = grid.inside(grid.barycentre-5)
+    inside, grid.position_to_cell_corners(grid.barycentre-5)
+    vector = grid.evaluate_gradient(grid.barycentre-5, grid.nodes[:, 1])
+    assert np.sum(np.mean(vector[inside,:],axis=0) - np.array([0, 1, 0])) == 0
+    vector = grid.evaluate_gradient( grid.nodes, grid.nodes[:, 1])
 
 def test_evaluate_gradient2():
     # this test is the same as above but we will use a random vector
@@ -211,3 +235,17 @@ def test_change_maximum_and_origin():
     assert np.all(grid.nsteps == np.array([8, 8, 8]))
     assert np.all(grid.maximum == np.array([7.0, 7.0, 7.0]))
     assert np.all(grid.step_vector == np.ones(3))
+
+if __name__ == "__main__":
+    test_create_structured_grid()
+    test_create_structured_grid2d()
+    test_create_structured_grid2d_origin_nsteps()
+    test_change_maximum()
+    test_change_maximum_and_origin()
+    test_change_origin()
+    test_create_structured_grid_origin_nsteps()
+    test_create_testmesh()
+    test_evaluate_gradient()
+    test_evaluate_gradient2()
+    test_outside_box()
+    
