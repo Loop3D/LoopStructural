@@ -168,7 +168,7 @@ def test_create_testmesh():
 
 def test_create_testmesh_origin_nsteps():
     grid = TetMesh(origin=np.zeros(3), nsteps=np.array([5, 5, 5]))
-    assert grid.n_nodes == 5 * 5 * 5
+    assert grid.n_nodes == 6 * 6 * 6
     assert np.sum(grid.maximum - np.ones(3) * 5) == 0
 
 
@@ -248,4 +248,5 @@ if __name__ == "__main__":
     test_evaluate_gradient()
     test_evaluate_gradient2()
     test_outside_box()
+    test_create_testmesh_origin_nsteps()
     
