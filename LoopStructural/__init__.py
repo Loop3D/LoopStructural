@@ -23,3 +23,20 @@ from .utils import log_to_console, log_to_file, getLogger
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")
+
+class Config:
+    """
+    Class to store configuration settings.
+    """
+    __splay_fault_threshold = 30
+    __experimental = False
+    __default_interpolator = "FDI"
+    __default_nelements = 1e4
+    __default_solver = 'cg'
+
+    @property
+    def experimental():
+        return __experimental
+    @experimental.setter
+    def experimental(self, value):
+        __experimental = value
