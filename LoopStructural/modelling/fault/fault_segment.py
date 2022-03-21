@@ -54,6 +54,48 @@ class FaultSegment:
         self.splay = {}
         self.abut = {}
 
+    @property
+    def fault_normal_vector(self):
+        if self.builder == None:
+            raise ValueError("Fault builder not set")
+        return self.builder.fault_normal_vector
+
+    @property
+    def fault_slip_vector(self):
+        if self.builder == None:
+            raise ValueError("Fault builder not set")
+        return self.builder.fault_slip_vector
+
+    @property
+    def fault_strike_vector(self):
+        if self.builder == None:
+            raise ValueError("Fault builder not set")
+        return self.builder.fault_strike_vector
+
+    @property
+    def fault_minor_axis(self):
+        if self.builder == None:
+            raise ValueError("Fault builder not set")
+        return self.builder.fault_minor_axis
+
+    @property
+    def fault_major_axis(self):
+        if self.builder == None:
+            raise ValueError("Fault builder not set")
+        return self.builder.fault_major_axis
+
+    @property
+    def fault_intermediate_axis(self):
+        if self.builder == None:
+            raise ValueError("Fault builder not set")
+        return self.builder.fault_intermediate_axis
+
+    @property
+    def fault_centre(self):
+        if self.builder == None:
+            raise ValueError("Fault builder not set")
+        return self.builder.fault_centre
+
     def __str__(self):
         _str = "FaultSegment - {} \n".format(self.name)
         _str += "Interpolator: {} \n".format(self.faultframe[0].interpolator.type)
@@ -381,17 +423,20 @@ class FaultSegment:
             )  # get_value_constraints()
             abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
             positive = abut_value > 0
+        # we want to crop the fault by the abutting fault so create a positive/neg region and include the fault centre and normal vector to help
+        # outside of the fault interpolation support
+
         if positive:
-            abutting_region = PositiveRegion(abutting_fault_feature)
+            abutting_region = PositiveRegion(
+                abutting_fault_feature,
+                vector=abutting_fault_feature.fault_normal_vector,
+                point=abutting_fault_feature.fault_centre,
+            )
         if positive == False:
-            abutting_region = NegativeRegion(abutting_fault_feature)
-            # if positive == True:
-            #      ## adding the nan check avoids truncating the fault at the edge of the abutting fault bounding box.
-            #         ## it makes the assumption that the abutted fault is not drawn across the abutting fault... but this should be ok
-            #     return np.logical_or(abutting_fault_feature.evaluate_value(pos) > 0,
-            #                             np.isnan(abutting_fault_feature.evaluate_value(pos)))
-            # if positive == False:
-            #     return np.logical_or(abutting_fault_feature.evaluate_value(pos) < 0,
-            #                             np.isnan(abutting_fault_feature.evaluate_value(pos)))
+            abutting_region = NegativeRegion(
+                abutting_fault_feature,
+                vector=abutting_fault_feature.fault_normal_vector,
+                point=abutting_fault_feature.fault_centre,
+            )
         self.abut[abutting_fault_feature.name] = abutting_region
         self.faultframe[0].add_region(abutting_region)

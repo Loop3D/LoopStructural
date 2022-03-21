@@ -48,6 +48,13 @@ class FaultBuilder(StructuralFrameBuilder):
         ] + fault_bounding_box_buffer * (
             self.model.bounding_box[1, :] - self.model.bounding_box[0, :]
         )
+        self.fault_normal_vector = None
+        self.fault_slip_vector = None
+        self.fault_strike_vector = None
+        self.fault_minor_axis = None
+        self.fault_major_axis = None
+        self.fault_intermediate_axis = None
+        self.fault_centre = None
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
@@ -95,6 +102,12 @@ class FaultBuilder(StructuralFrameBuilder):
         intermediate_axis : double
             fault volume radius in the slip direction
         """
+        self.fault_normal_vector = normal_vector
+        self.fault_slip_vector = slip_vector
+        self.fault_minor_axis = minor_axis
+        self.fault_major_axis = major_axis
+        self.fault_intermediate_axis = intermediate_axis
+        self.fault_centre = fault_center
         if major_axis is None:
             fault_trace = data.loc[
                 np.logical_and(data["coord"] == 0, data["val"] == 0), ["X", "Y"]
@@ -125,6 +138,8 @@ class FaultBuilder(StructuralFrameBuilder):
         #     logger.info("{} : projecting slip vector onto fault plane".format(self.name))
         #     slip_vector = np.cross(normal_vector, np.cross(slip_vector ,normal_vector))
         strike_vector = np.cross(normal_vector, slip_vector)
+        self.fault_strike_vector = strike_vector
+
         fault_edges = np.zeros((2, 3))
         fault_tips = np.zeros((2, 3))
         fault_depth = np.zeros((2, 3))
@@ -160,7 +175,7 @@ class FaultBuilder(StructuralFrameBuilder):
                         0,
                         w,
                     ]
-                    logger.warning("Converting fault norm data to gradient data")
+                    logger.info("Converting fault norm data to gradient data")
                     mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["nx"]))
                     data.loc[mask, ["gx", "gy", "gz"]] = data.loc[
                         mask, ["nx", "ny", "nz"]
