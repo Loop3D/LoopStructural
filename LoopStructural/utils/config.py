@@ -9,10 +9,10 @@ class Config:
     __default_nelements = 1e4
     __default_solver = "cg"
 
-    @property
-    def experimental():
-        return __experimental
+    # @property
+    # def experimental():
+    #     return __experimental
 
-    @experimental.setter
-    def experimental(self, value):
-        __experimental = value
+    # @experimental.setter
+    # def experimental(self, value):
+    #     __experimental = value
