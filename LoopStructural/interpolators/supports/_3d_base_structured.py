@@ -29,7 +29,7 @@ class BaseStructuredSupport:
         # inisialise the private attributes
         if np.any(step_vector == 0):
             logger.warning(f"Step vector {step_vector} has zero values")
-        self._nsteps = np.array(nsteps, dtype=int)
+        self._nsteps = np.array(nsteps+1, dtype=int)
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
         self.supporttype = "Base"
@@ -49,6 +49,10 @@ class BaseStructuredSupport:
         change_factor = nsteps / self.nsteps
         self._step_vector /= change_factor
         self._nsteps = nsteps
+
+    @property
+    def nsteps_cells(self):
+        return self.nsteps - 1
 
     @property
     def rotation_xy(self):
@@ -89,7 +93,7 @@ class BaseStructuredSupport:
 
     @property
     def maximum(self):
-        return self.origin + self.nsteps * self.step_vector
+        return self.origin + self.nsteps_cells * self.step_vector
 
     @maximum.setter
     def maximum(self, maximum):
@@ -99,15 +103,11 @@ class BaseStructuredSupport:
         maximum = np.array(maximum, dtype=float)
         length = maximum - self.origin
         length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(int)
+        self._nsteps = np.ceil(length).astype(int)+1
 
     @property
     def n_nodes(self):
         return np.product(self.nsteps)
-
-    @property
-    def nsteps_cells(self):
-        return self.nsteps - 1
 
     @property
     def n_elements(self):
@@ -194,8 +194,7 @@ class BaseStructuredSupport:
             inside *= pos[:, i] > self.origin[None, i]
             inside *= (
                 pos[:, i]
-                < self.origin[None, i]
-                + self.step_vector[None, i] * self.nsteps_cells[None, i]
+                < self.maximum[None,i]
             )
         return inside
 
