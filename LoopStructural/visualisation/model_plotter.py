@@ -212,7 +212,7 @@ class BaseModelPlotter:
             name,
             colour=colour,
             paint_with=paint_with,
-            **kwargs
+            **kwargs,
         )
 
     def add_isosurface(
@@ -230,7 +230,7 @@ class BaseModelPlotter:
         colours=None,
         opacity=None,
         function=None,
-        **kwargs
+        **kwargs,
     ):
         """Plot the surface of a geological feature
 
@@ -334,7 +334,9 @@ class BaseModelPlotter:
             )
 
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
-                logger.warning("Isovalue doesn't exist inside bounding box")
+                logger.warning(
+                    f"{geological_feature.name}: Isovalue doesn't exist inside bounding box"
+                )
                 continue
             try:
                 verts, faces, normals, values = marching_cubes(
@@ -380,7 +382,7 @@ class BaseModelPlotter:
                 paint_with=paint_with,
                 paint_with_value=paint_with_value,
                 cmap=cmap,
-                **kwargs
+                **kwargs,
             )
 
     def add_scalar_field(
@@ -392,7 +394,7 @@ class BaseModelPlotter:
         vmax=None,
         opacity=None,
         paint_with=None,
-        **kwargs
+        **kwargs,
     ):
         """Add a block the size of the model area painted with the scalar field value
 
@@ -432,7 +434,7 @@ class BaseModelPlotter:
             vmin=vmin,
             vmax=vmax,
             opacity=opacity,
-            **kwargs
+            **kwargs,
         )
 
     def add_box(self, bounding_box, name, colour="red", **kwargs):
@@ -498,7 +500,7 @@ class BaseModelPlotter:
             name,
             paint_with=lambda xyz: self.model.evaluate_model(xyz, scale=False),
             cmap=cmap,
-            **kwargs
+            **kwargs,
         )
 
     def add_fault_displacements(self, cmap="rainbow", **kwargs):
@@ -568,7 +570,7 @@ class BaseModelPlotter:
         cmap=None,
         fault_colour="black",
         displacement_cmap=None,
-        **kwargs
+        **kwargs,
     ):
         """Add surfaces for all of the interfaces in the model
 
@@ -661,7 +663,7 @@ class BaseModelPlotter:
                             slices=values,
                             names=names,
                             colours=colours,
-                            **kwargs
+                            **kwargs,
                         )
                         pbar.update(len(values))
 
@@ -702,7 +704,7 @@ class BaseModelPlotter:
                             region=mask,
                             colour=fault_colour,
                             name=f.name + name_suffix,
-                            **kwargs
+                            **kwargs,
                         )
                         pbar.update(1)
             logger.info("Adding surfaces took {} seconds".format(time.time() - start))
@@ -799,7 +801,7 @@ class BaseModelPlotter:
                 grad[:, 3:6],
                 name + "_grad_cp",
                 symbol_type=symbol_type,
-                **kwargs
+                **kwargs,
             )
 
         if norm.shape[0] > 0 and add_grad:
@@ -808,7 +810,7 @@ class BaseModelPlotter:
                 norm[:, 3:6],
                 name + "_norm_cp",
                 symbol_type=symbol_type,
-                **kwargs
+                **kwargs,
             )
         if value.shape[0] > 0 and add_value:
             kwargs["range"] = [feature.min(), feature.max()]
@@ -816,14 +818,14 @@ class BaseModelPlotter:
                 self.model.rescale(value[:, :3], inplace=False),
                 value[:, 3],
                 name + "_value_cp",
-                **kwargs
+                **kwargs,
             )
         if tang.shape[0] > 0 and add_tang:
             self.add_vector_data(
                 self.model.rescale(tang[:, :3], inplace=False),
                 tang[:, 3:6],
                 name + "_tang_cp",
-                **kwargs
+                **kwargs,
             )
         if interface.shape[0] > 0 and add_interface:
             self.add_points(
@@ -1020,5 +1022,5 @@ class BaseModelPlotter:
             tri,
             name,
             paint_with=paint_with,
-            **kwargs
+            **kwargs,
         )
