@@ -321,7 +321,6 @@ class GeologicalModel:
                     )
                     < 90,
                 )
-                # model[edge[1]].add_abutting_fault(model[edge[0]])
         for s in processor.stratigraphic_column.keys():
             if s != "faults":
                 faults = None
@@ -1609,7 +1608,7 @@ class GeologicalModel:
                     .to_numpy()
                 )
         if np.any(np.isnan(fault_slip_vector)):
-            logger.warning("Fault slip vector is nan, estimating from fault normal")
+            logger.info("Fault slip vector is nan, estimating from fault normal")
             strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
             fault_slip_vector = dip_vector[:, 0]
             logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
@@ -1675,6 +1674,7 @@ class GeologicalModel:
             **kwargs,
         )
         fault.builder = fault_frame_builder
+        
         for f in reversed(self.features):
             if f.type == "unconformity":
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
