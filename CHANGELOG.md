@@ -1,5 +1,49 @@
 # Changelog
 
+### [1.4.4](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.3...v1.4.4) (2022-03-21)
+
+
+### Bug Fixes
+
+* :ambulance: import failing when surfepy not install ([5041ad6](https://www.github.com/Loop3D/LoopStructural/commit/5041ad6692cbcd5f3a58b9edb2fc8168e73905ec))
+* :ambulance: number of steps was actually number of cells causing issues with indexing ([88b8fee](https://www.github.com/Loop3D/LoopStructural/commit/88b8fee380cf50a35801247a3c430d84eb4e14f4))
+* :ambulance: surfe import was failing ([63d61a4](https://www.github.com/Loop3D/LoopStructural/commit/63d61a4253a9b10cbc7e4e07ae73d42fbd1aa84e))
+* :bug: fixed bug with fault clipping, uses normal direction to infer hanging wall side away from interpolated surfaces ([7ea9beb](https://www.github.com/Loop3D/LoopStructural/commit/7ea9beb33993a82f87686c530f7f4d4851a6b8f9))
+* :bug: small fixes for making sure model update is called when params are changed ([a22ed61](https://www.github.com/Loop3D/LoopStructural/commit/a22ed6112e5cde81577523fdb142bfee446128ad))
+* :bug: stratigraphic column was not covering scalar field range. ([990e0f4](https://www.github.com/Loop3D/LoopStructural/commit/990e0f48cd02af1965418f3371d2e267e6affdb8))
+* :bug: weight for p2 interpolator wasn't being applied ([5002a8a](https://www.github.com/Loop3D/LoopStructural/commit/5002a8a69cdf1d69d52a36f877b81a49c8e86fa1))
+* :fire: changes fault slip warning to info ([16d16d7](https://www.github.com/Loop3D/LoopStructural/commit/16d16d7442f2f2a96ca457ec82ee3ebe5b7e1929))
+* :rotating_light: fixig pylint error ([d5c99cd](https://www.github.com/Loop3D/LoopStructural/commit/d5c99cdaffc94e4d6883de395923ae0278f23fe0))
+* :sparkles: adding config class for storing module wide configs ([9407ff7](https://www.github.com/Loop3D/LoopStructural/commit/9407ff7b523160786430e390491a49b62dd631d0))
+* :sparkles: faults/fault builder now store the fault geometry parameters ([f92749b](https://www.github.com/Loop3D/LoopStructural/commit/f92749b22494bb418f219a19f4f880f6278ee946))
+* :sparkles: flagging interpolator not up to date when data changes ([96c8ddb](https://www.github.com/Loop3D/LoopStructural/commit/96c8ddbe29d7f6e61efac89d6d0d9fca0d750089))
+* :sparkles: intrusionbuilder-->intrusionframebuilder, intrusionbuilder will build intrusionfeature ([7d5935c](https://www.github.com/Loop3D/LoopStructural/commit/7d5935c53c751096c1ca019dd0df31a71991f767))
+* adding debugging code for indexing structured grid ([59e130a](https://www.github.com/Loop3D/LoopStructural/commit/59e130a422db5a547d8fca4a228811074d7b5af6))
+* adding intrusion dependencies to setup.py ([08f6a22](https://www.github.com/Loop3D/LoopStructural/commit/08f6a224d2479814fc00cedb70013299f0617bdb))
+* adding logger and remove unused files ([bd3f428](https://www.github.com/Loop3D/LoopStructural/commit/bd3f428d65c0ce369b4b36970e7abce11a68abeb))
+* change logs ([b8000db](https://www.github.com/Loop3D/LoopStructural/commit/b8000db5caa6638360d4e1d9ace5ca59f8e3397a))
+* change pandas append to concat ([51bbf5e](https://www.github.com/Loop3D/LoopStructural/commit/51bbf5e69fc62f902d2be7bb6706edab879c4401))
+* changing ckmeans to sklearn kmeans ([60f3ec5](https://www.github.com/Loop3D/LoopStructural/commit/60f3ec5d6761e4bde94ea8dd1a56e16afa5506d6))
+* fixing import warnings ([3b5c0f3](https://www.github.com/Loop3D/LoopStructural/commit/3b5c0f3a3b48d39cc5f7ddac664aec99b3cf91c0))
+* improvements in modified scalar field ([d1de75d](https://www.github.com/Loop3D/LoopStructural/commit/d1de75d01b8131f150fc936f1ff4d74b71ef588d))
+* Intrusion Builder class ([f697ee6](https://www.github.com/Loop3D/LoopStructural/commit/f697ee62e4c948c74083f5762bb0b9333a8d8086))
+* intrusion feature containing pre IBody fxs ([cd6fe61](https://www.github.com/Loop3D/LoopStructural/commit/cd6fe6103505fb7f36eeacf91fcead01de17b951))
+* merge origin/intrusion to local intrusion ([2507b33](https://www.github.com/Loop3D/LoopStructural/commit/2507b33b5a45267eddd0a7c944a5250a3d457db1))
+* moving config to own file ([3dc2a19](https://www.github.com/Loop3D/LoopStructural/commit/3dc2a199bbe8cae904255c575c32c718004580c1))
+* remove of ckwrap library ([e5ddf5e](https://www.github.com/Loop3D/LoopStructural/commit/e5ddf5ee9f96e995809cfb0426c2a78beb506c9f))
+* temp removing rotate from structured support ([2e2d1c6](https://www.github.com/Loop3D/LoopStructural/commit/2e2d1c6774eb597f099488d3f83f0af4dddc7702))
+* unit tests for intrusions ([85b9b4b](https://www.github.com/Loop3D/LoopStructural/commit/85b9b4b034ffb13a811bc30ea4ccf7487b7e257e))
+* update of builder ([cdf7ebb](https://www.github.com/Loop3D/LoopStructural/commit/cdf7ebb5e70ea238a426d6161928d86cd818b38a))
+* update of conceptual models ([948beef](https://www.github.com/Loop3D/LoopStructural/commit/948beef1cf8cadf516ec20610fb89d878bddcc0f))
+* update of intrusion module ([bba0163](https://www.github.com/Loop3D/LoopStructural/commit/bba0163fc4d93def34a5fbb38d948e9c13280802))
+* update skfmm import ([ea855f0](https://www.github.com/Loop3D/LoopStructural/commit/ea855f03902e093855f3c1046ceabb9243b5dd90))
+* variogram parameters now in set_sgs_parameters ([26ca7b3](https://www.github.com/Loop3D/LoopStructural/commit/26ca7b37ac298ab0c99446820324e56e758f8223))
+
+
+### Performance Improvements
+
+* :zap: reducing memory for unstructured tetra ([1ee5dd6](https://www.github.com/Loop3D/LoopStructural/commit/1ee5dd6934602aff82c280429e62f18c699cef2e))
+
 ### [1.4.3](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.2...v1.4.3) (2022-02-21)
 
 
