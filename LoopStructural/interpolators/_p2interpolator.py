@@ -144,21 +144,14 @@ class P2Interpolator(DiscreteInterpolator):
             area = self.support.element_size[elements[inside]]
             wt = np.ones(area.shape[0])
             wt *= w * area
-            # print(grad[inside,:,:].shape)
-            # print(self.support.elements[elements[inside]].shape)
             elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
-
             elements = elements.swapaxes(0, 1)
-            # elements = elements.swapaxes(0,2)
-            # grad = grad.swapaxes(1, 2)
             self.add_constraints_to_least_squares(
                 grad[inside, :, :] * wt[:, None, None],
                 points[inside, 3:6] * wt[:, None],
                 elements,
                 name="norm",
             )
-
-        pass
 
     def add_value_constraints(self, w=1.0):
         points = self.get_value_constraints()
@@ -176,29 +169,30 @@ class P2Interpolator(DiscreteInterpolator):
                 name="value",
             )
 
-    def minimise_grad_steepness(self, w=0.1, maskall=True, wtfunc=None):
+    def minimise_grad_steepness(
+        self, w: float = 0.1, maskall: bool = False, wtfunc: callable = None
+    ):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions
         It is not added on the borders
 
         Parameters
         ----------
-        sten : float, optional
-            [description], by default 0.0
         w : float, optional
             [description], by default 0.1
+        maskall : bool, default False
+            whether to apply on all elements or just internal elements (default)
+        wtfunc :  callable, optional
+            a function that returns the weight to be applied at xyz. Called on the barycentre
+            of the tetrahedron
         """
         elements = np.arange(0, len(self.support.elements))
         mask = np.ones(self.support.neighbours.shape[0], dtype=bool)
         if maskall == False:
             mask[:] = np.all(self.support.neighbours > 3, axis=1)
-        # vertices = self.support.nodes[self.support.elements[elements[mask], :], :]
-        # barycentre = np.mean(vertices, axis=1)
-        # M_t = np.ones((vertices.shape[0], 3, 3))
-        # M_t[:, :, 1:] = vertices[:, :3, :]
-        # area = np.abs(np.linalg.det(M_t)) * 0.5
+
         d2 = self.support.evaluate_shape_d2(elements[mask])
-        # d2 is [ele_idx, deriv, node]
+        # d2 shape is [ele_idx, deriv, node]
         wt = np.ones(d2.shape[0])
         wt *= w  # * self.support.element_size[mask]
         if callable(wtfunc):
@@ -215,8 +209,20 @@ class P2Interpolator(DiscreteInterpolator):
             )
 
     def minimise_edge_jumps(
-        self, w=0.1, wtfunc=None, vector_func=None
-    ):  # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
+        self, w: float = 0.1, wtfunc: callable = None, vector_func: callable = None
+    ):
+        """_summary_
+
+        Parameters
+        ----------
+        w : float, optional
+            _description_, by default 0.1
+        wtfunc : callable, optional
+            _description_, by default None
+        vector_func : callable, optional
+            _description_, by default None
+        """
+        # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
 
         cp, weight = self.support.get_quadrature_points(3)
@@ -255,7 +261,7 @@ class P2Interpolator(DiscreteInterpolator):
                 name=f"shared element jump cp{i}",
             )
 
-    def evaluate_d2(self, evaluation_points):
+    def evaluate_d2(self, evaluation_points: np.ndarray) -> np.ndarray:
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
         mask = np.any(evaluation_points == np.nan, axis=1)
