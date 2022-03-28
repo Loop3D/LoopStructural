@@ -14,7 +14,7 @@ logger = getLogger(__name__)
 class TetMesh(BaseStructuredSupport):
     """ """
 
-    def __init__(self, origin=[0, 0, 0], nsteps=[10, 10, 10], step_vector=[1, 1, 1]):
+    def __init__(self, origin, nsteps, step_vector):
         BaseStructuredSupport.__init__(self, origin, nsteps, step_vector)
 
         self.tetra_mask_even = np.array(
@@ -28,38 +28,34 @@ class TetMesh(BaseStructuredSupport):
         self.cg = None
 
     @property
-    def ntetra(self):
+    def ntetra(self) -> int:
         return np.product(self.nsteps_cells) * 5
 
     @property
-    def n_elements(self):
+    def n_elements(self) -> int:
         return self.ntetra
 
     @property
-    def n_cells(self):
+    def n_cells(self) -> int:
         return np.product(self.nsteps_cells)
 
     @property
-    def barycentre(self):
+    def barycentre(self) -> np.ndarray:
         """
         Return the barycentres of all tetrahedrons or of specified tetras using
         global index
 
-        Parameters
-        ----------
-        elements - numpy array
-            global index
-
         Returns
         -------
-
+        barycentres : numpy array
+            barycentres of all tetrahedrons
         """
 
         tetra = self.get_elements()
         barycentre = np.sum(self.nodes[tetra][:, :, :], axis=1) / 4.0
         return barycentre
 
-    def evaluate_value(self, pos, property_array):
+    def evaluate_value(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
         """
         Evaluate value of interpolant
 
@@ -82,7 +78,9 @@ class TetMesh(BaseStructuredSupport):
         )
         return values
 
-    def evaluate_gradient(self, pos, property_array):
+    def evaluate_gradient(
+        self, pos: np.ndarray, property_array: np.ndarray
+    ) -> np.ndarray:
         """
         Evaluate the gradient of an interpolant at the locations
 
@@ -114,7 +112,8 @@ class TetMesh(BaseStructuredSupport):
         # values[inside,:] /= length[:,None]
         return values
 
-    def inside(self, pos):
+    def inside(self, pos: np.ndarray):
+
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
             inside *= pos[:, i] > self.origin[None, i]
@@ -125,7 +124,7 @@ class TetMesh(BaseStructuredSupport):
             )
         return inside
 
-    def get_element_for_location(self, pos):
+    def get_element_for_location(self, pos: np.ndarray):
         """
         Determine the tetrahedron from a numpy array of points
 
@@ -314,7 +313,7 @@ class TetMesh(BaseStructuredSupport):
 
         return element_gradients[elements, :, :]
 
-    def get_element_gradient_for_location(self, pos):
+    def get_element_gradient_for_location(self, pos: np.ndarray):
         """
         Get the gradient of the tetra for a location
 
@@ -361,7 +360,7 @@ class TetMesh(BaseStructuredSupport):
         element_gradients = element_gradients @ I
         return vertices, element_gradients, tetras, inside
 
-    def global_node_indicies(self, indexes):
+    def global_node_indicies(self, indexes: np.ndarray):
         """
         Convert from node indexes to global node index
 
@@ -380,7 +379,7 @@ class TetMesh(BaseStructuredSupport):
             + self.nsteps[None, None, 0] * self.nsteps[None, None, 1] * indexes[:, :, 2]
         )
 
-    def global_cell_indicies(self, indexes):
+    def global_cell_indicies(self, indexes: np.ndarray):
         """
         Convert from cell indexes to global cell index
 
@@ -428,7 +427,7 @@ class TetMesh(BaseStructuredSupport):
         zcorners = z_cell_index[:, None] + zcorner[None, :]
         return xcorners, ycorners, zcorners
 
-    def position_to_cell_corners(self, pos):
+    def position_to_cell_corners(self, pos: np.ndarray) -> np.ndarray:
         """
         Find the nodes that belong to a cell which contains a point
 
@@ -468,7 +467,7 @@ class TetMesh(BaseStructuredSupport):
 
         return np.array([x, y, z])
 
-    def global_index_to_node_index(self, global_index):
+    def global_index_to_node_index(self, global_index: np.ndarray):
         """
         Convert from global indexes to xi,yi,zi
 
@@ -513,7 +512,7 @@ class TetMesh(BaseStructuredSupport):
         )
         return x_index, y_index, z_index
 
-    def get_neighbours(self):
+    def get_neighbours(self) -> np.ndarray:
         """
         This function goes through all of the elements in the mesh and assembles a numpy array
         with the neighbours for each element

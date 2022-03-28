@@ -15,7 +15,13 @@ logger = getLogger(__name__)
 class UnStructuredTetMesh:
     """ """
 
-    def __init__(self, nodes, elements, neighbours, aabb_nsteps=None):
+    def __init__(
+        self,
+        nodes: np.ndarray,
+        elements: np.ndarray,
+        neighbours: np.ndarray,
+        aabb_nsteps=None,
+    ):
         """An unstructured mesh defined by nodes, elements and neighbours
         An axis aligned bounding box (AABB) is used to speed up finding
         which tetra a point is in.
@@ -34,9 +40,15 @@ class UnStructuredTetMesh:
             force nsteps for aabb, by default None
         """
         self.nodes = np.array(nodes)
+        if self.nodes.shape[1] != 3:
+            raise ValueError("Nodes must be 3D")
         self.n_nodes = self.nodes.shape[0]
         self.neighbours = np.array(neighbours, dtype=np.int64)
+        if self.neighbours.shape[1] != 4:
+            raise ValueError("Neighbours array is too big")
         self.elements = np.array(elements, dtype=np.int64)
+        if self.elements.shape[0] != self.neighbours.shape[0]:
+            raise ValueError("Number of elements and neighbours do not match")
         self.barycentre = (
             np.sum(self.nodes[self.elements[:, :4]][:, :, :], axis=1) / 4.0
         )
