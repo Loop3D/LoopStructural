@@ -315,7 +315,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             # set delta_c for indicator function
             self.delta_contacts = intrusion_network_input.get(
-                "delta_c", [1] * len(self.anisotropies_series_list)
+                "delta_c", [1] * self.number_of_contacts[0]
             )
 
             # set delta_f for indicator function
@@ -529,6 +529,10 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 logger.error("No anisotropy identified, increase value of delta_c")
 
             If = self.indicator_function_faults(delta=self.delta_faults)
+            # --------- check if any fault is indetified by indicator functions:
+            if len(np.where(If == 1)[0]) == 0:
+                logger.error("No faults identified, increase value of delta_f")
+
             velocity_field = self.compute_velocity_field(Ic, If)
 
             # --- find first (inlet) and last (outlet) anisotropies in anisotropies sequence, and compute associated scalar fields
@@ -685,28 +689,43 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             return shortest_path_points
 
     def get_indicator_function_points(self, ifx_type="contacts"):
+        """returns the points indicated as p[art of contact or fault anisotropies.
+
+        Parameters
+        ----------
+        ifx_type : string,
+                    'contacts' or 'faults'
+
+        """
+
+        
 
         if ifx_type == "contacts":
             IF = self.IFc
         else:
             IF = self.IFf
 
-        if_mod = np.sum(IF, axis=1)
+        # if_mod = np.sum(IF, axis=1)
+        If_points = []
 
         grid_points = self.grid_to_evaluate_ifx
 
-        counta = sum(1 for i in range(len(IF[:, 0])) if if_mod[i] >= 1)
-        points = np.zeros([counta, 4])
-        l = 0
-        for i in range(len(IF[:, 0])):
-            if if_mod[i] >= 1:
-                points[l, 0] = grid_points[i, 0]  # node
-                points[l, 1] = grid_points[i, 1]  # X coordinate
-                points[l, 2] = grid_points[i, 2]  # Y coordinate
-                points[l, 3] = IF[i, 0]  # Z coordinate
-                l = l + 1
+        for j in range(len(IF[0])):
 
-        return points
+            counta = sum(1 for i in range(len(IF)) if IF[i, j] == 1)
+            points = np.zeros([counta, 4])
+            l = 0
+            for i in range(len(IF)):
+                if IF[i, j] == 1:
+                    points[l, 0] = grid_points[i, 0]  # node
+                    points[l, 1] = grid_points[i, 1]  # X coordinate
+                    points[l, 2] = grid_points[i, 2]  # Y coordinate
+                    points[l, 3] = IF[i, j]  # Z coordinate
+                    l = l + 1
+
+            If_points.append(points)
+
+        return If_points
 
     def set_intrusion_frame_data(self, intrusion_frame_data, intrusion_network_points):
 
