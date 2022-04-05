@@ -59,6 +59,7 @@ class IntrusionBuilder:
         self.data_prepared = False
         self.model = model
         self._build_arguments = {}
+        self.width_data = True
 
     @property
     def feature(self):
@@ -152,23 +153,30 @@ class IntrusionBuilder:
         ].copy()
         data_maxside.reset_index(inplace=True)
 
-        if data_minside.shape[0] <= 3 and data_maxside.shape[0] > 0:
-            data_minside_ = data_maxside.copy()
-            data_minside = pd.concat([data_minside_, data_minside])
-            data_minside.loc[:,"coord2"] = data_minside.loc[:,"coord2"]*(-1)
-
-        if data_maxside.shape[0] == 0 and data_minside.shape[0] > 0:
-            data_maxside_ = data_minside.copy()
-            data_maxside = pd.concat([data_maxside, data_maxside_])
-            data_maxside.loc[:,"coord2"] = data_maxside.loc[:,"coord2"]*(-1)
-
         if data_maxside.shape[0] == 0 and data_minside.shape[0] == 0:
-            raise ValueError("Cannot create intrusion with no lateral data")
+            self.width_data = False
+            # raise ValueError("Cannot create intrusion with no lateral data")
 
-        data_sides = pd.concat([data_minside, data_maxside])
-        data_sides.reset_index(inplace=True)
+            data_sides = pd.DataFrame(columns = ["X", "Y", "Z",  "coord0",  "coord1",  "coord2"])
+            self.lateral_contact_data = [data_sides]
+        
+        else:
+            # -- at least 3 data points are required for SGS
+            if data_minside.shape[0] < 3 and data_maxside.shape[0] > 0:
+                data_minside_ = data_maxside.copy()
+                data_minside = pd.concat([data_minside_, data_minside])
+                data_minside.loc[:,"coord2"] = data_minside.loc[:,"coord2"]*(-1)
 
-        self.lateral_contact_data = [data_sides, data_minside, data_maxside]
+            if data_maxside.shape[0] < 3 and data_minside.shape[0] > 0:
+                data_maxside_ = data_minside.copy()
+                data_maxside = pd.concat([data_maxside, data_maxside_])
+                data_maxside.loc[:,"coord2"] = data_maxside.loc[:,"coord2"]*(-1)
+
+            
+            data_sides = pd.concat([data_minside, data_maxside])
+            data_sides.reset_index(inplace=True)
+
+            self.lateral_contact_data = [data_sides, data_minside, data_maxside]
         
         # -- separate data between roof and floor data
 
@@ -193,6 +201,7 @@ class IntrusionBuilder:
         ].evaluate_value(intrusion_network_data_xyz)
         intrusion_network_data.reset_index(inplace=True)
 
+        # -- if no data points for roof or floor, use geometric scaling to create points for SGS
         if self.intrusion_frame.builder.other_contact_data.shape[0] == 0:
             intrusion_type = geometric_scaling_parameters.get('intrusion_type', None)
             intrusion_length = geometric_scaling_parameters.get('intrusion_length', None)
@@ -210,7 +219,7 @@ class IntrusionBuilder:
                         self.intrusion_frame.builder.intrusion_network_contact)
                         )
 
-            else: #create data using geometric scaling
+            else: # -- create data using geometric scaling
                 estimated_thickness = thickness_from_geometric_scaling(intrusion_length, intrusion_type)
                 other_contact_data, other_contact_data_xyz = contact_pts_using_geometric_scaling(
                     estimated_thickness, 
@@ -479,14 +488,13 @@ class IntrusionBuilder:
         -------
         """
 
-        # get grid points and evaluated values in the intrusion frame
+        # -- get grid points and evaluated values in the intrusion frame
         # grid_points = self.simulation_grid
         # grid_points_coord0 = self.simulation_grid[1]
         grid_points_coord1 = self.simulation_grid[2]
         # grid_points_coord2 = self.simulation_grid[3]
 
         # -- generate data frame containing input data for simulation
-        data_sides = self.lateral_contact_data[0]
 
         minP = min(
             self.vertical_contact_data[0]["coord1"].min(),
@@ -509,37 +517,127 @@ class IntrusionBuilder:
             self.lateral_contact_data[0]["coord2"].max(),
         )
 
+        if self.width_data == False: # e.g. no lateral data
+            print('no lateral data')
+            
+            # -- try using vertical data to set some points and run SGS
+            vertical_data = pd.concat([self.vertical_contact_data[0],self.vertical_contact_data[1]])
+            vertical_data.loc[:,['conceptual_maxside','conceptual_minside']] = self.lateral_extent_model(
+                vertical_data, minP=minP, maxP=maxP, minS=minL, maxS=maxL
+                )
+
+            data_minL_temp = vertical_data[vertical_data['coord2'] < 0].copy()
+            data_maxL_temp = vertical_data[vertical_data['coord2'] >= 0].copy()
+
+            # -- coord l < 0
+
+            inputsimdata_minL = data_minL_temp[
+                data_minL_temp['coord2'] <= data_minL_temp['conceptual_minside']
+                ].loc[
+                    :,['X','Y','Z','coord0','coord1','coord2','conceptual_minside']].copy()
+            inputsimdata_minL.loc[:,'l_residual'] = inputsimdata_minL.loc[
+                :,'conceptual_minside'] - inputsimdata_minL.loc[:,'coord2']
+            inputsimdata_minL.rename(columns={'conceptual_minside': "l_conceptual"}, inplace = True)
+            inputsimdata_minL.reset_index(inplace = True)
+            print('length of minL data', len(inputsimdata_minL))
+
+            if len(inputsimdata_minL) > 0:
+                print('check 2')
+                while True:
+                    if len(inputsimdata_minL) >=3: #minimum 3 data points required for simulation
+                        break
+                    else:
+                        random_p = np.random.randint(minP,maxP)
+                        random_idx = np.random.randint(0,len(inputsimdata_minL))
+                        l_conceptual_residual = inputsimdata_minL.loc[random_idx,['coord2','l_conceptual','l_residual']].to_numpy()
+                        inputsimdata_minL.loc[len(inputsimdata_minL),['coord1','coord2','l_conceptual','l_residual','ref_coord']] = [random_p,
+                                                                                                                                    l_conceptual_residual[0],
+                                                                                                                                    l_conceptual_residual[1],
+                                                                                                                                    l_conceptual_residual[2],
+                                                                                                                                    0]
+
+                        continue
+
+            else: #if no data points, use conceptual model
+                print('check 3')
+
+                random_p = pd.DataFrame(np.random.randint(minP, maxP, 10), columns = ['coord1'])
+                conceptual_l = self.lateral_extent_model(random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+                inputsimdata_minL.loc[:,'l_residual'] = 0
+                inputsimdata_minL.loc[:,'l_conceptual'] = conceptual_l[1]
+                inputsimdata_minL.loc[:,'coord1'] = random_p
+
+            inputsimdata_minL.loc[:, "ref_coord"] = 0
+            # -- coord l >= 0   
+
+            inputsimdata_maxL = data_maxL_temp[data_maxL_temp['coord2'] >= data_maxL_temp['conceptual_maxside']].loc[:,['X','Y','Z','coord0','coord1','coord2','conceptual_maxside']].copy()
+            inputsimdata_maxL.loc[:,'l_residual'] = inputsimdata_maxL.loc[:,'conceptual_maxside'] - inputsimdata_maxL.loc[:,'coord2']
+            inputsimdata_maxL.rename(columns={'conceptual_maxside': 'l_conceptual'}, inplace = True)
+            inputsimdata_maxL.reset_index(inplace = True)
+
+            if len(inputsimdata_maxL) > 0:
+                print('check 4')
+                
+                while True:
+                    if len(inputsimdata_maxL) >=3:
+                        break
+                    else:
+                        random_p = np.random.randint(minP,maxP)
+                        random_idx = np.random.randint(0,len(inputsimdata_maxL))
+                        l_conceptual_residual = inputsimdata_maxL.loc[random_idx,['coord2','l_conceptual','l_residual']].to_numpy()
+                        inputsimdata_maxL.loc[len(inputsimdata_maxL),['coord1','coord2','l_conceptual','l_residual','ref_coord']] = [random_p,
+                                                                                                                                    l_conceptual_residual[0],
+                                                                                                                                    l_conceptual_residual[1],
+                                                                                                                                    l_conceptual_residual[2],
+                                                                                                                                    0]
+                        continue
+
+            else: #if no data points, use conceptual model
+                print('check 5')
+
+                random_p = pd.DataFrame(np.random.randint(minP, maxP, 10), columns = ['coord1'])
+                conceptual_l = self.lateral_extent_model(random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+                inputsimdata_minL.loc[:,'l_residual'] = 0
+                inputsimdata_minL.loc[:,'l_conceptual'] = conceptual_l[0]
+                inputsimdata_minL.loc[:,'coord1'] = random_p
+            
+            inputsimdata_maxL.loc[:, "ref_coord"] = 0
+            self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
+
+        if self.width_data == True: # e.g. simulation of thresholds using lateral contact data
+            print('with lateral data')
+        
         # -- Side of intrusion with coord2<0 (l<0)
-        data_minL = self.lateral_contact_data[1]
-        data_conceptual_minL = self.lateral_extent_model(
-            data_minL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
-        )
-        data_residual_minL = (
-            data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
-        ).to_numpy()
-        inputsimdata_minL = data_minL.loc[
-            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-        ].copy()
-        inputsimdata_minL.loc[:, "l_residual"] = data_residual_minL
-        inputsimdata_minL.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
-        inputsimdata_minL.loc[:, "ref_coord"] = 0
+            data_minL = self.lateral_contact_data[1]
+            data_conceptual_minL = self.lateral_extent_model(
+                data_minL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
+            )
+            data_residual_minL = (
+                data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
+            ).to_numpy()
+            inputsimdata_minL = data_minL.loc[
+                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+            ].copy()
+            inputsimdata_minL.loc[:, "l_residual"] = data_residual_minL
+            inputsimdata_minL.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
+            inputsimdata_minL.loc[:, "ref_coord"] = 0
 
-        # -- Side of intrusion with coord2>0 (l>0)
-        data_maxL = self.lateral_contact_data[2]
-        data_conceptual_maxL = self.lateral_extent_model(
-            data_maxL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
-        )
-        data_residual_maxL = (
-            data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
-        ).to_numpy()
-        inputsimdata_maxL = data_maxL.loc[
-            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-        ].copy()
-        inputsimdata_maxL.loc[:, "l_residual"] = data_residual_maxL
-        inputsimdata_maxL.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
-        inputsimdata_maxL.loc[:, "ref_coord"] = 0
+            # -- Side of intrusion with coord2>0 (l>0)
+            data_maxL = self.lateral_contact_data[2]
+            data_conceptual_maxL = self.lateral_extent_model(
+                data_maxL, minP=minP, maxP=maxP, minS=minL, maxS=maxL
+            )
+            data_residual_maxL = (
+                data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
+            ).to_numpy()
+            inputsimdata_maxL = data_maxL.loc[
+                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+            ].copy()
+            inputsimdata_maxL.loc[:, "l_residual"] = data_residual_maxL
+            inputsimdata_maxL.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
+            inputsimdata_maxL.loc[:, "ref_coord"] = 0
 
-        self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
+            self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
 
         # -- Compute simulation parameters if not defined
         # ---- compute lower and uper fence of simulated values using quartiles
@@ -579,8 +677,7 @@ class IntrusionBuilder:
         ndmax = self.lateral_sgs_parameters.get("ndmax")
         radius = self.lateral_sgs_parameters.get("radius")
 
-        # if geostats is None:
-        #     raise Exception("geostats is not installed, pip install geostatspy")
+
         l_min_simulation = geostats.sgsim(
             inputsimdata_minL,
             "coord1",
@@ -673,10 +770,10 @@ class IntrusionBuilder:
 
         # self.simulationGSLIB_s_outcome = [s_min_simulation, s_max_simulation]
 
-        # -- Create dataframe containing S threshold for each grid point
+        #-- Create dataframe containing S threshold for each grid point
 
         propagation_grid_model = np.linspace(xmn, xmn + (nx * xsiz), nx)
-
+        
         lateral_thresholds = pd.DataFrame(
             columns=[
                 "coord1",

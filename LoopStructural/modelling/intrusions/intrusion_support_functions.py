@@ -172,22 +172,26 @@ def shortest_path(inlet, outlet, time_map):
     inet[temp_inlet[0], temp_inlet[1]] = 0
     i = 0
 
+    n_rows = len(time_map)
+    n_cols = len(time_map[0])
+
     while True:
         i = i + 1
-        time_temp_inlet = time_map[
-            temp_inlet[0], temp_inlet[1]
-        ]  # obtain time value of temporary outlet
-        neighbors = element_neighbour(
-            temp_inlet, time_map, inet
-        )  # identify neighbours elements of temporary outlet
-        direction = index_min(
-            neighbors
-        )  # obtain the location (index min) of minimun difference
-        temp_inlet = new_inlet(temp_inlet, direction)
-        a = temp_inlet[0]
-        b = temp_inlet[1]
+        time_temp_inlet = time_map[temp_inlet[0], temp_inlet[1]]  # obtain time value of temporary outlet
+        neighbors = element_neighbour(temp_inlet, time_map, inet)  # identify neighbours elements of temporary outlet
+        direction = index_min(neighbors)  # obtain the location (index min) of minimun difference
 
-        inet[a, b] = 0
+        if direction == 10:
+            break
+
+        temp_inlet = new_inlet(temp_inlet, direction)
+        row = temp_inlet[0]
+        col = temp_inlet[1]
+
+        # if row >= n_rows or col >= n_cols:
+        #     break
+        # else:
+        inet[row, col] = 0
 
         if temp_inlet[0] == outlet[0] and temp_inlet[1] == outlet[1]:
             break
@@ -224,9 +228,9 @@ def element_neighbour(index, array, inet):
     rows = len(array) - 1  # max index of rows of time_map array
     cols = len(array[0]) - 1  # max index of columns of time_map arrays
     values = np.zeros(
-        9
-    )  # array to save values (element above, element to the left, element to the right)
-    values[8] = 10
+        8
+    )  # 8 - array to save values (element above, element to the left, element to the right)
+    # values[8] = 10
     index_row = index[0]
     index_col = index[1]
 
@@ -284,28 +288,28 @@ def element_neighbour(index, array, inet):
         if values[h] > -1:
             if h == 0:
                 if inet[index[0] - 1, index[1] - 1] == 0:
-                    values[0] = -1
+                    values[0] = -2
             if h == 1:
                 if inet[index[0] - 1, index[1]] == 0:
-                    values[1] = -1
+                    values[1] = -2
             if h == 2:
                 if inet[index[0] - 1, index[1] + 1] == 0:
-                    values[2] = -1
+                    values[2] = -2
             if h == 3:
                 if inet[index[0], index[1] - 1] == 0:
-                    values[3] = -1
+                    values[3] = -2
             if h == 4:
                 if inet[index[0], index[1] + 1] == 0:
-                    values[4] = -1
+                    values[4] = -2
             if h == 5:
                 if inet[index[0] + 1, index[1] - 1] == 0:
-                    values[5] = -1
+                    values[5] = -2
             if h == 6:
                 if inet[index[0] + 1, index[1]] == 0:
-                    values[6] = -1
+                    values[6] = -2
             if h == 7:
                 if inet[index[0] + 1, index[1] + 1] == 0:
-                    values[7] = -1
+                    values[7] = -2
         else:
             continue
 
@@ -327,6 +331,7 @@ def index_min(array):
     """
 
     # return the index value of the minimum value in an array of 1x8
+    # print(array)
     index_array = {}
 
     for i in range(
@@ -336,11 +341,15 @@ def index_min(array):
         if array[i] >= 0:
             index_array.update({i: array[i]})
 
-    minimum_val = min(index_array.values())
+    if len(index_array.values())> 0:        
 
-    for key, value in index_array.items():
-        if value == minimum_val:
-            index_min = key
+        minimum_val = min(index_array.values())
+
+        for key, value in index_array.items():
+            if value == minimum_val:
+                index_min = key
+
+    else: index_min = 10
 
     return index_min
 
@@ -369,7 +378,7 @@ def new_inlet(inlet, direction):
     pot_new_inlets.update({"5": np.array([inlet[0] + 1, inlet[1] - 1])})
     pot_new_inlets.update({"6": np.array([inlet[0] + 1, inlet[1]])})
     pot_new_inlets.update({"7": np.array([inlet[0] + 1, inlet[1] + 1])})
-    new_outlet = np.zeros(2)
+    new_inlet = np.zeros(2)
 
     for key, value in pot_new_inlets.items():
         if key == str(direction):
