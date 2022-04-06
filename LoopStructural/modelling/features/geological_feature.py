@@ -1,8 +1,9 @@
 """
 Geological features
 """
-import logging
-
+from LoopStructural.modelling.features import BaseFeature
+from LoopStructural.utils import getLogger
+from LoopStructural.modelling.features import FeatureType
 import numpy as np
 
 from LoopStructural.utils import getLogger, LoopValueError
@@ -10,7 +11,7 @@ from LoopStructural.utils import getLogger, LoopValueError
 logger = getLogger(__name__)
 
 
-class GeologicalFeature:
+class GeologicalFeature(BaseFeature):
     """
     Geological feature is class that is used to represent a geometrical element in a geological
     model. For example foliations, fault planes, fold rotation angles etc.
@@ -36,11 +37,9 @@ class GeologicalFeature:
         name,
         interpolator,
         builder=None,
-        data=None,
-        region=None,
-        type=None,
+        regions=[],
         faults=[],
-        fold=None,
+        model=None,
     ):
         """Default constructor for geological feature
 
@@ -56,23 +55,11 @@ class GeologicalFeature:
 
 
         """
+        BaseFeature.__init__(name, model, faults, regions, builder)
         self.name = name
         self.interpolator = interpolator
-        self.ndim = 1
         self.builder = builder
-        self.region = region
-        self.regions = []
-        self.type = type
-        self.faults = faults
-        self.faults_enabled = True
-        self.fold = fold
-        self._attributes = {}
-        self._attributes["feature"] = self
-        self._attributes["builder"] = self.builder
-        self._attributes["faults"] = self.faults
-        if region is None:
-            self.region = "everywhere"
-        self.model = None
+        self.type = FeatureType.INTERPOLATED
 
     def is_valid(self):
         return self.interpolator.valid
@@ -86,40 +73,8 @@ class GeologicalFeature:
     def __setitem__(self, key, item):
         self._attributes[key] = item
 
-    def __call__(self, xyz):
-        return self.evaluate_value(xyz)
-
     def set_model(self, model):
         self.model = model
-
-    def toggle_faults(self):
-        """
-        Turn the fault off for a feature
-        This function is only really used for debugging or creating methods
-        explanation figures
-
-        Returns
-        -------
-
-        """
-        self.faults_enabled = ~self.faults_enabled
-
-    def add_region(self, region):
-        """
-        Adds a region where the geological feature is active to the model.
-
-        Parameters
-        ----------
-        region : boolean function(x,y,z)
-                returns true if inside region, false if outside
-                can be passed as a lambda function e.g.
-                lambda pos : feature.evaluate_value(pos) > 0
-
-        Returns
-        -------
-
-        """
-        self.regions.append(region)
 
     def evaluate_value(self, evaluation_points):
         """

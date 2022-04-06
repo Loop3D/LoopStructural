@@ -1,28 +1,29 @@
 """
 Geological features
 """
-import logging
-
+from LoopStructural.modelling.features import BaseFeature
+from LoopStructural.utils import getLogger
+from LoopStructural.modelling.features import FeatureType
 import numpy as np
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
-class LambdaGeologicalFeature:
+class LambdaGeologicalFeature(BaseFeature):
     def __init__(
-        self, function=None, name="unnamed_lambda", gradient_function=None, model=None
+        self,
+        function=None,
+        name="unnamed_lambda",
+        gradient_function=None,
+        model=None,
+        regions=[],
+        faults=[],
+        builder=None,
     ):
+        BaseFeature.__init__(self, name, model, faults, regions, builder)
+        self.type = FeatureType.LAMBDA
         self.function = function
-        self.name = name
         self.gradient_function = gradient_function
-        self.model = model
-        if self.model is not None:
-            v = function(self.model.regular_grid((10, 10, 10)))
-            self._min = np.nanmin(v)  # function(self.model.regular_grid((10, 10, 10))))
-            self._max = np.nanmax(v)
-        else:
-            self._min = 0
-            self._max = 0
 
     def evaluate_value(self, xyz):
         v = np.zeros((xyz.shape[0]))
@@ -39,9 +40,3 @@ class LambdaGeologicalFeature:
         else:
             v[:, :] = self.gradient_function(xyz)
         return v
-
-    def min(self):
-        return self._min
-
-    def max(self):
-        return self._max

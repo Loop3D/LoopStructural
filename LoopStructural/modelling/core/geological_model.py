@@ -278,47 +278,53 @@ class GeologicalModel:
         logger.info("Creating model from processor")
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
-        for i in processor.fault_network.faults:
-            logger.info(f"Adding fault {i}")
-            model.create_and_add_fault(
-                i,
-                **processor.fault_properties.to_dict("index")[i],
-                faultfunction="BaseFault",
-            )
-        for edge, properties in processor.fault_network.fault_edge_properties.items():
-            if model[edge[1]] is None or model[edge[0]] is None:
-                logger.warning(
-                    f"Cannot add splay {edge[1]} or {edge[0]} are not in the model"
+        if processor.fault_properties is not None:
+            for i in processor.fault_network.faults:
+                logger.info(f"Adding fault {i}")
+                model.create_and_add_fault(
+                    i,
+                    **processor.fault_properties.to_dict("index")[i],
+                    faultfunction="BaseFault",
                 )
-                continue
-            splay = False
-            if "angle" in properties:
-                if (
-                    float(properties["angle"]) < 30
-                    and np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                        - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
+            for (
+                edge,
+                properties,
+            ) in processor.fault_network.fault_edge_properties.items():
+                if model[edge[1]] is None or model[edge[0]] is None:
+                    logger.warning(
+                        f"Cannot add splay {edge[1]} or {edge[0]} are not in the model"
                     )
-                    < 90
-                ):
-                    # splay
-                    region = model[edge[1]].builder.add_splay(model[edge[0]])
+                    continue
+                splay = False
+                if "angle" in properties:
+                    if (
+                        float(properties["angle"]) < 30
+                        and np.abs(
+                            processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                            - processor.stratigraphic_column["faults"][edge[1]][
+                                "dip_dir"
+                            ]
+                        )
+                        < 90
+                    ):
+                        # splay
+                        region = model[edge[1]].builder.add_splay(model[edge[0]])
 
-                    model[edge[1]].splay[model[edge[0]].name] = region
-                    splay = True
-            if splay == False:
-                model[edge[1]].add_abutting_fault(
-                    model[edge[0]],
-                    np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]][
-                            "downthrow_dir"
-                        ]
-                        - processor.stratigraphic_column["faults"][edge[1]][
-                            "downthrow_dir"
-                        ]
+                        model[edge[1]].splay[model[edge[0]].name] = region
+                        splay = True
+                if splay == False:
+                    model[edge[1]].add_abutting_fault(
+                        model[edge[0]],
+                        np.abs(
+                            processor.stratigraphic_column["faults"][edge[0]][
+                                "downthrow_dir"
+                            ]
+                            - processor.stratigraphic_column["faults"][edge[1]][
+                                "downthrow_dir"
+                            ]
+                        )
+                        < 90,
                     )
-                    < 90,
-                )
         for s in processor.stratigraphic_column.keys():
             if s != "faults":
                 faults = None
@@ -1651,7 +1657,7 @@ class GeologicalModel:
             **kwargs,
         )
         fault.builder = fault_frame_builder
-        
+
         for f in reversed(self.features):
             if f.type == "unconformity":
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
