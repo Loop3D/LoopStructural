@@ -62,22 +62,22 @@ class StructuralFrameBuilder:
         # self.builders
         if "fold" in kwargs:
             self.builders.append(
-                FoldedFeatureBuilder(interpolators[0], name=self.name + "_0", **kwargs)
+                FoldedFeatureBuilder(interpolators[0], name=f"{self.name}__0", **kwargs)
             )
         else:
             self.builders.append(
                 GeologicalFeatureInterpolator(
-                    interpolators[0], name=self.name + "_0", **kwargs
+                    interpolators[0], name=f"{self.name}__0", **kwargs
                 )
             )  # ,region=self.region))
         self.builders.append(
             GeologicalFeatureInterpolator(
-                interpolators[1], name=self.name + "_1", **kwargs
+                interpolators[1], name=f"{self.name}__1", **kwargs
             )
         )  # ,region=self.region))
         self.builders.append(
             GeologicalFeatureInterpolator(
-                interpolators[2], name=self.name + "_2", **kwargs
+                interpolators[2], name=f"{self.name}__2", **kwargs
             )
         )  # ,region=self.region))
 
