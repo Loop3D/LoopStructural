@@ -23,6 +23,8 @@ class ProcessInputData:
         colours=None,
         use_thickness=None,
         fault_edge_properties=None,
+        origin=None,
+        maximum=None,
     ):
         """Object to generate loopstructural input dataset from a geological map
 
@@ -81,9 +83,9 @@ class ProcessInputData:
         self._fault_locations = None
         self.fault_locations = fault_locations
         # self._fault_dimensions = None
+        self._fault_network = None
         self._fault_properties = None
         self.fault_properties = fault_properties
-        self._fault_network = None
         if fault_edges is not None and fault_edge_properties is not None:
             self.set_fault_network(fault_edges, fault_edge_properties)  # = fault_graph
         self._fault_stratigraphy = fault_stratigraphy
@@ -95,6 +97,26 @@ class ProcessInputData:
         # flags
         self._foliation_properties = {}  # empty dictionary of foliation parameters
         self.foliation_properties = None
+        self._origin = None
+        self.origin = origin
+        self._maximum = None
+        self.maximum = maximum
+
+    @property
+    def origin(self):
+        return self._origin
+
+    @origin.setter
+    def origin(self, origin):
+        self._origin = origin
+
+    @property
+    def maximum(self):
+        return self._maximum
+
+    @maximum.setter
+    def maximum(self, maximum):
+        self._maximum = maximum
 
     @property
     def stratigraphic_order(self):
@@ -313,7 +335,9 @@ class ProcessInputData:
                         ],
                     ] = np.mean(pts, axis=0)
         self._fault_properties = fault_properties
+        print(list(self.fault_properties.index))
         self._fault_network = FaultNetwork(list(self.fault_properties.index))
+        print(self.fault_network)
 
     @property
     def fault_network(self):
@@ -396,7 +420,7 @@ class ProcessInputData:
             value = 0.0  # reset for each supergroup
             for g in reversed(sg):
                 if g not in self.thicknesses:
-                    logger.warning("No thicknesses for {g}")
+                    logger.warning(f"No thicknesses for {g}")
                     stratigraphic_value[g] = np.nan
                 else:
                     stratigraphic_value[g] = value
@@ -485,14 +509,45 @@ class ProcessInputData:
         if "polarity" not in contact_orientations.columns:
             contact_orientations["polarity"] = 1.0
         contact_orientations = contact_orientations.copy()
+        if (
+            "nx" not in contact_orientations.columns
+            or "ny" not in contact_orientations.columns
+            or "nz" not in contact_orientations.columns
+        ):
+            if (
+                "strike" not in contact_orientations.columns
+                and "azimuth" in contact_orientations.columns
+            ):
+                contact_orientations["strike"] = contact_orientations["azimuth"] - 90
+            if (
+                "strike" not in contact_orientations.columns
+                and "dipdir" in contact_orientations.columns
+            ):
+                contact_orientations["strike"] = contact_orientations["dipdir"] - 90
+            if (
+                "strike" not in contact_orientations.columns
+                and "dipDir" in contact_orientations.columns
+            ):
+                contact_orientations["strike"] = contact_orientations["dipDir"] - 90
+            if (
+                "strike" in contact_orientations.columns
+                and "dip" in contact_orientations.columns
+            ):
+                contact_orientations["nx"] = np.nan
+                contact_orientations["ny"] = np.nan
+                contact_orientations["nz"] = np.nan
+                contact_orientations[["nx", "ny", "nz"]] = strike_dip_vector(
+                    contact_orientations["strike"], contact_orientations["dip"]
+                )
+            if (
+                "nx" not in contact_orientations.columns
+                or "ny" not in contact_orientations.columns
+                or "nz" not in contact_orientations.columns
+            ):
+                raise ValueError(
+                    "Contact orientation data must contain either strike/dipdir, dip, or nx, ny, nz"
+                )
 
-        contact_orientations["strike"] = contact_orientations["azimuth"] - 90
-        contact_orientations["nx"] = np.nan
-        contact_orientations["ny"] = np.nan
-        contact_orientations["nz"] = np.nan
-        contact_orientations[["nx", "ny", "nz"]] = strike_dip_vector(
-            contact_orientations["strike"], contact_orientations["dip"]
-        )
         self._update_feature_names(contact_orientations)
         self._contact_orientations = contact_orientations[
             ["X", "Y", "Z", "nx", "ny", "nz", "feature_name", "polarity"]
@@ -515,12 +570,32 @@ class ProcessInputData:
             return
         fault_orientations = fault_orientations.copy()
         fault_orientations["coord"] = 0
-        fault_orientations["gx"] = np.nan
-        fault_orientations["gy"] = np.nan
-        fault_orientations["gz"] = np.nan
-        fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
-            fault_orientations["strike"], fault_orientations["dip"]
-        )
+        if (
+            "gx" not in fault_orientations.columns
+            or "gy" not in fault_orientations.columns
+            or "gz" not in fault_orientations.columns
+        ):
+            if (
+                "strike" not in fault_orientations.columns
+                and "azimuth" in fault_orientations.columns
+            ):
+                fault_orientations["strike"] = fault_orientations["azimuth"] - 90
+            if (
+                "strike" not in fault_orientations.columns
+                and "dipdir" in fault_orientations.columns
+            ):
+                fault_orientations["strike"] = fault_orientations["dipdir"] - 90
+            if (
+                "strike" not in fault_orientations.columns
+                and "dipDir" in fault_orientations.columns
+            ):
+                fault_orientations["strike"] = fault_orientations["dipDir"] - 90
+            fault_orientations["gx"] = np.nan
+            fault_orientations["gy"] = np.nan
+            fault_orientations["gz"] = np.nan
+            fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
+                fault_orientations["strike"], fault_orientations["dip"]
+            )
         fault_orientations["feature_name"] = fault_orientations["fault_name"]
         self._fault_orientations = fault_orientations[
             ["X", "Y", "Z", "gx", "gy", "gz", "coord", "feature_name"]
