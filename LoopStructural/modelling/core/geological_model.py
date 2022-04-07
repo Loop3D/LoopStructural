@@ -611,30 +611,6 @@ class GeologicalModel:
 
         self.stratigraphic_column = stratigraphic_column
 
-    def create_from_feature_list(self, features):
-        """Initialises a model from a dictionary containing the features
-
-        Parameters
-        ----------
-        features : [type]
-            [description]
-
-        Raises
-        ------
-        LoopException
-            [description]
-        """
-        for f in features:
-            featuretype = f.pop("featuretype", None)
-            if featuretype is None:
-                raise LoopException
-            if featuretype == "strati":
-                self.create_and_add_foliation(f)
-            # if featuretype == 'fault':
-            #     self.create_and_add_fault(f)
-            if featuretype == "folded_strati":
-                self.create_and_add_folded_foliation(f)
-
     def get_interpolator(
         self,
         interpolatortype="FDI",
@@ -1642,16 +1618,17 @@ class GeologicalModel:
 
         kwargs["tol"] = tol
         fault_frame_builder.setup(**kwargs)
-        fault_frame = fault_frame_builder.frame
+        fault = fault_frame_builder.frame
+        fault.displacement = displacement_scaled
+        fault.faultfunction = faultfunction
+        # fault = FaultSegment(
+        #     fault_frame,
+        #     displacement=displacement_scaled,
+        #     faultfunction=faultfunction,
+        #     **kwargs,
+        # )
+        # fault.builder = fault_frame_builder
 
-        fault = FaultSegment(
-            fault_frame,
-            displacement=displacement_scaled,
-            faultfunction=faultfunction,
-            **kwargs,
-        )
-        fault.builder = fault_frame_builder
-        
         for f in reversed(self.features):
             if f.type == "unconformity":
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)

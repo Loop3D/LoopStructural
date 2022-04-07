@@ -1,5 +1,4 @@
-from ..features.structural_frame_builder import StructuralFrameBuilder
-
+from LoopStructural.modelling import StructuralFrameBuilder
 import numpy as np
 from LoopStructural.utils import getLogger
 
@@ -29,8 +28,11 @@ class FaultBuilder(StructuralFrameBuilder):
             the maximum area around the model domain that a fault is modelled. For high displacement faults this
             may need to be large, smaller values will be result in fewer degrees of freedom = quicker interpolation
         """
+        from LoopStructural.modelling import FaultSegment  # defer import until needed
 
-        StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
+        StructuralFrameBuilder.__init__(
+            self, interpolator, interpolators, frame=FaultSegment, **kwargs
+        )
         self.model = model
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array(
@@ -78,8 +80,9 @@ class FaultBuilder(StructuralFrameBuilder):
         major_axis=None,
         intermediate_axis=None,
         w=1.0,
-        points=True,
+        points=False,
     ):
+
         """Generate the required data for building a fault frame for a fault with the
         specified parameters
 

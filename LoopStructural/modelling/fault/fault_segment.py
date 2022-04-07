@@ -5,6 +5,7 @@ from LoopStructural.modelling.fault.fault_function_feature import (
 )
 from LoopStructural.modelling.fault.fault_function import BaseFault
 from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
+from LoopStructural.modelling import StructuralFrame
 
 logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
@@ -13,13 +14,13 @@ import numpy as np
 use_threads = True
 
 
-class FaultSegment:
+class FaultSegment(StructuralFrame):
     """
     Class for representing a slip event of a fault
     """
 
     def __init__(
-        self, faultframe, faultfunction=None, steps=3, displacement=1.0, **kwargs
+        self, features, name, faultfunction=None, steps=3, displacement=1.0, fold=None
     ):
         """
         A slip event of a fault
@@ -34,9 +35,8 @@ class FaultSegment:
             how many integration steps for faults
         kwargs
         """
-        self.faultframe = faultframe
+        StructuralFrame.__init__(self, features, name, fold)
         self.type = "fault"
-        self.name = kwargs.get("name", self.faultframe.name)
         self.displacement = displacement
         self.faultfunction = faultfunction
         if faultfunction == "BaseFault":
@@ -44,12 +44,8 @@ class FaultSegment:
         self.steps = steps
         self.regions = []
         self.faults_enabled = True
-        self.displacementfeature = None
         self.model = None
-        if self.faultframe is not None:
-            self.displacementfeature = FaultDisplacementFeature(
-                self.faultframe, self.faultfunction, name=self.name
-            )
+
         self.builder = None
         self.splay = {}
         self.abut = {}
@@ -96,29 +92,20 @@ class FaultSegment:
             raise ValueError("Fault builder not set")
         return self.builder.fault_centre
 
-    def __str__(self):
-        _str = "FaultSegment - {} \n".format(self.name)
-        _str += "Interpolator: {} \n".format(self.faultframe[0].interpolator.type)
-        _str += "Degrees of freedom: {}\n".format(self.faultframe[0].interpolator.nx)
-        _str += "Displacement magnitude: {}\n".format(self.displacement)
-        for name in self.splay.keys():
-            _str += "Splays from {}\n".format(name)
-        for name in self.abut.keys():
-            _str += "Abuts {}\n".format(name)
-        return _str
+    @property
+    def displacementfeature(self):
+        return FaultDisplacementFeature(self, self.faultfunction, name=self.name)
 
-    def __getitem__(self, item):
-        """
-
-        Parameters
-        ----------
-        item
-
-        Returns
-        -------
-
-        """
-        return self.faultframe[item]
+    # def __str__(self):
+    #     _str = "FaultSegment - {} \n".format(self.name)
+    #     _str += "Interpolator: {} \n".format(self.faultframe[0].interpolator.type)
+    #     _str += "Degrees of freedom: {}\n".format(self.faultframe[0].interpolator.nx)
+    #     _str += "Displacement magnitude: {}\n".format(self.displacement)
+    #     for name in self.splay.keys():
+    #         _str += "Splays from {}\n".format(name)
+    #     for name in self.abut.keys():
+    #         _str += "Abuts {}\n".format(name)
+    #     return _str
 
     def set_model(self, model):
         """
@@ -154,33 +141,33 @@ class FaultSegment:
         else:
             logger.warning("Displacement not updated")
 
-    def toggle_faults(self):
-        """
-        Toggle faults that affect this fault segment
+    # def toggle_faults(self):
+    #     """
+    #     Toggle faults that affect this fault segment
 
-        Returns
-        -------
+    #     Returns
+    #     -------
 
-        """
-        self.faults_enabled = ~self.faults_enabled
-        for i in range(3):
-            self.faultframe[i].toggle_faults()
+    #     """
+    #     self.faults_enabled = ~self.faults_enabled
+    #     for i in range(3):
+    #         self.faultframe[i].toggle_faults()
 
-    def add_region(self, region):
-        """
+    # def add_region(self, region):
+    #     """
 
-        Parameters
-        ----------
-        region : boolean function(x,y,z)
-                A function that returns true if inside region, false if outside
-                can be passed as a lambda function e.g.
-                lambda pos : feature.evaluate_value(pos) > 0
-        Returns
-        -------
+    #     Parameters
+    #     ----------
+    #     region : boolean function(x,y,z)
+    #             A function that returns true if inside region, false if outside
+    #             can be passed as a lambda function e.g.
+    #             lambda pos : feature.evaluate_value(pos) > 0
+    #     Returns
+    #     -------
 
-        """
+    #     """
 
-        self.regions.append(region)
+    #     self.regions.append(region)
 
     def evaluate(self, locations):
         """
@@ -196,7 +183,7 @@ class FaultSegment:
             boolean array true if on hanging wall, false if on footwall
 
         """
-        v = self.faultframe.features[0].evaluate_value(locations)
+        v = self.__getitem__(0).evaluate_value(locations)
         v[~np.isnan(v)] = v[~np.isnan(v)] > 0
         v[np.isnan(v)] = 0
         return v.astype(bool)
@@ -231,17 +218,17 @@ class FaultSegment:
                 mask = np.logical_and(mask, r(locations))
             except:
                 logger.error("nan slicing")
-        v[mask] = self.faultframe[0].evaluate_value(locations[mask, :])
+        v[mask] = self.__getitem__(0).evaluate_value(locations[mask, :])
         return v
 
     def mean(self):
-        return self.faultframe[0].mean()
+        return self.__getitem__(0).mean()
 
     def max(self):
-        return self.faultframe[0].max()
+        return self.__getitem__(0).max()
 
     def min(self):
-        return self.faultframe[0].min()
+        return self.__getitem__(0).min()
 
     def evaluate_gradient(self, locations):
         """
@@ -267,7 +254,7 @@ class FaultSegment:
             except:
                 logger.error("nan slicing ")
         # need to scale with fault displacement
-        v[mask, :] = self.faultframe[1].evaluate_gradient(locations[mask, :])
+        v[mask, :] = self.__getitem__(0).evaluate_gradient(locations[mask, :])
         return v
 
     def evaluate_displacement(self, points):
@@ -279,22 +266,16 @@ class FaultSegment:
         if use_threads:
             with ThreadPoolExecutor(max_workers=8) as executor:
                 # all of these operations should be independent so just run as different threads
-                gx_future = executor.submit(
-                    self.faultframe.features[0].evaluate_value, newp
-                )
-                gy_future = executor.submit(
-                    self.faultframe.features[1].evaluate_value, newp
-                )
-                gz_future = executor.submit(
-                    self.faultframe.features[2].evaluate_value, newp
-                )
+                gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp)
+                gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp)
+                gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp)
                 gx = gx_future.result()
                 gy = gy_future.result()
                 gz = gz_future.result()
         else:
-            gx = self.faultframe.features[0].evaluate_value(newp)
-            gy = self.faultframe.features[1].evaluate_value(newp)
-            gz = self.faultframe.features[2].evaluate_value(newp)
+            gx = self.__getitem__(0).evaluate_value(newp)
+            gy = self.__getitem__(1).evaluate_value(newp)
+            gz = self.__getitem__(2).evaluate_value(newp)
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
         mask = np.logical_and(mask, ~np.isnan(gz))
@@ -327,22 +308,16 @@ class FaultSegment:
         if use_threads:
             with ThreadPoolExecutor(max_workers=8) as executor:
                 # all of these operations should be independent so just run as different threads
-                gx_future = executor.submit(
-                    self.faultframe.features[0].evaluate_value, newp
-                )
-                gy_future = executor.submit(
-                    self.faultframe.features[1].evaluate_value, newp
-                )
-                gz_future = executor.submit(
-                    self.faultframe.features[2].evaluate_value, newp
-                )
+                gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp)
+                gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp)
+                gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp)
                 gx = gx_future.result()
                 gy = gy_future.result()
                 gz = gz_future.result()
         else:
-            gx = self.faultframe.features[0].evaluate_value(newp)
-            gy = self.faultframe.features[1].evaluate_value(newp)
-            gz = self.faultframe.features[2].evaluate_value(newp)
+            gx = self.__getitem__(0).evaluate_value(newp)
+            gy = self.__getitem__(1).evaluate_value(newp)
+            gz = self.__getitem__(2).evaluate_value(newp)
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
         mask = np.logical_and(mask, ~np.isnan(gz))
@@ -365,26 +340,26 @@ class FaultSegment:
                 with ThreadPoolExecutor(max_workers=8) as executor:
                     # all of these operations should be independent so just run as different threads
                     gx_future = executor.submit(
-                        self.faultframe.features[0].evaluate_value, newp[mask, :]
+                        self.__getitem__(0).evaluate_value, newp[mask, :]
                     )
                     g_future = executor.submit(
-                        self.faultframe.features[1].evaluate_gradient, newp[mask, :]
+                        self.__getitem__(1).evaluate_gradient, newp[mask, :]
                     )
                     gy_future = executor.submit(
-                        self.faultframe.features[1].evaluate_value, newp[mask, :]
+                        self.__getitem__(1).evaluate_value, newp[mask, :]
                     )
                     gz_future = executor.submit(
-                        self.faultframe.features[2].evaluate_value, newp[mask, :]
+                        self.__getitem__(2).evaluate_value, newp[mask, :]
                     )
                     gx = gx_future.result()
                     g = g_future.result()
                     gy = gy_future.result()
                     gz = gz_future.result()
             else:
-                gx = self.faultframe.features[0].evaluate_value(newp[mask, :])
-                gy = self.faultframe.features[1].evaluate_value(newp[mask, :])
-                gz = self.faultframe.features[2].evaluate_value(newp[mask, :])
-                g = self.faultframe.features[1].evaluate_gradient(newp[mask, :])
+                gx = self.__getitem__(0).evaluate_value(newp[mask, :])
+                gy = self.__getitem__(1).evaluate_value(newp[mask, :])
+                gz = self.__getitem__(2).evaluate_value(newp[mask, :])
+                g = self.__getitem__(1).evaluate_gradient(newp[mask, :])
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
@@ -419,7 +394,7 @@ class FaultSegment:
         abutting_region = None
         if positive is None:
             pts = (
-                self.faultframe[0].builder.data[["X", "Y", "Z"]].to_numpy()
+                self.__getitem__(0).builder.data[["X", "Y", "Z"]].to_numpy()
             )  # get_value_constraints()
             abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
             positive = abut_value > 0
@@ -439,4 +414,4 @@ class FaultSegment:
                 point=abutting_fault_feature.fault_centre,
             )
         self.abut[abutting_fault_feature.name] = abutting_region
-        self.faultframe[0].add_region(abutting_region)
+        self.__getitem__(0).add_region(abutting_region)
