@@ -292,20 +292,20 @@ class GeologicalModel:
                 )
                 continue
             splay = False
-            if "angle" in properties:
-                if (
-                    float(properties["angle"]) < 30
-                    and np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                        - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
-                    )
-                    < 90
-                ):
-                    # splay
-                    region = model[edge[1]].builder.add_splay(model[edge[0]])
+            # if "angle" in properties:
+            #     if (
+            #         float(properties["angle"]) < 30
+            #         and np.abs(
+            #             processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+            #             - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
+            #         )
+            #         < 90
+            #     ):
+            #         # splay
+            #         region = model[edge[1]].builder.add_splay(model[edge[0]])
 
-                    model[edge[1]].splay[model[edge[0]].name] = region
-                    splay = True
+            #         model[edge[1]].splay[model[edge[0]].name] = region
+            #         splay = True
             if splay == False:
                 model[edge[1]].add_abutting_fault(
                     model[edge[0]],
