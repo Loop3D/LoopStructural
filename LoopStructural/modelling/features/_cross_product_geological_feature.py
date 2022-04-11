@@ -4,24 +4,14 @@ import logging
 
 import numpy as np
 
-from LoopStructural.modelling.features.geological_feature import GeologicalFeature
+from LoopStructural.modelling.features import BaseFeature
 
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
 
-class CrossProductGeologicalFeature(GeologicalFeature):
-    """[summary]
-
-    [extended_summary]
-
-    Parameters
-    ----------
-    GeologicalFeature : [type]
-        [description]
-    """
-
+class CrossProductGeologicalFeature(BaseFeature):
     def __init__(self, name, geological_feature_a, geological_feature_b):
         """
         Create a geological feature for a vector field using the cross

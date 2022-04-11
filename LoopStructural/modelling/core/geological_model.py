@@ -29,7 +29,7 @@ from LoopStructural.interpolators import DiscreteInterpolator
 
 from LoopStructural.interpolators import StructuredGrid
 from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.features.fault.fault_segment import FaultSegment
 from LoopStructural.modelling.fault import FaultBuilder
 from LoopStructural.modelling.features import (
     GeologicalFeatureInterpolator,
@@ -39,7 +39,7 @@ from LoopStructural.modelling.features import (
     StructuralFrame,
     GeologicalFeature,
 )
-from LoopStructural.modelling.fold import (
+from LoopStructural.modelling.features.fold import (
     FoldRotationAngle,
     FoldedFeatureBuilder,
     FoldEvent,

@@ -1,4 +1,4 @@
-from ..features.structural_frame_builder import StructuralFrameBuilder
+from .structural_frame_builder import StructuralFrameBuilder
 
 import numpy as np
 from LoopStructural.utils import getLogger

@@ -3,7 +3,7 @@ import logging
 from LoopStructural.modelling.fault.fault_function_feature import (
     FaultDisplacementFeature,
 )
-from LoopStructural.modelling.fault.fault_function import BaseFault
+from LoopStructural.modelling.features.fault.fault_function import BaseFault
 from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
 
 logger = getLogger(__name__)
