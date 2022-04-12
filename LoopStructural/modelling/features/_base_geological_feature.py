@@ -1,6 +1,7 @@
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
-from LoopStructural import GeologicalModel
+
+# from LoopStructural import GeologicalModel
 import numpy as np
 
 logger = getLogger(__name__)
@@ -14,11 +15,28 @@ class BaseFeature:
     def __init__(self, name, model, faults, regions, builder):
         self.name = name
         self.type = FeatureType.BASE
-        self._regions = regions
-        self._faults = faults
+        self.regions = regions
+        self.faults = faults
         self._model = model
         self.builder = builder
         self.faults_enabled = True
+
+    def __str__(self):
+        _str = f"{self.name} {self.type} \n"
+        _str += "-----------------------------------------------------\n"
+        _str += f"\t{len(self.regions)} regions\n"
+        for r in self.regions:
+            _str += f"\t \t{r.__str__}\n"
+        _str += "-----------------------------------------------------\n"
+        _str += f"\t{len(self.faults)} faults.\n"
+        _str += f"\tFault enabled {self.faults_enabled}\n"
+
+        for f in self.faults:
+            _str += f"\t \t{f.__str__}\n"
+        return _str
+
+    def __repr__(self):
+        return self.__str__()
 
     @property
     def model(self):
@@ -26,8 +44,9 @@ class BaseFeature:
 
     @model.setter
     def model(self, model):
-        if type(model) == GeologicalModel:
-            self._model = model
+        # causes circular import, could delay import?
+        # if type(model) == GeologicalModel:
+        self._model = model
 
     def toggle_faults(self):
         """

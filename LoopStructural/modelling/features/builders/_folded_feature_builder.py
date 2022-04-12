@@ -1,5 +1,5 @@
-from .. import GeologicalFeatureBuilder
-from ..fold import FoldRotationAngle
+from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
+from LoopStructural.modelling.features.fold import FoldRotationAngle
 import numpy as np
 
 from LoopStructural.utils import getLogger, InterpolatorError

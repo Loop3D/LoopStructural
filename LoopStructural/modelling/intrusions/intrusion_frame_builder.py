@@ -1,9 +1,9 @@
-from LoopStructural.modelling.features import StructuralFrameBuilder
+from LoopStructural.modelling.features.builders import StructuralFrameBuilder
 from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
     shortest_path,
     array_from_coords,
-    find_inout_points
+    find_inout_points,
 )
 from LoopStructural.utils import getLogger
 
@@ -67,8 +67,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.intrusion_network_points = None
 
         self.velocity_field_arrays = None
-        self.IFf = None  
-        self.IFc = None  
+        self.IFf = None
+        self.IFc = None
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
@@ -353,7 +353,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         delta_list = delta
 
-
         for i, contact_id in enumerate(sorted(self.anisotropies_series_parameters)):
             series_id = self.anisotropies_series_parameters[contact_id][0]
             seriesi_mean = self.anisotropies_series_parameters[contact_id][1]
@@ -508,7 +507,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             return intrusion_network_points
 
         elif self.intrusion_network_type == "shortest path":
-
 
             grid_points, spacing = self.create_grid_for_indicator_fxs()
 

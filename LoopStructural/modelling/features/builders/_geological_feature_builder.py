@@ -79,7 +79,7 @@ class GeologicalFeatureBuilder:
             self._name,
             self._interpolator,
             builder=self,
-            region=self.region,
+            regions=[self.region],
             faults=self.faults,
         )
         self._orthogonal_features = {}

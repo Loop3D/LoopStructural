@@ -30,17 +30,19 @@ from LoopStructural.interpolators import DiscreteInterpolator
 from LoopStructural.interpolators import StructuredGrid
 from LoopStructural.interpolators import TetMesh
 from LoopStructural.modelling.features.fault._fault_segment import FaultSegment
-from LoopStructural.modelling.fault import FaultBuilder
-from LoopStructural.modelling.features import (
+from LoopStructural.modelling.features.builders import (
+    FaultBuilder,
     GeologicalFeatureBuilder,
     StructuralFrameBuilder,
+    FoldedFeatureBuilder,
+)
+from LoopStructural.modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
 )
 from LoopStructural.modelling.features.fold import (
     FoldRotationAngle,
-    FoldedFeatureBuilder,
     FoldEvent,
     FoldFrame,
 )
@@ -207,6 +209,10 @@ class GeologicalModel:
             self.maximum[0], self.maximum[1], self.maximum[2]
         )
         _str += "Model rescale factor: {} \n".format(self.scale_factor)
+        _str += "------------------------------------------ \n"
+        _str += "Feature list: \n"
+        for feature in self.features:
+            _str += "  {} \n".format(feature)
         return _str
 
     def _ipython_key_completions_(self):
@@ -468,7 +474,7 @@ class GeologicalModel:
             )
         self._add_domain_fault_above(feature)
         self._add_unconformity_above(feature)
-        feature.set_model(self)
+        feature.model = self
 
     def data_for_feature(self, feature_name):
         return self.data.loc[self.data["feature_name"] == feature_name, :]
@@ -1626,14 +1632,6 @@ class GeologicalModel:
         fault = fault_frame_builder.frame
         fault.displacement = displacement_scaled
         fault.faultfunction = faultfunction
-
-        fault = FaultSegment(
-            fault_frame,
-            displacement=displacement_scaled,
-            faultfunction=faultfunction,
-            **kwargs,
-        )
-        fault.builder = fault_frame_builder
 
         for f in reversed(self.features):
             if f.type == "unconformity":

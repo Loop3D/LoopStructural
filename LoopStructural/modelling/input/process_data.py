@@ -62,10 +62,10 @@ class ProcessInputData:
         network then only fault locations, orientations edges and properties are required
         """
         self._stratigraphic_order = None
+        self.stratigraphy = False
         self.stratigraphic_order = stratigraphic_order
         self._thicknesses = thicknesses
         self._use_thickness = use_thickness
-        self.stratigraphy = False
         if self.thicknesses is None:
             self._use_thickness = False
         if self._use_thickness is None:

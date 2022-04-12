@@ -12,11 +12,16 @@ class UnconformityFeature(BaseFeature):
         feature
         value
         """
+        BaseFeature.__init__(
+            self,
+            f"{feature.name}_unconformity",
+            feature.model,
+            feature.faults,
+            feature.regions,
+            feature.builder,
+        )
         self.feature = feature
         self.value = value
-        self.type = "unconformity"
-        self.name = f"{feature.name}_unconformity"
-        self.builder = self.feature.builder
 
     def evaluate(self, pos):
         """

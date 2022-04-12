@@ -55,7 +55,7 @@ class GeologicalFeature(BaseFeature):
 
 
         """
-        BaseFeature.__init__(name, model, faults, regions, builder)
+        BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.name = name
         self.interpolator = interpolator
         self.builder = builder
@@ -63,9 +63,6 @@ class GeologicalFeature(BaseFeature):
 
     def is_valid(self):
         return self.interpolator.valid
-
-    def __str__(self):
-        return self.name
 
     def __getitem__(self, key):
         return self._attributes[key]

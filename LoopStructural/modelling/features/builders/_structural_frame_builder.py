@@ -10,11 +10,9 @@ from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
-from LoopStructural.modelling.features.cross_product_geological_feature import (
-    CrossProductGeologicalFeature,
-)
-from LoopStructural.modelling.features import GeologicalFeatureBuilder
-from LoopStructural.modelling.fold import FoldedFeatureBuilder
+
+from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
+from LoopStructural.modelling.features.builders import FoldedFeatureBuilder
 from LoopStructural.modelling.features import StructuralFrame
 
 
@@ -189,6 +187,10 @@ class StructuralFrameBuilder:
             self.builders[1].build_arguments = kwargs
 
         if len(self.builders[2].data) == 0:
+            from LoopStructural.modelling.features import (
+                CrossProductGeologicalFeature,
+            )
+
             logger.debug("Creating analytical structural frame coordinate 2")
             c3 = CrossProductGeologicalFeature(
                 self.name + "_2", self._frame[0], self._frame[1]
