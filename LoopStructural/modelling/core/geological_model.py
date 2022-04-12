@@ -379,7 +379,9 @@ class GeologicalModel:
             name of the feature to return
         """
         return self.get_feature_by_name(feature_name)
-
+    
+    def __contains__(self, feature_name):
+        return feature_name in self.feature_name_index
     @property
     def dtm(self):
         return self._dtm
