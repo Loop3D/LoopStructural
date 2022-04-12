@@ -611,16 +611,17 @@ class BaseModelPlotter:
         logger.info("Isosurfacing")
         n_units = 0  # count how many discrete colours
         name_suffix = kwargs.pop("name", "")
-        for g in self.model.stratigraphic_column.keys():
-            if g in self.model.feature_name_index:
-                for u in self.model.stratigraphic_column[g].keys():
-                    n_units += 1
+        if strati and self.model.stratigraphic_column:
+            for g in self.model.stratigraphic_column.keys():
+                if g in self.model.feature_name_index:
+                    for u in self.model.stratigraphic_column[g].keys():
+                        n_units += 1
         n_faults = 0
         for f in self.model.features:
             if f.type == "fault":
                 n_faults += 1
 
-        if cmap is None:
+        if self.model.stratigraphic_column and cmap is None:
 
             colours = []
             boundaries = []
@@ -645,7 +646,7 @@ class BaseModelPlotter:
             n_surfaces += n_faults
         with tqdm(total=n_surfaces) as pbar:
 
-            if strati:
+            if strati and self.model.stratigraphic_column:
                 for g in self.model.stratigraphic_column.keys():
                     if g in self.model.feature_name_index:
                         feature = self.model.features[self.model.feature_name_index[g]]
@@ -679,7 +680,10 @@ class BaseModelPlotter:
 
                             return maskv
 
-                        if f.name in self.model.stratigraphic_column["faults"]:
+                        if (
+                            self.model.stratigraphic_column
+                            and f.name in self.model.stratigraphic_column["faults"]
+                        ):
                             fault_colour = self.model.stratigraphic_column["faults"][
                                 f.name
                             ].get("colour", ["red"])
