@@ -22,11 +22,11 @@ class FeatureType(IntEnum):
 from ._base_geological_feature import BaseFeature
 from ._geological_feature import GeologicalFeature
 from ._lambda_geological_feature import LambdaGeologicalFeature
-from .geological_feature_builder import GeologicalFeatureBuilder
-from .region_feature import RegionFeature
+
+# from .builders._geological_feature_builder import GeologicalFeatureBuilder
 from ._structural_frame import StructuralFrame
-from .builders._structural_frame_builder import StructuralFrameBuilder
+from ._cross_product_geological_feature import CrossProductGeologicalFeature
+
 from ._unconformity_feature import UnconformityFeature
 from ._analytical_feature import AnalyticalGeologicalFeature
 from ._structural_frame import StructuralFrame
-from .structural_frame_builder import StructuralFrameBuilder
