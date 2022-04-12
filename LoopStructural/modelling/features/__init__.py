@@ -20,13 +20,13 @@ class FeatureType(IntEnum):
 
 
 from ._base_geological_feature import BaseFeature
-from .geological_feature import GeologicalFeature
-from .lambda_geological_feature import LambdaGeologicalFeature
-from .geological_feature_builder import GeologicalFeatureInterpolator
+from ._geological_feature import GeologicalFeature
+from ._lambda_geological_feature import LambdaGeologicalFeature
+from .geological_feature_builder import GeologicalFeatureBuilder
 from .region_feature import RegionFeature
-from .structural_frame import StructuralFrame
-from .builders.structural_frame_builder import StructuralFrameBuilder
-from .unconformity_feature import UnconformityFeature
-from .analytical_feature import AnalyticalGeologicalFeature
-from .structural_frame import StructuralFrame
+from ._structural_frame import StructuralFrame
+from .builders._structural_frame_builder import StructuralFrameBuilder
+from ._unconformity_feature import UnconformityFeature
+from ._analytical_feature import AnalyticalGeologicalFeature
+from ._structural_frame import StructuralFrame
 from .structural_frame_builder import StructuralFrameBuilder

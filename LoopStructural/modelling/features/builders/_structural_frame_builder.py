@@ -13,7 +13,7 @@ logger = getLogger(__name__)
 from LoopStructural.modelling.features.cross_product_geological_feature import (
     CrossProductGeologicalFeature,
 )
-from LoopStructural.modelling.features import GeologicalFeatureInterpolator
+from LoopStructural.modelling.features import GeologicalFeatureBuilder
 from LoopStructural.modelling.fold import FoldedFeatureBuilder
 from LoopStructural.modelling.features import StructuralFrame
 
@@ -66,19 +66,15 @@ class StructuralFrameBuilder:
             )
         else:
             self.builders.append(
-                GeologicalFeatureInterpolator(
+                GeologicalFeatureBuilder(
                     interpolators[0], name=f"{self.name}__0", **kwargs
                 )
             )  # ,region=self.region))
         self.builders.append(
-            GeologicalFeatureInterpolator(
-                interpolators[1], name=f"{self.name}__1", **kwargs
-            )
+            GeologicalFeatureBuilder(interpolators[1], name=f"{self.name}__1", **kwargs)
         )  # ,region=self.region))
         self.builders.append(
-            GeologicalFeatureInterpolator(
-                interpolators[2], name=f"{self.name}__2", **kwargs
-            )
+            GeologicalFeatureBuilder(interpolators[2], name=f"{self.name}__2", **kwargs)
         )  # ,region=self.region))
 
         self._frame = frame(

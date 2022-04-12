@@ -27,10 +27,16 @@ from LoopStructural.utils import get_data_axis_aligned_bounding_box
 from LoopStructural.utils import RegionEverywhere
 
 
-class GeologicalFeatureInterpolator:
-    def __init__(self, interpolator, name="Feature", region=None, **kwargs):
+class GeologicalFeatureBuilder:
+    def __init__(
+        self,
+        interpolator: GeologicalInterpolator,
+        name="Feature",
+        region=None,
+        **kwargs,
+    ):
         """
-        Constructor for a GeologicalFeatureInterpolator
+        Constructor for a GeologicalFeatureBuilder
 
         Parameters
         ----------
@@ -69,14 +75,12 @@ class GeologicalFeatureInterpolator:
         self._feature = None
         self._up_to_date = False
         self._build_arguments = {}
-        self.fold = None
         self._feature = GeologicalFeature(
             self._name,
             self._interpolator,
             builder=self,
             region=self.region,
             faults=self.faults,
-            fold=self.fold,
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}

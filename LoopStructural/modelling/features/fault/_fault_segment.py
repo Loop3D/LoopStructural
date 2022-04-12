@@ -1,9 +1,9 @@
 import logging
 
-from LoopStructural.modelling.fault.fault_function_feature import (
+from LoopStructural.modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
-from LoopStructural.modelling.features.fault.fault_function import BaseFault
+from LoopStructural.modelling.features.fault._fault_function import BaseFault
 from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
 from LoopStructural.modelling import StructuralFrame
 
@@ -95,17 +95,6 @@ class FaultSegment(StructuralFrame):
     @property
     def displacementfeature(self):
         return FaultDisplacementFeature(self, self.faultfunction, name=self.name)
-
-    # def __str__(self):
-    #     _str = "FaultSegment - {} \n".format(self.name)
-    #     _str += "Interpolator: {} \n".format(self.faultframe[0].interpolator.type)
-    #     _str += "Degrees of freedom: {}\n".format(self.faultframe[0].interpolator.nx)
-    #     _str += "Displacement magnitude: {}\n".format(self.displacement)
-    #     for name in self.splay.keys():
-    #         _str += "Splays from {}\n".format(name)
-    #     for name in self.abut.keys():
-    #         _str += "Abuts {}\n".format(name)
-    #     return _str
 
     def set_model(self, model):
         """

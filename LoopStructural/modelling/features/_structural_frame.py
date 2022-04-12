@@ -2,18 +2,14 @@
 Structural frames
 """
 import logging
+from LoopStructural.modelling.features import BaseFeature
 import numpy as np
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
 
-class StructuralFrame:
-    """[summary]
-
-    [extended_summary]
-    """
-
+class StructuralFrame(BaseFeature):
     def __init__(self, name, features, fold=None):
         """
         Structural frame is a curvilinear coordinate system defined by
@@ -24,11 +20,9 @@ class StructuralFrame:
         name - name of the structural frame
         features - list of features to build the frame with
         """
-        self.name = name
+        BaseFeature.__init__(self, name, None, [], [], None)
         self.features = features
-        self.data = None
         self.fold = fold
-        self.builder = None
 
     def __getitem__(self, key):
         """
@@ -88,7 +82,6 @@ class StructuralFrame:
 
         """
         return self.features[i]
-
 
     def evaluate_value(self, evaluation_points):
         """

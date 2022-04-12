@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.modelling.features.structural_frame import StructuralFrame
+from LoopStructural.modelling.features._structural_frame import StructuralFrame
 
 from LoopStructural.utils import getLogger
 
@@ -30,7 +30,7 @@ class FoldFrame(StructuralFrame):
         fold frame
         Parameters
         ----------
-        feature_builder - GeologicalFeatureInterpolator
+        feature_builder - GeologicalFeatureBuilder
             - the builder for the geological feature that is folded
 
         Returns
@@ -92,7 +92,7 @@ class FoldFrame(StructuralFrame):
         the normals to the folded foliation
         Parameters
         ----------
-        feature_builder - GeologicalFeatureInterpolator
+        feature_builder - GeologicalFeatureBuilder
             the feature interpolator for the folded feature that has the
             datapoints the fold limb rotation angle is
             going to be calculated for
@@ -172,7 +172,7 @@ class FoldFrame(StructuralFrame):
         foliation
         Parameters
         ----------
-        feature_builder - GeologicalFeatureInterpolator
+        feature_builder - GeologicalFeatureBuilder
             the feature builder that contains the data points that the
             intersection lineation is calculated for
 

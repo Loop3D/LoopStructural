@@ -29,11 +29,10 @@ from LoopStructural.interpolators import DiscreteInterpolator
 
 from LoopStructural.interpolators import StructuredGrid
 from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.features.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.features.fault._fault_segment import FaultSegment
 from LoopStructural.modelling.fault import FaultBuilder
 from LoopStructural.modelling.features import (
-    GeologicalFeatureInterpolator,
-    RegionFeature,
+    GeologicalFeatureBuilder,
     StructuralFrameBuilder,
     UnconformityFeature,
     StructuralFrame,
@@ -814,7 +813,7 @@ class GeologicalModel:
             {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
         )
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(
+        series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
         )
         # add data
@@ -855,7 +854,7 @@ class GeologicalModel:
             {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
         )
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(
+        series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
         )
         # add data
@@ -1183,7 +1182,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature_builder : GeologicalFeatureInterpolator/StructuralFrameBuilder
+        feature_builder : GeologicalFeatureBuilder/StructuralFrameBuilder
             The feature buider to add the faults to
         features : list, optional
             A specific list of features rather than all features in the model
@@ -1208,7 +1207,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature : GeologicalFeatureInterpolator
+        feature : GeologicalFeatureBuilder
             the feature being added to the model where domain faults should be added
 
         Returns
@@ -1230,7 +1229,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature : GeologicalFeatureInterpolator
+        feature : GeologicalFeatureBuilder
             the feature being added to the model where domain faults should be added
 
         Returns
@@ -1302,7 +1301,7 @@ class GeologicalModel:
             return False
         # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
-        unconformity_feature_builder = GeologicalFeatureInterpolator(
+        unconformity_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=unconformity_surface_data
         )
         # add data
@@ -1407,7 +1406,7 @@ class GeologicalModel:
         """
         # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
-        domain_fault_feature_builder = GeologicalFeatureInterpolator(
+        domain_fault_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=fault_surface_data
         )
         # add data
