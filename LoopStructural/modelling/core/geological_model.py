@@ -292,20 +292,20 @@ class GeologicalModel:
                 )
                 continue
             splay = False
-            # if "angle" in properties:
-            #     if (
-            #         float(properties["angle"]) < 30
-            #         and np.abs(
-            #             processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-            #             - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
-            #         )
-            #         < 90
-            #     ):
-            #         # splay
-            #         region = model[edge[1]].builder.add_splay(model[edge[0]])
+            if "angle" in properties:
+                if float(properties["angle"]) < 30:
+                    # if 'dip_dir' in processor.stratigraphic_column["faults"][edge[0]] and 'dip_dir' in processor.stratigraphic_column["faults"][edge[1]]:
+                    #     if np.abs(
+                    #     processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                    #     - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"] > 90
+                    #     ):
+                    #         pass
+                    #     else:
+                    #     # splay
+                    region = model[edge[1]].builder.add_splay(model[edge[0]])
 
-            #         model[edge[1]].splay[model[edge[0]].name] = region
-            #         splay = True
+                    model[edge[1]].splay[model[edge[0]].name] = region
+                    splay = True
             if splay == False:
                 model[edge[1]].add_abutting_fault(
                     model[edge[0]],
@@ -319,17 +319,18 @@ class GeologicalModel:
                     )
                     < 90,
                 )
-        for s in processor.stratigraphic_column.keys():
-            if s != "faults":
-                faults = None
-                if processor.fault_stratigraphy is not None:
-                    faults = processor.fault_stratigraphy[s]
-                logger.info(f"Adding foliation {s}")
-                f = model.create_and_add_foliation(
-                    s, **processor.foliation_properties[s], faults=faults
-                )
-                model.add_unconformity(f, 0)
-        model.stratigraphic_column = processor.stratigraphic_column
+        if processor.stratigraphy:
+            for s in processor.stratigraphic_column.keys():
+                if s != "faults":
+                    faults = None
+                    if processor.fault_stratigraphy is not None:
+                        faults = processor.fault_stratigraphy[s]
+                    logger.info(f"Adding foliation {s}")
+                    f = model.create_and_add_foliation(
+                        s, **processor.foliation_properties[s], faults=faults
+                    )
+                    model.add_unconformity(f, 0)
+            model.stratigraphic_column = processor.stratigraphic_column
         return model
 
     @classmethod
@@ -387,7 +388,7 @@ class GeologicalModel:
     def faults(self):
         faults = []
         for f in self.features:
-            if f.type == "fault":
+            if type(f) == FaultSegment:
                 faults.append(f)
 
         return faults
@@ -1608,7 +1609,7 @@ class GeologicalModel:
             minor_axis=minor_axis,
             major_axis=major_axis,
             intermediate_axis=intermediate_axis,
-            points=kwargs.get("points", True),
+            points=kwargs.get("points", False),
         )
         if "force_mesh_geometry" not in kwargs:
 
@@ -1621,13 +1622,6 @@ class GeologicalModel:
         fault = fault_frame_builder.frame
         fault.displacement = displacement_scaled
         fault.faultfunction = faultfunction
-        # fault = FaultSegment(
-        #     fault_frame,
-        #     displacement=displacement_scaled,
-        #     faultfunction=faultfunction,
-        #     **kwargs,
-        # )
-        # fault.builder = fault_frame_builder
 
         for f in reversed(self.features):
             if f.type == "unconformity":

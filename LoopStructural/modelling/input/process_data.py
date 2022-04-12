@@ -65,6 +65,7 @@ class ProcessInputData:
         self.stratigraphic_order = stratigraphic_order
         self._thicknesses = thicknesses
         self._use_thickness = use_thickness
+        self.stratigraphy = False
         if self.thicknesses is None:
             self._use_thickness = False
         if self._use_thickness is None:
@@ -85,7 +86,13 @@ class ProcessInputData:
         # self._fault_dimensions = None
         self._fault_network = None
         self._fault_properties = None
-        self.fault_properties = fault_properties
+        if fault_properties is not None:
+            self.fault_properties = fault_properties
+        elif fault_locations is not None:
+            self.fault_properties = pd.DataFrame(
+                fault_locations["fault_name"].unique(), columns=["name"]
+            ).set_index("name")
+
         if fault_edges is not None and fault_edge_properties is not None:
             self.set_fault_network(fault_edges, fault_edge_properties)  # = fault_graph
         self._fault_stratigraphy = fault_stratigraphy
@@ -124,6 +131,9 @@ class ProcessInputData:
 
     @stratigraphic_order.setter
     def stratigraphic_order(self, stratigraphic_order):
+        if stratigraphic_order is None:
+            logger.warning("No stratigraphic order provided")
+            return
         if isinstance(stratigraphic_order[0][1], list) == False:
             raise TypeError(
                 "Stratigraphic_order must of the format [[('group_name',['unit1','unit2']),('group_name2',['unit3','unit4'])]]"
@@ -132,6 +142,7 @@ class ProcessInputData:
             raise TypeError("Stratigraphic_order must be a list")
         if isinstance(stratigraphic_order[0][1][0], str) == False:
             raise TypeError("Stratigraphic_order elements must be strings")
+        self.stratigraphy = True
         self._stratigraphic_order = stratigraphic_order
 
     @property
@@ -140,6 +151,7 @@ class ProcessInputData:
 
     @colours.setter
     def colours(self, colours):
+
         if colours is None:
             self._colours = {}
             for s in self.stratigraphic_name:
@@ -151,25 +163,26 @@ class ProcessInputData:
     def stratigraphic_column(self):
         stratigraphic_column = {}
         # add stratigraphy into the column
-        unit_id = 0
-        val = self._stratigraphic_value()
-        for name, sg in self._stratigraphic_order:
-            stratigraphic_column[name] = {}
-            for i, g in enumerate(reversed(sg)):
-                if g in self.thicknesses:
-                    stratigraphic_column[name][g] = {
-                        "max": val[g] + self.thicknesses[g],
-                        "min": val[g],
-                        "id": unit_id,
-                        "colour": self.colours[g],
-                    }
-                    if i == 0:
-                        stratigraphic_column[name][g]["min"] = -np.inf
-                    if i == len(sg) - 1:
-                        stratigraphic_column[name][g]["max"] = np.inf
+        if self.stratigraphy:
+            unit_id = 0
+            val = self._stratigraphic_value()
+            for name, sg in self._stratigraphic_order:
+                stratigraphic_column[name] = {}
+                for i, g in enumerate(reversed(sg)):
+                    if g in self.thicknesses:
+                        stratigraphic_column[name][g] = {
+                            "max": val[g] + self.thicknesses[g],
+                            "min": val[g],
+                            "id": unit_id,
+                            "colour": self.colours[g],
+                        }
+                        if i == 0:
+                            stratigraphic_column[name][g]["min"] = -np.inf
+                        if i == len(sg) - 1:
+                            stratigraphic_column[name][g]["max"] = np.inf
 
-                unit_id += 1
-        # add faults into the column
+                    unit_id += 1
+            # add faults into the column
         if self.fault_properties is not None:
             stratigraphic_column["faults"] = self.fault_properties.to_dict("index")
         return stratigraphic_column
@@ -249,6 +262,8 @@ class ProcessInputData:
 
     @foliation_properties.setter
     def foliation_properties(self, foliation_properties):
+        if self.stratigraphic_order == None:
+            return
         if foliation_properties is None:
             for k in self.stratigraphic_column.keys():
                 if k != "faults":
@@ -334,10 +349,16 @@ class ProcessInputData:
                             "avgSlipDirAltitude",
                         ],
                     ] = np.mean(pts, axis=0)
+        if "displacment" not in fault_properties.columns:
+            fault_properties["displacement"] = 0
+            logger.warning(
+                "Fault displacement not provided, setting to 0. \n\
+                This will result in only a fault surface, no displacement on older features"
+            )
+            # faults need a displacement, if we don't know it set as 0 so that the surface is built
+
         self._fault_properties = fault_properties
-        print(list(self.fault_properties.index))
         self._fault_network = FaultNetwork(list(self.fault_properties.index))
-        print(self.fault_network)
 
     @property
     def fault_network(self):
@@ -401,7 +422,9 @@ class ProcessInputData:
     @property
     def stratigraphic_name(self):
         names = []
-        for name, sg in self._stratigraphic_order:
+        if self.stratigraphic_order is None:
+            return names
+        for name, sg in self.stratigraphic_order:
             for g in sg:
                 names.append(g)
         return names
