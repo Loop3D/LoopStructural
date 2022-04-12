@@ -393,7 +393,7 @@ class GeologicalModel:
     def faults(self):
         faults = []
         for f in self.features:
-            if f.type == "fault":
+            if type(f) == FaultSegment:
                 faults.append(f)
 
         return faults
@@ -616,30 +616,6 @@ class GeologicalModel:
                     stratigraphic_column[g][u]["colour"] = cmap_colours[ci, :]
 
         self.stratigraphic_column = stratigraphic_column
-
-    def create_from_feature_list(self, features):
-        """Initialises a model from a dictionary containing the features
-
-        Parameters
-        ----------
-        features : [type]
-            [description]
-
-        Raises
-        ------
-        LoopException
-            [description]
-        """
-        for f in features:
-            featuretype = f.pop("featuretype", None)
-            if featuretype is None:
-                raise LoopException
-            if featuretype == "strati":
-                self.create_and_add_foliation(f)
-            # if featuretype == 'fault':
-            #     self.create_and_add_fault(f)
-            if featuretype == "folded_strati":
-                self.create_and_add_folded_foliation(f)
 
     def get_interpolator(
         self,
@@ -1638,7 +1614,7 @@ class GeologicalModel:
             minor_axis=minor_axis,
             major_axis=major_axis,
             intermediate_axis=intermediate_axis,
-            points=kwargs.get("points", True),
+            points=kwargs.get("points", False),
         )
         if "force_mesh_geometry" not in kwargs:
 
@@ -1648,7 +1624,9 @@ class GeologicalModel:
 
         kwargs["tol"] = tol
         fault_frame_builder.setup(**kwargs)
-        fault_frame = fault_frame_builder.frame
+        fault = fault_frame_builder.frame
+        fault.displacement = displacement_scaled
+        fault.faultfunction = faultfunction
 
         fault = FaultSegment(
             fault_frame,

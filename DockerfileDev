@@ -7,12 +7,32 @@ RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     gcc \
     g++ \
-    libc-dev
-RUN conda install -c loop3d -c conda-forge map2loop python=3.7 -y
-RUN conda install -c conda-forge pip scikit-learn cython numpy==1.20.1 pandas scipy pymc3 jupyter pyamg arviz==0.11.0 pygraphviz -y
-RUN conda install -c conda-forge ipywidgets
-RUN conda install -c conda-forge ipyleaflet
-RUN conda install -c conda-forge folium
+    libc-dev \
+    gfortran \
+    openmpi-bin \
+    libopenmpi-dev \ 
+    make 
+# RUN conda install -c conda-forge python=3.9 -y
+RUN conda install -c conda-forge pip \
+    scikit-learn \
+    cython \
+    numpy \
+    pandas \
+    scipy \
+    pymc3 \
+    jupyter \
+    pyamg \
+    # arviz==0.11.0 \
+    pygraphviz \
+    geopandas \
+    shapely \
+    ipywidgets \
+    ipyleaflet \
+    folium \
+    jupyterlab \
+    nodejs \
+    -y
+
 RUN pip install ipyfilechooser
 RUN jupyter nbextension enable --py --sys-prefix ipyleaflet
 RUN pip install lavavu-osmesa
@@ -30,9 +50,6 @@ WORKDIR ${HOME}
 USER root
 RUN chown -R ${NB_UID} ${HOME}
 
-
-
-RUN conda install -c conda-forge jupyterlab nodejs -y
 RUN pip install snakeviz
 
 # Add Tini
@@ -44,10 +61,16 @@ ENTRYPOINT ["/tini", "--"]
 USER ${NB_USER}
 
 RUN mkdir notebooks
-RUN mkdir LoopStructural
-RUN mkdir map2loop
-RUN mkdir LoopProjectFile
-
+RUN git clone https://github.com/Loop3D/LoopStructural.git 
+RUN git clone https://github.com/Loop3D/map2loop-2.git map2loop
+RUN git clone https://github.com/Loop3D/LoopProjectFile.git 
+RUN git clone https://github.com/TOMOFAST/Tomofast-x.git
+RUN pip install -e LoopStructural
+RUN pip install -e map2loop
+RUN pip install -e LoopProjectFile
+# WORKDIR Tomofast-x
+# RUN make
+WORKDIR ${HOME}
 # RUN pip install -e LoopStructural
 CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token=''", "--no-browser" ]
 

@@ -29,8 +29,11 @@ class FaultBuilder(StructuralFrameBuilder):
             the maximum area around the model domain that a fault is modelled. For high displacement faults this
             may need to be large, smaller values will be result in fewer degrees of freedom = quicker interpolation
         """
+        from LoopStructural.modelling import FaultSegment  # defer import until needed
 
-        StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
+        StructuralFrameBuilder.__init__(
+            self, interpolator, interpolators, frame=FaultSegment, **kwargs
+        )
         self.model = model
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array(
@@ -78,8 +81,9 @@ class FaultBuilder(StructuralFrameBuilder):
         major_axis=None,
         intermediate_axis=None,
         w=1.0,
-        points=True,
+        points=False,
     ):
+
         """Generate the required data for building a fault frame for a fault with the
         specified parameters
 
@@ -104,9 +108,7 @@ class FaultBuilder(StructuralFrameBuilder):
         """
         self.fault_normal_vector = normal_vector
         self.fault_slip_vector = slip_vector
-        self.fault_minor_axis = minor_axis
-        self.fault_major_axis = major_axis
-        self.fault_intermediate_axis = intermediate_axis
+
         self.fault_centre = fault_center
         if major_axis is None:
             fault_trace = data.loc[
@@ -131,6 +133,9 @@ class FaultBuilder(StructuralFrameBuilder):
             minor_axis = major_axis / 2.0
         if intermediate_axis is None:
             intermediate_axis = major_axis
+        self.fault_minor_axis = minor_axis
+        self.fault_major_axis = major_axis
+        self.fault_intermediate_axis = intermediate_axis
         normal_vector /= np.linalg.norm(normal_vector)
         slip_vector /= np.linalg.norm(slip_vector)
         # check if slip vector is inside fault plane, if not project onto fault plane
@@ -180,7 +185,10 @@ class FaultBuilder(StructuralFrameBuilder):
                     data.loc[mask, ["gx", "gy", "gz"]] = data.loc[
                         mask, ["nx", "ny", "nz"]
                     ]
+
                     data.loc[mask, ["nx", "ny", "nz"]] = np.nan
+                    mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["gx"]))
+                    data.loc[mask, ["gx", "gy", "gz"]] /= minor_axis * 0.5
                 if points == False:
                     logger.warning(
                         "Rescaling fault norm constraint length for fault frame"
@@ -327,7 +335,8 @@ class FaultBuilder(StructuralFrameBuilder):
                     )
                     return mask
 
-        self.builders[0].add_equality_constraints(splay, splayregion)
+        scalefactor = splay.fault_major_axis / self.fault_major_axis
+        self.builders[0].add_equality_constraints(splay, splayregion, scalefactor)
         return splayregion
 
     def update(self):
