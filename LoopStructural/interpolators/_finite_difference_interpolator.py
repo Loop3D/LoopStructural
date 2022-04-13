@@ -430,7 +430,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             # normalise vector and scale element gradient matrix by norm as well
             norm = np.linalg.norm(vector, axis=1)
-            vector /= norm[:, None]
+
+            vector[norm > 0, :] /= norm[norm > 0, None]
+
             # normalise element vector to unit vector for dot product
             (
                 vertices,
@@ -438,7 +440,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 elements,
                 inside_,
             ) = self.support.get_element_gradient_for_location(points[inside, :3])
-            T /= norm[:, None, None]
+            T[norm > 0, :, :] /= norm[norm > 0, None, None]
 
             # dot product of vector and element gradient = 0
             A = np.einsum("ij,ijk->ik", vector[inside, :3], T)

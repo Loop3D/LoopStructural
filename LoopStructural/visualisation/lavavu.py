@@ -91,14 +91,22 @@ class LavaVuModelViewer(BaseModelPlotter):
             # calculate the mode value, just to get the most common value
             surfaceval = np.zeros(vertices.shape[0])
             if isinstance(paint_with, GeologicalFeature):
+                # paint with a geological feature
+                # TODO make sure everything that could be
+                # a feature derives from the same base
+                # class, currently structuralframes and
+                # faults don't work here..
+                # or just change to using __call__
                 surfaceval[:] = paint_with.evaluate_value(
                     self.model.scale(vertices, inplace=False)
                 )
                 surf.values(surfaceval, "paint_with")
             if callable(paint_with):
+                # paint with a callable function e.g. (xyz)->value
                 surfaceval[:] = paint_with(self.model.scale(vertices))
                 surf.values(surfaceval, "paint_with")
             if isinstance(paint_with, (float, int)):
+                # paint with array a constant value
                 surfaceval[:] = paint_with
                 surf.values(surfaceval, "paint_with")
             surf["colourby"] = "paint_with"

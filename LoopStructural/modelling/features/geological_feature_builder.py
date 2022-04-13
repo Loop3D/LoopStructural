@@ -330,9 +330,9 @@ class GeologicalFeatureInterpolator:
                 B=B,
             )
 
-    def add_equality_constraints(self, feature, region):
+    def add_equality_constraints(self, feature, region, scalefactor=1.0):
 
-        self._equality_constraints[feature.name] = [feature, region]
+        self._equality_constraints[feature.name] = [feature, region, scalefactor]
         self._up_to_date = False
 
     def install_equality_constraints(self):
@@ -346,7 +346,7 @@ class GeologicalFeatureInterpolator:
                 idc = np.arange(0, support.n_nodes)[e[1](support.nodes)]
                 val = e[0].evaluate_value(support.nodes[e[1](support.nodes), :])
                 mask = ~np.isnan(val)
-                self.interpolator.add_equality_constraints(idc[mask], val[mask])
+                self.interpolator.add_equality_constraints(idc[mask], val[mask] * e[2])
             except BaseException as e:
                 logger.error(f"Could not add equality for {self.name}")
                 logger.error(f"Exception: {e}")
@@ -415,6 +415,18 @@ class GeologicalFeatureInterpolator:
             ].to_numpy(float)
         else:
             return np.zeros((0, 7))
+
+    def get_orientation_constraints(self):
+        """
+        Get the orientation constraints
+
+        Returns
+        -------
+        numpy array
+        """
+        gradient_constraints = self.get_gradient_constraints()
+        normal_constraints = self.get_norm_constraints()
+        return np.vstack([gradient_constraints, normal_constraints])
 
     def get_interface_constraints(self):
         mask = np.all(

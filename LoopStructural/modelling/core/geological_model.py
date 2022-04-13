@@ -293,15 +293,15 @@ class GeologicalModel:
                 continue
             splay = False
             if "angle" in properties:
-                if (
-                    float(properties["angle"]) < 30
-                    and np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                        - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
-                    )
-                    < 90
-                ):
-                    # splay
+                if float(properties["angle"]) < 30:
+                    # if 'dip_dir' in processor.stratigraphic_column["faults"][edge[0]] and 'dip_dir' in processor.stratigraphic_column["faults"][edge[1]]:
+                    #     if np.abs(
+                    #     processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                    #     - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"] > 90
+                    #     ):
+                    #         pass
+                    #     else:
+                    #     # splay
                     region = model[edge[1]].builder.add_splay(model[edge[0]])
 
                     model[edge[1]].splay[model[edge[0]].name] = region
@@ -319,18 +319,18 @@ class GeologicalModel:
                     )
                     < 90,
                 )
-                # model[edge[1]].add_abutting_fault(model[edge[0]])
-        for s in processor.stratigraphic_column.keys():
-            if s != "faults":
-                faults = None
-                if processor.fault_stratigraphy is not None:
-                    faults = processor.fault_stratigraphy[s]
-                logger.info(f"Adding foliation {s}")
-                f = model.create_and_add_foliation(
-                    s, **processor.foliation_properties[s], faults=faults
-                )
-                model.add_unconformity(f, 0)
-        model.stratigraphic_column = processor.stratigraphic_column
+        if processor.stratigraphy:
+            for s in processor.stratigraphic_column.keys():
+                if s != "faults":
+                    faults = None
+                    if processor.fault_stratigraphy is not None:
+                        faults = processor.fault_stratigraphy[s]
+                    logger.info(f"Adding foliation {s}")
+                    f = model.create_and_add_foliation(
+                        s, **processor.foliation_properties[s], faults=faults
+                    )
+                    model.add_unconformity(f, 0)
+            model.stratigraphic_column = processor.stratigraphic_column
         return model
 
     @classmethod
@@ -388,7 +388,7 @@ class GeologicalModel:
     def faults(self):
         faults = []
         for f in self.features:
-            if f.type == "fault":
+            if type(f) == FaultSegment:
                 faults.append(f)
 
         return faults
@@ -611,30 +611,6 @@ class GeologicalModel:
                     stratigraphic_column[g][u]["colour"] = cmap_colours[ci, :]
 
         self.stratigraphic_column = stratigraphic_column
-
-    def create_from_feature_list(self, features):
-        """Initialises a model from a dictionary containing the features
-
-        Parameters
-        ----------
-        features : [type]
-            [description]
-
-        Raises
-        ------
-        LoopException
-            [description]
-        """
-        for f in features:
-            featuretype = f.pop("featuretype", None)
-            if featuretype is None:
-                raise LoopException
-            if featuretype == "strati":
-                self.create_and_add_foliation(f)
-            # if featuretype == 'fault':
-            #     self.create_and_add_fault(f)
-            if featuretype == "folded_strati":
-                self.create_and_add_folded_foliation(f)
 
     def get_interpolator(
         self,
@@ -1586,7 +1562,7 @@ class GeologicalModel:
                     .to_numpy()
                 )
         if np.any(np.isnan(fault_slip_vector)):
-            logger.warning("Fault slip vector is nan, estimating from fault normal")
+            logger.info("Fault slip vector is nan, estimating from fault normal")
             strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
             fault_slip_vector = dip_vector[:, 0]
             logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
@@ -1633,7 +1609,7 @@ class GeologicalModel:
             minor_axis=minor_axis,
             major_axis=major_axis,
             intermediate_axis=intermediate_axis,
-            points=kwargs.get("points", True),
+            points=kwargs.get("points", False),
         )
         if "force_mesh_geometry" not in kwargs:
 
@@ -1643,15 +1619,10 @@ class GeologicalModel:
 
         kwargs["tol"] = tol
         fault_frame_builder.setup(**kwargs)
-        fault_frame = fault_frame_builder.frame
+        fault = fault_frame_builder.frame
+        fault.displacement = displacement_scaled
+        fault.faultfunction = faultfunction
 
-        fault = FaultSegment(
-            fault_frame,
-            displacement=displacement_scaled,
-            faultfunction=faultfunction,
-            **kwargs,
-        )
-        fault.builder = fault_frame_builder
         for f in reversed(self.features):
             if f.type == "unconformity":
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)

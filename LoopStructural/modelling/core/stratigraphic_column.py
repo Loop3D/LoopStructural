@@ -1,4 +1,4 @@
-class StratigraphicColumn:
+class StratigraphicColumn(dict):
     def __init__(self):
         pass
 
@@ -7,3 +7,11 @@ class StratigraphicColumn:
 
     def get_cmap(self):
         pass
+
+    @property
+    def faults(self):
+        return
+
+    @property
+    def stratigraphy(self):
+        return

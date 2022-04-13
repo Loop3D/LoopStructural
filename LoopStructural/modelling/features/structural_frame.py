@@ -89,19 +89,6 @@ class StructuralFrame:
         """
         return self.features[i]
 
-    def set_data(self, data):
-        """
-        Associate data with structural frame
-
-        Parameters
-        ----------
-        data
-
-        Returns
-        -------
-
-        """
-        self.data = data
 
     def evaluate_value(self, evaluation_points):
         """

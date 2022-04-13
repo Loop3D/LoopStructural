@@ -168,7 +168,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
         # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
-            logger.error("Cannot add constraints: A and indexes have different shape")
+            logger.error(f"Cannot add constraints: A and indexes have different shape : {name}")
             return
 
         if len(A.shape) > 2:
