@@ -1,5 +1,20 @@
 # Changelog
 
+### [1.4.5](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.4...v1.4.5) (2022-04-14)
+
+
+### Bug Fixes
+
+* :art: adding LoopProjectFileProcessor to modeling init ([fa1c8f7](https://www.github.com/Loop3D/LoopStructural/commit/fa1c8f7333d4c387988ddf3969e51958df5d123a))
+* :bug: adding origin and maximum to the data processor ([bb7b811](https://www.github.com/Loop3D/LoopStructural/commit/bb7b811bf773ffbeeafb270188ed1ee4992afa01))
+* :bug: adding scaling to splay faults to reduce bubbles ([7d618fe](https://www.github.com/Loop3D/LoopStructural/commit/7d618fedfa6ca9adb8f3c2040cc2ac93630ce2cd))
+* :bug: can add faults even when stratigraphic column hasn't been set ([33366f9](https://www.github.com/Loop3D/LoopStructural/commit/33366f926924f73ba8139c9d87e59c7ba09d06a2))
+* :bug: fault geometry weren't being set if they were calculated from the fault trace ([ddec5cb](https://www.github.com/Loop3D/LoopStructural/commit/ddec5cb45259186aef4bde2bbf98e0bd3f518079))
+* :bug: fixing warning message with divide by 0 ([ebd12ff](https://www.github.com/Loop3D/LoopStructural/commit/ebd12ff6a0af0a312076327a2ab26a03a5333661))
+* bug with fold constraints causing crash ([3abb65e](https://www.github.com/Loop3D/LoopStructural/commit/3abb65e47d2f90f9f2e2500ddbe0d362bec136fb))
+* bug with fold interpolator ([8d94ca4](https://www.github.com/Loop3D/LoopStructural/commit/8d94ca4cd8aa2ff7de17cae6b53f77a3abc06af4))
+* temp disable splay fault ([721270e](https://www.github.com/Loop3D/LoopStructural/commit/721270e942258c9c220aaaaaf01391e36d9af958))
+
 ### [1.4.4](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.3...v1.4.4) (2022-03-21)
 
 
