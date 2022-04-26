@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.4.6](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.5...v1.4.6) (2022-04-26)
+
+
+### Bug Fixes
+
+* :ambulance: quick fix for projectfile import error ([34fb1d6](https://www.github.com/Loop3D/LoopStructural/commit/34fb1d695b101cfbefbcb5f8e8bbb0449e170c18))
+* :ambulance: try 2, catching loopimporterror as well as import error ([5db6a81](https://www.github.com/Loop3D/LoopStructural/commit/5db6a8113d5dd0f6f2c3c59078cbd812f4aecafb))
+
 ### [1.4.5](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.4...v1.4.5) (2022-04-14)
 
 
