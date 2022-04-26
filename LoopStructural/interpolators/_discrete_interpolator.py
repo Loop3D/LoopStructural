@@ -168,7 +168,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
         # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
-            logger.error(f"Cannot add constraints: A and indexes have different shape : {name}")
+            logger.error(
+                f"Cannot add constraints: A and indexes have different shape : {name}"
+            )
             return
 
         if len(A.shape) > 2:
@@ -417,6 +419,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         ).tocsc()  # .tocsr()
 
         B = np.array(b)
+        print("A", A.shape)
+        print("B", B.shape)
         if not square:
             logger.info("Using rectangular matrix, equality constraints are not used")
             return A, B
@@ -696,7 +700,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             P, q, A, l, u = self.build_matrix(True, ie=True)
         else:
             A, B = self.build_matrix(damp=damp)
-
         # run the chosen solver
         if solver == "cg":
             logger.info("Solving using conjugate gradient")

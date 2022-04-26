@@ -22,12 +22,12 @@ class BaseFeature:
         self.faults_enabled = True
 
     def __str__(self):
-        _str = f"{self.name} {self.type} \n"
+        _str = "-----------------------------------------------------\n"
+        _str += f"{self.name} {self.type} \n"
         _str += "-----------------------------------------------------\n"
         _str += f"\t{len(self.regions)} regions\n"
         for r in self.regions:
             _str += f"\t \t{r.__str__}\n"
-        _str += "-----------------------------------------------------\n"
         _str += f"\t{len(self.faults)} faults.\n"
         _str += f"\tFault enabled {self.faults_enabled}\n"
 
