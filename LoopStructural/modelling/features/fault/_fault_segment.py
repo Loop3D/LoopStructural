@@ -38,9 +38,7 @@ class FaultSegment(StructuralFrame):
         StructuralFrame.__init__(self, features, name, fold)
         self.type = "fault"
         self.displacement = displacement
-        self.faultfunction = faultfunction
-        if faultfunction == "BaseFault":
-            self.faultfunction = BaseFault.fault_displacement
+        self._faultfunction = BaseFault.fault_displacement
         self.steps = steps
         self.regions = []
         self.faults_enabled = True
@@ -49,6 +47,19 @@ class FaultSegment(StructuralFrame):
         self.builder = None
         self.splay = {}
         self.abut = {}
+
+    @property
+    def faultfunction(self):
+        return self._faultfunction
+
+    @faultfunction.setter
+    def faultfunction(self, value):
+        if callable(value):
+            self.faultfunction = value
+        elif isinstance(value, str) and value == "BaseFault":
+            self._faultfunction = BaseFault.fault_displacement
+        else:
+            raise ValueError("Fault function must be a function or BaseFault")
 
     @property
     def fault_normal_vector(self):
