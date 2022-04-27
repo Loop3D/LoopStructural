@@ -6,7 +6,10 @@ from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopImportError
 
 logger = getLogger(__name__)
-from LoopStructural.modelling.input.process_data import ProcessInputData
+from LoopStructural.modelling.input import (
+    ProcessInputData,
+    Map2LoopProcessor,
+)
 
 try:
     from LoopStructural.modelling.input.project_file import LoopProjectfileProcessor
