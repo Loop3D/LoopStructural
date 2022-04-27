@@ -17,7 +17,10 @@ try:
     import skfmm as fmm
 
 except ImportError:
-    logger.error("skfmm not installed \n" "pip install scikit-fmm")
+    logger.warning(
+        "Cannot use IntrusionFrameBuilder: skfmm not installed \n"
+        "pip install scikit-fmm"
+    )
 
 
 class IntrusionFrameBuilder(StructuralFrameBuilder):

@@ -43,7 +43,7 @@ class BaseModelPlotter:
             logger.debug("Using bounding box from model")
 
     @property
-    def nelements(self):
+    def nelements(self) -> int:
         """The number of elements to use for evaluating the isosurface
 
         Returns
@@ -85,11 +85,11 @@ class BaseModelPlotter:
         )
 
     @property
-    def nsteps(self):
+    def nsteps(self) -> np.ndarray:
         return self._nsteps
 
     @nsteps.setter
-    def nsteps(self, nsteps):
+    def nsteps(self, nsteps: np.ndarray):
         self._nsteps = np.array(nsteps)
 
     def _add_surface(
