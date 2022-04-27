@@ -97,7 +97,10 @@ class GeologicalFeatureBuilder:
     def build_arguments(self, build_arguments):
         # self._build_arguments = {}
         for k, i in build_arguments.items():
-            self._build_arguments[k] = i
+            if i != self._build_arguments.get(k, None):
+                self._build_arguments[k] = i
+                ## if build_arguments change then flag to reinterpolate
+                self._up_to_date = False
 
     def update(self):
         self.build(**self.build_arguments)
@@ -516,7 +519,7 @@ class GeologicalFeatureBuilder:
         -------
 
         """
-
+        # self.get_interpolator(**kwargs)
         self.add_data_to_interpolator(**kwargs)
         if data_region is not None:
             xyz = self.interpolator.get_data_locations()
