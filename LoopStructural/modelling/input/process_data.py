@@ -281,21 +281,21 @@ class ProcessInputData:
             return
 
         fault_properties = fault_properties.copy()
-        if (
-            "centreEasting" not in fault_properties.columns
-            or "centreNorthing" not in fault_properties.columns
-            or "centreAltitude" not in fault_properties
-        ):
-            fault_properties["centreEasting"] = np.nan
-            fault_properties["centreNorthing"] = np.nan
-            fault_properties["centreAltitude"] = np.nan
-            for fname in fault_properties.index:
-                pts = self.fault_locations.loc[
-                    self.fault_locations["feature_name"] == fname, ["X", "Y", "Z"]
-                ]
-                fault_properties.loc[
-                    fname, ["centreEasting", "centreNorthing", "centreAltitude"]
-                ] = np.nanmean(pts, axis=0)
+        # if (
+        #     "centreEasting" not in fault_properties.columns
+        #     or "centreNorthing" not in fault_properties.columns
+        #     or "centreAltitude" not in fault_properties
+        # ):
+        fault_properties["centreEasting"] = np.nan
+        fault_properties["centreNorthing"] = np.nan
+        fault_properties["centreAltitude"] = np.nan
+        for fname in fault_properties.index:
+            pts = self.fault_locations.loc[
+                self.fault_locations["feature_name"] == fname, ["X", "Y", "Z"]
+            ]
+            fault_properties.loc[
+                fname, ["centreEasting", "centreNorthing", "centreAltitude"]
+            ] = np.nanmean(pts, axis=0)
         if (
             "avgNormalEasting" not in fault_properties.columns
             or "avgNormalNorthing" not in fault_properties.columns
@@ -349,7 +349,7 @@ class ProcessInputData:
                             "avgSlipDirAltitude",
                         ],
                     ] = np.mean(pts, axis=0)
-        if "displacment" not in fault_properties.columns:
+        if "displacement" not in fault_properties.columns:
             fault_properties["displacement"] = 0
             logger.warning(
                 "Fault displacement not provided, setting to 0. \n\
