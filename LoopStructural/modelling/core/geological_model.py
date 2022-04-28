@@ -5,33 +5,44 @@ import logging
 
 import numpy as np
 import pandas as pd
+import LoopStructural
 from LoopStructural.datasets import normal_vector_headers
-from LoopStructural.interpolators.discrete_fold_interpolator import (
-    DiscreteFoldInterpolator as DFI,
-)
-from LoopStructural.interpolators.finite_difference_interpolator import (
-    FiniteDifferenceInterpolator as FDI,
-)
-from LoopStructural.interpolators.piecewiselinear_interpolator import (
-    PiecewiseLinearInterpolator as PLI,
-)
+from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
+from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+
+# if LoopStructural.experimental:
+from LoopStructural.interpolators import P2Interpolator
+
+try:
+    from LoopStructural.interpolators import SurfeRBFInterpolator as Surfe
+
+    surfe = True
+
+except ImportError:
+    surfe = False
+
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
+from LoopStructural.modelling.fault import FaultSegment
 from LoopStructural.interpolators import DiscreteInterpolator
 
-from LoopStructural.interpolators.structured_grid import StructuredGrid
-from LoopStructural.interpolators.structured_tetra import TetMesh
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
-from LoopStructural.modelling.fault import FaultBuilder
-from LoopStructural.modelling.features import (
-    GeologicalFeatureInterpolator,
-    RegionFeature,
+from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import TetMesh
+from LoopStructural.modelling.features.fault._fault_segment import FaultSegment
+from LoopStructural.modelling.features.builders import (
+    FaultBuilder,
+    GeologicalFeatureBuilder,
     StructuralFrameBuilder,
+    FoldedFeatureBuilder,
+)
+from LoopStructural.modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
 )
-from LoopStructural.modelling.fold import (
+from LoopStructural.modelling.features.fold import (
     FoldRotationAngle,
-    FoldedFeatureBuilder,
     FoldEvent,
     FoldFrame,
 )
@@ -44,6 +55,14 @@ from LoopStructural.utils.helper import (
     get_vectors,
 )
 
+intrusions = True
+try:
+    from LoopStructural.modelling.intrusions import IntrusionBuilder
+
+    from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
+except ImportError as e:
+    print(e)
+    intrusions = False
 from LoopStructural.utils import getLogger, log_to_file
 
 logger = getLogger(__name__)
@@ -76,8 +95,8 @@ class GeologicalModel:
 
     def __init__(
         self,
-        origin,
-        maximum,
+        origin: np.ndarray,
+        maximum: np.ndarray,
         data=None,
         rescale=False,
         nsteps=(50, 50, 25),
@@ -133,9 +152,7 @@ class GeologicalModel:
         # we want to rescale the model area so that the maximum length is
         # 1
         self.origin = np.array(origin).astype(float)
-        originstr = "Model origin: {} {} {}".format(
-            self.origin[0], self.origin[1], self.origin[2]
-        )
+        originstr = f"Model origin: {self.origin[0]} {self.origin[1]} {self.origin[2]}"
         logger.info(originstr)
         self.maximum = np.array(maximum).astype(float)
         maximumstr = "Model maximum: {} {} {}".format(
@@ -192,6 +209,10 @@ class GeologicalModel:
             self.maximum[0], self.maximum[1], self.maximum[2]
         )
         _str += "Model rescale factor: {} \n".format(self.scale_factor)
+        _str += "------------------------------------------ \n"
+        _str += "Feature list: \n"
+        for feature in self.features:
+            _str += "  {} \n".format(feature)
         return _str
 
     def _ipython_key_completions_(self):
@@ -206,7 +227,7 @@ class GeologicalModel:
         use_thickness=True,
         vector_scale=1,
         gradient=False,
-        **kwargs
+        **kwargs,
     ):
         """Alternate constructor for a geological model using m2l output
 
@@ -226,6 +247,8 @@ class GeologicalModel:
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
 
+        log_to_file(f"{m2l_directory}/loopstructural_log.txt")
+        logger.info("Creating model from m2l directory")
         processor = Map2LoopProcessor(m2l_directory, use_thickness)
         processor._gradient = gradient
         processor.vector_scale = vector_scale
@@ -257,56 +280,71 @@ class GeologicalModel:
 
     @classmethod
     def from_processor(cls, processor):
+        logger.info("Creating model from processor")
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
-        for i in processor.fault_network.faults:
-            model.create_and_add_fault(
-                i,
-                **processor.fault_properties.to_dict("index")[i],
-                faultfunction="BaseFault"
-            )
-        for edge, properties in processor.fault_network.fault_edge_properties.items():
-            if model[edge[1]] is None or model[edge[0]] is None:
-                logger.warning(
-                    "cannot add splay {} or {} are not in the model".format(
-                        edge[1], edge[0]
-                    )
+        if processor.fault_properties is not None:
+            for i in processor.fault_network.faults:
+                logger.info(f"Adding fault {i}")
+                model.create_and_add_fault(
+                    i,
+                    **processor.fault_properties.to_dict("index")[i],
+                    faultfunction="BaseFault",
                 )
-                continue
-            splay = False
-            if "angle" in properties:
-                if (
-                    float(properties["angle"]) < 30
-                    and np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                        - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
+            for (
+                edge,
+                properties,
+            ) in processor.fault_network.fault_edge_properties.items():
+                if model[edge[1]] is None or model[edge[0]] is None:
+                    logger.warning(
+                        f"Cannot add splay {edge[1]} or {edge[0]} are not in the model"
                     )
-                    < 90
-                ):
-                    # splay
-                    region = model[edge[1]].builder.add_splay(model[edge[0]])
+                    continue
+                splay = False
+                if "angle" in properties:
+                    if float(properties["angle"]) < 30 and (
+                        "dip_dir"
+                        not in processor.stratigraphic_column["faults"][edge[0]]
+                        or np.abs(
+                            processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                            - processor.stratigraphic_column["faults"][edge[1]][
+                                "dip_dir"
+                            ]
+                        )
+                        < 90
+                    ):
+                        # splay
+                        region = model[edge[1]].builder.add_splay(model[edge[0]])
 
-                    model[edge[1]].splay[model[edge[0]].name] = region
-                    splay = True
-            if splay == False:
-                model[edge[1]].add_abutting_fault(
-                    model[edge[0]],
-                    np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]][
-                            "downthrow_dir"
-                        ]
-                        - processor.stratigraphic_column["faults"][edge[1]][
-                            "downthrow_dir"
-                        ]
+                        model[edge[1]].splay[model[edge[0]].name] = region
+                        splay = True
+                if splay == False:
+                    positive = None
+                    if (
+                        "downthrow_dir"
+                        in processor.stratigraphic_column["faults"][edge[0]]
+                    ):
+                        positive = (
+                            np.abs(
+                                processor.stratigraphic_column["faults"][edge[0]][
+                                    "downthrow_dir"
+                                ]
+                                - processor.stratigraphic_column["faults"][edge[1]][
+                                    "downthrow_dir"
+                                ]
+                            )
+                            < 90
+                        )
+                    model[edge[1]].add_abutting_fault(
+                        model[edge[0]],
+                        positive=positive,
                     )
-                    < 90,
-                )
-                # model[edge[1]].add_abutting_fault(model[edge[0]])
         for s in processor.stratigraphic_column.keys():
             if s != "faults":
                 faults = None
                 if processor.fault_stratigraphy is not None:
                     faults = processor.fault_stratigraphy[s]
+                logger.info(f"Adding foliation {s}")
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
@@ -338,7 +376,7 @@ class GeologicalModel:
             logger.info("GeologicalModel initialised from file")
             return model
         else:
-            logger.error("{} does not contain a geological model".format(file))
+            logger.error(f"{file} does not contain a geological model")
             return None
 
     def __getitem__(self, feature_name):
@@ -350,6 +388,9 @@ class GeologicalModel:
             name of the feature to return
         """
         return self.get_feature_by_name(feature_name)
+
+    def __contains__(self, feature_name):
+        return feature_name in self.feature_name_index
 
     @property
     def dtm(self):
@@ -369,7 +410,7 @@ class GeologicalModel:
     def faults(self):
         faults = []
         for f in self.features:
-            if f.type == "fault":
+            if type(f) == FaultSegment:
                 faults.append(f)
 
         return faults
@@ -416,7 +457,7 @@ class GeologicalModel:
             )
             return
         try:
-            logger.info("Writing GeologicalModel to: {}".format(file))
+            logger.info(f"Writing GeologicalModel to: {file}")
             pickle.dump(self, open(file, "wb"))
         except pickle.PicklingError:
             logger.error("Error saving file")
@@ -434,19 +475,18 @@ class GeologicalModel:
 
         if feature.name in self.feature_name_index:
             logger.info(
-                "Feature %s already exists at %i, overwriting"
-                % (feature.name, self.feature_name_index[feature.name])
+                f"Feature {feature.name} already exists at {self.feature_name_index[feature.name]}, overwriting"
             )
             self.features[self.feature_name_index[feature.name]] = feature
         else:
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info(
-                "Adding %s to model at location %i" % (feature.name, len(self.features))
+                f"Adding {feature.name} to model at location {len(self.features)}"
             )
         self._add_domain_fault_above(feature)
         self._add_unconformity_above(feature)
-        feature.set_model(self)
+        feature.model = self
 
     def data_for_feature(self, feature_name):
         return self.data.loc[self.data["feature_name"] == feature_name, :]
@@ -486,9 +526,7 @@ class GeologicalModel:
             except:
                 logger.error("Could not load pandas data frame from data")
                 raise BaseException("Cannot load data")
-        logger.info(
-            "Adding data to GeologicalModel with {} data points".format(len(data))
-        )
+        logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
         self._data["X"] -= self.origin[0]
         self._data["Y"] -= self.origin[1]
@@ -596,37 +634,13 @@ class GeologicalModel:
 
         self.stratigraphic_column = stratigraphic_column
 
-    def create_from_feature_list(self, features):
-        """Initialises a model from a dictionary containing the features
-
-        Parameters
-        ----------
-        features : [type]
-            [description]
-
-        Raises
-        ------
-        LoopException
-            [description]
-        """
-        for f in features:
-            featuretype = f.pop("featuretype", None)
-            if featuretype is None:
-                raise LoopException
-            if featuretype == "strati":
-                self.create_and_add_foliation(f)
-            # if featuretype == 'fault':
-            #     self.create_and_add_fault(f)
-            if featuretype == "folded_strati":
-                self.create_and_add_folded_foliation(f)
-
     def get_interpolator(
         self,
         interpolatortype="FDI",
         nelements=1e4,
         buffer=0.2,
         element_volume=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Returns an interpolator given the arguments, also constructs a
@@ -673,15 +687,13 @@ class GeologicalModel:
                 for i in range(3):
                     if nsteps[i] < 3:
                         logger.error(
-                            "Number of steps in direction {} is too small, try increasing nelements".format(
-                                axis_labels[i]
-                            )
+                            f"Number of steps in direction {axis_labels[i]} is too small, try increasing nelements"
                         )
                 logger.error("Cannot create interpolator: number of steps is too small")
                 raise ValueError("Number of steps too small cannot create interpolator")
             # create a structured grid using the origin and number of steps
             if self.reuse_supports:
-                mesh_id = "mesh_{}".format(nelements)
+                mesh_id = f"mesh_{nelements}"
                 mesh = self.support.get(
                     mesh_id,
                     TetMesh(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector),
@@ -701,7 +713,27 @@ class GeologicalModel:
             )
 
             return PLI(mesh)
-
+        if interpolatortype == "P2":
+            if element_volume is None:
+                # nelements /= 5
+                element_volume = box_vol / nelements
+            # calculate the step vector of a regular cube
+            step_vector = np.zeros(3)
+            step_vector[:] = element_volume ** (1.0 / 3.0)
+            # step_vector /= np.array([1,1,2])
+            # number of steps is the length of the box / step vector
+            nsteps = np.ceil((bb[1, :] - bb[0, :]) / step_vector).astype(int)
+            if "meshbuilder" in kwargs:
+                mesh = kwargs["meshbuilder"](bb, nelements)
+            else:
+                raise NotImplementedError(
+                    "Cannot use P2 interpolator without external mesh"
+                )
+            logger.info(
+                "Creating regular tetrahedron mesh with %i elements \n"
+                "for modelling using P2" % (mesh.ntetra)
+            )
+            return P2Interpolator(mesh)
         if interpolatortype == "FDI":
 
             # find the volume of one element
@@ -718,9 +750,7 @@ class GeologicalModel:
                 for i in range(3):
                     if nsteps[i] < 3:
                         logger.error(
-                            "Number of steps in direction {} is too small, try increasing nelements".format(
-                                axis_labels[i]
-                            )
+                            f"Number of steps in direction {axis_labels[i]} is too small, try increasing nelements"
                         )
                 raise ValueError("Number of steps too small cannot create interpolator")
             # create a structured grid using the origin and number of steps
@@ -739,8 +769,8 @@ class GeologicalModel:
                     origin=bb[0, :], nsteps=nsteps, step_vector=step_vector
                 )
             logger.info(
-                "Creating regular grid with %i elements \n"
-                "for modelling using FDI" % grid.n_elements
+                f"Creating regular grid with {grid.n_elements} elements \n"
+                "for modelling using FDI"
             )
             return FDI(grid)
 
@@ -762,21 +792,12 @@ class GeologicalModel:
                     TetMesh(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector),
                 )
             logger.info(
-                "Creating regular tetrahedron mesh with %i elements \n"
-                "for modelling using DFI" % mesh.ntetra
+                f"Creating regular tetrahedron mesh with {mesh.ntetra} elements \n"
+                "for modelling using DFI"
             )
             return DFI(mesh, kwargs["fold"])
         if interpolatortype == "Surfe" or interpolatortype == "surfe":
             # move import of surfe to where we actually try and use it
-            try:
-                from LoopStructural.interpolators.surfe_wrapper import (
-                    SurfeRBFInterpolator as Surfe,
-                )
-
-                surfe = True
-
-            except ImportError:
-                surfe = False
             if not surfe:
                 logger.warning("Cannot import Surfe, try another interpolator")
                 raise ImportError("Cannot import surfepy, try pip install surfe")
@@ -810,13 +831,13 @@ class GeologicalModel:
             {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
         )
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(
+        series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
         )
         # add data
         series_data = self.data[self.data["feature_name"] == series_surface_data]
         if series_data.shape[0] == 0:
-            logger.warning("No data for %s, skipping" % series_surface_data)
+            logger.warning("No data for {series_surface_data}, skipping")
             return
         series_builder.add_data_from_data_frame(series_data)
         self._add_faults(series_builder, features=faults)
@@ -851,13 +872,13 @@ class GeologicalModel:
             {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
         )
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(
+        series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
         )
         # add data
         series_data = self.data[self.data["feature_name"] == series_surface_data]
         if series_data.shape[0] == 0:
-            logger.warning("No data for %s, skipping" % series_surface_data)
+            logger.warning("No data for {series_surface_data}, skipping")
             return
         series_builder.add_data_from_data_frame(series_data)
         # self._add_faults(series_builder)
@@ -953,7 +974,7 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
-        fold = FoldEvent(fold_frame, name="Fold_{}".format(foliation_data))
+        fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}")
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         if "fold_weights" not in kwargs:
             kwargs["fold_weights"] = {}
@@ -1019,10 +1040,9 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
-        fold = FoldEvent(fold_frame, name="Fold_{}".format(fold_frame_data))
+        fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-
         frame_interpolator = self.get_interpolator(**kwargs)
         interpolators = [
             fold_interpolator,
@@ -1034,7 +1054,7 @@ class GeologicalModel:
             name=fold_frame_data,
             fold=fold,
             frame=FoldFrame,
-            **kwargs
+            **kwargs,
         )
         fold_frame_builder.add_data_from_data_frame(
             self.data[self.data["feature_name"] == fold_frame_data]
@@ -1059,12 +1079,127 @@ class GeologicalModel:
 
         return folded_fold_frame
 
+    def create_and_add_intrusion(
+        self,
+        intrusion_name,
+        intrusion_frame_name,
+        intrusion_lateral_extent_model=None,
+        intrusion_vertical_extent_model=None,
+        intrusion_network_parameters={},
+        lateral_extent_sgs_parameters={},
+        vertical_extent_sgs_parameters={},
+        **kwargs,
+    ):
+        """
+        An intrusion in built in two main steps:
+        (1) Intrusion builder: intrusion builder creates the intrusion structural frame.
+            This object is curvilinear coordinate system of the intrusion constrained with intrusion network points,
+            and flow and inflation measurements (provided by the user).
+            The intrusion network is a representation of the approximated location of roof or floor contact of the intrusion.
+            This object might be constrained using the anisotropies of the host rock if the roof (or floor) contact is not well constrained.
+
+        (2) Intrusion feature: simulation of lateral and vertical extent of intrusion within the model volume.
+            The simulations outcome consist in thresholds distances along the structural frame coordinates
+            that are used to constrained the extent of the intrusion.
+
+        Parameters
+        ----------
+        intrusion_name :  string,
+            name of intrusion feature in model data
+        intrusion_frame_name :  string,
+            name of intrusion frame in model data
+        intrusion_lateral_extent_model = function,
+            geometrical conceptual model for simulation of lateral extent
+        intrusion_vertical_extent_model = function,
+            geometrical conceptual model for simulation of vertical extent
+        intrusion_network_parameters : dictionary, optional
+            contact : string, contact of the intrusion to be used to create the network (roof or floor)
+            type : string, type of algorithm to create the intrusion network (interpolated or shortest path).
+                    Shortest path is recommended when intrusion contact is not well constrained
+            contacts_anisotropies : list of series-type features involved in intrusion emplacement
+            structures_anisotropies : list of fault-type features involved in intrusion emplacement
+            sequence_anisotropies : list of anisotropies to look for the shortest path. It could be only starting and end point.
+        lateral_extent_sgs_parameters = dictionary, optional
+            parameters for sequential gaussian simulation of lateral extent
+        vertical_extent_sgs_parameters = dictionary, optional
+            parameters for sequential gaussian simulation of vertical extent
+
+        kwargs
+
+        Returns
+        -------
+        intrusion feature
+
+        """
+        if intrusions == False:
+            logger.error("Libraries not installed")
+            raise Exception("Libraries not installed")
+
+        intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
+        intrusion_frame_data = self.data[
+            self.data["feature_name"] == intrusion_frame_name
+        ].copy()
+
+        # -- get variables for intrusion frame interpolation
+        gxxgz = kwargs.get("gxxgz", 0)
+        gxxgy = kwargs.get("gxxgy", 0)
+        gyxgz = kwargs.get("gyxgz", 0)
+
+        interpolatortype = kwargs.get("interpolatortype", "FDI")
+        nelements = kwargs.get("nelements", 1e2)
+
+        weights = [gxxgz, gxxgy, gyxgz]
+        interpolator = self.get_interpolator(interpolatortype=interpolatortype)
+
+        intrusion_frame_builder = IntrusionFrameBuilder(
+            interpolator, name=intrusion_frame_name, model=self, **kwargs
+        )
+
+        # -- create intrusion network
+        intrusion_frame_builder.set_intrusion_network_parameters(
+            intrusion_data, intrusion_network_parameters
+        )
+        intrusion_network_geometry = intrusion_frame_builder.create_intrusion_network()
+
+        # -- create intrusion frame using intrusion network points and flow/inflation measurements
+        intrusion_frame_builder.set_intrusion_frame_data(
+            intrusion_frame_data, intrusion_network_geometry
+        )
+
+        ## -- create intrusion frame
+        intrusion_frame_builder.setup(
+            nelements=nelements,
+            w2=weights[0],
+            w1=weights[1],
+            gxygz=weights[2],
+        )
+
+        intrusion_frame = intrusion_frame_builder.frame
+
+        # -- create intrusion builder to simulate distance thresholds along frame coordinates
+        intrusion_builder = IntrusionBuilder(
+            intrusion_frame, model=self, name=f"{intrusion_name}_feature"
+        )
+        intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
+        intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
+
+        # logger.info("setting data for thresholds simulation")
+        intrusion_builder.set_data_for_extent_simulation(intrusion_data)
+        intrusion_builder.build_arguments = {
+            "lateral_extent_sgs_parameters": lateral_extent_sgs_parameters,
+            "vertical_extent_sgs_parameters": vertical_extent_sgs_parameters,
+        }
+        intrusion_feature = intrusion_builder.feature
+        self._add_feature(intrusion_feature)
+
+        return intrusion_feature
+
     def _add_faults(self, feature_builder, features=None):
         """Adds all existing faults to a geological feature builder
 
         Parameters
         ----------
-        feature_builder : GeologicalFeatureInterpolator/StructuralFrameBuilder
+        feature_builder : GeologicalFeatureBuilder/StructuralFrameBuilder
             The feature buider to add the faults to
         features : list, optional
             A specific list of features rather than all features in the model
@@ -1089,7 +1224,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature : GeologicalFeatureInterpolator
+        feature : GeologicalFeatureBuilder
             the feature being added to the model where domain faults should be added
 
         Returns
@@ -1111,7 +1246,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature : GeologicalFeatureInterpolator
+        feature : GeologicalFeatureBuilder
             the feature being added to the model where domain faults should be added
 
         Returns
@@ -1183,7 +1318,7 @@ class GeologicalModel:
             return False
         # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
-        unconformity_feature_builder = GeologicalFeatureInterpolator(
+        unconformity_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=unconformity_surface_data
         )
         # add data
@@ -1288,7 +1423,7 @@ class GeologicalModel:
         """
         # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
-        domain_fault_feature_builder = GeologicalFeatureInterpolator(
+        domain_fault_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=fault_surface_data
         )
         # add data
@@ -1325,7 +1460,7 @@ class GeologicalModel:
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
-        **kwargs
+        **kwargs,
     ):
         """
         Parameters
@@ -1346,6 +1481,28 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
+        if "fault_extent" in kwargs and major_axis == None:
+            major_axis = kwargs["fault_extent"]
+        if "fault_influence" in kwargs and minor_axis == None:
+            minor_axis = kwargs["fault_influence"]
+        if "fault_vectical_radius" in kwargs and intermediate_axis == None:
+            intermediate_axis = kwargs["fault_vectical_radius"]
+
+        logger.info(f'Creating fault "{fault_surface_data}"')
+        logger.info(f"Displacement: {displacement}")
+        logger.info(f"Tolerance: {tol}")
+        logger.info(f"Fault function: {faultfunction}")
+        logger.info(f"Fault slip vector: {fault_slip_vector}")
+        logger.info(f"Fault center: {fault_center}")
+        logger.info(f"Major axis: {major_axis}")
+        logger.info(f"Minor axis: {minor_axis}")
+        logger.info(f"Intermediate axis: {intermediate_axis}")
+        fault_slip_vector = np.array(fault_slip_vector, dtype="float")
+        fault_center = np.array(fault_center, dtype="float")
+
+        for k, v in kwargs.items():
+            logger.info(f"{k}: {v}")
+
         if tol is None:
             tol = self.tol
         self.parameters["features"].append(
@@ -1356,6 +1513,9 @@ class GeologicalModel:
                 **kwargs,
             }
         )
+        if displacement == 0:
+            logger.warning(f"{fault_surface_data} displacement is 0")
+
         if "data_region" in kwargs:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
@@ -1367,9 +1527,8 @@ class GeologicalModel:
             logger.error(
                 "Change interpolator to a discrete interpolation algorithm FDI/PLI"
             )
-            raise InterpolatorError(
-                "Faults not supported for {}".format(kwargs["interpolatortype"])
-            )
+            interpolatortype = kwargs["interpolatortype"]
+            raise InterpolatorError(f"Faults not supported for {interpolatortype}")
         fault_frame_builder = FaultBuilder(
             interpolator, name=fault_surface_data, model=self, **kwargs
         )
@@ -1377,12 +1536,29 @@ class GeologicalModel:
         fault_frame_data = self.data[
             self.data["feature_name"] == fault_surface_data
         ].copy()
+        trace_mask = np.logical_and(
+            fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
+        )
+        logger.info(f"There are {np.sum(trace_mask)} points on the fault trace")
+        if np.sum(trace_mask) == 0:
+            logger.error(
+                "You cannot model a fault without defining the location of the fault"
+            )
+            raise ValueError(f"There are no points on the fault trace")
+
         mask = np.logical_and(
             fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
         )
-        fault_normal_vector = (
-            fault_frame_data.loc[mask, ["gx", "gy", "gz"]].mean(axis=0).to_numpy()
+        vector_data = fault_frame_data.loc[mask, ["gx", "gy", "gz"]].to_numpy()
+        mask2 = np.logical_and(
+            fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["nz"])
         )
+        vector_data = np.vstack(
+            [vector_data, fault_frame_data.loc[mask2, ["nx", "ny", "nz"]].to_numpy()]
+        )
+        fault_normal_vector = np.mean(vector_data, axis=0)
+        logger.info(f"Fault normal vector: {fault_normal_vector}")
+
         mask = np.logical_and(
             fault_frame_data["coord"] == 1, ~np.isnan(fault_frame_data["gz"])
         )
@@ -1407,18 +1583,20 @@ class GeologicalModel:
                     .to_numpy()
                 )
         if np.any(np.isnan(fault_slip_vector)):
-            logger.warning("Fault slip vector is nan, estimating from fault normal")
+            logger.info("Fault slip vector is nan, estimating from fault normal")
             strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
             fault_slip_vector = dip_vector[:, 0]
-        if fault_center is not None:
+            logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
+
+        if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
-        if fault_center is None:
+        else:
             # if we haven't defined a fault centre take the center of mass for lines assocaited with
             # the fault trace
             if (
-                "centreEasting" in kwargs
-                and "centreNorthing" in kwargs
-                and "centreAltitude" in kwargs
+                ~np.isnan(kwargs.get("centreEasting", np.nan))
+                and ~np.isnan(kwargs.get("centreNorthing", np.nan))
+                and ~np.isnan(kwargs.get("centreAltitude", np.nan))
             ):
                 fault_center = self.scale(
                     np.array(
@@ -1452,31 +1630,20 @@ class GeologicalModel:
             minor_axis=minor_axis,
             major_axis=major_axis,
             intermediate_axis=intermediate_axis,
-            points=kwargs.get("points", None),
+            points=kwargs.get("points", False),
         )
-
-        # if minor_axis == None or major_axis == None or intermediate_axis == None:
-        #     fault_frame_builder.origin = self.bounding_box[0,:]
-        #     fault_frame_builder.maximum = self.bounding_box[1,:]
         if "force_mesh_geometry" not in kwargs:
 
-            fault_frame_builder.set_mesh_geometry(
-                kwargs.get("fault_buffer", 0.2), 0
-            )  
+            fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
         if "splay" in kwargs and "splayregion" in kwargs:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])
 
         kwargs["tol"] = tol
         fault_frame_builder.setup(**kwargs)
-        fault_frame = fault_frame_builder.frame
+        fault = fault_frame_builder.frame
+        fault.displacement = displacement_scaled
+        fault.faultfunction = faultfunction
 
-        fault = FaultSegment(
-            fault_frame,
-            displacement=displacement_scaled,
-            faultfunction=faultfunction,
-            **kwargs
-        )
-        fault.builder = fault_frame_builder
         for f in reversed(self.features):
             if f.type == "unconformity":
                 fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
@@ -1593,11 +1760,11 @@ class GeologicalModel:
                         nsteps[2])
         >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(xyz,scale=False)
 
         Evaluate on points defined by regular grid function
 
-        >>> model.evaluate_model(model.regular_grid())
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
 
 
         Evaluate on a map
@@ -1609,7 +1776,10 @@ class GeologicalModel:
         >>> xx, yy = np.meshgrid(x, y, indexing='ij')
         >>> zz = np.zeros_like(yy)
         >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_model(xyz)
+        >>> model.evaluate_model(model.regular_grid(shuffle=False),scale=False)
+
+        Evaluate on points in reference coordinate system
+        >>> model.evaluate_model(xyz,scale=True)
 
         """
         xyz = np.array(xyz)
@@ -1631,7 +1801,7 @@ class GeologicalModel:
                         )
                     ] = series["id"]
             if feature_id == -1:
-                logger.error("Model does not contain {}".format(group))
+                logger.error(f"Model does not contain {group}")
         return strat_id
 
     def evaluate_fault_displacements(self, points, scale=True):
@@ -1682,7 +1852,7 @@ class GeologicalModel:
         if feature_index > -1:
             return self.features[feature_index]
         else:
-            logger.error("{} does not exist!".format(feature_name))
+            logger.error(f"{feature_name} does not exist!")
             return None
 
     def evaluate_feature_value(self, feature_name, xyz, scale=True):
@@ -1772,10 +1942,7 @@ class GeologicalModel:
                 total_dof += f.interpolator.nx
         if verbose == True:
             print(
-                "Updating geological model. There are: \n"
-                "{} geological features that need to be interpolated\n".format(
-                    nfeatures
-                )
+                f"Updating geological model. There are: \n {nfeatures} geological features that need to be interpolated\n"
             )
 
         from tqdm.auto import tqdm
@@ -1788,8 +1955,8 @@ class GeologicalModel:
         with tqdm(total=nfeatures) as pbar:
             buf = 0
             for f in self.features:
-                pbar.set_description("Interpolating {}".format(f.name))
+                pbar.set_description(f"Interpolating {f.name}")
                 f.builder.up_to_date(callback=pbar.update)
 
         if verbose:
-            print("Model update took: {} seconds".format(time.time() - start))
+            print(f"Model update took: {time.time()-start} seconds")

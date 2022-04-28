@@ -52,7 +52,7 @@ class RotationAnglePlotter:
         self.ax[0][0].set_xlabel("Fold Frame Axis Direction Field")
 
     def add_fold_limb_data(self, symb="bo", **kwargs):
-        fold_frame = self.feature.fold.fold_limb_rotation.fold_frame_coordinate
+        fold_frame = self.feature.builder.fold.fold_limb_rotation.fold_frame_coordinate
         rotation = self.feature.fold.fold_limb_rotation.rotation_angle
         return self.plot(fold_frame, rotation, 0, 1, symb, **kwargs)
 
@@ -63,11 +63,11 @@ class RotationAnglePlotter:
             100,
         )
         return self.plot(
-            x, self.feature.fold.fold_limb_rotation(x), 0, 1, symb, **kwargs
+            x, self.feature.builder.fold.fold_limb_rotation(x), 0, 1, symb, **kwargs
         )
 
     def add_axis_svariogram(self, symb="bo", **kwargs):
-        svariogram = self.feature.fold.fold_axis_rotation.svario
+        svariogram = self.feature.builder.fold.fold_axis_rotation.svario
         if svariogram:
             svariogram.calc_semivariogram()
             return self.plot(
@@ -75,7 +75,7 @@ class RotationAnglePlotter:
             )
 
     def add_limb_svariogram(self, symb="bo", **kwargs):
-        svariogram = self.feature.fold.fold_limb_rotation.svario
+        svariogram = self.feature.builder.fold.fold_limb_rotation.svario
         if svariogram:
             svariogram.calc_semivariogram()
             return self.plot(
@@ -83,16 +83,16 @@ class RotationAnglePlotter:
             )
 
     def add_fold_axis_data(self, symb="bo", **kwargs):
-        fold_frame = self.feature.fold.fold_axis_rotation.fold_frame_coordinate
-        rotation = self.feature.fold.fold_axis_rotation.rotation_angle
+        fold_frame = self.feature.builder.fold.fold_axis_rotation.fold_frame_coordinate
+        rotation = self.feature.builder.fold.fold_axis_rotation.rotation_angle
         return self.plot(fold_frame, rotation, 0, 0, symb, **kwargs)
 
     def add_fold_axis_curve(self, symb="r-", **kwargs):
         x = np.linspace(
-            self.feature.fold.foldframe[1].min(),
-            self.feature.fold.foldframe[1].max(),
+            self.feature.builder.fold.foldframe[1].min(),
+            self.feature.builder.fold.foldframe[1].max(),
             100,
         )
         return self.plot(
-            x, self.feature.fold.fold_axis_rotation(x), 0, 0, symb, **kwargs
+            x, self.feature.builder.fold.fold_axis_rotation(x), 0, 0, symb, **kwargs
         )

@@ -17,29 +17,29 @@ class Map2LoopProcessor(ProcessInputData):
         m2l_directory : path
             path to a m2l root directory
         """
-        groups = pd.read_csv(m2l_directory + "/tmp/all_sorts_clean.csv", index_col=0)
-        orientations = pd.read_csv(m2l_directory + "/output/orientations_clean.csv")
+        groups = pd.read_csv(f"{m2l_directory}/tmp/all_sorts_clean.csv", index_col=0)
+        orientations = pd.read_csv(f"{m2l_directory}/output/orientations_clean.csv")
         formation_thickness = pd.read_csv(
-            m2l_directory + "/output/formation_summary_thicknesses.csv"
+            f"{m2l_directory}/output/formation_summary_thicknesses.csv"
         )
         contacts = pd.read_csv(m2l_directory + "/output/contacts_clean.csv")
         fault_displacements = pd.read_csv(
-            m2l_directory + "/output/fault_displacements3.csv"
+            f"{m2l_directory}/output/fault_displacements3.csv"
         )
         fault_orientations = pd.read_csv(
-            m2l_directory + "/output/fault_orientations.csv"
+            f"{m2l_directory}/output/fault_orientations.csv"
         )
         fault_locations = pd.read_csv(m2l_directory + "/output/faults.csv")
         fault_strat = pd.read_csv(
             f"{m2l_directory}/output/supergroup-fault-relationships.csv"
         )
         fault_dimensions = pd.read_csv(
-            m2l_directory + "/output/fault_dimensions.csv", index_col="Fault"
+            f"{m2l_directory}/output/fault_dimensions.csv", index_col="Fault"
         )
-        fault_graph = networkx.read_gml(m2l_directory + "/tmp/fault_network.gml")
+        fault_graph = networkx.read_gml(f"{m2l_directory}/tmp/fault_network.gml")
         fault_orientations.rename(columns={"formation": "fault_name"}, inplace=True)
 
-        bb = np.loadtxt(m2l_directory + "/tmp/bbox.csv", skiprows=1, delimiter=",")
+        bb = np.loadtxt(f"{m2l_directory}/tmp/bbox.csv", skiprows=1, delimiter=",")
         fault_dimensions["displacement"] = np.nan
         fault_dimensions["downthrow_dir"] = np.nan
         fault_dimensions["dip_dir"] = np.nan
@@ -80,7 +80,7 @@ class Map2LoopProcessor(ProcessInputData):
         # make sure supergroups are in the groups dataframe
 
         supergroups = {}
-        with open(m2l_directory + "/tmp/super_groups.csv") as f:
+        with open(f"{m2l_directory}/tmp/super_groups.csv") as f:
             for line in f:
 
                 i = 0
@@ -158,7 +158,9 @@ class Map2LoopProcessor(ProcessInputData):
         """
         for fname in fault_properties.index:
             if fault_properties.loc[fname, "downthrow_dir"] == 1.0:
-                logger.info("Estimating downthrow direction using fault intersections")
+                logger.info(
+                    f"{fname}: Estimating downthrow direction using fault intersections"
+                )
             # fault_intersection_angles[f]
             if (
                 np.abs(
