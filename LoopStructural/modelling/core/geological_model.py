@@ -319,17 +319,25 @@ class GeologicalModel:
                         model[edge[1]].splay[model[edge[0]].name] = region
                         splay = True
                 if splay == False:
+                    positive = None
+                    if (
+                        "downthrow_dir"
+                        in processor.stratigraphic_column["faults"][edge[0]]
+                    ):
+                        positive = (
+                            np.abs(
+                                processor.stratigraphic_column["faults"][edge[0]][
+                                    "downthrow_dir"
+                                ]
+                                - processor.stratigraphic_column["faults"][edge[1]][
+                                    "downthrow_dir"
+                                ]
+                            )
+                            < 90
+                        )
                     model[edge[1]].add_abutting_fault(
                         model[edge[0]],
-                        np.abs(
-                            processor.stratigraphic_column["faults"][edge[0]][
-                                "downthrow_dir"
-                            ]
-                            - processor.stratigraphic_column["faults"][edge[1]][
-                                "downthrow_dir"
-                            ]
-                        )
-                        < 90,
+                        positive=positive,
                     )
         for s in processor.stratigraphic_column.keys():
             if s != "faults":

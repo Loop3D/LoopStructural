@@ -400,7 +400,6 @@ class FaultSegment(StructuralFrame):
             positive = abut_value > 0
         # we want to crop the fault by the abutting fault so create a positive/neg region and include the fault centre and normal vector to help
         # outside of the fault interpolation support
-
         if positive:
             abutting_region = PositiveRegion(
                 abutting_fault_feature,
