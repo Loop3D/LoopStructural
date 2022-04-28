@@ -65,6 +65,19 @@ class StructuralFrame(BaseFeature):
                 continue
             f.set_model(model)
 
+    @property
+    def model(self):
+        return self._model
+
+    @model.setter
+    def model(self, model):
+        # causes circular import, could delay import?
+        # if type(model) == GeologicalModel:
+        for f in self.features:
+            if f is None:
+                continue
+            f.model = model
+
     def add_region(self, region):
         for i in range(3):
             self.features[i].add_region(region)

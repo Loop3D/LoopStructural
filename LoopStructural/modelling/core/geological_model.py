@@ -1035,7 +1035,6 @@ class GeologicalModel:
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-
         frame_interpolator = self.get_interpolator(**kwargs)
         interpolators = [
             fold_interpolator,
@@ -1070,7 +1069,7 @@ class GeologicalModel:
 
         self._add_feature(folded_fold_frame)
 
-        return fold_frame
+        return folded_fold_frame
 
     def create_and_add_intrusion(
         self,

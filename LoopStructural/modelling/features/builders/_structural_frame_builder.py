@@ -17,11 +17,6 @@ from LoopStructural.modelling.features import StructuralFrame
 
 
 class StructuralFrameBuilder:
-    """[summary]
-
-    [extended_summary]
-    """
-
     def __init__(
         self, interpolator=None, interpolators=None, frame=StructuralFrame, **kwargs
     ):
@@ -46,6 +41,7 @@ class StructuralFrameBuilder:
             self.name = kwargs["name"]
             kwargs.pop("name")
         self.data = [[], [], []]
+        self.fold = kwargs.get('fold',None)
         # list of interpolators
         # self.interpolators = []
         # Create the interpolation objects by copying the template

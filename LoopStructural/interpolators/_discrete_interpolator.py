@@ -419,8 +419,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         ).tocsc()  # .tocsr()
 
         B = np.array(b)
-        print("A", A.shape)
-        print("B", B.shape)
         if not square:
             logger.info("Using rectangular matrix, equality constraints are not used")
             return A, B
