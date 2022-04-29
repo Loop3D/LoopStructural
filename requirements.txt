@@ -5,6 +5,9 @@ scipy
 numpy
 setuptools
 pandas
+lavavu
+pyevtk
+dill
 
 
 

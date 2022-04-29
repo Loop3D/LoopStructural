@@ -40,7 +40,7 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
    auto_examples/index
    contributors_guide
    about
-   changelog
+   CHANGELOG
    
 .. toctree::
    :caption: User Guide:

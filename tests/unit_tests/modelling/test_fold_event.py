@@ -1,4 +1,4 @@
-from LoopStructural.modelling.fold import FoldEvent
+from LoopStructural.modelling.features.fold import FoldEvent
 from LoopStructural.modelling.features import StructuralFrame
 
 

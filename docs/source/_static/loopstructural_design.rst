@@ -8,14 +8,13 @@ LoopStructural design
 Overview
 ~~~~~~~~
 
-LoopStructural is a modular 3D geological modelling library with a flexible API for building 3D geological models. 
+LoopStructural is a modular 3D geological modelling library with a flexible API for building 3D geological models. It provides access to implicit interpolators as well as geological feature/events.
 
 
 Context
 ~~~~~~~
 
-The objective of geological modelling is to predict the geometry and distribution of geological objects in the subsurface. 
-LoopStructural provides a Explain implicit modelling
+The objective of geological modelling is to predict the geometry and distribution of geological objects in the subsurface. Different geological objects are represented by approximating an implicit function where isovalues/level sets of the implicit function define the geometry of geological features. The interaction between different geological objects is defined by the geological feature type (fault, fold, unconformity). 
 
 Goals and Non-Goals
 ~~~~~~~~~~~~~~~~~~~
@@ -24,7 +23,8 @@ The aim of LoopStructural are:
 
 * to provide an easy to use python API for building 3D geological models from data.
 * a platform for developing 3D modelling ideas, remove the requirement for boiler plate code.
-* A framework for 
+* integrate more geological observation types and knowledge into the modelling workflow
+
 
 Existing Solutions
 ~~~~~~~~~~~~~~~~~~
@@ -53,11 +53,11 @@ The main modules for the library are:
 **Coding paradigm** LoopStructural is written in an object oriented paradigm.
 The four pillars of object oriented coding should be adhered to:
 
-* **Encapsulation**: Attributes in python are designed to be accessible both within the class and from outside of the class. In LoopStructural, where an attribute of a class should be private the ``@property`` decorator should be used.
+* **Encapsulation**: Attributes in python are designed to be accessible both within the class and from outside of the class. In LoopStructural, the where an attribute of a class should be private the ``@property`` decorator should be used.
 * **Inheritance**: Classes should inheret attributes and methods from parent classes. 
 * **Polymorphism**: Child classes, where a method is different from a parent class should override methods from parent classes.
 
-**Dependency management** The library is written in python and is dependent on numpy, scipy.
+**Dependency management** The library is written in python and is dependent on numpy, scipy. Care should be taken to avoid incorporating of uncessary dependencies. For dependencies that are not part of the standard scientific python toolkit (numfocus projects) the dependencies should be optional and not be required. 
 
 **Documentation** The documentation is written for sphinx and should be formatted using the numpy style. 
 
@@ -71,6 +71,7 @@ A new patch pull request will be created when a bug fix is applied and passes th
 A new feature pull request will be created when a new feature is added and passes the tests.
 When the new release is merged the library will be deployed to pypi, loop3d conda channel and dockerhub. 
 The documentation is automatically built when a new release is created and will be uploaded.
+The entire CI/CD workflow is run using github actions.
 
 
 1. interpolators
@@ -81,6 +82,7 @@ The base of the interpolation module is the **GeologicalInterpolator** class.
 The **GeologicalInterpolator** class contains the entry point for all interpolators and the functions for accessing constraints.
 All implementations of interpolators are subclassed from the **GeologicalInterpolator**. 
 This module should include all interpolators and associated classes (e.g. mesh, grid, operators).
+Future update: there should be a separate API so that the interpolators can be used without a GeologicalModel. 
 
 
 2. modelling

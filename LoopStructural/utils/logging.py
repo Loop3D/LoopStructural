@@ -1,5 +1,6 @@
 import logging
 import LoopStructural
+import os
 
 
 def get_levels():
@@ -29,7 +30,7 @@ def getLogger(name):
     return logger
 
 
-def log_to_file(filename, level="info"):
+def log_to_file(filename, overwrite=True, level="info"):
     """Set the logging parameters for log file
 
 
@@ -40,6 +41,12 @@ def log_to_file(filename, level="info"):
     level : str, optional
         'info', 'warning', 'error', 'debug' mapped to logging levels, by default 'info'
     """
+    logger = getLogger(__name__)
+    if os.path.isfile(filename):
+        logger.warning(
+            "Overwriting existing logfile. To avoid this, set overwrite=False"
+        )
+        os.remove(filename)
     levels = get_levels()
     level = levels.get(level, logging.WARNING)
     fh = logging.FileHandler(filename)

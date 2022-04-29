@@ -42,6 +42,16 @@ class LoopProjectfileProcessor(ProcessInputData):
             )
         )
         fault_properties = self.projectfile.faultLog
+        fault_properties.rename(
+            columns={
+                "avgDisplacement": "displacement",
+                "influenceDistance": "minor_axis",
+                "verticalRadius": "intermediate_axis",
+                "horizontalRadius": "major_axis",
+                # "name": "fault_name",
+            },
+            inplace=True,
+        )
         colours = dict(
             zip(
                 self.projectfile.stratigraphicLog.name,
@@ -58,16 +68,18 @@ class LoopProjectfileProcessor(ProcessInputData):
             contacts=contacts,
             contact_orientations=orientations,
             stratigraphic_order=[
-                ("sg", list(self.stratigraphicLog.name))
+                ("sg", list(self.projectfile.stratigraphicLog.name))
             ],  # needs to be updated,
             thicknesses=thicknesses,
             fault_orientations=fault_orientations,
             fault_locations=fault_locations,
             fault_properties=fault_properties,
-            #                     fault_edges=list(fault_graph.edges),
+            fault_edges=[],  # list(fault_graph.edges),
             colours=colours,
             fault_stratigraphy=None,
             intrusions=None,
             use_thickness=use_thickness,
+            origin=self.projectfile.origin,
+            maximum=self.projectfile.maximum
             #                     fault_edge_properties=fault_edge_properties
         )

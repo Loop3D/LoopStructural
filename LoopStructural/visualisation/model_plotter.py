@@ -43,7 +43,7 @@ class BaseModelPlotter:
             logger.debug("Using bounding box from model")
 
     @property
-    def nelements(self):
+    def nelements(self) -> int:
         """The number of elements to use for evaluating the isosurface
 
         Returns
@@ -85,11 +85,11 @@ class BaseModelPlotter:
         )
 
     @property
-    def nsteps(self):
+    def nsteps(self) -> np.ndarray:
         return self._nsteps
 
     @nsteps.setter
-    def nsteps(self, nsteps):
+    def nsteps(self, nsteps: np.ndarray):
         self._nsteps = np.array(nsteps)
 
     def _add_surface(
@@ -206,13 +206,13 @@ class BaseModelPlotter:
         # set the surface to be painted with the geological feature, but if a painter is specified, use that instead
         # if 'paint_with' not in kwargs:
         #     kwargs['paint_with'] = geological_feature
-        self._add_surface(
+        return self._add_surface(
             self.model.rescale(points, inplace=False),
             tri,
             name,
             colour=colour,
             paint_with=paint_with,
-            **kwargs
+            **kwargs,
         )
 
     def add_isosurface(
@@ -230,7 +230,7 @@ class BaseModelPlotter:
         colours=None,
         opacity=None,
         function=None,
-        **kwargs
+        **kwargs,
     ):
         """Plot the surface of a geological feature
 
@@ -268,6 +268,7 @@ class BaseModelPlotter:
         [type]
             [description]
         """
+        return_container = {}
         if geological_feature is None:
             logger.error("Cannot add isosurface GeologicalFeature does not exist")
         # update the feature to make sure its current
@@ -334,7 +335,9 @@ class BaseModelPlotter:
             )
 
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
-                logger.warning("Isovalue doesn't exist inside bounding box")
+                logger.warning(
+                    f"{geological_feature.name}: Isovalue doesn't exist inside bounding box"
+                )
                 continue
             try:
                 verts, faces, normals, values = marching_cubes(
@@ -371,7 +374,7 @@ class BaseModelPlotter:
             paint_with_value = None
             if paint_with == geological_feature:
                 paint_with_value = isovalue
-            self._add_surface(
+            return_container[name] = self._add_surface(
                 verts,
                 faces,
                 name,
@@ -380,8 +383,10 @@ class BaseModelPlotter:
                 paint_with=paint_with,
                 paint_with_value=paint_with_value,
                 cmap=cmap,
-                **kwargs
+                **kwargs,
             )
+
+        return return_container
 
     def add_scalar_field(
         self,
@@ -392,7 +397,7 @@ class BaseModelPlotter:
         vmax=None,
         opacity=None,
         paint_with=None,
-        **kwargs
+        **kwargs,
     ):
         """Add a block the size of the model area painted with the scalar field value
 
@@ -423,7 +428,7 @@ class BaseModelPlotter:
         pts = self.model.rescale(points, inplace=False)
         if paint_with is None:
             paint_with = geological_feature
-        self._add_surface(
+        return self._add_surface(
             pts,
             tri,
             name,
@@ -432,7 +437,7 @@ class BaseModelPlotter:
             vmin=vmin,
             vmax=vmax,
             opacity=opacity,
-            **kwargs
+            **kwargs,
         )
 
     def add_box(self, bounding_box, name, colour="red", **kwargs):
@@ -448,7 +453,7 @@ class BaseModelPlotter:
             [description], by default 'red'
         """
         points, tri = create_box(bounding_box, self.nsteps)
-        self._add_surface(points, tri, name, colour, **kwargs)
+        return self._add_surface(points, tri, name, colour, **kwargs)
 
     def add_model(self, cmap=None, **kwargs):
         """Add a block model painted by stratigraphic id to the viewer
@@ -492,13 +497,13 @@ class BaseModelPlotter:
                     boundaries.append(v["id"])  # print(u,v)
             cmap = colors.ListedColormap(colours).colors
 
-        self._add_surface(
+        return self._add_surface(
             self.model.rescale(points, inplace=False),
             tri,
             name,
             paint_with=lambda xyz: self.model.evaluate_model(xyz, scale=False),
             cmap=cmap,
-            **kwargs
+            **kwargs,
         )
 
     def add_fault_displacements(self, cmap="rainbow", **kwargs):
@@ -535,6 +540,12 @@ class BaseModelPlotter:
         self.add_isosurface(fault, value=0, name=fault.name)
         self.add_vector_field(fault, locations=self.model.regular_grid()[::step])
 
+    def add_structural_frame(self, frame, step=100, data=True, **kwargs):
+        for i in range(3):
+            self.add_isosurface(frame[i], slices=[-1, 0, 1], **kwargs)
+            if data:
+                self.add_data(frame[i])
+
     def unfault_grid(self, feature, grid=None):
         if grid is None:
             grid = self.model.regular_grid()
@@ -562,7 +573,7 @@ class BaseModelPlotter:
         cmap=None,
         fault_colour="black",
         displacement_cmap=None,
-        **kwargs
+        **kwargs,
     ):
         """Add surfaces for all of the interfaces in the model
 
@@ -595,6 +606,7 @@ class BaseModelPlotter:
         import time
         from tqdm.auto import tqdm
 
+        return_container = {}
         start = time.time()
         logger.info("Updating model")
         self.model.update()
@@ -603,16 +615,17 @@ class BaseModelPlotter:
         logger.info("Isosurfacing")
         n_units = 0  # count how many discrete colours
         name_suffix = kwargs.pop("name", "")
-        for g in self.model.stratigraphic_column.keys():
-            if g in self.model.feature_name_index:
-                for u in self.model.stratigraphic_column[g].keys():
-                    n_units += 1
+        if strati and self.model.stratigraphic_column:
+            for g in self.model.stratigraphic_column.keys():
+                if g in self.model.feature_name_index:
+                    for u in self.model.stratigraphic_column[g].keys():
+                        n_units += 1
         n_faults = 0
         for f in self.model.features:
             if f.type == "fault":
                 n_faults += 1
 
-        if cmap is None:
+        if self.model.stratigraphic_column and cmap is None:
 
             colours = []
             boundaries = []
@@ -637,7 +650,7 @@ class BaseModelPlotter:
             n_surfaces += n_faults
         with tqdm(total=n_surfaces) as pbar:
 
-            if strati:
+            if strati and self.model.stratigraphic_column:
                 for g in self.model.stratigraphic_column.keys():
                     if g in self.model.feature_name_index:
                         feature = self.model.features[self.model.feature_name_index[g]]
@@ -650,12 +663,14 @@ class BaseModelPlotter:
                             colours.append(cmap_colours[ci, :])
                             ci += 1
                         pbar.set_description("Isosurfacing {}".format(feature.name))
-                        self.add_isosurface(
-                            feature,
-                            slices=values,
-                            names=names,
-                            colours=colours,
-                            **kwargs
+                        return_container.update(
+                            self.add_isosurface(
+                                feature,
+                                slices=values,
+                                names=names,
+                                colours=colours,
+                                **kwargs,
+                            )
                         )
                         pbar.update(len(values))
 
@@ -671,7 +686,10 @@ class BaseModelPlotter:
 
                             return maskv
 
-                        if f.name in self.model.stratigraphic_column["faults"]:
+                        if (
+                            self.model.stratigraphic_column
+                            and f.name in self.model.stratigraphic_column["faults"]
+                        ):
                             fault_colour = self.model.stratigraphic_column["faults"][
                                 f.name
                             ].get("colour", ["red"])
@@ -690,16 +708,19 @@ class BaseModelPlotter:
                             )
                             #  = feature
                         region = kwargs.pop("region", None)
-                        self.add_isosurface(
-                            f,
-                            isovalue=0,
-                            region=mask,
-                            colour=fault_colour,
-                            name=f.name + name_suffix,
-                            **kwargs
+                        return_container.update(
+                            self.add_isosurface(
+                                f,
+                                isovalue=0,
+                                region=mask,
+                                colour=fault_colour,
+                                name=f.name + name_suffix,
+                                **kwargs,
+                            )
                         )
                         pbar.update(1)
             logger.info("Adding surfaces took {} seconds".format(time.time() - start))
+        return return_container
 
     def add_vector_field(self, geological_feature, **kwargs):
         """
@@ -793,7 +814,7 @@ class BaseModelPlotter:
                 grad[:, 3:6],
                 name + "_grad_cp",
                 symbol_type=symbol_type,
-                **kwargs
+                **kwargs,
             )
 
         if norm.shape[0] > 0 and add_grad:
@@ -802,7 +823,7 @@ class BaseModelPlotter:
                 norm[:, 3:6],
                 name + "_norm_cp",
                 symbol_type=symbol_type,
-                **kwargs
+                **kwargs,
             )
         if value.shape[0] > 0 and add_value:
             kwargs["range"] = [feature.min(), feature.max()]
@@ -810,14 +831,14 @@ class BaseModelPlotter:
                 self.model.rescale(value[:, :3], inplace=False),
                 value[:, 3],
                 name + "_value_cp",
-                **kwargs
+                **kwargs,
             )
         if tang.shape[0] > 0 and add_tang:
             self.add_vector_data(
                 self.model.rescale(tang[:, :3], inplace=False),
                 tang[:, 3:6],
                 name + "_tang_cp",
-                **kwargs
+                **kwargs,
             )
         if interface.shape[0] > 0 and add_interface:
             self.add_points(
@@ -1014,5 +1035,5 @@ class BaseModelPlotter:
             tri,
             name,
             paint_with=paint_with,
-            **kwargs
+            **kwargs,
         )
