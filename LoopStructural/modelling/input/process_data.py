@@ -619,7 +619,10 @@ class ProcessInputData:
             fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
                 fault_orientations["strike"], fault_orientations["dip"]
             )
-        fault_orientations["feature_name"] = fault_orientations["fault_name"]
+        if "feature_name" not in fault_orientations.columns and "fault_name" in fault_orientations.columns:
+            fault_orientations["feature_name"] = fault_orientations["fault_name"]
+        if "feature_name" not in fault_orientations.columns:
+            raise ValueError("Fault orientation data must contain feature_name or fault_name")
         self._fault_orientations = fault_orientations[
             ["X", "Y", "Z", "gx", "gy", "gz", "coord", "feature_name"]
         ]
