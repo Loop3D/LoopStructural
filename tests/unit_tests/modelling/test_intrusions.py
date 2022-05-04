@@ -47,7 +47,7 @@ def test_intrusion_freame_builder():
     mean = intrusion_frame_builder.anisotropies_series_parameters[keys[0]][1]
     # mean = -10
     stdv = intrusion_frame_builder.anisotropies_series_parameters[keys[0]][2]
-    evaluated_inet_points =  conformable_feature['feature'].evaluate_value(model.scale(intrusion_network_geometry[:,:3]))
+    evaluated_inet_points =  conformable_feature.evaluate_value(model.scale(intrusion_network_geometry[:,:3]))
 
     assert np.all(np.logical_and((mean - stdv*delta_c)<= evaluated_inet_points,(mean + stdv*delta_c)>= evaluated_inet_points))
 
@@ -115,3 +115,6 @@ def test_intrusion_builder():
     assert len(intrusion_feature._lateral_simulated_thresholds) > 0
     assert len(intrusion_feature._growth_simulated_thresholds) > 0
     
+if __name__ == "__main__":
+    test_intrusion_freame_builder()
+    test_intrusion_builder()

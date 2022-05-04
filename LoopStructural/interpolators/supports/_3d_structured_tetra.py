@@ -14,7 +14,7 @@ logger = getLogger(__name__)
 class TetMesh(BaseStructuredSupport):
     """ """
 
-    def __init__(self, origin, nsteps, step_vector):
+    def __init__(self, origin=np.zeros(3), nsteps=np.ones(3)*10, step_vector=np.ones(3)):
         BaseStructuredSupport.__init__(self, origin, nsteps, step_vector)
 
         self.tetra_mask_even = np.array(
