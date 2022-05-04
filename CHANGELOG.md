@@ -1,5 +1,25 @@
 # Changelog
 
+### [1.4.7](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.6...v1.4.7) (2022-05-04)
+
+
+### Bug Fixes
+
+* :bug: fault function attribute is now a property accessor ([3b9cc2e](https://www.github.com/Loop3D/LoopStructural/commit/3b9cc2e29d10d5b05af12da23ac8ccc6c2dca11a))
+* :zap: flag not uptodate when build arguments change ([6f80029](https://www.github.com/Loop3D/LoopStructural/commit/6f8002911af8d52def836bc555193cfe20485d9c))
+* changing import error message to warning ([de22530](https://www.github.com/Loop3D/LoopStructural/commit/de22530702a55ce322ae5cbfeeaa8c0ed6dd2875))
+* fold frame bug for refolded folds ([bf272d1](https://www.github.com/Loop3D/LoopStructural/commit/bf272d19c55338421d24edda9255d184b5ce60e3))
+* if downthrow not provided estimate abutting direction ([5a7c8d5](https://www.github.com/Loop3D/LoopStructural/commit/5a7c8d5ee16b1f8d080e496894507f1ef09ed102))
+* temp disable fault centre from project file ([44d813d](https://www.github.com/Loop3D/LoopStructural/commit/44d813d4f4b66fffcbce97099b92e2c04ceb4294))
+
+
+### Documentation
+
+* :memo: updating docs for pydata, actually committing changes ([be33a6f](https://www.github.com/Loop3D/LoopStructural/commit/be33a6fe2d8bd1d8f69117203c7bc460706eda9c))
+* :memo: updating documentation to use pydata theme ([c5b28d5](https://www.github.com/Loop3D/LoopStructural/commit/c5b28d5238663d581c661bc4220487253cba4eca))
+* adding fault network example ([2bcbfac](https://www.github.com/Loop3D/LoopStructural/commit/2bcbfac75cc06312a7bb55e9abd5c06a01abbaeb))
+* adding more to design document ([8322c60](https://www.github.com/Loop3D/LoopStructural/commit/8322c6036f95cb5e382e54176e6d73200d55bf27))
+
 ### [1.4.6](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.5...v1.4.6) (2022-04-26)
 
 
