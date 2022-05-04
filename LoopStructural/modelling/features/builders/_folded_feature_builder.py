@@ -1,5 +1,5 @@
-from ..features import GeologicalFeatureInterpolator
-from . import FoldRotationAngle
+from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
+from LoopStructural.modelling.features.fold import FoldRotationAngle
 import numpy as np
 
 from LoopStructural.utils import getLogger, InterpolatorError
@@ -7,26 +7,26 @@ from LoopStructural.utils import getLogger, InterpolatorError
 logger = getLogger(__name__)
 
 
-def _calculate_average_intersection(feature_builder, fold_frame, fold, **kwargs):
-    """
-
-    Parameters
-    ----------
-    series_builder
-    fold_frame
-    fold
-
-    Returns
-    -------
-
-    """
-
-
-class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
+class FoldedFeatureBuilder(GeologicalFeatureBuilder):
     def __init__(
         self, interpolator, fold, fold_weights={}, name="Feature", region=None, **kwargs
     ):
-        GeologicalFeatureInterpolator.__init__(
+        """Builder for creating a geological feature using fold constraints
+
+        Parameters
+        ----------
+        interpolator : GeologicalInterpolator
+            the interpolator to add the fold constraints to
+        fold : FoldEvent
+            a fold event object that contains the geometry of the fold
+        fold_weights : dict, optional
+            interpolation weights for the fold, by default {}
+        name : str, optional
+            name of the geological feature, by default "Feature"
+        region : _type_, optional
+            _description_, by default None
+        """
+        GeologicalFeatureBuilder.__init__(
             self, interpolator, name=name, region=region, **kwargs
         )
         self.fold = fold
@@ -77,7 +77,7 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
         self.fold.fold_limb_rotation = fold_limb_rotation
 
     def build(self, data_region=None, constrained=None, **kwargs):
-        """[summary]
+        """the main function to run the interpolation and set up the parameters
 
         Parameters
         ----------
@@ -109,4 +109,4 @@ class FoldedFeatureBuilder(GeologicalFeatureInterpolator):
             # try adding very small cg
             kwargs["cgw"] = 0.0
         # now the fold is set up run the standard interpolation
-        GeologicalFeatureInterpolator.build(self, data_region=data_region, **kwargs)
+        GeologicalFeatureBuilder.build(self, data_region=data_region, **kwargs)

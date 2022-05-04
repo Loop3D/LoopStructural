@@ -27,10 +27,16 @@ from LoopStructural.utils import get_data_axis_aligned_bounding_box
 from LoopStructural.utils import RegionEverywhere
 
 
-class GeologicalFeatureInterpolator:
-    def __init__(self, interpolator, name="Feature", region=None, **kwargs):
+class GeologicalFeatureBuilder:
+    def __init__(
+        self,
+        interpolator: GeologicalInterpolator,
+        name="Feature",
+        region=None,
+        **kwargs,
+    ):
         """
-        Constructor for a GeologicalFeatureInterpolator
+        Constructor for a GeologicalFeatureBuilder
 
         Parameters
         ----------
@@ -69,14 +75,12 @@ class GeologicalFeatureInterpolator:
         self._feature = None
         self._up_to_date = False
         self._build_arguments = {}
-        self.fold = None
         self._feature = GeologicalFeature(
             self._name,
             self._interpolator,
             builder=self,
-            region=self.region,
+            regions=[self.region],
             faults=self.faults,
-            fold=self.fold,
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}
@@ -93,7 +97,10 @@ class GeologicalFeatureInterpolator:
     def build_arguments(self, build_arguments):
         # self._build_arguments = {}
         for k, i in build_arguments.items():
-            self._build_arguments[k] = i
+            if i != self._build_arguments.get(k, None):
+                self._build_arguments[k] = i
+                ## if build_arguments change then flag to reinterpolate
+                self._up_to_date = False
 
     def update(self):
         self.build(**self.build_arguments)
@@ -512,7 +519,7 @@ class GeologicalFeatureInterpolator:
         -------
 
         """
-
+        # self.get_interpolator(**kwargs)
         self.add_data_to_interpolator(**kwargs)
         if data_region is not None:
             xyz = self.interpolator.get_data_locations()

@@ -27,7 +27,9 @@ def close_all():
 class LavaVuModelViewer(BaseModelPlotter):
     def __init__(self, model=None, bounding_box=None, nsteps=None, **kwargs):
         if lavavu is None:
-            logger.error("Lavavu isn't installed: pip install lavavu")
+            logger.error(
+                "Cannot use LavaVuModelViewer: Lavavu isn't installed \n pip install lavavu"
+            )
             return
         self._id_name = "{}-{}".format(str(hex(id(self))), len(_OPEN_VIEWERS))
         _OPEN_VIEWERS[self._id_name] = self
@@ -43,7 +45,9 @@ class LavaVuModelViewer(BaseModelPlotter):
             self.nsteps = model.nsteps
             logger.debug("Using bounding box from model")
         if self.bounding_box is None or self.nsteps is None:
-            logger.error("Plot area has not been defined.")
+            logger.warning(
+                "Limited functionality for plot, bounding box is not defined."
+            )
         self.bounding_box = np.array(self.bounding_box)
 
     def _parse_kwargs(self, kwargs):
@@ -54,9 +58,9 @@ class LavaVuModelViewer(BaseModelPlotter):
 
     def _add_surface(
         self,
-        vertices,
-        faces,
-        name,
+        vertices: np.ndarray,
+        faces: np.ndarray,
+        name: str,
         colour="red",
         paint_with=None,
         paint_with_value=None,
@@ -115,7 +119,7 @@ class LavaVuModelViewer(BaseModelPlotter):
             vmax = kwargs.get("vmax", np.nanmax(surfaceval))
             surf.colourmap(cmap, range=(vmin, vmax))
 
-    def _add_points(self, points, name, value=None, c=None, **kwargs):
+    def _add_points(self, points: np.ndarray, name: str, value=None, c=None, **kwargs):
         """Virtual function to be overwritten by subclasses for adding points to the viewer
 
         Parameters
@@ -147,7 +151,14 @@ class LavaVuModelViewer(BaseModelPlotter):
             cmap = kwargs.get("cmap", self.default_cmap)
             p.colourmap(cmap, range=(vmin, vmax))
 
-    def _add_vector_marker(self, location, vector, name, symbol_type="arrow", **kwargs):
+    def _add_vector_marker(
+        self,
+        location: np.ndarray,
+        vector: np.ndarray,
+        name: str,
+        symbol_type="arrow",
+        **kwargs
+    ):
         """Virtual function to be overwritten by subclasses for adding vectors to the viewer
 
         Parameters

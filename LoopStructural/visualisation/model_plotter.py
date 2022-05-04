@@ -43,7 +43,7 @@ class BaseModelPlotter:
             logger.debug("Using bounding box from model")
 
     @property
-    def nelements(self):
+    def nelements(self) -> int:
         """The number of elements to use for evaluating the isosurface
 
         Returns
@@ -85,11 +85,11 @@ class BaseModelPlotter:
         )
 
     @property
-    def nsteps(self):
+    def nsteps(self) -> np.ndarray:
         return self._nsteps
 
     @nsteps.setter
-    def nsteps(self, nsteps):
+    def nsteps(self, nsteps: np.ndarray):
         self._nsteps = np.array(nsteps)
 
     def _add_surface(
@@ -206,7 +206,7 @@ class BaseModelPlotter:
         # set the surface to be painted with the geological feature, but if a painter is specified, use that instead
         # if 'paint_with' not in kwargs:
         #     kwargs['paint_with'] = geological_feature
-        self._add_surface(
+        return self._add_surface(
             self.model.rescale(points, inplace=False),
             tri,
             name,
@@ -268,6 +268,7 @@ class BaseModelPlotter:
         [type]
             [description]
         """
+        return_container = {}
         if geological_feature is None:
             logger.error("Cannot add isosurface GeologicalFeature does not exist")
         # update the feature to make sure its current
@@ -373,7 +374,7 @@ class BaseModelPlotter:
             paint_with_value = None
             if paint_with == geological_feature:
                 paint_with_value = isovalue
-            self._add_surface(
+            return_container[name] = self._add_surface(
                 verts,
                 faces,
                 name,
@@ -384,6 +385,8 @@ class BaseModelPlotter:
                 cmap=cmap,
                 **kwargs,
             )
+
+        return return_container
 
     def add_scalar_field(
         self,
@@ -425,7 +428,7 @@ class BaseModelPlotter:
         pts = self.model.rescale(points, inplace=False)
         if paint_with is None:
             paint_with = geological_feature
-        self._add_surface(
+        return self._add_surface(
             pts,
             tri,
             name,
@@ -450,7 +453,7 @@ class BaseModelPlotter:
             [description], by default 'red'
         """
         points, tri = create_box(bounding_box, self.nsteps)
-        self._add_surface(points, tri, name, colour, **kwargs)
+        return self._add_surface(points, tri, name, colour, **kwargs)
 
     def add_model(self, cmap=None, **kwargs):
         """Add a block model painted by stratigraphic id to the viewer
@@ -494,7 +497,7 @@ class BaseModelPlotter:
                     boundaries.append(v["id"])  # print(u,v)
             cmap = colors.ListedColormap(colours).colors
 
-        self._add_surface(
+        return self._add_surface(
             self.model.rescale(points, inplace=False),
             tri,
             name,
@@ -603,6 +606,7 @@ class BaseModelPlotter:
         import time
         from tqdm.auto import tqdm
 
+        return_container = {}
         start = time.time()
         logger.info("Updating model")
         self.model.update()
@@ -659,12 +663,14 @@ class BaseModelPlotter:
                             colours.append(cmap_colours[ci, :])
                             ci += 1
                         pbar.set_description("Isosurfacing {}".format(feature.name))
-                        self.add_isosurface(
-                            feature,
-                            slices=values,
-                            names=names,
-                            colours=colours,
-                            **kwargs,
+                        return_container.update(
+                            self.add_isosurface(
+                                feature,
+                                slices=values,
+                                names=names,
+                                colours=colours,
+                                **kwargs,
+                            )
                         )
                         pbar.update(len(values))
 
@@ -702,16 +708,19 @@ class BaseModelPlotter:
                             )
                             #  = feature
                         region = kwargs.pop("region", None)
-                        self.add_isosurface(
-                            f,
-                            isovalue=0,
-                            region=mask,
-                            colour=fault_colour,
-                            name=f.name + name_suffix,
-                            **kwargs,
+                        return_container.update(
+                            self.add_isosurface(
+                                f,
+                                isovalue=0,
+                                region=mask,
+                                colour=fault_colour,
+                                name=f.name + name_suffix,
+                                **kwargs,
+                            )
                         )
                         pbar.update(1)
             logger.info("Adding surfaces took {} seconds".format(time.time() - start))
+        return return_container
 
     def add_vector_field(self, geological_feature, **kwargs):
         """

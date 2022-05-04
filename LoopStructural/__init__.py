@@ -6,6 +6,7 @@ LoopStructural API
 
 import logging
 from logging.config import dictConfig
+__all__ = ['GeologicalModel']
 import tempfile
 from pathlib import Path
 from .version import __version__

@@ -1,11 +1,12 @@
 import numpy as np
-
+from LoopStructural.modelling.features import BaseFeature
 from LoopStructural.utils import getLogger
+from LoopStructural.modelling.features import FeatureType
 
 logger = getLogger(__name__)
 
 
-class AnalyticalGeologicalFeature:
+class AnalyticalGeologicalFeature(BaseFeature):
     """
     Geological feature is class that is used to represent a geometrical element in a geological
     model. For example foliations, fault planes, fold rotation angles etc.
@@ -26,26 +27,13 @@ class AnalyticalGeologicalFeature:
         list of FaultSegments that affect this feature
     """
 
-    def __init__(self, name, vector, origin, region=None, type=None, faults=[]):
-        self.name = name
+    def __init__(
+        self, name, vector, origin, regions=[], faults=[], model=None, builder=None
+    ):
+        BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.vector = np.array(vector, dtype=float)
         self.origin = np.array(origin, dtype=float)
-        self.region = region
-        self.type = type
-        self.faults = faults
-        self.model = None
-
-    def __str__(self):
-        return self.name
-
-    def __getitem__(self, key):
-        return self._attributes[key]
-
-    def __setitem__(self, key, item):
-        self._attributes[key] = item
-
-    def set_model(self, model):
-        self.model = model
+        self.type = FeatureType.ANALYTICALFEATURE
 
     def evaluate_value(self, xyz):
         xyz2 = np.zeros(xyz.shape)
@@ -64,13 +52,3 @@ class AnalyticalGeologicalFeature:
         v = np.zeros(xyz.shape)
         v[:, :] = self.vector[None, :]
         return v
-
-    def min(self):
-        if self.model is None:
-            return 0
-        return np.nanmin(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-
-    def max(self):
-        if self.model is None:
-            return 0
-        return np.nanmax(self.evaluate_value(self.model.regular_grid((10, 10, 10))))

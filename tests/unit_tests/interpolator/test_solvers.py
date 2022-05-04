@@ -50,6 +50,11 @@ def test_FDI():
     interpolator.solve_system()
     assert np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data) < 0.5
 def test_inequality_FDI():
+    try:
+        import osqp
+    except ImportError:
+        print('osqp not installed')
+        return
     xy = np.array(np.meshgrid(np.linspace(0,1,50),np.linspace(0,1,50))).T.reshape(-1,2)
     xyz = np.hstack([xy,np.zeros((xy.shape[0],1))])
     data = pd.DataFrame(xyz,columns=['X','Y','Z'])
@@ -84,6 +89,11 @@ def test_inequality_FDI():
     # print(np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data))
     # assert np.sum(interpolator.evaluate_value(data[['X','Y','Z']].to_numpy())-data[['val']].to_numpy())/len(data) < 0.5
 def test_inequality_FDI_nodes():
+    try:
+        import osqp
+    except ImportError:
+        print('osqp not installed')
+        return
     xy = np.array(np.meshgrid(np.linspace(0,1,50),np.linspace(0,1,50))).T.reshape(-1,2)
     xyz = np.hstack([xy,np.zeros((xy.shape[0],1))])
     data = pd.DataFrame(xyz,columns=['X','Y','Z'])
@@ -126,7 +136,7 @@ def test_equality_FDI_nodes():
     interpolator.solve_system(solver='cg')
 
 if __name__ == '__main__':
-    # test_inequality_FDI()
-    # test_inequality_FDI_nodes()
-    # test_FDI()
+    test_inequality_FDI()
+    test_inequality_FDI_nodes()
+    test_FDI()
     test_equality_FDI_nodes()

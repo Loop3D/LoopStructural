@@ -1,9 +1,9 @@
-from LoopStructural.modelling.features import StructuralFrameBuilder
+from LoopStructural.modelling.features.builders import StructuralFrameBuilder
 from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
     shortest_path,
     array_from_coords,
-    find_inout_points
+    find_inout_points,
 )
 from LoopStructural.utils import getLogger
 
@@ -17,7 +17,10 @@ try:
     import skfmm as fmm
 
 except ImportError:
-    logger.error("skfmm not installed \n" "pip install scikit-fmm")
+    logger.warning(
+        "Cannot use IntrusionFrameBuilder: skfmm not installed \n"
+        "pip install scikit-fmm"
+    )
 
 
 class IntrusionFrameBuilder(StructuralFrameBuilder):
@@ -67,8 +70,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.intrusion_network_points = None
 
         self.velocity_field_arrays = None
-        self.IFf = None  
-        self.IFc = None  
+        self.IFf = None
+        self.IFc = None
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
@@ -178,7 +181,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     == series_list[i].name
                 ].copy()
                 data_array_temp = data_temp.loc[:, ["X", "Y", "Z"]].to_numpy()
-                series_i_vals = series_list[i]["feature"].evaluate_value(
+                series_i_vals = series_list[i].evaluate_value(
                     data_array_temp
                 )
                 series_array = np.zeros([len(data_array_temp), 4])
@@ -353,12 +356,11 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         delta_list = delta
 
-
         for i, contact_id in enumerate(sorted(self.anisotropies_series_parameters)):
             series_id = self.anisotropies_series_parameters[contact_id][0]
             seriesi_mean = self.anisotropies_series_parameters[contact_id][1]
             seriesi_std = self.anisotropies_series_parameters[contact_id][2]
-            seriesi_values = series_id["feature"].evaluate_value(grid_points)
+            seriesi_values = series_id .evaluate_value(grid_points)
 
             # apend associated scalar field values to each anisotropy
             self.anisotropies_series_parameters[contact_id].append(seriesi_values)
@@ -509,7 +511,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         elif self.intrusion_network_type == "shortest path":
 
-
             grid_points, spacing = self.create_grid_for_indicator_fxs()
 
             # --- check axis
@@ -542,7 +543,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             if (
                 inlet_anisotropy in self.anisotropies_series_list
             ):  # if inlet anisotropy type is series
-                sf_inlet_anisotropy = inlet_anisotropy["feature"].evaluate_value(
+                sf_inlet_anisotropy = inlet_anisotropy .evaluate_value(
                     grid_points
                 )
 
@@ -553,7 +554,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 len(self.anisotropies_sequence) - 1
             ]
             if outlet_anisotropy in self.anisotropies_series_list:
-                sf_outlet_anisotropy = outlet_anisotropy["feature"].evaluate_value(
+                sf_outlet_anisotropy = outlet_anisotropy .evaluate_value(
                     grid_points
                 )
 

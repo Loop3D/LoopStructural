@@ -1,4 +1,5 @@
-from LoopStructural.modelling import StructuralFrameBuilder
+from ._structural_frame_builder import StructuralFrameBuilder
+
 import numpy as np
 from LoopStructural.utils import getLogger
 
@@ -28,7 +29,7 @@ class FaultBuilder(StructuralFrameBuilder):
             the maximum area around the model domain that a fault is modelled. For high displacement faults this
             may need to be large, smaller values will be result in fewer degrees of freedom = quicker interpolation
         """
-        from LoopStructural.modelling import FaultSegment  # defer import until needed
+        from LoopStructural.modelling.features.fault import FaultSegment  # defer import until needed
 
         StructuralFrameBuilder.__init__(
             self, interpolator, interpolators, frame=FaultSegment, **kwargs
@@ -204,6 +205,8 @@ class FaultBuilder(StructuralFrameBuilder):
                     )[:, None]
                     # scale vector so that the distance between -1 and 1 is the minor axis length
                     data.loc[mask, ["nx", "ny", "nz"]] /= minor_axis * 0.5
+                    # self.builders[0].add_orthogonal_feature(self, feature, w=1.0, region=None, step=1, B=0):
+
             if major_axis is not None:
                 fault_tips[0, :] = fault_center[:3] + strike_vector * 0.5 * major_axis
                 fault_tips[1, :] = fault_center[:3] - strike_vector * 0.5 * major_axis

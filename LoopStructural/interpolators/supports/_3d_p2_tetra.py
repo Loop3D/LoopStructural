@@ -4,8 +4,16 @@ import numpy as np
 
 
 class P2UnstructuredTetMesh(UnStructuredTetMesh):
-    def __init__(self, nodes, elements, neighbours, aabb_nsteps=None):
+    def __init__(
+        self,
+        nodes: np.ndarray,
+        elements: np.ndarray,
+        neighbours: np.ndarray,
+        aabb_nsteps=None,
+    ):
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
+        if self.elements.shape[1] != 10:
+            raise ValueError("P2 tetrahedron must have 8 nodes")
         self.hessian = np.array(
             [
                 [
@@ -26,7 +34,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
             ]
         )
 
-    def get_quadrature_points(self, npts=3):
+    def get_quadrature_points(self, npts: int = 3):
         """Calculate the quadrature points for the triangle using 3 points
         these points are at the barycentric coordinates of (1/6,1/6), (1/6,2/3), (2/3,1/6)
         All points are weighted equally at 1/6
@@ -78,24 +86,22 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 + vertices[:, 1, :] * (reference_points[0, 0])
                 + vertices[:, 2, :] * (reference_points[1, 0])
             )
-            # cp[:,1,:] = vertices[:,0,:]*(1-reference_points[0,1]-reference_points[1,1])+vertices[:,1,:]*(reference_points[0,1])+vertices[:,2,:]*(reference_points[1,1])
-            # cp[:,2,:] = vertices[:,0,:]*(1-reference_points[0,2]-reference_points[1,2])+vertices[:,1,:]*(reference_points[0,2])+vertices[:,2,:]*(reference_points[1,2])
             weights = np.zeros((vertices.shape[0], 1))
             weights[:, :] = 1 / 2
             return cp, weights
 
-    def evaluate_shape_d2(self, indexes):
+    def evaluate_shape_d2(self, indexes: np.ndarray) -> np.ndarray:
         """evaluate second derivatives of shape functions in s and t
 
         Parameters
         ----------
-        M : [type]
-            [description]
+        indexes : np.ndarray
+            array of indexes
 
         Returns
         -------
-        [type]
-            [description]
+        np.array
+            array of second derivative shape function
         """
 
         vertices = self.nodes[self.elements[indexes], :]
@@ -137,10 +143,28 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 ii += 1
         return d2
 
-    def evaluate_shape_derivatives(self, locations, elements=None):
+    def evaluate_shape_derivatives(
+        self, locations: np.ndarray, elements: np.ndarray = None
+    ) -> np.ndarray:
         """
         compute dN/ds (1st row), dN/dt(2nd row)
+
+
+        Parameters
+        ----------
+        locations : np.array
+            location (n,3) array
+        elements : np.array, optional
+            indexes to calculate shape function for. Used when evaluating quad points
+            on faces as two tetra hold the point by default None
+            When it is none, the index is calculated from the location
+
+        Returns
+        -------
+        np.array
+            array of shape paramters
         """
+
         locations = np.array(locations)
         if elements is None:
             verts, c, elements, inside = self.get_element_for_location(locations)
@@ -221,7 +245,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         # d_n = np.dot(np.linalg.inv(jac),dN)
         return d_n, elements
 
-    def evaluate_shape(self, locations):
+    def evaluate_shape(self, locations: np.ndarray):
         locations = np.array(locations)
         verts, c, elements, inside = self.get_element_for_location(locations)
         # order of bary coord is (1-s-t,s,t)
@@ -241,7 +265,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         # inside = np.all(c>0,axis=1)
         return N, elements, inside
 
-    def evaluate_d2(self, pos, prop):
+    def evaluate_d2(self, pos: np.ndarray, prop: np.ndarray) -> np.ndarray:
         """
         Evaluate the second derivative of the interpolant
         d2x, dxdy, d2y, dxdz dydz d2dz
@@ -259,7 +283,6 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         """
         c, tri, inside = self.evaluate_shape(pos)
         d2 = self.evaluate_shape_d2(tri)
-        # print(prop[self.elements[tri[inside], :]])
         values = np.zeros((pos.shape[0], d2.shape[1]))
         values[:] = np.nan
 
@@ -271,7 +294,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
 
         return values
 
-    def evaluate_value(self, pos, property_array):
+    def evaluate_value(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
         """
         Evaluate value of interpolant
 
@@ -286,6 +309,10 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         -------
 
         """
+        if len(pos) != 2 or pos.shape[1] != 3:
+            raise ValueError("pos must be a numpy array of shape (n,3)")
+        if property_array.shape[0] != self.n_nodes:
+            raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
         N, tetras, inside = self.evaluate_shape(pos)
@@ -294,26 +321,20 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         )
         return values
 
-    def evaluate_gradient(self, pos, property_array):
+    def evaluate_gradient(
+        self, pos: np.ndarray, property_array: np.ndarray
+    ) -> np.ndarray:
+        if len(pos) != 2 or pos.shape[1] != 3:
+            raise ValueError("pos must be a numpy array of shape (n,3)")
+        if property_array.shape[0] != self.n_nodes:
+            raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape)
         values[:] = np.nan
         element_gradients, tetra = self.evaluate_shape_derivatives(pos[:, :3])
         inside = tetra >= 0
-        # ?vertices, element_gradients, elements, inside = self.get_element_gradient_for_location(pos[:,:2])
-        # vertex_vals = self.properties[prop][elements]
-        # grads = np.zeros(tetras.shape)
-        # v = (element_gradients[inside,:,:]*tmesh.properties['defaultproperty'][tmesh.elements[tri[inside],:,None]]).sum(1)
-        # values[inside, :] = (
-        #     element_gradients[inside, :, :]
-        #     * property_array[self.elements[tetra[inside], :, None]]
-        # ).sum(1)
         values[inside, :] = (
             element_gradients[:, :, :]
             * property_array[self.elements[tetra[inside], None, :]]
         ).sum(2)
 
-        # values[inside, :] = (
-        #     element_gradients[inside, :, :] * property_array[self.elements[tetra][inside, None,:]]
-        # ).sum(2)
-        # values[inside,:] /= length[:,None]
         return values

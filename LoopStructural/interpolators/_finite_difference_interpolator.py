@@ -396,6 +396,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 logger.warning(
                     f"{self.propertyname}: {np.sum(~inside)} norm constraints not added: outside of model bounding box"
                 )
+            self.up_to_date = False
 
     def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
         """
@@ -444,7 +445,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
             # dot product of vector and element gradient = 0
             A = np.einsum("ij,ijk->ik", vector[inside, :3], T)
-            B = np.zeros(points[inside, :].shape[0])
+            B = np.zeros(points[inside, :].shape[0])+B
             self.add_constraints_to_least_squares(
                 A, B, idc[inside, :], w=w * self.vol, name="gradient orthogonal"
             )
@@ -452,6 +453,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 logger.warning(
                     f"{self.propertyname}: {np.sum(~inside)} gradient constraints not added: outside of model bounding box"
                 )
+            self.up_to_date = False
 
     def add_regularisation(self, operator, w=0.1):
         """

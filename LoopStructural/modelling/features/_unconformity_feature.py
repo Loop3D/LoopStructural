@@ -1,9 +1,7 @@
-"""
-
-"""
+from LoopStructural.modelling.features import BaseFeature
 
 
-class UnconformityFeature:
+class UnconformityFeature(BaseFeature):
     """ """
 
     def __init__(self, feature, value):
@@ -14,18 +12,16 @@ class UnconformityFeature:
         feature
         value
         """
+        BaseFeature.__init__(
+            self,
+            f"{feature.name}_unconformity",
+            feature.model,
+            feature.faults,
+            feature.regions,
+            feature.builder,
+        )
         self.feature = feature
         self.value = value
-        self.type = "unconformity"
-        self.name = f"{feature.name}_unconformity"
-        self.builder = self.feature.builder
-
-    def add_region(self, region):
-        # self.feature.add_region(region)
-        pass
-
-    def set_model(self, model):
-        self.model = model
 
     def evaluate(self, pos):
         """

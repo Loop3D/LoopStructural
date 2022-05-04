@@ -1,11 +1,11 @@
 import logging
 
-from LoopStructural.modelling.fault.fault_function_feature import (
+from LoopStructural.modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
-from LoopStructural.modelling.fault.fault_function import BaseFault
+from LoopStructural.modelling.features.fault._fault_function import BaseFault
 from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
-from LoopStructural.modelling import StructuralFrame
+from LoopStructural.modelling.features import StructuralFrame
 
 logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
@@ -38,9 +38,7 @@ class FaultSegment(StructuralFrame):
         StructuralFrame.__init__(self, features, name, fold)
         self.type = "fault"
         self.displacement = displacement
-        self.faultfunction = faultfunction
-        if faultfunction == "BaseFault":
-            self.faultfunction = BaseFault.fault_displacement
+        self._faultfunction = BaseFault.fault_displacement
         self.steps = steps
         self.regions = []
         self.faults_enabled = True
@@ -49,6 +47,19 @@ class FaultSegment(StructuralFrame):
         self.builder = None
         self.splay = {}
         self.abut = {}
+
+    @property
+    def faultfunction(self):
+        return self._faultfunction
+
+    @faultfunction.setter
+    def faultfunction(self, value):
+        if callable(value):
+            self.faultfunction = value
+        elif isinstance(value, str) and value == "BaseFault":
+            self._faultfunction = BaseFault.fault_displacement
+        else:
+            raise ValueError("Fault function must be a function or BaseFault")
 
     @property
     def fault_normal_vector(self):
@@ -95,17 +106,6 @@ class FaultSegment(StructuralFrame):
     @property
     def displacementfeature(self):
         return FaultDisplacementFeature(self, self.faultfunction, name=self.name)
-
-    # def __str__(self):
-    #     _str = "FaultSegment - {} \n".format(self.name)
-    #     _str += "Interpolator: {} \n".format(self.faultframe[0].interpolator.type)
-    #     _str += "Degrees of freedom: {}\n".format(self.faultframe[0].interpolator.nx)
-    #     _str += "Displacement magnitude: {}\n".format(self.displacement)
-    #     for name in self.splay.keys():
-    #         _str += "Splays from {}\n".format(name)
-    #     for name in self.abut.keys():
-    #         _str += "Abuts {}\n".format(name)
-    #     return _str
 
     def set_model(self, model):
         """
@@ -400,7 +400,6 @@ class FaultSegment(StructuralFrame):
             positive = abut_value > 0
         # we want to crop the fault by the abutting fault so create a positive/neg region and include the fault centre and normal vector to help
         # outside of the fault interpolation support
-
         if positive:
             abutting_region = PositiveRegion(
                 abutting_fault_feature,

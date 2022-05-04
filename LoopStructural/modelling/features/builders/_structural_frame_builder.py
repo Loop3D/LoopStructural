@@ -10,20 +10,13 @@ from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
-from LoopStructural.modelling.features.cross_product_geological_feature import (
-    CrossProductGeologicalFeature,
-)
-from LoopStructural.modelling.features import GeologicalFeatureInterpolator
-from LoopStructural.modelling.fold import FoldedFeatureBuilder
+
+from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
+from LoopStructural.modelling.features.builders import FoldedFeatureBuilder
 from LoopStructural.modelling.features import StructuralFrame
 
 
 class StructuralFrameBuilder:
-    """[summary]
-
-    [extended_summary]
-    """
-
     def __init__(
         self, interpolator=None, interpolators=None, frame=StructuralFrame, **kwargs
     ):
@@ -48,6 +41,7 @@ class StructuralFrameBuilder:
             self.name = kwargs["name"]
             kwargs.pop("name")
         self.data = [[], [], []]
+        self.fold = kwargs.get('fold',None)
         # list of interpolators
         # self.interpolators = []
         # Create the interpolation objects by copying the template
@@ -66,19 +60,15 @@ class StructuralFrameBuilder:
             )
         else:
             self.builders.append(
-                GeologicalFeatureInterpolator(
+                GeologicalFeatureBuilder(
                     interpolators[0], name=f"{self.name}__0", **kwargs
                 )
             )  # ,region=self.region))
         self.builders.append(
-            GeologicalFeatureInterpolator(
-                interpolators[1], name=f"{self.name}__1", **kwargs
-            )
+            GeologicalFeatureBuilder(interpolators[1], name=f"{self.name}__1", **kwargs)
         )  # ,region=self.region))
         self.builders.append(
-            GeologicalFeatureInterpolator(
-                interpolators[2], name=f"{self.name}__2", **kwargs
-            )
+            GeologicalFeatureBuilder(interpolators[2], name=f"{self.name}__2", **kwargs)
         )  # ,region=self.region))
 
         self._frame = frame(
@@ -193,6 +183,10 @@ class StructuralFrameBuilder:
             self.builders[1].build_arguments = kwargs
 
         if len(self.builders[2].data) == 0:
+            from LoopStructural.modelling.features import (
+                CrossProductGeologicalFeature,
+            )
+
             logger.debug("Creating analytical structural frame coordinate 2")
             c3 = CrossProductGeologicalFeature(
                 self.name + "_2", self._frame[0], self._frame[1]

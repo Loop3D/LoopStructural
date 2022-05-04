@@ -1,16 +1,26 @@
 import logging
 
 import numpy as np
+from LoopStructural.modelling.features import BaseFeature
 
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
 
-class FoldRotationAngleFeature:
+class FoldRotationAngleFeature(BaseFeature):
     """ """
 
-    def __init__(self, fold_frame, rotation):
+    def __init__(
+        self,
+        fold_frame,
+        rotation,
+        name="fold_rotation_angle",
+        model=None,
+        faults=[],
+        regions=[],
+        builder = None
+    ):
         """
 
         Parameters
@@ -18,6 +28,9 @@ class FoldRotationAngleFeature:
         fold_frame
         rotation
         """
+        BaseFeature.__init__(
+            self, f"{name}_displacement", model, faults, regions, builder
+        )
         self.fold_frame = fold_frame
         self.rotation = rotation
 

@@ -24,24 +24,24 @@ except ImportError:
 
 from LoopStructural.interpolators import StructuredGrid
 from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.fault import FaultSegment
+from LoopStructural.modelling.features.fault import FaultSegment
 from LoopStructural.interpolators import DiscreteInterpolator
 
 from LoopStructural.interpolators import StructuredGrid
 from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.fault.fault_segment import FaultSegment
-from LoopStructural.modelling.fault import FaultBuilder
-from LoopStructural.modelling.features import (
-    GeologicalFeatureInterpolator,
-    RegionFeature,
+from LoopStructural.modelling.features.builders import (
+    FaultBuilder,
+    GeologicalFeatureBuilder,
     StructuralFrameBuilder,
+    FoldedFeatureBuilder,
+)
+from LoopStructural.modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
 )
-from LoopStructural.modelling.fold import (
+from LoopStructural.modelling.features.fold import (
     FoldRotationAngle,
-    FoldedFeatureBuilder,
     FoldEvent,
     FoldFrame,
 )
@@ -208,6 +208,10 @@ class GeologicalModel:
             self.maximum[0], self.maximum[1], self.maximum[2]
         )
         _str += "Model rescale factor: {} \n".format(self.scale_factor)
+        _str += "------------------------------------------ \n"
+        _str += "Feature list: \n"
+        for feature in self.features:
+            _str += "  {} \n".format(feature)
         return _str
 
     def _ipython_key_completions_(self):
@@ -267,70 +271,78 @@ class GeologicalModel:
         model = GeologicalModel.from_processor(processor)
         return model, processor
 
-        # from LoopStructural.utils import build_model, process_map2loop
-        # logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
-        # m2lflags = kwargs.pop('m2lflags',{})
-        # m2l_data = process_map2loop(m2l_directory,m2lflags)
-        # return build_model(m2l_data,**kwargs), m2l_data
-
     @classmethod
     def from_processor(cls, processor):
         logger.info("Creating model from processor")
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
-        for i in processor.fault_network.faults:
-            logger.info(f"Adding fault {i}")
-            model.create_and_add_fault(
-                i,
-                **processor.fault_properties.to_dict("index")[i],
-                faultfunction="BaseFault",
-            )
-        for edge, properties in processor.fault_network.fault_edge_properties.items():
-            if model[edge[1]] is None or model[edge[0]] is None:
-                logger.warning(
-                    f"Cannot add splay {edge[1]} or {edge[0]} are not in the model"
+        if processor.fault_properties is not None:
+            for i in processor.fault_network.faults:
+                logger.info(f"Adding fault {i}")
+                model.create_and_add_fault(
+                    i,
+                    **processor.fault_properties.to_dict("index")[i],
+                    faultfunction="BaseFault",
                 )
-                continue
-            splay = False
-            if "angle" in properties:
-                if float(properties["angle"]) < 30:
-                    # if 'dip_dir' in processor.stratigraphic_column["faults"][edge[0]] and 'dip_dir' in processor.stratigraphic_column["faults"][edge[1]]:
-                    #     if np.abs(
-                    #     processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                    #     - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"] > 90
-                    #     ):
-                    #         pass
-                    #     else:
-                    #     # splay
-                    region = model[edge[1]].builder.add_splay(model[edge[0]])
+            for (
+                edge,
+                properties,
+            ) in processor.fault_network.fault_edge_properties.items():
+                if model[edge[1]] is None or model[edge[0]] is None:
+                    logger.warning(
+                        f"Cannot add splay {edge[1]} or {edge[0]} are not in the model"
+                    )
+                    continue
+                splay = False
+                if "angle" in properties:
+                    if float(properties["angle"]) < 30 and (
+                        "dip_dir"
+                        not in processor.stratigraphic_column["faults"][edge[0]]
+                        or np.abs(
+                            processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                            - processor.stratigraphic_column["faults"][edge[1]][
+                                "dip_dir"
+                            ]
+                        )
+                        < 90
+                    ):
+                        # splay
+                        region = model[edge[1]].builder.add_splay(model[edge[0]])
 
-                    model[edge[1]].splay[model[edge[0]].name] = region
-                    splay = True
-            if splay == False:
-                model[edge[1]].add_abutting_fault(
-                    model[edge[0]],
-                    np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]][
-                            "downthrow_dir"
-                        ]
-                        - processor.stratigraphic_column["faults"][edge[1]][
-                            "downthrow_dir"
-                        ]
+                        model[edge[1]].splay[model[edge[0]].name] = region
+                        splay = True
+                if splay == False:
+                    positive = None
+                    if (
+                        "downthrow_dir"
+                        in processor.stratigraphic_column["faults"][edge[0]]
+                    ):
+                        positive = (
+                            np.abs(
+                                processor.stratigraphic_column["faults"][edge[0]][
+                                    "downthrow_dir"
+                                ]
+                                - processor.stratigraphic_column["faults"][edge[1]][
+                                    "downthrow_dir"
+                                ]
+                            )
+                            < 90
+                        )
+                    model[edge[1]].add_abutting_fault(
+                        model[edge[0]],
+                        positive=positive,
                     )
-                    < 90,
+        for s in processor.stratigraphic_column.keys():
+            if s != "faults":
+                faults = None
+                if processor.fault_stratigraphy is not None:
+                    faults = processor.fault_stratigraphy[s]
+                logger.info(f"Adding foliation {s}")
+                f = model.create_and_add_foliation(
+                    s, **processor.foliation_properties[s], faults=faults
                 )
-        if processor.stratigraphy:
-            for s in processor.stratigraphic_column.keys():
-                if s != "faults":
-                    faults = None
-                    if processor.fault_stratigraphy is not None:
-                        faults = processor.fault_stratigraphy[s]
-                    logger.info(f"Adding foliation {s}")
-                    f = model.create_and_add_foliation(
-                        s, **processor.foliation_properties[s], faults=faults
-                    )
-                    model.add_unconformity(f, 0)
-            model.stratigraphic_column = processor.stratigraphic_column
+                model.add_unconformity(f, 0)
+        model.stratigraphic_column = processor.stratigraphic_column
         return model
 
     @classmethod
@@ -369,6 +381,9 @@ class GeologicalModel:
             name of the feature to return
         """
         return self.get_feature_by_name(feature_name)
+
+    def __contains__(self, feature_name):
+        return feature_name in self.feature_name_index
 
     @property
     def dtm(self):
@@ -464,7 +479,7 @@ class GeologicalModel:
             )
         self._add_domain_fault_above(feature)
         self._add_unconformity_above(feature)
-        feature.set_model(self)
+        feature.model = self
 
     def data_for_feature(self, feature_name):
         return self.data.loc[self.data["feature_name"] == feature_name, :]
@@ -809,7 +824,7 @@ class GeologicalModel:
             {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
         )
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(
+        series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
         )
         # add data
@@ -850,7 +865,7 @@ class GeologicalModel:
             {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
         )
         interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureInterpolator(
+        series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
         )
         # add data
@@ -1021,7 +1036,6 @@ class GeologicalModel:
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-
         frame_interpolator = self.get_interpolator(**kwargs)
         interpolators = [
             fold_interpolator,
@@ -1056,7 +1070,7 @@ class GeologicalModel:
 
         self._add_feature(folded_fold_frame)
 
-        return fold_frame
+        return folded_fold_frame
 
     def create_and_add_intrusion(
         self,
@@ -1178,7 +1192,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature_builder : GeologicalFeatureInterpolator/StructuralFrameBuilder
+        feature_builder : GeologicalFeatureBuilder/StructuralFrameBuilder
             The feature buider to add the faults to
         features : list, optional
             A specific list of features rather than all features in the model
@@ -1203,7 +1217,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature : GeologicalFeatureInterpolator
+        feature : GeologicalFeatureBuilder
             the feature being added to the model where domain faults should be added
 
         Returns
@@ -1225,7 +1239,7 @@ class GeologicalModel:
 
         Parameters
         ----------
-        feature : GeologicalFeatureInterpolator
+        feature : GeologicalFeatureBuilder
             the feature being added to the model where domain faults should be added
 
         Returns
@@ -1297,7 +1311,7 @@ class GeologicalModel:
             return False
         # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
-        unconformity_feature_builder = GeologicalFeatureInterpolator(
+        unconformity_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=unconformity_surface_data
         )
         # add data
@@ -1402,7 +1416,7 @@ class GeologicalModel:
         """
         # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
-        domain_fault_feature_builder = GeologicalFeatureInterpolator(
+        domain_fault_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=fault_surface_data
         )
         # add data

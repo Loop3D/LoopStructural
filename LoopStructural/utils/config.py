@@ -1,4 +1,4 @@
-class Config:
+class LoopStructuralConfig:
     """
     Class to store configuration settings.
     """
