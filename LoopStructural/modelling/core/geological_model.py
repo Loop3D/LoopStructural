@@ -272,12 +272,6 @@ class GeologicalModel:
         model = GeologicalModel.from_processor(processor)
         return model, processor
 
-        # from LoopStructural.utils import build_model, process_map2loop
-        # logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
-        # m2lflags = kwargs.pop('m2lflags',{})
-        # m2l_data = process_map2loop(m2l_directory,m2lflags)
-        # return build_model(m2l_data,**kwargs), m2l_data
-
     @classmethod
     def from_processor(cls, processor):
         logger.info("Creating model from processor")

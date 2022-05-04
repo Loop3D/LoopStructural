@@ -2,6 +2,7 @@
 Geological modelling classes and functions
 
 """
+__all__ = ['GeologicalModel', 'ProcessInputData', 'LavaVuModelViewer', 'Map2LoopProcessor','LoopProjectfileProcessor','StructuralFrame','FaultSegment']
 from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopImportError
 
