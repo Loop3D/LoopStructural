@@ -2,7 +2,7 @@
 Geological modelling classes and functions
 
 """
-__all__ = ['GeologicalModel', 'ProcessInputData', 'LavaVuModelViewer', 'Map2LoopProcessor','LoopProjectfileProcessor','StructuralFrame','FaultSegment']
+__all__ = ['GeologicalModel', 'ProcessInputData', 'LavaVuModelViewer', 'Map2LoopProcessor','LoopProjectfileProcessor']
 from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopImportError
 
@@ -18,5 +18,5 @@ except (LoopImportError, ImportError):
     logger.warning(
         "Cannot use LoopProjectfileProcessor: Loop project file cannot be imported, try installing LoopProjectFile"
     )
-from LoopStructural.modelling.features import StructuralFrame
-from LoopStructural.modelling.fault import FaultSegment
+# from LoopStructural.modelling.features import StructuralFrame
+# from LoopStructural.modelling.features.fault import FaultSegment

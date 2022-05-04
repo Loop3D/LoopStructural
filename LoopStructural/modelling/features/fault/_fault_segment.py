@@ -5,7 +5,7 @@ from LoopStructural.modelling.features.fault._fault_function_feature import (
 )
 from LoopStructural.modelling.features.fault._fault_function import BaseFault
 from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
-from LoopStructural.modelling import StructuralFrame
+from LoopStructural.modelling.features import StructuralFrame
 
 logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor

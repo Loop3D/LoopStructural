@@ -24,12 +24,11 @@ except ImportError:
 
 from LoopStructural.interpolators import StructuredGrid
 from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.fault import FaultSegment
+from LoopStructural.modelling.features.fault import FaultSegment
 from LoopStructural.interpolators import DiscreteInterpolator
 
 from LoopStructural.interpolators import StructuredGrid
 from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.features.fault._fault_segment import FaultSegment
 from LoopStructural.modelling.features.builders import (
     FaultBuilder,
     GeologicalFeatureBuilder,
