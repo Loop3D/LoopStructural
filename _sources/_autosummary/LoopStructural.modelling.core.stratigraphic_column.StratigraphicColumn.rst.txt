@@ -18,10 +18,28 @@ LoopStructural.modelling.core.stratigraphic\_column.StratigraphicColumn
    
       ~StratigraphicColumn.__init__
       ~StratigraphicColumn.add_series
+      ~StratigraphicColumn.clear
+      ~StratigraphicColumn.copy
+      ~StratigraphicColumn.fromkeys
+      ~StratigraphicColumn.get
       ~StratigraphicColumn.get_cmap
+      ~StratigraphicColumn.items
+      ~StratigraphicColumn.keys
+      ~StratigraphicColumn.pop
+      ~StratigraphicColumn.popitem
+      ~StratigraphicColumn.setdefault
+      ~StratigraphicColumn.update
+      ~StratigraphicColumn.values
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~StratigraphicColumn.faults
+      ~StratigraphicColumn.stratigraphy
    
    

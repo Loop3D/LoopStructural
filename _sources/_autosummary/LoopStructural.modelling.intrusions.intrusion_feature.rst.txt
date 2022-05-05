@@ -1,0 +1,40 @@
+LoopStructural.modelling.intrusions.intrusion\_feature
+======================================================
+
+.. automodule:: LoopStructural.modelling.intrusions.intrusion_feature
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      IntrusionFeature
+   
+   
+
+   
+   
+   
+
+
+

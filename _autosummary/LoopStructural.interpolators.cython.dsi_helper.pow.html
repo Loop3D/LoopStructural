@@ -1,127 +1,481 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LoopStructural.interpolators.cython.dsi_helper.pow &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-    <script src="../_static/js/theme.js"></script>
-    <link rel="author" title="About these documents" href="../about.html" />
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoopStructural.interpolators.cython.dsi_helper.pow &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> LoopStructural
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Getting Started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-</ul>
-<p class="caption"><span class="caption-text">User Guide:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">Visualisation</a></li>
-</ul>
-<p class="caption"><span class="caption-text">API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="LoopStructural.html">LoopStructural</a></li>
-</ul>
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
 
-        </div>
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
-    </nav>
+      
+    </div>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">LoopStructural</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>LoopStructural.interpolators.cython.dsi_helper.pow</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/_autosummary/LoopStructural.interpolators.cython.dsi_helper.pow.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.acos.html">
+   LoopStructural.interpolators.cython.dsi_helper.acos
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.acosh.html">
+   LoopStructural.interpolators.cython.dsi_helper.acosh
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.asin.html">
+   LoopStructural.interpolators.cython.dsi_helper.asin
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.asinh.html">
+   LoopStructural.interpolators.cython.dsi_helper.asinh
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.atan.html">
+   LoopStructural.interpolators.cython.dsi_helper.atan
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.atan2.html">
+   LoopStructural.interpolators.cython.dsi_helper.atan2
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.atanh.html">
+   LoopStructural.interpolators.cython.dsi_helper.atanh
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.calculate_pairs.html">
+   LoopStructural.interpolators.cython.dsi_helper.calculate_pairs
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.ceil.html">
+   LoopStructural.interpolators.cython.dsi_helper.ceil
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.cg.html">
+   LoopStructural.interpolators.cython.dsi_helper.cg
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.comb.html">
+   LoopStructural.interpolators.cython.dsi_helper.comb
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.constant_norm.html">
+   LoopStructural.interpolators.cython.dsi_helper.constant_norm
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.copysign.html">
+   LoopStructural.interpolators.cython.dsi_helper.copysign
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.cos.html">
+   LoopStructural.interpolators.cython.dsi_helper.cos
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.cosh.html">
+   LoopStructural.interpolators.cython.dsi_helper.cosh
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.degrees.html">
+   LoopStructural.interpolators.cython.dsi_helper.degrees
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.dist.html">
+   LoopStructural.interpolators.cython.dsi_helper.dist
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.erf.html">
+   LoopStructural.interpolators.cython.dsi_helper.erf
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.erfc.html">
+   LoopStructural.interpolators.cython.dsi_helper.erfc
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.exp.html">
+   LoopStructural.interpolators.cython.dsi_helper.exp
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.expm1.html">
+   LoopStructural.interpolators.cython.dsi_helper.expm1
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.fabs.html">
+   LoopStructural.interpolators.cython.dsi_helper.fabs
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.factorial.html">
+   LoopStructural.interpolators.cython.dsi_helper.factorial
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.floor.html">
+   LoopStructural.interpolators.cython.dsi_helper.floor
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.fmod.html">
+   LoopStructural.interpolators.cython.dsi_helper.fmod
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.fold_cg.html">
+   LoopStructural.interpolators.cython.dsi_helper.fold_cg
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.frexp.html">
+   LoopStructural.interpolators.cython.dsi_helper.frexp
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.fsum.html">
+   LoopStructural.interpolators.cython.dsi_helper.fsum
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.gamma.html">
+   LoopStructural.interpolators.cython.dsi_helper.gamma
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.gcd.html">
+   LoopStructural.interpolators.cython.dsi_helper.gcd
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.hypot.html">
+   LoopStructural.interpolators.cython.dsi_helper.hypot
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.isclose.html">
+   LoopStructural.interpolators.cython.dsi_helper.isclose
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.isfinite.html">
+   LoopStructural.interpolators.cython.dsi_helper.isfinite
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.isinf.html">
+   LoopStructural.interpolators.cython.dsi_helper.isinf
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.isnan.html">
+   LoopStructural.interpolators.cython.dsi_helper.isnan
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.isqrt.html">
+   LoopStructural.interpolators.cython.dsi_helper.isqrt
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.ldexp.html">
+   LoopStructural.interpolators.cython.dsi_helper.ldexp
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.lgamma.html">
+   LoopStructural.interpolators.cython.dsi_helper.lgamma
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.log.html">
+   LoopStructural.interpolators.cython.dsi_helper.log
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.log10.html">
+   LoopStructural.interpolators.cython.dsi_helper.log10
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.log1p.html">
+   LoopStructural.interpolators.cython.dsi_helper.log1p
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.log2.html">
+   LoopStructural.interpolators.cython.dsi_helper.log2
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.modf.html">
+   LoopStructural.interpolators.cython.dsi_helper.modf
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.perm.html">
+   LoopStructural.interpolators.cython.dsi_helper.perm
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   LoopStructural.interpolators.cython.dsi_helper.pow
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.prod.html">
+   LoopStructural.interpolators.cython.dsi_helper.prod
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.radians.html">
+   LoopStructural.interpolators.cython.dsi_helper.radians
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.remainder.html">
+   LoopStructural.interpolators.cython.dsi_helper.remainder
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.sin.html">
+   LoopStructural.interpolators.cython.dsi_helper.sin
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.sinh.html">
+   LoopStructural.interpolators.cython.dsi_helper.sinh
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.sqrt.html">
+   LoopStructural.interpolators.cython.dsi_helper.sqrt
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.tan.html">
+   LoopStructural.interpolators.cython.dsi_helper.tan
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.tanh.html">
+   LoopStructural.interpolators.cython.dsi_helper.tanh
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.tetra_neighbours.html">
+   LoopStructural.interpolators.cython.dsi_helper.tetra_neighbours
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.interpolators.cython.dsi_helper.trunc.html">
+   LoopStructural.interpolators.cython.dsi_helper.trunc
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <div class="section" id="loopstructural-interpolators-cython-dsi-helper-pow">
-<h1>LoopStructural.interpolators.cython.dsi_helper.pow<a class="headerlink" href="#loopstructural-interpolators-cython-dsi-helper-pow" title="Permalink to this headline">¶</a></h1>
+<h1>LoopStructural.interpolators.cython.dsi_helper.pow<a class="headerlink" href="#loopstructural-interpolators-cython-dsi-helper-pow" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
-<dt id="LoopStructural.interpolators.cython.dsi_helper.pow">
-<code class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.cython.dsi_helper.</span></code><code class="sig-name descname"><span class="pre">pow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.cython.dsi_helper.pow" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="LoopStructural.interpolators.cython.dsi_helper.pow">
+<span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.cython.dsi_helper.</span></span><span class="sig-name descname"><span class="pre">pow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.cython.dsi_helper.pow" title="Permalink to this definition">#</a></dt>
 <dd><p>Return x**y (x to the power of y).</p>
 </dd></dl>
 
 </div>
 
 
-           </div>
-          </div>
-          <footer>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020, Lachlan Grose.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();
@@ -133,6 +487,5 @@
     });
 </script>
 
-
-</body>
+  </body>
 </html>

@@ -1,185 +1,1914 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LoopStructural.utils.helper.inequality_name &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-    <script src="../_static/js/theme.js"></script>
-    <link rel="author" title="About these documents" href="../about.html" />
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoopStructural.utils.helper.inequality_name &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.utils.helper.interface_name" href="LoopStructural.utils.helper.interface_name.html" />
-    <link rel="prev" title="LoopStructural.utils.helper.gradient_vec_names" href="LoopStructural.utils.helper.gradient_vec_names.html" /> 
-</head>
+    <link rel="prev" title="LoopStructural.utils.helper.gradient_vec_names" href="LoopStructural.utils.helper.gradient_vec_names.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> LoopStructural
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Getting Started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-</ul>
-<p class="caption"><span class="caption-text">User Guide:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/input_data.html">Input data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/geological_model.html">Geological Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/fold_modelling.html">Fold modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/fault_modelling.html">Fault modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/visualisation.html">Visualisation</a></li>
-</ul>
-<p class="caption"><span class="caption-text">API</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.html#loopstructural-api">LoopStructural API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.analysis.html">LoopStructural.analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.datasets.html">LoopStructural.datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.probability.html">LoopStructural.probability</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="LoopStructural.utils.html">LoopStructural.utils</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.html#utils">Utils</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.bounding_box.html">LoopStructural.utils.bounding_box</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.dtm_creator.html">LoopStructural.utils.dtm_creator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.exceptions.html">LoopStructural.utils.exceptions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="LoopStructural.utils.helper.html">LoopStructural.utils.helper</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.all_heading.html">LoopStructural.utils.helper.all_heading</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.coord_name.html">LoopStructural.utils.helper.coord_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.create_box.html">LoopStructural.utils.helper.create_box</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.create_surface.html">LoopStructural.utils.helper.create_surface</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.empty_dataframe.html">LoopStructural.utils.helper.empty_dataframe</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.feature_name.html">LoopStructural.utils.helper.feature_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.getLogger.html">LoopStructural.utils.helper.getLogger</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_data_axis_aligned_bounding_box.html">LoopStructural.utils.helper.get_data_axis_aligned_bounding_box</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box.html">LoopStructural.utils.helper.get_data_bounding_box</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box_map.html">LoopStructural.utils.helper.get_data_bounding_box_map</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_dip_vector.html">LoopStructural.utils.helper.get_dip_vector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_strike_vector.html">LoopStructural.utils.helper.get_strike_vector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.get_vectors.html">LoopStructural.utils.helper.get_vectors</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.gradient_vec_names.html">LoopStructural.utils.helper.gradient_vec_names</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">LoopStructural.utils.helper.inequality_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.interface_name.html">LoopStructural.utils.helper.interface_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.normal_vec_names.html">LoopStructural.utils.helper.normal_vec_names</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.normal_vector_to_strike_and_dip.html">LoopStructural.utils.helper.normal_vector_to_strike_and_dip</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector.html">LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.polarity_name.html">LoopStructural.utils.helper.polarity_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.rotation.html">LoopStructural.utils.helper.rotation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.strike_dip_vector.html">LoopStructural.utils.helper.strike_dip_vector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.tangent_vec_names.html">LoopStructural.utils.helper.tangent_vec_names</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.val_name.html">LoopStructural.utils.helper.val_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.weight_name.html">LoopStructural.utils.helper.weight_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.xyz_names.html">LoopStructural.utils.helper.xyz_names</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.utils.helper.PCA.html">LoopStructural.utils.helper.PCA</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.logging.html">LoopStructural.utils.logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.map2loop.html">LoopStructural.utils.map2loop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.regions.html">LoopStructural.utils.regions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.utils.utils.html">LoopStructural.utils.utils</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.version.html">LoopStructural.version</a></li>
-<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
-</ul>
-</li>
-</ul>
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
 
-        </div>
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
-    </nav>
+      
+    </div>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">LoopStructural</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="LoopStructural.html">LoopStructural</a> &raquo;</li>
-          <li><a href="LoopStructural.utils.html">LoopStructural.utils</a> &raquo;</li>
-          <li><a href="LoopStructural.utils.helper.html">LoopStructural.utils.helper</a> &raquo;</li>
-      <li>LoopStructural.utils.helper.inequality_name</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/_autosummary/LoopStructural.utils.helper.inequality_name.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.GeologicalModel.html">
+   LoopStructural.GeologicalModel
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="LoopStructural.analysis.html">
+   LoopStructural.analysis
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.analysis.getLogger.html">
+     LoopStructural.analysis.getLogger
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="LoopStructural.datasets.html">
+   LoopStructural.datasets
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_claudius.html">
+     LoopStructural.datasets.load_claudius
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_duplex.html">
+     LoopStructural.datasets.load_duplex
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_grose2017.html">
+     LoopStructural.datasets.load_grose2017
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_grose2018.html">
+     LoopStructural.datasets.load_grose2018
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_grose2019.html">
+     LoopStructural.datasets.load_grose2019
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_intrusion.html">
+     LoopStructural.datasets.load_intrusion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_laurent2016.html">
+     LoopStructural.datasets.load_laurent2016
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_noddy_single_fold.html">
+     LoopStructural.datasets.load_noddy_single_fold
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_tabular_intrusion.html">
+     LoopStructural.datasets.load_tabular_intrusion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_unconformity.html">
+     LoopStructural.datasets.load_unconformity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.normal_vector_headers.html">
+     LoopStructural.datasets.normal_vector_headers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.strike_dip_headers.html">
+     LoopStructural.datasets.strike_dip_headers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.value_headers.html">
+     LoopStructural.datasets.value_headers
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="LoopStructural.interpolators.html">
+   LoopStructural.interpolators
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.InterpolatorType.html">
+     LoopStructural.interpolators.InterpolatorType
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html">
+     LoopStructural.interpolators.GeologicalInterpolator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.DiscreteInterpolator.html">
+     LoopStructural.interpolators.DiscreteInterpolator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">
+     LoopStructural.interpolators.FiniteDifferenceInterpolator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">
+     LoopStructural.interpolators.PiecewiseLinearInterpolator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">
+     LoopStructural.interpolators.DiscreteFoldInterpolator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html">
+     LoopStructural.interpolators.P1Interpolator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.P2Interpolator.html">
+     LoopStructural.interpolators.P2Interpolator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">
+     LoopStructural.interpolators.TetMesh
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">
+     LoopStructural.interpolators.StructuredGrid
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.UnStructuredTetMesh.html">
+     LoopStructural.interpolators.UnStructuredTetMesh
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.P1Unstructured2d.html">
+     LoopStructural.interpolators.P1Unstructured2d
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.P2Unstructured2d.html">
+     LoopStructural.interpolators.P2Unstructured2d
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.StructuredGrid2D.html">
+     LoopStructural.interpolators.StructuredGrid2D
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.interpolators.P2UnstructuredTetMesh.html">
+     LoopStructural.interpolators.P2UnstructuredTetMesh
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="LoopStructural.modelling.html">
+   LoopStructural.modelling
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html">
+     LoopStructural.modelling.ProcessInputData
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.modelling.Map2LoopProcessor.html">
+     LoopStructural.modelling.Map2LoopProcessor
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.modelling.core.html">
+     LoopStructural.modelling.core
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.core.geological_model.html">
+       LoopStructural.modelling.core.geological_model
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.all_heading.html">
+         LoopStructural.modelling.core.geological_model.all_heading
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.getLogger.html">
+         LoopStructural.modelling.core.geological_model.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.get_vectors.html">
+         LoopStructural.modelling.core.geological_model.get_vectors
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.gradient_vec_names.html">
+         LoopStructural.modelling.core.geological_model.gradient_vec_names
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.log_to_file.html">
+         LoopStructural.modelling.core.geological_model.log_to_file
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.normal_vector_headers.html">
+         LoopStructural.modelling.core.geological_model.normal_vector_headers
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.strike_dip_vector.html">
+         LoopStructural.modelling.core.geological_model.strike_dip_vector
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.DFI.html">
+         LoopStructural.modelling.core.geological_model.DFI
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.DiscreteInterpolator.html">
+         LoopStructural.modelling.core.geological_model.DiscreteInterpolator
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FDI.html">
+         LoopStructural.modelling.core.geological_model.FDI
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FaultBuilder.html">
+         LoopStructural.modelling.core.geological_model.FaultBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FaultSegment.html">
+         LoopStructural.modelling.core.geological_model.FaultSegment
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldEvent.html">
+         LoopStructural.modelling.core.geological_model.FoldEvent
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldFrame.html">
+         LoopStructural.modelling.core.geological_model.FoldFrame
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldRotationAngle.html">
+         LoopStructural.modelling.core.geological_model.FoldRotationAngle
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.html">
+         LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.GeologicalFeature.html">
+         LoopStructural.modelling.core.geological_model.GeologicalFeature
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.GeologicalFeatureBuilder.html">
+         LoopStructural.modelling.core.geological_model.GeologicalFeatureBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.GeologicalModel.html">
+         LoopStructural.modelling.core.geological_model.GeologicalModel
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.IntrusionBuilder.html">
+         LoopStructural.modelling.core.geological_model.IntrusionBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder.html">
+         LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.P2Interpolator.html">
+         LoopStructural.modelling.core.geological_model.P2Interpolator
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.PLI.html">
+         LoopStructural.modelling.core.geological_model.PLI
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.StructuralFrame.html">
+         LoopStructural.modelling.core.geological_model.StructuralFrame
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.StructuralFrameBuilder.html">
+         LoopStructural.modelling.core.geological_model.StructuralFrameBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.StructuredGrid.html">
+         LoopStructural.modelling.core.geological_model.StructuredGrid
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.TetMesh.html">
+         LoopStructural.modelling.core.geological_model.TetMesh
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.UnconformityFeature.html">
+         LoopStructural.modelling.core.geological_model.UnconformityFeature
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.InterpolatorError.html">
+         LoopStructural.modelling.core.geological_model.InterpolatorError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.LoopException.html">
+         LoopStructural.modelling.core.geological_model.LoopException
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.html">
+       LoopStructural.modelling.core.stratigraphic_column
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html">
+         LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.modelling.features.html">
+     LoopStructural.modelling.features
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.getLogger.html">
+       LoopStructural.modelling.features.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.AnalyticalGeologicalFeature.html">
+       LoopStructural.modelling.features.AnalyticalGeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.BaseFeature.html">
+       LoopStructural.modelling.features.BaseFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.CrossProductGeologicalFeature.html">
+       LoopStructural.modelling.features.CrossProductGeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.FeatureType.html">
+       LoopStructural.modelling.features.FeatureType
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.GeologicalFeature.html">
+       LoopStructural.modelling.features.GeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.IntEnum.html">
+       LoopStructural.modelling.features.IntEnum
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.LambdaGeologicalFeature.html">
+       LoopStructural.modelling.features.LambdaGeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.StructuralFrame.html">
+       LoopStructural.modelling.features.StructuralFrame
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.features.UnconformityFeature.html">
+       LoopStructural.modelling.features.UnconformityFeature
+      </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.features.builders.html">
+       LoopStructural.modelling.features.builders
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+      <label for="toctree-checkbox-9">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.builders.FaultBuilder.html">
+         LoopStructural.modelling.features.builders.FaultBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.builders.FoldedFeatureBuilder.html">
+         LoopStructural.modelling.features.builders.FoldedFeatureBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.builders.GeologicalFeatureBuilder.html">
+         LoopStructural.modelling.features.builders.GeologicalFeatureBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.builders.StructuralFrameBuilder.html">
+         LoopStructural.modelling.features.builders.StructuralFrameBuilder
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.features.fault.html">
+       LoopStructural.modelling.features.fault
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+      <label for="toctree-checkbox-10">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fault.Composite.html">
+         LoopStructural.modelling.features.fault.Composite
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fault.CubicFunction.html">
+         LoopStructural.modelling.features.fault.CubicFunction
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fault.FaultDisplacementFeature.html">
+         LoopStructural.modelling.features.fault.FaultDisplacementFeature
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fault.FaultSegment.html">
+         LoopStructural.modelling.features.fault.FaultSegment
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fault.Ones.html">
+         LoopStructural.modelling.features.fault.Ones
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fault.Zeros.html">
+         LoopStructural.modelling.features.fault.Zeros
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.features.fold.html">
+       LoopStructural.modelling.features.fold
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+      <label for="toctree-checkbox-11">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fold.fourier_series.html">
+         LoopStructural.modelling.features.fold.fourier_series
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fold.FoldEvent.html">
+         LoopStructural.modelling.features.fold.FoldEvent
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fold.FoldFrame.html">
+         LoopStructural.modelling.features.fold.FoldFrame
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fold.FoldRotationAngle.html">
+         LoopStructural.modelling.features.fold.FoldRotationAngle
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fold.FoldRotationAngleFeature.html">
+         LoopStructural.modelling.features.fold.FoldRotationAngleFeature
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.features.fold.SVariogram.html">
+         LoopStructural.modelling.features.fold.SVariogram
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.modelling.input.html">
+     LoopStructural.modelling.input
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+    <label for="toctree-checkbox-12">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.input.Map2LoopProcessor.html">
+       LoopStructural.modelling.input.Map2LoopProcessor
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.input.ProcessInputData.html">
+       LoopStructural.modelling.input.ProcessInputData
+      </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.input.fault_network.html">
+       LoopStructural.modelling.input.fault_network
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+      <label for="toctree-checkbox-13">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.fault_network.FaultNetwork.html">
+         LoopStructural.modelling.input.fault_network.FaultNetwork
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.fault_network.FaultNetworkIter.html">
+         LoopStructural.modelling.input.fault_network.FaultNetworkIter
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.html">
+       LoopStructural.modelling.input.map2loop_processor
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+      <label for="toctree-checkbox-14">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.getLogger.html">
+         LoopStructural.modelling.input.map2loop_processor.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor.html">
+         LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.html">
+         LoopStructural.modelling.input.map2loop_processor.ProcessInputData
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.input.process_data.html">
+       LoopStructural.modelling.input.process_data
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+      <label for="toctree-checkbox-15">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.process_data.getLogger.html">
+         LoopStructural.modelling.input.process_data.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.process_data.strike_dip_vector.html">
+         LoopStructural.modelling.input.process_data.strike_dip_vector
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.process_data.FaultNetwork.html">
+         LoopStructural.modelling.input.process_data.FaultNetwork
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.input.process_data.ProcessInputData.html">
+         LoopStructural.modelling.input.process_data.ProcessInputData
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.modelling.intrusions.html">
+     LoopStructural.modelling.intrusions
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
+    <label for="toctree-checkbox-16">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.ellipse_function.html">
+       LoopStructural.modelling.intrusions.ellipse_function
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.obliquecone_function.html">
+       LoopStructural.modelling.intrusions.obliquecone_function
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.parallelepiped_function.html">
+       LoopStructural.modelling.intrusions.parallelepiped_function
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.rectangle_function.html">
+       LoopStructural.modelling.intrusions.rectangle_function
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionBuilder.html">
+       LoopStructural.modelling.intrusions.IntrusionBuilder
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFeature.html">
+       LoopStructural.modelling.intrusions.IntrusionFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html">
+       LoopStructural.modelling.intrusions.IntrusionFrameBuilder
+      </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.html">
+       LoopStructural.modelling.intrusions.geom_conceptual_models
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
+      <label for="toctree-checkbox-17">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function.html">
+         LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger.html">
+         LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function.html">
+         LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function.html">
+         LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function.html">
+         LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.html">
+       LoopStructural.modelling.intrusions.intrusion_builder
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
+      <label for="toctree-checkbox-18">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.element_neighbour.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.element_neighbour
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.getLogger.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.index_min.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.index_min
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.new_inlet.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.new_inlet
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.shortest_path.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.shortest_path
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html">
+         LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.html">
+       LoopStructural.modelling.intrusions.intrusion_feature
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
+      <label for="toctree-checkbox-19">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.getLogger.html">
+         LoopStructural.modelling.intrusions.intrusion_feature.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html">
+         LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.html">
+       LoopStructural.modelling.intrusions.intrusion_frame_builder
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/>
+      <label for="toctree-checkbox-20">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.array_from_coords.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.array_from_coords
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.find_inout_points.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.find_inout_points
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.getLogger.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder.html">
+         LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.html">
+       LoopStructural.modelling.intrusions.intrusion_support_functions
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/>
+      <label for="toctree-checkbox-21">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.array_from_coords.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.array_from_coords
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.element_neighbour.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.element_neighbour
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.findMinDiff.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.findMinDiff
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.find_inout_points.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.find_inout_points
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.getLogger.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.getLogger
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.grid_from_array.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.grid_from_array
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.index_min.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.index_min
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.new_inlet.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.new_inlet
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.shortest_path.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.shortest_path
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_support_functions.sort_2_arrays.html">
+         LoopStructural.modelling.intrusions.intrusion_support_functions.sort_2_arrays
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="LoopStructural.probability.html">
+   LoopStructural.probability
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
+  <label for="toctree-checkbox-22">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.probability.getLogger.html">
+     LoopStructural.probability.getLogger
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.probability.normal.html">
+     LoopStructural.probability.normal
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.probability.LogLikelihood.html">
+     LoopStructural.probability.LogLikelihood
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.probability.LogLikelihoodGradient.html">
+     LoopStructural.probability.LogLikelihoodGradient
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="LoopStructural.utils.html">
+   LoopStructural.utils
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
+  <label for="toctree-checkbox-23">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.build_model.html">
+     LoopStructural.utils.build_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.getLogger.html">
+     LoopStructural.utils.getLogger
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.get_data_axis_aligned_bounding_box.html">
+     LoopStructural.utils.get_data_axis_aligned_bounding_box
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.get_data_bounding_box.html">
+     LoopStructural.utils.get_data_bounding_box
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.get_data_bounding_box_map.html">
+     LoopStructural.utils.get_data_bounding_box_map
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.get_dip_vector.html">
+     LoopStructural.utils.get_dip_vector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.get_strike_vector.html">
+     LoopStructural.utils.get_strike_vector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.get_vectors.html">
+     LoopStructural.utils.get_vectors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.log_to_console.html">
+     LoopStructural.utils.log_to_console
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.log_to_file.html">
+     LoopStructural.utils.log_to_file
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.process_map2loop.html">
+     LoopStructural.utils.process_map2loop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.strike_dip_vector.html">
+     LoopStructural.utils.strike_dip_vector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.NegativeRegion.html">
+     LoopStructural.utils.NegativeRegion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.PositiveRegion.html">
+     LoopStructural.utils.PositiveRegion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.RegionEverywhere.html">
+     LoopStructural.utils.RegionEverywhere
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.RegionFunction.html">
+     LoopStructural.utils.RegionFunction
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.InterpolatorError.html">
+     LoopStructural.utils.InterpolatorError
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.LoopException.html">
+     LoopStructural.utils.LoopException
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.LoopImportError.html">
+     LoopStructural.utils.LoopImportError
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.LoopTypeError.html">
+     LoopStructural.utils.LoopTypeError
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.LoopValueError.html">
+     LoopStructural.utils.LoopValueError
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.bounding_box.html">
+     LoopStructural.utils.bounding_box
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.config.html">
+     LoopStructural.utils.config
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/>
+    <label for="toctree-checkbox-24">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.config.LoopStructuralConfig.html">
+       LoopStructural.utils.config.LoopStructuralConfig
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.dtm_creator.html">
+     LoopStructural.utils.dtm_creator
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/>
+    <label for="toctree-checkbox-25">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.dtm_creator.create_dtm_with_rasterio.html">
+       LoopStructural.utils.dtm_creator.create_dtm_with_rasterio
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.exceptions.html">
+     LoopStructural.utils.exceptions
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/>
+    <label for="toctree-checkbox-26">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.exceptions.getLogger.html">
+       LoopStructural.utils.exceptions.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.exceptions.InterpolatorError.html">
+       LoopStructural.utils.exceptions.InterpolatorError
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.exceptions.LoopException.html">
+       LoopStructural.utils.exceptions.LoopException
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.exceptions.LoopImportError.html">
+       LoopStructural.utils.exceptions.LoopImportError
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.exceptions.LoopTypeError.html">
+       LoopStructural.utils.exceptions.LoopTypeError
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.exceptions.LoopValueError.html">
+       LoopStructural.utils.exceptions.LoopValueError
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="LoopStructural.utils.helper.html">
+     LoopStructural.utils.helper
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/>
+    <label for="toctree-checkbox-27">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.all_heading.html">
+       LoopStructural.utils.helper.all_heading
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.coord_name.html">
+       LoopStructural.utils.helper.coord_name
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.create_box.html">
+       LoopStructural.utils.helper.create_box
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.create_surface.html">
+       LoopStructural.utils.helper.create_surface
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.empty_dataframe.html">
+       LoopStructural.utils.helper.empty_dataframe
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.feature_name.html">
+       LoopStructural.utils.helper.feature_name
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.getLogger.html">
+       LoopStructural.utils.helper.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.get_data_axis_aligned_bounding_box.html">
+       LoopStructural.utils.helper.get_data_axis_aligned_bounding_box
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box.html">
+       LoopStructural.utils.helper.get_data_bounding_box
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.get_data_bounding_box_map.html">
+       LoopStructural.utils.helper.get_data_bounding_box_map
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.get_dip_vector.html">
+       LoopStructural.utils.helper.get_dip_vector
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.get_strike_vector.html">
+       LoopStructural.utils.helper.get_strike_vector
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.get_vectors.html">
+       LoopStructural.utils.helper.get_vectors
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.gradient_vec_names.html">
+       LoopStructural.utils.helper.gradient_vec_names
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       LoopStructural.utils.helper.inequality_name
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.interface_name.html">
+       LoopStructural.utils.helper.interface_name
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.normal_vec_names.html">
+       LoopStructural.utils.helper.normal_vec_names
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.normal_vector_to_strike_and_dip.html">
+       LoopStructural.utils.helper.normal_vector_to_strike_and_dip
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector.html">
+       LoopStructural.utils.helper.plunge_and_plunge_dir_to_vector
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.polarity_name.html">
+       LoopStructural.utils.helper.polarity_name
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.rotation.html">
+       LoopStructural.utils.helper.rotation
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.strike_dip_vector.html">
+       LoopStructural.utils.helper.strike_dip_vector
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.tangent_vec_names.html">
+       LoopStructural.utils.helper.tangent_vec_names
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.val_name.html">
+       LoopStructural.utils.helper.val_name
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.weight_name.html">
+       LoopStructural.utils.helper.weight_name
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.xyz_names.html">
+       LoopStructural.utils.helper.xyz_names
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.helper.PCA.html">
+       LoopStructural.utils.helper.PCA
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.logging.html">
+     LoopStructural.utils.logging
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/>
+    <label for="toctree-checkbox-28">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.logging.getLogger.html">
+       LoopStructural.utils.logging.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.logging.get_levels.html">
+       LoopStructural.utils.logging.get_levels
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.logging.log_to_console.html">
+       LoopStructural.utils.logging.log_to_console
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.logging.log_to_file.html">
+       LoopStructural.utils.logging.log_to_file
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.map2loop.html">
+     LoopStructural.utils.map2loop
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/>
+    <label for="toctree-checkbox-29">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.map2loop.build_model.html">
+       LoopStructural.utils.map2loop.build_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.map2loop.getLogger.html">
+       LoopStructural.utils.map2loop.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.map2loop.process_map2loop.html">
+       LoopStructural.utils.map2loop.process_map2loop
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.regions.html">
+     LoopStructural.utils.regions
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/>
+    <label for="toctree-checkbox-30">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.regions.BaseRegion.html">
+       LoopStructural.utils.regions.BaseRegion
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.regions.NegativeRegion.html">
+       LoopStructural.utils.regions.NegativeRegion
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.regions.PositiveRegion.html">
+       LoopStructural.utils.regions.PositiveRegion
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.regions.RegionEverywhere.html">
+       LoopStructural.utils.regions.RegionEverywhere
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.regions.RegionFunction.html">
+       LoopStructural.utils.regions.RegionFunction
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.utils.html">
+     LoopStructural.utils.utils
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/>
+    <label for="toctree-checkbox-31">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.utils.getLogger.html">
+       LoopStructural.utils.utils.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.utils.read_voxet.html">
+       LoopStructural.utils.utils.read_voxet
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.utils.strike_symbol.html">
+       LoopStructural.utils.utils.strike_symbol
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.utils.write_property_to_gocad_voxet.html">
+       LoopStructural.utils.utils.write_property_to_gocad_voxet
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LoopStructural.version.html">
+   LoopStructural.version
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="LoopStructural.visualisation.html">
+   LoopStructural.visualisation
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/>
+  <label for="toctree-checkbox-32">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.visualisation.getLogger.html">
+     LoopStructural.visualisation.getLogger
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.visualisation.DashView.html">
+     LoopStructural.visualisation.DashView
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.visualisation.LavaVuModelViewer.html">
+     LoopStructural.visualisation.LavaVuModelViewer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.visualisation.MapView.html">
+     LoopStructural.visualisation.MapView
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.visualisation.RotationAnglePlotter.html">
+     LoopStructural.visualisation.RotationAnglePlotter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.visualisation.ScalarField.html">
+     LoopStructural.visualisation.ScalarField
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.visualisation.lavavu.html">
+     LoopStructural.visualisation.lavavu
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/>
+    <label for="toctree-checkbox-33">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.close_all.html">
+       LoopStructural.visualisation.lavavu.close_all
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.getLogger.html">
+       LoopStructural.visualisation.lavavu.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.is_notebook.html">
+       LoopStructural.visualisation.lavavu.is_notebook
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.BaseModelPlotter.html">
+       LoopStructural.visualisation.lavavu.BaseModelPlotter
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.GeologicalFeature.html">
+       LoopStructural.visualisation.lavavu.GeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.LavaVuModelViewer.html">
+       LoopStructural.visualisation.lavavu.LavaVuModelViewer
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.LoopImportError.html">
+       LoopStructural.visualisation.lavavu.LoopImportError
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">
+     LoopStructural.visualisation.map_viewer
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/>
+    <label for="toctree-checkbox-34">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.map_viewer.getLogger.html">
+       LoopStructural.visualisation.map_viewer.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.map_viewer.MapView.html">
+       LoopStructural.visualisation.map_viewer.MapView
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">
+     LoopStructural.visualisation.model_plotter
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/>
+    <label for="toctree-checkbox-35">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.create_box.html">
+       LoopStructural.visualisation.model_plotter.create_box
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.create_surface.html">
+       LoopStructural.visualisation.model_plotter.create_surface
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.getLogger.html">
+       LoopStructural.visualisation.model_plotter.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.get_vectors.html">
+       LoopStructural.visualisation.model_plotter.get_vectors
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.marching_cubes.html">
+       LoopStructural.visualisation.model_plotter.marching_cubes
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html">
+       LoopStructural.visualisation.model_plotter.BaseModelPlotter
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.GeologicalFeature.html">
+       LoopStructural.visualisation.model_plotter.GeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.LoopImportError.html">
+       LoopStructural.visualisation.model_plotter.LoopImportError
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">
+     LoopStructural.visualisation.rotation_angle_plotter
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/>
+    <label for="toctree-checkbox-36">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.getLogger.html">
+       LoopStructural.visualisation.rotation_angle_plotter.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.RotationAnglePlotter.html">
+       LoopStructural.visualisation.rotation_angle_plotter.RotationAnglePlotter
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">
+     LoopStructural.visualisation.sphinx_scraper
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/>
+    <label for="toctree-checkbox-37">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.Scraper.html">
+       LoopStructural.visualisation.sphinx_scraper.Scraper
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">
+     LoopStructural.visualisation.stratigraphic_column
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/>
+    <label for="toctree-checkbox-38">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.PatchCollection.html">
+       LoopStructural.visualisation.stratigraphic_column.PatchCollection
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.Polygon.html">
+       LoopStructural.visualisation.stratigraphic_column.Polygon
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html">
+       LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <div class="section" id="loopstructural-utils-helper-inequality-name">
-<h1>LoopStructural.utils.helper.inequality_name<a class="headerlink" href="#loopstructural-utils-helper-inequality-name" title="Permalink to this headline">¶</a></h1>
+<h1>LoopStructural.utils.helper.inequality_name<a class="headerlink" href="#loopstructural-utils-helper-inequality-name" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
-<dt id="LoopStructural.utils.helper.inequality_name">
-<code class="sig-prename descclassname"><span class="pre">LoopStructural.utils.helper.</span></code><code class="sig-name descname"><span class="pre">inequality_name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.inequality_name" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="LoopStructural.utils.helper.inequality_name">
+<span class="sig-prename descclassname"><span class="pre">LoopStructural.utils.helper.</span></span><span class="sig-name descname"><span class="pre">inequality_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.inequality_name" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </div>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="LoopStructural.utils.helper.gradient_vec_names.html" class="btn btn-neutral float-left" title="LoopStructural.utils.helper.gradient_vec_names" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="LoopStructural.utils.helper.interface_name.html" class="btn btn-neutral float-right" title="LoopStructural.utils.helper.interface_name" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020, Lachlan Grose.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="LoopStructural.utils.helper.gradient_vec_names.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">LoopStructural.utils.helper.gradient_vec_names</p>
         </div>
+    </a>
+    <a class='right-next' id="next-link" href="LoopStructural.utils.helper.interface_name.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural.utils.helper.interface_name</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();
@@ -191,6 +1920,5 @@
     });
 </script>
 
-
-</body>
+  </body>
 </html>

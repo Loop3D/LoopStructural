@@ -1,0 +1,58 @@
+LoopStructural.modelling.intrusions
+===================================
+
+.. automodule:: LoopStructural.modelling.intrusions
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ellipse_function
+      obliquecone_function
+      parallelepiped_function
+      rectangle_function
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      IntrusionBuilder
+      IntrusionFeature
+      IntrusionFrameBuilder
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst                 
+   :recursive:
+
+   LoopStructural.modelling.intrusions.geom_conceptual_models
+   LoopStructural.modelling.intrusions.intrusion_builder
+   LoopStructural.modelling.intrusions.intrusion_feature
+   LoopStructural.modelling.intrusions.intrusion_frame_builder
+   LoopStructural.modelling.intrusions.intrusion_support_functions
+

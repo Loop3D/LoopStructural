@@ -28,6 +28,7 @@ LoopStructural.modelling.core.geological\_model.FoldedFeatureBuilder
       ~FoldedFeatureBuilder.get_gradient_constraints
       ~FoldedFeatureBuilder.get_interface_constraints
       ~FoldedFeatureBuilder.get_norm_constraints
+      ~FoldedFeatureBuilder.get_orientation_constraints
       ~FoldedFeatureBuilder.get_tangent_constraints
       ~FoldedFeatureBuilder.get_value_constraints
       ~FoldedFeatureBuilder.install_equality_constraints

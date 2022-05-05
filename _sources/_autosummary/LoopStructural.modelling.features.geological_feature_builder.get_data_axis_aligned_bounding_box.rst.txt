@@ -1,6 +1,0 @@
-LoopStructural.modelling.features.geological\_feature\_builder.get\_data\_axis\_aligned\_bounding\_box
-======================================================================================================
-
-.. currentmodule:: LoopStructural.modelling.features.geological_feature_builder
-
-.. autofunction:: get_data_axis_aligned_bounding_box

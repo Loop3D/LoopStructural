@@ -1,0 +1,49 @@
+LoopStructural.modelling.intrusions.IntrusionFrameBuilder
+=========================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions
+
+.. autoclass:: IntrusionFrameBuilder
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~IntrusionFrameBuilder.__init__
+      ~IntrusionFrameBuilder.add_contact_anisotropies
+      ~IntrusionFrameBuilder.add_data_from_data_frame
+      ~IntrusionFrameBuilder.add_fault
+      ~IntrusionFrameBuilder.add_faults_anisotropies
+      ~IntrusionFrameBuilder.compute_velocity_field
+      ~IntrusionFrameBuilder.create_grid_for_indicator_fxs
+      ~IntrusionFrameBuilder.create_intrusion_network
+      ~IntrusionFrameBuilder.get_indicator_function_points
+      ~IntrusionFrameBuilder.indicator_function_contacts
+      ~IntrusionFrameBuilder.indicator_function_faults
+      ~IntrusionFrameBuilder.set_intrusion_frame_data
+      ~IntrusionFrameBuilder.set_intrusion_network_data
+      ~IntrusionFrameBuilder.set_intrusion_network_parameters
+      ~IntrusionFrameBuilder.set_model
+      ~IntrusionFrameBuilder.setup
+      ~IntrusionFrameBuilder.up_to_date
+      ~IntrusionFrameBuilder.update
+      ~IntrusionFrameBuilder.update_geometry
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~IntrusionFrameBuilder.frame
+   
+   

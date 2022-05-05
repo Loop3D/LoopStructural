@@ -21,6 +21,7 @@ LoopStructural.modelling
       :recursive:              
    
       ProcessInputData
+      Map2LoopProcessor
    
    
 
@@ -38,8 +39,7 @@ LoopStructural.modelling
    :recursive:
 
    LoopStructural.modelling.core
-   LoopStructural.modelling.fault
    LoopStructural.modelling.features
-   LoopStructural.modelling.fold
    LoopStructural.modelling.input
+   LoopStructural.modelling.intrusions
 

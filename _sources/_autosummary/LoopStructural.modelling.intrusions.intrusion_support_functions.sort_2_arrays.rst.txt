@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.intrusion\_support\_functions.sort\_2\_arrays
+=================================================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_support_functions
+
+.. autofunction:: sort_2_arrays

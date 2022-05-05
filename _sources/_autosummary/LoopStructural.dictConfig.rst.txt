@@ -1,6 +1,0 @@
-LoopStructural.dictConfig
-=========================
-
-.. currentmodule:: LoopStructural
-
-.. autofunction:: dictConfig

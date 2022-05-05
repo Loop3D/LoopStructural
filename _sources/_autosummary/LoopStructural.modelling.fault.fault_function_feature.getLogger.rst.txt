@@ -1,6 +1,0 @@
-LoopStructural.modelling.fault.fault\_function\_feature.getLogger
-=================================================================
-
-.. currentmodule:: LoopStructural.modelling.fault.fault_function_feature
-
-.. autofunction:: getLogger

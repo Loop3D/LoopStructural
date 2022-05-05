@@ -41,6 +41,8 @@ LoopStructural.modelling.input.map2loop\_processor.Map2LoopProcessor
       ~Map2LoopProcessor.fault_properties
       ~Map2LoopProcessor.fault_stratigraphy
       ~Map2LoopProcessor.foliation_properties
+      ~Map2LoopProcessor.maximum
+      ~Map2LoopProcessor.origin
       ~Map2LoopProcessor.stratigraphic_column
       ~Map2LoopProcessor.stratigraphic_name
       ~Map2LoopProcessor.stratigraphic_order

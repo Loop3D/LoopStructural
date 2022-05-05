@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.intrusion\_builder.new\_inlet
+=================================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_builder
+
+.. autofunction:: new_inlet

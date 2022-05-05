@@ -9,17 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-      :toctree:
-      :recursive:
-   
-      dictConfig
-      getLogger
-      log_to_console
-      log_to_file
-   
    
 
    
@@ -32,7 +21,6 @@
       :recursive:              
    
       GeologicalModel
-      Path
    
    
 

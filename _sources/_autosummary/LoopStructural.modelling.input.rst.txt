@@ -13,6 +13,16 @@ LoopStructural.modelling.input
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      Map2LoopProcessor
+      ProcessInputData
+   
    
 
    

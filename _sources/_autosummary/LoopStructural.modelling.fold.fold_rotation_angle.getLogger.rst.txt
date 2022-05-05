@@ -1,6 +1,0 @@
-LoopStructural.modelling.fold.fold\_rotation\_angle.getLogger
-=============================================================
-
-.. currentmodule:: LoopStructural.modelling.fold.fold_rotation_angle
-
-.. autofunction:: getLogger

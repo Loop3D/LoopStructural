@@ -1,93 +1,228 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>From geological map to model &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-    <script src="../_static/js/theme.js"></script>
-    <link rel="author" title="About these documents" href="../about.html" />
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>From geological map to model &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> LoopStructural
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Loop Structural</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Getting Started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributors_guide.html">Contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
-</ul>
-<p class="caption"><span class="caption-text">User Guide:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="input_data.html">Input data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="geological_model.html">Geological Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interpolation_options.html">Implicit Interpolators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fold_modelling.html">Fold modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fault_modelling.html">Fault modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="visualisation.html">Visualisation</a></li>
-</ul>
-<p class="caption"><span class="caption-text">API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/LoopStructural.html">LoopStructural</a></li>
-</ul>
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
 
-        </div>
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../_autosummary/LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
-    </nav>
+      
+    </div>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">LoopStructural</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>From geological map to model</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/user_guide/preparing_data.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   From geological map to model
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#input-dataset">
+   Input dataset
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#requirements-for-modelling-stratigraphy">
+     Requirements for modelling stratigraphy
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#contacts">
+       contacts
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#orientations">
+       orientations
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#stratigraphic-order">
+       stratigraphic_order
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#thicknesses">
+       thicknesses
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#processinputdata">
+   ProcessInputData
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <div class="section" id="from-geological-map-to-model">
-<h1>From geological map to model<a class="headerlink" href="#from-geological-map-to-model" title="Permalink to this headline">¶</a></h1>
+<h1>From geological map to model<a class="headerlink" href="#from-geological-map-to-model" title="Permalink to this headline">#</a></h1>
 <p>LoopStructural is an implicit geological modelling library with different interpolation algorithms (discrete and data supported).
 A geological model consists of multiple implicit functions that each define a distance or pseudo-distance within the geological object.
 The interaction between the implicit function is defined by the relative timing of the feature and the type of geological feature being modelled.
@@ -96,7 +231,7 @@ The geological observations need to be converted into mathematical constraints f
 <p>This guide details the <cite>modelling.input</cite> module which provides the tools for converting from a geological dataset into a 3D modelling.</p>
 </div>
 <div class="section" id="input-dataset">
-<h1>Input dataset<a class="headerlink" href="#input-dataset" title="Permalink to this headline">¶</a></h1>
+<h1>Input dataset<a class="headerlink" href="#input-dataset" title="Permalink to this headline">#</a></h1>
 <p>To build a geological model of the location and distribution of stratigraphic units the input dataset must include:
 1. Location of the interface between stratigraphic units
 2. Orientation of stratigraphy
@@ -109,9 +244,9 @@ The geological observations need to be converted into mathematical constraints f
 9. Fault stratigraphy intersections
 10. Visualisation colours</p>
 <div class="section" id="requirements-for-modelling-stratigraphy">
-<h2>Requirements for modelling stratigraphy<a class="headerlink" href="#requirements-for-modelling-stratigraphy" title="Permalink to this headline">¶</a></h2>
+<h2>Requirements for modelling stratigraphy<a class="headerlink" href="#requirements-for-modelling-stratigraphy" title="Permalink to this headline">#</a></h2>
 <div class="section" id="contacts">
-<h3>contacts<a class="headerlink" href="#contacts" title="Permalink to this headline">¶</a></h3>
+<h3>contacts<a class="headerlink" href="#contacts" title="Permalink to this headline">#</a></h3>
 <p>To build a model showing the distribution and location of stratigraphy the location of the basal interface between stratigraphic layers needs to recorded.
 This can be included as a DataFrame like object with the following columns:
 * <cite>X</cite> eastings of the contact location
@@ -120,7 +255,7 @@ This can be included as a DataFrame like object with the following columns:
 * <cite>formation</cite> a unique name defining the interface</p>
 </div>
 <div class="section" id="orientations">
-<h3>orientations<a class="headerlink" href="#orientations" title="Permalink to this headline">¶</a></h3>
+<h3>orientations<a class="headerlink" href="#orientations" title="Permalink to this headline">#</a></h3>
 <p>Structural observations can be included using a DataFrame like object with the following columns:
 * <cite>X</cite> eastings of the contact location
 * <cite>Y</cite> northings of the contact Location
@@ -129,7 +264,7 @@ This can be included as a DataFrame like object with the following columns:
 * <cite>dip</cite> angle between horizontal and contact</p>
 </div>
 <div class="section" id="stratigraphic-order">
-<h3>stratigraphic_order<a class="headerlink" href="#stratigraphic-order" title="Permalink to this headline">¶</a></h3>
+<h3>stratigraphic_order<a class="headerlink" href="#stratigraphic-order" title="Permalink to this headline">#</a></h3>
 <p>The stratigraphic order defines the relative age of the stratigraphic interfaces.
 This can be included using a nested list containing the formation names.
 The lists are to be formated so that the first level of the list contains the youngest conformable layers.
@@ -141,14 +276,14 @@ In the example below, there are two groups the youngest group contains a,b,c and
 <p>Note: If the stratigraphy can be interpreted as conformable, it is advisable to include all stratigraphy inside a single group.</p>
 </div>
 <div class="section" id="thicknesses">
-<h3>thicknesses<a class="headerlink" href="#thicknesses" title="Permalink to this headline">¶</a></h3>
+<h3>thicknesses<a class="headerlink" href="#thicknesses" title="Permalink to this headline">#</a></h3>
 <p>I
 should be incolumn</p>
 </div>
 </div>
 </div>
 <div class="section" id="processinputdata">
-<h1>ProcessInputData<a class="headerlink" href="#processinputdata" title="Permalink to this headline">¶</a></h1>
+<h1>ProcessInputData<a class="headerlink" href="#processinputdata" title="Permalink to this headline">#</a></h1>
 <p>The minimum requirements for building a geological model are:
 * contact location observations
 * contact orientation observations
@@ -156,31 +291,22 @@ should be incolumn</p>
 </div>
 
 
-           </div>
-          </div>
-          <footer>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020, Lachlan Grose.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();
@@ -192,6 +318,5 @@ should be incolumn</p>
     });
 </script>
 
-
-</body>
+  </body>
 </html>

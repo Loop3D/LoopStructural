@@ -129,6 +129,7 @@ LoopStructural.visualisation.stratigraphic\_column.Polygon
 
    .. autosummary::
    
+      ~Polygon.aname
       ~Polygon.axes
       ~Polygon.fill
       ~Polygon.mouseover

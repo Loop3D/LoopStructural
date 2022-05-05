@@ -17,14 +17,21 @@ LoopStructural.modelling.features.AnalyticalGeologicalFeature
    .. autosummary::
    
       ~AnalyticalGeologicalFeature.__init__
+      ~AnalyticalGeologicalFeature.add_region
       ~AnalyticalGeologicalFeature.evaluate_gradient
       ~AnalyticalGeologicalFeature.evaluate_value
       ~AnalyticalGeologicalFeature.max
       ~AnalyticalGeologicalFeature.min
-      ~AnalyticalGeologicalFeature.set_model
+      ~AnalyticalGeologicalFeature.toggle_faults
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~AnalyticalGeologicalFeature.model
    
    

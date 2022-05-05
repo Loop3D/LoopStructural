@@ -28,6 +28,7 @@ LoopStructural.visualisation
       :template: custom-class-template.rst
       :recursive:              
    
+      DashView
       LavaVuModelViewer
       MapView
       RotationAnglePlotter

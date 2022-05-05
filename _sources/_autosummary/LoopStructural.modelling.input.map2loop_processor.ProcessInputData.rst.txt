@@ -40,6 +40,8 @@ LoopStructural.modelling.input.map2loop\_processor.ProcessInputData
       ~ProcessInputData.fault_properties
       ~ProcessInputData.fault_stratigraphy
       ~ProcessInputData.foliation_properties
+      ~ProcessInputData.maximum
+      ~ProcessInputData.origin
       ~ProcessInputData.stratigraphic_column
       ~ProcessInputData.stratigraphic_name
       ~ProcessInputData.stratigraphic_order

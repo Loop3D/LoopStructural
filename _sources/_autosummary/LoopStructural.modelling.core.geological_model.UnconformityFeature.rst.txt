@@ -23,10 +23,16 @@ LoopStructural.modelling.core.geological\_model.UnconformityFeature
       ~UnconformityFeature.evaluate_value
       ~UnconformityFeature.max
       ~UnconformityFeature.min
-      ~UnconformityFeature.set_model
+      ~UnconformityFeature.toggle_faults
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~UnconformityFeature.model
    
    

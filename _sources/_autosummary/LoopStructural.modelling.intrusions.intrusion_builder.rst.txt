@@ -1,0 +1,46 @@
+LoopStructural.modelling.intrusions.intrusion\_builder
+======================================================
+
+.. automodule:: LoopStructural.modelling.intrusions.intrusion_builder
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      element_neighbour
+      getLogger
+      grid_from_array
+      index_min
+      new_inlet
+      shortest_path
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      IntrusionBuilder
+      IntrusionFeature
+   
+   
+
+   
+   
+   
+
+
+

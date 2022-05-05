@@ -24,11 +24,19 @@ LoopStructural.modelling.core.geological\_model.FoldFrame
       ~FoldFrame.evaluate_gradient
       ~FoldFrame.evaluate_value
       ~FoldFrame.get_feature
-      ~FoldFrame.set_data
+      ~FoldFrame.max
+      ~FoldFrame.min
       ~FoldFrame.set_model
+      ~FoldFrame.toggle_faults
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FoldFrame.model
    
    

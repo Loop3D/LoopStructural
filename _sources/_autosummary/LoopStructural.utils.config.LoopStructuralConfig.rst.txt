@@ -1,0 +1,25 @@
+LoopStructural.utils.config.LoopStructuralConfig
+================================================
+
+.. currentmodule:: LoopStructural.utils.config
+
+.. autoclass:: LoopStructuralConfig
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LoopStructuralConfig.__init__
+   
+   
+
+   
+   
+   

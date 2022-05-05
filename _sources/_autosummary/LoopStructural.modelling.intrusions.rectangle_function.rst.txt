@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.rectangle\_function
+=======================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions
+
+.. autofunction:: rectangle_function

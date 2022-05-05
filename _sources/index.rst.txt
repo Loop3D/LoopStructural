@@ -28,35 +28,14 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
 .. toctree::
    :hidden:
 
-   self
-
-
-.. toctree::
-   :caption: Getting Started
-   :hidden:
-
-   installation
-   background
+   getting_started/index
    auto_examples/index
-   contributors_guide
-   about
-   changelog
+   user_guide/index
+
    
-.. toctree::
-   :caption: User Guide:
-   :hidden:
-
-   user_guide/input_data
-   user_guide/geological_model
-   user_guide/interpolation_options
-   user_guide/fold_modelling
-   user_guide/fault_modelling
-   user_guide/visualisation
-
-.. toctree::
+   .. toctree::
    :caption: LoopStructural API
    :hidden:
-
 
 .. autosummary::
    :caption: API
@@ -67,13 +46,3 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
    LoopStructural
 
 
-.. .. toctree::
-   :caption: Loop
-
-
-..   map2loop
-   geophysics
-   uncertainty
-
-.. bibliography:: references.bib
-   :style:

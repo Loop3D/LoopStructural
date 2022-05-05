@@ -1,6 +1,0 @@
-LoopStructural.modelling.features.geological\_feature\_builder.gradient\_vec\_names
-===================================================================================
-
-.. currentmodule:: LoopStructural.modelling.features.geological_feature_builder
-
-.. autofunction:: gradient_vec_names

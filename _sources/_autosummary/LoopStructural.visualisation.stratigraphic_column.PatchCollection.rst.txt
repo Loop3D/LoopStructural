@@ -153,11 +153,14 @@ LoopStructural.visualisation.stratigraphic\_column.PatchCollection
 
    .. autosummary::
    
+      ~PatchCollection.aname
       ~PatchCollection.axes
       ~PatchCollection.mouseover
       ~PatchCollection.stale
       ~PatchCollection.sticky_edges
-      ~PatchCollection.update_dict
       ~PatchCollection.zorder
+      ~PatchCollection.norm
+      ~PatchCollection.cmap
+      ~PatchCollection.colorbar
    
    

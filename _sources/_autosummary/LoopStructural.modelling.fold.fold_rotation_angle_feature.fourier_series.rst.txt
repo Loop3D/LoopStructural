@@ -1,6 +1,0 @@
-LoopStructural.modelling.fold.fold\_rotation\_angle\_feature.fourier\_series
-============================================================================
-
-.. currentmodule:: LoopStructural.modelling.fold.fold_rotation_angle_feature
-
-.. autofunction:: fourier_series

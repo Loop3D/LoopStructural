@@ -1,6 +1,0 @@
-LoopStructural.modelling.features.geological\_feature\_builder.val\_name
-========================================================================
-
-.. currentmodule:: LoopStructural.modelling.features.geological_feature_builder
-
-.. autofunction:: val_name

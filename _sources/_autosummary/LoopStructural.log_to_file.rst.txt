@@ -1,6 +1,0 @@
-LoopStructural.log\_to\_file
-============================
-
-.. currentmodule:: LoopStructural
-
-.. autofunction:: log_to_file

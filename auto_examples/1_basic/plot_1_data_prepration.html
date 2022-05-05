@@ -1,129 +1,314 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>1a. Getting started &mdash; LoopStructural 0.1 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="author" title="About these documents" href="../../about.html" />
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>1a. Getting started &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="1b. Implicit surface modelling" href="plot_2_surface_modelling.html" />
-    <link rel="prev" title="1a. Advanced least squares" href="plot_6_least_squares.html" /> 
-</head>
+    <link rel="prev" title="1a. Advanced least squares" href="plot_6_least_squares.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> LoopStructural
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">Loop Structural</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Getting Started</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../background.html">Background</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#basics">1. Basics</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="plot_6_least_squares.html">1a. Advanced least squares</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">1a. Getting started</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#implicit-surface-modelling">Implicit surface modelling</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-types">Data types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#geologicalfeatures">GeologicalFeatures</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#creating-loopstructural-dataset">Creating LoopStructural dataset</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#creating-a-geologicalmodel">Creating a GeologicalModel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#adding-a-conformable-foliation">Adding a conformable foliation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#visualising-a-2-d-section">Visualising a 2-D section</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="plot_2_surface_modelling.html">1b. Implicit surface modelling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_3_multiple_groups.html">1c. Multiple groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_3_model_visualisation.html">1c. Visualising models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plot_5_using_logging.html">1e. Using logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-folds">2. Modelling Folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#modelling-faults">3. Modelling Faults</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../contributors_guide.html">Contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
-</ul>
-<p class="caption"><span class="caption-text">User Guide:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/input_data.html">Input data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/geological_model.html">Geological Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/interpolation_options.html">Implicit Interpolators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/fold_modelling.html">Fold modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/fault_modelling.html">Fault modelling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/visualisation.html">Visualisation</a></li>
-</ul>
-<p class="caption"><span class="caption-text">API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/LoopStructural.html">LoopStructural</a></li>
-</ul>
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
 
-        </div>
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../_autosummary/LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
-    </nav>
+      
+    </div>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">LoopStructural</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Examples</a> &raquo;</li>
-      <li>1a. Getting started</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/auto_examples/1_basic/plot_1_data_prepration.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="plot_6_least_squares.html">
+   1a. Advanced least squares
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   1a. Getting started
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="plot_2_surface_modelling.html">
+   1b. Implicit surface modelling
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="plot_3_multiple_groups.html">
+   1c. Multiple groups
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="plot_3_model_visualisation.html">
+   1c. Visualising models
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="plot_4_using_stratigraphic_column.html">
+   1d. Using Stratigraphic Columns
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="plot_5_using_logging.html">
+   1e. Using logging
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="example_surfe.html">
+   1f. Radial Basis Interpolation Using Surfe
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../2_fold/plot_adding_folds_to_surfaces.html">
+   2a. Modelling folds
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../2_fold/plot_refolded_folds.html">
+   2b. Refolded folds
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../3_fault/plot_faulted_intrusion.html">
+   3a. Modelling faults using structural frames
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../3_fault/plot_fault_network.html">
+   3b. Modelling a fault network in LoopStructural
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#implicit-surface-modelling">
+   Implicit surface modelling
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#data-types">
+   Data types
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#geologicalfeatures">
+   GeologicalFeatures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-loopstructural-dataset">
+   Creating LoopStructural dataset
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-a-geologicalmodel">
+   Creating a GeologicalModel
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#adding-a-conformable-foliation">
+   Adding a conformable foliation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualising-a-2-d-section">
+   Visualising a 2-D section
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-1-basic-plot-1-data-prepration-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="a-getting-started">
-<span id="sphx-glr-auto-examples-1-basic-plot-1-data-prepration-py"></span><h1>1a. Getting started<a class="headerlink" href="#a-getting-started" title="Permalink to this headline">¶</a></h1>
+<span id="sphx-glr-auto-examples-1-basic-plot-1-data-prepration-py"></span><h1>1a. Getting started<a class="headerlink" href="#a-getting-started" title="Permalink to this headline">#</a></h1>
 <p>This tutorial will demonstrate how to setup a basic geological model for using with LoopStructural.</p>
 <div class="section" id="implicit-surface-modelling">
-<h2>Implicit surface modelling<a class="headerlink" href="#implicit-surface-modelling" title="Permalink to this headline">¶</a></h2>
+<h2>Implicit surface modelling<a class="headerlink" href="#implicit-surface-modelling" title="Permalink to this headline">#</a></h2>
 <p>LoopStructural uses implicit surface representation to build upper and lower surfaces for geological horizons.
 Implicit surface representation involves approximating an unknown function <span class="math notranslate nohighlight">\(f(x,y,z)\)</span> where the function value
 represents the distance from a reference horizon.
@@ -143,7 +328,7 @@ are combined with a regularisation term to find the best resulting surface.</p>
 </ol>
 </div>
 <div class="section" id="data-types">
-<h2>Data types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<h2>Data types<a class="headerlink" href="#data-types" title="Permalink to this headline">#</a></h2>
 <p>There are three constraints that can be added to the interpolator</p>
 <ol class="arabic simple">
 <li><p>Value constraints which set enforce <span class="math notranslate nohighlight">\(f(x,y,z) = value\)</span></p></li>
@@ -152,7 +337,7 @@ are combined with a regularisation term to find the best resulting surface.</p>
 </ol>
 </div>
 <div class="section" id="geologicalfeatures">
-<h2>GeologicalFeatures<a class="headerlink" href="#geologicalfeatures" title="Permalink to this headline">¶</a></h2>
+<h2>GeologicalFeatures<a class="headerlink" href="#geologicalfeatures" title="Permalink to this headline">#</a></h2>
 <p>A typical geological model may contain multiple geological interfaces, including unconformities and faults.
 Conformable surfaces can be represented by a single implicit function where different isosurfaces represent different horizons.</p>
 <p>In LoopStructural an implicit function is encapsulated by a GeologicalFeature.
@@ -183,7 +368,7 @@ add some noise to make it interesting!</p>
 </div>
 </div>
 <div class="section" id="creating-loopstructural-dataset">
-<h2>Creating LoopStructural dataset<a class="headerlink" href="#creating-loopstructural-dataset" title="Permalink to this headline">¶</a></h2>
+<h2>Creating LoopStructural dataset<a class="headerlink" href="#creating-loopstructural-dataset" title="Permalink to this headline">#</a></h2>
 <p>LoopStructural uses pandas dataframes for importing and manipulating the data used for geological
 modelling. There are key headers that are used to interpret the numerical data into the geological
 interpolators</p>
@@ -235,7 +420,7 @@ for the interpolator to be able to find a solution.</p>
       <th>0</th>
       <td>0.000000</td>
       <td>0.0</td>
-      <td>1.611323</td>
+      <td>1.166641</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -243,7 +428,7 @@ for the interpolator to be able to find a solution.</p>
       <th>1</th>
       <td>1.111111</td>
       <td>0.0</td>
-      <td>1.482671</td>
+      <td>1.371522</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -251,7 +436,7 @@ for the interpolator to be able to find a solution.</p>
       <th>2</th>
       <td>2.222222</td>
       <td>0.0</td>
-      <td>1.477343</td>
+      <td>1.333734</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -259,7 +444,7 @@ for the interpolator to be able to find a solution.</p>
       <th>3</th>
       <td>3.333333</td>
       <td>0.0</td>
-      <td>1.661223</td>
+      <td>1.033190</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -267,7 +452,7 @@ for the interpolator to be able to find a solution.</p>
       <th>4</th>
       <td>4.444444</td>
       <td>0.0</td>
-      <td>1.354758</td>
+      <td>1.376828</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -278,7 +463,7 @@ for the interpolator to be able to find a solution.</p>
 <br />
 <br /></div>
 <div class="section" id="creating-a-geologicalmodel">
-<h2>Creating a GeologicalModel<a class="headerlink" href="#creating-a-geologicalmodel" title="Permalink to this headline">¶</a></h2>
+<h2>Creating a GeologicalModel<a class="headerlink" href="#creating-a-geologicalmodel" title="Permalink to this headline">#</a></h2>
 <p>The GeologicalModel is the main entry point into LoopStructural which manages the model domain,
 setting up the interpolators, unconformities, faults etc.
 To create a GeologicalModel we need to define the extent of the model with an origin vector and a maximum vector.
@@ -291,7 +476,7 @@ The pandas dataframe that contains the model data need to be linked to the geolo
 </div>
 </div>
 <div class="section" id="adding-a-conformable-foliation">
-<h2>Adding a conformable foliation<a class="headerlink" href="#adding-a-conformable-foliation" title="Permalink to this headline">¶</a></h2>
+<h2>Adding a conformable foliation<a class="headerlink" href="#adding-a-conformable-foliation" title="Permalink to this headline">#</a></h2>
 <p>We can create a geological feature using the create_and_add_foliation method.
 This returns a To build a scalar field representing the</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature" class="sphx-glr-backref-module-LoopStructural-modelling-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conformable_feature</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span><span class="s1">&#39;conformable&#39;</span><span class="p">)</span>
@@ -299,7 +484,7 @@ This returns a To build a scalar field representing the</p>
 </div>
 </div>
 <div class="section" id="visualising-a-2-d-section">
-<h2>Visualising a 2-D section<a class="headerlink" href="#visualising-a-2-d-section" title="Permalink to this headline">¶</a></h2>
+<h2>Visualising a 2-D section<a class="headerlink" href="#visualising-a-2-d-section" title="Permalink to this headline">#</a></h2>
 <p>Geological feature can be evaluated:
 * for the scalar field value at a location
 * for the gradient of the scalar field at a location
@@ -340,7 +525,7 @@ next tutorial will show how to use the lavavu visualisation model.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_1_data_prepration_001.png" srcset="../../_images/sphx_glr_plot_1_data_prepration_001.png" alt="plot 1 data prepration" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.897 seconds)</p>
+<img src="../../_images/sphx_glr_plot_1_data_prepration_001.png" srcset="../../_images/sphx_glr_plot_1_data_prepration_001.png" alt="plot 1 data prepration" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.006 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-1-data-prepration-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cf292dac4af30976a15aed25f7ce78f5/plot_1_data_prepration.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_1_data_prepration.py</span></code></a></p>
@@ -354,34 +539,36 @@ next tutorial will show how to use the lavavu visualisation model.</p>
 </div>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="plot_6_least_squares.html" class="btn btn-neutral float-left" title="1a. Advanced least squares" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="plot_2_surface_modelling.html" class="btn btn-neutral float-right" title="1b. Implicit surface modelling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020, Lachlan Grose.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="plot_6_least_squares.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">1a. Advanced least squares</p>
         </div>
+    </a>
+    <a class='right-next' id="next-link" href="plot_2_surface_modelling.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">1b. Implicit surface modelling</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
  <script type="text/javascript">
     $(document).ready(function() {
         $(".toggle > *").hide();
@@ -393,6 +580,5 @@ next tutorial will show how to use the lavavu visualisation model.</p>
     });
 </script>
 
-
-</body>
+  </body>
 </html>

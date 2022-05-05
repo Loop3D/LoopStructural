@@ -23,6 +23,7 @@ LoopStructural.datasets
       load_intrusion
       load_laurent2016
       load_noddy_single_fold
+      load_tabular_intrusion
       load_unconformity
       normal_vector_headers
       strike_dip_headers

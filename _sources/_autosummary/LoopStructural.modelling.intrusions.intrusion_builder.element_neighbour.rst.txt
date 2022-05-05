@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.intrusion\_builder.element\_neighbour
+=========================================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_builder
+
+.. autofunction:: element_neighbour

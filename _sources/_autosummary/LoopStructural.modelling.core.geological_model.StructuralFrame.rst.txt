@@ -21,11 +21,19 @@ LoopStructural.modelling.core.geological\_model.StructuralFrame
       ~StructuralFrame.evaluate_gradient
       ~StructuralFrame.evaluate_value
       ~StructuralFrame.get_feature
-      ~StructuralFrame.set_data
+      ~StructuralFrame.max
+      ~StructuralFrame.min
       ~StructuralFrame.set_model
+      ~StructuralFrame.toggle_faults
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~StructuralFrame.model
    
    

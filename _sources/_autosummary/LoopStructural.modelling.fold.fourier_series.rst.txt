@@ -1,6 +1,0 @@
-LoopStructural.modelling.fold.fourier\_series
-=============================================
-
-.. currentmodule:: LoopStructural.modelling.fold
-
-.. autofunction:: fourier_series

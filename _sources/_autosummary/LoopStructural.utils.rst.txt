@@ -71,6 +71,7 @@ LoopStructural.utils
    :recursive:
 
    LoopStructural.utils.bounding_box
+   LoopStructural.utils.config
    LoopStructural.utils.dtm_creator
    LoopStructural.utils.exceptions
    LoopStructural.utils.helper

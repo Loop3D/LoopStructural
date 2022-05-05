@@ -24,6 +24,7 @@ LoopStructural.modelling.core.geological\_model.FaultSegment
       ~FaultSegment.evaluate_displacement
       ~FaultSegment.evaluate_gradient
       ~FaultSegment.evaluate_value
+      ~FaultSegment.get_feature
       ~FaultSegment.inside_volume
       ~FaultSegment.max
       ~FaultSegment.mean
@@ -35,5 +36,20 @@ LoopStructural.modelling.core.geological\_model.FaultSegment
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FaultSegment.displacementfeature
+      ~FaultSegment.fault_centre
+      ~FaultSegment.fault_intermediate_axis
+      ~FaultSegment.fault_major_axis
+      ~FaultSegment.fault_minor_axis
+      ~FaultSegment.fault_normal_vector
+      ~FaultSegment.fault_slip_vector
+      ~FaultSegment.fault_strike_vector
+      ~FaultSegment.faultfunction
+      ~FaultSegment.model
    
    

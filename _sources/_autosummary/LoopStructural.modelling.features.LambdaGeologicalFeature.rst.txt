@@ -17,13 +17,21 @@ LoopStructural.modelling.features.LambdaGeologicalFeature
    .. autosummary::
    
       ~LambdaGeologicalFeature.__init__
+      ~LambdaGeologicalFeature.add_region
       ~LambdaGeologicalFeature.evaluate_gradient
       ~LambdaGeologicalFeature.evaluate_value
       ~LambdaGeologicalFeature.max
       ~LambdaGeologicalFeature.min
+      ~LambdaGeologicalFeature.toggle_faults
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LambdaGeologicalFeature.model
    
    

@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.intrusion\_support\_functions.shortest\_path
+================================================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_support_functions
+
+.. autofunction:: shortest_path

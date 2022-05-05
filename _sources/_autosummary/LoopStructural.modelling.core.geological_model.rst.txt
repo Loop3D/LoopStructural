@@ -44,10 +44,12 @@ LoopStructural.modelling.core.geological\_model
       FoldRotationAngle
       FoldedFeatureBuilder
       GeologicalFeature
-      GeologicalFeatureInterpolator
+      GeologicalFeatureBuilder
       GeologicalModel
+      IntrusionBuilder
+      IntrusionFrameBuilder
+      P2Interpolator
       PLI
-      RegionFeature
       StructuralFrame
       StructuralFrameBuilder
       StructuredGrid

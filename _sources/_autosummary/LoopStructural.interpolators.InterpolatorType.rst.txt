@@ -21,12 +21,12 @@ LoopStructural.interpolators.InterpolatorType
    .. autosummary::
    
       ~InterpolatorType.BASE
-      ~InterpolatorType.BASE_DATA_SUPPORTED
       ~InterpolatorType.BASE_DISCRETE
-      ~InterpolatorType.DISCRETE_FOLD
       ~InterpolatorType.FINITE_DIFFERENCE
+      ~InterpolatorType.DISCRETE_FOLD
       ~InterpolatorType.PIECEWISE_LINEAR
       ~InterpolatorType.PIECEWISE_QUADRATIC
+      ~InterpolatorType.BASE_DATA_SUPPORTED
       ~InterpolatorType.SURFE
    
    

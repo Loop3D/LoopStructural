@@ -9,6 +9,14 @@ LoopStructural.modelling.features
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
    
 
    
@@ -21,12 +29,13 @@ LoopStructural.modelling.features
       :recursive:              
    
       AnalyticalGeologicalFeature
+      BaseFeature
+      CrossProductGeologicalFeature
+      FeatureType
       GeologicalFeature
-      GeologicalFeatureInterpolator
+      IntEnum
       LambdaGeologicalFeature
-      RegionFeature
       StructuralFrame
-      StructuralFrameBuilder
       UnconformityFeature
    
    
@@ -44,13 +53,7 @@ LoopStructural.modelling.features
    :template: custom-module-template.rst                 
    :recursive:
 
-   LoopStructural.modelling.features.analytical_feature
-   LoopStructural.modelling.features.cross_product_geological_feature
-   LoopStructural.modelling.features.geological_feature
-   LoopStructural.modelling.features.geological_feature_builder
-   LoopStructural.modelling.features.lambda_geological_feature
-   LoopStructural.modelling.features.region_feature
-   LoopStructural.modelling.features.structural_frame
-   LoopStructural.modelling.features.structural_frame_builder
-   LoopStructural.modelling.features.unconformity_feature
+   LoopStructural.modelling.features.builders
+   LoopStructural.modelling.features.fault
+   LoopStructural.modelling.features.fold
 

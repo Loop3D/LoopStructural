@@ -33,4 +33,10 @@ LoopStructural.visualisation.lavavu.GeologicalFeature
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GeologicalFeature.model
+   
    

@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.parallelepiped\_function
+============================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions
+
+.. autofunction:: parallelepiped_function

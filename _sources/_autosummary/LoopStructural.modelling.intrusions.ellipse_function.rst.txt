@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.ellipse\_function
+=====================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions
+
+.. autofunction:: ellipse_function
