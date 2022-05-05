@@ -49,7 +49,7 @@ jobs:
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-            conda install -c conda-forge theano cython numpy pandas imageio scipy matplotlib  sphinx sphinx-gallery sphinxcontrib-bibtex pydata-sphinx-theme myst-parser scikit-learn scikit-image pyamg flake8 pytest networkx python=3.9 geopandas   -y
+            conda install -c conda-forge theano cython numpy pandas imageio scipy matplotlib  sphinx sphinx-gallery sphinxcontrib-bibtex pydata-sphinx-theme myst-parser scikit-learn scikit-image pyamg flake8 pytest networkx python geopandas   -y
             pip install lavavu-osmesa 
             python setup.py install build_ext --inplace
             cd docs
