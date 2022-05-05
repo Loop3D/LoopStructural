@@ -90,7 +90,7 @@ class ProcessInputData:
             self.fault_properties = fault_properties
         elif fault_locations is not None:
             self.fault_properties = pd.DataFrame(
-                fault_locations["feature_name"].unique(), columns=["name"]
+                self.fault_locations["feature_name"].unique(), columns=["name"]
             ).set_index("name")
 
         if fault_edges is not None and fault_edge_properties is not None:
