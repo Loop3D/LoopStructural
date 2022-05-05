@@ -6,7 +6,7 @@ Getting Started
 
    installation
    background
-   auto_examples/index
-   contributors_guide
    about
+   contributors_guide
+   loopstructural_design
    CHANGELOG
