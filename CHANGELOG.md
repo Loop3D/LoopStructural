@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.4.9](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.8...v1.4.9) (2022-05-05)
+
+
+### Documentation
+
+* fixing docs ci ([2e0d472](https://www.github.com/Loop3D/LoopStructural/commit/2e0d47292ccc20c071256cbb51ac8736c6851f9e))
+
 ### [1.4.8](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.7...v1.4.8) (2022-05-05)
 
 
