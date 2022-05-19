@@ -1,5 +1,26 @@
 # Changelog
 
+### [1.4.9](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.8...v1.4.9) (2022-05-05)
+
+
+### Documentation
+
+* fixing docs ci ([2e0d472](https://www.github.com/Loop3D/LoopStructural/commit/2e0d47292ccc20c071256cbb51ac8736c6851f9e))
+
+### [1.4.8](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.7...v1.4.8) (2022-05-05)
+
+
+### Bug Fixes
+
+* :bug: faults where feature name given not fault_name were crashing ([dae9e92](https://www.github.com/Loop3D/LoopStructural/commit/dae9e92f4b2f94ebcaefe85dfc419bfdef69b43a))
+
+
+### Documentation
+
+* adding geopandas to doc test ([b6613a9](https://www.github.com/Loop3D/LoopStructural/commit/b6613a91fd158405ac01d8c9675618bcb6e6af12))
+* fixing fault network example ([6f4f2fc](https://www.github.com/Loop3D/LoopStructural/commit/6f4f2fcba8e1e708c17acfa569d6592f0a33c9d6))
+* refactoring documentation + adding new example ([d15ba6c](https://www.github.com/Loop3D/LoopStructural/commit/d15ba6c391af889e0a0e57f4eced126fe6521461))
+
 ### [1.4.7](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.6...v1.4.7) (2022-05-04)
 
 
