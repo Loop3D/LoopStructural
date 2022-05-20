@@ -252,7 +252,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             self.anisotropies_fault_parameters = faults_parameters
 
-    def add_steps_stratigraphic_units(self): #, intrusion_steps):
+    def add_steps_stratigraphic_units(self): 
         """
         adds stratigraphic contacts from before and after a step (controlled by a fault)
         for each fault, at least one strigraphic unit must be provided. 
@@ -276,6 +276,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         intrusion_network_data = self.intrusion_network_data.copy()
         intrusion_network_data_xyz = intrusion_network_data.loc[:,['X','Y','Z']].copy().to_numpy()
         intrusion_network_data.loc[:,'model_values'] = self.model.evaluate_model(self.model.rescale(intrusion_network_data_xyz, inplace = False))
+        std_backup = 25
+        
 
         for step_i in self.intrusion_steps.keys():
             unit_from_name = self.intrusion_steps[step_i].get('unit_from')
@@ -324,14 +326,33 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             else: #step between different strat units
                 data_points_from_xyz = intrusion_network_data[intrusion_network_data['model_values'] == unit_from_id].loc[:,['X','Y','Z']].copy().to_numpy()
-                series_values = series_from_name['feature'].evaluate_value(data_points_from_xyz)
-                self.intrusion_steps[step_i]['unit_from_mean'] = np.nanmean(series_values)
-                self.intrusion_steps[step_i]['unit_from_std'] = np.nanstd(series_values)
+                if len(data_points_from_xyz) ==0: #no data points in strat unit
+                    unit_from_min = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('min')
+                    unit_from_max = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('max')
+                    self.intrusion_steps[step_i]['unit_from_mean'] = unit_from_min + (unit_from_max - unit_from_min)/2
+                    self.intrusion_steps[step_i]['unit_from_std'] = std_backup
+                else:
+                    series_values = series_from_name['feature'].evaluate_value(data_points_from_xyz)
+                    self.intrusion_steps[step_i]['unit_from_mean'] = np.nanmean(series_values)
+                    self.intrusion_steps[step_i]['unit_from_std'] = np.nanstd(series_values)
+
+                if self.intrusion_steps[step_i]['unit_from_std'] == 0:
+                    self.intrusion_steps[step_i]['unit_from_std'] = std_backup
 
                 data_points_to_xyz = intrusion_network_data[intrusion_network_data['model_values'] == unit_to_id].loc[:,['X','Y','Z']].copy().to_numpy()
-                series_values = series_to_name['feature'].evaluate_value(data_points_to_xyz)
-                self.intrusion_steps[step_i]['unit_to_mean'] = np.nanmean(series_values)
-                self.intrusion_steps[step_i]['unit_to_std'] = np.nanstd(series_values)
+                if len(data_points_to_xyz) == 0:
+                    unit_to_min = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('min')
+                    unit_to_max = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('max')
+                    self.intrusion_steps[step_i]['unit_to_mean'] = unit_to_min + (unit_to_max - unit_to_min)/2
+                    self.intrusion_steps[step_i]['unit_to_std'] = std_backup
+                else:
+                    series_values = series_to_name['feature'].evaluate_value(data_points_to_xyz)
+                    self.intrusion_steps[step_i]['unit_to_mean'] = np.nanmean(series_values)
+                    self.intrusion_steps[step_i]['unit_to_std'] = np.nanstd(series_values)
+
+                if self.intrusion_steps[step_i]['unit_to_std'] == 0:
+                    self.intrusion_steps[step_i]['unit_to_std'] = std_backup
+
       
 
     def set_intrusion_network_parameters(
@@ -662,7 +683,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     contacts1_val_min = self.intrusion_steps[step_i].get('unit_to_mean') - (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact)
                     contacts1_val_max = self.intrusion_steps[step_i].get('unit_to_mean') + (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact)
 
-                   
+                    
                    
                     fault_i_points = grid_points[np.logical_and(
                         If_sum == 0, np.logical_or(
@@ -945,13 +966,10 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             np.random.shuffle(self.intrusion_network_gradients)
             sliced_grads = self.intrusion_network_gradients[:100,:]
 
-            coord_0_grads = pd.DataFrame(sliced_grads[:,:3], columns=["X", "Y", "Z"]) #, 'gx', 'gy', 'gz'])
-            coord_0_grads['gx'] = 0
-            coord_0_grads['gy'] = 0
-            coord_0_grads['gz'] = -1
+            coord_0_grads = pd.DataFrame(sliced_grads[:,:6], columns=["X", "Y", "Z", 'gx', 'gy', 'gz'])
             coord_0_grads["coord"] = 0
             coord_0_grads["feature_name"] = self.name
-            coord_0_grads["w"] = .1
+            coord_0_grads["w"] = 1
 
             intrusion_frame_data_complete = pd.concat([intrusion_frame_data_temp, coord_0_grads])
         
