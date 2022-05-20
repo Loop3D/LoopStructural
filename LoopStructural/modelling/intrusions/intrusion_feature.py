@@ -248,7 +248,7 @@ class IntrusionFeature:
             + d * mod_Gmax_thresholds
             - e * mod_Gmin_thresholds
             + f * mod_Gmax_thresholds
-        )
+        )*(-1)   # multiply by (-1) so intrusions can be used as unconformities
 
         self.evaluated_points = [
             points,
