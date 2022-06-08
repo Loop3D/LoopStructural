@@ -13,7 +13,7 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
-from LoopStructural.modelling.features import GeologicalFeature
+from LoopStructural.modelling.features import GeologicalFeature, BaseFeature
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 
@@ -143,7 +143,13 @@ class BaseModelPlotter:
         pass
 
     def add_section(
-        self, geological_feature=None, axis="x", value=None, paint_with=None, **kwargs
+        self,
+        geological_feature=None,
+        axis="x",
+        value=None,
+        paint_with=None,
+        name=None,
+        **kwargs,
     ):
         """
 
@@ -186,14 +192,20 @@ class BaseModelPlotter:
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 2])
             zz[:] = value
-        name = "nothing"
         if geological_feature == "model" and self.model is not None:
             name = kwargs.get("name", "model_section")
             if paint_with == None:
                 paint_with = lambda xyz: self.model.evaluate_model(xyz, scale=False)
-        elif geological_feature is not None:
+        elif geological_feature is not None and isinstance(
+            geological_feature, BaseFeature
+        ):
             name = kwargs.get("name", geological_feature.name)
             paint_with = geological_feature
+        elif callable(geological_feature):
+            if name is None:
+                name = "unnamed_callable"
+            paint_with = geological_feature
+
         name = "{}_section_at_{}_of_{}".format(axis, value, name)
         colour = kwargs.get("colour", "red")
 
