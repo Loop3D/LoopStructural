@@ -18,3 +18,4 @@ from .exceptions import (
     LoopTypeError,
     LoopValueError,
 )
+from .json_encoder import LoopJSONEncoder

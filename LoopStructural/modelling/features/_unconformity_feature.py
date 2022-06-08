@@ -1,10 +1,11 @@
 from LoopStructural.modelling.features import BaseFeature
+from LoopStructural.modelling.features import FeatureType
 
 
 class UnconformityFeature(BaseFeature):
     """ """
 
-    def __init__(self, feature, value):
+    def __init__(self, feature: BaseFeature, value: float):
         """
 
         Parameters
@@ -22,6 +23,7 @@ class UnconformityFeature(BaseFeature):
         )
         self.feature = feature
         self.value = value
+        self.type = FeatureType.UNCONFORMITY
 
     def evaluate(self, pos):
         """

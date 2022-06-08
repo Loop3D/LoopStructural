@@ -33,7 +33,7 @@ class AnalyticalGeologicalFeature(BaseFeature):
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.vector = np.array(vector, dtype=float)
         self.origin = np.array(origin, dtype=float)
-        self.type = FeatureType.ANALYTICALFEATURE
+        self.type = FeatureType.ANALYTICAL
 
     def evaluate_value(self, xyz):
         xyz2 = np.zeros(xyz.shape)
