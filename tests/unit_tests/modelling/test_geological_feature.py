@@ -17,7 +17,7 @@ def test_constructors():
     assert base_feature.type == FeatureType.BASE
     assert base_feature.name == "test"
     feature = GeologicalFeature("test", None, [], [], None)
-    assert feature.type == FeatureType.GEOLOGICALFEATURE
+    assert feature.type == FeatureType.INTERPOLATED
     assert feature.name == "test"
     feature = AnalyticalGeologicalFeature(
         "test", [0, 0, 1], [0, 0, 0], [], [], None, None
@@ -25,10 +25,10 @@ def test_constructors():
     # for analytical feature check that the evaluated value is correct.
     # this should be the distance from origin to the point in the direction
     # of the direction vector
-    assert feature.type == FeatureType.ANALYTICALFEATURE
+    assert feature.type == FeatureType.ANALYTICAL
     assert feature.name == "test"
     assert feature.evaluate_value([0, 0, 0]) == 0
-    assert feature.evaluate_gradient([0, 0, 0]) == np.array([0, 0, 1])
+    assert np.all(feature.evaluate_gradient([0, 0, 0]) - np.array([0, 0, 1]) == 0)
     assert feature.evaluate_value([0, 0, 1]) == 1
     assert feature.evaluate_value([0, 0, -1]) == -1
     assert feature.evaluate_value([0, 1, 0]) == 0
@@ -49,3 +49,11 @@ def test_tojson():
     from LoopStructural.utils import LoopJSONEncoder
 
     json.dumps(base_feature, cls=LoopJSONEncoder)
+
+
+if __name__ == "__main__":
+    test_constructors()
+    test_toggle_faults()
+    test_tojson()
+    print("All tests passed")
+    exit(0)
