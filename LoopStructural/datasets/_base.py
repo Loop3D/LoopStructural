@@ -219,6 +219,8 @@ def load_geological_map_data():
 def load_fault_trace():
     import geopandas
 
+    module_path = dirname(__file__)
+
     fault_trace = geopandas.read_file(
         join(module_path, Path("data/fault_trace/fault_trace.shp"))
     )
