@@ -80,6 +80,7 @@ def test_intrusion_builder():
 
     intrusion_network_parameters = {'type': 'interpolated',
                                     'contact' :'roof'}
+    interpolator = model.get_interpolator(interpolatortype='FDI')
 
     intrusion_frame_builder = IntrusionFrameBuilder(
         interpolator, name='tabular_intrusion_frame', model=model)

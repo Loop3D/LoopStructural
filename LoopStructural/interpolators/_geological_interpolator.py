@@ -86,6 +86,7 @@ class GeologicalInterpolator:
 
         self.data["value"] = points
         self.n_i = points.shape[0]
+        self.up_to_date = False
 
     def set_gradient_constraints(self, points):
         """
@@ -100,6 +101,8 @@ class GeologicalInterpolator:
         """
         self.n_g = points.shape[0]
         self.data["gradient"] = points
+        self.up_to_date = False
+
 
     def set_normal_constraints(self, points):
         """
@@ -114,6 +117,8 @@ class GeologicalInterpolator:
         """
         self.n_n = points.shape[0]
         self.data["normal"] = points
+        self.up_to_date = False
+
 
     def set_tangent_constraints(self, points):
         """
@@ -127,12 +132,17 @@ class GeologicalInterpolator:
 
         """
         self.data["tangent"] = points
+        self.up_to_date = False
+
 
     def set_interface_constraints(self, points):
         self.data["interface"] = points
+        self.up_to_date = False
+
 
     def set_inequality_constraints(self, points):
         self.data["inequality"] = points
+        self.up_to_date = False
 
     def get_value_constraints(self):
         """
