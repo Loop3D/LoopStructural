@@ -15,7 +15,7 @@ class IntrusionFeature:
 
     """
 
-    def __init__(self, frame, builder, name="UnnamedIntrusion", model=None):
+    def __init__(self, frame, builder, faults = [], name="UnnamedIntrusion", model=None):
 
         """
         Parameters
@@ -35,6 +35,8 @@ class IntrusionFeature:
         self.intrusion_frame = frame
         self.builder = builder
         self.type = "intrusion"
+        self.faults = faults
+        self.faults_enabled = True
         # simulated thresholds:
         self._lateral_simulated_thresholds = None
         self._growth_simulated_thresholds = None
@@ -96,6 +98,21 @@ class IntrusionFeature:
 
     def set_intrusion_frame(self, intrusion_frame):
         self.intrusion_feature_frame = intrusion_frame
+
+    def toggle_faults(self):
+        """
+        Turn the fault off for a feature
+        This function is only really used for debugging or creating methods
+        explanation figures
+
+        Returns
+        -------
+
+        """
+        if self.faults_enabled == True:
+            self.faults_enabled = False
+        else:
+            self.faults_enabled = True
 
     def set_model(self, model):
         self.model = model
