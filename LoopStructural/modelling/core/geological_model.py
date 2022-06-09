@@ -1094,6 +1094,7 @@ class GeologicalModel:
         lateral_extent_sgs_parameters={},
         vertical_extent_sgs_parameters={},
         geometric_scaling_parameters = {},
+        faults = None,
         **kwargs,
     ):
         """
@@ -1141,6 +1142,9 @@ class GeologicalModel:
             logger.error("Libraries not installed")
             raise Exception("Libraries not installed")
 
+        self.parameters["features"].append({
+            "feature_type": "intrusion", "feature_name": intrusion_name, **kwargs})
+
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
         intrusion_frame_data = self.data[
             self.data["feature_name"] == intrusion_frame_name
@@ -1160,6 +1164,7 @@ class GeologicalModel:
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
         )
+        intrusion_frame_builder.post_intrusion_faults = faults
 
         # -- create intrusion network
         intrusion_frame_builder.set_intrusion_network_parameters(
@@ -1182,6 +1187,8 @@ class GeologicalModel:
 
         intrusion_frame = intrusion_frame_builder.frame
 
+        self._add_faults(intrusion_frame_builder, features = faults)
+
         # -- create intrusion builder to simulate distance thresholds along frame coordinates
         intrusion_builder = IntrusionBuilder(
             intrusion_frame, model=self, name=f"{intrusion_name}_feature"
@@ -1198,6 +1205,7 @@ class GeologicalModel:
         }
 
         intrusion_feature = intrusion_builder.feature
+        # self._add_faults(intrusion_feature, features = faults)
         self._add_feature(intrusion_feature)
 
         return intrusion_feature

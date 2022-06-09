@@ -46,6 +46,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.intrusion_network_type = None
         self.intrusion_network_data = None
         self.other_contact_data = None
+        self.post_intrusion_faults = None
         self.grid_to_evaluate_ifx = np.zeros([1, 1])
 
         self.anisotropies_series_list = []
@@ -171,6 +172,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             series_parameters = {}
             for i in range(len(series_list)):
 
+                series_list[i].faults_enabled = True # data points evaluated in faulted hostrock 
                 data_temp = self.intrusion_network_data[
                     self.intrusion_network_data["intrusion_anisotropy"]
                     == series_list[i].name
@@ -275,7 +277,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         # set data
         intrusion_network_data = self.intrusion_network_data.copy()
         intrusion_network_data_xyz = intrusion_network_data.loc[:,['X','Y','Z']].copy().to_numpy()
-        intrusion_network_data.loc[:,'model_values'] = self.model.evaluate_model(self.model.rescale(intrusion_network_data_xyz, inplace = False))
         std_backup = 25
         
 
@@ -287,6 +288,14 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             unit_to_name = self.intrusion_steps[step_i].get('unit_to')
             series_to_name = self.intrusion_steps[step_i].get('series_to')
             unit_to_id = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('id')
+
+            series_from_name.faults_enabled = True # data points evaluated in faulted hostrock
+            series_to_name.faults_enabled = True # data points evaluated in faulted hostrock
+
+            intrusion_network_data.loc[:,'model_values'] = self.model.evaluate_model(
+                self.model.rescale(
+                    intrusion_network_data_xyz, inplace = False)
+                    )
 
             #check if step is within the same unit:
 
@@ -353,8 +362,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 if self.intrusion_steps[step_i]['unit_to_std'] == 0:
                     self.intrusion_steps[step_i]['unit_to_std'] = std_backup
 
-      
-
     def set_intrusion_network_parameters(
         self, intrusion_data, intrusion_network_input, **kwargs
     ):
@@ -402,7 +409,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     "delta_f", [1] * len(intrusion_steps)
                 )
 
-                self.add_steps_stratigraphic_units()
+                self.add_steps_stratigraphic_units() #update steps parameters
 
             
                 # set fault anisotropies and compute parameters 
@@ -497,6 +504,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             series_id = self.anisotropies_series_parameters[contact_id][0]
             seriesi_mean = self.anisotropies_series_parameters[contact_id][1]
             seriesi_std = self.anisotropies_series_parameters[contact_id][2]
+
+            series_id.faults_enabled = True
             seriesi_values = series_id["feature"].evaluate_value(grid_points)
 
             # apend associated scalar field values to each anisotropy
@@ -635,25 +644,22 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             )
 
         elif self.intrusion_network_type == "interpolated":
-            # print('creating interpolated intrusion network')
 
-            # Value contraints for intrusion frame coord0
             # 1. data points of intrusion network contacts
-            intrusion_network_points = np.zeros([len(self.intrusion_network_data), 4])
+            # intrusion_network_points = np.zeros([len(self.intrusion_network_data), 4])
             inet_points_xyz = self.intrusion_network_data.loc[
                 :, ["X", "Y", "Z"]
             ].to_numpy()
 
             intrusion_network_points = inet_points_xyz
 
-            self.intrusion_network_points = intrusion_network_points
+            grid_points, spacing = self.create_grid_for_indicator_fxs()
+
+            # self.intrusion_network_points = intrusion_network_points
 
             # 2. More constraints if steps present:
-
             if self.intrusion_steps is not None:
-                # print('adding more values constraints to intrusion frame coordinate 0')
-                
-                grid_points, spacing = self.create_grid_for_indicator_fxs()
+              
                 If = self.indicator_function_faults(delta=self.delta_faults)
         
                 if len(np.where(If == 1)[0]) == 0:
@@ -663,12 +669,17 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
                 # evaluate grid points in series
 
+                faults = []
+
                 for i, step_i in enumerate(self.intrusion_steps.keys()):
                     delta_contact = self.delta_contacts[i]
                     step_fault = self.intrusion_steps[step_i].get('structure')
                     series_from_name = self.intrusion_steps[step_i].get('series_from')
                     series_to_name = self.intrusion_steps[step_i].get('series_to')
-                    
+
+                    series_from_name.faults_enabled = True
+                    series_to_name.faults_enabled = True
+
                     fault_gridpoints_vals = step_fault[0].evaluate_value(grid_points)
                     
                     series_from_gridpoints_vals = series_from_name["feature"].evaluate_value(grid_points)
@@ -698,28 +709,40 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     )
                     ]
 
-
-
                     intrusion_network_points = np.vstack([intrusion_network_points, fault_i_points])
 
-                self.intrusion_network_points = intrusion_network_points
+            # restore points --> intrusion network should be interpolated with constraints simulating scenario of intrusion time.
+            # faults = self.post_intrusion_faults
 
+            # if faults is not None:
+            #     unfaulted_points = faults[0].apply_to_points(intrusion_network_points)
+                    
+            #     for j in range(len(faults)-1):
+            #         fault_temp = faults[j+1]
+            #         unfaulted_points = np.vstack([unfaulted_points,fault_temp.apply_to_points(intrusion_network_points)])
 
-                # 3. Gradient contraints for intrusion frame coord0
-                # Evaluate points in gradient of stratigraphy, and exclude points around faults
+            #     self.intrusion_network_points = unfaulted_points
 
-                series_id = self.anisotropies_series_list[0]
-                strat_gradient_grid_points = series_id["feature"].evaluate_gradient(grid_points)
+            # else:
+            self.intrusion_network_points = intrusion_network_points
+           
+ 
+            # 3. Gradient contraints for intrusion frame coord0
+            # Evaluate points in gradient of stratigraphy, and exclude points around faults
+
+            series_id = self.anisotropies_series_list[0]
+            series_id.faults_enabled = True
+            strat_gradient_grid_points = series_id["feature"].evaluate_gradient(grid_points)
                 
-                # If intrusion network is built usinf roof/top contact, then change vector direction
-                if self.intrusion_network_contact == 'roof' or self.intrusion_network_contact == 'top':
-                    grid_points_inflation = strat_gradient_grid_points*(-1)
-                else:
-                    grid_points_inflation = strat_gradient_grid_points
+            # If intrusion network is built usinf roof/top contact, then change vector direction
+            if self.intrusion_network_contact == 'roof' or self.intrusion_network_contact == 'top':
+                grid_points_inflation = strat_gradient_grid_points*(-1)
+            else:
+                grid_points_inflation = strat_gradient_grid_points
                 
-                grid_points_and_inflation_all = np.hstack([grid_points, grid_points_inflation])
-                grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
-                self.intrusion_network_gradients = grid_points_and_inflation
+            grid_points_and_inflation_all = np.hstack([grid_points, grid_points_inflation])
+            grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
+            self.intrusion_network_gradients = grid_points_and_inflation
          
             
             return intrusion_network_points       
