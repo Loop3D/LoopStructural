@@ -11,6 +11,8 @@ There is a disconnect between the input data required by 3D modelling software a
 from LoopStructural.modelling import ProcessInputData, Map2LoopProcessor
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.datasets import load_geological_map_data
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,24 +21,24 @@ import matplotlib.pyplot as plt
 # Read stratigraphy from csv
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+(
+    contacts,
+    stratigraphic_orientations,
+    stratigraphic_thickness,
+    stratigraphic_order,
+    bbox,
+    fault_locations,
+    fault_orientations,
+    fault_properties,
+    fault_edges,
+) = load_geological_map_data()
 
-contacts = pd.read_csv("contacts.csv")
-stratigraphic_orientations = pd.read_csv("stratigraphic_orientations.csv")
 thicknesses = dict(
     zip(
-        list(
-            pd.read_csv(
-                "stratigraphic_thickness.csv", skiprows=1, names=["name", "thickness"]
-            )["name"]
-        ),
-        list(
-            pd.read_csv(
-                "stratigraphic_thickness.csv", skiprows=1, names=["name", "thickness"]
-            )["thickness"]
-        ),
+        list(stratigraphic_thickness["name"]),
+        list(stratigraphic_thickness["thickness"]),
     )
 )
-stratigraphic_order = pd.read_csv("stratigraphic_order.csv")
 
 ##############################
 #  Stratigraphic Contacts
@@ -70,9 +72,7 @@ thicknesses
 # ~~~~~~~~~~~~
 # * Origin - bottom left corner of the model # * Maximum - top right hand corner of the model
 
-bbox = pd.read_csv(
-    "bbox.csv", index_col=0, header=None, names=["X", "Y", "Z"]
-)  # ,'r').read().split('\n')
+
 origin = bbox.loc["origin"].to_numpy()  # np.array(bbox[0].split(',')[1:],dtype=float)
 maximum = bbox.loc["maximum"].to_numpy()  # np.array(bbox[1].split(',')[1:],dtype=float)
 
@@ -139,21 +139,11 @@ view.display()
 # ~~~~~~~~~~~~~
 
 
-fault_locations = pd.read_csv("fault_locations.csv")
-fault_orientations = pd.read_csv("fault_orientations.csv")
-
 fault_orientations
 
-fault_edges = []
-with open("fault_edges.txt", "r") as f:
-    for l in f.read().split("\n"):
-        faults = l.split(",")
-        if len(faults) == 2:
-            fault_edges.append((faults[0], faults[1]))
 
 fault_edges
 
-fault_properties = pd.read_csv("fault_displacement.csv", index_col=0)
 
 fault_properties
 
