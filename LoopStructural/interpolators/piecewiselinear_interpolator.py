@@ -2,7 +2,7 @@
 Piecewise linear interpolator
 """
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg, fold_cg
+from LoopStructural.interpolators._cython.dsi_helper import cg, fold_cg
 
 from LoopStructural.interpolators import DiscreteInterpolator
 from LoopStructural.interpolators import InterpolatorType

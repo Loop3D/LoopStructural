@@ -11,7 +11,7 @@ from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
-from .cython.dsi_helper import fold_cg
+from ._cython.dsi_helper import fold_cg
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
