@@ -17,4 +17,5 @@ WORKDIR LoopStructural
 RUN pip install .
 WORKDIR docs
 RUN conda install -c conda-forge pydata-sphinx-theme 
+RUN python -c "import sphinx; print(sphinx.__version__)"
 RUN make html
