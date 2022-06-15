@@ -55,6 +55,7 @@ jobs:
             conda install -c conda-forge theano cython numpy pandas imageio scipy matplotlib  sphinx sphinx-gallery sphinxcontrib-bibtex pydata-sphinx-theme myst-parser scikit-learn scikit-image pyamg flake8 pytest networkx python geopandas   -y
             pip install lavavu-osmesa 
             pip install .
+            python -c "from LoopStructural import GeologicalModel"
             cd docs
             make html
 
