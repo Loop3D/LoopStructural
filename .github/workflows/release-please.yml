@@ -38,7 +38,7 @@ jobs:
           pytest
   documentation-test:
     runs-on: ubuntu-latest
-    needs: continuous-integration
+    #needs: continuous-integration
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -56,8 +56,8 @@ jobs:
             pip install lavavu-osmesa 
             pip install .
             python -c "from LoopStructural import GeologicalModel"
-            cd docs
-            make html
+            #cd docs
+            #make html
 
   release-please:
     runs-on: ubuntu-latest
