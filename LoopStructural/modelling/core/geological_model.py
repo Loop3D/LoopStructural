@@ -9,7 +9,11 @@ import LoopStructural
 from LoopStructural.datasets import normal_vector_headers
 from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
 from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
-from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+try:
+    from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+    pli = True
+except ImportError:
+    pli = False
 
 # if LoopStructural.experimental:
 from LoopStructural.interpolators import P2Interpolator
@@ -665,7 +669,7 @@ class GeologicalModel:
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         box_vol = (bb[1, 0] - bb[0, 0]) * (bb[1, 1] - bb[0, 1]) * (bb[1, 2] - bb[0, 2])
-        if interpolatortype == "PLI":
+        if interpolatortype == "PLI" and pli:
             if element_volume is None:
                 # nelements /= 5
                 element_volume = box_vol / nelements
