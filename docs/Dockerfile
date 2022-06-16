@@ -11,11 +11,5 @@ RUN apt-get update -qq && \
     make
 RUN conda install -c conda-forge theano cython numpy pandas imageio scipy matplotlib  sphinx sphinx-gallery sphinxcontrib-bibtex sphinx_rtd_theme myst-parser scikit-learn scikit-image pyamg flake8 pytest networkx -y
 RUN pip install lavavu-osmesa 
-COPY . LoopStructural
-#RUN git clone https://github.com/Loop3D/LoopStructural.git 
-WORKDIR LoopStructural
-RUN pip install .
-WORKDIR docs
 RUN conda install -c conda-forge pydata-sphinx-theme 
-RUN python -c "import sphinx; print(sphinx.__version__)"
-RUN make html
+RUN mkdir LoopStructural
