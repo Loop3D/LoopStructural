@@ -66,6 +66,8 @@ class IntrusionBuilder:
         self._build_arguments = {}
         self.width_data = [True, True]
 
+        self.simulationGSLIB_s_outcome = None
+
     @property
     def feature(self):
         return self._feature
@@ -540,6 +542,14 @@ class IntrusionBuilder:
                 self.lateral_contact_data[0]["coord2"].max(),
                 )
 
+        if minL < 0  and maxL < 0:
+            maxL = minL*-1
+        
+        if minL > 0  and maxL > 0:
+            minL = maxL*-1
+
+        print(minL,maxL)
+
 
         if modelcover == True:
             minP = np.nanmin(grid_points_coord1)
@@ -557,7 +567,7 @@ class IntrusionBuilder:
                 )
 
 
-        if self.width_data[0] == False: # e.g. no lateral data for side L<0
+        if self.width_data[0] == False: # i.e., no lateral data for side L<0
             print('Not enought lateral data for simulation of side L<0, Using roof/floor data to condition the conceptual model')
             
             # -- try using vertical data to set some points and run SGS
@@ -568,17 +578,15 @@ class IntrusionBuilder:
 
             data_minL_temp = vertical_data[vertical_data['coord2'] < 0].copy()
 
-            inputsimdata_minL = data_minL_temp[
-                data_minL_temp['coord2'] <= data_minL_temp['conceptual_minside']
-                ].loc[
+            inputsimdata_minL = data_minL_temp[data_minL_temp['coord2'] <= data_minL_temp['conceptual_minside']].loc[
                     :,['X','Y','Z','coord0','coord1','coord2','conceptual_minside']].copy()
             inputsimdata_minL.loc[:,'l_residual'] = inputsimdata_minL.loc[
                 :,'conceptual_minside'] - inputsimdata_minL.loc[:,'coord2']
-            inputsimdata_minL.rename(columns={'conceptual_minside': "l_conceptual"}, inplace = True)
+            inputsimdata_minL.rename(columns={'conceptual_minside': 'l_conceptual'}, inplace = True)
             inputsimdata_minL.reset_index(inplace = True)
 
             if len(inputsimdata_minL) < 3:
-                # create random points along coordinate 1, and evaluate them conceptual model. Residual = 0. Add points to dataframe containing input for sgs
+                # create random points along coordinate 1, and evaluate them in conceptual model. Residual = 0. Add points to dataframe containing input for sgs
                 print('Simulation of lateral side L<0: No enought roof/floor data to condition the conceptual model, lateral contact equivalent to conceptual')
 
                 random_p = pd.DataFrame(np.random.randint(minP, maxP, 10), columns = ['coord1'])
@@ -608,7 +616,7 @@ class IntrusionBuilder:
             inputsimdata_minL.loc[:, "ref_coord"] = 0
 
             
-        if self.width_data[1] == False: # e.g. no lateral data for side L>0
+        if self.width_data[1] == False: # i.e., no lateral data for side L>0
             print('Not enought lateral data for simulation of side L>=0, Using roof/floor data to condition the conceptual model')
             
             # -- try using vertical data to set some points and run SGS
@@ -650,38 +658,33 @@ class IntrusionBuilder:
             inputsimdata_maxL.loc[:, "l_residual"] = data_residual_maxL
             inputsimdata_maxL.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
             
-
-            # # check if any vertical contact point lies outside conceptual model and add it as constraints for SGS
-            # vertical_data = pd.concat([self.vertical_contact_data[0],self.vertical_contact_data[1]])
-            # vertical_data.loc[:,['conceptual_maxside','conceptual_minside']] = self.lateral_extent_model(
-            #     vertical_data, minP=minP, maxP=maxP, minS=minL, maxS=maxL
-            #     )
-
-            # data_maxL_temp = vertical_data[vertical_data['coord2'] >= 0].copy() 
-            # inputsimdata_maxL_ = data_maxL_temp[data_maxL_temp['coord2'] >= data_maxL_temp['conceptual_maxside']].loc[:,['X','Y','Z','coord0','coord1','coord2','conceptual_maxside']].copy()
-            
-            # if len(inputsimdata_maxL_) > 0:
-            #     inputsimdata_maxL_.loc[:,'l_residual'] = inputsimdata_maxL_.loc[:,'conceptual_maxside'] - inputsimdata_maxL.loc[:,'coord2']
-            #     inputsimdata_maxL_.rename(columns={'conceptual_maxside': 'l_conceptual'}, inplace = True)
-            #     inputsimdata_maxL = pd.concat([inputsimdata_maxL, inputsimdata_maxL_])
-            
-            
             inputsimdata_maxL.reset_index(inplace = True)
             inputsimdata_maxL.loc[:, "ref_coord"] = 0
         
-        self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
-
         # -- Compute simulation parameters if not defined
         # ---- compute lower and uper fence of simulated values using quartiles
-        lateral_data = pd.concat(
-            [inputsimdata_minL, inputsimdata_maxL])
-        p25 = np.percentile(lateral_data.l_residual, 25)
-        p75 = np.percentile(lateral_data.l_residual, 75)
+
+        p25_lmin = np.percentile(inputsimdata_minL.copy().drop_duplicates(subset='l_residual').l_residual, 25)
+        p75_lmin = np.percentile(inputsimdata_minL.copy().drop_duplicates(subset='l_residual').l_residual, 75)
+        p25_lmax = np.percentile(inputsimdata_maxL.copy().drop_duplicates(subset='l_residual').l_residual, 25)
+        p75_lmax = np.percentile(inputsimdata_maxL.copy().drop_duplicates(subset='l_residual').l_residual, 75)
 
         if self.lateral_sgs_parameters.get("zmin") == None:
-            self.lateral_sgs_parameters["zmin"] = p25 - 1.5*(p75 - p25)
+            self.lateral_sgs_parameters["zmin_lmin"] = p25_lmin - 1.5*(p75_lmin - p25_lmin)
+            self.lateral_sgs_parameters["zmin_lmax"] = p25_lmax - 1.5*(p75_lmax - p25_lmax)
+        else:
+            self.lateral_sgs_parameters["zmin_lmin"] = self.lateral_sgs_parameters.get("zmin")
+            self.lateral_sgs_parameters["zmin_lmax"] = self.lateral_sgs_parameters.get("zmin")
+
         if self.lateral_sgs_parameters.get("zmax") == None:
-            self.lateral_sgs_parameters["zmax"] = p75 + 1.5*(p75 - p25)
+            self.lateral_sgs_parameters["zmax_lmin"] = p75_lmin + 1.5*(p75_lmin - p25_lmin)
+            self.lateral_sgs_parameters["zmax_lmax"] = p75_lmax + 1.5*(p75_lmax - p25_lmax)
+
+        else:
+            self.lateral_sgs_parameters["zmax_lmin"] = self.lateral_sgs_parameters.get("zmax")
+            self.lateral_sgs_parameters["zmax_lmax"] = self.lateral_sgs_parameters.get("zmax")
+
+
         if self.lateral_sgs_parameters.get("xmn") == None:
             self.lateral_sgs_parameters["xmn"] = np.nanmin(grid_points_coord1)
         if self.lateral_sgs_parameters.get("xsiz") == None:
@@ -701,17 +704,18 @@ class IntrusionBuilder:
         ymn = self.lateral_sgs_parameters.get("ymn")
         xsiz = self.lateral_sgs_parameters.get("xsiz")
         ysiz = self.lateral_sgs_parameters.get("ysiz")
-        zmin = self.lateral_sgs_parameters.get("zmin")
-        zmax = self.lateral_sgs_parameters.get("zmax")
+        zmin = self.lateral_sgs_parameters.get("zmin_lmin")
+        zmax = self.lateral_sgs_parameters.get("zmax_lmin")
         nxdis = self.lateral_sgs_parameters.get("nxdis")
         nydis = self.lateral_sgs_parameters.get("nydis")
         ndmin = self.lateral_sgs_parameters.get("ndmin")
         ndmax = self.lateral_sgs_parameters.get("ndmax")
         radius = self.lateral_sgs_parameters.get("radius")
 
+        self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
 
         l_min_simulation = geostats.sgsim(
-            inputsimdata_minL,
+            self.lateral_sgs_input_data[0],
             "coord1",
             "ref_coord",
             "l_residual",
@@ -752,11 +756,14 @@ class IntrusionBuilder:
             ktype=ktype,
             colocorr=0.0,
             sec_map=0,
-            vario=self.lateral_sgs_variogram,
-        )
+            vario=self.lateral_sgs_variogram
+            )
+        
+        zmin = self.lateral_sgs_parameters.get("zmin_lmax")
+        zmax = self.lateral_sgs_parameters.get("zmax_lmax")
 
         l_max_simulation = geostats.sgsim(
-            inputsimdata_maxL,
+            self.lateral_sgs_input_data[1],
             "coord1",
             "ref_coord",
             "l_residual",
@@ -797,10 +804,9 @@ class IntrusionBuilder:
             ktype=ktype,
             colocorr=0.0,
             sec_map=0,
-            vario=self.lateral_sgs_variogram,
-        )
+            vario=self.lateral_sgs_variogram)
 
-        # self.simulationGSLIB_s_outcome = [s_min_simulation, s_max_simulation]
+        self.simulationGSLIB_s_outcome = [l_min_simulation, l_max_simulation]
 
         #-- Create dataframe containing S threshold for each grid point
 
@@ -812,36 +818,36 @@ class IntrusionBuilder:
                 "min_l_residual",
                 "min_l_threshold",
                 "max_l_residual",
-                "max_l_threshold",
-            ]
-        )
+                "max_l_threshold"]
+                )
+        
         lateral_thresholds["coord1"] = propagation_grid_model
 
         model_conceptual_l = self.lateral_extent_model(
             lateral_contact_data=lateral_thresholds, minP=minP, maxP=maxP, minS=minL, maxS=maxL
-        )
+            )
         lateral_thresholds["conceptual_minl"] = model_conceptual_l[:, 1]
         lateral_thresholds["min_l_residual"] = l_min_simulation[1]
         lateral_thresholds["min_l_threshold"] = (
             model_conceptual_l[:, 1] - l_min_simulation[1]
-        )
+            )
 
         lateral_thresholds["conceptual_maxl"] = model_conceptual_l[:, 0]
         lateral_thresholds["max_l_residual"] = l_max_simulation[1]
         lateral_thresholds["max_l_threshold"] = (
             model_conceptual_l[:, 0] - l_max_simulation[1]
-        )
+            )
         lateral_thresholds.sort_values(["coord1"], ascending=[True], inplace=True)
 
         # Ignore simulated data outside area covered by input data
 
         lateral_thresholds.loc[
             lateral_thresholds.coord1 < minP, ["min_l_threshold", "max_l_threshold"]
-        ] = [0.00001, 0.00001]
+            ] = [0.00001, 0.00001]
 
         lateral_thresholds.loc[
             lateral_thresholds.coord1 > maxP, ["min_l_threshold", "max_l_threshold"]
-        ] = [0.00001, 0.00001]
+            ] = [0.00001, 0.00001]
 
         self.lateral_simulated_thresholds = lateral_thresholds
 

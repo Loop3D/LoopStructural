@@ -992,7 +992,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         if self.intrusion_network_gradients is not None:
             np.random.shuffle(self.intrusion_network_gradients)
-            sliced_grads = self.intrusion_network_gradients[:100,:]
+            sliced_grads = self.intrusion_network_gradients[:200,:]
 
             coord_0_grads = pd.DataFrame(sliced_grads[:,:6], columns=["X", "Y", "Z", 'gx', 'gy', 'gz'])
             coord_0_grads["coord"] = 0
