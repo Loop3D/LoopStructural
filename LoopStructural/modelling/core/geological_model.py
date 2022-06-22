@@ -43,6 +43,7 @@ from LoopStructural.modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
+    FeatureType
 )
 from LoopStructural.modelling.features.fold import (
     FoldRotationAngle,
@@ -345,7 +346,9 @@ class GeologicalModel:
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
-                model.add_unconformity(f, 0)
+                # check feature was built, and is an interpolated feature.
+                if f is not None and f.type == FeatureType.INTERPOLATED:
+                    model.add_unconformity(f, 0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
 
@@ -820,7 +823,7 @@ class GeologicalModel:
             the created geological feature
         """
         if self.check_inialisation() == False:
-            return False
+            return 
         # if tol is not specified use the model default
         if tol is None:
             tol = self.tol
@@ -1357,6 +1360,9 @@ class GeologicalModel:
             unconformity feature
 
         """
+        if feature is None:
+            logger.warning(f"Cannot add unconformtiy, base feature is None")
+            return
         self.parameters["features"].append(
             {"feature_type": "unconformity", "feature": feature, "value": value}
         )
