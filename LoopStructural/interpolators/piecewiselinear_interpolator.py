@@ -2,10 +2,11 @@
 Piecewise linear interpolator
 """
 import numpy as np
+
 try:
     from LoopStructural.interpolators._cython.dsi_helper import cg, fold_cg
-except ModuleNotFoundError:
-    raise ImportError('Cython compiled code not found')
+except:
+    raise ImportError("Cython compiled code not found")
 from LoopStructural.interpolators import DiscreteInterpolator
 from LoopStructural.interpolators import InterpolatorType
 

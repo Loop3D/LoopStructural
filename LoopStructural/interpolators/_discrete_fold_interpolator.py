@@ -12,7 +12,7 @@ from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 try:
     from ._cython.dsi_helper import fold_cg
-except ModuleNotFoundError:
+except:
     raise ImportError("Cython compiled code not found")
 
 
