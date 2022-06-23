@@ -7,10 +7,18 @@ import numpy as np
 import pandas as pd
 import LoopStructural
 from LoopStructural.datasets import normal_vector_headers
-from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+
+try:
+    from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+
+    dfi = True
+except ImportError:
+    dfi = False
 from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
+
 try:
     from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+
     pli = True
 except ImportError:
     pli = False
@@ -43,7 +51,7 @@ from LoopStructural.modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
-    FeatureType
+    FeatureType,
 )
 from LoopStructural.modelling.features.fold import (
     FoldRotationAngle,
@@ -774,7 +782,7 @@ class GeologicalModel:
             )
             return FDI(grid)
 
-        if interpolatortype == "DFI":  # "fold" in kwargs:
+        if interpolatortype == "DFI" and dfi == True:  # "fold" in kwargs:
             if element_volume is None:
                 nelements /= 5
                 element_volume = box_vol / nelements
@@ -823,7 +831,7 @@ class GeologicalModel:
             the created geological feature
         """
         if self.check_inialisation() == False:
-            return 
+            return
         # if tol is not specified use the model default
         if tol is None:
             tol = self.tol
