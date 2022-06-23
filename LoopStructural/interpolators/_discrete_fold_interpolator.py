@@ -10,8 +10,10 @@ from LoopStructural.interpolators import PiecewiseLinearInterpolator, Interpolat
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
-
-from ._cython.dsi_helper import fold_cg
+try:
+    from ._cython.dsi_helper import fold_cg
+except ModuleNotFoundError:
+    raise ImportError("Cython compiled code not found")
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
