@@ -750,8 +750,12 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 grid_points_inflation = strat_gradient_grid_points*(-1)
             else:
                 grid_points_inflation = strat_gradient_grid_points
-                
+              
             grid_points_and_inflation_all = np.hstack([grid_points, grid_points_inflation])
+            
+            if self.intrusion_steps is None:  
+                If_sum = np.zeros(len(grid_points_and_inflation_all)).T #e.g. no faults afecting the intrusion
+            
             grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
             self.intrusion_network_gradients = grid_points_and_inflation
          
