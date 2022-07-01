@@ -699,7 +699,13 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     contacts1_val_min = self.intrusion_steps[step_i].get('unit_to_mean') - (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact)
                     contacts1_val_max = self.intrusion_steps[step_i].get('unit_to_mean') + (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact)
 
+                    self.intrusion_steps[step_i]['constraints_hw'] = grid_points[
+                        np.logical_and(
+                            If_sum == 0, (fault_gridpoints_vals >=0) & (series_from_gridpoints_vals >= contacts0_val_min) & (series_from_gridpoints_vals <= contacts0_val_max))]
                     
+                    self.intrusion_steps[step_i]['constraints_fw'] = grid_points[
+                        np.logical_and(
+                            If_sum == 0, (fault_gridpoints_vals < 0) & (series_from_gridpoints_vals >= contacts0_val_min) & (series_from_gridpoints_vals <= contacts0_val_max))]
                    
                     fault_i_points = grid_points[np.logical_and(
                         If_sum == 0, np.logical_or(
@@ -716,19 +722,19 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
                     intrusion_network_points = np.vstack([intrusion_network_points, fault_i_points])
 
-            # restore points --> intrusion network should be interpolated with constraints simulating scenario of intrusion time.
-            # faults = self.post_intrusion_faults
+                    splits_from_sill_name = self.intrusion_steps[step_i].get('splits_from', None)
 
-            # if faults is not None:
-            #     unfaulted_points = faults[0].apply_to_points(intrusion_network_points)
-                    
-            #     for j in range(len(faults)-1):
-            #         fault_temp = faults[j+1]
-            #         unfaulted_points = np.vstack([unfaulted_points,fault_temp.apply_to_points(intrusion_network_points)])
+                    #check if sill comes from anothe sill 
+                    #(add all the constraint from original sill, this have to be changed and adapted so it adds constraints for specific faults)
 
-            #     self.intrusion_network_points = unfaulted_points
+                    if splits_from_sill_name is not None:
+                        # print('ssd')
+                        splits_from_sill_steps = self.model.__getitem__(splits_from_sill_name).intrusion_frame.builder.intrusion_steps
+                        for j, step_j in enumerate(splits_from_sill_steps.keys()):
+                            step_j_hg_constraints = splits_from_sill_steps[step_j].get('constraints_hw')
+                            intrusion_network_points = np.vstack([intrusion_network_points, step_j_hg_constraints])
+        
 
-            # else:
             self.intrusion_network_points = intrusion_network_points
            
  
