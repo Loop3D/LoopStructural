@@ -404,6 +404,14 @@ class GeologicalModel:
         return series
 
     @property
+    def intrusions(self):
+        intrusions = []
+        for f in self.features:
+            if f.type == "intrusion":
+                intrusions.append(f)
+        return intrusions
+
+    @property
     def faults_displacement_magnitude(self):
         displacements = []
         for f in self.faults:
