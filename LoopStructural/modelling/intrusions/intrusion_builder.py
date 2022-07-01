@@ -3,6 +3,7 @@ import pandas as pd
 
 from LoopStructural.utils import getLogger
 from .intrusion_feature import IntrusionFeature
+from LoopStructural.interpolators import StructuredGrid2D
 
 from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
@@ -66,7 +67,8 @@ class IntrusionBuilder:
         self._build_arguments = {}
         self.width_data = [True, True]
 
-        self.simulationGSLIB_s_outcome = None
+        # self.simulationGSLIB_s_outcome = None
+        self.growth_simulated_thresholds_grid = None
 
     @property
     def feature(self):
@@ -1100,7 +1102,12 @@ class IntrusionBuilder:
         g_maximum = conceptual_maxg[:, 1] - g_residual[:, 5]
         simulation_g_threshold.loc[:, "g_maximum"] = g_maximum
 
+        grid_for_growth_evaluation = StructuredGrid2D(origin = [xmn,ymn], nsteps = [nx,ny], step_vector =[xsiz,ysiz])
+        grid_for_growth_evaluation.update_property('g_maximum', g_maximum)
+        grid_for_growth_evaluation.update_property('g_minimum', g_minimum[:, 5])
+
         self.growth_simulated_thresholds = simulation_g_threshold
+        self.growth_simulated_thresholds_grid = grid_for_growth_evaluation
 
     def build(
         self,
@@ -1128,6 +1135,7 @@ class IntrusionBuilder:
         self.simulate_growth_thresholds()
         self.feature.growth_simulated_thresholds = self.growth_simulated_thresholds
         self.feature.lateral_simulated_thresholds = self.lateral_simulated_thresholds
+        self.feature.growth_simulated_thresholds_grid = self.growth_simulated_thresholds_grid
       
 
     def update(self):

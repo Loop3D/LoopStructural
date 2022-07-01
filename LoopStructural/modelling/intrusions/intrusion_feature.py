@@ -42,6 +42,7 @@ class IntrusionFeature:
         # simulated thresholds:
         self._lateral_simulated_thresholds = None
         self._growth_simulated_thresholds = None
+        self._growth_simulated_thresholds_grid = None
 
     @property
     def lateral_simulated_thresholds(self):
@@ -64,6 +65,17 @@ class IntrusionFeature:
     def growth_simulated_thresholds(self, growth_simulated_threshold):
         # TODO check type is correct and will work?
         self._growth_simulated_thresholds = growth_simulated_threshold
+
+    @property
+    def growth_simulated_thresholds_grid(self):
+        self.builder.up_to_date()
+
+        return self._growth_simulated_thresholds_grid    
+
+    @growth_simulated_thresholds_grid.setter
+    def growth_simulated_thresholds_grid(self, growth_simulated_threshold_grid):
+        # TODO check type is correct and will work?
+        self._growth_simulated_thresholds_grid = growth_simulated_threshold_grid
 
    
     @property
@@ -119,7 +131,7 @@ class IntrusionFeature:
     def set_model(self, model):
         self.model = model
 
-    def evaluate_value(self, points):
+    def evaluate_value2(self, points):
 
         """
         Computes a distance scalar field to the intrusion contact (isovalue = 0).
@@ -279,7 +291,7 @@ class IntrusionFeature:
 
         return intrusion_sf
 
-    def evaluate_value2(self, points):
+    def evaluate_value(self, points):
 
         """
         Computes a distance scalar field to the intrusion contact (isovalue = 0).
@@ -334,18 +346,12 @@ class IntrusionFeature:
         if simulated_g_data is None:
             print("No simulation for vertical extent")
         else:
-            simulation_g_data_coord1 = simulated_g_data["coord1"].to_numpy()
-            simulation_g_data_coord2 = simulated_g_data["coord2"].to_numpy()
-            simulated_gmin_values = simulated_g_data["g_minimum"].to_numpy()
-            simulated_gmax_values = simulated_g_data["g_maximum"].to_numpy()
-
-            min_g_interpolator = NearestNDInterpolator(np.array([simulation_g_data_coord1, simulation_g_data_coord2]).T, simulated_gmin_values)
-            max_g_interpolator = NearestNDInterpolator(np.array([simulation_g_data_coord1, simulation_g_data_coord2]).T, simulated_gmax_values)
-            print(len(intrusion_coord1_pts), len(intrusion_coord2_pts))
-
-            g_minside_threshold = min_g_interpolator(np.array([intrusion_coord1_pts, intrusion_coord2_pts]).T)
-            g_maxside_threshold = max_g_interpolator(np.array([intrusion_coord1_pts, intrusion_coord2_pts]).T)
-
+            # containers for thresholds
+            # print("Assigning vertical thresholds")
+            grid_for_growth_evaluation = self.growth_simulated_thresholds_grid
+            coords_12_points = np.array([intrusion_coord1_pts, intrusion_coord2_pts]).T
+            g_minside_threshold = grid_for_growth_evaluation.evaluate_value(coords_12_points,'g_minimum')
+            g_maxside_threshold = grid_for_growth_evaluation.evaluate_value(coords_12_points,'g_maximum')
 
         #         ------- intrusion_sf: final distance scalar field
         # Transform the scalar fields given by the frame coordinates, using the thresholds.
