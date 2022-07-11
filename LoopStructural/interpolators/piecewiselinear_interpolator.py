@@ -2,19 +2,19 @@
 Piecewise linear interpolator
 """
 import numpy as np
+from LoopStructural.utils import getLogger
 
+logger = getLogger(__name__)
 try:
     from LoopStructural.interpolators._cython.dsi_helper import cg, fold_cg
 except:
-    raise ImportError("Cython compiled code not found")
+    from LoopStructural.interpolators._python.dsi_helper import cg, fold_cg
+
+    logger.warning("Using python code not compiled cython code, this will be slower")
 from LoopStructural.interpolators import DiscreteInterpolator
 from LoopStructural.interpolators import InterpolatorType
 
 from LoopStructural.utils.helper import get_vectors
-
-from LoopStructural.utils import getLogger
-
-logger = getLogger(__name__)
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
