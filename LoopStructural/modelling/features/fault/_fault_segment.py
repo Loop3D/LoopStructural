@@ -3,6 +3,7 @@ import logging
 from LoopStructural.modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
+from LoopStructural.modelling.features import FeatureType
 from LoopStructural.modelling.features.fault._fault_function import BaseFault
 from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
 from LoopStructural.modelling.features import StructuralFrame
@@ -36,7 +37,7 @@ class FaultSegment(StructuralFrame):
         kwargs
         """
         StructuralFrame.__init__(self, features, name, fold)
-        self.type = "fault"
+        self.type = FeatureType.INTERPOLATED
         self.displacement = displacement
         self._faultfunction = BaseFault.fault_displacement
         self.steps = steps

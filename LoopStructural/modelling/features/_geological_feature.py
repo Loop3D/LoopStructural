@@ -61,6 +61,7 @@ class GeologicalFeature(BaseFeature):
         self.builder = builder
         self.type = FeatureType.INTERPOLATED
 
+         
     def is_valid(self):
         return self.interpolator.valid
 
