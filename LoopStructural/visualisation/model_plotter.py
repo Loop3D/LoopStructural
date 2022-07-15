@@ -1,5 +1,6 @@
 from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopImportError
+from LoopStructural.modelling.features import FeatureType
 
 logger = getLogger(__name__)
 
@@ -13,7 +14,11 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
-from LoopStructural.modelling.features import GeologicalFeature, BaseFeature
+from LoopStructural.modelling.features import (
+    FeatureType,
+    GeologicalFeature,
+    BaseFeature,
+)
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 
@@ -634,7 +639,7 @@ class BaseModelPlotter:
                         n_units += 1
         n_faults = 0
         for f in self.model.features:
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 n_faults += 1
 
         if self.model.stratigraphic_column and cmap is None:
@@ -688,7 +693,7 @@ class BaseModelPlotter:
 
             if faults:
                 for f in self.model.features:
-                    if f.type == "fault":
+                    if f.type == FeatureType.FAULT:
 
                         def mask(x):
                             val = f.displacementfeature.evaluate_value(x)

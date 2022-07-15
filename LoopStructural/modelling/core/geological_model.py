@@ -1791,7 +1791,7 @@ class GeologicalModel:
             points = self.scale(points, inplace=False)
         vals = np.zeros(points.shape[0])
         for f in self.features:
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
         return (
@@ -1898,7 +1898,7 @@ class GeologicalModel:
         total_dof = 0
         nfeatures = 0
         for f in self.features:
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 nfeatures += 3
                 total_dof += f[0].interpolator.nx * 3
             if isinstance(f, StructuralFrame):

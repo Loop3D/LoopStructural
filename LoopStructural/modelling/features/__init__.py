@@ -19,6 +19,7 @@ class FeatureType(IntEnum):
     LAMBDA = 6
     UNCONFORMITY = 7
     INTRUSION = 8
+    FAULT = 9
 
 
 from ._base_geological_feature import BaseFeature

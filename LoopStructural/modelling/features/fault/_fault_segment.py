@@ -37,7 +37,7 @@ class FaultSegment(StructuralFrame):
         kwargs
         """
         StructuralFrame.__init__(self, features, name, fold)
-        self.type = FeatureType.INTERPOLATED
+        self.type = FeatureType.FAULT
         self.displacement = displacement
         self._faultfunction = BaseFault.fault_displacement
         self.steps = steps
