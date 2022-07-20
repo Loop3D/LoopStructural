@@ -535,7 +535,7 @@ class GeologicalModel:
         self._data["Y"] /= self.scale_factor
         self._data["Z"] /= self.scale_factor
         if "type" in self._data:
-            logger.warning("'type' is depreciated replace with 'feature_name' \n")
+            logger.warning("'type' is deprecated replace with 'feature_name' \n")
             self._data.rename(columns={"type": "feature_name"}, inplace=True)
         if "feature_name" not in self._data:
             logger.error("Data does not contain 'feature_name' column")
@@ -565,7 +565,7 @@ class GeologicalModel:
 
     def set_model_data(self, data):
         logger.warning(
-            "Depreciated method. Model data can now be set using the data attribute"
+            "deprecated method. Model data can now be set using the data attribute"
         )
         self.data = data
 

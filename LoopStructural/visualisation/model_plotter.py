@@ -10,7 +10,7 @@ import numpy as np
 try:
     from skimage.measure import marching_cubes
 except ImportError:
-    logger.warning("Using depreciated version of scikit-image")
+    logger.warning("Using deprecated version of scikit-image")
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
