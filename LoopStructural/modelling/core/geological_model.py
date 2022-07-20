@@ -1260,29 +1260,6 @@ class GeologicalModel:
                 feature.add_region(lambda pos: f.evaluate(pos))
                 break
 
-    def _add_unconformity_below(self, feature):
-        """
-        Adds a region to the features that represents the
-        unconformity so it is not evaluated below the unconformity
-
-        Parameters
-        ----------
-        feature
-
-        Returns
-        -------
-
-        """
-        # for f in self.features:
-        #     if f.type == FeatureType.INTERPOLATED and feature.name != f.name:
-        #         feature.add_region(lambda pos: f.evaluate(pos))
-        # for f in reversed(self.features):
-        #     if f.type == FeatureType.UNCONFORMITY:
-        #         feature.add_region(lambda pos: f.evaluate(pos))
-        #         break
-        # feature.add_region(lambda pos: ~feature.evaluate(pos))
-        pass
-
     def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
         """
         Parameters
@@ -1321,7 +1298,9 @@ class GeologicalModel:
         # evaluated where the unconformity is positive
         return self.add_unconformity(uc_feature_base, 0)
 
-    def add_unconformity(self, feature, value):
+    def add_unconformity(
+        self, feature: GeologicalFeature, value: float
+    ) -> UnconformityFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1338,22 +1317,27 @@ class GeologicalModel:
             unconformity feature
 
         """
+        logger.debug(f"Adding {feature.name} as unconformity at {value}")
         if feature is None:
             logger.warning(f"Cannot add unconformtiy, base feature is None")
             return
+        # look backwards through features and add the unconformity as a region until
+        # we get to an unconformity
         uc_feature = UnconformityFeature(feature, value)
 
-        for f in self.features:
+        for f in reversed(self.features):
+            if f.type == FeatureType.UNCONFORMITY:
+                logger.debug(f"Reached unconformity {f.name}")
+                break
+            logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
             f.add_region(lambda pos: ~uc_feature.evaluate(pos))
-        # feature.add_region(lambda pos: ~uc_feature.evaluate(pos))
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(uc_feature)
-        # self._add_unconformity_below(uc_feature)  # , uc_feature)
+        # now add the unconformity to the feature list
         self._add_feature(uc_feature)
-
         return uc_feature
 
-    def add_onlap_unconformity(self, feature, value):
+    def add_onlap_unconformity(
+        self, feature: GeologicalFeature, value: float
+    ) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1371,14 +1355,19 @@ class GeologicalModel:
 
         """
 
-        uc_feature = UnconformityFeature(feature, value)
-
+        uc_feature = UnconformityFeature(feature, value, True)
+        feature.add_region(lambda pos: ~uc_feature.evaluate(pos))
+        for f in reversed(self.features):
+            if f.type == FeatureType.UNCONFORMITY:
+                break
+            if f != feature:
+                f.add_region(lambda pos: uc_feature.evaluate(pos))
         # for f in self.features:
         #     f.add_region(lambda pos: uc_feature.evaluate(pos))
 
         # see if any unconformities are above this feature if so add region
         # self._add_unconformity_above(uc_feature)
-        self._add_unconformity_below(uc_feature)  # , uc_feature)
+        # self._add_unconformity_below(uc_feature)  # , uc_feature)
         self._add_feature(uc_feature)
 
         return uc_feature
@@ -1901,12 +1890,15 @@ class GeologicalModel:
             if f.type == FeatureType.FAULT:
                 nfeatures += 3
                 total_dof += f[0].interpolator.nx * 3
+                continue
             if isinstance(f, StructuralFrame):
                 nfeatures += 3
                 total_dof += f[0].interpolator.nx * 3
+                continue
             if f.type == FeatureType.INTERPOLATED:
                 nfeatures += 1
                 total_dof += f.interpolator.nx
+                continue
         if verbose == True:
             print(
                 f"Updating geological model. There are: \n {nfeatures} geological features that need to be interpolated\n"
