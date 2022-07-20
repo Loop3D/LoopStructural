@@ -5,7 +5,7 @@ from LoopStructural.modelling.features import FeatureType
 class UnconformityFeature(GeologicalFeature):
     """ """
 
-    def __init__(self, feature: GeologicalFeature, value: float):
+    def __init__(self, feature: GeologicalFeature, value: float, sign=True):
         """
 
         Parameters
@@ -26,6 +26,7 @@ class UnconformityFeature(GeologicalFeature):
         )
         self.value = value
         self.type = FeatureType.UNCONFORMITY
+        self.sign = sign
 
     def evaluate(self, pos):
         """
@@ -40,4 +41,7 @@ class UnconformityFeature(GeologicalFeature):
         boolean
             true if above the unconformity, false if below
         """
-        return self.evaluate_value(pos) < self.value
+        if self.sign:
+            return self.evaluate_value(pos) < self.value
+        if not self.sign:
+            return self.evaluate_value(pos) > self.value

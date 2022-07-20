@@ -61,7 +61,6 @@ class GeologicalFeature(BaseFeature):
         self.builder = builder
         self.type = FeatureType.INTERPOLATED
 
-         
     def is_valid(self):
         return self.interpolator.valid
 
@@ -103,10 +102,10 @@ class GeologicalFeature(BaseFeature):
         mask[:] = True
         # check regions
         for r in self.regions:
-            try:
-                mask = np.logical_and(mask, r(evaluation_points))
-            except:
-                logger.error("nan slicing")
+            # try:
+            mask = np.logical_and(mask, r(evaluation_points))
+            # except:
+            #     logger.error("nan slicing")
         # apply faulting after working out which regions are visible
         if self.faults_enabled:
             for f in self.faults:
