@@ -1,3 +1,4 @@
+from pyrsistent import v
 from .model_plotter import BaseModelPlotter
 from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopImportError
@@ -409,6 +410,12 @@ class LavaVuModelViewer(BaseModelPlotter):
 
     @camera.setter
     def camera(self, camera):
+        # for some reason lavavu complains if the keys
+        # attributes aren't already in the dict, so add them and then
+        # call camera
+        for key, value in camera.items():
+            self.lv[key] = value
+
         self.lv.camera(camera)
 
     @property
