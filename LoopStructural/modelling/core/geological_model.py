@@ -1184,7 +1184,7 @@ class GeologicalModel:
         for f in reversed(features):
             if isinstance(f, str):
                 f = self.__getitem__(f)
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 feature_builder.add_fault(f)
             # if f.type == 'unconformity':
             #     break
