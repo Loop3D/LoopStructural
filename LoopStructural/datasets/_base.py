@@ -177,7 +177,7 @@ def load_geological_map_data():
     stratigraphic_order = pd.read_csv(
         join(module_path, Path("data/geological_map_data/stratigraphic_order.csv")),
         skiprows=1,
-        names=["name", "order"],
+        names=["order", "unit name"],
     )
     bbox = pd.read_csv(
         join(module_path, Path("data/geological_map_data/bbox.csv")),
