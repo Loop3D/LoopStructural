@@ -189,7 +189,7 @@ class StructuralFrameBuilder:
 
             logger.debug("Creating analytical structural frame coordinate 2")
             c3 = CrossProductGeologicalFeature(
-                self.name + "_2", self._frame[0], self._frame[1]
+                self.name + "__2", self._frame[0], self._frame[1]
             )
             self._frame[2] = c3
 

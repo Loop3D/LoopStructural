@@ -434,7 +434,8 @@ class GeologicalModel:
         return self.feature_name_index.keys()
 
     def fault_names(self):
-        pass
+
+        return [f.name for f in self.faults]
 
     def check_inialisation(self):
         if self.data is None:
@@ -485,7 +486,8 @@ class GeologicalModel:
                 f"Adding {feature.name} to model at location {len(self.features)}"
             )
         self._add_domain_fault_above(feature)
-        self._add_unconformity_above(feature)
+        if feature.type == FeatureType.INTERPOLATED:
+            self._add_unconformity_above(feature)
         feature.model = self
 
     def data_for_feature(self, feature_name):
@@ -882,8 +884,6 @@ class GeologicalModel:
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
         series_feature.type = "dtm"
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
         self._add_feature(series_feature)
         return series_feature
 
@@ -921,8 +921,7 @@ class GeologicalModel:
         kwargs["tol"] = tol
         fold_frame_builder.setup(**kwargs)
         fold_frame = fold_frame_builder.frame
-        # for i in range(3):
-        #     self._add_unconformity_above(fold_frame[i])
+
         fold_frame.type = FeatureType.STRUCTURALFRAME
         fold_frame.builder = fold_frame_builder
         self._add_feature(fold_frame)
@@ -983,9 +982,7 @@ class GeologicalModel:
         series_builder.build_arguments = kwargs
         series_feature.type = FeatureType.INTERPOLATED
         series_feature.fold = fold
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
-        # result['support'] = series_feature.get_interpolator().support
+
         self._add_feature(series_feature)
         return series_feature
 
@@ -1049,9 +1046,6 @@ class GeologicalModel:
         folded_fold_frame.builder = fold_frame_builder
 
         folded_fold_frame.type = "structuralframe"
-        # see if any unconformities are above this feature if so add region
-        # for i in range(3):
-        #     self._add_unconformity_above(fold_frame[i])
 
         self._add_feature(folded_fold_frame)
 
@@ -1255,6 +1249,7 @@ class GeologicalModel:
         -------
 
         """
+
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
                 feature.add_region(lambda pos: f.evaluate(pos))
@@ -1330,6 +1325,8 @@ class GeologicalModel:
                 logger.debug(f"Reached unconformity {f.name}")
                 break
             logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
+            if f.type == FeatureType.FAULT:
+                continue
             f.add_region(lambda pos: ~uc_feature.evaluate(pos))
         # now add the unconformity to the feature list
         self._add_feature(uc_feature)
@@ -1362,12 +1359,6 @@ class GeologicalModel:
                 break
             if f != feature:
                 f.add_region(lambda pos: uc_feature.evaluate(pos))
-        # for f in self.features:
-        #     f.add_region(lambda pos: uc_feature.evaluate(pos))
-
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(uc_feature)
-        # self._add_unconformity_below(uc_feature)  # , uc_feature)
         self._add_feature(uc_feature)
 
         return uc_feature

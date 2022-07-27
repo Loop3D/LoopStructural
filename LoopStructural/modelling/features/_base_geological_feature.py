@@ -12,7 +12,7 @@ class BaseFeature:
     Base class for geological features.
     """
 
-    def __init__(self, name, model, faults, regions, builder):
+    def __init__(self, name, model=None, faults=[], regions=[], builder=None):
         self.name = name
         self.type = FeatureType.BASE
         self.regions = regions

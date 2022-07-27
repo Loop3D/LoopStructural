@@ -81,8 +81,9 @@ class StructuralFrame(BaseFeature):
             f.model = model
 
     def add_region(self, region):
+        self.regions.append(region)
         for i in range(3):
-            self.features[i].add_region(region)
+            self.features[i].regions = self.regions
 
     def get_feature(self, i):
         """
