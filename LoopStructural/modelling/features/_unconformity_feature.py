@@ -1,6 +1,8 @@
 from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.modelling.features import FeatureType
 
+import numpy as np
+
 
 class UnconformityFeature(GeologicalFeature):
     """ """
@@ -28,7 +30,12 @@ class UnconformityFeature(GeologicalFeature):
         self.type = FeatureType.UNCONFORMITY
         self.sign = sign
 
-    def evaluate(self, pos):
+    def inverse(self):
+        uc = UnconformityFeature(self, self.value, sign=not self.sign)
+        uc.name = self.name + "_inverse"
+        return uc
+
+    def evaluate(self, pos: np.ndarray) -> np.ndarray:
         """
 
         Parameters
@@ -38,10 +45,13 @@ class UnconformityFeature(GeologicalFeature):
 
         Returns
         -------
-        boolean
+        np.ndarray.dtype(bool)
             true if above the unconformity, false if below
         """
         if self.sign:
-            return self.evaluate_value(pos) < self.value
+            return self.evaluate_value(pos) < self.value + self.model.epsilon
         if not self.sign:
-            return self.evaluate_value(pos) > self.value
+            return self.evaluate_value(pos) > self.value - self.model.epsilon
+
+    def __call__(self, pos) -> np.ndarray:
+        return self.evaluate(pos)

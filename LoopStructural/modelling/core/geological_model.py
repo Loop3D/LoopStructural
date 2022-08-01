@@ -115,6 +115,7 @@ class GeologicalModel:
         reuse_supports=False,
         logfile=None,
         loglevel="info",
+        epsilon=0.04,
     ):
         """
         Parameters
@@ -125,7 +126,8 @@ class GeologicalModel:
             specifying the maximum extent of the model
         rescale : bool
             whether to rescale the model to between 0/1
-
+        epsion : float
+            a fudge factor for isosurfacing, used to make sure surfaces appear
         Examples
         --------
         Demo data
@@ -184,6 +186,7 @@ class GeologicalModel:
             )
 
         self.bounding_box /= self.scale_factor
+        self.epsilon = epsilon * float(np.max(lengths)) / self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
         if self.reuse_supports:
@@ -1252,7 +1255,7 @@ class GeologicalModel:
 
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
-                feature.add_region(lambda pos: f.evaluate(pos))
+                feature.add_region(f)
                 break
 
     def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
@@ -1327,7 +1330,7 @@ class GeologicalModel:
             logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
             if f.type == FeatureType.FAULT:
                 continue
-            f.add_region(lambda pos: ~uc_feature.evaluate(pos))
+            f.add_region(uc_feature.inverse())
         # now add the unconformity to the feature list
         self._add_feature(uc_feature)
         return uc_feature
@@ -1353,12 +1356,12 @@ class GeologicalModel:
         """
 
         uc_feature = UnconformityFeature(feature, value, True)
-        feature.add_region(lambda pos: ~uc_feature.evaluate(pos))
+        feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
                 break
             if f != feature:
-                f.add_region(lambda pos: uc_feature.evaluate(pos))
+                f.add_region(uc_feature)
         self._add_feature(uc_feature)
 
         return uc_feature
@@ -1593,7 +1596,7 @@ class GeologicalModel:
 
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
-                fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
+                fault.add_region(f)
                 break
         if displacement == 0:
             fault.type = "fault_inactive"
