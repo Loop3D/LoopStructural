@@ -47,7 +47,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             l2 = self.fold.foldframe.calculate_intersection_lineation(self)
             self.fold.fold_axis = np.mean(l2, axis=0)
         if self.fold.fold_axis is None:
-            if self.fold.foldframe[1].is_valid() == False:
+            if not self.fold.foldframe[1].is_valid():
                 raise InterpolatorError("Fold frame direction coordinate is not valid")
             far, fad = self.fold.foldframe.calculate_fold_axis_rotation(self)
             fold_axis_rotation = FoldRotationAngle(far, fad, svario=self.svario)
@@ -97,7 +97,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
                 else:
                     constrained = True
         self.add_data_to_interpolator(constrained=constrained)
-        if self.fold.foldframe[0].is_valid() == False:
+        if not self.fold.foldframe[0].is_valid():
             raise InterpolatorError("Fold frame main coordinate is not valid")
         self.set_fold_axis()
         self.set_fold_limb_rotation()
