@@ -209,18 +209,19 @@ class FaultSegment(StructuralFrame):
         -------
 
         """
-        v = np.zeros(locations.shape[0])
-        v[:] = np.nan
-        mask = np.zeros(locations.shape[0]).astype(bool)
-        mask[:] = True
-        # check regions
-        for r in self.regions:
-            try:
-                mask = np.logical_and(mask, r(locations))
-            except:
-                logger.error("nan slicing")
-        v[mask] = self.__getitem__(0).evaluate_value(locations[mask, :])
-        return v
+        # v = np.zeros(locations.shape[0])
+        # v[:] = np.nan
+        # mask =
+        # mask = np.zeros(locations.shape[0]).astype(bool)
+        # mask[:] = True
+        # # check regions
+        # for r in self.regions:
+        #     try:
+        #         mask = np.logical_and(mask, r(locations))
+        #     except:
+        #         logger.error("nan slicing")
+        # v[mask] = self.__getitem__(0).evaluate_value(locations[mask, :])
+        return self.__getitem__(0).evaluate_value(locations)
 
     def mean(self):
         return self.__getitem__(0).mean()

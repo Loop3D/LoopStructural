@@ -115,7 +115,6 @@ class GeologicalModel:
         reuse_supports=False,
         logfile=None,
         loglevel="info",
-        epsilon=0.04,
     ):
         """
         Parameters
@@ -186,7 +185,6 @@ class GeologicalModel:
             )
 
         self.bounding_box /= self.scale_factor
-        self.epsilon = epsilon * float(np.max(lengths)) / self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
         if self.reuse_supports:
@@ -219,7 +217,7 @@ class GeologicalModel:
         _str += "------------------------------------------ \n"
         _str += "Feature list: \n"
         for feature in self.features:
-            _str += "  {} \n".format(feature)
+            _str += "  {} \n".format(feature.name)
         return _str
 
     def _ipython_key_completions_(self):
@@ -1330,7 +1328,10 @@ class GeologicalModel:
             logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
             if f.type == FeatureType.FAULT:
                 continue
-            f.add_region(uc_feature.inverse())
+            if f == feature:
+                continue
+            else:
+                f.add_region(uc_feature)
         # now add the unconformity to the feature list
         self._add_feature(uc_feature)
         return uc_feature

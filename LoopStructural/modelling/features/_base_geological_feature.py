@@ -87,6 +87,47 @@ class BaseFeature:
         """
         raise NotImplementedError
 
+    def _calculate_mask(self, evaluation_points: np.ndarray) -> np.ndarray:
+        """Calculate the mask for which evaluation points need to be calculated
+
+        Parameters
+        ----------
+        evaluation_points : np.ndarray
+            location to be evaluated, Nx3 array
+
+        Returns
+        -------
+        np.ndarray
+            bool mask Nx1 ndarray
+        """
+        mask = np.zeros(evaluation_points.shape[0]).astype(bool)
+
+        mask[:] = True
+        # check regions
+        for r in self.regions:
+            # try:
+            mask = np.logical_and(mask, r(evaluation_points))
+        return mask
+
+    def _apply_faults(self, evaluation_points: np.ndarray) -> np.ndarray:
+        """Calculate the restored location of the points given any faults if faults are enabled
+
+        Parameters
+        ----------
+        evaluation_points : np.ndarray
+            location to be evaluated, Nx3 array
+
+        Returns
+        -------
+        np.ndarray
+            faulted value Nx1 ndarray
+        """
+        if self.faults_enabled:
+            # check faults
+            for f in self.faults:
+                evaluation_points = f.apply_to_points(evaluation_points)
+        return evaluation_points
+
     def evaluate_gradient(self, pos):
         """
         Evaluate the gradient of the feature at a given position.
