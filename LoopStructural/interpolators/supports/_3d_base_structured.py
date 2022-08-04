@@ -210,7 +210,7 @@ class BaseStructuredSupport:
         [type]
             [description]
         """
-
+        pos = np.array(pos)
         if len(pos.shape) == 1:
             pos = np.array([pos])
         if len(pos.shape) != 2:

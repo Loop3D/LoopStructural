@@ -423,7 +423,8 @@ class BaseModelPlotter:
         geological_feature : GeologicalFeature
             the geological feature to colour the scalar field by
         name : string, optional
-            Name of the object for lavavu, needs to be unique for the viewer object, by default uses feature name
+            Name of the object for lavavu, needs to be unique for the viewer object,
+            by default uses feature name
         cmap : str, optional
             mpl colourmap reference, by default 'rainbow'
         vmin : double, optional
@@ -433,7 +434,7 @@ class BaseModelPlotter:
         opacity : double, optional
             change the opacity of the block
         """
-        if name == None:
+        if name is None:
             if geological_feature is None:
                 name = "unnamed scalar field"
             else:
