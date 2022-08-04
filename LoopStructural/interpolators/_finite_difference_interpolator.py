@@ -187,6 +187,14 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 )
 
     def add_inequality_constraints(self, w=1.0):
+        """add inequality constraints to the interpolator
+        only works if using osqp solver.
+
+        Parameters
+        ----------
+        w : float, optional
+            weight of constraint in lsqr system, by default 1.0
+        """
         points = self.get_inequality_constraints()
         # check that we have added some points
         if points.shape[0] > 0:
@@ -402,14 +410,18 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 )
             self.up_to_date = False
 
-    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
+    def add_gradient_orthogonal_constraints(
+        self, points: np.ndarray, vector: np.ndarray, w: float = 1.0, B: float = 0
+    ):
         """
         constraints scalar field to be orthogonal to a given vector
 
         Parameters
         ----------
-        elements : np.array
-        normals : np.array
+        points : np.darray
+            location to add gradient orthogonal constraint
+        vector : np.darray
+            vector to be orthogonal to, should be the same shape as points
         w : double
         B : np.array
 
@@ -419,8 +431,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
-            # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
-
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
@@ -435,7 +445,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             # normalise vector and scale element gradient matrix by norm as well
             norm = np.linalg.norm(vector, axis=1)
-
             vector[norm > 0, :] /= norm[norm > 0, None]
 
             # normalise element vector to unit vector for dot product
