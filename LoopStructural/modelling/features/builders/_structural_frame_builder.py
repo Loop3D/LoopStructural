@@ -41,7 +41,7 @@ class StructuralFrameBuilder:
             self.name = kwargs["name"]
             kwargs.pop("name")
         self.data = [[], [], []]
-        self.fold = kwargs.get('fold',None)
+        self.fold = kwargs.get("fold", None)
         # list of interpolators
         # self.interpolators = []
         # Create the interpolation objects by copying the template
@@ -140,13 +140,13 @@ class StructuralFrameBuilder:
         """
         step = kwargs.get("step", 10)
         if "gxxgy" in kwargs:
-            logger.warning("gxxgy depreciated please use w1")
+            logger.warning("gxxgy deprecated please use w1")
             w1 = kwargs["gxxgy"]
         if "gxxgz" in kwargs:
-            logger.warning("gxxgz depreciated please use w2")
+            logger.warning("gxxgz deprecated please use w2")
             w2 = kwargs["gxxgz"]
         if "gyxgz" in kwargs:
-            logger.warning("gyxgz depreciated please use w3")
+            logger.warning("gyxgz deprecated please use w3")
             w3 = kwargs["gyxgz"]
 
         # set regularisation so the the main surface (foliation, fault) is smooth
@@ -189,7 +189,7 @@ class StructuralFrameBuilder:
 
             logger.debug("Creating analytical structural frame coordinate 2")
             c3 = CrossProductGeologicalFeature(
-                self.name + "_2", self._frame[0], self._frame[1]
+                self.name + "__2", self._frame[0], self._frame[1]
             )
             self._frame[2] = c3
 

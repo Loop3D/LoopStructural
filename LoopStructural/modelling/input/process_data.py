@@ -90,7 +90,7 @@ class ProcessInputData:
             self.fault_properties = fault_properties
         elif fault_locations is not None:
             self.fault_properties = pd.DataFrame(
-                fault_locations["fault_name"].unique(), columns=["name"]
+                self.fault_locations["feature_name"].unique(), columns=["name"]
             ).set_index("name")
 
         if fault_edges is not None and fault_edge_properties is not None:
@@ -177,7 +177,7 @@ class ProcessInputData:
                             "colour": self.colours[g],
                         }
                         if i == 0:
-                            stratigraphic_column[name][g]["min"] = -np.inf
+                            stratigraphic_column[name][g]["min"] = 0
                         if i == len(sg) - 1:
                             stratigraphic_column[name][g]["max"] = np.inf
 
@@ -619,10 +619,15 @@ class ProcessInputData:
             fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
                 fault_orientations["strike"], fault_orientations["dip"]
             )
-        if "feature_name" not in fault_orientations.columns and "fault_name" in fault_orientations.columns:
+        if (
+            "feature_name" not in fault_orientations.columns
+            and "fault_name" in fault_orientations.columns
+        ):
             fault_orientations["feature_name"] = fault_orientations["fault_name"]
         if "feature_name" not in fault_orientations.columns:
-            raise ValueError("Fault orientation data must contain feature_name or fault_name")
+            raise ValueError(
+                "Fault orientation data must contain feature_name or fault_name"
+            )
         self._fault_orientations = fault_orientations[
             ["X", "Y", "Z", "gx", "gy", "gz", "coord", "feature_name"]
         ]
@@ -645,7 +650,15 @@ class ProcessInputData:
         fault_locations = fault_locations.copy()
         fault_locations["coord"] = 0
         fault_locations["val"] = 0
-        fault_locations["feature_name"] = fault_locations["fault_name"]
+        if (
+            "feature_name" not in fault_locations.columns
+            and "fault_name" in fault_locations.columns
+        ):
+            fault_locations["feature_name"] = fault_locations["fault_name"]
+        if "feature_name" not in fault_locations.columns:
+            raise ValueError(
+                "Fault location data must contain feature_name or fault_name"
+            )
         self._fault_locations = fault_locations[
             ["X", "Y", "Z", "val", "feature_name", "coord"]
         ]

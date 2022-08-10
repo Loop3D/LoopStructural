@@ -13,7 +13,9 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
     ):
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
         if self.elements.shape[1] != 10:
-            raise ValueError("P2 tetrahedron must have 8 nodes")
+            raise ValueError(
+                f"P2 tetrahedron must have 8 nodes, has {self.elements.shape[1]}"
+            )
         self.hessian = np.array(
             [
                 [
@@ -309,8 +311,10 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         -------
 
         """
-        if len(pos) != 2 or pos.shape[1] != 3:
-            raise ValueError("pos must be a numpy array of shape (n,3)")
+        if len(pos.shape) != 2 or pos.shape[1] != 3:
+            raise ValueError(
+                f"pos must be a numpy array of shape (n,3), shape is {pos.shape}"
+            )
         if property_array.shape[0] != self.n_nodes:
             raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape[0])
@@ -324,8 +328,10 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
     def evaluate_gradient(
         self, pos: np.ndarray, property_array: np.ndarray
     ) -> np.ndarray:
-        if len(pos) != 2 or pos.shape[1] != 3:
-            raise ValueError("pos must be a numpy array of shape (n,3)")
+        if len(pos.shape) != 2 or pos.shape[1] != 3:
+            raise ValueError(
+                f"pos must be a numpy array of shape (n,3), shape is {pos.shape}"
+            )
         if property_array.shape[0] != self.n_nodes:
             raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape)

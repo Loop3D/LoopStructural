@@ -3,6 +3,7 @@ import pandas as pd
 
 # import logging
 from LoopStructural.utils import getLogger
+from LoopStructural.modelling.features import FeatureType
 
 logger = getLogger(__name__)
 
@@ -34,7 +35,7 @@ class IntrusionFeature:
         self.model = model
         self.intrusion_frame = frame
         self.builder = builder
-        self.type = "intrusion"
+        self.type = FeatureType.INTRUSION
         # simulated thresholds:
         self._lateral_simulated_thresholds = None
         self._growth_simulated_thresholds = None
@@ -42,7 +43,7 @@ class IntrusionFeature:
     @property
     def lateral_simulated_thresholds(self):
         self.builder.up_to_date()
-        
+
         return self._lateral_simulated_thresholds
 
     @lateral_simulated_thresholds.setter
@@ -61,12 +62,11 @@ class IntrusionFeature:
         # TODO check type is correct and will work?
         self._growth_simulated_thresholds = growth_simulated_threshold
 
-   
     @property
     def lateral_sgs_input_data(self):
         self.builder.up_to_date()
         return self.builder.lateral_sgs_input_data
-    
+
     @property
     def vertical_sgs_input_data(self):
         self.builder.up_to_date()

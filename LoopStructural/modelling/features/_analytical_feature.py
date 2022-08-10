@@ -33,14 +33,20 @@ class AnalyticalGeologicalFeature(BaseFeature):
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.vector = np.array(vector, dtype=float)
         self.origin = np.array(origin, dtype=float)
-        self.type = FeatureType.ANALYTICALFEATURE
+        self.type = FeatureType.ANALYTICAL
 
     def evaluate_value(self, xyz):
+        xyz = np.array(xyz)
+        if len(xyz.shape) == 1:
+            xyz = xyz[None, :]
+        if len(xyz.shape) != 2:
+            raise ValueError("xyz must be a 1D or 2D array")
         xyz2 = np.zeros(xyz.shape)
-
+        xyz2[:] = xyz[:]
         for f in self.faults:
             xyz2[:] = f.apply_to_points(xyz)
-        xyz2[:] = self.model.rescale(xyz2, inplace=False)
+        if self.model is not None:
+            xyz2[:] = self.model.rescale(xyz2, inplace=False)
         xyz2[:] = xyz2 - self.origin
         normal = self.vector / np.linalg.norm(self.vector)
         distance = (
@@ -49,6 +55,11 @@ class AnalyticalGeologicalFeature(BaseFeature):
         return distance / np.linalg.norm(self.vector)
 
     def evaluate_gradient(self, xyz):
+        xyz = np.array(xyz)
+        if len(xyz.shape) == 1:
+            xyz = xyz[None, :]
+        if len(xyz.shape) != 2:
+            raise ValueError("xyz must be a 1D or 2D array")
         v = np.zeros(xyz.shape)
         v[:, :] = self.vector[None, :]
         return v

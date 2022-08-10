@@ -7,9 +7,21 @@ import numpy as np
 import pandas as pd
 import LoopStructural
 from LoopStructural.datasets import normal_vector_headers
-from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+
+try:
+    from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+
+    dfi = True
+except ImportError:
+    dfi = False
 from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
-from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+
+try:
+    from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+
+    pli = True
+except ImportError:
+    pli = False
 
 # if LoopStructural.experimental:
 from LoopStructural.interpolators import P2Interpolator
@@ -39,6 +51,7 @@ from LoopStructural.modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
+    FeatureType,
 )
 from LoopStructural.modelling.features.fold import (
     FoldRotationAngle,
@@ -102,6 +115,7 @@ class GeologicalModel:
         reuse_supports=False,
         logfile=None,
         loglevel="info",
+        epsilon=0.04,
     ):
         """
         Parameters
@@ -112,7 +126,8 @@ class GeologicalModel:
             specifying the maximum extent of the model
         rescale : bool
             whether to rescale the model to between 0/1
-
+        epsion : float
+            a fudge factor for isosurfacing, used to make sure surfaces appear
         Examples
         --------
         Demo data
@@ -171,6 +186,7 @@ class GeologicalModel:
             )
 
         self.bounding_box /= self.scale_factor
+        self.epsilon = epsilon * float(np.max(lengths)) / self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
         if self.reuse_supports:
@@ -181,15 +197,7 @@ class GeologicalModel:
             )
         logger.info("Reusing interpolation supports: {}".format(self.reuse_supports))
         self.stratigraphic_column = None
-        self.parameters = {
-            "features": [],
-            "model": {
-                "bounding_box": self.origin.tolist() + self.maximum.tolist(),
-                "rescale": rescale,
-                "nsteps": nsteps,
-                "reuse_supports": reuse_supports,
-            },
-        }
+
         self.tol = 1e-10 * np.max(self.bounding_box[1, :] - self.bounding_box[0, :])
         self._dtm = None
 
@@ -341,7 +349,9 @@ class GeologicalModel:
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
-                model.add_unconformity(f, 0)
+                # check feature was built, and is an interpolated feature.
+                if f is not None and f.type == FeatureType.INTERPOLATED:
+                    model.add_unconformity(f, 0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
 
@@ -412,7 +422,7 @@ class GeologicalModel:
     def series(self):
         series = []
         for f in self.features:
-            if f.type == "series":
+            if f.type == FeatureType.INTERPOLATED:
                 series.append(f)
         return series
 
@@ -427,7 +437,8 @@ class GeologicalModel:
         return self.feature_name_index.keys()
 
     def fault_names(self):
-        pass
+
+        return [f.name for f in self.faults]
 
     def check_inialisation(self):
         if self.data is None:
@@ -478,7 +489,8 @@ class GeologicalModel:
                 f"Adding {feature.name} to model at location {len(self.features)}"
             )
         self._add_domain_fault_above(feature)
-        self._add_unconformity_above(feature)
+        if feature.type == FeatureType.INTERPOLATED:
+            self._add_unconformity_above(feature)
         feature.model = self
 
     def data_for_feature(self, feature_name):
@@ -528,7 +540,7 @@ class GeologicalModel:
         self._data["Y"] /= self.scale_factor
         self._data["Z"] /= self.scale_factor
         if "type" in self._data:
-            logger.warning("'type' is depreciated replace with 'feature_name' \n")
+            logger.warning("'type' is deprecated replace with 'feature_name' \n")
             self._data.rename(columns={"type": "feature_name"}, inplace=True)
         if "feature_name" not in self._data:
             logger.error("Data does not contain 'feature_name' column")
@@ -558,7 +570,7 @@ class GeologicalModel:
 
     def set_model_data(self, data):
         logger.warning(
-            "Depreciated method. Model data can now be set using the data attribute"
+            "deprecated method. Model data can now be set using the data attribute"
         )
         self.data = data
 
@@ -665,7 +677,7 @@ class GeologicalModel:
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         box_vol = (bb[1, 0] - bb[0, 0]) * (bb[1, 1] - bb[0, 1]) * (bb[1, 2] - bb[0, 2])
-        if interpolatortype == "PLI":
+        if interpolatortype == "PLI" and pli:
             if element_volume is None:
                 # nelements /= 5
                 element_volume = box_vol / nelements
@@ -767,7 +779,7 @@ class GeologicalModel:
             )
             return FDI(grid)
 
-        if interpolatortype == "DFI":  # "fold" in kwargs:
+        if interpolatortype == "DFI" and dfi == True:  # "fold" in kwargs:
             if element_volume is None:
                 nelements /= 5
                 element_volume = box_vol / nelements
@@ -816,13 +828,11 @@ class GeologicalModel:
             the created geological feature
         """
         if self.check_inialisation() == False:
-            return False
+            return
         # if tol is not specified use the model default
         if tol is None:
             tol = self.tol
-        self.parameters["features"].append(
-            {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
-        )
+
         interpolator = self.get_interpolator(**kwargs)
         series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
@@ -840,9 +850,7 @@ class GeologicalModel:
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
         series_builder.build_arguments["tol"] = tol
-        series_feature.type = "series"
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
+        series_feature.type = FeatureType.INTERPOLATED
         self._add_feature(series_feature)
         return series_feature
 
@@ -861,9 +869,7 @@ class GeologicalModel:
         """
         if self.check_inialisation() == False:
             return False
-        self.parameters["features"].append(
-            {"feature_type": "foliation", "feature_name": series_surface_data, **kwargs}
-        )
+
         interpolator = self.get_interpolator(**kwargs)
         series_builder = GeologicalFeatureBuilder(
             interpolator, name=series_surface_data, **kwargs
@@ -881,8 +887,6 @@ class GeologicalModel:
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
         series_feature.type = "dtm"
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
         self._add_feature(series_feature)
         return series_feature
 
@@ -904,9 +908,7 @@ class GeologicalModel:
             return False
         if tol is None:
             tol = self.tol
-        self.parameters["features"].append(
-            {"feature_type": "fold_frame", "feature_name": foldframe_data, **kwargs}
-        )
+
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         #
@@ -922,9 +924,8 @@ class GeologicalModel:
         kwargs["tol"] = tol
         fold_frame_builder.setup(**kwargs)
         fold_frame = fold_frame_builder.frame
-        # for i in range(3):
-        #     self._add_unconformity_above(fold_frame[i])
-        fold_frame.type = "structuralframe"
+
+        fold_frame.type = FeatureType.STRUCTURALFRAME
         fold_frame.builder = fold_frame_builder
         self._add_feature(fold_frame)
 
@@ -955,14 +956,7 @@ class GeologicalModel:
             return False
         if tol is None:
             tol = self.tol
-        self.parameters["features"].append(
-            {
-                "feature_type": "fold_foliation",
-                "feature_name": foliation_data,
-                "fold_frame": fold_frame,
-                **kwargs,
-            }
-        )
+
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
@@ -989,11 +983,9 @@ class GeologicalModel:
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
-        series_feature.type = "series"
+        series_feature.type = FeatureType.INTERPOLATED
         series_feature.fold = fold
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
-        # result['support'] = series_feature.get_interpolator().support
+
         self._add_feature(series_feature)
         return series_feature
 
@@ -1021,14 +1013,7 @@ class GeologicalModel:
             return False
         if tol is None:
             tol = self.tol
-        self.parameters["features"].append(
-            {
-                "feature_type": "folded_fold_frame",
-                "feature_name": fold_frame_data,
-                "fold_frame": fold_frame,
-                **kwargs,
-            }
-        )
+
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
@@ -1064,9 +1049,6 @@ class GeologicalModel:
         folded_fold_frame.builder = fold_frame_builder
 
         folded_fold_frame.type = "structuralframe"
-        # see if any unconformities are above this feature if so add region
-        # for i in range(3):
-        #     self._add_unconformity_above(fold_frame[i])
 
         self._add_feature(folded_fold_frame)
 
@@ -1205,7 +1187,7 @@ class GeologicalModel:
         for f in reversed(features):
             if isinstance(f, str):
                 f = self.__getitem__(f)
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 feature_builder.add_fault(f)
             # if f.type == 'unconformity':
             #     break
@@ -1250,7 +1232,7 @@ class GeologicalModel:
             if f.name == domain_fault.name:
                 continue
             f.add_region(lambda pos: domain_fault.evaluate_value(pos) > 0)
-            if f.type == "unconformity":
+            if f.type == FeatureType.UNCONFORMITY:
                 break
 
     def _add_unconformity_above(self, feature):
@@ -1270,32 +1252,11 @@ class GeologicalModel:
         -------
 
         """
+
         for f in reversed(self.features):
-            if f.type == "unconformity":
-                feature.add_region(lambda pos: f.evaluate(pos))
+            if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
+                feature.add_region(f)
                 break
-
-    def _add_unconformity_below(self, feature):
-        """
-        Adds a region to the features that represents the
-        unconformity so it is not evaluated below the unconformity
-
-        Parameters
-        ----------
-        feature
-
-        Returns
-        -------
-
-        """
-        for f in self.features:
-            if f.type == "series" and feature.feature.name != f.name:
-                f.add_region(lambda pos: ~feature.evaluate(pos))
-        # for f in reversed(self.features):
-        #     if f.type == 'unconformity':
-        #         feature.add_region(lambda pos: f.evaluate(pos))
-        #         break
-        # feature.add_region(lambda pos: ~uc.evaluate(pos))
 
     def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
         """
@@ -1309,7 +1270,6 @@ class GeologicalModel:
         """
         if not self.check_initialisation():
             return False
-        # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
         unconformity_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=unconformity_surface_data
@@ -1336,7 +1296,9 @@ class GeologicalModel:
         # evaluated where the unconformity is positive
         return self.add_unconformity(uc_feature_base, 0)
 
-    def add_unconformity(self, feature, value):
+    def add_unconformity(
+        self, feature: GeologicalFeature, value: float
+    ) -> UnconformityFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1353,22 +1315,29 @@ class GeologicalModel:
             unconformity feature
 
         """
-        self.parameters["features"].append(
-            {"feature_type": "unconformity", "feature": feature, "value": value}
-        )
+        logger.debug(f"Adding {feature.name} as unconformity at {value}")
+        if feature is None:
+            logger.warning(f"Cannot add unconformtiy, base feature is None")
+            return
+        # look backwards through features and add the unconformity as a region until
+        # we get to an unconformity
         uc_feature = UnconformityFeature(feature, value)
 
-        # for f in self.features:
-        #     f.add_region(lambda pos: uc_feature.evaluate(pos))
-
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(uc_feature)
-        # self._add_unconformity_below(feature)#, uc_feature)
+        for f in reversed(self.features):
+            if f.type == FeatureType.UNCONFORMITY:
+                logger.debug(f"Reached unconformity {f.name}")
+                break
+            logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
+            if f.type == FeatureType.FAULT:
+                continue
+            f.add_region(uc_feature.inverse())
+        # now add the unconformity to the feature list
         self._add_feature(uc_feature)
-
         return uc_feature
 
-    def add_onlap_unconformity(self, feature, value):
+    def add_onlap_unconformity(
+        self, feature: GeologicalFeature, value: float
+    ) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1385,18 +1354,14 @@ class GeologicalModel:
             the created unconformity
 
         """
-        self.parameters["features"].append(
-            {"feature_type": "onlap", "feature": feature, "value": value}
-        )
 
-        uc_feature = UnconformityFeature(feature, value)
-
-        # for f in self.features:
-        #     f.add_region(lambda pos: uc_feature.evaluate(pos))
-
-        # see if any unconformities are above this feature if so add region
-        # self._add_unconformity_above(uc_feature)
-        self._add_unconformity_below(uc_feature)  # , uc_feature)
+        uc_feature = UnconformityFeature(feature, value, True)
+        feature.add_region(uc_feature.inverse())
+        for f in reversed(self.features):
+            if f.type == FeatureType.UNCONFORMITY:
+                break
+            if f != feature:
+                f.add_region(uc_feature)
         self._add_feature(uc_feature)
 
         return uc_feature
@@ -1414,7 +1379,6 @@ class GeologicalModel:
             the created domain fault
 
         """
-        # self.parameters['features'].append({'feature_type':'unconformity','feature_name':unconformity_surface_data,**kwargs})
         interpolator = self.get_interpolator(**kwargs)
         domain_fault_feature_builder = GeologicalFeatureBuilder(
             interpolator, name=fault_surface_data
@@ -1498,14 +1462,7 @@ class GeologicalModel:
 
         if tol is None:
             tol = self.tol
-        self.parameters["features"].append(
-            {
-                "feature_type": "fault",
-                "feature_name": fault_surface_data,
-                "displacement": displacement,
-                **kwargs,
-            }
-        )
+
         if displacement == 0:
             logger.warning(f"{fault_surface_data} displacement is 0")
 
@@ -1638,8 +1595,8 @@ class GeologicalModel:
         fault.faultfunction = faultfunction
 
         for f in reversed(self.features):
-            if f.type == "unconformity":
-                fault.add_region(lambda pos: f.evaluate_value(pos) <= 0)
+            if f.type == FeatureType.UNCONFORMITY:
+                fault.add_region(f)
                 break
         if displacement == 0:
             fault.type = "fault_inactive"
@@ -1817,7 +1774,7 @@ class GeologicalModel:
             points = self.scale(points, inplace=False)
         vals = np.zeros(points.shape[0])
         for f in self.features:
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
         return (
@@ -1924,15 +1881,18 @@ class GeologicalModel:
         total_dof = 0
         nfeatures = 0
         for f in self.features:
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 nfeatures += 3
                 total_dof += f[0].interpolator.nx * 3
+                continue
             if isinstance(f, StructuralFrame):
                 nfeatures += 3
                 total_dof += f[0].interpolator.nx * 3
-            if f.type == "series":
+                continue
+            if f.type == FeatureType.INTERPOLATED:
                 nfeatures += 1
                 total_dof += f.interpolator.nx
+                continue
         if verbose == True:
             print(
                 f"Updating geological model. There are: \n {nfeatures} geological features that need to be interpolated\n"

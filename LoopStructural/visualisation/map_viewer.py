@@ -6,6 +6,7 @@ import numpy as np
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
+from LoopStructural.modelling.features import FeatureType
 
 
 class MapView:
@@ -372,7 +373,7 @@ class MapView:
 
     def add_faults(self, **kwargs):
         for f in self.model.features:
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 # create a function to return true if displacement > 0
                 def mask(x):
                     val = f.displacementfeature.evaluate_value(x)

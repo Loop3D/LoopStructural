@@ -12,7 +12,7 @@ class BaseFeature:
     Base class for geological features.
     """
 
-    def __init__(self, name, model, faults, regions, builder):
+    def __init__(self, name, model=None, faults=[], regions=[], builder=None):
         self.name = name
         self.type = FeatureType.BASE
         self.regions = regions
@@ -59,7 +59,7 @@ class BaseFeature:
 
         """
         logger.warning(f"Toggling faults for feature {self.name}")
-        self.faults_enabled = ~self.faults_enabled
+        self.faults_enabled = not self.faults_enabled
 
     def add_region(self, region):
         """
@@ -104,4 +104,11 @@ class BaseFeature:
         return np.nanmax(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
 
     def __tojson__(self):
-        return {"name": self.name, "type": self.type}
+        regions = [r.name for r in self.regions]
+        faults = [f.name for f in self.faults]
+        return {
+            "name": self.name,
+            "type": self.type,
+            "regions": regions,
+            "faults": faults,
+        }

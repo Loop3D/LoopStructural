@@ -14,9 +14,12 @@ class FeatureType(IntEnum):
     INTERPOLATED = 1
     STRUCTURALFRAME = 2
     REGION = 3
-    FOLDEDFEATURE = 4
-    ANALYTICALFEATURE = 5
-    LAMBDAFEATURE = 6
+    FOLDED = 4
+    ANALYTICAL = 5
+    LAMBDA = 6
+    UNCONFORMITY = 7
+    INTRUSION = 8
+    FAULT = 9
 
 
 from ._base_geological_feature import BaseFeature

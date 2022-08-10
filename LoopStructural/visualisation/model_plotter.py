@@ -9,11 +9,16 @@ import numpy as np
 try:
     from skimage.measure import marching_cubes
 except ImportError:
-    logger.warning("Using depreciated version of scikit-image")
+    logger.warning("Using deprecated version of scikit-image")
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
-from LoopStructural.modelling.features import GeologicalFeature
+from LoopStructural.modelling.features import (
+    FeatureType,
+    GeologicalFeature,
+    BaseFeature,
+    StructuralFrame,
+)
 from LoopStructural.utils.helper import create_surface, get_vectors, create_box
 
 
@@ -143,7 +148,13 @@ class BaseModelPlotter:
         pass
 
     def add_section(
-        self, geological_feature=None, axis="x", value=None, paint_with=None, **kwargs
+        self,
+        geological_feature=None,
+        axis="x",
+        value=None,
+        paint_with=None,
+        name=None,
+        **kwargs,
     ):
         """
 
@@ -186,14 +197,20 @@ class BaseModelPlotter:
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 2])
             zz[:] = value
-        name = "nothing"
         if geological_feature == "model" and self.model is not None:
             name = kwargs.get("name", "model_section")
             if paint_with == None:
                 paint_with = lambda xyz: self.model.evaluate_model(xyz, scale=False)
-        elif geological_feature is not None:
+        elif geological_feature is not None and isinstance(
+            geological_feature, BaseFeature
+        ):
             name = kwargs.get("name", geological_feature.name)
             paint_with = geological_feature
+        elif callable(geological_feature):
+            if name is None:
+                name = "unnamed_callable"
+            paint_with = geological_feature
+
         name = "{}_section_at_{}_of_{}".format(axis, value, name)
         colour = kwargs.get("colour", "red")
 
@@ -622,7 +639,7 @@ class BaseModelPlotter:
                         n_units += 1
         n_faults = 0
         for f in self.model.features:
-            if f.type == "fault":
+            if f.type == FeatureType.FAULT:
                 n_faults += 1
 
         if self.model.stratigraphic_column and cmap is None:
@@ -676,7 +693,7 @@ class BaseModelPlotter:
 
             if faults:
                 for f in self.model.features:
-                    if f.type == "fault":
+                    if f.type == FeatureType.FAULT:
 
                         def mask(x):
                             val = f.displacementfeature.evaluate_value(x)
@@ -795,79 +812,87 @@ class BaseModelPlotter:
             add_tang = kwargs["tang"]
         if "interface" in kwargs:
             add_interface = kwargs["interface"]
-        grad = feature.builder.get_gradient_constraints()
-        norm = feature.builder.get_norm_constraints()
-        value = feature.builder.get_value_constraints()
-        tang = feature.builder.get_tangent_constraints()
-        interface = feature.builder.get_interface_constraints()
-        symbol_type = self.default_vector_symbol
-        if disks:
-            symbol_type = "disk"
-        if vectors:
-            symbol_type = "arrow"
-        if vectors and disks:
-            logger.warning("Cannot use both disks and arrows, using disks")
-            symbol_type = "disk"
-        if grad.shape[0] > 0 and add_grad:
-            self.add_vector_data(
-                self.model.rescale(grad[:, :3], inplace=False),
-                grad[:, 3:6],
-                name + "_grad_cp",
-                symbol_type=symbol_type,
-                **kwargs,
-            )
+        if isinstance(feature, StructuralFrame):
+            features = feature.features
+        else:
+            features = [feature]
+        for feature in features:
 
-        if norm.shape[0] > 0 and add_grad:
-            self.add_vector_data(
-                self.model.rescale(norm[:, :3], inplace=False),
-                norm[:, 3:6],
-                name + "_norm_cp",
-                symbol_type=symbol_type,
-                **kwargs,
-            )
-        if value.shape[0] > 0 and add_value:
-            kwargs["range"] = [feature.min(), feature.max()]
-            self.add_value_data(
-                self.model.rescale(value[:, :3], inplace=False),
-                value[:, 3],
-                name + "_value_cp",
-                **kwargs,
-            )
-        if tang.shape[0] > 0 and add_tang:
-            self.add_vector_data(
-                self.model.rescale(tang[:, :3], inplace=False),
-                tang[:, 3:6],
-                name + "_tang_cp",
-                **kwargs,
-            )
-        if interface.shape[0] > 0 and add_interface:
-            self.add_points(
-                self.model.rescale(interface[:, :3], inplace=False),
-                name + "_interface_cp",
-            )
+            grad = feature.builder.get_gradient_constraints()
+            norm = feature.builder.get_norm_constraints()
+            value = feature.builder.get_value_constraints()
+            tang = feature.builder.get_tangent_constraints()
+            interface = feature.builder.get_interface_constraints()
+            symbol_type = self.default_vector_symbol
+            if disks:
+                symbol_type = "disk"
+            if vectors:
+                symbol_type = "arrow"
+            if vectors and disks:
+                logger.warning("Cannot use both disks and arrows, using disks")
+                symbol_type = "disk"
+            if grad.shape[0] > 0 and add_grad:
+                self.add_vector_data(
+                    self.model.rescale(grad[:, :3], inplace=False),
+                    grad[:, 3:6],
+                    name + "_grad_cp",
+                    symbol_type=symbol_type,
+                    **kwargs,
+                )
 
-    def add_intersection_lineation(self, feature, **kwargs):
-        name = feature.name
-        if "name" in kwargs:
-            name = kwargs["name"]
-            del kwargs["name"]
-        intersection = feature.builder.fold.foldframe.calculate_intersection_lineation(
-            feature.builder
-        )
-        gpoints = feature.builder.interpolator.get_gradient_constraints()[:, :6]
-        npoints = feature.builder.interpolator.get_norm_constraints()[:, :6]
-        points = []
-        if gpoints.shape[0] > 0:
-            points.append(gpoints)
-        if npoints.shape[0] > 0:
-            points.append(npoints)
-        points = np.vstack(points)
-        if intersection.shape[0] > 0:
-            self.add_vector_data(
-                self.model.rescale(points[:, :3], inplace=False),
-                intersection,
-                name + "_intersection",
+            if norm.shape[0] > 0 and add_grad:
+                self.add_vector_data(
+                    self.model.rescale(norm[:, :3], inplace=False),
+                    norm[:, 3:6],
+                    name + "_norm_cp",
+                    symbol_type=symbol_type,
+                    **kwargs,
+                )
+            if value.shape[0] > 0 and add_value:
+                kwargs["range"] = [feature.min(), feature.max()]
+                self.add_value_data(
+                    self.model.rescale(value[:, :3], inplace=False),
+                    value[:, 3],
+                    name + "_value_cp",
+                    **kwargs,
+                )
+            if tang.shape[0] > 0 and add_tang:
+                self.add_vector_data(
+                    self.model.rescale(tang[:, :3], inplace=False),
+                    tang[:, 3:6],
+                    name + "_tang_cp",
+                    **kwargs,
+                )
+            if interface.shape[0] > 0 and add_interface:
+                self.add_points(
+                    self.model.rescale(interface[:, :3], inplace=False),
+                    name + "_interface_cp",
+                )
+
+        def add_intersection_lineation(self, feature, **kwargs):
+            name = feature.name
+            if "name" in kwargs:
+                name = kwargs["name"]
+                del kwargs["name"]
+            intersection = (
+                feature.builder.fold.foldframe.calculate_intersection_lineation(
+                    feature.builder
+                )
             )
+            gpoints = feature.builder.interpolator.get_gradient_constraints()[:, :6]
+            npoints = feature.builder.interpolator.get_norm_constraints()[:, :6]
+            points = []
+            if gpoints.shape[0] > 0:
+                points.append(gpoints)
+            if npoints.shape[0] > 0:
+                points.append(npoints)
+            points = np.vstack(points)
+            if intersection.shape[0] > 0:
+                self.add_vector_data(
+                    self.model.rescale(points[:, :3], inplace=False),
+                    intersection,
+                    name + "_intersection",
+                )
 
     def add_points(self, points, name, **kwargs):
         """

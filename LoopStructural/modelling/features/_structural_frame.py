@@ -5,6 +5,7 @@ import logging
 from LoopStructural.modelling.features import BaseFeature
 import numpy as np
 from LoopStructural.utils import getLogger
+from LoopStructural.modelling.features import FeatureType
 
 logger = getLogger(__name__)
 
@@ -23,6 +24,7 @@ class StructuralFrame(BaseFeature):
         BaseFeature.__init__(self, name, None, [], [], None)
         self.features = features
         self.fold = fold
+        self.type = FeatureType.STRUCTURALFRAME
 
     def __getitem__(self, key):
         """
@@ -79,8 +81,9 @@ class StructuralFrame(BaseFeature):
             f.model = model
 
     def add_region(self, region):
+        self.regions.append(region)
         for i in range(3):
-            self.features[i].add_region(region)
+            self.features[i].regions = self.regions
 
     def get_feature(self, i):
         """

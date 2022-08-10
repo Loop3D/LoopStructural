@@ -1,5 +1,63 @@
 # Changelog
 
+### [1.4.10](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.9...v1.4.10) (2022-07-20)
+
+
+### Bug Fixes
+
+* :bug: unconformities weren't working. ([304335d](https://www.github.com/Loop3D/LoopStructural/commit/304335d0421297ca026fa26a2e6fed2e4c16332b))
+* adding loopjson encoder ([ec1b84e](https://www.github.com/Loop3D/LoopStructural/commit/ec1b84e7881977d7ec1fec7ecf00b45770f5d832))
+* adding more informative errors to p2 tetra ([c63cae7](https://www.github.com/Loop3D/LoopStructural/commit/c63cae7e9c03be10b566d4b5b85987956d164a78))
+* adding python alternatives for cg and fold cg ([5ffef3b](https://www.github.com/Loop3D/LoopStructural/commit/5ffef3b482e1fedaaf2ec6a6c8c44a392d6def6f))
+* catch all exceptions, raise import ([a071416](https://www.github.com/Loop3D/LoopStructural/commit/a071416cb602db135c9fa9d67d99ceb79ddb0407))
+* catch dfi import error ([f9c8aa0](https://www.github.com/Loop3D/LoopStructural/commit/f9c8aa0b04996dd5ad887871b950b2851c4310bb))
+* catch modulenotfound raise importerror ([836ee84](https://www.github.com/Loop3D/LoopStructural/commit/836ee843f418956fc9bd578868030eba537960e2))
+* don't add unconformity if base feature is None ([be4d8ac](https://www.github.com/Loop3D/LoopStructural/commit/be4d8ac220d1fe9a58738652ccf823631cab607e))
+* faults enabled bug, ~ does not flip boolean, changing to not ([0c68788](https://www.github.com/Loop3D/LoopStructural/commit/0c6878837e8eeb24b2ca9009cced0a8ecb6750ac))
+* feature type enums renaming ([616b554](https://www.github.com/Loop3D/LoopStructural/commit/616b55440944055d284484381ace2d068e5259c1))
+* featuretype enum ([c256746](https://www.github.com/Loop3D/LoopStructural/commit/c2567465855b9a8ae6a97c1ded5972ec18a89b30))
+* fold cg ([a35f41a](https://www.github.com/Loop3D/LoopStructural/commit/a35f41a0a1f2be50e9d15ae8d4e2d92877526eff))
+* lavavu.camera bug when keys are missing ([b554c3c](https://www.github.com/Loop3D/LoopStructural/commit/b554c3c143b27e592672f87d1982ae455779aade))
+* missing enum ([bc34bb4](https://www.github.com/Loop3D/LoopStructural/commit/bc34bb4e8cb07a006529c26a7982b3e2b3ea0241))
+* model plotter uses BaseFeature to check type ([a2bd0f0](https://www.github.com/Loop3D/LoopStructural/commit/a2bd0f01a7c297ecf01fc0c612dc0d123ac16702))
+* pli import is optional ([6347742](https://www.github.com/Loop3D/LoopStructural/commit/6347742847460821a11ce840af51972f0b5df43b))
+* raise error if cython can't be imported ([f5b82eb](https://www.github.com/Loop3D/LoopStructural/commit/f5b82ebf96e7b93052693f99af783ea18511aa48))
+* recursive error fix ([f3180f3](https://www.github.com/Loop3D/LoopStructural/commit/f3180f3beaae36a424be1de7f2512800fbe39022))
+* renaming enums to be consistent with calls ([57ed443](https://www.github.com/Loop3D/LoopStructural/commit/57ed44349c5b8f04e967d049f55aa35f1440e324))
+* unconformities causing nan slicing due to recurvsive error ([728fc5f](https://www.github.com/Loop3D/LoopStructural/commit/728fc5f053345ae6901631bf60bd1d2457574d66))
+
+
+### Documentation
+
+* :memo: added example for plotting unconformities ([bad53a0](https://www.github.com/Loop3D/LoopStructural/commit/bad53a01e21e39dcdbdc3a5c218e9c9957050f9b))
+* fixing new documentation so that data can be loaded ([7ac5a0d](https://www.github.com/Loop3D/LoopStructural/commit/7ac5a0d1752c6aad2e8f5112ec4d6efeaa93dd20))
+* missing variable ([7df88a2](https://www.github.com/Loop3D/LoopStructural/commit/7df88a2111c259de367b734a095452a747b8a019))
+* renaming cython to _cython so its not included in docs ([27e88a1](https://www.github.com/Loop3D/LoopStructural/commit/27e88a1d4f3c8f3461481972fc1b13fda7513f0d))
+* trying to ignore cython ([6582d0c](https://www.github.com/Loop3D/LoopStructural/commit/6582d0c8381588e8f59c623641c7d8ce451891fc))
+* updating documentation ([493beea](https://www.github.com/Loop3D/LoopStructural/commit/493beeac3ade0b35c49895d91c64aa8926d9a3b7))
+* using docker to build docs ([f499aae](https://www.github.com/Loop3D/LoopStructural/commit/f499aae76107e09e15d2b9ce56e75fa9b2e0560b))
+
+### [1.4.9](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.8...v1.4.9) (2022-05-05)
+
+
+### Documentation
+
+* fixing docs ci ([2e0d472](https://www.github.com/Loop3D/LoopStructural/commit/2e0d47292ccc20c071256cbb51ac8736c6851f9e))
+
+### [1.4.8](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.7...v1.4.8) (2022-05-05)
+
+
+### Bug Fixes
+
+* :bug: faults where feature name given not fault_name were crashing ([dae9e92](https://www.github.com/Loop3D/LoopStructural/commit/dae9e92f4b2f94ebcaefe85dfc419bfdef69b43a))
+
+
+### Documentation
+
+* adding geopandas to doc test ([b6613a9](https://www.github.com/Loop3D/LoopStructural/commit/b6613a91fd158405ac01d8c9675618bcb6e6af12))
+* fixing fault network example ([6f4f2fc](https://www.github.com/Loop3D/LoopStructural/commit/6f4f2fcba8e1e708c17acfa569d6592f0a33c9d6))
+* refactoring documentation + adding new example ([d15ba6c](https://www.github.com/Loop3D/LoopStructural/commit/d15ba6c391af889e0a0e57f4eced126fe6521461))
+
 ### [1.4.7](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.6...v1.4.7) (2022-05-04)
 
 

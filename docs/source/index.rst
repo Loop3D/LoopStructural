@@ -28,7 +28,7 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
 .. toctree::
    :hidden:
 
-   getting_started
+   getting_started/index
    auto_examples/index
    user_guide/index
 

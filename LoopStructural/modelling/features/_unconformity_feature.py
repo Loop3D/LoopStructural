@@ -1,10 +1,13 @@
-from LoopStructural.modelling.features import BaseFeature
+from LoopStructural.modelling.features import GeologicalFeature
+from LoopStructural.modelling.features import FeatureType
+
+import numpy as np
 
 
-class UnconformityFeature(BaseFeature):
+class UnconformityFeature(GeologicalFeature):
     """ """
 
-    def __init__(self, feature, value):
+    def __init__(self, feature: GeologicalFeature, value: float, sign=True):
         """
 
         Parameters
@@ -12,18 +15,27 @@ class UnconformityFeature(BaseFeature):
         feature
         value
         """
-        BaseFeature.__init__(
+        # create a shallow(ish) copy of the geological feature
+        # just don't link the regions
+        GeologicalFeature.__init__(
             self,
-            f"{feature.name}_unconformity",
-            feature.model,
-            feature.faults,
-            feature.regions,
-            feature.builder,
+            name=f"{feature.name}_unconformity",
+            faults=feature.faults,
+            regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
+            builder=feature.builder,
+            model=feature.model,
+            interpolator=feature.interpolator,
         )
-        self.feature = feature
         self.value = value
+        self.type = FeatureType.UNCONFORMITY
+        self.sign = sign
 
-    def evaluate(self, pos):
+    def inverse(self):
+        uc = UnconformityFeature(self, self.value, sign=not self.sign)
+        uc.name = self.name + "_inverse"
+        return uc
+
+    def evaluate(self, pos: np.ndarray) -> np.ndarray:
         """
 
         Parameters
@@ -33,41 +45,13 @@ class UnconformityFeature(BaseFeature):
 
         Returns
         -------
-        boolean
+        np.ndarray.dtype(bool)
             true if above the unconformity, false if below
         """
-        return self.feature.evaluate_value(pos) < self.value
+        if self.sign:
+            return self.evaluate_value(pos) < self.value + self.model.epsilon
+        if not self.sign:
+            return self.evaluate_value(pos) > self.value - self.model.epsilon
 
-    def evaluate_value(self, pos):
-        """
-
-        Parameters
-        ----------
-        pos : numpy array
-            locations to evaluate the value of the base geological feature
-
-        Returns
-        -------
-
-        """
-        return self.feature.evaluate_value(pos)
-
-    def evaluate_gradient(self, pos):
-        """
-
-        Parameters
-        ----------
-        pos : numpy array
-            location to evaluate the gradient of the base geological feature
-
-        Returns
-        -------
-
-        """
-        return self.feature.evaluate_gradient(pos)
-
-    def min(self):
-        return self.feature.min()
-
-    def max(self):
-        return self.feature.max()
+    def __call__(self, pos) -> np.ndarray:
+        return self.evaluate(pos)
