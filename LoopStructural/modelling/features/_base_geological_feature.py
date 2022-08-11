@@ -12,7 +12,24 @@ class BaseFeature:
     Base class for geological features.
     """
 
-    def __init__(self, name, model=None, faults=[], regions=[], builder=None):
+    def __init__(self, name : str, model=None, faults: list=[], regions: list=[], builder=None):
+        """Base geological feature, this is a virtucal class and should not be
+        used directly. Inheret from this to implement a new type of geological
+        feature or use one of the exisitng implementations
+
+        Parameters
+        ----------
+        name : 
+            Name of the geological feature to add
+        model : GeologicalModel, optional
+            the model the feature is associated with, by default None
+        faults : list, optional
+            any faults that fault this feature, by default []
+        regions : list, optional
+            any regions that affect this feature, by default []
+        builder : GeologicalFeatureBuilder, optional
+            the builder of the feature, by default None
+        """
         self.name = name
         self.type = FeatureType.BASE
         self.regions = regions
@@ -44,9 +61,12 @@ class BaseFeature:
 
     @model.setter
     def model(self, model):
+        from LoopStructural import GeologicalModel
         # causes circular import, could delay import?
-        # if type(model) == GeologicalModel:
-        self._model = model
+        if type(model) == GeologicalModel:
+            self._model = model
+        else:
+            raise TypeError("Model must be a GeologicalModel")
 
     def toggle_faults(self):
         """
@@ -79,6 +99,18 @@ class BaseFeature:
         self.regions.append(region)
 
     def __call__(self, xyz):
+        """ Calls evaluate_value method
+
+        Parameters
+        ----------
+        xyz : np.ndarray
+            location to evaluate feature
+
+        Returns
+        -------
+        np.ndarray
+            the value of the feature at the locations
+        """
         return self.evaluate_value(xyz)
 
     def evaluate_value(self, pos):
@@ -94,11 +126,27 @@ class BaseFeature:
         raise NotImplementedError
 
     def min(self):
+        """Calculate the min value of the geological feature
+        in the model
+
+        Returns
+        -------
+        minimum, float
+            min value of the feature evaluated on a regular grid in the model domain
+        """
         if self.model is None:
             return 0
         return np.nanmin(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
 
     def max(self):
+        """Calculate the maximum value of the geological feature
+        in the model
+
+        Returns
+        -------
+        maximum, float
+            max value of the feature evaluated on a regular grid in the model domain
+        """
         if self.model is None:
             return 0
         return np.nanmax(self.evaluate_value(self.model.regular_grid((10, 10, 10))))

@@ -12,8 +12,9 @@ logger = getLogger(__name__)
 
 
 class CrossProductGeologicalFeature(BaseFeature):
-    def __init__(self, name, geological_feature_a, geological_feature_b):
+    def __init__(self, name : str, geological_feature_a : BaseFeature, geological_feature_b: BaseFeature):
         """
+    
         Create a geological feature for a vector field using the cross
         product between
         two existing features
@@ -22,18 +23,29 @@ class CrossProductGeologicalFeature(BaseFeature):
         name: feature name
         geological_feature_a: first feature
         geological_feature_b: second feature
+        
+
+        Parameters
+        ----------
+        name : str
+            name of the feature
+        geological_feature_a : BaseFeature
+            Left hand side of cross product
+        geological_feature_b : BaseFeature
+            Right hand side of cross product
         """
         super().__init__(name)
         self.geological_feature_a = geological_feature_a
         self.geological_feature_b = geological_feature_b
         self.value_feature = None
 
-    def evaluate_gradient(self, locations):
+    def evaluate_gradient(self, locations : np.ndarray) ->np.ndarray:
         """
         Calculate the gradient of the geological feature by using numpy to
         calculate the cross
         product between the two existing feature gradients.
         This means both features have to be evaluated for the locations
+        
         Parameters
         ----------
         locations
@@ -48,7 +60,7 @@ class CrossProductGeologicalFeature(BaseFeature):
         # v2 /= np.linalg.norm(v2,axis=1)[:,None]
         return np.cross(v1, v2, axisa=1, axisb=1)
 
-    def evaluate_value(self, evaluation_points):
+    def evaluate_value(self, evaluation_points : np.ndarray) -> np.ndarray:
         """
         Return 0 because there is no value for this feature
         Parameters
