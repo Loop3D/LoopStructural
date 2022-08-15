@@ -57,6 +57,9 @@ class ScalarField:
         if self.mode == "grid":
             indexes = np.array(self.grid.position_to_cell_index(xyz))
             inside = np.all(indexes >= 0, axis=0)
+            inside = np.logical_and(
+                np.all(indexes < self.grid.nsteps_cells[:, None], axis=0), inside
+            )
             v = np.zeros(xyz.shape[0], dtype=float)
             v[:] = np.nan
             v[inside] = self.values[self.grid.global_cell_indicies(indexes[:, inside])]
