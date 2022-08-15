@@ -409,7 +409,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                 )
 
     def add_gradient_orthogonal_constraints(
-        self, points: np.darray, vector: np.ndarray, w: float = 1.0, B: float = 0
+        self, points: np.ndarray, vector: np.ndarray, w: float = 1.0, B: float = 0
     ):
         """
         constraints scalar field to be orthogonal to a given vector
