@@ -342,6 +342,8 @@ class GeologicalModel:
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
+                if not f:
+                    logger.warning(f"Foliation {s} not added")
                 # check feature was built, and is an interpolated feature.
                 if f is not None and f.type == FeatureType.INTERPOLATED:
                     model.add_unconformity(f, 0)
@@ -437,6 +439,8 @@ class GeologicalModel:
         if self.data is None:
             logger.error("Data not associated with GeologicalModel. Run set_data")
             return False
+        if self.data.shape[0] > 0:
+            return True
 
     def to_file(self, file):
         """Save a model to a pickle file requires dill
@@ -819,6 +823,7 @@ class GeologicalModel:
             the created geological feature
         """
         if not self.check_inialisation():
+            logger.warning(f"{series_surface_data} not added, model not initialised")
             return
         # if tol is not specified use the model default
         if tol is None:

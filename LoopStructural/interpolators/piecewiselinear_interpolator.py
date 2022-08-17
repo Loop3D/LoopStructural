@@ -416,7 +416,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
         Parameters
         ----------
-        points : np.darray
+        points : np.ndarray
             location of constraints
         vector : np.ndarray
             vector to be orthogonal to
