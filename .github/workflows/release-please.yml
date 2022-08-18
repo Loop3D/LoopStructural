@@ -1,7 +1,5 @@
 on:
   push:
-    branches:
-      - master
 name: release-please
 jobs:
   continuous-integration:
@@ -49,6 +47,7 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     needs: documentation-test
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
         id: release
