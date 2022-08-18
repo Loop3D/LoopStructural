@@ -4,6 +4,7 @@ Geological features
 from LoopStructural.modelling.features import BaseFeature
 from LoopStructural.utils import getLogger
 from LoopStructural.modelling.features import FeatureType
+from LoopStructural.interpolators import GeologicalInterpolator
 import numpy as np
 
 from LoopStructural.utils import getLogger, LoopValueError
@@ -34,24 +35,23 @@ class GeologicalFeature(BaseFeature):
 
     def __init__(
         self,
-        name,
-        interpolator,
+        name : str,
+        interpolator : GeologicalInterpolator,
         builder=None,
-        regions=[],
-        faults=[],
+        regions : list=[],
+        faults : list =[],
         model=None,
     ):
         """Default constructor for geological feature
 
         Parameters
         ----------
-        name: string
+        name: str
         interpolator : GeologicalInterpolator
         builder : GeologicalFeatureBuilder
-        data :
-        region :
-        type :
+        region : list
         faults : list
+        model : GeologicalModel
 
 
         """
@@ -73,14 +73,14 @@ class GeologicalFeature(BaseFeature):
     def set_model(self, model):
         self.model = model
 
-    def evaluate_value(self, evaluation_points):
+    def evaluate_value(self, evaluation_points : np.ndarray) -> np.ndarray:
         """
         Evaluate the scalar field value of the geological feature at the locations
         specified
 
         Parameters
         ----------
-        evaluation_points : numpy array
+        evaluation_points : np.ndarray
             location to evaluate the scalar value
 
         Returns
@@ -106,7 +106,7 @@ class GeologicalFeature(BaseFeature):
             v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         return v
 
-    def evaluate_gradient(self, evaluation_points):
+    def evaluate_gradient(self, evaluation_points : np.ndarray) -> np.ndarray:
         """
 
         Parameters
@@ -116,6 +116,7 @@ class GeologicalFeature(BaseFeature):
 
         Returns
         -------
+
 
         """
         if evaluation_points.shape[1] != 3:
@@ -172,41 +173,3 @@ class GeologicalFeature(BaseFeature):
         diff /= self.max() - self.min()
         return diff
 
-    def mean(self):
-        """
-        Calculate average of the support values
-
-        Returns
-        -------
-        mean : double
-            average value of the feature evaluated on a (10,10,10) grid in model area
-
-        """
-        if self.model is None:
-            return 0
-        return np.mean(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-
-    def min(self):
-        """
-
-        Returns
-        -------
-        min : double
-            min value of the feature evaluated on a (10,10,10) grid in model area
-        """
-        if self.model is None:
-            return 0
-        return np.nanmin(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
-
-    def max(self):
-        """
-        Calculate average of the support values
-
-        Returns
-        -------
-        max : double
-            max value of the feature evaluated on a (10,10,10) grid in model area
-        """
-        if self.model is None:
-            return 0
-        return np.nanmax(self.evaluate_value(self.model.regular_grid((10, 10, 10))))

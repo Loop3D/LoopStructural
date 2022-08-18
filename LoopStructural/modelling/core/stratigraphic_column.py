@@ -15,3 +15,16 @@ class StratigraphicColumn(dict):
     @property
     def stratigraphy(self):
         return
+        
+class BaseStratigraphicColumnElement(object):
+    def __init__(self):
+        pass
+
+class StratigraphicUnit(dict):
+    def __init__(self):
+        pass
+
+class Lithology(dict):
+    def __init__(self):
+        pass
+
