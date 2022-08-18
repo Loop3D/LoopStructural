@@ -12,14 +12,16 @@ class BaseFeature:
     Base class for geological features.
     """
 
-    def __init__(self, name : str, model=None, faults: list=[], regions: list=[], builder=None):
+    def __init__(
+        self, name: str, model=None, faults: list = [], regions: list = [], builder=None
+    ):
         """Base geological feature, this is a virtucal class and should not be
         used directly. Inheret from this to implement a new type of geological
         feature or use one of the exisitng implementations
 
         Parameters
         ----------
-        name : 
+        name :
             Name of the geological feature to add
         model : GeologicalModel, optional
             the model the feature is associated with, by default None
@@ -62,9 +64,13 @@ class BaseFeature:
     @model.setter
     def model(self, model):
         from LoopStructural import GeologicalModel
+
         # causes circular import, could delay import?
         if type(model) == GeologicalModel:
             self._model = model
+        elif not model:
+            self._model = None
+            logger.error("Model not set")
         else:
             raise TypeError("Model must be a GeologicalModel")
 
@@ -99,7 +105,7 @@ class BaseFeature:
         self.regions.append(region)
 
     def __call__(self, xyz):
-        """ Calls evaluate_value method
+        """Calls evaluate_value method
 
         Parameters
         ----------
