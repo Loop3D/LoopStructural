@@ -286,6 +286,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         
 
         for step_i in self.intrusion_steps.keys():
+            step_structure = self.intrusion_steps[step_i].get('structure')
             unit_from_name = self.intrusion_steps[step_i].get('unit_from')
             series_from_name = self.intrusion_steps[step_i].get('series_from')
             unit_from_id = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('id')
@@ -340,6 +341,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             else: #step between different strat units
                 data_points_from_xyz = intrusion_network_data[intrusion_network_data['model_values'] == unit_from_id].loc[:,['X','Y','Z']].copy().to_numpy()
+                step_structure_points_vals = step_structure[0].evaluate_value(data_points_from_xyz)
+                # print(step_structure_points_vals)
                 if len(data_points_from_xyz) ==0: #no data points in strat unit
                     unit_from_min = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('min')
                     unit_from_max = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('max')
@@ -347,13 +350,20 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     self.intrusion_steps[step_i]['unit_from_std'] = std_backup
                 else:
                     series_values = series_from_name['feature'].evaluate_value(data_points_from_xyz)
-                    self.intrusion_steps[step_i]['unit_from_mean'] = np.nanmean(series_values)
-                    self.intrusion_steps[step_i]['unit_from_std'] = np.nanstd(series_values)
+                    # print(len(step_structure_points_vals), len(series_values))
+                    mask = step_structure_points_vals<0
+                    if len(mask) >0:
+                        series_values_mod = np.ma.compressed(np.ma.masked_array(series_values, step_structure_points_vals<0))
+                    else:
+                        series_values_mod = series_values
+                    self.intrusion_steps[step_i]['unit_from_mean'] = np.nanmean(series_values_mod)
+                    self.intrusion_steps[step_i]['unit_from_std'] = np.nanstd(series_values_mod)
 
                 if self.intrusion_steps[step_i]['unit_from_std'] == 0:
                     self.intrusion_steps[step_i]['unit_from_std'] = std_backup
 
                 data_points_to_xyz = intrusion_network_data[intrusion_network_data['model_values'] == unit_to_id].loc[:,['X','Y','Z']].copy().to_numpy()
+                step_structure_points_vals = step_structure[0].evaluate_value(data_points_to_xyz)
                 if len(data_points_to_xyz) == 0:
                     unit_to_min = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('min')
                     unit_to_max = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('max')
@@ -361,8 +371,14 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     self.intrusion_steps[step_i]['unit_to_std'] = std_backup
                 else:
                     series_values = series_to_name['feature'].evaluate_value(data_points_to_xyz)
-                    self.intrusion_steps[step_i]['unit_to_mean'] = np.nanmean(series_values)
-                    self.intrusion_steps[step_i]['unit_to_std'] = np.nanstd(series_values)
+                    # print(len(step_structure_points_vals), len(series_values))
+                    mask = step_structure_points_vals>0
+                    if len(mask) >0:
+                        series_values_mod = np.ma.compressed(np.ma.masked_array(series_values, step_structure_points_vals>0))
+                    else:
+                        series_values_mod = series_values
+                    self.intrusion_steps[step_i]['unit_to_mean'] = np.nanmean(series_values_mod)
+                    self.intrusion_steps[step_i]['unit_to_std'] = np.nanstd(series_values_mod)
 
                 if self.intrusion_steps[step_i]['unit_to_std'] == 0:
                     self.intrusion_steps[step_i]['unit_to_std'] = std_backup
@@ -678,6 +694,13 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
                 for i, step_i in enumerate(self.intrusion_steps.keys()):
                     delta_contact = self.delta_contacts[i]
+                    if type(delta_contact) is list:
+                        delta_contact0 = delta_contact[0]
+                        delta_contact1 = delta_contact[1]
+                    else:
+                        delta_contact0 = delta_contact
+                        delta_contact1 = delta_contact
+
                     step_fault = self.intrusion_steps[step_i].get('structure')
                     series_from_name = self.intrusion_steps[step_i].get('series_from')
                     series_to_name = self.intrusion_steps[step_i].get('series_to')
@@ -686,7 +709,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     series_to_name.faults_enabled = True
 
                     fault_gridpoints_vals = step_fault[0].evaluate_value(grid_points)
-                    
+                    fault_gridpoints_grads = step_fault[0].evaluate_gradient(grid_points)
+
                     series_from_gridpoints_vals = series_from_name["feature"].evaluate_value(grid_points)
                     if series_from_name == series_to_name:
                         series_to_gridpoints_vals = series_from_gridpoints_vals
@@ -694,10 +718,10 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     else:
                         series_to_gridpoints_vals = series_to_name["feature"].evaluate_value(grid_points)
 
-                    contacts0_val_min = self.intrusion_steps[step_i].get('unit_from_mean') - (self.intrusion_steps[step_i].get('unit_from_std')*delta_contact)
-                    contacts0_val_max = self.intrusion_steps[step_i].get('unit_from_mean') + (self.intrusion_steps[step_i].get('unit_from_std')*delta_contact)
-                    contacts1_val_min = self.intrusion_steps[step_i].get('unit_to_mean') - (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact)
-                    contacts1_val_max = self.intrusion_steps[step_i].get('unit_to_mean') + (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact)
+                    contacts0_val_min = self.intrusion_steps[step_i].get('unit_from_mean') - (self.intrusion_steps[step_i].get('unit_from_std')*delta_contact0)
+                    contacts0_val_max = self.intrusion_steps[step_i].get('unit_from_mean') + (self.intrusion_steps[step_i].get('unit_from_std')*delta_contact0)
+                    contacts1_val_min = self.intrusion_steps[step_i].get('unit_to_mean') - (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact1)
+                    contacts1_val_max = self.intrusion_steps[step_i].get('unit_to_mean') + (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact1)
 
                     self.intrusion_steps[step_i]['constraints_hw'] = grid_points[
                         np.logical_and(
@@ -720,6 +744,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     )
                     ]
 
+                    # #TODO
+                    # gradients_in_fault = 
+
                     intrusion_network_points = np.vstack([intrusion_network_points, fault_i_points])
 
                     splits_from_sill_name = self.intrusion_steps[step_i].get('splits_from', None)
@@ -728,7 +755,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     #(add all the constraint from original sill, this have to be changed and adapted so it adds constraints for specific faults)
 
                     if splits_from_sill_name is not None:
-                        # print('ssd')
                         splits_from_sill_steps = self.model.__getitem__(splits_from_sill_name).intrusion_frame.builder.intrusion_steps
                         for j, step_j in enumerate(splits_from_sill_steps.keys()):
                             step_j_hg_constraints = splits_from_sill_steps[step_j].get('constraints_hw')
@@ -1000,7 +1026,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             [intrusion_frame_data, coord_0_values]
         )
 
-        if self.intrusion_network_gradients is not None:
+        # if self.intrusion_network_gradients is not None:
+        coord_0_data = intrusion_frame_data[intrusion_frame_data['coord'] == 0].copy()
+        if len(coord_0_data) == 0:
             np.random.shuffle(self.intrusion_network_gradients)
             sliced_grads = self.intrusion_network_gradients[:200,:]
 
