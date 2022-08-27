@@ -1,5 +1,18 @@
 # Changelog
 
+### [1.4.11](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.10...v1.4.11) (2022-08-10)
+
+
+### Bug Fixes
+
+* add data for structural frame, adds data for all coordinates ([6ebdf84](https://www.github.com/Loop3D/LoopStructural/commit/6ebdf842071d8822053008c6e7a19eb8c0131414))
+* adding new dataset for fault, map in installer ([b32edf3](https://www.github.com/Loop3D/LoopStructural/commit/b32edf3a739b51347db9233d8b35a8f92fa5bbb5))
+* basal unconformities cropping lowest surface ([5c47ef6](https://www.github.com/Loop3D/LoopStructural/commit/5c47ef6020b2d2c1da53e771db5dac1308d870db))
+* faults not added to features because using string not enum ([faf71ee](https://www.github.com/Loop3D/LoopStructural/commit/faf71ee6584d3da63e77343847dfbcfafefb4b21))
+* faults were not faulting unconformities ([ec520fa](https://www.github.com/Loop3D/LoopStructural/commit/ec520fa88f7b0c0efeb1c80516b6b77967cd7982))
+* geological map example stratigraphic order loaded incorrectly ([b98397b](https://www.github.com/Loop3D/LoopStructural/commit/b98397b6adafc279f0bfa9701a77b8b79f779aed))
+* single group surfaces not plotting, changed min strat column to 0 ([44481a3](https://www.github.com/Loop3D/LoopStructural/commit/44481a3155b0dafcbe009f148625362dbcda1770))
+
 ### [1.4.10](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.9...v1.4.10) (2022-07-20)
 
 
