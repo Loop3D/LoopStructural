@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.tangent\_vec\_names
-===============================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: tangent_vec_names

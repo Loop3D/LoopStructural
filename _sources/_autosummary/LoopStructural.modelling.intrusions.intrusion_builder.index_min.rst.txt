@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_builder.index\_min
-=================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_builder
-
-.. autofunction:: index_min

@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.weight\_name
-========================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: weight_name

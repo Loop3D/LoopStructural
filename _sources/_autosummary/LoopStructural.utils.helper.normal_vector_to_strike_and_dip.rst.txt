@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.normal\_vector\_to\_strike\_and\_dip
-================================================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: normal_vector_to_strike_and_dip

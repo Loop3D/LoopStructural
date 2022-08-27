@@ -1,6 +1,0 @@
-LoopStructural.modelling.input.process\_data.strike\_dip\_vector
-================================================================
-
-.. currentmodule:: LoopStructural.modelling.input.process_data
-
-.. autofunction:: strike_dip_vector

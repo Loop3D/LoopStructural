@@ -1,6 +1,0 @@
-LoopStructural.datasets.normal\_vector\_headers
-===============================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: normal_vector_headers

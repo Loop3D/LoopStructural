@@ -1,6 +1,0 @@
-LoopStructural.interpolators.piecewiselinear\_interpolator.getLogger
-====================================================================
-
-.. currentmodule:: LoopStructural.interpolators.piecewiselinear_interpolator
-
-.. autofunction:: getLogger

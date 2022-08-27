@@ -1,6 +1,0 @@
-LoopStructural.utils.InterpolatorError
-======================================
-
-.. currentmodule:: LoopStructural.utils
-
-.. autoexception:: InterpolatorError

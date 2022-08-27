@@ -1,6 +1,0 @@
-LoopStructural.datasets.load\_unconformity
-==========================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: load_unconformity

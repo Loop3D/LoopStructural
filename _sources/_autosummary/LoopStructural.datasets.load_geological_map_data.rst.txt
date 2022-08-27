@@ -1,6 +1,0 @@
-LoopStructural.datasets.load\_geological\_map\_data
-===================================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: load_geological_map_data

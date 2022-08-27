@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.create\_surface
-===========================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: create_surface

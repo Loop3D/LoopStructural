@@ -1,6 +1,0 @@
-LoopStructural.utils.dtm\_creator.create\_dtm\_with\_rasterio
-=============================================================
-
-.. currentmodule:: LoopStructural.utils.dtm_creator
-
-.. autofunction:: create_dtm_with_rasterio

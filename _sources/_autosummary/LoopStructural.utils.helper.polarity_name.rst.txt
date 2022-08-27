@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.polarity\_name
-==========================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: polarity_name

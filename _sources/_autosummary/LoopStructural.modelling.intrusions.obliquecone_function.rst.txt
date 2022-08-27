@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.obliquecone\_function
-=========================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions
-
-.. autofunction:: obliquecone_function

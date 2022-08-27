@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_support\_functions.findMinDiff
-=============================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_support_functions
-
-.. autofunction:: findMinDiff

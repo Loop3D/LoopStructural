@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.val\_name
-=====================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: val_name

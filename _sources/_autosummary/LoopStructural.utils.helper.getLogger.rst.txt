@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.getLogger
-=====================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: getLogger

@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_frame\_builder.grid\_from\_array
-===============================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_frame_builder
-
-.. autofunction:: grid_from_array

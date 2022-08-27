@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.xyz\_names
-======================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: xyz_names

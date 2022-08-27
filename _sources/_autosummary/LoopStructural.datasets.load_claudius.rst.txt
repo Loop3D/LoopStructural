@@ -1,6 +1,0 @@
-LoopStructural.datasets.load\_claudius
-======================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: load_claudius

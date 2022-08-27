@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.geom\_conceptual\_models.parallelepiped\_function
-=====================================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.geom_conceptual_models
-
-.. autofunction:: parallelepiped_function

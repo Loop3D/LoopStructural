@@ -1,6 +1,0 @@
-LoopStructural.utils.exceptions.LoopException
-=============================================
-
-.. currentmodule:: LoopStructural.utils.exceptions
-
-.. autoexception:: LoopException

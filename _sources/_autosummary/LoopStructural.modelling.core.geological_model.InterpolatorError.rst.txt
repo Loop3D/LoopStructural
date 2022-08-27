@@ -1,6 +1,0 @@
-LoopStructural.modelling.core.geological\_model.InterpolatorError
-=================================================================
-
-.. currentmodule:: LoopStructural.modelling.core.geological_model
-
-.. autoexception:: InterpolatorError

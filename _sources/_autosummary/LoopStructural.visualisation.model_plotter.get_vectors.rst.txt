@@ -1,6 +1,0 @@
-LoopStructural.visualisation.model\_plotter.get\_vectors
-========================================================
-
-.. currentmodule:: LoopStructural.visualisation.model_plotter
-
-.. autofunction:: get_vectors
