@@ -1,8 +1,6 @@
 """
 Base geological interpolator
 """
-import logging
-
 from LoopStructural.interpolators import InterpolatorType
 import numpy as np
 
@@ -21,9 +19,10 @@ class GeologicalInterpolator:
 
     def __init__(self):
         """
-        This class is the base class for a geological interpolator and contains all of the
-        main interface functions. Any class that is inheriting from this should be callable
-        by using any of these functions. This will enable interpolators to be interchanged.
+        This class is the base class for a geological interpolator and contains
+        all of the main interface functions. Any class that is inheriting from
+        this should be callable by using any of these functions. This will
+        enable interpolators to be interchanged.
         """
 
         self.data = {
@@ -103,7 +102,6 @@ class GeologicalInterpolator:
         self.data["gradient"] = points
         self.up_to_date = False
 
-
     def set_normal_constraints(self, points):
         """
 
@@ -119,7 +117,6 @@ class GeologicalInterpolator:
         self.data["normal"] = points
         self.up_to_date = False
 
-
     def set_tangent_constraints(self, points):
         """
 
@@ -134,11 +131,9 @@ class GeologicalInterpolator:
         self.data["tangent"] = points
         self.up_to_date = False
 
-
     def set_interface_constraints(self, points):
         self.data["interface"] = points
         self.up_to_date = False
-
 
     def set_inequality_constraints(self, points):
         self.data["inequality"] = points
@@ -244,9 +239,15 @@ class GeologicalInterpolator:
             self.type > InterpolatorType.BASE_DISCRETE
             and self.type < InterpolatorType.BASE_DATA_SUPPORTED
         ):
-            mask = lambda xyz: self.support.inside(xyz)
+
+            def mask(xyz):
+                return self.support.inside(xyz)
+
         else:
-            mask = lambda xyz: np.ones(xyz.shape[0], dtype=bool)
+
+            def mask(xyz):
+                return np.ones(xyz.shape[0], dtype=bool)
+
         if (
             len(
                 np.unique(

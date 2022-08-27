@@ -6,7 +6,6 @@ import pandas as pd
 
 from LoopStructural.utils import getLogger
 
-logger = getLogger(__name__)
 
 from LoopStructural.interpolators import GeologicalInterpolator
 from LoopStructural.utils.helper import (
@@ -23,8 +22,9 @@ from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from LoopStructural.utils import get_data_axis_aligned_bounding_box
 from LoopStructural.utils import RegionEverywhere
+
+logger = getLogger(__name__)
 
 
 class GeologicalFeatureBuilder:
@@ -32,7 +32,7 @@ class GeologicalFeatureBuilder:
         self,
         interpolator: GeologicalInterpolator,
         name="Feature",
-        region=None,
+        interpolation_region=None,
         **kwargs,
     ):
         """
@@ -46,7 +46,7 @@ class GeologicalFeatureBuilder:
             defining whether the location (xyz) should be included in the
         kwargs - name of the feature, region to interpolate the feature
         """
-        if issubclass(type(interpolator), GeologicalInterpolator) == False:
+        if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
                 "interpolator is {} and must be a GeologicalInterpolator".format(
                     type(interpolator)
@@ -56,10 +56,7 @@ class GeologicalFeatureBuilder:
         self._name = name
         self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
-        if region is None:
-            self.region = RegionEverywhere()
-        else:
-            self.region = region
+
         header = (
             xyz_names()
             + val_name()
@@ -71,7 +68,10 @@ class GeologicalFeatureBuilder:
         self.data = pd.DataFrame(columns=header)
         self.faults = []
         self.data_added = False
-        self._interpolator.set_region(region=self.region)
+        self._interpolation_region = None
+        self.interpolation_region = interpolation_region
+        if self.interpolation_region is not None:
+            self._interpolator.set_region(region=self.interpolation_region)
         self._feature = None
         self._up_to_date = False
         self._build_arguments = {}
@@ -79,11 +79,25 @@ class GeologicalFeatureBuilder:
             self._name,
             self._interpolator,
             builder=self,
-            regions=[self.region],
+            regions=[],
             faults=self.faults,
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}
+
+    @property
+    def interpolation_region(self):
+        return self._interpolation_region
+
+    @interpolation_region.setter
+    def interpolation_region(self, interpolation_region):
+        if interpolation_region is not None:
+            self._interpolation_region = interpolation_region
+            self._interpolator.set_region(region=self._interpolation_region)
+        else:
+            self._interpolation_region = RegionEverywhere()
+            self._interpolator.set_region(region=self._interpolation_region)
+        self._up_to_date = False
 
     @property
     def feature(self):
@@ -99,7 +113,7 @@ class GeologicalFeatureBuilder:
         for k, i in build_arguments.items():
             if i != self._build_arguments.get(k, None):
                 self._build_arguments[k] = i
-                ## if build_arguments change then flag to reinterpolate
+                # if build_arguments change then flag to reinterpolate
                 self._up_to_date = False
 
     def update(self):
@@ -127,13 +141,13 @@ class GeologicalFeatureBuilder:
         for f in self.faults:
             f.builder.up_to_date(callback=callback)
         # has anything changed in the builder since we built the feature? if so update
-        if self._up_to_date == False:
+        if not self._up_to_date:
             self.update()
             if callable(callback):
                 callback(1)
             return
         # check if the interpolator is up to date, if not solve
-        if self._interpolator.up_to_date == False:
+        if not self._interpolator.up_to_date:
             self.update()
             if callable(callback):
                 callback(1)
@@ -174,8 +188,9 @@ class GeologicalFeatureBuilder:
 
     def add_orthogonal_feature(self, feature, w=1.0, region=None, step=1, B=0):
         """
-        Add a constraint to the interpolator so that the gradient of an exisitng feature is orthogonal
-        to the feature being built. E.g. dot product between gradients should be = 0
+        Add a constraint to the interpolator so that the gradient of an exisitng
+        feature is orthogonal to the feature being built. E.g. dot product
+        between gradients should be = 0
 
         Parameters
         ----------
@@ -192,8 +207,8 @@ class GeologicalFeatureBuilder:
 
         Notes
         -----
-        The constraint can be applied to a random subset of the tetrahedral elements in the mesh
-        in theory this shu
+        The constraint can be applied to a random subset of the tetrahedral
+        elements in the mesh
         """
         try:
             step = int(step)  # cast as int in case it was a float
@@ -219,7 +234,7 @@ class GeologicalFeatureBuilder:
         -------
 
         """
-        if self.data_added == True:
+        if self.data_added:
             return
         # first move the data for the fault
         logger.info(f"Adding {len(self.faults)} faults to {self.name}")
@@ -487,7 +502,8 @@ class GeologicalFeatureBuilder:
             )
 
     def check_interpolation_geometry(self, data):
-        """Check the interpolation support geometry to data to make sure everything fits"""
+        """Check the interpolation support geometry
+        to data to make sure everything fits"""
         origin = self.interpolator.support.origin
         maximum = self.interpolator.support.maximum
         print(origin, maximum)
@@ -528,14 +544,22 @@ class GeologicalFeatureBuilder:
             if np.any(np.min(bb[0, :]) < self.interpolator.support.origin):
                 neworigin = np.min([self.interpolator.support.origin, bb[0, :]], axis=0)
                 logger.info(
-                    f"Changing origin of support for {self.name} from {self.interpolator.support.origin[0]} {self.interpolator.support.origin[1]} {self.interpolator.support.origin[2]} to {neworigin[0]} {neworigin[1]} {neworigin[2]}"
+                    f"Changing origin of support for {self.name} from \
+                        {self.interpolator.support.origin[0]} \
+                        {self.interpolator.support.origin[1]} \
+                        {self.interpolator.support.origin[2]} \
+                        to {neworigin[0]} {neworigin[1]} {neworigin[2]}"
                 )
 
                 self.interpolator.support.origin = neworigin
             if np.any(np.max(bb[0, :]) < self.interpolator.support.maximum):
                 newmax = np.max([self.interpolator.support.maximum, bb[0, :]], axis=0)
                 logger.info(
-                    "Changing origin of support for {self.name} from {self.interpolator.support.maximum[0]} {self.interpolator.support.maximum[1]} {self.interpolator.support.maximum[2]} to {newmax[0]} {newmax[1]} {newmax[2]}"
+                    f"Changing origin of support for {self.name} from \
+                        from {self.interpolator.support.maximum[0]} \
+                        {self.interpolator.support.maximum[1]} \
+                            {self.interpolator.support.maximum[2]} \
+                                to {newmax[0]} {newmax[1]} {newmax[2]}"
                 )
 
                 self.interpolator.support.maximum = newmax

@@ -1,5 +1,3 @@
-import logging
-
 from LoopStructural.modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
@@ -8,9 +6,10 @@ from LoopStructural.modelling.features.fault._fault_function import BaseFault
 from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
 from LoopStructural.modelling.features import StructuralFrame
 
-logger = getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
+
+logger = getLogger(__name__)
 
 use_threads = True
 
@@ -64,43 +63,43 @@ class FaultSegment(StructuralFrame):
 
     @property
     def fault_normal_vector(self):
-        if self.builder == None:
+        if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_normal_vector
 
     @property
     def fault_slip_vector(self):
-        if self.builder == None:
+        if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_slip_vector
 
     @property
     def fault_strike_vector(self):
-        if self.builder == None:
+        if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_strike_vector
 
     @property
     def fault_minor_axis(self):
-        if self.builder == None:
+        if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_minor_axis
 
     @property
     def fault_major_axis(self):
-        if self.builder == None:
+        if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_major_axis
 
     @property
     def fault_intermediate_axis(self):
-        if self.builder == None:
+        if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_intermediate_axis
 
     @property
     def fault_centre(self):
-        if self.builder == None:
+        if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_centre
 
@@ -209,18 +208,19 @@ class FaultSegment(StructuralFrame):
         -------
 
         """
-        v = np.zeros(locations.shape[0])
-        v[:] = np.nan
-        mask = np.zeros(locations.shape[0]).astype(bool)
-        mask[:] = True
-        # check regions
-        for r in self.regions:
-            try:
-                mask = np.logical_and(mask, r(locations))
-            except:
-                logger.error("nan slicing")
-        v[mask] = self.__getitem__(0).evaluate_value(locations[mask, :])
-        return v
+        # v = np.zeros(locations.shape[0])
+        # v[:] = np.nan
+        # mask =
+        # mask = np.zeros(locations.shape[0]).astype(bool)
+        # mask[:] = True
+        # # check regions
+        # for r in self.regions:
+        #     try:
+        #         mask = np.logical_and(mask, r(locations))
+        #     except:
+        #         logger.error("nan slicing")
+        # v[mask] = self.__getitem__(0).evaluate_value(locations[mask, :])
+        return self.__getitem__(0).evaluate_value(locations)
 
     def mean(self):
         return self.__getitem__(0).mean()
@@ -260,13 +260,15 @@ class FaultSegment(StructuralFrame):
 
     def evaluate_displacement(self, points):
         newp = np.copy(points).astype(float)
-        # evaluate fault function for all points then define mask for only points affected by fault
+        # evaluate fault function for all
+        # points then define mask for only points affected by fault
         gx = None
         gy = None
         gz = None
         if use_threads:
             with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be independent so just run as different threads
+                # all of these operations should be independent so
+                # just run as different threads
                 gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp)
                 gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp)
                 gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp)
@@ -302,13 +304,15 @@ class FaultSegment(StructuralFrame):
         """
         steps = self.steps
         newp = np.copy(points).astype(float)
-        # evaluate fault function for all points then define mask for only points affected by fault
+        # evaluate fault function for all points
+        # then define mask for only points affected by fault
         gx = None
         gy = None
         gz = None
         if use_threads:
             with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be independent so just run as different threads
+                # all of these operations should be
+                # independent so just run as different threads
                 gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp)
                 gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp)
                 gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp)
@@ -339,7 +343,8 @@ class FaultSegment(StructuralFrame):
             g = None
             if use_threads:
                 with ThreadPoolExecutor(max_workers=8) as executor:
-                    # all of these operations should be independent so just run as different threads
+                    # all of these operations should be
+                    # independent so just run as different threads
                     gx_future = executor.submit(
                         self.__getitem__(0).evaluate_value, newp[mask, :]
                     )
@@ -399,7 +404,9 @@ class FaultSegment(StructuralFrame):
             )  # get_value_constraints()
             abut_value = np.nanmedian(abutting_fault_feature.evaluate_value(pts))
             positive = abut_value > 0
-        # we want to crop the fault by the abutting fault so create a positive/neg region and include the fault centre and normal vector to help
+        # we want to crop the fault by the abutting
+        # fault so create a positive/neg region and
+        # include the fault centre and normal vector to help
         # outside of the fault interpolation support
         if positive:
             abutting_region = PositiveRegion(
@@ -407,7 +414,7 @@ class FaultSegment(StructuralFrame):
                 vector=abutting_fault_feature.fault_normal_vector,
                 point=abutting_fault_feature.fault_centre,
             )
-        if positive == False:
+        if not positive:
             abutting_region = NegativeRegion(
                 abutting_fault_feature,
                 vector=abutting_fault_feature.fault_normal_vector,

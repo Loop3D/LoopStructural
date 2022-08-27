@@ -29,9 +29,19 @@ class UnconformityFeature(GeologicalFeature):
         self.value = value
         self.type = FeatureType.UNCONFORMITY
         self.sign = sign
+        self.parent = feature
 
     def inverse(self):
-        uc = UnconformityFeature(self, self.value, sign=not self.sign)
+        """Returns an unconformity feature with the sign flipped
+        The feature is a shallow copy with the parent being set to
+        the parent of this feature
+
+        Returns
+        -------
+        UnconformityFeature
+            _description_
+        """
+        uc = UnconformityFeature(self.parent, self.value, sign=not self.sign)
         uc.name = self.name + "_inverse"
         return uc
 
@@ -49,9 +59,9 @@ class UnconformityFeature(GeologicalFeature):
             true if above the unconformity, false if below
         """
         if self.sign:
-            return self.evaluate_value(pos) < self.value + self.model.epsilon
+            return self.evaluate_value(pos) < self.value
         if not self.sign:
-            return self.evaluate_value(pos) > self.value - self.model.epsilon
+            return self.evaluate_value(pos) > self.value
 
     def __call__(self, pos) -> np.ndarray:
         return self.evaluate(pos)

@@ -1,12 +1,10 @@
 """
 Main entry point for creating a geological model
 """
-import logging
+from LoopStructural.utils import getLogger, log_to_file
 
 import numpy as np
 import pandas as pd
-import LoopStructural
-from LoopStructural.datasets import normal_vector_headers
 
 try:
     from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
@@ -39,8 +37,6 @@ from LoopStructural.interpolators import TetMesh
 from LoopStructural.modelling.features.fault import FaultSegment
 from LoopStructural.interpolators import DiscreteInterpolator
 
-from LoopStructural.interpolators import StructuredGrid
-from LoopStructural.interpolators import TetMesh
 from LoopStructural.modelling.features.builders import (
     FaultBuilder,
     GeologicalFeatureBuilder,
@@ -54,12 +50,11 @@ from LoopStructural.modelling.features import (
     FeatureType,
 )
 from LoopStructural.modelling.features.fold import (
-    FoldRotationAngle,
     FoldEvent,
     FoldFrame,
 )
 
-from LoopStructural.utils.exceptions import LoopException, InterpolatorError
+from LoopStructural.utils.exceptions import InterpolatorError
 from LoopStructural.utils.helper import (
     all_heading,
     gradient_vec_names,
@@ -75,7 +70,6 @@ try:
 except ImportError as e:
     print(e)
     intrusions = False
-from LoopStructural.utils import getLogger, log_to_file
 
 logger = getLogger(__name__)
 
@@ -115,7 +109,6 @@ class GeologicalModel:
         reuse_supports=False,
         logfile=None,
         loglevel="info",
-        epsilon=0.04,
     ):
         """
         Parameters
@@ -186,7 +179,6 @@ class GeologicalModel:
             )
 
         self.bounding_box /= self.scale_factor
-        self.epsilon = epsilon * float(np.max(lengths)) / self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
         if self.reuse_supports:
@@ -219,7 +211,7 @@ class GeologicalModel:
         _str += "------------------------------------------ \n"
         _str += "Feature list: \n"
         for feature in self.features:
-            _str += "  {} \n".format(feature)
+            _str += "  {} \n".format(feature.name)
         return _str
 
     def _ipython_key_completions_(self):
@@ -240,7 +232,8 @@ class GeologicalModel:
 
         Uses the information saved in the map2loop files to build a geological model.
         You can specify kwargs for building foliation using foliation_params and for
-        faults using fault_params.  faults is a flag that allows for the faults to be skipped.
+        faults using fault_params.  faults is a flag that allows for the faults to be
+        skipped.
 
         Parameters
         ----------
@@ -319,7 +312,7 @@ class GeologicalModel:
 
                         model[edge[1]].splay[model[edge[0]].name] = region
                         splay = True
-                if splay == False:
+                if splay is False:
                     positive = None
                     if (
                         "downthrow_dir"
@@ -349,6 +342,8 @@ class GeologicalModel:
                 f = model.create_and_add_foliation(
                     s, **processor.foliation_properties[s], faults=faults
                 )
+                if not f:
+                    logger.warning(f"Foliation {s} not added")
                 # check feature was built, and is an interpolated feature.
                 if f is not None and f.type == FeatureType.INTERPOLATED:
                     model.add_unconformity(f, 0)
@@ -444,6 +439,8 @@ class GeologicalModel:
         if self.data is None:
             logger.error("Data not associated with GeologicalModel. Run set_data")
             return False
+        if self.data.shape[0] > 0:
+            return True
 
     def to_file(self, file):
         """Save a model to a pickle file requires dill
@@ -666,8 +663,6 @@ class GeologicalModel:
         Returns
         -------
         """
-        # get an interpolator for
-        interpolator = None
         bb = np.copy(self.bounding_box)
         # add a buffer to the interpolation domain, this is necessary for
         # faults but also generally a good
@@ -779,7 +774,7 @@ class GeologicalModel:
             )
             return FDI(grid)
 
-        if interpolatortype == "DFI" and dfi == True:  # "fold" in kwargs:
+        if interpolatortype == "DFI" and dfi is True:
             if element_volume is None:
                 nelements /= 5
                 element_volume = box_vol / nelements
@@ -827,7 +822,8 @@ class GeologicalModel:
         feature : GeologicalFeature
             the created geological feature
         """
-        if self.check_inialisation() == False:
+        if not self.check_inialisation():
+            logger.warning(f"{series_surface_data} not added, model not initialised")
             return
         # if tol is not specified use the model default
         if tol is None:
@@ -867,7 +863,7 @@ class GeologicalModel:
         feature : GeologicalFeature
             the created geological feature
         """
-        if self.check_inialisation() == False:
+        if not self.check_inialisation():
             return False
 
         interpolator = self.get_interpolator(**kwargs)
@@ -904,7 +900,7 @@ class GeologicalModel:
         fold_frame : FoldFrame
             the created fold frame
         """
-        if self.check_inialisation() == False:
+        if not self.check_inialisation():
             return False
         if tol is None:
             tol = self.tol
@@ -952,7 +948,7 @@ class GeologicalModel:
         feature : GeologicalFeature
             created geological feature
         """
-        if self.check_inialisation() == False:
+        if not self.check_inialisation():
             return False
         if tol is None:
             tol = self.tol
@@ -1009,7 +1005,7 @@ class GeologicalModel:
         fold_frame : FoldFrame
             created fold frame
         """
-        if self.check_inialisation() == False:
+        if not self.check_inialisation():
             return False
         if tol is None:
             tol = self.tol
@@ -1088,11 +1084,14 @@ class GeologicalModel:
         intrusion_vertical_extent_model = function,
             geometrical conceptual model for simulation of vertical extent
         intrusion_network_parameters : dictionary, optional
-            contact : string, contact of the intrusion to be used to create the network (roof or floor)
+            contact :
+        string, contact of the intrusion to be used to create the network (roof or floor)
             type : string, type of algorithm to create the intrusion network (interpolated or shortest path).
-                    Shortest path is recommended when intrusion contact is not well constrained
-            contacts_anisotropies : list of series-type features involved in intrusion emplacement
-            structures_anisotropies : list of fault-type features involved in intrusion emplacement
+        Shortest path is recommended when intrusion contact is not well constrained
+            contacts_anisotropies : list
+         of series-type features involved in intrusion emplacement
+            structures_anisotropies : list
+         of fault-type features involved in intrusion emplacement
             sequence_anisotropies : list of anisotropies to look for the shortest path. It could be only starting and end point.
         lateral_extent_sgs_parameters = dictionary, optional
             parameters for sequential gaussian simulation of lateral extent
@@ -1136,7 +1135,8 @@ class GeologicalModel:
         )
         intrusion_network_geometry = intrusion_frame_builder.create_intrusion_network()
 
-        # -- create intrusion frame using intrusion network points and flow/inflation measurements
+        # -- create intrusion frame using intrusion network points
+        # and flow/inflation measurements
         intrusion_frame_builder.set_intrusion_frame_data(
             intrusion_frame_data, intrusion_network_geometry
         )
@@ -1151,7 +1151,8 @@ class GeologicalModel:
 
         intrusion_frame = intrusion_frame_builder.frame
 
-        # -- create intrusion builder to simulate distance thresholds along frame coordinates
+        # -- create intrusion builder to simulate distance thresholds
+        # along frame coordinates
         intrusion_builder = IntrusionBuilder(
             intrusion_frame, model=self, name=f"{intrusion_name}_feature"
         )
@@ -1215,9 +1216,10 @@ class GeologicalModel:
 
     def _add_domain_fault_below(self, domain_fault):
         """
-        Looks through the feature list and adds any the domain_fault to the features that already exist in the stack
-        until an unconformity is reached. domain faults to the feature. The domain fault masks everything
-        where the fault scalar field is < 0 as being active when added to feature.
+        Looks through the feature list and adds any the domain_fault to the features
+        that already exist in the stack until an unconformity is reached. domain faults
+        to the feature. The domain fault masks everything where the fault scalar field
+         is < 0 as being active when added to feature.
 
         Parameters
         ----------
@@ -1330,7 +1332,10 @@ class GeologicalModel:
             logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
             if f.type == FeatureType.FAULT:
                 continue
-            f.add_region(uc_feature.inverse())
+            if f == feature:
+                continue
+            else:
+                f.add_region(uc_feature)
         # now add the unconformity to the feature list
         self._add_feature(uc_feature)
         return uc_feature
@@ -1438,11 +1443,11 @@ class GeologicalModel:
         fault : FaultSegment
             created fault
         """
-        if "fault_extent" in kwargs and major_axis == None:
+        if "fault_extent" in kwargs and major_axis is None:
             major_axis = kwargs["fault_extent"]
-        if "fault_influence" in kwargs and minor_axis == None:
+        if "fault_influence" in kwargs and minor_axis is None:
             minor_axis = kwargs["fault_influence"]
-        if "fault_vectical_radius" in kwargs and intermediate_axis == None:
+        if "fault_vectical_radius" in kwargs and intermediate_axis is None:
             intermediate_axis = kwargs["fault_vectical_radius"]
 
         logger.info(f'Creating fault "{fault_surface_data}"')
@@ -1473,7 +1478,7 @@ class GeologicalModel:
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
         # faults arent supported for surfe
-        if isinstance(interpolator, DiscreteInterpolator) == False:
+        if not isinstance(interpolator, DiscreteInterpolator):
             logger.error(
                 "Change interpolator to a discrete interpolation algorithm FDI/PLI"
             )
@@ -1541,8 +1546,8 @@ class GeologicalModel:
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
         else:
-            # if we haven't defined a fault centre take the center of mass for lines assocaited with
-            # the fault trace
+            # if we haven't defined a fault centre take the
+            #  center of mass for lines assocaited with the fault trace
             if (
                 ~np.isnan(kwargs.get("centreEasting", np.nan))
                 and ~np.isnan(kwargs.get("centreNorthing", np.nan))
@@ -1620,7 +1625,7 @@ class GeologicalModel:
         points : np.array((N,3),dtype=double)
 
         """
-        if inplace == False:
+        if not inplace:
             points = points.copy()
         points *= self.scale_factor
         points += self.origin
@@ -1642,7 +1647,7 @@ class GeologicalModel:
 
         """
         points = np.array(points).astype(float)
-        if inplace == False:
+        if not inplace:
             points = points.copy()
         # if len(points.shape) == 1:
         #     points = points[None,:]
@@ -1895,18 +1900,17 @@ class GeologicalModel:
                 continue
         if verbose == True:
             print(
-                f"Updating geological model. There are: \n {nfeatures} geological features that need to be interpolated\n"
+                f"Updating geological model. There are: \n {nfeatures} \
+                    geological features that need to be interpolated\n"
             )
 
         from tqdm.auto import tqdm
         import time
 
         start = time.time()
-        sizecounter = 0
 
         # Load tqdm with size counter instead of file counter
         with tqdm(total=nfeatures) as pbar:
-            buf = 0
             for f in self.features:
                 pbar.set_description(f"Interpolating {f.name}")
                 f.builder.up_to_date(callback=pbar.update)
