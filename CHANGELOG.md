@@ -1,5 +1,14 @@
 # Changelog
 
+### [1.4.12](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.11...v1.4.12) (2022-08-27)
+
+
+### Bug Fixes
+
+* enabling fault network example ([5560d3f](https://www.github.com/Loop3D/LoopStructural/commit/5560d3f03aee7213dec7088b0e07f8a4150935f4))
+* failfast in strategy ([2f3304e](https://www.github.com/Loop3D/LoopStructural/commit/2f3304ee40220ac1b5f49ddf6b29d6a2e524520b))
+* path to copy change log ([c061755](https://www.github.com/Loop3D/LoopStructural/commit/c0617555acb1f1f57247c1fa7138e9a412f06207))
+
 ### [1.4.11](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.10...v1.4.11) (2022-08-10)
 
 
