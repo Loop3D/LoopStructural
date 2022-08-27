@@ -1,22 +1,25 @@
 :orphan:
 
-
-
-.. _sphx_glr_auto_examples:
-
 Examples
 ========
 
+
 .. raw:: html
 
-    <div class="sphx-glr-clear"></div>
+    <div class="sphx-glr-thumbnails">
 
 
+.. raw:: html
 
-.. _sphx_glr_auto_examples_1_basic:
+    </div>
 
 1. Basics
 ---------
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
 
 
 .. raw:: html
@@ -25,20 +28,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_6_least_squares_thumb.png
-     :alt: 1a. Advanced least squares
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_least_squares_thumb.png
+    :alt: 1a. Advanced least squares
 
-     :ref:`sphx_glr_auto_examples_1_basic_plot_6_least_squares.py`
+  :ref:`sphx_glr_auto_examples_1_basic_least_squares.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">1a. Advanced least squares</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/1_basic/plot_6_least_squares
 
 .. raw:: html
 
@@ -46,20 +45,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
-     :alt: 1a. Getting started
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
+    :alt: 1a. Getting started
 
-     :ref:`sphx_glr_auto_examples_1_basic_plot_1_data_prepration.py`
+  :ref:`sphx_glr_auto_examples_1_basic_plot_1_data_prepration.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">1a. Getting started</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/1_basic/plot_1_data_prepration
 
 .. raw:: html
 
@@ -67,20 +62,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
-     :alt: 1b. Implicit surface modelling
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
+    :alt: 1b. Implicit surface modelling
 
-     :ref:`sphx_glr_auto_examples_1_basic_plot_2_surface_modelling.py`
+  :ref:`sphx_glr_auto_examples_1_basic_plot_2_surface_modelling.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">1b. Implicit surface modelling</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/1_basic/plot_2_surface_modelling
 
 .. raw:: html
 
@@ -88,20 +79,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
-     :alt: 1c. Multiple groups
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
+    :alt: 1c. Multiple groups
 
-     :ref:`sphx_glr_auto_examples_1_basic_plot_3_multiple_groups.py`
+  :ref:`sphx_glr_auto_examples_1_basic_plot_3_multiple_groups.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">1c. Multiple groups</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/1_basic/plot_3_multiple_groups
 
 .. raw:: html
 
@@ -109,20 +96,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_model_visualisation_thumb.png
-     :alt: 1c. Visualising models
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_3_model_visualisation_thumb.png
+    :alt: 1c. Visualising models
 
-     :ref:`sphx_glr_auto_examples_1_basic_plot_3_model_visualisation.py`
+  :ref:`sphx_glr_auto_examples_1_basic_plot_3_model_visualisation.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">1c. Visualising models</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/1_basic/plot_3_model_visualisation
 
 .. raw:: html
 
@@ -130,20 +113,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
-     :alt: 1d. Using Stratigraphic Columns
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
+    :alt: 1d. Using Stratigraphic Columns
 
-     :ref:`sphx_glr_auto_examples_1_basic_plot_4_using_stratigraphic_column.py`
+  :ref:`sphx_glr_auto_examples_1_basic_plot_4_using_stratigraphic_column.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">1d. Using Stratigraphic Columns</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/1_basic/plot_4_using_stratigraphic_column
 
 .. raw:: html
 
@@ -151,20 +130,33 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_5_using_logging_thumb.png
-     :alt: 1e. Using logging
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_5_using_logging_thumb.png
+    :alt: 1e. Using logging
 
-     :ref:`sphx_glr_auto_examples_1_basic_plot_5_using_logging.py`
+  :ref:`sphx_glr_auto_examples_1_basic_plot_5_using_logging.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">1e. Using logging</div>
     </div>
 
 
-.. toctree::
-   :hidden:
+.. raw:: html
 
-   /auto_examples/1_basic/plot_5_using_logging
+    <div class="sphx-glr-thumbcontainer" tooltip="This example explores the relationship between the value of the scalar field and the geometry t...">
+
+.. only:: html
+
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_scalar_field_thumb.png
+    :alt: 1f. Implicit modelling: signed distance field
+
+  :ref:`sphx_glr_auto_examples_1_basic_scalar_field.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1f. Implicit modelling: signed distance field</div>
+    </div>
+
 
 .. raw:: html
 
@@ -172,30 +164,45 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/1_basic/images/thumb/sphx_glr_example_surfe_thumb.png
-     :alt: 1f. Radial Basis Interpolation Using Surfe
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_example_surfe_thumb.png
+    :alt: 1f. Radial Basis Interpolation Using Surfe
 
-     :ref:`sphx_glr_auto_examples_1_basic_example_surfe.py`
+  :ref:`sphx_glr_auto_examples_1_basic_example_surfe.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1f. Radial Basis Interpolation Using Surfe</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1f. Unconformities">
+
+.. only:: html
+
+  .. image:: /auto_examples/1_basic/images/thumb/sphx_glr_plot_6_unconformities_thumb.png
+    :alt: 1f. Unconformities
+
+  :ref:`sphx_glr_auto_examples_1_basic_plot_6_unconformities.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1f. Unconformities</div>
+    </div>
+
 
 .. raw:: html
 
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/1_basic/example_surfe
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. _sphx_glr_auto_examples_2_fold:
-
 2. Modelling Folds
 -------------------
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
 
 
 .. raw:: html
@@ -204,20 +211,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
-     :alt: 2a. Modelling folds
+  .. image:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
+    :alt: 2a. Modelling folds
 
-     :ref:`sphx_glr_auto_examples_2_fold_plot_adding_folds_to_surfaces.py`
+  :ref:`sphx_glr_auto_examples_2_fold_plot_adding_folds_to_surfaces.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">2a. Modelling folds</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/2_fold/plot_adding_folds_to_surfaces
 
 .. raw:: html
 
@@ -225,30 +228,28 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_refolded_folds_thumb.png
-     :alt: 2b. Refolded folds
+  .. image:: /auto_examples/2_fold/images/thumb/sphx_glr_plot_refolded_folds_thumb.png
+    :alt: 2b. Refolded folds
 
-     :ref:`sphx_glr_auto_examples_2_fold_plot_refolded_folds.py`
+  :ref:`sphx_glr_auto_examples_2_fold_plot_refolded_folds.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">2b. Refolded folds</div>
+    </div>
+
 
 .. raw:: html
 
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/2_fold/plot_refolded_folds
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. _sphx_glr_auto_examples_3_fault:
-
 3. Modelling Faults
 --------------------
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
 
 
 .. raw:: html
@@ -257,20 +258,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/3_fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
-     :alt: 3a. Modelling faults using structural frames
+  .. image:: /auto_examples/3_fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
+    :alt: 3a. Modelling faults using structural frames
 
-     :ref:`sphx_glr_auto_examples_3_fault_plot_faulted_intrusion.py`
+  :ref:`sphx_glr_auto_examples_3_fault_plot_faulted_intrusion.py`
 
 .. raw:: html
 
+      <div class="sphx-glr-thumbnail-title">3a. Modelling faults using structural frames</div>
     </div>
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/3_fault/plot_faulted_intrusion
 
 .. raw:: html
 
@@ -278,10 +275,16 @@ Examples
 
 .. only:: html
 
- .. figure:: /auto_examples/3_fault/images/thumb/sphx_glr_plot_fault_network_thumb.png
-     :alt: 3b. Modelling a fault network in LoopStructural
+  .. image:: /auto_examples/3_fault/images/thumb/sphx_glr_fault_network_thumb.png
+    :alt: 3b. Modelling a fault network in LoopStructural
 
-     :ref:`sphx_glr_auto_examples_3_fault_plot_fault_network.py`
+  :ref:`sphx_glr_auto_examples_3_fault_fault_network.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3b. Modelling a fault network in LoopStructural</div>
+    </div>
+
 
 .. raw:: html
 
@@ -290,29 +293,24 @@ Examples
 
 .. toctree::
    :hidden:
+   :includehidden:
 
-   /auto_examples/3_fault/plot_fault_network
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-gallery
+   /auto_examples//1_basic/index.rst
+   /auto_examples//2_fold/index.rst
+   /auto_examples//3_fault/index.rst
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+.. only:: html
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
+      :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
+      :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Implicit Interpolators &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,45 +28,54 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Fold modelling" href="fold_modelling.html" />
     <link rel="prev" title="Geological Model" href="geological_model.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -108,6 +121,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -126,13 +147,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -177,19 +198,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -221,26 +243,24 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="implicit-interpolators">
-<span id="interpolation-options"></span><h1>Implicit Interpolators<a class="headerlink" href="#implicit-interpolators" title="Permalink to this headline">#</a></h1>
+<span id="interpolation-options"></span><h1>Implicit Interpolators<a class="headerlink" href="#implicit-interpolators" title="Permalink to this heading">#</a></h1>
 <p>The aim of implicit modelling is to find a function which represents the distance away from a reference geological horizon.
 There is no known analytical solution for this problem which means that they need to be approximated from the observations that are provided.
 We can approximate the implicit function using a weighted combination of basis functions:</p>
@@ -272,7 +292,7 @@ We can approximate the implicit function using a weighted combination of basis f
 1. Discrete interpolation where the implicit function is approximated by basis functions on a predefined support
 2. Data supported interpolation where the implicit function is approximated using basis functions located on the data points</p>
 <div class="section" id="discrete-interpolation">
-<h2>Discrete Interpolation<a class="headerlink" href="#discrete-interpolation" title="Permalink to this headline">#</a></h2>
+<h2>Discrete Interpolation<a class="headerlink" href="#discrete-interpolation" title="Permalink to this heading">#</a></h2>
 <p>There are two approaches that can be used for discrete interpolation.
 The first approach, <strong>Piecewise Linear Interpolation</strong>, uses a linear function on a tetrahedral mesh, in LoopStructural a tetrahedral mesh is generated from a catesian grid.
 This means that the tetrahdral mesh is limited to object geometries that can be stored on a regular grid.</p>
@@ -334,7 +354,7 @@ The regularisation term is added by adding the following constraint for every pa
 </table>
 </div></blockquote>
 <div class="section" id="finite-difference-interpolation">
-<h3>Finite Difference Interpolation<a class="headerlink" href="#finite-difference-interpolation" title="Permalink to this headline">#</a></h3>
+<h3>Finite Difference Interpolation<a class="headerlink" href="#finite-difference-interpolation" title="Permalink to this heading">#</a></h3>
 <p>Instead of using the P1 finite elements we represent the property using trilinear interpolation within a cubic element.
 The property is interpolated using the 8 vertices of a cube and a linear interpolation along each axis.</p>
 <p>The local coordinates are determined by finding the relative location of the point within a cell:</p>
@@ -394,7 +414,7 @@ N_8 = \frac{1}{8}(1-\xi)(1+\eta)(1+\zeta) \\
 </div>
 </div>
 <div class="section" id="solving-discrete-system">
-<h2>Solving discrete system<a class="headerlink" href="#solving-discrete-system" title="Permalink to this headline">#</a></h2>
+<h2>Solving discrete system<a class="headerlink" href="#solving-discrete-system" title="Permalink to this heading">#</a></h2>
 <p>The discrete interpolation problems are an over determined system of equations:</p>
 <div class="math notranslate nohighlight">
 \[A \cdot x = b\]</div>
@@ -445,7 +465,7 @@ Both pyamg and cg have the following parameters that can be used to specify the 
 <p>Another parameter maxiter can be used to specify the maximum number of iterations for the alorithm.</p>
 </div>
 <div class="section" id="data-supported-interpolation">
-<h2>Data Supported Interpolation<a class="headerlink" href="#data-supported-interpolation" title="Permalink to this headline">#</a></h2>
+<h2>Data Supported Interpolation<a class="headerlink" href="#data-supported-interpolation" title="Permalink to this heading">#</a></h2>
 <p>LoopStructural provides a wrapper to the SurfE c++ library developed  Natural Resources Canada (Geological Survey of Canada) by Michael Hillier, Eric de Kemp, and Ernst Schetselaar for the purposes of 3D structural geological modelling particularly in sparse data environments.
 SurfE can be used for interpolating a GeologicalFeature in a GeologicalModel by specifying the parameter
 .. code-block:</p>
@@ -491,35 +511,39 @@ SurfE can be used for interpolating a GeologicalFeature in a GeologicalModel by 
 </div>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="geological_model.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Geological Model</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="fold_modelling.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Fold modelling</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="geological_model.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Geological Model</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="fold_modelling.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Fold modelling</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

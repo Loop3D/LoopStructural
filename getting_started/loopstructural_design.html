@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoopStructural design &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,44 +28,53 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Examples" href="../auto_examples/index.html" />
     <link rel="prev" title="Contribute" href="contributors_guide.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -107,6 +120,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -125,13 +146,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -171,19 +192,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -247,38 +269,36 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="loopstructural-design">
-<h1>LoopStructural design<a class="headerlink" href="#loopstructural-design" title="Permalink to this headline">#</a></h1>
+<h1>LoopStructural design<a class="headerlink" href="#loopstructural-design" title="Permalink to this heading">#</a></h1>
 <p><strong>Authors:</strong> Lachlan Grose, Laurent Ailleres, Gautier Laurent, Mark Jessell, Roy Thomson</p>
 <p><strong>Last updated:</strong> 1/11/2021</p>
 <div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">#</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
 <p>LoopStructural is a modular 3D geological modelling library with a flexible API for building 3D geological models. It provides access to implicit interpolators as well as geological feature/events.</p>
 </div>
 <div class="section" id="context">
-<h2>Context<a class="headerlink" href="#context" title="Permalink to this headline">#</a></h2>
+<h2>Context<a class="headerlink" href="#context" title="Permalink to this heading">#</a></h2>
 <p>The objective of geological modelling is to predict the geometry and distribution of geological objects in the subsurface. Different geological objects are represented by approximating an implicit function where isovalues/level sets of the implicit function define the geometry of geological features. The interaction between different geological objects is defined by the geological feature type (fault, fold, unconformity).</p>
 </div>
 <div class="section" id="goals-and-non-goals">
-<h2>Goals and Non-Goals<a class="headerlink" href="#goals-and-non-goals" title="Permalink to this headline">#</a></h2>
+<h2>Goals and Non-Goals<a class="headerlink" href="#goals-and-non-goals" title="Permalink to this heading">#</a></h2>
 <p>The aim of LoopStructural are:</p>
 <ul class="simple">
 <li><p>to provide an easy to use python API for building 3D geological models from data.</p></li>
@@ -287,7 +307,7 @@
 </ul>
 </div>
 <div class="section" id="existing-solutions">
-<h2>Existing Solutions<a class="headerlink" href="#existing-solutions" title="Permalink to this headline">#</a></h2>
+<h2>Existing Solutions<a class="headerlink" href="#existing-solutions" title="Permalink to this heading">#</a></h2>
 <p>There are a number of commercial and open source 3D modelling packages available.</p>
 <ul class="simple">
 <li><p>Gocad/Skua provides a 3D modelling environment and an implicit interpolation algorithm</p></li>
@@ -299,7 +319,7 @@
 </ul>
 </div>
 <div class="section" id="technical-architecture">
-<h2>Technical Architecture<a class="headerlink" href="#technical-architecture" title="Permalink to this headline">#</a></h2>
+<h2>Technical Architecture<a class="headerlink" href="#technical-architecture" title="Permalink to this heading">#</a></h2>
 <p><strong>Module design</strong> LoopStructural is divided into submodules which contain specific independent elements of the code.
 The submodules separate clear differences in the functionality of the code.
 The main modules for the library are:</p>
@@ -329,7 +349,7 @@ When the new release is merged the library will be deployed to pypi, loop3d cond
 The documentation is automatically built when a new release is created and will be uploaded.
 The entire CI/CD workflow is run using github actions.</p>
 <div class="section" id="interpolators">
-<h3>1. interpolators<a class="headerlink" href="#interpolators" title="Permalink to this headline">#</a></h3>
+<h3>1. interpolators<a class="headerlink" href="#interpolators" title="Permalink to this heading">#</a></h3>
 <p>The interpolation module contains different interpolators and associated supports used by LoopStructural.
 The purpose of the interpolator is to build a 2D/3D scalar field from constraints (e.g. orientation, contact, fold).
 The base of the interpolation module is the <strong>GeologicalInterpolator</strong> class.
@@ -339,7 +359,7 @@ This module should include all interpolators and associated classes (e.g. mesh, 
 Future update: there should be a separate API so that the interpolators can be used without a GeologicalModel.</p>
 </div>
 <div class="section" id="modelling">
-<h3>2. modelling<a class="headerlink" href="#modelling" title="Permalink to this headline">#</a></h3>
+<h3>2. modelling<a class="headerlink" href="#modelling" title="Permalink to this heading">#</a></h3>
 <p>The modelling is the main entry point to LoopStructural and includes the <strong>GeologicalModel</strong> class.
 A <strong>GeologicalModel</strong> consists of <strong>GeologicalFeatures</strong> which define a particular geological phenomenon.
 For example, a <strong>GeologicalFeature</strong> can be a stratigraphic sequence, a fault, a foliation, an unconformity, an intrusion.
@@ -350,10 +370,10 @@ The builder is in charge of keeping track of whether the interpolator has been r
 The builder could also be used to build a <strong>GeologicalFeature</strong> without an interpolator.</p>
 </div>
 <div class="section" id="visualisation">
-<h3>3. visualisation<a class="headerlink" href="#visualisation" title="Permalink to this headline">#</a></h3>
+<h3>3. visualisation<a class="headerlink" href="#visualisation" title="Permalink to this heading">#</a></h3>
 <p>The visualisation module is in charge of creating 2D/3D visualisations for the GeolgicalModel and GeologicalFeatures.</p>
 <div class="section" id="d-visualisation">
-<h4>3D visualisation<a class="headerlink" href="#d-visualisation" title="Permalink to this headline">#</a></h4>
+<h4>3D visualisation<a class="headerlink" href="#d-visualisation" title="Permalink to this heading">#</a></h4>
 <p>The 3D visualisation module for LoopStructural has been written using an abstract base class.
 <strong>BaseModelPlotter</strong> contains all of the methods for plotting the various different attributes for a GeologicalModel.
 A visualisation module can be implemented by simply subclassing the <strong>BaseModelPlotter</strong> and implementing the following methods:</p>
@@ -365,42 +385,46 @@ A visualisation module can be implemented by simply subclassing the <strong>Base
 </div>
 </div>
 <div class="section" id="utils">
-<h3>4. utils<a class="headerlink" href="#utils" title="Permalink to this headline">#</a></h3>
+<h3>4. utils<a class="headerlink" href="#utils" title="Permalink to this heading">#</a></h3>
 <p>The utils module is a container for utility functions that are used throughout the library.</p>
 </div>
 </div>
 </div>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="contributors_guide.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Contribute</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="../auto_examples/index.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Examples</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="contributors_guide.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Contribute</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../auto_examples/index.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Examples</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

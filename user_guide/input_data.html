@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Input data &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,45 +28,54 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Geological Model" href="geological_model.html" />
     <link rel="prev" title="User Guide" href="index.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -108,6 +121,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -126,13 +147,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -177,19 +198,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -224,26 +246,24 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="input-data">
-<h1>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">#</a></h1>
+<h1>Input data<a class="headerlink" href="#input-data" title="Permalink to this heading">#</a></h1>
 <p>To create a geological model the data needs to be formatted in a table the following headings:</p>
 <ul class="simple">
 <li><p>X - x component of the cartesian coordinates</p></li>
@@ -264,14 +284,14 @@
 <li><p>coord - coordinate of the structural frame data point is used for</p></li>
 </ul>
 <div class="section" id="value-constraints">
-<h2>Value constraints<a class="headerlink" href="#value-constraints" title="Permalink to this headline">#</a></h2>
+<h2>Value constraints<a class="headerlink" href="#value-constraints" title="Permalink to this heading">#</a></h2>
 <p>Value constraints set the value of the implicit function to equal the value.
 This should represent the distance from the reference horizon.
 It is important to consider the range in value of this field and the coordinates of the model.
 If the range in value of the scalar field is very large relative to the model coordinates, it would be expected that the resulting model will be very steep.</p>
 </div>
 <div class="section" id="interface-constraints">
-<h2>Interface constraints<a class="headerlink" href="#interface-constraints" title="Permalink to this headline">#</a></h2>
+<h2>Interface constraints<a class="headerlink" href="#interface-constraints" title="Permalink to this heading">#</a></h2>
 <p>Interface constraints are points which should have the same value of the implicit function.
 This is comparable to the way data are interpreted using the Lajaunnie approach.
 A warning, when using interface constraints there is no gradient information implicitly defined by the value of the points.
@@ -281,13 +301,13 @@ Due to the implementation of interface constraints, these tend to be weighted hi
 As a result, it is recommended to increase the weighting of the normal constraints by at least the average number of points in an interface.</p>
 </div>
 <div class="section" id="gradient-norm-constraints">
-<h2>Gradient norm constraints<a class="headerlink" href="#gradient-norm-constraints" title="Permalink to this headline">#</a></h2>
+<h2>Gradient norm constraints<a class="headerlink" href="#gradient-norm-constraints" title="Permalink to this heading">#</a></h2>
 <p>Sets the partial derivatives of the implicit function to equal the components of the gradient norm vector.
 This has a similar limitation as the value constraints, the magnitude of the vector needs to within the correct scale of the model.
 This means the normal vector should be scaled in the same way as the model coordinates.</p>
 </div>
 <div class="section" id="gradient-constraints">
-<h2>Gradient constraints<a class="headerlink" href="#gradient-constraints" title="Permalink to this headline">#</a></h2>
+<h2>Gradient constraints<a class="headerlink" href="#gradient-constraints" title="Permalink to this heading">#</a></h2>
 <p>Gradient constraints find a pair of vectors that are orthogonal to the normal vector to the field.
 This this can be the strike vector and the dip vector.
 Two constraints are added into the implicit functions constraining the scalar field to be orthogonal to these vectors.
@@ -295,7 +315,7 @@ This constraint will control the gradient of the scalar field without controllin
 For this reason these constraints are not as strong as the gradient norm constraint.</p>
 </div>
 <div class="section" id="tangent-constraints">
-<h2>Tangent constraints<a class="headerlink" href="#tangent-constraints" title="Permalink to this headline">#</a></h2>
+<h2>Tangent constraints<a class="headerlink" href="#tangent-constraints" title="Permalink to this heading">#</a></h2>
 <p>Constrains a vector to be orthogonal to the scalar field by adding the following constraint:</p>
 <div class="math notranslate nohighlight">
 \[f(x,y,z) \cdot \textbf{t} = 0\]</div>
@@ -305,35 +325,39 @@ It is not recommended for use, however it could be used for integrating form lin
 </div>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="index.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">User Guide</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="geological_model.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Geological Model</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">User Guide</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="geological_model.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Geological Model</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

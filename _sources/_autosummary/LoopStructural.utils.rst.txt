@@ -39,6 +39,7 @@ LoopStructural.utils
       :template: custom-class-template.rst
       :recursive:              
    
+      LoopJSONEncoder
       NegativeRegion
       PositiveRegion
       RegionEverywhere
@@ -75,6 +76,7 @@ LoopStructural.utils
    LoopStructural.utils.dtm_creator
    LoopStructural.utils.exceptions
    LoopStructural.utils.helper
+   LoopStructural.utils.json_encoder
    LoopStructural.utils.logging
    LoopStructural.utils.map2loop
    LoopStructural.utils.regions

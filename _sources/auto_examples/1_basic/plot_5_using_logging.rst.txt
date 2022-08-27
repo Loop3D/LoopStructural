@@ -117,12 +117,10 @@ Create model
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.09s/it]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.09s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 73.30it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.99s/it]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.99s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 68.33it/s]
 
 
 
@@ -207,12 +205,10 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.05s/it]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.05s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 67.50it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.01s/it]    Interpolating strati: 100%|##########| 1/1 [00:03<00:00,  3.01s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 66.38it/s]
 
 
 
@@ -220,28 +216,23 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.763 seconds)
+   **Total running time of the script:** ( 0 minutes  7.672 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_5_using_logging.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_5_using_logging.py <plot_5_using_logging.py>`
 
-     :download:`Download Python source code: plot_5_using_logging.py <plot_5_using_logging.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_5_using_logging.ipynb <plot_5_using_logging.ipynb>`
+      :download:`Download Jupyter notebook: plot_5_using_logging.ipynb <plot_5_using_logging.ipynb>`
 
 
 .. only:: html

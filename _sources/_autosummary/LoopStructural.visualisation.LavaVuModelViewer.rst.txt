@@ -23,7 +23,6 @@ LoopStructural.visualisation.LavaVuModelViewer
       ~LavaVuModelViewer.add_fault
       ~LavaVuModelViewer.add_fault_displacements
       ~LavaVuModelViewer.add_fold
-      ~LavaVuModelViewer.add_intersection_lineation
       ~LavaVuModelViewer.add_isosurface
       ~LavaVuModelViewer.add_model
       ~LavaVuModelViewer.add_model_surfaces

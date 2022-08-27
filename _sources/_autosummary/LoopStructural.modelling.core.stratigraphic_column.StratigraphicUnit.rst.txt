@@ -1,0 +1,36 @@
+LoopStructural.modelling.core.stratigraphic\_column.StratigraphicUnit
+=====================================================================
+
+.. currentmodule:: LoopStructural.modelling.core.stratigraphic_column
+
+.. autoclass:: StratigraphicUnit
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~StratigraphicUnit.__init__
+      ~StratigraphicUnit.clear
+      ~StratigraphicUnit.copy
+      ~StratigraphicUnit.fromkeys
+      ~StratigraphicUnit.get
+      ~StratigraphicUnit.items
+      ~StratigraphicUnit.keys
+      ~StratigraphicUnit.pop
+      ~StratigraphicUnit.popitem
+      ~StratigraphicUnit.setdefault
+      ~StratigraphicUnit.update
+      ~StratigraphicUnit.values
+   
+   
+
+   
+   
+   

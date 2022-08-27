@@ -51,7 +51,6 @@ LoopStructural.interpolators
    :template: custom-module-template.rst                 
    :recursive:
 
-   LoopStructural.interpolators.cython
    LoopStructural.interpolators.piecewiselinear_interpolator
    LoopStructural.interpolators.supports
 

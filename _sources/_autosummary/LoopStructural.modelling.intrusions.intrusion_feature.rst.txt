@@ -28,6 +28,7 @@ LoopStructural.modelling.intrusions.intrusion\_feature
       :template: custom-class-template.rst
       :recursive:              
    
+      FeatureType
       IntrusionFeature
    
    

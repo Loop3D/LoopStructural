@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>2a. Modelling folds &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,45 +28,54 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="2b. Refolded folds" href="plot_refolded_folds.html" />
-    <link rel="prev" title="1f. Radial Basis Interpolation Using Surfe" href="../1_basic/example_surfe.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+    <link rel="prev" title="2. Modelling Folds" href="index.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -108,6 +121,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -126,117 +147,142 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/plot_6_least_squares.html">
-   1a. Advanced least squares
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../1_basic/index.html">
+   1. Basics
   </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/least_squares.html">
+     1a. Advanced least squares
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/plot_1_data_prepration.html">
+     1a. Getting started
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/plot_2_surface_modelling.html">
+     1b. Implicit surface modelling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/plot_3_multiple_groups.html">
+     1c. Multiple groups
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/plot_3_model_visualisation.html">
+     1c. Visualising models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/plot_4_using_stratigraphic_column.html">
+     1d. Using Stratigraphic Columns
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/plot_5_using_logging.html">
+     1e. Using logging
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/scalar_field.html">
+     1f. Implicit modelling: signed distance field
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/example_surfe.html">
+     1f. Radial Basis Interpolation Using Surfe
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../1_basic/plot_6_unconformities.html">
+     1f. Unconformities
+    </a>
+   </li>
+  </ul>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/plot_1_data_prepration.html">
-   1a. Getting started
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   2. Modelling Folds
   </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     2a. Modelling folds
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="plot_refolded_folds.html">
+     2b. Refolded folds
+    </a>
+   </li>
+  </ul>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/plot_2_surface_modelling.html">
-   1b. Implicit surface modelling
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../3_fault/index.html">
+   3. Modelling Faults
   </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/plot_3_multiple_groups.html">
-   1c. Multiple groups
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/plot_3_model_visualisation.html">
-   1c. Visualising models
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/plot_4_using_stratigraphic_column.html">
-   1d. Using Stratigraphic Columns
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/plot_5_using_logging.html">
-   1e. Using logging
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_basic/example_surfe.html">
-   1f. Radial Basis Interpolation Using Surfe
-  </a>
- </li>
-</ul>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   2a. Modelling folds
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="plot_refolded_folds.html">
-   2b. Refolded folds
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../3_fault/plot_faulted_intrusion.html">
-   3a. Modelling faults using structural frames
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../3_fault/plot_fault_network.html">
-   3b. Modelling a fault network in LoopStructural
-  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../3_fault/plot_faulted_intrusion.html">
+     3a. Modelling faults using structural frames
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../3_fault/fault_network.html">
+     3b. Modelling a fault network in LoopStructural
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -288,23 +334,21 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -312,7 +356,7 @@
 to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="a-modelling-folds">
-<span id="sphx-glr-auto-examples-2-fold-plot-adding-folds-to-surfaces-py"></span><h1>2a. Modelling folds<a class="headerlink" href="#a-modelling-folds" title="Permalink to this headline">#</a></h1>
+<span id="sphx-glr-auto-examples-2-fold-plot-adding-folds-to-surfaces-py"></span><h1>2a. Modelling folds<a class="headerlink" href="#a-modelling-folds" title="Permalink to this heading">#</a></h1>
 <blockquote>
 <div><p>This tutorial will show how Loop Structural improves the modelling of
 folds by using an accurate parameterization of folds geometry. This will
@@ -324,7 +368,7 @@ Construction of folded foliations using fold geostatistics inside the
 fold frame coordinate system</p>
 </div></blockquote>
 <div class="section" id="imports">
-<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">#</a></h2>
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
 <span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.datasets.load_noddy_single_fold.html#LoopStructural.datasets.load_noddy_single_fold" title="LoopStructural.datasets.load_noddy_single_fold" class="sphx-glr-backref-module-LoopStructural-datasets sphx-glr-backref-type-py-function"><span class="n">load_noddy_single_fold</span></a>
 <span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">,</span> <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">RotationAnglePlotter</span></a>
@@ -337,7 +381,7 @@ fold frame coordinate system</p>
 </div>
 </div>
 <div class="section" id="structural-geology-of-folds">
-<h2>Structural geology of folds<a class="headerlink" href="#structural-geology-of-folds" title="Permalink to this headline">#</a></h2>
+<h2>Structural geology of folds<a class="headerlink" href="#structural-geology-of-folds" title="Permalink to this heading">#</a></h2>
 <p>Folds are one of the most common features found in deformed rocks and
 are defined by the location of higher curvature. The geometry of the
 folded surface can be characterised by three geometrical elements:</p>
@@ -355,7 +399,7 @@ surfaces the geologist will need to characterise the geometry of the
 folded surface in high detail.</p>
 </div>
 <div class="section" id="modelling-folded-surfaces-without-structural-geology">
-<h2>Modelling folded surfaces without structural geology<a class="headerlink" href="#modelling-folded-surfaces-without-structural-geology" title="Permalink to this headline">#</a></h2>
+<h2>Modelling folded surfaces without structural geology<a class="headerlink" href="#modelling-folded-surfaces-without-structural-geology" title="Permalink to this heading">#</a></h2>
 <p>In the following section we will attempt to model a synthetic fold shape
 that is defined by a sinusoidal folded surface. For simplicity we will
 consider the fold as cylindrical and therefore only consider the fold in
@@ -375,7 +419,7 @@ points.</p></li>
 <li><p>Look at using data points ONLY from a map surface</p></li>
 </ol>
 <div class="section" id="modelling-folded-surfaces-using-loop-structural">
-<h3>Modelling folded surfaces using loop structural<a class="headerlink" href="#modelling-folded-surfaces-using-loop-structural" title="Permalink to this headline">#</a></h3>
+<h3>Modelling folded surfaces using loop structural<a class="headerlink" href="#modelling-folded-surfaces-using-loop-structural" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the sample data</span>
 <span class="n">data</span><span class="p">,</span> <span class="n">boundary_points</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.datasets.load_noddy_single_fold.html#LoopStructural.datasets.load_noddy_single_fold" title="LoopStructural.datasets.load_noddy_single_fold" class="sphx-glr-backref-module-LoopStructural-datasets sphx-glr-backref-type-py-function"><span class="n">load_noddy_single_fold</span></a><span class="p">()</span>
 <span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -594,7 +638,7 @@ choosing the first N samples from the dataframe</p>
 <p>returns the first 100 data points from the array</p>
 </div>
 <div class="section" id="testing-data-density">
-<h3>Testing data density<a class="headerlink" href="#testing-data-density" title="Permalink to this headline">#</a></h3>
+<h3>Testing data density<a class="headerlink" href="#testing-data-density" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Use the toggle bar to change the amount of data used by the
 interpolation algorithm.</p></li>
@@ -622,7 +666,7 @@ field box.</p>
 </div>
 <img src="../../_images/sphx_glr_plot_adding_folds_to_surfaces_001.png" srcset="../../_images/sphx_glr_plot_adding_folds_to_surfaces_001.png" alt="plot adding folds to surfaces" class = "sphx-glr-single-img"/></div>
 <div class="section" id="modelling-folds-using-structural-geology">
-<h3>Modelling folds using structural geology<a class="headerlink" href="#modelling-folds-using-structural-geology" title="Permalink to this headline">#</a></h3>
+<h3>Modelling folds using structural geology<a class="headerlink" href="#modelling-folds-using-structural-geology" title="Permalink to this heading">#</a></h3>
 <p>The following section will describe how the fold axis, fold axial
 surface and fold vergence can be used to help constrain the shape of the
 folded surface. To do this we need to build a fold frame which is
@@ -645,7 +689,7 @@ plane defined by the fold axis and <span class="math notranslate nohighlight">\(
 the fold limb rotation angle <span class="math notranslate nohighlight">\(\alpha_L\)</span>.</p>
 </div>
 <div class="section" id="calculating-the-fold-rotation-angles">
-<h3>Calculating the fold rotation angles<a class="headerlink" href="#calculating-the-fold-rotation-angles" title="Permalink to this headline">#</a></h3>
+<h3>Calculating the fold rotation angles<a class="headerlink" href="#calculating-the-fold-rotation-angles" title="Permalink to this heading">#</a></h3>
 <p>The rotation angles can be calculated for observations of the folded
 foliation and assocaited lineations. For example, the fold axis rotation
 angle is found by calculating the angle between the gradient of the fold
@@ -691,7 +735,7 @@ shown in B and C.</p>
 </div>
 <img src="../../_images/sphx_glr_plot_adding_folds_to_surfaces_002.png" srcset="../../_images/sphx_glr_plot_adding_folds_to_surfaces_002.png" alt="plot adding folds to surfaces" class = "sphx-glr-single-img"/></div>
 <div class="section" id="plotting-the-fold-rotation-angles">
-<h3>Plotting the fold rotation angles<a class="headerlink" href="#plotting-the-fold-rotation-angles" title="Permalink to this headline">#</a></h3>
+<h3>Plotting the fold rotation angles<a class="headerlink" href="#plotting-the-fold-rotation-angles" title="Permalink to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rotation_plots</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">RotationAnglePlotter</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature" class="sphx-glr-backref-module-LoopStructural-modelling-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stratigraphy</span></a><span class="p">)</span>
 <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rotation_plots</span></a><span class="o">.</span><span class="n">add_fold_limb_data</span><span class="p">()</span>
 <span class="c1"># plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy[&#39;limb_rotation&#39;],&#39;bo&#39;)</span>
@@ -700,8 +744,8 @@ shown in B and C.</p>
 <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rotation_plots</span></a><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_adding_folds_to_surfaces_003.png" srcset="../../_images/sphx_glr_plot_adding_folds_to_surfaces_003.png" alt="plot adding folds to surfaces" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.967 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-2-fold-plot-adding-folds-to-surfaces-py">
+<img src="../../_images/sphx_glr_plot_adding_folds_to_surfaces_003.png" srcset="../../_images/sphx_glr_plot_adding_folds_to_surfaces_003.png" alt="plot adding folds to surfaces" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  16.674 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-2-fold-plot-adding-folds-to-surfaces-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8f4f4bb3558c5a8991abf6d5e83f3af2/plot_adding_folds_to_surfaces.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_adding_folds_to_surfaces.py</span></code></a></p>
 </div>
@@ -715,35 +759,39 @@ shown in B and C.</p>
 </div>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="../1_basic/example_surfe.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">1f. Radial Basis Interpolation Using Surfe</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="plot_refolded_folds.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">2b. Refolded folds</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">2. Modelling Folds</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="plot_refolded_folds.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">2b. Refolded folds</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

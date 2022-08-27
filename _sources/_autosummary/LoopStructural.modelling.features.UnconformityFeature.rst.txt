@@ -20,9 +20,14 @@ LoopStructural.modelling.features.UnconformityFeature
       ~UnconformityFeature.add_region
       ~UnconformityFeature.evaluate
       ~UnconformityFeature.evaluate_gradient
+      ~UnconformityFeature.evaluate_gradient_misfit
       ~UnconformityFeature.evaluate_value
+      ~UnconformityFeature.evaluate_value_misfit
+      ~UnconformityFeature.inverse
+      ~UnconformityFeature.is_valid
       ~UnconformityFeature.max
       ~UnconformityFeature.min
+      ~UnconformityFeature.set_model
       ~UnconformityFeature.toggle_faults
    
    

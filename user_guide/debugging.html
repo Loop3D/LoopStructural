@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Debugging LoopStructural &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,42 +28,51 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -105,6 +118,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -123,13 +144,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -137,19 +158,20 @@
     
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -210,30 +232,28 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="debugging-loopstructural">
-<h1>Debugging LoopStructural<a class="headerlink" href="#debugging-loopstructural" title="Permalink to this headline">#</a></h1>
+<h1>Debugging LoopStructural<a class="headerlink" href="#debugging-loopstructural" title="Permalink to this heading">#</a></h1>
 <div class="section" id="interpolation">
-<h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this headline">#</a></h2>
+<h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this heading">#</a></h2>
 <div class="section" id="surfaces-are-not-displaying">
-<h3>Surfaces are not displaying<a class="headerlink" href="#surfaces-are-not-displaying" title="Permalink to this headline">#</a></h3>
+<h3>Surfaces are not displaying<a class="headerlink" href="#surfaces-are-not-displaying" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>check to see what the scalar field looks linked</p></li>
 <li><p>look at the values of the nodes of the implicit function supports <cite>feature.interpolator.c</cite> if all of the nodes are 0 the interpolator has not solved.</p></li>
@@ -242,7 +262,7 @@
 </ul>
 </div>
 <div class="section" id="surface-geometry-is-erroneous">
-<h3>Surface geometry is erroneous<a class="headerlink" href="#surface-geometry-is-erroneous" title="Permalink to this headline">#</a></h3>
+<h3>Surface geometry is erroneous<a class="headerlink" href="#surface-geometry-is-erroneous" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Try using a different solver - sometimes <code class="code docutils literal notranslate"><span class="pre">pyamg</span></code> does not work as it tries to pick a pattern in the interpolation matrix indicating the mesh geometry.</p></li>
 <li><p>If the solution doesn’t fit your data points try adding more elements</p></li>
@@ -271,14 +291,14 @@ Smaller values mean the solution will be a closer fit to the data + regularisati
 </ul>
 </div>
 <div class="section" id="interpolator-hasn-t-solved">
-<h3>Interpolator hasn’t solved<a class="headerlink" href="#interpolator-hasn-t-solved" title="Permalink to this headline">#</a></h3>
+<h3>Interpolator hasn’t solved<a class="headerlink" href="#interpolator-hasn-t-solved" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>check that there are sufficient data points to constrain a surface. There needs to be at least two unique value constraints or a single value constraint and a gradient norm constraint.</p></li>
 <li><p>Try using the default solver, <code class="code docutils literal notranslate"><span class="pre">solver=&quot;cg&quot;</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="interpolator-is-taking-a-long-time">
-<h3>Interpolator is taking a long time<a class="headerlink" href="#interpolator-is-taking-a-long-time" title="Permalink to this headline">#</a></h3>
+<h3>Interpolator is taking a long time<a class="headerlink" href="#interpolator-is-taking-a-long-time" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Check how many elements you are using, <code class="code docutils literal notranslate"><span class="pre">1e5</span></code> should take under 5 minutes on a modern laptop</p></li>
 <li><p>How many faults are associated with the feature? <code class="code docutils literal notranslate"><span class="pre">len(feature.faults)</span></code>, you can remove the faults by setting this to an empty list</p></li>
@@ -289,11 +309,11 @@ Smaller values mean the solution will be a closer fit to the data + regularisati
 </div>
 </div>
 <div class="section" id="folds">
-<h2>Folds<a class="headerlink" href="#folds" title="Permalink to this headline">#</a></h2>
+<h2>Folds<a class="headerlink" href="#folds" title="Permalink to this heading">#</a></h2>
 <p>When using the <code class="code docutils literal notranslate"><span class="pre">create_and_add_folded_foliation</span></code> or <code class="code docutils literal notranslate"><span class="pre">create_and_add_folded_fold_frame</span></code> LoopStructural the quality of the results can be dependent on
 the correct parameterisation.</p>
 <div class="section" id="s-plot-doesn-t-fit-the-observations">
-<h3>S-Plot doesn’t fit the observations<a class="headerlink" href="#s-plot-doesn-t-fit-the-observations" title="Permalink to this headline">#</a></h3>
+<h3>S-Plot doesn’t fit the observations<a class="headerlink" href="#s-plot-doesn-t-fit-the-observations" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Is the fold axis correct? If you expect a constant fold axis check that the calculated fold axis is consistent with your interpretation.</p></li>
 <li><p>Is the wavelength obvious in the s-variogram? If it is, check the guessed wavelength is reasonable Check the s</p></li>
@@ -306,9 +326,9 @@ the correct parameterisation.</p>
 </div>
 </div>
 <div class="section" id="faults">
-<h2>Faults<a class="headerlink" href="#faults" title="Permalink to this headline">#</a></h2>
+<h2>Faults<a class="headerlink" href="#faults" title="Permalink to this heading">#</a></h2>
 <div class="section" id="no-displacement">
-<h3>No displacement<a class="headerlink" href="#no-displacement" title="Permalink to this headline">#</a></h3>
+<h3>No displacement<a class="headerlink" href="#no-displacement" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Check that the displacement is large enough that it should be visible. E.g. compare displacement to model bounding box</p></li>
 <li><p>Has the fault frame interpolated correctly? Coordinates 0 and 1 should both have values.</p></li>
@@ -322,21 +342,25 @@ the correct parameterisation.</p>
 </div>
 
 
-              </div>
+              </article>
               
+
               
-              <!-- Previous / next buttons -->
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
 <div class='prev-next-area'>
 </div>
+              </footer>
               
-          </main>
+          </div>
           
-
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

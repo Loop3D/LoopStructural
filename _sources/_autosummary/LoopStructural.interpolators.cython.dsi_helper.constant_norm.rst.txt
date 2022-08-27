@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.constant\_norm
-==============================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: constant_norm

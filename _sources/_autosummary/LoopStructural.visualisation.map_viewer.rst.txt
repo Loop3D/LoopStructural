@@ -28,6 +28,7 @@ LoopStructural.visualisation.map\_viewer
       :template: custom-class-template.rst
       :recursive:              
    
+      FeatureType
       MapView
    
    

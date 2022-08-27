@@ -23,7 +23,6 @@ LoopStructural.visualisation.model\_plotter.BaseModelPlotter
       ~BaseModelPlotter.add_fault
       ~BaseModelPlotter.add_fault_displacements
       ~BaseModelPlotter.add_fold
-      ~BaseModelPlotter.add_intersection_lineation
       ~BaseModelPlotter.add_isosurface
       ~BaseModelPlotter.add_model
       ~BaseModelPlotter.add_model_surfaces

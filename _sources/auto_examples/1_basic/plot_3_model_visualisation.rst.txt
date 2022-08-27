@@ -208,34 +208,38 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    [ 353.27219054  353.27941939  353.50232288 ... -148.00299304 -148.5821538
+     -149.39664783]
+    [-129.06281772 -127.44475076 -125.82848009 ... -129.87060415 -128.50641881
+     -126.28428657]
+
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.165 seconds)
+   **Total running time of the script:** ( 0 minutes  2.233 seconds)
 
 
 .. _sphx_glr_download_auto_examples_1_basic_plot_3_model_visualisation.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_3_model_visualisation.py <plot_3_model_visualisation.py>`
 
-     :download:`Download Python source code: plot_3_model_visualisation.py <plot_3_model_visualisation.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_3_model_visualisation.ipynb <plot_3_model_visualisation.ipynb>`
+      :download:`Download Jupyter notebook: plot_3_model_visualisation.ipynb <plot_3_model_visualisation.ipynb>`
 
 
 .. only:: html

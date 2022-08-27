@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Examples &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,44 +28,53 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1a. Advanced least squares" href="1_basic/plot_6_least_squares.html" />
+    <link rel="next" title="1. Basics" href="1_basic/index.html" />
     <link rel="prev" title="LoopStructural design" href="../getting_started/loopstructural_design.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -107,6 +120,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -125,117 +146,142 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/plot_6_least_squares.html">
-   1a. Advanced least squares
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="1_basic/index.html">
+   1. Basics
   </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/least_squares.html">
+     1a. Advanced least squares
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/plot_1_data_prepration.html">
+     1a. Getting started
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/plot_2_surface_modelling.html">
+     1b. Implicit surface modelling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/plot_3_multiple_groups.html">
+     1c. Multiple groups
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/plot_3_model_visualisation.html">
+     1c. Visualising models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/plot_4_using_stratigraphic_column.html">
+     1d. Using Stratigraphic Columns
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/plot_5_using_logging.html">
+     1e. Using logging
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/scalar_field.html">
+     1f. Implicit modelling: signed distance field
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/example_surfe.html">
+     1f. Radial Basis Interpolation Using Surfe
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="1_basic/plot_6_unconformities.html">
+     1f. Unconformities
+    </a>
+   </li>
+  </ul>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/plot_1_data_prepration.html">
-   1a. Getting started
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="2_fold/index.html">
+   2. Modelling Folds
   </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="2_fold/plot_adding_folds_to_surfaces.html">
+     2a. Modelling folds
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="2_fold/plot_refolded_folds.html">
+     2b. Refolded folds
+    </a>
+   </li>
+  </ul>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/plot_2_surface_modelling.html">
-   1b. Implicit surface modelling
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="3_fault/index.html">
+   3. Modelling Faults
   </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/plot_3_multiple_groups.html">
-   1c. Multiple groups
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/plot_3_model_visualisation.html">
-   1c. Visualising models
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/plot_4_using_stratigraphic_column.html">
-   1d. Using Stratigraphic Columns
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/plot_5_using_logging.html">
-   1e. Using logging
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="1_basic/example_surfe.html">
-   1f. Radial Basis Interpolation Using Surfe
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="2_fold/plot_adding_folds_to_surfaces.html">
-   2a. Modelling folds
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="2_fold/plot_refolded_folds.html">
-   2b. Refolded folds
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="3_fault/plot_faulted_intrusion.html">
-   3a. Modelling faults using structural frames
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="3_fault/plot_fault_network.html">
-   3b. Modelling a fault network in LoopStructural
-  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="3_fault/plot_faulted_intrusion.html">
+     3a. Modelling faults using structural frames
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="3_fault/fault_network.html">
+     3b. Modelling a fault network in LoopStructural
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -246,127 +292,91 @@
   <a class="reference internal nav-link" href="#basics">
    1. Basics
   </a>
-  <ul class="nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#modelling-folds">
    2. Modelling Folds
   </a>
-  <ul class="nav section-nav flex-column">
-  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#modelling-faults">
    3. Modelling Faults
   </a>
-  <ul class="nav section-nav flex-column">
-  </ul>
  </li>
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="examples">
-<span id="sphx-glr-auto-examples"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">#</a></h1>
-<div class="sphx-glr-clear"></div><div class="section" id="basics">
-<span id="sphx-glr-auto-examples-1-basic"></span><h2>1. Basics<a class="headerlink" href="#basics" title="Permalink to this headline">#</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="1a. Advanced least squares"><div class="figure align-default" id="id1">
-<img alt="1a. Advanced least squares" src="../_images/sphx_glr_plot_6_least_squares_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/plot_6_least_squares.html#sphx-glr-auto-examples-1-basic-plot-6-least-squares-py"><span class="std std-ref">1a. Advanced least squares</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="1a. Getting started"><div class="figure align-default" id="id2">
-<img alt="1a. Getting started" src="../_images/sphx_glr_plot_1_data_prepration_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/plot_1_data_prepration.html#sphx-glr-auto-examples-1-basic-plot-1-data-prepration-py"><span class="std std-ref">1a. Getting started</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches obs..."><div class="figure align-default" id="id3">
-<img alt="1b. Implicit surface modelling" src="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/plot_2_surface_modelling.html#sphx-glr-auto-examples-1-basic-plot-2-surface-modelling-py"><span class="std std-ref">1b. Implicit surface modelling</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="1c. Multiple groups"><div class="figure align-default" id="id4">
-<img alt="1c. Multiple groups" src="../_images/sphx_glr_plot_3_multiple_groups_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/plot_3_multiple_groups.html#sphx-glr-auto-examples-1-basic-plot-3-multiple-groups-py"><span class="std std-ref">1c. Multiple groups</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment...."><div class="figure align-default" id="id5">
-<img alt="1c. Visualising models" src="../_images/sphx_glr_plot_3_model_visualisation_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/plot_3_model_visualisation.html#sphx-glr-auto-examples-1-basic-plot-3-model-visualisation-py"><span class="std std-ref">1c. Visualising models</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="1d. Using Stratigraphic Columns"><div class="figure align-default" id="id6">
-<img alt="1d. Using Stratigraphic Columns" src="../_images/sphx_glr_plot_4_using_stratigraphic_column_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/plot_4_using_stratigraphic_column.html#sphx-glr-auto-examples-1-basic-plot-4-using-stratigraphic-column-py"><span class="std std-ref">1d. Using Stratigraphic Columns</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="LoopStructural uses all of these logging levels to report the various aspects of the model buil..."><div class="figure align-default" id="id7">
-<img alt="1e. Using logging" src="../_images/sphx_glr_plot_5_using_logging_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/plot_5_using_logging.html#sphx-glr-auto-examples-1-basic-plot-5-using-logging-py"><span class="std std-ref">1e. Using logging</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Python wrappers allow for the library to be used from within a python interface.  There are two..."><div class="figure align-default" id="id8">
-<img alt="1f. Radial Basis Interpolation Using Surfe" src="../_images/sphx_glr_example_surfe_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="1_basic/example_surfe.html#sphx-glr-auto-examples-1-basic-example-surfe-py"><span class="std std-ref">1f. Radial Basis Interpolation Using Surfe</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div></div>
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h1>
+<div class="sphx-glr-thumbnails"></div><div class="section" id="basics">
+<h2>1. Basics<a class="headerlink" href="#basics" title="Permalink to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="1a. Advanced least squares"><img alt="1a. Advanced least squares" src="../_images/sphx_glr_least_squares_thumb.png" />
+<p><a class="reference internal" href="1_basic/least_squares.html#sphx-glr-auto-examples-1-basic-least-squares-py"><span class="std std-ref">1a. Advanced least squares</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1a. Advanced least squares</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1a. Getting started"><img alt="1a. Getting started" src="../_images/sphx_glr_plot_1_data_prepration_thumb.png" />
+<p><a class="reference internal" href="1_basic/plot_1_data_prepration.html#sphx-glr-auto-examples-1-basic-plot-1-data-prepration-py"><span class="std std-ref">1a. Getting started</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1a. Getting started</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches obs..."><img alt="1b. Implicit surface modelling" src="../_images/sphx_glr_plot_2_surface_modelling_thumb.png" />
+<p><a class="reference internal" href="1_basic/plot_2_surface_modelling.html#sphx-glr-auto-examples-1-basic-plot-2-surface-modelling-py"><span class="std std-ref">1b. Implicit surface modelling</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1b. Implicit surface modelling</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1c. Multiple groups"><img alt="1c. Multiple groups" src="../_images/sphx_glr_plot_3_multiple_groups_thumb.png" />
+<p><a class="reference internal" href="1_basic/plot_3_multiple_groups.html#sphx-glr-auto-examples-1-basic-plot-3-multiple-groups-py"><span class="std std-ref">1c. Multiple groups</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1c. Multiple groups</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment...."><img alt="1c. Visualising models" src="../_images/sphx_glr_plot_3_model_visualisation_thumb.png" />
+<p><a class="reference internal" href="1_basic/plot_3_model_visualisation.html#sphx-glr-auto-examples-1-basic-plot-3-model-visualisation-py"><span class="std std-ref">1c. Visualising models</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1c. Visualising models</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1d. Using Stratigraphic Columns"><img alt="1d. Using Stratigraphic Columns" src="../_images/sphx_glr_plot_4_using_stratigraphic_column_thumb.png" />
+<p><a class="reference internal" href="1_basic/plot_4_using_stratigraphic_column.html#sphx-glr-auto-examples-1-basic-plot-4-using-stratigraphic-column-py"><span class="std std-ref">1d. Using Stratigraphic Columns</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1d. Using Stratigraphic Columns</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="LoopStructural uses all of these logging levels to report the various aspects of the model buil..."><img alt="1e. Using logging" src="../_images/sphx_glr_plot_5_using_logging_thumb.png" />
+<p><a class="reference internal" href="1_basic/plot_5_using_logging.html#sphx-glr-auto-examples-1-basic-plot-5-using-logging-py"><span class="std std-ref">1e. Using logging</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1e. Using logging</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example explores the relationship between the value of the scalar field and the geometry t..."><img alt="1f. Implicit modelling: signed distance field" src="../_images/sphx_glr_scalar_field_thumb.png" />
+<p><a class="reference internal" href="1_basic/scalar_field.html#sphx-glr-auto-examples-1-basic-scalar-field-py"><span class="std std-ref">1f. Implicit modelling: signed distance field</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1f. Implicit modelling: signed distance field</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Python wrappers allow for the library to be used from within a python interface.  There are two..."><img alt="1f. Radial Basis Interpolation Using Surfe" src="../_images/sphx_glr_example_surfe_thumb.png" />
+<p><a class="reference internal" href="1_basic/example_surfe.html#sphx-glr-auto-examples-1-basic-example-surfe-py"><span class="std std-ref">1f. Radial Basis Interpolation Using Surfe</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1f. Radial Basis Interpolation Using Surfe</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1f. Unconformities"><img alt="1f. Unconformities" src="../_images/sphx_glr_plot_6_unconformities_thumb.png" />
+<p><a class="reference internal" href="1_basic/plot_6_unconformities.html#sphx-glr-auto-examples-1-basic-plot-6-unconformities-py"><span class="std std-ref">1f. Unconformities</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1f. Unconformities</div>
+</div></div></div>
 <div class="section" id="modelling-folds">
-<span id="sphx-glr-auto-examples-2-fold"></span><h2>2. Modelling Folds<a class="headerlink" href="#modelling-folds" title="Permalink to this headline">#</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip=" This tutorial will show how Loop Structural improves the modelling of  folds by using an accur..."><div class="figure align-default" id="id9">
-<img alt="2a. Modelling folds" src="../_images/sphx_glr_plot_adding_folds_to_surfaces_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="2_fold/plot_adding_folds_to_surfaces.html#sphx-glr-auto-examples-2-fold-plot-adding-folds-to-surfaces-py"><span class="std std-ref">2a. Modelling folds</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="2b. Refolded folds"><div class="figure align-default" id="id10">
-<img alt="2b. Refolded folds" src="../_images/sphx_glr_plot_refolded_folds_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="2_fold/plot_refolded_folds.html#sphx-glr-auto-examples-2-fold-plot-refolded-folds-py"><span class="std std-ref">2b. Refolded folds</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div></div>
+<h2>2. Modelling Folds<a class="headerlink" href="#modelling-folds" title="Permalink to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip=" This tutorial will show how Loop Structural improves the modelling of  folds by using an accur..."><img alt="2a. Modelling folds" src="../_images/sphx_glr_plot_adding_folds_to_surfaces_thumb.png" />
+<p><a class="reference internal" href="2_fold/plot_adding_folds_to_surfaces.html#sphx-glr-auto-examples-2-fold-plot-adding-folds-to-surfaces-py"><span class="std std-ref">2a. Modelling folds</span></a></p>
+  <div class="sphx-glr-thumbnail-title">2a. Modelling folds</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="2b. Refolded folds"><img alt="2b. Refolded folds" src="../_images/sphx_glr_plot_refolded_folds_thumb.png" />
+<p><a class="reference internal" href="2_fold/plot_refolded_folds.html#sphx-glr-auto-examples-2-fold-plot-refolded-folds-py"><span class="std std-ref">2b. Refolded folds</span></a></p>
+  <div class="sphx-glr-thumbnail-title">2b. Refolded folds</div>
+</div></div></div>
 <div class="section" id="modelling-faults">
-<span id="sphx-glr-auto-examples-3-fault"></span><h2>3. Modelling Faults<a class="headerlink" href="#modelling-faults" title="Permalink to this headline">#</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="3a. Modelling faults using structural frames"><div class="figure align-default" id="id11">
-<img alt="3a. Modelling faults using structural frames" src="../_images/sphx_glr_plot_faulted_intrusion_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="3_fault/plot_faulted_intrusion.html#sphx-glr-auto-examples-3-fault-plot-faulted-intrusion-py"><span class="std std-ref">3a. Modelling faults using structural frames</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">#</a></p>
+<h2>3. Modelling Faults<a class="headerlink" href="#modelling-faults" title="Permalink to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="3a. Modelling faults using structural frames"><img alt="3a. Modelling faults using structural frames" src="../_images/sphx_glr_plot_faulted_intrusion_thumb.png" />
+<p><a class="reference internal" href="3_fault/plot_faulted_intrusion.html#sphx-glr-auto-examples-3-fault-plot-faulted-intrusion-py"><span class="std std-ref">3a. Modelling faults using structural frames</span></a></p>
+  <div class="sphx-glr-thumbnail-title">3a. Modelling faults using structural frames</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="3b. Modelling a fault network in LoopStructural"><img alt="3b. Modelling a fault network in LoopStructural" src="../_images/sphx_glr_fault_network_thumb.png" />
+<p><a class="reference internal" href="3_fault/fault_network.html#sphx-glr-auto-examples-3-fault-fault-network-py"><span class="std std-ref">3b. Modelling a fault network in LoopStructural</span></a></p>
+  <div class="sphx-glr-thumbnail-title">3b. Modelling a fault network in LoopStructural</div>
+</div></div><div class="toctree-wrapper compound">
 </div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="3b. Modelling a fault network in LoopStructural"><div class="figure align-default" id="id12">
-<img alt="3b. Modelling a fault network in LoopStructural" src="../_images/sphx_glr_plot_fault_network_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="3_fault/plot_fault_network.html#sphx-glr-auto-examples-3-fault-plot-fault-network-py"><span class="std std-ref">3b. Modelling a fault network in LoopStructural</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">#</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07fcc19ba03226cd3d83d4e40ec44385/auto_examples_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_examples_python.zip</span></code></a></p>
 </div>
@@ -379,35 +389,39 @@
 </div>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="../getting_started/loopstructural_design.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">LoopStructural design</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="1_basic/plot_6_least_squares.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">1a. Advanced least squares</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="../getting_started/loopstructural_design.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">LoopStructural design</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="1_basic/index.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">1. Basics</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

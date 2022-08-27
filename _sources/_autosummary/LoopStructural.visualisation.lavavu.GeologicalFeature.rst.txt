@@ -24,7 +24,6 @@ LoopStructural.visualisation.lavavu.GeologicalFeature
       ~GeologicalFeature.evaluate_value_misfit
       ~GeologicalFeature.is_valid
       ~GeologicalFeature.max
-      ~GeologicalFeature.mean
       ~GeologicalFeature.min
       ~GeologicalFeature.set_model
       ~GeologicalFeature.toggle_faults

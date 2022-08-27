@@ -24,8 +24,11 @@ LoopStructural.modelling.features.FeatureType
       ~FeatureType.INTERPOLATED
       ~FeatureType.STRUCTURALFRAME
       ~FeatureType.REGION
-      ~FeatureType.FOLDEDFEATURE
-      ~FeatureType.ANALYTICALFEATURE
-      ~FeatureType.LAMBDAFEATURE
+      ~FeatureType.FOLDED
+      ~FeatureType.ANALYTICAL
+      ~FeatureType.LAMBDA
+      ~FeatureType.UNCONFORMITY
+      ~FeatureType.INTRUSION
+      ~FeatureType.FAULT
    
    

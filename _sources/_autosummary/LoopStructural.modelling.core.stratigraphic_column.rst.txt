@@ -20,7 +20,10 @@ LoopStructural.modelling.core.stratigraphic\_column
       :template: custom-class-template.rst
       :recursive:              
    
+      BaseStratigraphicColumnElement
+      Lithology
       StratigraphicColumn
+      StratigraphicUnit
    
    
 

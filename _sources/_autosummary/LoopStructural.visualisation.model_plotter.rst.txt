@@ -32,8 +32,11 @@ LoopStructural.visualisation.model\_plotter
       :template: custom-class-template.rst
       :recursive:              
    
+      BaseFeature
       BaseModelPlotter
+      FeatureType
       GeologicalFeature
+      StructuralFrame
    
    
 

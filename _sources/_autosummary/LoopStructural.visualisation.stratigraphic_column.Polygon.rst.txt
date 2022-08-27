@@ -37,7 +37,6 @@ LoopStructural.visualisation.stratigraphic\_column.Polygon
       ~Polygon.get_clip_on
       ~Polygon.get_clip_path
       ~Polygon.get_closed
-      ~Polygon.get_contains
       ~Polygon.get_cursor_data
       ~Polygon.get_data_transform
       ~Polygon.get_ec
@@ -92,7 +91,6 @@ LoopStructural.visualisation.stratigraphic\_column.Polygon
       ~Polygon.set_clip_path
       ~Polygon.set_closed
       ~Polygon.set_color
-      ~Polygon.set_contains
       ~Polygon.set_ec
       ~Polygon.set_edgecolor
       ~Polygon.set_facecolor
@@ -129,7 +127,6 @@ LoopStructural.visualisation.stratigraphic\_column.Polygon
 
    .. autosummary::
    
-      ~Polygon.aname
       ~Polygon.axes
       ~Polygon.fill
       ~Polygon.mouseover

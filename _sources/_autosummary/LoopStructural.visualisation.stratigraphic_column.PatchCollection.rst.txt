@@ -18,11 +18,9 @@ LoopStructural.visualisation.stratigraphic\_column.PatchCollection
    
       ~PatchCollection.__init__
       ~PatchCollection.add_callback
-      ~PatchCollection.add_checker
       ~PatchCollection.autoscale
       ~PatchCollection.autoscale_None
       ~PatchCollection.changed
-      ~PatchCollection.check_update
       ~PatchCollection.contains
       ~PatchCollection.convert_xunits
       ~PatchCollection.convert_yunits
@@ -40,7 +38,6 @@ LoopStructural.visualisation.stratigraphic\_column.PatchCollection
       ~PatchCollection.get_clip_on
       ~PatchCollection.get_clip_path
       ~PatchCollection.get_cmap
-      ~PatchCollection.get_contains
       ~PatchCollection.get_cursor_data
       ~PatchCollection.get_dashes
       ~PatchCollection.get_datalim
@@ -63,7 +60,6 @@ LoopStructural.visualisation.stratigraphic\_column.PatchCollection
       ~PatchCollection.get_linewidths
       ~PatchCollection.get_ls
       ~PatchCollection.get_lw
-      ~PatchCollection.get_offset_position
       ~PatchCollection.get_offset_transform
       ~PatchCollection.get_offsets
       ~PatchCollection.get_path_effects
@@ -105,7 +101,6 @@ LoopStructural.visualisation.stratigraphic\_column.PatchCollection
       ~PatchCollection.set_clip_path
       ~PatchCollection.set_cmap
       ~PatchCollection.set_color
-      ~PatchCollection.set_contains
       ~PatchCollection.set_dashes
       ~PatchCollection.set_ec
       ~PatchCollection.set_edgecolor
@@ -126,7 +121,7 @@ LoopStructural.visualisation.stratigraphic\_column.PatchCollection
       ~PatchCollection.set_ls
       ~PatchCollection.set_lw
       ~PatchCollection.set_norm
-      ~PatchCollection.set_offset_position
+      ~PatchCollection.set_offset_transform
       ~PatchCollection.set_offsets
       ~PatchCollection.set_path_effects
       ~PatchCollection.set_paths
@@ -153,14 +148,13 @@ LoopStructural.visualisation.stratigraphic\_column.PatchCollection
 
    .. autosummary::
    
-      ~PatchCollection.aname
       ~PatchCollection.axes
+      ~PatchCollection.callbacksSM
       ~PatchCollection.mouseover
+      ~PatchCollection.norm
       ~PatchCollection.stale
       ~PatchCollection.sticky_edges
       ~PatchCollection.zorder
-      ~PatchCollection.norm
-      ~PatchCollection.cmap
       ~PatchCollection.colorbar
    
    

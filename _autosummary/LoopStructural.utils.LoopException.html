@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoopStructural.utils.LoopException &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,44 +28,53 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.utils.LoopImportError" href="LoopStructural.utils.LoopImportError.html" />
     <link rel="prev" title="LoopStructural.utils.InterpolatorError" href="LoopStructural.utils.InterpolatorError.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -107,6 +120,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -125,13 +146,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -179,6 +200,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="LoopStructural.datasets.load_duplex.html">
      LoopStructural.datasets.load_duplex
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_geological_map_data.html">
+     LoopStructural.datasets.load_geological_map_data
     </a>
    </li>
    <li class="toctree-l2">
@@ -391,11 +417,6 @@
         </a>
        </li>
        <li class="toctree-l4">
-        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.normal_vector_headers.html">
-         LoopStructural.modelling.core.geological_model.normal_vector_headers
-        </a>
-       </li>
-       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.geological_model.strike_dip_vector.html">
          LoopStructural.modelling.core.geological_model.strike_dip_vector
         </a>
@@ -426,6 +447,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FeatureType.html">
+         LoopStructural.modelling.core.geological_model.FeatureType
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldEvent.html">
          LoopStructural.modelling.core.geological_model.FoldEvent
         </a>
@@ -433,11 +459,6 @@
        <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldFrame.html">
          LoopStructural.modelling.core.geological_model.FoldFrame
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldRotationAngle.html">
-         LoopStructural.modelling.core.geological_model.FoldRotationAngle
         </a>
        </li>
        <li class="toctree-l4">
@@ -510,11 +531,6 @@
          LoopStructural.modelling.core.geological_model.InterpolatorError
         </a>
        </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.LoopException.html">
-         LoopStructural.modelling.core.geological_model.LoopException
-        </a>
-       </li>
       </ul>
      </li>
      <li class="toctree-l3 has-children">
@@ -528,8 +544,23 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement.html">
+         LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.Lithology.html">
+         LoopStructural.modelling.core.stratigraphic_column.Lithology
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html">
          LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html">
+         LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit
         </a>
        </li>
       </ul>
@@ -967,6 +998,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html">
+         LoopStructural.modelling.intrusions.intrusion_feature.FeatureType
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html">
          LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature
         </a>
@@ -1191,6 +1227,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="LoopStructural.utils.strike_dip_vector.html">
      LoopStructural.utils.strike_dip_vector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.LoopJSONEncoder.html">
+     LoopStructural.utils.LoopJSONEncoder
     </a>
    </li>
    <li class="toctree-l2">
@@ -1467,11 +1508,28 @@
     </ul>
    </li>
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="LoopStructural.utils.logging.html">
-     LoopStructural.utils.logging
+    <a class="reference internal" href="LoopStructural.utils.json_encoder.html">
+     LoopStructural.utils.json_encoder
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/>
     <label for="toctree-checkbox-28">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.json_encoder.LoopJSONEncoder.html">
+       LoopStructural.utils.json_encoder.LoopJSONEncoder
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.logging.html">
+     LoopStructural.utils.logging
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/>
+    <label for="toctree-checkbox-29">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1502,8 +1560,8 @@
     <a class="reference internal" href="LoopStructural.utils.map2loop.html">
      LoopStructural.utils.map2loop
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/>
-    <label for="toctree-checkbox-29">
+    <input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/>
+    <label for="toctree-checkbox-30">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1529,8 +1587,8 @@
     <a class="reference internal" href="LoopStructural.utils.regions.html">
      LoopStructural.utils.regions
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/>
-    <label for="toctree-checkbox-30">
+    <input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/>
+    <label for="toctree-checkbox-31">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1566,8 +1624,8 @@
     <a class="reference internal" href="LoopStructural.utils.utils.html">
      LoopStructural.utils.utils
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/>
-    <label for="toctree-checkbox-31">
+    <input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/>
+    <label for="toctree-checkbox-32">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1605,8 +1663,8 @@
   <a class="reference internal" href="LoopStructural.visualisation.html">
    LoopStructural.visualisation
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/>
-  <label for="toctree-checkbox-32">
+  <input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/>
+  <label for="toctree-checkbox-33">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -1645,8 +1703,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.lavavu.html">
      LoopStructural.visualisation.lavavu
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/>
-    <label for="toctree-checkbox-33">
+    <input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/>
+    <label for="toctree-checkbox-34">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1664,6 +1722,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.lavavu.is_notebook.html">
        LoopStructural.visualisation.lavavu.is_notebook
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.v.html">
+       LoopStructural.visualisation.lavavu.v
       </a>
      </li>
      <li class="toctree-l3">
@@ -1692,8 +1755,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">
      LoopStructural.visualisation.map_viewer
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/>
-    <label for="toctree-checkbox-34">
+    <input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/>
+    <label for="toctree-checkbox-35">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1701,6 +1764,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.map_viewer.getLogger.html">
        LoopStructural.visualisation.map_viewer.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.map_viewer.FeatureType.html">
+       LoopStructural.visualisation.map_viewer.FeatureType
       </a>
      </li>
      <li class="toctree-l3">
@@ -1714,8 +1782,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">
      LoopStructural.visualisation.model_plotter
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/>
-    <label for="toctree-checkbox-35">
+    <input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/>
+    <label for="toctree-checkbox-36">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1746,13 +1814,28 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseFeature.html">
+       LoopStructural.visualisation.model_plotter.BaseFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html">
        LoopStructural.visualisation.model_plotter.BaseModelPlotter
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.FeatureType.html">
+       LoopStructural.visualisation.model_plotter.FeatureType
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.model_plotter.GeologicalFeature.html">
        LoopStructural.visualisation.model_plotter.GeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.StructuralFrame.html">
+       LoopStructural.visualisation.model_plotter.StructuralFrame
       </a>
      </li>
      <li class="toctree-l3">
@@ -1766,8 +1849,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">
      LoopStructural.visualisation.rotation_angle_plotter
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/>
-    <label for="toctree-checkbox-36">
+    <input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/>
+    <label for="toctree-checkbox-37">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1788,8 +1871,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">
      LoopStructural.visualisation.sphinx_scraper
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/>
-    <label for="toctree-checkbox-37">
+    <input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/>
+    <label for="toctree-checkbox-38">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1805,8 +1888,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">
      LoopStructural.visualisation.stratigraphic_column
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/>
-    <label for="toctree-checkbox-38">
+    <input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/>
+    <label for="toctree-checkbox-39">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1834,43 +1917,42 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 
 <nav id="bd-toc-nav">
     
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="loopstructural-utils-loopexception">
-<h1>LoopStructural.utils.LoopException<a class="headerlink" href="#loopstructural-utils-loopexception" title="Permalink to this headline">#</a></h1>
+<h1>LoopStructural.utils.LoopException<a class="headerlink" href="#loopstructural-utils-loopexception" title="Permalink to this heading">#</a></h1>
 <dl class="py exception">
 <dt class="sig sig-object py" id="LoopStructural.utils.LoopException">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.utils.</span></span><span class="sig-name descname"><span class="pre">LoopException</span></span><a class="headerlink" href="#LoopStructural.utils.LoopException" title="Permalink to this definition">#</a></dt>
@@ -1880,35 +1962,39 @@
 </div>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="LoopStructural.utils.InterpolatorError.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">LoopStructural.utils.InterpolatorError</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="LoopStructural.utils.LoopImportError.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">LoopStructural.utils.LoopImportError</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="LoopStructural.utils.InterpolatorError.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">LoopStructural.utils.InterpolatorError</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="LoopStructural.utils.LoopImportError.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">LoopStructural.utils.LoopImportError</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

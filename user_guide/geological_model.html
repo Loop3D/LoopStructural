@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Geological Model &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,44 +28,53 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Implicit Interpolators" href="interpolation_options.html" />
     <link rel="prev" title="Input data" href="input_data.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -107,6 +120,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -125,13 +146,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -176,19 +197,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -262,30 +284,28 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="geological-model">
-<h1>Geological Model<a class="headerlink" href="#geological-model" title="Permalink to this headline">#</a></h1>
+<h1>Geological Model<a class="headerlink" href="#geological-model" title="Permalink to this heading">#</a></h1>
 <p>The GeologicalModel is the main entry point for creating a LoopStructural model.
 GeologicalModel’s define the bounding box of the model, determine how the different scalar fields interact and apply the time aware modelling.</p>
 <div class="section" id="creating-a-model-manually">
-<h2>Creating a model manually<a class="headerlink" href="#creating-a-model-manually" title="Permalink to this headline">#</a></h2>
+<h2>Creating a model manually<a class="headerlink" href="#creating-a-model-manually" title="Permalink to this heading">#</a></h2>
 <p>A GeologicalModel can be created using the default constructor.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span><span class="n">maximum</span><span class="p">)</span>
 </pre></div>
@@ -330,14 +350,14 @@ The model creates a copy of the dataframe meaning that the original data frame i
 </pre></div>
 </div>
 <div class="section" id="adding-a-geological-feature">
-<h3>Adding a geological feature<a class="headerlink" href="#adding-a-geological-feature" title="Permalink to this headline">#</a></h3>
+<h3>Adding a geological feature<a class="headerlink" href="#adding-a-geological-feature" title="Permalink to this heading">#</a></h3>
 <p>Once the model has been initialised and the data has been linked to the model,
 we can add a geological feature to the model.
 There are a number of different methods that can be used to add a geological feature
 to the model.</p>
 </div>
 <div class="section" id="adding-a-foliation">
-<h3>Adding a foliation<a class="headerlink" href="#adding-a-foliation" title="Permalink to this headline">#</a></h3>
+<h3>Adding a foliation<a class="headerlink" href="#adding-a-foliation" title="Permalink to this heading">#</a></h3>
 <p>We can add a foliation to the model using the <em>create_and_add_foliation</em> method for a GeologicalModel object.
 The only required argument is the feature_name, which is the identifier to the datasets.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="n">feature_name</span><span class="p">,</span>
@@ -352,7 +372,7 @@ The only required argument is the feature_name, which is the identifier to the d
 Different interpolation schemes can be used, see <a class="reference internal" href="interpolation_options.html"><span class="doc">Implicit Interpolators</span></a> for more information.</p>
 </div>
 <div class="section" id="adding-a-fault">
-<h3>Adding a fault<a class="headerlink" href="#adding-a-fault" title="Permalink to this headline">#</a></h3>
+<h3>Adding a fault<a class="headerlink" href="#adding-a-fault" title="Permalink to this heading">#</a></h3>
 <p>Faults are modelled by building a structural frame to define the fault geometry.
 The structural frame has three coordinates:</p>
 <ul class="simple">
@@ -378,7 +398,7 @@ the fault frame coordinates scaled by the maximum displacement.</p>
 </div>
 </div>
 <div class="section" id="adding-an-uncomformity">
-<h3>Adding an uncomformity<a class="headerlink" href="#adding-an-uncomformity" title="Permalink to this headline">#</a></h3>
+<h3>Adding an uncomformity<a class="headerlink" href="#adding-an-uncomformity" title="Permalink to this heading">#</a></h3>
 <p>There are two ways an unconformity can be added into the model.
 The first approach creates an unconformity as a new geological feature assigning the unconformity surface to the 0 isovalue.
 Using this approach does not ensure that the unconformity is conformable to a stratigraphic series.</p>
@@ -398,7 +418,7 @@ Using this approach does not ensure that the unconformity is conformable to a st
 </div>
 </div>
 <div class="section" id="setting-a-stratigraphic-column">
-<h2>Setting a stratigraphic column<a class="headerlink" href="#setting-a-stratigraphic-column" title="Permalink to this headline">#</a></h2>
+<h2>Setting a stratigraphic column<a class="headerlink" href="#setting-a-stratigraphic-column" title="Permalink to this heading">#</a></h2>
 <p>The GeologicalModel can have a stratigraphic column assigned to it.
 The stratigraphic column performs a map between the GeologicalFeatures representing stratigraphy and a unique identification for each stratigraphic unit.
 The stratigraphic column can also be used to specify colouring for faults.</p>
@@ -415,7 +435,7 @@ The stratigraphic column can also be used to specify colouring for faults.</p>
 If it is a fault, this scalar field is not used for evaluating the stratigraphy.</p>
 </div>
 <div class="section" id="using-the-geologicalmodel">
-<h2>Using the GeologicalModel<a class="headerlink" href="#using-the-geologicalmodel" title="Permalink to this headline">#</a></h2>
+<h2>Using the GeologicalModel<a class="headerlink" href="#using-the-geologicalmodel" title="Permalink to this heading">#</a></h2>
 <p>The GeologicalModel has a number of helper functions allowing you to easily access different
 aspects of the model.</p>
 <p>A regular grid inside the model bounding box can be retrieved:</p>
@@ -435,7 +455,7 @@ in model coordinates by default.</p>
 </pre></div>
 </div>
 <div class="section" id="solving-updating-a-geological-model">
-<h3>Solving/Updating a geological model<a class="headerlink" href="#solving-updating-a-geological-model" title="Permalink to this headline">#</a></h3>
+<h3>Solving/Updating a geological model<a class="headerlink" href="#solving-updating-a-geological-model" title="Permalink to this heading">#</a></h3>
 <p>In version 1.1+ the implicit function representing a geological feature does not have to be solved to generate the model object.
 The scalar field is solved on demand when the geological features are evaluated.
 This means that parts of the geological model can be modified and only the older (features lower in the feature list) are updated.
@@ -447,7 +467,7 @@ All features in the model can be updated:</p>
 The verbose flag provides additional information useful for debugging including the number of degrees of freedom in the system and the time taken to solve.</p>
 </div>
 <div class="section" id="evaluating-a-scalar-field">
-<h3>Evaluating a scalar field<a class="headerlink" href="#evaluating-a-scalar-field" title="Permalink to this headline">#</a></h3>
+<h3>Evaluating a scalar field<a class="headerlink" href="#evaluating-a-scalar-field" title="Permalink to this heading">#</a></h3>
 <p>The scalar field for a GeologicalFeature can be evaluated using the evaluate_feature_value method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">rescale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">sf</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_feature_value</span><span class="p">(</span><span class="s1">&#39;myfeature&#39;</span><span class="p">,</span><span class="n">regular_grid</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -460,7 +480,7 @@ A numpy array of N dimensions will be returned where N is the number of points.
 If the value cannot be evaulated it will be np.nan.</p>
 </div>
 <div class="section" id="evaluating-scalar-field-gradient">
-<h3>Evaluating scalar field gradient<a class="headerlink" href="#evaluating-scalar-field-gradient" title="Permalink to this headline">#</a></h3>
+<h3>Evaluating scalar field gradient<a class="headerlink" href="#evaluating-scalar-field-gradient" title="Permalink to this heading">#</a></h3>
 <p>The gradient scalar field for a GeologicalFeature can be evaluated using the evaluate_feature_gradient method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">vf</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_feature_gradient</span><span class="p">(</span><span class="s1">&#39;myfeature&#39;</span><span class="p">,</span><span class="n">regular_grid</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -468,7 +488,7 @@ If the value cannot be evaulated it will be np.nan.</p>
 </div>
 </div>
 <div class="section" id="evaluating-fault-displacement-magnitude">
-<h3>Evaluating fault displacement magnitude<a class="headerlink" href="#evaluating-fault-displacement-magnitude" title="Permalink to this headline">#</a></h3>
+<h3>Evaluating fault displacement magnitude<a class="headerlink" href="#evaluating-fault-displacement-magnitude" title="Permalink to this heading">#</a></h3>
 <p>The fault displacement magnitude can be evaulated on a pointset.
 This will evaluate the fault function for every fault in the model and can be used
 for analysing models.</p>
@@ -478,7 +498,7 @@ for analysing models.</p>
 </div>
 </div>
 <div class="section" id="evaluating-lithology-id">
-<h3>Evaluating lithology id<a class="headerlink" href="#evaluating-lithology-id" title="Permalink to this headline">#</a></h3>
+<h3>Evaluating lithology id<a class="headerlink" href="#evaluating-lithology-id" title="Permalink to this heading">#</a></h3>
 <p>The model can be evaluated for the lithology id defined in the stratigraphic column.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">litho</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="s1">&#39;myfeature&#39;</span><span class="p">,</span><span class="n">regular_grid</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -489,35 +509,39 @@ for analysing models.</p>
 </div>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="input_data.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Input data</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="interpolation_options.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Implicit Interpolators</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="input_data.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Input data</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="interpolation_options.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Implicit Interpolators</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

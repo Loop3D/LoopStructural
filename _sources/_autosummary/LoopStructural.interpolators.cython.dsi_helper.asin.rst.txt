@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.asin
-====================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: asin

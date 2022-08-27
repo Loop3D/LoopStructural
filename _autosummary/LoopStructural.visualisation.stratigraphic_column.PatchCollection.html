@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoopStructural.visualisation.stratigraphic_column.PatchCollection &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,44 +28,53 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.visualisation.stratigraphic_column.Polygon" href="LoopStructural.visualisation.stratigraphic_column.Polygon.html" />
     <link rel="prev" title="LoopStructural.visualisation.stratigraphic_column" href="LoopStructural.visualisation.stratigraphic_column.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -107,6 +120,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -125,13 +146,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -179,6 +200,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="LoopStructural.datasets.load_duplex.html">
      LoopStructural.datasets.load_duplex
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.datasets.load_geological_map_data.html">
+     LoopStructural.datasets.load_geological_map_data
     </a>
    </li>
    <li class="toctree-l2">
@@ -391,11 +417,6 @@
         </a>
        </li>
        <li class="toctree-l4">
-        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.normal_vector_headers.html">
-         LoopStructural.modelling.core.geological_model.normal_vector_headers
-        </a>
-       </li>
-       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.geological_model.strike_dip_vector.html">
          LoopStructural.modelling.core.geological_model.strike_dip_vector
         </a>
@@ -426,6 +447,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FeatureType.html">
+         LoopStructural.modelling.core.geological_model.FeatureType
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldEvent.html">
          LoopStructural.modelling.core.geological_model.FoldEvent
         </a>
@@ -433,11 +459,6 @@
        <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldFrame.html">
          LoopStructural.modelling.core.geological_model.FoldFrame
-        </a>
-       </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.FoldRotationAngle.html">
-         LoopStructural.modelling.core.geological_model.FoldRotationAngle
         </a>
        </li>
        <li class="toctree-l4">
@@ -510,11 +531,6 @@
          LoopStructural.modelling.core.geological_model.InterpolatorError
         </a>
        </li>
-       <li class="toctree-l4">
-        <a class="reference internal" href="LoopStructural.modelling.core.geological_model.LoopException.html">
-         LoopStructural.modelling.core.geological_model.LoopException
-        </a>
-       </li>
       </ul>
      </li>
      <li class="toctree-l3 has-children">
@@ -528,8 +544,23 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement.html">
+         LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.Lithology.html">
+         LoopStructural.modelling.core.stratigraphic_column.Lithology
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html">
          LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html">
+         LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit
         </a>
        </li>
       </ul>
@@ -967,6 +998,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html">
+         LoopStructural.modelling.intrusions.intrusion_feature.FeatureType
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html">
          LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature
         </a>
@@ -1191,6 +1227,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="LoopStructural.utils.strike_dip_vector.html">
      LoopStructural.utils.strike_dip_vector
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="LoopStructural.utils.LoopJSONEncoder.html">
+     LoopStructural.utils.LoopJSONEncoder
     </a>
    </li>
    <li class="toctree-l2">
@@ -1467,11 +1508,28 @@
     </ul>
    </li>
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="LoopStructural.utils.logging.html">
-     LoopStructural.utils.logging
+    <a class="reference internal" href="LoopStructural.utils.json_encoder.html">
+     LoopStructural.utils.json_encoder
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/>
     <label for="toctree-checkbox-28">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.utils.json_encoder.LoopJSONEncoder.html">
+       LoopStructural.utils.json_encoder.LoopJSONEncoder
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="LoopStructural.utils.logging.html">
+     LoopStructural.utils.logging
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/>
+    <label for="toctree-checkbox-29">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1502,8 +1560,8 @@
     <a class="reference internal" href="LoopStructural.utils.map2loop.html">
      LoopStructural.utils.map2loop
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/>
-    <label for="toctree-checkbox-29">
+    <input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/>
+    <label for="toctree-checkbox-30">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1529,8 +1587,8 @@
     <a class="reference internal" href="LoopStructural.utils.regions.html">
      LoopStructural.utils.regions
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/>
-    <label for="toctree-checkbox-30">
+    <input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/>
+    <label for="toctree-checkbox-31">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1566,8 +1624,8 @@
     <a class="reference internal" href="LoopStructural.utils.utils.html">
      LoopStructural.utils.utils
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/>
-    <label for="toctree-checkbox-31">
+    <input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/>
+    <label for="toctree-checkbox-32">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1605,8 +1663,8 @@
   <a class="reference internal" href="LoopStructural.visualisation.html">
    LoopStructural.visualisation
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/>
-  <label for="toctree-checkbox-32">
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/>
+  <label for="toctree-checkbox-33">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -1645,8 +1703,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.lavavu.html">
      LoopStructural.visualisation.lavavu
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/>
-    <label for="toctree-checkbox-33">
+    <input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/>
+    <label for="toctree-checkbox-34">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1664,6 +1722,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.lavavu.is_notebook.html">
        LoopStructural.visualisation.lavavu.is_notebook
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.lavavu.v.html">
+       LoopStructural.visualisation.lavavu.v
       </a>
      </li>
      <li class="toctree-l3">
@@ -1692,8 +1755,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.map_viewer.html">
      LoopStructural.visualisation.map_viewer
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/>
-    <label for="toctree-checkbox-34">
+    <input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/>
+    <label for="toctree-checkbox-35">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1701,6 +1764,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.map_viewer.getLogger.html">
        LoopStructural.visualisation.map_viewer.getLogger
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.map_viewer.FeatureType.html">
+       LoopStructural.visualisation.map_viewer.FeatureType
       </a>
      </li>
      <li class="toctree-l3">
@@ -1714,8 +1782,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.model_plotter.html">
      LoopStructural.visualisation.model_plotter
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/>
-    <label for="toctree-checkbox-35">
+    <input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/>
+    <label for="toctree-checkbox-36">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1746,13 +1814,28 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseFeature.html">
+       LoopStructural.visualisation.model_plotter.BaseFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html">
        LoopStructural.visualisation.model_plotter.BaseModelPlotter
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.FeatureType.html">
+       LoopStructural.visualisation.model_plotter.FeatureType
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="LoopStructural.visualisation.model_plotter.GeologicalFeature.html">
        LoopStructural.visualisation.model_plotter.GeologicalFeature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="LoopStructural.visualisation.model_plotter.StructuralFrame.html">
+       LoopStructural.visualisation.model_plotter.StructuralFrame
       </a>
      </li>
      <li class="toctree-l3">
@@ -1766,8 +1849,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.rotation_angle_plotter.html">
      LoopStructural.visualisation.rotation_angle_plotter
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/>
-    <label for="toctree-checkbox-36">
+    <input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/>
+    <label for="toctree-checkbox-37">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1788,8 +1871,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.sphinx_scraper.html">
      LoopStructural.visualisation.sphinx_scraper
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/>
-    <label for="toctree-checkbox-37">
+    <input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/>
+    <label for="toctree-checkbox-38">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1805,8 +1888,8 @@
     <a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.html">
      LoopStructural.visualisation.stratigraphic_column
     </a>
-    <input checked="" class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/>
-    <label for="toctree-checkbox-38">
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/>
+    <label for="toctree-checkbox-39">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1834,49 +1917,48 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 
 <nav id="bd-toc-nav">
     
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="section" id="loopstructural-visualisation-stratigraphic-column-patchcollection">
-<h1>LoopStructural.visualisation.stratigraphic_column.PatchCollection<a class="headerlink" href="#loopstructural-visualisation-stratigraphic-column-patchcollection" title="Permalink to this headline">#</a></h1>
+<h1>LoopStructural.visualisation.stratigraphic_column.PatchCollection<a class="headerlink" href="#loopstructural-visualisation-stratigraphic-column-patchcollection" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.stratigraphic_column.</span></span><span class="sig-name descname"><span class="pre">PatchCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_original</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.collections.Collection</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></p>
 <p>A generic collection of patches.</p>
-<p>This makes it easier to assign a color map to a heterogeneous
+<p>This makes it easier to assign a colormap to a heterogeneous
 collection of patches.</p>
 <p>This also may improve plotting speed, since PatchCollection will
 draw faster than a large number of patches.</p>
@@ -1890,13 +1972,13 @@ providing the standard collection arguments, facecolor,
 edgecolor, linewidths, norm or cmap.</p>
 </dd>
 </dl>
-<p>If any of <em>edgecolors</em>, <em>facecolors</em>, <em>linewidths</em>,
-<em>antialiaseds</em> are None, they default to their
-<code class="xref py py-data docutils literal notranslate"><span class="pre">matplotlib.rcParams</span></code> patch setting, in sequence form.</p>
-<p>The use of <code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarMappable</span></code> is optional.
-If the <code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarMappable</span></code> matrix _A is not
-None (i.e., a call to set_array has been made), at draw time a
-call to scalar mappable will be made to set the face colors.</p>
+<p>If any of <em>edgecolors</em>, <em>facecolors</em>, <em>linewidths</em>, <em>antialiaseds</em> are
+None, they default to their <cite>.rcParams</cite> patch setting, in sequence
+form.</p>
+<p>The use of <cite>~matplotlib.cm.ScalarMappable</cite> functionality is optional.
+If the <cite>~matplotlib.cm.ScalarMappable</cite> matrix <code class="docutils literal notranslate"><span class="pre">_A</span></code> has been set (via
+a call to <cite>~.ScalarMappable.set_array</cite>), at draw time a call to scalar
+mappable will be made to set the face colors.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_original</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__" title="Permalink to this definition">#</a></dt>
@@ -1910,13 +1992,13 @@ providing the standard collection arguments, facecolor,
 edgecolor, linewidths, norm or cmap.</p>
 </dd>
 </dl>
-<p>If any of <em>edgecolors</em>, <em>facecolors</em>, <em>linewidths</em>,
-<em>antialiaseds</em> are None, they default to their
-<code class="xref py py-data docutils literal notranslate"><span class="pre">matplotlib.rcParams</span></code> patch setting, in sequence form.</p>
-<p>The use of <code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarMappable</span></code> is optional.
-If the <code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarMappable</span></code> matrix _A is not
-None (i.e., a call to set_array has been made), at draw time a
-call to scalar mappable will be made to set the face colors.</p>
+<p>If any of <em>edgecolors</em>, <em>facecolors</em>, <em>linewidths</em>, <em>antialiaseds</em> are
+None, they default to their <cite>.rcParams</cite> patch setting, in sequence
+form.</p>
+<p>The use of <cite>~matplotlib.cm.ScalarMappable</cite> functionality is optional.
+If the <cite>~matplotlib.cm.ScalarMappable</cite> matrix <code class="docutils literal notranslate"><span class="pre">_A</span></code> has been set (via
+a call to <cite>~.ScalarMappable.set_array</cite>), at draw time a call to scalar
+mappable will be made to set the face colors.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -1932,20 +2014,14 @@ call to scalar mappable will be made to set the face colors.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_callback" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_callback</span></code></a>(func)</p></td>
 <td><p>Add a callback function that will be called whenever one of the <cite>.Artist</cite>'s properties changes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_checker" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_checker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_checker</span></code></a>(checker)</p></td>
-<td><p>Add an entry to a dictionary of boolean flags that are set to True when the mappable is changed.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">autoscale</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">autoscale</span></code></a>()</p></td>
 <td><p>Autoscale the scalar limits on the norm instance using the current array</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale_None" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale_None"><code class="xref py py-obj docutils literal notranslate"><span class="pre">autoscale_None</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale_None" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale_None"><code class="xref py py-obj docutils literal notranslate"><span class="pre">autoscale_None</span></code></a>()</p></td>
 <td><p>Autoscale the scalar limits on the norm instance using the current array, changing only limits that are None</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">changed</span></code></a>()</p></td>
-<td><p>Call this whenever the mappable is changed to notify all the callbackSM listeners to the 'changed' signal</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.check_update" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.check_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_update</span></code></a>(checker)</p></td>
-<td><p>If mappable has changed since the last check, return True; else return False</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">changed</span></code></a>()</p></td>
+<td><p>Call this whenever the mappable is changed to notify all the callbackSM listeners to the 'changed' signal.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.contains" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains</span></code></a>(mouseevent)</p></td>
 <td><p>Test whether the mouse event occurred in the collection.</p></td>
@@ -1957,7 +2033,7 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Convert <em>y</em> using the unit type of the yaxis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.draw" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw</span></code></a>(renderer)</p></td>
-<td><p>Draw the Artist using the given renderer.</p></td>
+<td><p>Draw the Artist (and its children) using the given renderer.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.findobj" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.findobj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">findobj</span></code></a>([match, include_self])</p></td>
 <td><p>Find artist objects.</p></td>
@@ -1969,13 +2045,13 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Return filter function to be used for agg filter.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_alpha" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alpha</span></code></a>()</p></td>
-<td><p>Return the alpha value used for blending - not supported on all backends</p></td>
+<td><p>Return the alpha value used for blending - not supported on all backends.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_animated" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_animated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_animated</span></code></a>()</p></td>
-<td><p>Return the animated state.</p></td>
+<td><p>Return whether the artist is animated.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_array" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_array</span></code></a>()</p></td>
-<td><p>Return the array</p></td>
+<td><p>Return the array of values, that are mapped to colors.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_capstyle</span></code>()</p></td>
 <td><p></p></td>
@@ -1984,7 +2060,7 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Return a list of the child <cite>.Artist</cite>s of this <cite>.Artist</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clim" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_clim</span></code></a>()</p></td>
-<td><p>return the min, max of the color limits for image scaling</p></td>
+<td><p>Return the values (min, max) that are mapped to the colormap limits.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_box" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_clip_box</span></code></a>()</p></td>
 <td><p>Return the clipbox.</p></td>
@@ -1996,82 +2072,76 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Return the clip path.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cmap" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cmap</span></code></a>()</p></td>
-<td><p>return the colormap</p></td>
+<td><p>Return the <cite>.Colormap</cite> instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_contains" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_contains</span></code></a>()</p></td>
-<td><p>Return the custom contains function of the artist if set, or <em>None</em>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cursor_data</span></code></a>(event)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cursor_data</span></code></a>(event)</p></td>
 <td><p>Return the cursor data for a given event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_dashes" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_dashes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dashes</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_dashes" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_dashes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dashes</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_linestyle</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datalim</span></code>(transData)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datalim</span></code>(transData)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ec" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ec</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ec" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ec</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_edgecolor</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edgecolor</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edgecolor</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_edgecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_edgecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edgecolors</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_edgecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_edgecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edgecolors</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_edgecolor</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_facecolor</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_facecolor</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_facecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_facecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_facecolors</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_facecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_facecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_facecolors</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_facecolor</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fc" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fc</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fc" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fc</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_facecolor</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_figure" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_figure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_figure</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_figure" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_figure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_figure</span></code></a>()</p></td>
 <td><p>Return the <cite>.Figure</cite> instance the artist belongs to.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fill</span></code></a>()</p></td>
-<td><p>return whether fill is set</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fill</span></code></a>()</p></td>
+<td><p>Return whether face is colored.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_gid" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gid</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_gid" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gid</span></code></a>()</p></td>
 <td><p>Return the group id.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_hatch" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_hatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hatch</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_hatch" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_hatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hatch</span></code></a>()</p></td>
 <td><p>Return the current hatching pattern.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_in_layout" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_in_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_in_layout</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_in_layout" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_in_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_in_layout</span></code></a>()</p></td>
 <td><p>Return boolean flag, <code class="docutils literal notranslate"><span class="pre">True</span></code> if artist is included in layout calculations.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_joinstyle</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_joinstyle</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_label" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_label</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_label" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_label</span></code></a>()</p></td>
 <td><p>Return the label used for this artist in the legend.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linestyle</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linestyle</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linestyles" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linestyles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linestyles</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linestyles" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linestyles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linestyles</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_linestyle</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linewidth</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linewidth</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linewidths" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linewidths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linewidths</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linewidths" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linewidths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linewidths</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_linewidth</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ls</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ls</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_linestyle</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_lw" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_lw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_lw</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_lw" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_lw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_lw</span></code></a>()</p></td>
 <td><p>Alias for <cite>get_linewidth</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_position" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_offset_position</span></code></a>()</p></td>
-<td><p>Returns how offsets are applied for the collection.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_offset_transform</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_transform" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_offset_transform</span></code></a>()</p></td>
+<td><p>Return the <cite>.Transform</cite> instance used by this artist offset.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offsets" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offsets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_offsets</span></code></a>()</p></td>
 <td><p>Return the offsets for the collection.</p></td>
@@ -2092,13 +2162,13 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Return whether the artist is to be rasterized.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_sketch_params" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_sketch_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sketch_params</span></code></a>()</p></td>
-<td><p>Returns the sketch parameters for the artist.</p></td>
+<td><p>Return the sketch parameters for the artist.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_snap" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_snap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_snap</span></code></a>()</p></td>
-<td><p>Returns the snap setting.</p></td>
+<td><p>Return the snap setting.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_tightbbox" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_tightbbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tightbbox</span></code></a>(renderer)</p></td>
-<td><p>Like <cite>Artist.get_window_extent</cite>, but includes any clipping.</p></td>
+<td><p>Like <cite>.Artist.get_window_extent</cite>, but includes any clipping.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transform" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_transform</span></code></a>()</p></td>
 <td><p>Return the <cite>.Transform</cite> instance used by this artist.</p></td>
@@ -2112,20 +2182,20 @@ call to scalar mappable will be made to set the face colors.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_url" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_url</span></code></a>()</p></td>
 <td><p>Return the url.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_urls</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_urls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_urls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_urls</span></code></a>()</p></td>
+<td><p>Return a list of URLs, one for each element of the collection.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_visible" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_visible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_visible</span></code></a>()</p></td>
 <td><p>Return the visibility.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_window_extent" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_window_extent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_window_extent</span></code></a>(renderer)</p></td>
-<td><p>Get the axes bounding box in display space.</p></td>
+<td><p>Get the artist's bounding box in display space.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_zorder" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_zorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_zorder</span></code></a>()</p></td>
 <td><p>Return the artist's zorder.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.have_units" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.have_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">have_units</span></code></a>()</p></td>
-<td><p>Return <em>True</em> if units are set on any axis.</p></td>
+<td><p>Return whether units are set on any axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.is_transform_set" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.is_transform_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_transform_set</span></code></a>()</p></td>
 <td><p>Return whether the Artist has an explicitly set transform.</p></td>
@@ -2148,8 +2218,8 @@ call to scalar mappable will be made to set the face colors.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove_callback" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_callback</span></code></a>(oid)</p></td>
 <td><p>Remove a callback based on its observer id.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>(**kwargs)</p></td>
-<td><p>A property batch setter.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>(*[, agg_filter, alpha, animated, ...])</p></td>
+<td><p>Set multiple properties at once.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_aa" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_aa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_aa</span></code></a>(aa)</p></td>
 <td><p>Alias for <cite>set_antialiased</cite>.</p></td>
@@ -2161,7 +2231,7 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Set the alpha value used for blending - not supported on all backends.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_animated" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_animated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_animated</span></code></a>(b)</p></td>
-<td><p>Set the artist's animation state.</p></td>
+<td><p>Set whether the artist is intended to be used in an animation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_antialiased" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_antialiased"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_antialiased</span></code></a>(aa)</p></td>
 <td><p>Set the antialiasing state for rendering.</p></td>
@@ -2170,10 +2240,10 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Alias for <cite>set_antialiased</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_array" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_array</span></code></a>(A)</p></td>
-<td><p>Set the image array from numpy array <em>A</em>.</p></td>
+<td><p>Set the value array from array-like <em>A</em>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_capstyle" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_capstyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_capstyle</span></code></a>(cs)</p></td>
-<td><p>Set the capstyle for the collection (for all its elements).</p></td>
+<td><p>Set the <cite>.CapStyle</cite> for the collection (for all its elements).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clim" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_clim</span></code></a>([vmin, vmax])</p></td>
 <td><p>Set the norm limits for image scaling.</p></td>
@@ -2188,131 +2258,128 @@ call to scalar mappable will be made to set the face colors.</p>
 <td><p>Set the artist's clip path.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_cmap" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cmap</span></code></a>(cmap)</p></td>
-<td><p>set the colormap for luminance data</p></td>
+<td><p>Set the colormap for luminance data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_color" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_color</span></code></a>(c)</p></td>
 <td><p>Set both the edgecolor and the facecolor.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_contains" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_contains</span></code></a>(picker)</p></td>
-<td><p>Define a custom contains test for the artist.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_dashes" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_dashes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_dashes</span></code></a>(ls)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_dashes" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_dashes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_dashes</span></code></a>(ls)</p></td>
 <td><p>Alias for <cite>set_linestyle</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ec" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ec</span></code></a>(c)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ec" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ec</span></code></a>(c)</p></td>
 <td><p>Alias for <cite>set_edgecolor</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolor" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_edgecolor</span></code></a>(c)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolor" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_edgecolor</span></code></a>(c)</p></td>
 <td><p>Set the edgecolor(s) of the collection.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_edgecolors</span></code></a>(c)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_edgecolors</span></code></a>(c)</p></td>
 <td><p>Alias for <cite>set_edgecolor</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolor" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_facecolor</span></code></a>(c)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolor" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_facecolor</span></code></a>(c)</p></td>
 <td><p>Set the facecolor(s) of the collection.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_facecolors</span></code></a>(c)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolors" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_facecolors</span></code></a>(c)</p></td>
 <td><p>Alias for <cite>set_facecolor</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_fc" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_fc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fc</span></code></a>(c)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_fc" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_fc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fc</span></code></a>(c)</p></td>
 <td><p>Alias for <cite>set_facecolor</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_figure" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_figure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_figure</span></code></a>(fig)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_figure" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_figure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_figure</span></code></a>(fig)</p></td>
 <td><p>Set the <cite>.Figure</cite> instance the artist belongs to.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_gid" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gid</span></code></a>(gid)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_gid" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gid</span></code></a>(gid)</p></td>
 <td><p>Set the (group) id for the artist.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_hatch" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_hatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_hatch</span></code></a>(hatch)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_hatch" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_hatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_hatch</span></code></a>(hatch)</p></td>
 <td><p>Set the hatching pattern</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_in_layout" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_in_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_in_layout</span></code></a>(in_layout)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_in_layout" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_in_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_in_layout</span></code></a>(in_layout)</p></td>
 <td><p>Set if artist is to be included in layout calculations, E.g.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_joinstyle</span></code></a>(js)</p></td>
-<td><p>Set the joinstyle for the collection (for all its elements).</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_joinstyle</span></code></a>(js)</p></td>
+<td><p>Set the <cite>.JoinStyle</cite> for the collection (for all its elements).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_label" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_label</span></code></a>(s)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_label" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_label</span></code></a>(s)</p></td>
 <td><p>Set a label that will be displayed in the legend.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyle" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linestyle</span></code></a>(ls)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyle" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linestyle</span></code></a>(ls)</p></td>
 <td><p>Set the linestyle(s) for the collection.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyles" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linestyles</span></code></a>(ls)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyles" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linestyles</span></code></a>(ls)</p></td>
 <td><p>Alias for <cite>set_linestyle</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidth" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linewidth</span></code></a>(lw)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidth" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linewidth</span></code></a>(lw)</p></td>
 <td><p>Set the linewidth(s) for the collection.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidths" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linewidths</span></code></a>(lw)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidths" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linewidths</span></code></a>(lw)</p></td>
 <td><p>Alias for <cite>set_linewidth</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ls</span></code></a>(ls)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ls</span></code></a>(ls)</p></td>
 <td><p>Alias for <cite>set_linestyle</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_lw" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_lw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_lw</span></code></a>(lw)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_lw" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_lw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_lw</span></code></a>(lw)</p></td>
 <td><p>Alias for <cite>set_linewidth</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_norm</span></code></a>(norm)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_norm</span></code></a>(norm)</p></td>
 <td><p>Set the normalization instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_position" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_offset_position</span></code></a>(offset_position)</p></td>
-<td><p>Set how offsets are applied.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_offset_transform</span></code></a>(transOffset)</p></td>
+<td><p>Set the artist offset transform.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_offsets</span></code></a>(offsets)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_offsets</span></code></a>(offsets)</p></td>
 <td><p>Set the offsets for the collection.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_path_effects" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_path_effects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_path_effects</span></code></a>(path_effects)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_path_effects" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_path_effects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_path_effects</span></code></a>(path_effects)</p></td>
 <td><p>Set the path effects.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_paths</span></code>(patches)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_paths</span></code>(patches)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_picker" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_picker</span></code></a>(picker)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_picker" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_picker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_picker</span></code></a>(picker)</p></td>
 <td><p>Define the picking behavior of the artist.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_pickradius" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_pickradius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_pickradius</span></code></a>(pr)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_pickradius" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_pickradius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_pickradius</span></code></a>(pr)</p></td>
 <td><p>Set the pick radius used for containment tests.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_rasterized</span></code></a>(rasterized)</p></td>
-<td><p>Force rasterized (bitmap) drawing in vector backend output.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_rasterized</span></code></a>(rasterized)</p></td>
+<td><p>Force rasterized (bitmap) drawing for vector graphics output.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_sketch_params</span></code></a>([scale, length, randomness])</p></td>
-<td><p>Sets the sketch parameters.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_sketch_params</span></code></a>([scale, length, randomness])</p></td>
+<td><p>Set the sketch parameters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_snap" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_snap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_snap</span></code></a>(snap)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_snap" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_snap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_snap</span></code></a>(snap)</p></td>
 <td><p>Set the snapping behavior.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transform" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_transform</span></code></a>(t)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transform" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_transform</span></code></a>(t)</p></td>
 <td><p>Set the artist transform.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_url" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_url</span></code></a>(url)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_url" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_url</span></code></a>(url)</p></td>
 <td><p>Set the url for the artist.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_urls</span></code></a>(urls)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_urls</span></code></a>(urls)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param urls</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_visible" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_visible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_visible</span></code></a>(b)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_visible" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_visible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_visible</span></code></a>(b)</p></td>
 <td><p>Set the artist's visibility.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_zorder" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_zorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_zorder</span></code></a>(level)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_zorder" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_zorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_zorder</span></code></a>(level)</p></td>
 <td><p>Set the zorder for the artist.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_rgba</span></code></a>(x[, alpha, bytes, norm])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_rgba</span></code></a>(x[, alpha, bytes, norm])</p></td>
 <td><p>Return a normalized rgba array corresponding to <em>x</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(props)</p></td>
-<td><p>Update this artist's properties from the dictionary <em>props</em>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(props)</p></td>
+<td><p>Update this artist's properties from the dict <em>props</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from</span></code></a>(other)</p></td>
-<td><p>copy properties from other to self</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from</span></code></a>(other)</p></td>
+<td><p>Copy properties from other to self.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_scalarmappable</span></code></a>()</p></td>
-<td><p>Update colors from the scalar mappable array, if it is not None.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_scalarmappable</span></code></a>()</p></td>
+<td><p>Update colors from the scalar mappable array, if any.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2323,22 +2390,25 @@ call to scalar mappable will be made to set the face colors.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">aname</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">axes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">axes</span></code></a></p></td>
 <td><p>The <cite>~.axes.Axes</cite> instance the artist resides in, or <em>None</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">callbacksSM</span></code></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouseover</span></code></a></p></td>
 <td><p>If this property is set to <em>True</em>, the artist will be queried for custom context information when the mouse cursor moves over it.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale</span></code></a></p></td>
 <td><p>Whether the artist is 'stale' and needs to be re-drawn for the output to match the internal state of the artist.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sticky_edges</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sticky_edges</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> sticky edge lists for autoscaling.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zorder</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zorder</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -2359,7 +2429,7 @@ but are ignored.</p>
 </p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>oid</strong> (<em>int</em>) – The observer id associated with the callback. This id can be
+<dd class="field-even"><p><em>int</em> – The observer id associated with the callback. This id can be
 used for removing the callback with <cite>.remove_callback</cite> later.</p>
 </dd>
 </dl>
@@ -2367,13 +2437,6 @@ used for removing the callback with <cite>.remove_callback</cite> later.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove_callback" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_callback</span></code></a></p>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_checker">
-<span class="sig-name descname"><span class="pre">add_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_checker" title="Permalink to this definition">#</a></dt>
-<dd><p>Add an entry to a dictionary of boolean flags
-that are set to True when the mappable is changed.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2400,20 +2463,7 @@ current array, changing only limits that are None</p>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed">
 <span class="sig-name descname"><span class="pre">changed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed" title="Permalink to this definition">#</a></dt>
 <dd><p>Call this whenever the mappable is changed to notify all the
-callbackSM listeners to the ‘changed’ signal</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.check_update">
-<span class="sig-name descname"><span class="pre">check_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.check_update" title="Permalink to this definition">#</a></dt>
-<dd><p>If mappable has changed since the last check,
-return True; else return False</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.cmap">
-<span class="sig-name descname"><span class="pre">cmap</span></span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.cmap" title="Permalink to this definition">#</a></dt>
-<dd><p>The Colormap instance of this ScalarMappable.</p>
+callbackSM listeners to the ‘changed’ signal.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2449,15 +2499,16 @@ have units, <em>y</em> itself is returned.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.draw">
 <span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.draw" title="Permalink to this definition">#</a></dt>
-<dd><p>Draw the Artist using the given renderer.</p>
-<p>This method will be overridden in the Artist subclasses. Typically,
-it is implemented to not have any effect if the Artist is not visible
-(<cite>.Artist.get_visible</cite> is <em>False</em>).</p>
+<dd><p>Draw the Artist (and its children) using the given renderer.</p>
+<p>This has no effect if the artist is not visible (<cite>.Artist.get_visible</cite>
+returns False).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>renderer</strong> (<cite>.RendererBase</cite> subclass.) – </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This method is overridden in the Artist subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2482,7 +2533,7 @@ artists of this class or its subclasses (<code class="docutils literal notransla
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>artists</strong> (list of <cite>.Artist</cite>)</p>
+<dd class="field-even"><p>list of <cite>.Artist</cite></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2498,7 +2549,9 @@ As an end-user of Matplotlib you will most likely not call this
 method yourself.</p>
 </div>
 <p>The default implementation converts ints and floats and arrays of ints
-and floats into a comma-separated string enclosed in square brackets.</p>
+and floats into a comma-separated string enclosed in square brackets,
+unless the artist has an associated colorbar, in which case scalar
+values are formatted using the colorbar’s formatter.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cursor_data</span></code></a></p>
@@ -2515,19 +2568,21 @@ and floats into a comma-separated string enclosed in square brackets.</p>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_alpha">
 <span class="sig-name descname"><span class="pre">get_alpha</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_alpha" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the alpha value used for blending - not supported on all
-backends</p>
+backends.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_animated">
 <span class="sig-name descname"><span class="pre">get_animated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_animated" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the animated state.</p>
+<dd><p>Return whether the artist is animated.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_array">
 <span class="sig-name descname"><span class="pre">get_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_array" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the array</p>
+<dd><p>Return the array of values, that are mapped to colors.</p>
+<p>The base class <cite>.ScalarMappable</cite> does not make any assumptions on
+the dimensionality and shape of the array.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2539,7 +2594,7 @@ backends</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clim">
 <span class="sig-name descname"><span class="pre">get_clim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clim" title="Permalink to this definition">#</a></dt>
-<dd><p>return the min, max of the color limits for image scaling</p>
+<dd><p>Return the values (min, max) that are mapped to the colormap limits.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2563,17 +2618,7 @@ backends</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cmap">
 <span class="sig-name descname"><span class="pre">get_cmap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cmap" title="Permalink to this definition">#</a></dt>
-<dd><p>return the colormap</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_contains">
-<span class="sig-name descname"><span class="pre">get_contains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_contains" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the custom contains function of the artist if set, or <em>None</em>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_contains" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_contains</span></code></a></p>
-</div>
+<dd><p>Return the <cite>.Colormap</cite> instance.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2644,7 +2689,7 @@ in the status bar of a plot window, while moving the mouse.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill">
 <span class="sig-name descname"><span class="pre">get_fill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill" title="Permalink to this definition">#</a></dt>
-<dd><p>return whether fill is set</p>
+<dd><p>Return whether face is colored.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2700,14 +2745,9 @@ calculations.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_position">
-<span class="sig-name descname"><span class="pre">get_offset_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_position" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns how offsets are applied for the collection.  If
-<em>offset_position</em> is ‘screen’, the offset is applied after the
-master transform has been applied, that is, the offsets are in
-screen coordinates.  If offset_position is ‘data’, the offset
-is applied before the master transform, i.e., the offsets are
-in data coordinates.</p>
+<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_transform">
+<span class="sig-name descname"><span class="pre">get_offset_transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the <cite>.Transform</cite> instance used by this artist offset.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2736,10 +2776,10 @@ in data coordinates.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_sketch_params">
 <span class="sig-name descname"><span class="pre">get_sketch_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_sketch_params" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the sketch parameters for the artist.</p>
+<dd><p>Return the sketch parameters for the artist.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><strong>sketch_params</strong> (<em>tuple or None</em>) – A 3-tuple with the following elements:</p>
+<dd class="field-odd"><p><p><em>tuple or None</em> – A 3-tuple with the following elements:</p>
 <ul class="simple">
 <li><p><em>scale</em>: The amplitude of the wiggle perpendicular to the
 source line.</p></li>
@@ -2756,21 +2796,21 @@ shrunken or expanded.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_snap">
 <span class="sig-name descname"><span class="pre">get_snap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_snap" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the snap setting.</p>
+<dd><p>Return the snap setting.</p>
 <p>See <cite>.set_snap</cite> for details.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_tightbbox">
 <span class="sig-name descname"><span class="pre">get_tightbbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_tightbbox" title="Permalink to this definition">#</a></dt>
-<dd><p>Like <cite>Artist.get_window_extent</cite>, but includes any clipping.</p>
+<dd><p>Like <cite>.Artist.get_window_extent</cite>, but includes any clipping.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>renderer</strong> (<cite>.RendererBase</cite> instance) – renderer that will be used to draw the figures (i.e.
+<dd class="field-odd"><p><strong>renderer</strong> (<cite>.RendererBase</cite> subclass) – renderer that will be used to draw the figures (i.e.
 <code class="docutils literal notranslate"><span class="pre">fig.canvas.get_renderer()</span></code>)</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>bbox</strong> (<cite>.Bbox</cite>) – The enclosing bounding box (in figure pixel co-ordinates).</p>
+<dd class="field-even"><p><cite>.Bbox</cite> – The enclosing bounding box (in figure pixel coordinates).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2796,6 +2836,14 @@ transformation.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_urls">
+<span class="sig-name descname"><span class="pre">get_urls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_urls" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of URLs, one for each element of the collection.</p>
+<p>The list contains <em>None</em> for elements without a URL. See
+<span class="xref std std-doc">/gallery/misc/hyperlinks_sgskip</span> for an example.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_visible">
 <span class="sig-name descname"><span class="pre">get_visible</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_visible" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the visibility.</p>
@@ -2804,7 +2852,7 @@ transformation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_window_extent">
 <span class="sig-name descname"><span class="pre">get_window_extent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_window_extent" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the axes bounding box in display space.</p>
+<dd><p>Get the artist’s bounding box in display space.</p>
 <p>The bounding box’ width and height are nonnegative.</p>
 <p>Subclasses should override for inclusion in the bounding box
 “tight” calculation. Default is to return an empty bounding
@@ -2827,7 +2875,7 @@ but will save incorrectly.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.have_units">
 <span class="sig-name descname"><span class="pre">have_units</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.have_units" title="Permalink to this definition">#</a></dt>
-<dd><p>Return <em>True</em> if units are set on any axis.</p>
+<dd><p>Return whether units are set on any axis.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2844,12 +2892,6 @@ but will save incorrectly.</p>
 custom context information when the mouse cursor moves over it.</p>
 <p>See also <a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_cursor_data()</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ToolCursorPosition</span></code> and
 <code class="xref py py-class docutils literal notranslate"><span class="pre">NavigationToolbar2</span></code>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.norm">
-<span class="sig-name descname"><span class="pre">norm</span></span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.norm" title="Permalink to this definition">#</a></dt>
-<dd><p>The Normalization instance of this ScalarMappable.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2915,8 +2957,49 @@ collection was added to the axes with <em>autolim</em> = True.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set">
-<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set" title="Permalink to this definition">#</a></dt>
-<dd><p>A property batch setter.  Pass <em>kwargs</em> to set properties.</p>
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_filter=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antialiased=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clim=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_box=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_on=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_path=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hatch=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joinstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_transform=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offsets=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_effects=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picker=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickradius=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sketch_params=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urls=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder=&lt;UNSET&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set" title="Permalink to this definition">#</a></dt>
+<dd><p>Set multiple properties at once.</p>
+<p>Supported properties are</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>agg_filter: a filter function, which takes a (m, n, 3) float array and a dpi value, and returns a (m, n, 3) array
+alpha: array-like or scalar or None
+animated: bool
+antialiased or aa or antialiaseds: bool or list of bools
+array: array-like or None
+capstyle: <cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}
+clim: (vmin: float, vmax: float)
+clip_box: <cite>.Bbox</cite>
+clip_on: bool
+clip_path: Patch or (Path, Transform) or None
+cmap: <cite>.Colormap</cite> or str or None
+color: color or list of rgba tuples
+edgecolor or ec or edgecolors: color or list of colors or ‘face’
+facecolor or facecolors or fc: color or list of colors
+figure: <cite>.Figure</cite>
+gid: str
+hatch: {‘/’, ‘\’, ‘|’, ‘-‘, ‘+’, ‘x’, ‘o’, ‘O’, ‘.’, ‘*’}
+in_layout: bool
+joinstyle: <cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}
+label: object
+linestyle or dashes or linestyles or ls: str or tuple or list thereof
+linewidth or linewidths or lw: float or list of floats
+norm: <cite>.Normalize</cite> or None
+offset_transform: <cite>.Transform</cite>
+offsets: (N, 2) or (2,) array-like
+path_effects: <cite>.AbstractPathEffect</cite>
+paths: unknown
+picker: None or bool or float or callable
+pickradius: float
+rasterized: bool
+sketch_params: (scale: float, length: float, randomness: float)
+snap: bool or None
+transform: <cite>.Transform</cite>
+url: str
+urls: list of str or None
+visible: bool
+zorder: float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2944,7 +3027,8 @@ value, and returns a (m, n, 3) array.</p>
 <dd><p>Set the alpha value used for blending - not supported on all backends.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>alpha</strong> (<em>float</em><em> or </em><em>None</em>) – </p>
+<dd class="field-odd"><p><strong>alpha</strong> (<em>array-like</em><em> or </em><em>scalar</em><em> or </em><em>None</em>) – All values must be within the 0-1 range, inclusive.
+Masked values and nans are not supported.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2952,7 +3036,13 @@ value, and returns a (m, n, 3) array.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_animated">
 <span class="sig-name descname"><span class="pre">set_animated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_animated" title="Permalink to this definition">#</a></dt>
-<dd><p>Set the artist’s animation state.</p>
+<dd><p>Set whether the artist is intended to be used in an animation.</p>
+<p>If True, the artist is excluded from regular drawing of the figure.
+You have to call <cite>.Figure.draw_artist</cite> / <cite>.Axes.draw_artist</cite>
+explicitly on the artist. This appoach is used to speed up animations
+using blitting.</p>
+<p>See also <cite>matplotlib.animation</cite> and
+<span class="xref std std-doc">/tutorials/advanced/blitting</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
@@ -2966,7 +3056,7 @@ value, and returns a (m, n, 3) array.</p>
 <dd><p>Set the antialiasing state for rendering.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>aa</strong> (<em>bool</em><em> or </em><em>sequence of bools</em>) – </p>
+<dd class="field-odd"><p><strong>aa</strong> (<em>bool</em><em> or </em><em>list of bools</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -2980,10 +3070,13 @@ value, and returns a (m, n, 3) array.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_array">
 <span class="sig-name descname"><span class="pre">set_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_array" title="Permalink to this definition">#</a></dt>
-<dd><p>Set the image array from numpy array <em>A</em>.</p>
+<dd><p>Set the value array from array-like <em>A</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>A</strong> (<em>ndarray</em>) – </p>
+<dd class="field-odd"><p><strong>A</strong> (<em>array-like</em><em> or </em><em>None</em>) – <p>The values that are mapped to colors.</p>
+<p>The base class <cite>.ScalarMappable</cite> does not make any assumptions on
+the dimensionality and shape of the value array <em>A</em>.</p>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2991,10 +3084,10 @@ value, and returns a (m, n, 3) array.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_capstyle">
 <span class="sig-name descname"><span class="pre">set_capstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_capstyle" title="Permalink to this definition">#</a></dt>
-<dd><p>Set the capstyle for the collection (for all its elements).</p>
+<dd><p>Set the <cite>.CapStyle</cite> for the collection (for all its elements).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cs</strong> (<em>{'butt'</em><em>, </em><em>'round'</em><em>, </em><em>'projecting'}</em>) – The capstyle</p>
+<dd class="field-odd"><p><strong>cs</strong> (<cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3034,7 +3127,7 @@ single positional argument.</p>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_on">
 <span class="sig-name descname"><span class="pre">set_clip_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_on" title="Permalink to this definition">#</a></dt>
 <dd><p>Set whether the artist uses clipping.</p>
-<p>When False artists will be visible out side of the axes which
+<p>When False artists will be visible outside of the axes which
 can lead to unexpected results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -3061,7 +3154,7 @@ is converted to a <cite>.TransformedPath</cite> using <em>transform</em>.</p></l
 <p>For efficiency, if <em>path</em> is a <cite>.Rectangle</cite> this method will set the
 clipping box to the corresponding rectangle and set the clipping path
 to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-<p>For technical reasons (support of <code class="docutils literal notranslate"><span class="pre">setp</span></code>), a tuple
+<p>For technical reasons (support of <cite>~.Artist.set</cite>), a tuple
 (<em>path</em>, <em>transform</em>) is also accepted as a single positional
 parameter.</p>
 </dd></dl>
@@ -3069,10 +3162,10 @@ parameter.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_cmap">
 <span class="sig-name descname"><span class="pre">set_cmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_cmap" title="Permalink to this definition">#</a></dt>
-<dd><p>set the colormap for luminance data</p>
+<dd><p>Set the colormap for luminance data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cmap</strong> (<em>colormap</em><em> or </em><em>registered colormap name</em>) – </p>
+<dd class="field-odd"><p><strong>cmap</strong> (<cite>.Colormap</cite> or str or None) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3083,39 +3176,13 @@ parameter.</p>
 <dd><p>Set both the edgecolor and the facecolor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>sequence of rgba tuples</em>) – </p>
+<dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>list of rgba tuples</em>) – </p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Collection.set_facecolor</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Collection.set_edgecolor</span></code></p>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_contains">
-<span class="sig-name descname"><span class="pre">set_contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">picker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_contains" title="Permalink to this definition">#</a></dt>
-<dd><p>Define a custom contains test for the artist.</p>
-<p>The provided callable replaces the default <cite>.contains</cite> method
-of the artist.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>picker</strong> (<em>callable</em>) – <p>A custom picker function to evaluate if an event is within the
-artist. The function must have the signature:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="n">artist</span><span class="p">:</span> <span class="n">Artist</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">MouseEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span>
-</pre></div>
-</div>
-<p>that returns:</p>
-<ul class="simple">
-<li><p>a bool indicating if the event is within the artist</p></li>
-<li><p>a dict of additional information. The dict should at least
-return the same information as the default <code class="docutils literal notranslate"><span class="pre">contains()</span></code>
-implementation of the respective artist, but may provide
-additional information.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -3136,7 +3203,7 @@ additional information.</p></li>
 <dd><p>Set the edgecolor(s) of the collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>sequence of colors</em><em> or </em><em>'face'</em>) – The collection edgecolor(s).  If a sequence, the patches cycle
+<dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>list of colors</em><em> or </em><em>'face'</em>) – The collection edgecolor(s).  If a sequence, the patches cycle
 through it.  If ‘face’, match the facecolor.</p>
 </dd>
 </dl>
@@ -3157,7 +3224,7 @@ patches will cycle through the sequence.</p>
 <p>If <em>c</em> is ‘none’, the patch will not be filled.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>sequence of colors</em>) – </p>
+<dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>list of colors</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3245,10 +3312,10 @@ E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_gu
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle">
 <span class="sig-name descname"><span class="pre">set_joinstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">js</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle" title="Permalink to this definition">#</a></dt>
-<dd><p>Set the joinstyle for the collection (for all its elements).</p>
+<dd><p>Set the <cite>.JoinStyle</cite> for the collection (for all its elements).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>js</strong> (<em>{'miter'</em><em>, </em><em>'round'</em><em>, </em><em>'bevel'}</em>) – The joinstyle</p>
+<dd class="field-odd"><p><strong>js</strong> (<cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3300,7 +3367,9 @@ E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_gu
 <p>where <code class="docutils literal notranslate"><span class="pre">onoffseq</span></code> is an even length tuple of on and off ink in points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ls</strong> (<em>{'-'</em><em>, </em><em>'--'</em><em>, </em><em>'-.'</em><em>, </em><em>':'</em><em>, </em><em>''</em><em>, </em><em>(</em><em>offset</em><em>, </em><em>on-off-seq</em><em>)</em><em>, </em><em>...</em><em>}</em>) – The line style.</p>
+<dd class="field-odd"><p><strong>ls</strong> (<em>str</em><em> or </em><em>tuple</em><em> or </em><em>list thereof</em>) – Valid values for individual linestyles include {‘-‘, ‘–’, ‘-.’,
+‘:’, ‘’, (offset, on-off-seq)}. See <cite>.Line2D.set_linestyle</cite> for a
+complete description.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3319,7 +3388,7 @@ or a sequence; if it is a sequence the patches will cycle
 through the sequence</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>lw</strong> (<em>float</em><em> or </em><em>sequence of floats</em>) – </p>
+<dd class="field-odd"><p><strong>lw</strong> (<em>float</em><em> or </em><em>list of floats</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3348,7 +3417,7 @@ through the sequence</p>
 <dd><p>Set the normalization instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>norm</strong> (<cite>.Normalize</cite>) – </p>
+<dd class="field-odd"><p><strong>norm</strong> (<cite>.Normalize</cite> or None) – </p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -3358,16 +3427,12 @@ on the colorbar to default.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_position">
-<span class="sig-name descname"><span class="pre">set_offset_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_position" title="Permalink to this definition">#</a></dt>
-<dd><p>Set how offsets are applied.  If <em>offset_position</em> is ‘screen’
-(default) the offset is applied after the master transform has
-been applied, that is, the offsets are in screen coordinates.
-If offset_position is ‘data’, the offset is applied before the
-master transform, i.e., the offsets are in data coordinates.</p>
+<dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform">
+<span class="sig-name descname"><span class="pre">set_offset_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transOffset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the artist offset transform.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>offset_position</strong> (<em>{'screen'</em><em>, </em><em>'data'}</em>) – </p>
+<dd class="field-odd"><p><strong>transOffset</strong> (<cite>.Transform</cite>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3378,7 +3443,7 @@ master transform, i.e., the offsets are in data coordinates.</p>
 <dd><p>Set the offsets for the collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>offsets</strong> (<em>array-like</em><em> (</em><em>N</em><em>, </em><em>2</em><em>) or </em><em>(</em><em>2</em><em>,</em><em>)</em>) – </p>
+<dd class="field-odd"><p><strong>offsets</strong> (<em>(</em><em>N</em><em>, </em><em>2</em><em>) or </em><em>(</em><em>2</em><em>,</em><em>) </em><em>array-like</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3408,7 +3473,7 @@ artist will fire a pick event if the mouse event is over
 the artist.</p></li>
 <li><p>A float: If picker is a number it is interpreted as an
 epsilon tolerance in points and the artist will fire
-off an event if it’s data is within epsilon of the mouse
+off an event if its data is within epsilon of the mouse
 event.  For some artists like lines and patch collections,
 the artist may provide additional data to the pick event
 that is generated, e.g., the indices of the data within
@@ -3435,7 +3500,7 @@ properties you want added to the PickEvent attributes.</p>
 <dd><p>Set the pick radius used for containment tests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>d</strong> (<em>float</em>) – Pick radius, in points.</p>
+<dd class="field-odd"><p><strong>pr</strong> (<em>float</em>) – Pick radius, in points.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3443,11 +3508,15 @@ properties you want added to the PickEvent attributes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized">
 <span class="sig-name descname"><span class="pre">set_rasterized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rasterized</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized" title="Permalink to this definition">#</a></dt>
-<dd><p>Force rasterized (bitmap) drawing in vector backend output.</p>
-<p>Defaults to None, which implies the backend’s default behavior.</p>
+<dd><p>Force rasterized (bitmap) drawing for vector graphics output.</p>
+<p>Rasterized drawing is not supported by all artists. If you try to
+enable this on an artist that does not support it, the command has no
+effect and a warning will be issued.</p>
+<p>This setting is ignored for pixel-based output.</p>
+<p>See also <span class="xref std std-doc">/gallery/misc/rasterization_demo</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>rasterized</strong> (<em>bool</em><em> or </em><em>None</em>) – </p>
+<dd class="field-odd"><p><strong>rasterized</strong> (<em>bool</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -3455,7 +3524,7 @@ properties you want added to the PickEvent attributes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params">
 <span class="sig-name descname"><span class="pre">set_sketch_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params" title="Permalink to this definition">#</a></dt>
-<dd><p>Sets the sketch parameters.</p>
+<dd><p>Set the sketch parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -3466,6 +3535,8 @@ sketch filter will be provided.</p></li>
 (default 128.0)</p></li>
 <li><p><strong>randomness</strong> (<em>float</em><em>, </em><em>optional</em>) – <p>The scale factor by which the length is shrunken or
 expanded (default 16.0)</p>
+<p>The PGF backend uses this argument as an RNG seed and not as
+described above. Using the same seed yields the same random shape.</p>
 </p></li>
 </ul>
 </dd>
@@ -3526,9 +3597,12 @@ segments, round to the nearest pixel center.</p></li>
 <span class="sig-name descname"><span class="pre">set_urls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>urls</strong> (<em>List</em><em>[</em><em>str</em><em>] or </em><em>None</em>) – </p>
+<dd class="field-odd"><p><strong>urls</strong> (<em>list of str</em><em> or </em><em>None</em>) – </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>URLs are currently only implemented by the SVG backend. They are
+ignored by all other backends.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3570,6 +3644,10 @@ the corresponding sticky_edges list, then no margin will be added–the
 view limit “sticks” to the edge. A typical use case is histograms,
 where one usually expects no margin on the bottom edge (0) of the
 histogram.</p>
+<p>Moreover, margin expansion “bumps” against sticky edges and cannot
+cross them.  For example, if the upper data limit is 1.0, the upper
+view limit computed by simple margin application is 1.2, but there is a
+sticky edge at 1.1, then the actual upper view limit will be 1.1.</p>
 <p>This attribute cannot be assigned to; however, the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>
 lists can be modified in place as needed.</p>
 <p class="rubric">Examples</p>
@@ -3583,7 +3661,7 @@ lists can be modified in place as needed.</p>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba">
 <span class="sig-name descname"><span class="pre">to_rgba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a normalized rgba array corresponding to <em>x</em>.</p>
-<p>In the normal case, <em>x</em> is a 1-D or 2-D sequence of scalars, and
+<p>In the normal case, <em>x</em> is a 1D or 2D sequence of scalars, and
 the corresponding ndarray of rgba values will be returned,
 based on the norm and colormap set for this ScalarMappable.</p>
 <p>There is one special case, for handling images that are already
@@ -3609,19 +3687,26 @@ performed, and it is assumed to be in the range (0-1).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">props</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update" title="Permalink to this definition">#</a></dt>
-<dd><p>Update this artist’s properties from the dictionary <em>props</em>.</p>
+<dd><p>Update this artist’s properties from the dict <em>props</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>props</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from">
 <span class="sig-name descname"><span class="pre">update_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from" title="Permalink to this definition">#</a></dt>
-<dd><p>copy properties from other to self</p>
+<dd><p>Copy properties from other to self.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable">
 <span class="sig-name descname"><span class="pre">update_scalarmappable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable" title="Permalink to this definition">#</a></dt>
-<dd><p>Update colors from the scalar mappable array, if it is not None.</p>
+<dd><p>Update colors from the scalar mappable array, if any.</p>
+<p>Assign colors to edges and faces based on the array and/or
+colors that were directly set, as appropriate.</p>
 </dd></dl>
 
 </dd></dl>
@@ -3629,35 +3714,39 @@ performed, and it is assumed to be in the range (0-1).</p>
 </div>
 
 
-              </div>
+              </article>
               
+
               
-              <!-- Previous / next buttons -->
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="LoopStructural.visualisation.stratigraphic_column.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="LoopStructural.visualisation.stratigraphic_column.Polygon.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column.Polygon</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
+  <a class='left-prev' id="prev-link" href="LoopStructural.visualisation.stratigraphic_column.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="LoopStructural.visualisation.stratigraphic_column.Polygon.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column.Polygon</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
 </div>
+              </footer>
               
-          </main>
+          </div>
           
-
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

@@ -94,6 +94,13 @@ Modelling S2
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    [-3.96070387 -3.79150399 -3.62230411 ...  4.34785626  4.34724127
+      4.34663168]
+
 
 
 
@@ -133,6 +140,13 @@ Modelling S1
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    [ 1683.59537888  1760.0819939   1832.6233591  ... -4409.85535785
+     -4539.70071034 -4673.24676405]
+
 
 
 
@@ -167,12 +181,10 @@ S2/S1 S-Plots
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    [<matplotlib.lines.Line2D object at 0x7fd0c78a20a0>]
+    [<matplotlib.lines.Line2D object at 0x7ff0383f2760>]
 
 
 
@@ -210,6 +222,13 @@ Modelling S0
    :srcset: /auto_examples/2_fold/images/sphx_glr_plot_refolded_folds_004.png
    :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    [-173.73954699 -151.61108269 -129.45129922 ... -103.03100067 -119.20235966
+     -136.61400572]
 
 
 
@@ -261,28 +280,23 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  30.038 seconds)
+   **Total running time of the script:** ( 1 minutes  6.493 seconds)
 
 
 .. _sphx_glr_download_auto_examples_2_fold_plot_refolded_folds.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_refolded_folds.py <plot_refolded_folds.py>`
 
-     :download:`Download Python source code: plot_refolded_folds.py <plot_refolded_folds.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_refolded_folds.ipynb <plot_refolded_folds.ipynb>`
+      :download:`Download Jupyter notebook: plot_refolded_folds.ipynb <plot_refolded_folds.ipynb>`
 
 
 .. only:: html

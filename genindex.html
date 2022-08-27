@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; LoopStructural 0.1 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -24,42 +28,51 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="index.html">
-<p class="title">LoopStructural</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -105,6 +118,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -123,13 +144,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -137,26 +158,25 @@
     
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-          </div>
-          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
 
 <h1 id="index">Index</h1>
@@ -252,13 +272,13 @@
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultSegment.html#LoopStructural.modelling.core.geological_model.FaultSegment.__init__">(LoopStructural.modelling.core.geological_model.FaultSegment method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FeatureType.html#LoopStructural.modelling.core.geological_model.FeatureType.__init__">(LoopStructural.modelling.core.geological_model.FeatureType method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.html#LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.__init__">(LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldEvent.html#LoopStructural.modelling.core.geological_model.FoldEvent.__init__">(LoopStructural.modelling.core.geological_model.FoldEvent method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldFrame.html#LoopStructural.modelling.core.geological_model.FoldFrame.__init__">(LoopStructural.modelling.core.geological_model.FoldFrame method)</a>
-</li>
-        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldRotationAngle.html#LoopStructural.modelling.core.geological_model.FoldRotationAngle.__init__">(LoopStructural.modelling.core.geological_model.FoldRotationAngle method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.__init__">(LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
 </li>
@@ -282,7 +302,13 @@
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.UnconformityFeature.html#LoopStructural.modelling.core.geological_model.UnconformityFeature.__init__">(LoopStructural.modelling.core.geological_model.UnconformityFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement.html#LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement.__init__">(LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.__init__">(LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.__init__">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.__init__">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.features.AnalyticalGeologicalFeature.html#LoopStructural.modelling.features.AnalyticalGeologicalFeature.__init__">(LoopStructural.modelling.features.AnalyticalGeologicalFeature method)</a>
 </li>
@@ -352,6 +378,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html#LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.__init__">(LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html#LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.__init__">(LoopStructural.modelling.intrusions.intrusion_feature.FeatureType method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html#LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.__init__">(LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.__init__">(LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder method)</a>
@@ -377,6 +405,10 @@
         <li><a href="_autosummary/LoopStructural.utils.config.LoopStructuralConfig.html#LoopStructural.utils.config.LoopStructuralConfig.__init__">(LoopStructural.utils.config.LoopStructuralConfig method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.__init__">(LoopStructural.utils.helper.PCA method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.utils.json_encoder.LoopJSONEncoder.html#LoopStructural.utils.json_encoder.LoopJSONEncoder.__init__">(LoopStructural.utils.json_encoder.LoopJSONEncoder method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.utils.LoopJSONEncoder.html#LoopStructural.utils.LoopJSONEncoder.__init__">(LoopStructural.utils.LoopJSONEncoder method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.utils.NegativeRegion.html#LoopStructural.utils.NegativeRegion.__init__">(LoopStructural.utils.NegativeRegion method)</a>
 </li>
@@ -406,13 +438,21 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.__init__">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.map_viewer.FeatureType.html#LoopStructural.visualisation.map_viewer.FeatureType.__init__">(LoopStructural.visualisation.map_viewer.FeatureType method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.map_viewer.MapView.html#LoopStructural.visualisation.map_viewer.MapView.__init__">(LoopStructural.visualisation.map_viewer.MapView method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.MapView.html#LoopStructural.visualisation.MapView.__init__">(LoopStructural.visualisation.MapView method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature.__init__">(LoopStructural.visualisation.model_plotter.BaseFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.__init__">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.FeatureType.html#LoopStructural.visualisation.model_plotter.FeatureType.__init__">(LoopStructural.visualisation.model_plotter.FeatureType method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.__init__">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.__init__">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.rotation_angle_plotter.RotationAnglePlotter.html#LoopStructural.visualisation.rotation_angle_plotter.RotationAnglePlotter.__init__">(LoopStructural.visualisation.rotation_angle_plotter.RotationAnglePlotter method)</a>
 </li>
@@ -435,10 +475,6 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.acos.html#LoopStructural.interpolators.cython.dsi_helper.acos">acos() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.acosh.html#LoopStructural.interpolators.cython.dsi_helper.acosh">acosh() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.visualisation.DashView.html#LoopStructural.visualisation.DashView.add_box">add_box() (LoopStructural.visualisation.DashView method)</a>
 
       <ul>
@@ -457,8 +493,6 @@
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.add_callback">(LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_checker">add_checker() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.modelling.input.fault_network.FaultNetwork.html#LoopStructural.modelling.input.fault_network.FaultNetwork.add_connection">add_connection() (LoopStructural.modelling.input.fault_network.FaultNetwork method)</a>
 
       <ul>
@@ -667,6 +701,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.P2Interpolator.html#LoopStructural.modelling.core.geological_model.P2Interpolator.add_gradient_orthogonal_constraints">(LoopStructural.modelling.core.geological_model.P2Interpolator method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_inequality_constraints">add_inequality_constraints() (LoopStructural.interpolators.FiniteDifferenceInterpolator method)</a>
+</li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.add_inequality_constraints_to_matrix">add_inequality_constraints_to_matrix() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
 
       <ul>
@@ -814,7 +850,11 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.add_region">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature.add_region">(LoopStructural.visualisation.model_plotter.BaseFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.add_region">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.add_region">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_regularisation">add_regularisation() (LoopStructural.interpolators.FiniteDifferenceInterpolator method)</a>
@@ -947,17 +987,7 @@
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_support_functions.array_from_coords.html#LoopStructural.modelling.intrusions.intrusion_support_functions.array_from_coords">(in module LoopStructural.modelling.intrusions.intrusion_support_functions)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.asin.html#LoopStructural.interpolators.cython.dsi_helper.asin">asin() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.asinh.html#LoopStructural.interpolators.cython.dsi_helper.asinh">asinh() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator.assemble_inner">assemble_inner() (LoopStructural.interpolators.FiniteDifferenceInterpolator method)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.atan.html#LoopStructural.interpolators.cython.dsi_helper.atan">atan() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.atan2.html#LoopStructural.interpolators.cython.dsi_helper.atan2">atan2() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.atanh.html#LoopStructural.interpolators.cython.dsi_helper.atanh">atanh() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale">autoscale() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
@@ -994,7 +1024,11 @@
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.features.BaseFeature.html#LoopStructural.modelling.features.BaseFeature">BaseFeature (class in LoopStructural.modelling.features)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature">(class in LoopStructural.visualisation.model_plotter)</a>
 </li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.lavavu.BaseModelPlotter.html#LoopStructural.visualisation.lavavu.BaseModelPlotter">BaseModelPlotter (class in LoopStructural.visualisation.lavavu)</a>
 
       <ul>
@@ -1002,6 +1036,8 @@
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.regions.BaseRegion.html#LoopStructural.utils.regions.BaseRegion">BaseRegion (class in LoopStructural.utils.regions)</a>
+</li>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement.html#LoopStructural.modelling.core.stratigraphic_column.BaseStratigraphicColumnElement">BaseStratigraphicColumnElement (class in LoopStructural.modelling.core.stratigraphic_column)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.interpolators.supports.BaseUnstructured2d.html#LoopStructural.interpolators.supports.BaseUnstructured2d">BaseUnstructured2d (class in LoopStructural.interpolators.supports)</a>
 </li>
@@ -1017,6 +1053,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.border">(LoopStructural.visualisation.LavaVuModelViewer property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.html#LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.build">build() (LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder method)</a>
 
       <ul>
@@ -1033,8 +1071,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.IntrusionBuilder.html#LoopStructural.modelling.intrusions.IntrusionBuilder.build">(LoopStructural.modelling.intrusions.IntrusionBuilder method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.build_matrix">build_matrix() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
 
       <ul>
@@ -1197,15 +1233,7 @@
         <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldFrame.html#LoopStructural.modelling.features.fold.FoldFrame.calculate_intersection_lineation">(LoopStructural.modelling.features.fold.FoldFrame method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldRotationAngle.html#LoopStructural.modelling.core.geological_model.FoldRotationAngle.calculate_misfit">calculate_misfit() (LoopStructural.modelling.core.geological_model.FoldRotationAngle method)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle.calculate_misfit">(LoopStructural.modelling.features.fold.FoldRotationAngle method)</a>
-</li>
-      </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.calculate_pairs.html#LoopStructural.interpolators.cython.dsi_helper.calculate_pairs">calculate_pairs() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.ceil.html#LoopStructural.interpolators.cython.dsi_helper.ceil">ceil() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle.calculate_misfit">calculate_misfit() (LoopStructural.modelling.features.fold.FoldRotationAngle method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid.cell_centres">cell_centres() (LoopStructural.interpolators.StructuredGrid method)</a>
 
@@ -1237,12 +1265,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.TetMesh.html#LoopStructural.modelling.core.geological_model.TetMesh.cell_corner_indexes">(LoopStructural.modelling.core.geological_model.TetMesh method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.cg.html#LoopStructural.interpolators.cython.dsi_helper.cg">cg() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.cg.html#LoopStructural.interpolators.piecewiselinear_interpolator.cg">(in module LoopStructural.interpolators.piecewiselinear_interpolator)</a>
+      <li><a href="_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.cg.html#LoopStructural.interpolators.piecewiselinear_interpolator.cg">cg() (in module LoopStructural.interpolators.piecewiselinear_interpolator)</a>
 </li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed">changed() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.html#LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.check_interpolation_geometry">check_interpolation_geometry() (LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder method)</a>
@@ -1275,11 +1299,13 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.check_update">check_update() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.clear">clear() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.clear">clear() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
 
       <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.clear">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.clear">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.LavaVuModelViewer.html#LoopStructural.visualisation.lavavu.LavaVuModelViewer.clear">(LoopStructural.visualisation.lavavu.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.clear">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
@@ -1289,11 +1315,7 @@
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.cluster_centers_">cluster_centers_ (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans attribute)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.cmap">cmap (LoopStructural.visualisation.stratigraphic_column.PatchCollection attribute)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.colorbar">colorbar (LoopStructural.visualisation.stratigraphic_column.PatchCollection attribute)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.comb.html#LoopStructural.interpolators.cython.dsi_helper.comb">comb() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.components_">components_ (LoopStructural.utils.helper.PCA attribute)</a>
 </li>
@@ -1307,8 +1329,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html#LoopStructural.modelling.intrusions.IntrusionFrameBuilder.compute_velocity_field">(LoopStructural.modelling.intrusions.IntrusionFrameBuilder method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.constant_norm.html#LoopStructural.interpolators.cython.dsi_helper.constant_norm">constant_norm() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.contains">contains() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 
       <ul>
@@ -1336,15 +1356,13 @@
       <li><a href="_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator.copy">copy() (LoopStructural.interpolators.FiniteDifferenceInterpolator method)</a>
 
       <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.copy">(LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.copy">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.copy">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
+</li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.copysign.html#LoopStructural.interpolators.cython.dsi_helper.copysign">copysign() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.cos.html#LoopStructural.interpolators.cython.dsi_helper.cos">cos() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.cosh.html#LoopStructural.interpolators.cython.dsi_helper.cosh">cosh() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_domain_fault">create_and_add_domain_fault() (LoopStructural.GeologicalModel method)</a>
 
       <ul>
@@ -1515,8 +1533,18 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.degrees.html#LoopStructural.interpolators.cython.dsi_helper.degrees">degrees() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+      <li><a href="_autosummary/LoopStructural.utils.json_encoder.LoopJSONEncoder.html#LoopStructural.utils.json_encoder.LoopJSONEncoder.default">default() (LoopStructural.utils.json_encoder.LoopJSONEncoder method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.utils.LoopJSONEncoder.html#LoopStructural.utils.LoopJSONEncoder.default">(LoopStructural.utils.LoopJSONEncoder method)</a>
 </li>
+      </ul></li>
+      <li><a href="_autosummary/LoopStructural.probability.LogLikelihood.html#LoopStructural.probability.LogLikelihood.default_output">default_output (LoopStructural.probability.LogLikelihood attribute)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.probability.LogLikelihoodGradient.html#LoopStructural.probability.LogLikelihoodGradient.default_output">(LoopStructural.probability.LogLikelihoodGradient attribute)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.DFI.html#LoopStructural.modelling.core.geological_model.DFI">DFI (in module LoopStructural.modelling.core.geological_model)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator">DiscreteFoldInterpolator (class in LoopStructural.interpolators)</a>
@@ -1535,8 +1563,6 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.display">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.dist.html#LoopStructural.interpolators.cython.dsi_helper.dist">dist() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.probability.LogLikelihood.html#LoopStructural.probability.LogLikelihood.do_constant_folding">do_constant_folding() (LoopStructural.probability.LogLikelihood method)</a>
 
       <ul>
@@ -1579,10 +1605,12 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.helper.empty_dataframe.html#LoopStructural.utils.helper.empty_dataframe">empty_dataframe() (in module LoopStructural.utils.helper)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.erf.html#LoopStructural.interpolators.cython.dsi_helper.erf">erf() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+      <li><a href="_autosummary/LoopStructural.utils.json_encoder.LoopJSONEncoder.html#LoopStructural.utils.json_encoder.LoopJSONEncoder.encode">encode() (LoopStructural.utils.json_encoder.LoopJSONEncoder method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.utils.LoopJSONEncoder.html#LoopStructural.utils.LoopJSONEncoder.encode">(LoopStructural.utils.LoopJSONEncoder method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.erfc.html#LoopStructural.interpolators.cython.dsi_helper.erfc">erfc() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultSegment.html#LoopStructural.modelling.core.geological_model.FaultSegment.evaluate">evaluate() (LoopStructural.modelling.core.geological_model.FaultSegment method)</a>
 
       <ul>
@@ -1706,13 +1734,21 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.evaluate_gradient">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature.evaluate_gradient">(LoopStructural.visualisation.model_plotter.BaseFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.evaluate_gradient">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.evaluate_gradient_misfit">evaluate_gradient_misfit() (LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
 
       <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.UnconformityFeature.html#LoopStructural.modelling.core.geological_model.UnconformityFeature.evaluate_gradient_misfit">(LoopStructural.modelling.core.geological_model.UnconformityFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature.evaluate_gradient_misfit">(LoopStructural.modelling.features.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.UnconformityFeature.html#LoopStructural.modelling.features.UnconformityFeature.evaluate_gradient_misfit">(LoopStructural.modelling.features.UnconformityFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.evaluate_gradient_misfit">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
@@ -1838,7 +1874,11 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.evaluate_value">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature.evaluate_value">(LoopStructural.visualisation.model_plotter.BaseFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.evaluate_value">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.ScalarField.html#LoopStructural.visualisation.ScalarField.evaluate_value">(LoopStructural.visualisation.ScalarField method)</a>
 </li>
@@ -1846,20 +1886,20 @@
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.evaluate_value_misfit">evaluate_value_misfit() (LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
 
       <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.UnconformityFeature.html#LoopStructural.modelling.core.geological_model.UnconformityFeature.evaluate_value_misfit">(LoopStructural.modelling.core.geological_model.UnconformityFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature.evaluate_value_misfit">(LoopStructural.modelling.features.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.UnconformityFeature.html#LoopStructural.modelling.features.UnconformityFeature.evaluate_value_misfit">(LoopStructural.modelling.features.UnconformityFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.evaluate_value_misfit">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value_misfit">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.exp.html#LoopStructural.interpolators.cython.dsi_helper.exp">exp() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.explained_variance_">explained_variance_ (LoopStructural.utils.helper.PCA attribute)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.explained_variance_ratio_">explained_variance_ratio_ (LoopStructural.utils.helper.PCA attribute)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.expm1.html#LoopStructural.interpolators.cython.dsi_helper.expm1">expm1() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.extend_model_data">extend_model_data() (LoopStructural.GeologicalModel method)</a>
 
@@ -1873,10 +1913,6 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.fabs.html#LoopStructural.interpolators.cython.dsi_helper.fabs">fabs() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.factorial.html#LoopStructural.interpolators.cython.dsi_helper.factorial">factorial() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultBuilder.html#LoopStructural.modelling.core.geological_model.FaultBuilder">FaultBuilder (class in LoopStructural.modelling.core.geological_model)</a>
 
       <ul>
@@ -1927,8 +1963,18 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.features">(LoopStructural.modelling.core.geological_model.GeologicalModel attribute)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.features.FeatureType.html#LoopStructural.modelling.features.FeatureType">FeatureType (class in LoopStructural.modelling.features)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FeatureType.html#LoopStructural.modelling.core.geological_model.FeatureType">FeatureType (class in LoopStructural.modelling.core.geological_model)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.features.FeatureType.html#LoopStructural.modelling.features.FeatureType">(class in LoopStructural.modelling.features)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html#LoopStructural.modelling.intrusions.intrusion_feature.FeatureType">(class in LoopStructural.modelling.intrusions.intrusion_feature)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.map_viewer.FeatureType.html#LoopStructural.visualisation.map_viewer.FeatureType">(class in LoopStructural.visualisation.map_viewer)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.FeatureType.html#LoopStructural.visualisation.model_plotter.FeatureType">(class in LoopStructural.visualisation.model_plotter)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.fill">fill (LoopStructural.visualisation.stratigraphic_column.Polygon property)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.find_inout_points.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.find_inout_points">find_inout_points() (in module LoopStructural.modelling.intrusions.intrusion_frame_builder)</a>
@@ -1941,6 +1987,8 @@
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_support_functions.findMinDiff.html#LoopStructural.modelling.intrusions.intrusion_support_functions.findMinDiff">findMinDiff() (in module LoopStructural.modelling.intrusions.intrusion_support_functions)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.findobj">findobj() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 
       <ul>
@@ -1949,20 +1997,14 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator">FiniteDifferenceInterpolator (class in LoopStructural.interpolators)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit">fit() (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans method)</a>
 
       <ul>
         <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.fit">(LoopStructural.utils.helper.PCA method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldRotationAngle.html#LoopStructural.modelling.core.geological_model.FoldRotationAngle.fit_fourier_series">fit_fourier_series() (LoopStructural.modelling.core.geological_model.FoldRotationAngle method)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle.fit_fourier_series">(LoopStructural.modelling.features.fold.FoldRotationAngle method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle.fit_fourier_series">fit_fourier_series() (LoopStructural.modelling.features.fold.FoldRotationAngle method)</a>
 </li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit_predict">fit_predict() (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit_transform">fit_transform() (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans method)</a>
@@ -1971,16 +2013,8 @@
         <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.fit_transform">(LoopStructural.utils.helper.PCA method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.floor.html#LoopStructural.interpolators.cython.dsi_helper.floor">floor() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+      <li><a href="_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.fold_cg.html#LoopStructural.interpolators.piecewiselinear_interpolator.fold_cg">fold_cg() (in module LoopStructural.interpolators.piecewiselinear_interpolator)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.fmod.html#LoopStructural.interpolators.cython.dsi_helper.fmod">fmod() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.fold_cg.html#LoopStructural.interpolators.cython.dsi_helper.fold_cg">fold_cg() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.fold_cg.html#LoopStructural.interpolators.piecewiselinear_interpolator.fold_cg">(in module LoopStructural.interpolators.piecewiselinear_interpolator)</a>
-</li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder.html#LoopStructural.modelling.core.geological_model.FoldedFeatureBuilder">FoldedFeatureBuilder (class in LoopStructural.modelling.core.geological_model)</a>
 
       <ul>
@@ -1999,12 +2033,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldFrame.html#LoopStructural.modelling.features.fold.FoldFrame">(class in LoopStructural.modelling.features.fold)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldRotationAngle.html#LoopStructural.modelling.core.geological_model.FoldRotationAngle">FoldRotationAngle (class in LoopStructural.modelling.core.geological_model)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle">(class in LoopStructural.modelling.features.fold)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle">FoldRotationAngle (class in LoopStructural.modelling.features.fold)</a>
 </li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngleFeature.html#LoopStructural.modelling.features.fold.FoldRotationAngleFeature">FoldRotationAngleFeature (class in LoopStructural.modelling.features.fold)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.format_cursor_data">format_cursor_data() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
@@ -2014,8 +2044,6 @@
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.features.fold.fourier_series.html#LoopStructural.modelling.features.fold.fourier_series">fourier_series() (in module LoopStructural.modelling.features.fold)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.frexp.html#LoopStructural.interpolators.cython.dsi_helper.frexp">frexp() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.from_file">from_file() (LoopStructural.GeologicalModel class method)</a>
 
@@ -2031,20 +2059,20 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.from_piecewise_linear_and_fold">from_piecewise_linear_and_fold() (LoopStructural.interpolators.DiscreteFoldInterpolator class method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.fromkeys">fromkeys() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.fromkeys">fromkeys() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.fromkeys">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.fsum.html#LoopStructural.interpolators.cython.dsi_helper.fsum">fsum() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.fromkeys">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.gamma.html#LoopStructural.interpolators.cython.dsi_helper.gamma">gamma() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.gcd.html#LoopStructural.interpolators.cython.dsi_helper.gcd">gcd() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature">GeologicalFeature (class in LoopStructural.modelling.core.geological_model)</a>
 
       <ul>
@@ -2069,8 +2097,14 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel">(class in LoopStructural.modelling.core.geological_model)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.get">get() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.get">get() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.get">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.get">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.get_aa">get_aa() (LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_agg_filter">get_agg_filter() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
@@ -2127,12 +2161,6 @@
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cmap">get_cmap() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_contains">get_contains() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.get_contains">(LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
-</li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.get_covariance">get_covariance() (LoopStructural.utils.helper.PCA method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data">get_cursor_data() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
@@ -2326,6 +2354,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.features.StructuralFrame.html#LoopStructural.modelling.features.StructuralFrame.get_feature">(LoopStructural.modelling.features.StructuralFrame method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.get_feature">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.get_feature_by_name">get_feature_by_name() (LoopStructural.GeologicalModel method)</a>
 
@@ -2441,10 +2471,10 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.logging.get_levels.html#LoopStructural.utils.logging.get_levels">get_levels() (in module LoopStructural.utils.logging)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.get_linestyle">get_linestyle() (LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linestyles">get_linestyles() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.get_linewidth">get_linewidth() (LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
@@ -2511,7 +2541,7 @@
         <li><a href="_autosummary/LoopStructural.modelling.features.builders.GeologicalFeatureBuilder.html#LoopStructural.modelling.features.builders.GeologicalFeatureBuilder.get_norm_constraints">(LoopStructural.modelling.features.builders.GeologicalFeatureBuilder method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_position">get_offset_position() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
+      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_transform">get_offset_transform() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offsets">get_offsets() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
@@ -2629,6 +2659,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.get_url">(LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_urls">get_urls() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
+</li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.get_value_constraints">get_value_constraints() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
 
       <ul>
@@ -2842,10 +2874,6 @@
 </li>
       </ul></li>
   </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.hypot.html#LoopStructural.interpolators.cython.dsi_helper.hypot">hypot() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-  </ul></td>
 </tr></table>
 
 <h2 id="I">I</h2>
@@ -2933,6 +2961,12 @@
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder">(class in LoopStructural.modelling.intrusions.intrusion_frame_builder)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.UnconformityFeature.html#LoopStructural.modelling.core.geological_model.UnconformityFeature.inverse">inverse() (LoopStructural.modelling.core.geological_model.UnconformityFeature method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.features.UnconformityFeature.html#LoopStructural.modelling.features.UnconformityFeature.inverse">(LoopStructural.modelling.features.UnconformityFeature method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.inverse_transform">inverse_transform() (LoopStructural.utils.helper.PCA method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.lavavu.is_notebook.html#LoopStructural.visualisation.lavavu.is_notebook">is_notebook() (in module LoopStructural.visualisation.lavavu)</a>
@@ -2943,26 +2977,34 @@
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.is_transform_set">(LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.isclose.html#LoopStructural.interpolators.cython.dsi_helper.isclose">isclose() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.items">items() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.items">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.isfinite.html#LoopStructural.interpolators.cython.dsi_helper.isfinite">isfinite() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.items">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.isinf.html#LoopStructural.interpolators.cython.dsi_helper.isinf">isinf() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+      </ul></li>
+      <li><a href="_autosummary/LoopStructural.utils.json_encoder.LoopJSONEncoder.html#LoopStructural.utils.json_encoder.LoopJSONEncoder.iterencode">iterencode() (LoopStructural.utils.json_encoder.LoopJSONEncoder method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.utils.LoopJSONEncoder.html#LoopStructural.utils.LoopJSONEncoder.iterencode">(LoopStructural.utils.LoopJSONEncoder method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.isnan.html#LoopStructural.interpolators.cython.dsi_helper.isnan">isnan() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.isqrt.html#LoopStructural.interpolators.cython.dsi_helper.isqrt">isqrt() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.items">items() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
-</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.keys">keys() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.keys">keys() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.keys">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.keys">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans">KMeans (class in LoopStructural.modelling.intrusions.intrusion_frame_builder)</a>
@@ -2983,13 +3025,13 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.LavaVuModelViewer.html#LoopStructural.visualisation.lavavu.LavaVuModelViewer">(class in LoopStructural.visualisation.lavavu)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.ldexp.html#LoopStructural.interpolators.cython.dsi_helper.ldexp">ldexp() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.lgamma.html#LoopStructural.interpolators.cython.dsi_helper.lgamma">lgamma() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology">Lithology (class in LoopStructural.modelling.core.stratigraphic_column)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.datasets.load_claudius.html#LoopStructural.datasets.load_claudius">load_claudius() (in module LoopStructural.datasets)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.datasets.load_duplex.html#LoopStructural.datasets.load_duplex">load_duplex() (in module LoopStructural.datasets)</a>
+</li>
+      <li><a href="_autosummary/LoopStructural.datasets.load_geological_map_data.html#LoopStructural.datasets.load_geological_map_data">load_geological_map_data() (in module LoopStructural.datasets)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.datasets.load_grose2017.html#LoopStructural.datasets.load_grose2017">load_grose2017() (in module LoopStructural.datasets)</a>
 </li>
@@ -3006,14 +3048,6 @@
       <li><a href="_autosummary/LoopStructural.datasets.load_tabular_intrusion.html#LoopStructural.datasets.load_tabular_intrusion">load_tabular_intrusion() (in module LoopStructural.datasets)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.datasets.load_unconformity.html#LoopStructural.datasets.load_unconformity">load_unconformity() (in module LoopStructural.datasets)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.log.html#LoopStructural.interpolators.cython.dsi_helper.log">log() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.log10.html#LoopStructural.interpolators.cython.dsi_helper.log10">log10() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.log1p.html#LoopStructural.interpolators.cython.dsi_helper.log1p">log1p() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.log2.html#LoopStructural.interpolators.cython.dsi_helper.log2">log2() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.log_to_console.html#LoopStructural.utils.log_to_console">log_to_console() (in module LoopStructural.utils)</a>
 
@@ -3033,10 +3067,16 @@
 </li>
       <li><a href="_autosummary/LoopStructural.probability.LogLikelihoodGradient.html#LoopStructural.probability.LogLikelihoodGradient">LogLikelihoodGradient (class in LoopStructural.probability)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.LoopException.html#LoopStructural.modelling.core.geological_model.LoopException">LoopException</a>, <a href="_autosummary/LoopStructural.utils.LoopException.html#LoopStructural.utils.LoopException">[1]</a>, <a href="_autosummary/LoopStructural.utils.exceptions.LoopException.html#LoopStructural.utils.exceptions.LoopException">[2]</a>
+      <li><a href="_autosummary/LoopStructural.utils.LoopException.html#LoopStructural.utils.LoopException">LoopException</a>, <a href="_autosummary/LoopStructural.utils.exceptions.LoopException.html#LoopStructural.utils.exceptions.LoopException">[1]</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.LoopImportError.html#LoopStructural.utils.LoopImportError">LoopImportError</a>, <a href="_autosummary/LoopStructural.utils.exceptions.LoopImportError.html#LoopStructural.utils.exceptions.LoopImportError">[1]</a>, <a href="_autosummary/LoopStructural.visualisation.lavavu.LoopImportError.html#LoopStructural.visualisation.lavavu.LoopImportError">[2]</a>, <a href="_autosummary/LoopStructural.visualisation.model_plotter.LoopImportError.html#LoopStructural.visualisation.model_plotter.LoopImportError">[3]</a>
 </li>
+      <li><a href="_autosummary/LoopStructural.utils.LoopJSONEncoder.html#LoopStructural.utils.LoopJSONEncoder">LoopJSONEncoder (class in LoopStructural.utils)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.utils.json_encoder.LoopJSONEncoder.html#LoopStructural.utils.json_encoder.LoopJSONEncoder">(class in LoopStructural.utils.json_encoder)</a>
+</li>
+      </ul></li>
       <li>
     LoopStructural
 
@@ -3063,20 +3103,6 @@
 
       <ul>
         <li><a href="_autosummary/LoopStructural.interpolators.html#module-LoopStructural.interpolators">module</a>
-</li>
-      </ul></li>
-      <li>
-    LoopStructural.interpolators.cython
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.interpolators.cython.html#module-LoopStructural.interpolators.cython">module</a>
-</li>
-      </ul></li>
-      <li>
-    LoopStructural.interpolators.cython.dsi_helper
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.html#module-LoopStructural.interpolators.cython.dsi_helper">module</a>
 </li>
       </ul></li>
       <li>
@@ -3149,8 +3175,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.features.fold.html#module-LoopStructural.modelling.features.fold">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     LoopStructural.modelling.input
 
@@ -3165,6 +3189,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.input.fault_network.html#module-LoopStructural.modelling.input.fault_network">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     LoopStructural.modelling.input.map2loop_processor
 
@@ -3268,6 +3294,13 @@
 
       <ul>
         <li><a href="_autosummary/LoopStructural.utils.helper.html#module-LoopStructural.utils.helper">module</a>
+</li>
+      </ul></li>
+      <li>
+    LoopStructural.utils.json_encoder
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.utils.json_encoder.html#module-LoopStructural.utils.json_encoder">module</a>
 </li>
       </ul></li>
       <li>
@@ -3422,10 +3455,38 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.marching_cubes.html#LoopStructural.visualisation.model_plotter.marching_cubes">marching_cubes() (in module LoopStructural.visualisation.model_plotter)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.max">max() (LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultSegment.html#LoopStructural.modelling.core.geological_model.FaultSegment.max">max() (LoopStructural.modelling.core.geological_model.FaultSegment method)</a>
 
       <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldFrame.html#LoopStructural.modelling.core.geological_model.FoldFrame.max">(LoopStructural.modelling.core.geological_model.FoldFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.max">(LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.StructuralFrame.html#LoopStructural.modelling.core.geological_model.StructuralFrame.max">(LoopStructural.modelling.core.geological_model.StructuralFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.UnconformityFeature.html#LoopStructural.modelling.core.geological_model.UnconformityFeature.max">(LoopStructural.modelling.core.geological_model.UnconformityFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.AnalyticalGeologicalFeature.html#LoopStructural.modelling.features.AnalyticalGeologicalFeature.max">(LoopStructural.modelling.features.AnalyticalGeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.BaseFeature.html#LoopStructural.modelling.features.BaseFeature.max">(LoopStructural.modelling.features.BaseFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.CrossProductGeologicalFeature.html#LoopStructural.modelling.features.CrossProductGeologicalFeature.max">(LoopStructural.modelling.features.CrossProductGeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fault.FaultDisplacementFeature.html#LoopStructural.modelling.features.fault.FaultDisplacementFeature.max">(LoopStructural.modelling.features.fault.FaultDisplacementFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment.max">(LoopStructural.modelling.features.fault.FaultSegment method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldFrame.html#LoopStructural.modelling.features.fold.FoldFrame.max">(LoopStructural.modelling.features.fold.FoldFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngleFeature.html#LoopStructural.modelling.features.fold.FoldRotationAngleFeature.max">(LoopStructural.modelling.features.fold.FoldRotationAngleFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature.max">(LoopStructural.modelling.features.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.LambdaGeologicalFeature.html#LoopStructural.modelling.features.LambdaGeologicalFeature.max">(LoopStructural.modelling.features.LambdaGeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.StructuralFrame.html#LoopStructural.modelling.features.StructuralFrame.max">(LoopStructural.modelling.features.StructuralFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.UnconformityFeature.html#LoopStructural.modelling.features.UnconformityFeature.max">(LoopStructural.modelling.features.UnconformityFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html#LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.max">(LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature method)</a>
 </li>
@@ -3435,31 +3496,59 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.max">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature.max">(LoopStructural.visualisation.model_plotter.BaseFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.max">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
 </li>
-      </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.mean">mean() (LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature.mean">(LoopStructural.modelling.features.GeologicalFeature method)</a>
-</li>
-        <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.mean">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
-</li>
-        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.mean">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.max">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.mean_">mean_ (LoopStructural.utils.helper.PCA attribute)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.min">min() (LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultSegment.html#LoopStructural.modelling.core.geological_model.FaultSegment.min">min() (LoopStructural.modelling.core.geological_model.FaultSegment method)</a>
 
       <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldFrame.html#LoopStructural.modelling.core.geological_model.FoldFrame.min">(LoopStructural.modelling.core.geological_model.FoldFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.min">(LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.StructuralFrame.html#LoopStructural.modelling.core.geological_model.StructuralFrame.min">(LoopStructural.modelling.core.geological_model.StructuralFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.UnconformityFeature.html#LoopStructural.modelling.core.geological_model.UnconformityFeature.min">(LoopStructural.modelling.core.geological_model.UnconformityFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.AnalyticalGeologicalFeature.html#LoopStructural.modelling.features.AnalyticalGeologicalFeature.min">(LoopStructural.modelling.features.AnalyticalGeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.BaseFeature.html#LoopStructural.modelling.features.BaseFeature.min">(LoopStructural.modelling.features.BaseFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.CrossProductGeologicalFeature.html#LoopStructural.modelling.features.CrossProductGeologicalFeature.min">(LoopStructural.modelling.features.CrossProductGeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fault.FaultDisplacementFeature.html#LoopStructural.modelling.features.fault.FaultDisplacementFeature.min">(LoopStructural.modelling.features.fault.FaultDisplacementFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment.min">(LoopStructural.modelling.features.fault.FaultSegment method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldFrame.html#LoopStructural.modelling.features.fold.FoldFrame.min">(LoopStructural.modelling.features.fold.FoldFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngleFeature.html#LoopStructural.modelling.features.fold.FoldRotationAngleFeature.min">(LoopStructural.modelling.features.fold.FoldRotationAngleFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature.min">(LoopStructural.modelling.features.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.LambdaGeologicalFeature.html#LoopStructural.modelling.features.LambdaGeologicalFeature.min">(LoopStructural.modelling.features.LambdaGeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.StructuralFrame.html#LoopStructural.modelling.features.StructuralFrame.min">(LoopStructural.modelling.features.StructuralFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.features.UnconformityFeature.html#LoopStructural.modelling.features.UnconformityFeature.min">(LoopStructural.modelling.features.UnconformityFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.min">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature.min">(LoopStructural.visualisation.model_plotter.BaseFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.min">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.min">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.interpolators.P2Interpolator.html#LoopStructural.interpolators.P2Interpolator.minimise_edge_jumps">minimise_edge_jumps() (LoopStructural.interpolators.P2Interpolator method)</a>
 
       <ul>
@@ -3472,8 +3561,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.P2Interpolator.html#LoopStructural.modelling.core.geological_model.P2Interpolator.minimise_grad_steepness">(LoopStructural.modelling.core.geological_model.P2Interpolator method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.modf.html#LoopStructural.interpolators.cython.dsi_helper.modf">modf() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li>
     module
 
@@ -3485,10 +3572,6 @@
         <li><a href="_autosummary/LoopStructural.datasets.html#module-LoopStructural.datasets">LoopStructural.datasets</a>
 </li>
         <li><a href="_autosummary/LoopStructural.interpolators.html#module-LoopStructural.interpolators">LoopStructural.interpolators</a>
-</li>
-        <li><a href="_autosummary/LoopStructural.interpolators.cython.html#module-LoopStructural.interpolators.cython">LoopStructural.interpolators.cython</a>
-</li>
-        <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.html#module-LoopStructural.interpolators.cython.dsi_helper">LoopStructural.interpolators.cython.dsi_helper</a>
 </li>
         <li><a href="_autosummary/LoopStructural.interpolators.piecewiselinear_interpolator.html#module-LoopStructural.interpolators.piecewiselinear_interpolator">LoopStructural.interpolators.piecewiselinear_interpolator</a>
 </li>
@@ -3544,6 +3627,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.utils.helper.html#module-LoopStructural.utils.helper">LoopStructural.utils.helper</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.utils.json_encoder.html#module-LoopStructural.utils.json_encoder">LoopStructural.utils.json_encoder</a>
+</li>
         <li><a href="_autosummary/LoopStructural.utils.logging.html#module-LoopStructural.utils.logging">LoopStructural.utils.logging</a>
 </li>
         <li><a href="_autosummary/LoopStructural.utils.map2loop.html#module-LoopStructural.utils.map2loop">LoopStructural.utils.map2loop</a>
@@ -3569,8 +3654,6 @@
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.html#module-LoopStructural.visualisation.stratigraphic_column">LoopStructural.visualisation.stratigraphic_column</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover">mouseover (LoopStructural.visualisation.stratigraphic_column.PatchCollection property)</a>
 
       <ul>
@@ -3633,6 +3716,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.StructuredGrid.html#LoopStructural.modelling.core.geological_model.StructuredGrid.neighbour_global_indexes">(LoopStructural.modelling.core.geological_model.StructuredGrid method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.visualisation.DashView.html#LoopStructural.visualisation.DashView.nelements">nelements (LoopStructural.visualisation.DashView property)</a>
 
       <ul>
@@ -3645,8 +3730,6 @@
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.nelements">(LoopStructural.visualisation.model_plotter.BaseModelPlotter property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_builder.new_inlet.html#LoopStructural.modelling.intrusions.intrusion_builder.new_inlet">new_inlet() (in module LoopStructural.modelling.intrusions.intrusion_builder)</a>
 
       <ul>
@@ -3675,18 +3758,12 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.noise_variance_">noise_variance_ (LoopStructural.utils.helper.PCA attribute)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.norm">norm (LoopStructural.visualisation.stratigraphic_column.PatchCollection attribute)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.probability.normal.html#LoopStructural.probability.normal">normal() (in module LoopStructural.probability)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.helper.normal_vec_names.html#LoopStructural.utils.helper.normal_vec_names">normal_vec_names() (in module LoopStructural.utils.helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.datasets.normal_vector_headers.html#LoopStructural.datasets.normal_vector_headers">normal_vector_headers() (in module LoopStructural.datasets)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.normal_vector_headers.html#LoopStructural.modelling.core.geological_model.normal_vector_headers">(in module LoopStructural.modelling.core.geological_model)</a>
 </li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.helper.normal_vector_to_strike_and_dip.html#LoopStructural.utils.helper.normal_vector_to_strike_and_dip">normal_vector_to_strike_and_dip() (in module LoopStructural.utils.helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.nsteps">nsteps (LoopStructural.GeologicalModel attribute)</a>
@@ -3777,8 +3854,6 @@
         <li><a href="_autosummary/LoopStructural.probability.LogLikelihoodGradient.html#LoopStructural.probability.LogLikelihoodGradient.perform">(LoopStructural.probability.LogLikelihoodGradient method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.perm.html#LoopStructural.interpolators.cython.dsi_helper.perm">perm() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.pick">pick() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 
       <ul>
@@ -3811,10 +3886,22 @@
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon">Polygon (class in LoopStructural.visualisation.stratigraphic_column)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.pop">pop() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.pop">pop() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.pop">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.popitem">popitem() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.pop">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
 </li>
+      </ul></li>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.popitem">popitem() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.popitem">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.popitem">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.supports.TetMesh.html#LoopStructural.interpolators.supports.TetMesh.position_to_cell_corners">position_to_cell_corners() (LoopStructural.interpolators.supports.TetMesh method)</a>
 
       <ul>
@@ -3823,6 +3910,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.TetMesh.html#LoopStructural.modelling.core.geological_model.TetMesh.position_to_cell_corners">(LoopStructural.modelling.core.geological_model.TetMesh method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid.position_to_cell_index">position_to_cell_index() (LoopStructural.interpolators.StructuredGrid method)</a>
 
       <ul>
@@ -3841,8 +3930,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.TetMesh.html#LoopStructural.modelling.core.geological_model.TetMesh.position_to_cell_index">(LoopStructural.modelling.core.geological_model.TetMesh method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid.position_to_cell_vertices">position_to_cell_vertices() (LoopStructural.interpolators.StructuredGrid method)</a>
 
       <ul>
@@ -3887,8 +3974,6 @@
         <li><a href="_autosummary/LoopStructural.utils.regions.PositiveRegion.html#LoopStructural.utils.regions.PositiveRegion">(class in LoopStructural.utils.regions)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.pow.html#LoopStructural.interpolators.cython.dsi_helper.pow">pow() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.predict">predict() (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.probability.LogLikelihood.html#LoopStructural.probability.LogLikelihood.prepare_node">prepare_node() (LoopStructural.probability.LogLikelihood method)</a>
@@ -3921,8 +4006,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.input.process_data.ProcessInputData.html#LoopStructural.modelling.input.process_data.ProcessInputData">(class in LoopStructural.modelling.input.process_data)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.prod.html#LoopStructural.interpolators.cython.dsi_helper.prod">prod() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.properties">properties() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 
       <ul>
@@ -3941,8 +4024,6 @@
         <li><a href="_autosummary/LoopStructural.probability.LogLikelihoodGradient.html#LoopStructural.probability.LogLikelihoodGradient.R_op">(LoopStructural.probability.LogLikelihoodGradient method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.radians.html#LoopStructural.interpolators.cython.dsi_helper.radians">radians() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.utils.utils.read_voxet.html#LoopStructural.utils.utils.read_voxet">read_voxet() (in module LoopStructural.utils.utils)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.rectangle_function.html#LoopStructural.modelling.intrusions.rectangle_function">rectangle_function() (in module LoopStructural.modelling.intrusions)</a>
@@ -3981,8 +4062,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.regular_grid">(LoopStructural.modelling.core.geological_model.GeologicalModel method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.remainder.html#LoopStructural.interpolators.cython.dsi_helper.remainder">remainder() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove">remove() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 
       <ul>
@@ -4205,12 +4284,6 @@
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.set_color">(LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_contains">set_contains() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.Polygon.html#LoopStructural.visualisation.stratigraphic_column.Polygon.set_contains">(LoopStructural.visualisation.stratigraphic_column.Polygon method)</a>
-</li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_dashes">set_dashes() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.IntrusionBuilder.html#LoopStructural.modelling.core.geological_model.IntrusionBuilder.set_data_for_extent_simulation">set_data_for_extent_simulation() (LoopStructural.modelling.core.geological_model.IntrusionBuilder method)</a>
@@ -4275,12 +4348,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.features.builders.FoldedFeatureBuilder.html#LoopStructural.modelling.features.builders.FoldedFeatureBuilder.set_fold_limb_rotation">(LoopStructural.modelling.features.builders.FoldedFeatureBuilder method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FoldRotationAngle.html#LoopStructural.modelling.core.geological_model.FoldRotationAngle.set_function">set_function() (LoopStructural.modelling.core.geological_model.FoldRotationAngle method)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle.set_function">(LoopStructural.modelling.features.fold.FoldRotationAngle method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.features.fold.FoldRotationAngle.html#LoopStructural.modelling.features.fold.FoldRotationAngle.set_function">set_function() (LoopStructural.modelling.features.fold.FoldRotationAngle method)</a>
 </li>
-      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.IntrusionBuilder.html#LoopStructural.modelling.core.geological_model.IntrusionBuilder.set_g_sgs_GSLIBparameters">set_g_sgs_GSLIBparameters() (LoopStructural.modelling.core.geological_model.IntrusionBuilder method)</a>
 
       <ul>
@@ -4460,6 +4529,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html#LoopStructural.modelling.intrusions.IntrusionFrameBuilder.set_model">(LoopStructural.modelling.intrusions.IntrusionFrameBuilder method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.set_model">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm">set_norm() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
@@ -4487,7 +4558,7 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.P2Interpolator.html#LoopStructural.modelling.core.geological_model.P2Interpolator.set_normal_constraints">(LoopStructural.modelling.core.geological_model.P2Interpolator method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_position">set_offset_position() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
+      <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform">set_offset_transform() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets">set_offsets() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
@@ -4671,8 +4742,14 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.set_zscale">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.setdefault">setdefault() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.setdefault">setdefault() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.setdefault">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.setdefault">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultBuilder.html#LoopStructural.modelling.core.geological_model.FaultBuilder.setup">setup() (LoopStructural.modelling.core.geological_model.FaultBuilder method)</a>
 
       <ul>
@@ -4759,11 +4836,7 @@
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.IntrusionBuilder.html#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds">(LoopStructural.modelling.intrusions.IntrusionBuilder method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.sin.html#LoopStructural.interpolators.cython.dsi_helper.sin">sin() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.singular_values_">singular_values_ (LoopStructural.utils.helper.PCA attribute)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.sinh.html#LoopStructural.interpolators.cython.dsi_helper.sinh">sinh() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.solve_system">solve_system() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
 
@@ -4791,8 +4864,6 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_support_functions.sort_2_arrays.html#LoopStructural.modelling.intrusions.intrusion_support_functions.sort_2_arrays">sort_2_arrays() (in module LoopStructural.modelling.intrusions.intrusion_support_functions)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.sqrt.html#LoopStructural.interpolators.cython.dsi_helper.sqrt">sqrt() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale">stale (LoopStructural.visualisation.stratigraphic_column.PatchCollection property)</a>
 
       <ul>
@@ -4808,6 +4879,8 @@
       <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn">StratigraphicColumn (class in LoopStructural.modelling.core.stratigraphic_column)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html#LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView">StratigraphicColumnView (class in LoopStructural.visualisation.stratigraphic_column)</a>
+</li>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit">StratigraphicUnit (class in LoopStructural.modelling.core.stratigraphic_column)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor.html#LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor.stratigraphy_cmap">stratigraphy_cmap() (LoopStructural.modelling.input.map2loop_processor.Map2LoopProcessor method)</a>
 
@@ -4843,6 +4916,8 @@
 
       <ul>
         <li><a href="_autosummary/LoopStructural.modelling.features.StructuralFrame.html#LoopStructural.modelling.features.StructuralFrame">(class in LoopStructural.modelling.features)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame">(class in LoopStructural.visualisation.model_plotter)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.StructuralFrameBuilder.html#LoopStructural.modelling.core.geological_model.StructuralFrameBuilder">StructuralFrameBuilder (class in LoopStructural.modelling.core.geological_model)</a>
@@ -4887,11 +4962,7 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.tan.html#LoopStructural.interpolators.cython.dsi_helper.tan">tan() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.utils.helper.tangent_vec_names.html#LoopStructural.utils.helper.tangent_vec_names">tangent_vec_names() (in module LoopStructural.utils.helper)</a>
-</li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.tanh.html#LoopStructural.interpolators.cython.dsi_helper.tanh">tanh() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.interpolators.TetMesh.html#LoopStructural.interpolators.TetMesh">TetMesh (class in LoopStructural.interpolators)</a>
 
@@ -4901,8 +4972,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.TetMesh.html#LoopStructural.modelling.core.geological_model.TetMesh">(class in LoopStructural.modelling.core.geological_model)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.tetra_neighbours.html#LoopStructural.interpolators.cython.dsi_helper.tetra_neighbours">tetra_neighbours() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.to_file">to_file() (LoopStructural.GeologicalModel method)</a>
 
       <ul>
@@ -4946,7 +5015,11 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.toggle_faults">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseFeature.html#LoopStructural.visualisation.model_plotter.BaseFeature.toggle_faults">(LoopStructural.visualisation.model_plotter.BaseFeature method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.toggle_faults">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.toggle_faults">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -4965,8 +5038,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.StructuredGrid.html#LoopStructural.modelling.core.geological_model.StructuredGrid.trilinear">(LoopStructural.modelling.core.geological_model.StructuredGrid method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.interpolators.cython.dsi_helper.trunc.html#LoopStructural.interpolators.cython.dsi_helper.trunc">trunc() (in module LoopStructural.interpolators.cython.dsi_helper)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -5022,7 +5093,11 @@
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.P2Interpolator.html#LoopStructural.modelling.core.geological_model.P2Interpolator.update">(LoopStructural.modelling.core.geological_model.P2Interpolator method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.update">(LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.update">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.update">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update">(LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
@@ -5053,14 +5128,22 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/LoopStructural.visualisation.lavavu.v.html#LoopStructural.visualisation.lavavu.v">v() (in module LoopStructural.visualisation.lavavu)</a>
+</li>
       <li><a href="_autosummary/LoopStructural.utils.helper.val_name.html#LoopStructural.utils.helper.val_name">val_name() (in module LoopStructural.utils.helper)</a>
+</li>
+      <li><a href="_autosummary/LoopStructural.datasets.value_headers.html#LoopStructural.datasets.value_headers">value_headers() (in module LoopStructural.datasets)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/LoopStructural.datasets.value_headers.html#LoopStructural.datasets.value_headers">value_headers() (in module LoopStructural.datasets)</a>
+      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.values">values() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.values">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.values">values() (LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
+        <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.values">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -5098,37 +5181,41 @@
 
 
 
-              </div>
+              </article>
               
+
               
-              <!-- Previous / next buttons -->
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
 <div class='prev-next-area'>
 </div>
+              </footer>
               
-          </main>
+          </div>
           
-
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
     &copy; Copyright 2020, Lachlan Grose.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>

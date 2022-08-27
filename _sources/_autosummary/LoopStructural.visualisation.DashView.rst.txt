@@ -23,7 +23,6 @@ LoopStructural.visualisation.DashView
       ~DashView.add_fault
       ~DashView.add_fault_displacements
       ~DashView.add_fold
-      ~DashView.add_intersection_lineation
       ~DashView.add_isosurface
       ~DashView.add_model
       ~DashView.add_model_surfaces

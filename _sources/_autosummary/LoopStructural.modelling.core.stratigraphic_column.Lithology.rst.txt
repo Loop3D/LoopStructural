@@ -1,0 +1,36 @@
+LoopStructural.modelling.core.stratigraphic\_column.Lithology
+=============================================================
+
+.. currentmodule:: LoopStructural.modelling.core.stratigraphic_column
+
+.. autoclass:: Lithology
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Lithology.__init__
+      ~Lithology.clear
+      ~Lithology.copy
+      ~Lithology.fromkeys
+      ~Lithology.get
+      ~Lithology.items
+      ~Lithology.keys
+      ~Lithology.pop
+      ~Lithology.popitem
+      ~Lithology.setdefault
+      ~Lithology.update
+      ~Lithology.values
+   
+   
+
+   
+   
+   

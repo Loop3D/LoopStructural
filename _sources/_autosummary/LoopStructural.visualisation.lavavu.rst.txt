@@ -18,6 +18,7 @@ LoopStructural.visualisation.lavavu
       close_all
       getLogger
       is_notebook
+      v
    
    
 
