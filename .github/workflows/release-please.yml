@@ -65,6 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          cp CHANGELOG.md docs/getting_started/CHANGELOG.md
           docker build . -t=lsdocs -f docs/Dockerfile 
           docker run -v $(pwd):/LoopStructural lsdocs bash LoopStructural/docs/build_docs.sh
       - name: Deploy 🚀
