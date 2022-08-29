@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.4.14](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.13...v1.4.14) (2022-08-29)
+
+
+### Bug Fixes
+
+* setting versionfile for version.py ([6fc564e](https://www.github.com/Loop3D/LoopStructural/commit/6fc564e38a996888bd71804213d0495a5a6714e0))
+
 ### [1.4.13](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.12...v1.4.13) (2022-08-29)
 
 
