@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.4.13](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.12...v1.4.13) (2022-08-29)
+
+
+### Bug Fixes
+
+* removing example that crashes docs ([63a9ce9](https://www.github.com/Loop3D/LoopStructural/commit/63a9ce907339e8a12395b4f7b1bf150e5b537e18))
+
 ### [1.4.12](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.11...v1.4.12) (2022-08-27)
 
 
