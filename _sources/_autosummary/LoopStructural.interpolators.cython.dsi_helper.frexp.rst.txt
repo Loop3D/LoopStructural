@@ -1,0 +1,6 @@
+LoopStructural.interpolators.cython.dsi\_helper.frexp
+=====================================================
+
+.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
+
+.. autofunction:: frexp

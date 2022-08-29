@@ -1,0 +1,403 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualisation &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural" href="../_autosummary/LoopStructural.html" />
+    <link rel="prev" title="Fault modelling" href="fault_modelling.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../_autosummary/LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  User Guide
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="input_data.html">
+   Input data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="geological_model.html">
+   Geological Model
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="interpolation_options.html">
+   Implicit Interpolators
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="fold_modelling.html">
+   Fold modelling
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="fault_modelling.html">
+   Fault modelling
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Visualisation
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualising-geologicalfeatures">
+   Visualising GeologicalFeatures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualising-data">
+   Visualising data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualising-geological-model">
+   Visualising geological model
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#custom-visualisation">
+   Custom visualisation
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="visualisation">
+<h1>Visualisation<a class="headerlink" href="#visualisation" title="Permalink to this headline">#</a></h1>
+<p>LoopStructural uses the powerful lavaVu visualisaton library for visualising the 3D models as surfaces and scalar fields.
+LavaVu provides an interative viewer inside jupyter notebooks and can use matplotlib colourmaps as well as export the model to webgl.
+The LavaVuModelViewer provides an easy to use interfaces for adding GeologicalFeatures to the viewer, the base lavaVu object can still be used.
+Some of the functions in the viewer require a bounding box to be able to draw isosurfaces or scalar fields.
+By default the viewer is initialised with a GeologicalModel and the origin and maximum of the model are used to set the viewers extents.
+It is also possible to modify this manually by changing the bounding_box attribute.</p>
+<div class="section" id="visualising-geologicalfeatures">
+<h2>Visualising GeologicalFeatures<a class="headerlink" href="#visualising-geologicalfeatures" title="Permalink to this headline">#</a></h2>
+<p>There are four main ways a GeologicalFeature can be visualised.
+1. Scalar field showing the value of the implicit function on a block representing the model domain</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">geological_feature</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Surfaces extracted from isovalues of the implicit function</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">geological_feature</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Vector field representing the gradient of the implicit function</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">geological_feature</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Cross section showing the value of the implicit function at a particular location inside the model</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">geological_feature</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When adding to the viewer there are a number of common arguments that can be specified to change the behaviour:</p>
+<blockquote>
+<div><table class="colwidths-given table" id="id1">
+<caption><span class="caption-text">Viewer kwargs</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Options</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>overwrite the name of the object to be added into the viewer</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmin</p></td>
+<td><p>minimum value for colourmap</p></td>
+</tr>
+<tr class="row-even"><td><p>vmax</p></td>
+<td><p>maximum value for colourmap</p></td>
+</tr>
+<tr class="row-odd"><td><p>cmap</p></td>
+<td><p>matplotlib colourmap or string with name of matplotlib colourmap e.g. ‘rainbow’</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The default behaviour of the viewer can also be modified.
+To change the resolution of the scalar field or isosurfacing, either set the number of steps in x,y,z or the total number of elements.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">nsteps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">nz</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">nsteps</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">nelements</span> <span class="o">=</span> <span class="mf">1e6</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">nsteps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="visualising-data">
+<h2>Visualising data<a class="headerlink" href="#visualising-data" title="Permalink to this headline">#</a></h2>
+<p>The input data for the geological model can also be visualised within the viewer.
+To add all of the data attached to a GeologicalFeature</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">geological_feature</span><span class="p">,</span><span class="n">grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">tang</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">interface</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, points can be added into the model using the:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;name of viewer object&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or points with an associated value:</p>
+<p>or points with an associated vector:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_vector_data</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span><span class="n">vec</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;name of viewer object&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Warning, you cannot have two objects in the viewer with the same name</strong></p>
+</div>
+<div class="section" id="visualising-geological-model">
+<h2>Visualising geological model<a class="headerlink" href="#visualising-geological-model" title="Permalink to this headline">#</a></h2>
+<p>Where the GeologicalModel has an assocaited stratigraphic column including a list of faults in the model, this can be used for automatically visualising the model.
+To add a block model showing the stratigraphic unit distribution, where the value is linked to the <em>id</em> in the stratigraphic column.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_model</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>alternatively, the surfaces can be added to the visualisation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_model_surfaces</span><span class="p">(</span><span class="n">faults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where the faults flag allows you to disable visualising the fault surface.
+This function will add a surface for every stratigraphic unit in the stratigraphic column.</p>
+</div>
+<div class="section" id="custom-visualisation">
+<h2>Custom visualisation<a class="headerlink" href="#custom-visualisation" title="Permalink to this headline">#</a></h2>
+<p>It is also possible to pass custom functions to the viewer using the LambdaGeologicalFeature.
+The LambdaGeologicalFeature is a class allowing for a function describing the value at locations or vector field.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural.modelling.features</span> <span class="kn">import</span> <span class="n">LambdaGeologicalFeature</span>
+<span class="k">def</span> <span class="nf">x_function</span><span class="p">(</span><span class="n">xyz</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">xyz</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">custom_feature</span> <span class="o">=</span> <span class="n">LambdaGeologicalFeature</span><span class="p">(</span><span class="n">x_function</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;x feature&#39;</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">custom_feature</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">custom_feature</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function passed to the LambdaGeologicalFeature can be as simple or complicated as required.
+It will be evaluated for the locations within the model that the visualisation requires, usually between the origin and maximum of the geoloical model.
+By default the min and max values are 0, however these can be overwritten by setting the attribute min and max to the required values.</p>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="fault_modelling.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Fault modelling</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="../_autosummary/LoopStructural.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

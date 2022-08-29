@@ -1,0 +1,38 @@
+LoopStructural.modelling.features.UnconformityFeature
+=====================================================
+
+.. currentmodule:: LoopStructural.modelling.features
+
+.. autoclass:: UnconformityFeature
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~UnconformityFeature.__init__
+      ~UnconformityFeature.add_region
+      ~UnconformityFeature.evaluate
+      ~UnconformityFeature.evaluate_gradient
+      ~UnconformityFeature.evaluate_value
+      ~UnconformityFeature.max
+      ~UnconformityFeature.min
+      ~UnconformityFeature.toggle_faults
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~UnconformityFeature.model
+   
+   

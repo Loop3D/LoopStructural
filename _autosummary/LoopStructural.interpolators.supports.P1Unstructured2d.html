@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoopStructural.interpolators.supports.P1Unstructured2d &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="loopstructural-interpolators-supports-p1unstructured2d">
+<h1>LoopStructural.interpolators.supports.P1Unstructured2d<a class="headerlink" href="#loopstructural-interpolators-supports-p1unstructured2d" title="Permalink to this headline">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.supports.</span></span><span class="sig-name descname"><span class="pre">P1Unstructured2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbours</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.supports.BaseUnstructured2d.html#LoopStructural.interpolators.supports.BaseUnstructured2d" title="LoopStructural.interpolators.supports._2d_base_unstructured.BaseUnstructured2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators.supports._2d_base_unstructured.BaseUnstructured2d</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbours</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.__init__" title="LoopStructural.interpolators.supports.P1Unstructured2d.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(elements, vertices, neighbours)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_area</span></code>(elements)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_gradient" title="LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(pos, prop)</p></td>
+<td><p>Evaluate the gradient of an interpolant at the locations</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_shape</span></code>(locations)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_shape_derivatives" title="LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_shape_derivatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_shape_derivatives</span></code></a>(locations[, elements])</p></td>
+<td><p>compute dN/ds (1st row), dN/dt(2nd row)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_value" title="LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(pos, prop)</p></td>
+<td><p>Evaluate value of interpolant</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.get_element_for_location" title="LoopStructural.interpolators.supports.P1Unstructured2d.get_element_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_for_location</span></code></a>(pos)</p></td>
+<td><p>Determine the elements from a numpy array of points</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.barycentre" title="LoopStructural.interpolators.supports.P1Unstructured2d.barycentre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">barycentre</span></code></a></p></td>
+<td><p>Return the barycentres of all tetrahedrons or of specified tetras using global index</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.ncps" title="LoopStructural.interpolators.supports.P1Unstructured2d.ncps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ncps</span></code></a></p></td>
+<td><p>Returns the number of nodes for an element in the mesh</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P1Unstructured2d.nodes" title="LoopStructural.interpolators.supports.P1Unstructured2d.nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></a></p></td>
+<td><p>Gets the nodes of the mesh as a property rather than using a function, accessible as a property! Python magic!</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.barycentre">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">barycentre</span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.barycentre" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the barycentres of all tetrahedrons or of specified tetras using
+global index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>elements - numpy</em>) – global index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_gradient">
+<span class="sig-name descname"><span class="pre">evaluate_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_gradient" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate the gradient of an interpolant at the locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>pos - numpy</em>) – locations</p></li>
+<li><p><strong>string</strong> (<em>prop -</em>) – property to evaluate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_shape_derivatives">
+<span class="sig-name descname"><span class="pre">evaluate_shape_derivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_shape_derivatives" title="Permalink to this definition">#</a></dt>
+<dd><p>compute dN/ds (1st row), dN/dt(2nd row)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_value">
+<span class="sig-name descname"><span class="pre">evaluate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.evaluate_value" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate value of interpolant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>prop - numpy</em>) – locations</p></li>
+<li><p><strong>array</strong> – property values at nodes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.get_element_for_location">
+<span class="sig-name descname"><span class="pre">get_element_for_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.get_element_for_location" title="Permalink to this definition">#</a></dt>
+<dd><p>Determine the elements from a numpy array of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>np.array</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.ncps">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ncps</span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.ncps" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the number of nodes for an element in the mesh</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P1Unstructured2d.nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P1Unstructured2d.nodes" title="Permalink to this definition">#</a></dt>
+<dd><p>Gets the nodes of the mesh as a property rather than using a function, accessible as a property! Python magic!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>np.array((N,3))</em>) – Fortran ordered</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,6 @@
+LoopStructural.interpolators.cython.dsi\_helper.expm1
+=====================================================
+
+.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
+
+.. autofunction:: expm1

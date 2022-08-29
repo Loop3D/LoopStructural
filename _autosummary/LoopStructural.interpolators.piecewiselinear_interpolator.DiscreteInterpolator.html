@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="loopstructural-interpolators-piecewiselinear-interpolator-discreteinterpolator">
+<h1>LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator<a class="headerlink" href="#loopstructural-interpolators-piecewiselinear-interpolator-discreteinterpolator" title="Permalink to this headline">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.piecewiselinear_interpolator.</span></span><span class="sig-name descname"><span class="pre">DiscreteInterpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">support</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator" title="LoopStructural.interpolators._geological_interpolator.GeologicalInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.interpolators._geological_interpolator.GeologicalInterpolator</span></code></a></p>
+<p>Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
+any interpolator that solves the system using least squares approximation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>support</strong> – A discrete mesh with, nodes, elements, etc</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">support</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
+any interpolator that solves the system using least squares approximation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>support</strong> – A discrete mesh with, nodes, elements, etc</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.__init__" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(support)</p></td>
+<td><p>Base class for a discrete interpolator e.g.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_constraints_to_least_squares" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_constraints_to_least_squares"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_constraints_to_least_squares</span></code></a>(A, B, idc)</p></td>
+<td><p>Adds constraints to the least squares system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_equality_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_equality_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_equality_constraints</span></code></a>(node_idx, values[, ...])</p></td>
+<td><p>Adds hard constraints to the least squares system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_constraints_to_matrix</span></code></a>(A, l, ...)</p></td>
+<td><p>Adds constraints for a matrix where the linear function l &lt; Ax &gt; u constrains the objective function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_feature</span></code>(feature[, lower, mask])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_non_linear_constraints</span></code>(nonlinear_constraint)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_tangent_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tangent_constraints</span></code></a>([w])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param w</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.build_matrix" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.build_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_matrix</span></code></a>([square, damp, ie])</p></td>
+<td><p>Assemble constraints into interpolation matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_residual_for_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.debug" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>()</p></td>
+<td><p>Helper function for debugging when the interpolator isn't working</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.evaluate_gradient" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(evaluation_points)</p></td>
+<td><p>Evaluate the gradient of the scalar field at the evaluation points :param evaluation_points: xyz locations to evaluate the gradient :type evaluation_points: np.array</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code>(evaluation_points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_data_locations" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_data_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_locations</span></code></a>()</p></td>
+<td><p>Get the location of all data points</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_gradient_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gradient_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_interface_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
+<td><p>Get the location of interface constraints</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_norm_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_value_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.remove_constraints_from_least_squares" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.remove_constraints_from_least_squares"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_constraints_from_least_squares</span></code></a>([...])</p></td>
+<td><p>Remove constraints from the least squares system using the constraint ids which corresponds to the rows in the interpolation matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.reset" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Reset the interpolation constraints</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_interpolation_weights" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_interpolation_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interpolation_weights</span></code></a>(weights)</p></td>
+<td><p>Set the interpolation weights dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_normal_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_normal_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_normal_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_property_name" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_property_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_property_name</span></code></a>(propertyname)</p></td>
+<td><p>Set the property name attribute, this is usually used to save the property on the support</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_region" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_region</span></code></a>([region])</p></td>
+<td><p>Set the region of the support the interpolator is working on</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_tangent_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_tangent_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_value_constraints" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.setup_interpolator" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.setup_interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_interpolator</span></code></a>(**kwargs)</p></td>
+<td><p>Runs all of the required setting up stuff</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.solve_system" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.solve_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_system</span></code></a>(**kwargs)</p></td>
+<td><p>Solves the interpolation equations</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.update" title="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
+<td><p>Check if the solver is up to date, if not rerun interpolation using the previously used solver.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nx</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">region</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">region_map</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_constraints_to_least_squares">
+<span class="sig-name descname"><span class="pre">add_constraints_to_least_squares</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'undefined'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_constraints_to_least_squares" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds constraints to the least squares system. Automatically works
+out the row
+index given the shape of the input arrays</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>numpy array / list</em>) – RxC numpy array of constraints where C is number of columns,R rows</p></li>
+<li><p><strong>B</strong> (<em>numpy array /list</em>) – B values array length R</p></li>
+<li><p><strong>idc</strong> (<em>numpy array/list</em>) – RxC column index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of constraint ids</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_equality_constraints">
+<span class="sig-name descname"><span class="pre">add_equality_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'undefined'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_equality_constraints" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds hard constraints to the least squares system. For now this just
+sets
+the node values to be fixed using a lagrangian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_idx</strong> (<em>numpy array/list</em>) – int array of node indexes</p></li>
+<li><p><strong>values</strong> (<em>numpy array/list</em>) – array of node values</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix">
+<span class="sig-name descname"><span class="pre">add_inequality_constraints_to_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'undefined'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_inequality_constraints_to_matrix" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds constraints for a matrix where the linear function
+l &lt; Ax &gt; u constrains the objective function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>numpy array</em>) – matrix of coefficients</p></li>
+<li><p><strong>l</strong> (<em>numpy array</em>) – lower bounds</p></li>
+<li><p><strong>u</strong> (<em>numpy array</em>) – upper bounds</p></li>
+<li><p><strong>idc</strong> (<em>numpy array</em>) – index of constraints</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_tangent_constraints">
+<span class="sig-name descname"><span class="pre">add_tangent_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.add_tangent_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>w</strong> (<em>double</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.build_matrix">
+<span class="sig-name descname"><span class="pre">build_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ie</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.build_matrix" title="Permalink to this definition">#</a></dt>
+<dd><p>Assemble constraints into interpolation matrix. Adds equaltiy
+constraints
+using lagrange modifiers if necessary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>damp</strong> (<em>bool</em>) – Flag whether damping should be added to the diagonal of the matrix</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Interpolation matrix and B</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.debug" title="Permalink to this definition">#</a></dt>
+<dd><p>Helper function for debugging when the interpolator isn’t working</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.evaluate_gradient">
+<span class="sig-name descname"><span class="pre">evaluate_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluation_points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.evaluate_gradient" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate the gradient of the scalar field at the evaluation points
+:param evaluation_points: xyz locations to evaluate the gradient
+:type evaluation_points: np.array</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_data_locations">
+<span class="sig-name descname"><span class="pre">get_data_locations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_data_locations" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the location of all data points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em> – Nx3 - X,Y,Z location of all data points</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_gradient_constraints">
+<span class="sig-name descname"><span class="pre">get_gradient_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_gradient_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_interface_constraints">
+<span class="sig-name descname"><span class="pre">get_interface_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_interface_constraints" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the location of interface constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em> – Nx4 - X,Y,Z,id location of all interface constraints</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_norm_constraints">
+<span class="sig-name descname"><span class="pre">get_norm_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_norm_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_tangent_constraints">
+<span class="sig-name descname"><span class="pre">get_tangent_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_tangent_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_value_constraints">
+<span class="sig-name descname"><span class="pre">get_value_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.get_value_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.remove_constraints_from_least_squares">
+<span class="sig-name descname"><span class="pre">remove_constraints_from_least_squares</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'undefined'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.remove_constraints_from_least_squares" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove constraints from the least squares system using the constraint ids
+which corresponds to the rows in the interpolation matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint_ids</strong> (<em>np.array</em><em>(</em><em>dtype=int</em><em>)</em>) – id of constraints to remove</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.reset" title="Permalink to this definition">#</a></dt>
+<dd><p>Reset the interpolation constraints</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_gradient_constraints">
+<span class="sig-name descname"><span class="pre">set_gradient_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_gradient_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_interpolation_weights">
+<span class="sig-name descname"><span class="pre">set_interpolation_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_interpolation_weights" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the interpolation weights dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dictionary</strong> (<em>weights -</em>) – Entry of new weights to assign to self.interpolation_weights</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_normal_constraints">
+<span class="sig-name descname"><span class="pre">set_normal_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_normal_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_property_name">
+<span class="sig-name descname"><span class="pre">set_property_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propertyname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_property_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the property name attribute, this is usually used to
+save the property on the support</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>propertyname</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_region">
+<span class="sig-name descname"><span class="pre">set_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_region" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the region of the support the interpolator is working on</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>function</strong><strong>(</strong><strong>position</strong><strong>)</strong> (<em>region -</em>) – return true when in region, false when out</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_tangent_constraints">
+<span class="sig-name descname"><span class="pre">set_tangent_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_tangent_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_value_constraints">
+<span class="sig-name descname"><span class="pre">set_value_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.set_value_constraints" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.setup_interpolator">
+<span class="sig-name descname"><span class="pre">setup_interpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.setup_interpolator" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs all of the required setting up stuff</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.solve_system">
+<span class="sig-name descname"><span class="pre">solve_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.solve_system" title="Permalink to this definition">#</a></dt>
+<dd><p>Solves the interpolation equations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.piecewiselinear_interpolator.DiscreteInterpolator.update" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the solver is up to date, if not rerun interpolation using
+the previously used solver. If the interpolation has not been run
+before it will
+return False</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>bool</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

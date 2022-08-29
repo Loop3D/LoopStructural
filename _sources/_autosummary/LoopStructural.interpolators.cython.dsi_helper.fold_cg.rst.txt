@@ -1,0 +1,6 @@
+LoopStructural.interpolators.cython.dsi\_helper.fold\_cg
+========================================================
+
+.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
+
+.. autofunction:: fold_cg

@@ -1,0 +1,536 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Implicit Interpolators &#8212; LoopStructural 0.1 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Fold modelling" href="fold_modelling.html" />
+    <link rel="prev" title="Geological Model" href="geological_model.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">LoopStructural</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started/index.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../_autosummary/LoopStructural.html">
+  LoopStructural
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/loop3d/LoopStructural" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/loop3d" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  User Guide
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="input_data.html">
+   Input data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="geological_model.html">
+   Geological Model
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Implicit Interpolators
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="fold_modelling.html">
+   Fold modelling
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="fault_modelling.html">
+   Fault modelling
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="visualisation.html">
+   Visualisation
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#discrete-interpolation">
+   Discrete Interpolation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#finite-difference-interpolation">
+     Finite Difference Interpolation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#solving-discrete-system">
+   Solving discrete system
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#data-supported-interpolation">
+   Data Supported Interpolation
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="implicit-interpolators">
+<span id="interpolation-options"></span><h1>Implicit Interpolators<a class="headerlink" href="#implicit-interpolators" title="Permalink to this headline">#</a></h1>
+<p>The aim of implicit modelling is to find a function which represents the distance away from a reference geological horizon.
+There is no known analytical solution for this problem which means that they need to be approximated from the observations that are provided.
+We can approximate the implicit function using a weighted combination of basis functions:</p>
+<div class="math notranslate nohighlight">
+\[f(x,y,z) = \sum^N_{i=0} v_i \varphi_i(X)\]</div>
+<p>Geological observations including the location of contacts and orientation of stratigraphy can be converted into mathematical expressions:</p>
+<ul class="simple">
+<li><p>Observations constraining the value of the scalar field</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[f(x,y,z) = v\]</div>
+<ul class="simple">
+<li><p>Observations constraining an form surface or interface between stratigraphic units</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\sum^N_{i=0} \sum^N_{j=i} f(x_i,y_i,z_i) - f(x_j,y_j,z_j) = 0\]</div>
+<ul class="simple">
+<li><p>Observations constraining the magnitude of the gradient norm of the scalar field</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\nabla f(x,y,z) = \textbf{n}\]</div>
+<ul class="simple">
+<li><p>Observations constraining a vector to be orthogonal to the scalar field</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\nabla f(x,y,z) \cdot \textbf{t} = 0\]</div>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>To solve the implicit system there needs to be a minimum of two different value observations, or a value observation and a gradient normal constraint. **</p>
+<p>LoopStructural has two types of interpolation algorithms that can be used.
+1. Discrete interpolation where the implicit function is approximated by basis functions on a predefined support
+2. Data supported interpolation where the implicit function is approximated using basis functions located on the data points</p>
+<div class="section" id="discrete-interpolation">
+<h2>Discrete Interpolation<a class="headerlink" href="#discrete-interpolation" title="Permalink to this headline">#</a></h2>
+<p>There are two approaches that can be used for discrete interpolation.
+The first approach, <strong>Piecewise Linear Interpolation</strong>, uses a linear function on a tetrahedral mesh, in LoopStructural a tetrahedral mesh is generated from a catesian grid.
+This means that the tetrahdral mesh is limited to object geometries that can be stored on a regular grid.</p>
+<p>The basis of the piece wise linear interpolation algorithm is the linear tetrahedron where the property within the tetrahdron is interpolated using a linear function:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\phi (x,y,z) = a + bx + cy + dz\]</div>
+<p>This can be expressed by the values at the nodes (0-3):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+\phi_0 = a + bx_0 + cy_0 + dz_0 \\
+\phi_1 = a + bx_1 + cy_1 + dz_1 \\
+\phi_2 = a + bx_2 + cy_2 + dz_2 \\
+\phi_3 = a + bx_3 + cy_3 + dz_3 \\
+\end{split}\end{split}\]</div>
+</div></blockquote>
+<p>The shape functions can be used to incorporate geological observations into the approximation by determining the tetrahedron that a data point is inside.
+The constraint type can then be represented as a linear equation for these vertices and the shape parameter of the tetrahedron.</p>
+<p>A regularisation constraint is used to solve the implicit system.
+The constant gradient regularisation minimises the difference in the gradient between neighbouring tetrahdron.
+The regularisation constraint was first presented by Tobias Frank et al., 2007 in Computers and Geoscience.
+The same method has been extended by Guillaume Caumon et al., in 2013.
+The regularisation term is added by adding the following constraint for every pair of neighbouring tetrahedrons in the mesh.</p>
+<div class="math notranslate nohighlight">
+\[\nabla\phi_{T1} - \nabla\phi_{T2} = 0\]</div>
+<p>Additional parameters can be specified to the interpolator including:</p>
+<blockquote>
+<div><table class="colwidths-given table" id="id3">
+<caption><span class="caption-text">Piecewise Linear Interpolator (PLI)</span><a class="headerlink" href="#id3" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Options</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cpw</p></td>
+<td><p>Weighting of the control points default = 1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>npw</p></td>
+<td><p>Weighting of gradient norm control points default = 1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>gpw</p></td>
+<td><p>Weighting of gradient control points default = 1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>ipw</p></td>
+<td><p>weighting of interface constraints default = 1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>regularisation</p></td>
+<td><p>weighting of the regularisation constraint default = 1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>cgw</p></td>
+<td><p>weighting of the constant gradient regularisation</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="section" id="finite-difference-interpolation">
+<h3>Finite Difference Interpolation<a class="headerlink" href="#finite-difference-interpolation" title="Permalink to this headline">#</a></h3>
+<p>Instead of using the P1 finite elements we represent the property using trilinear interpolation within a cubic element.
+The property is interpolated using the 8 vertices of a cube and a linear interpolation along each axis.</p>
+<p>The local coordinates are determined by finding the relative location of the point within a cell:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\xi, \eta, \zeta\]</div>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+N_1 = \frac{1}{8}(1-\xi)(1-\eta)(1-\zeta) \\
+N_2 = \frac{1}{8}(1+\xi)(1-\eta)(1-\zeta) \\
+N_3 = \frac{1}{8}(1+\xi)(1+\eta)(1-\zeta) \\
+N_4 = \frac{1}{8}(1-\xi)(1+\eta)(1-\zeta) \\
+N_5 = \frac{1}{8}(1-\xi)(1-\eta)(1+\zeta) \\
+N_6 = \frac{1}{8}(1+\xi)(1-\eta)(1-\zeta) \\
+N_7 = \frac{1}{8}(1+\xi)(1+\eta)(1+\zeta) \\
+N_8 = \frac{1}{8}(1-\xi)(1+\eta)(1+\zeta) \\
+\end{split}\end{split}\]</div>
+<p>We use the regularisation constraints defined by Modest Ikarama which minimises the second derivative of the implicit function.</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial^2}{\partial_{xx}}+\frac{\partial^2}{\partial_{yy}}+\frac{\partial^2}{\partial_{zz}}+2\frac{\partial^2}{\partial_{xz}}+2\frac{\partial^2}{\partial_{xy}}+2 \frac{\partial^2}{\partial_{zy}} = 0\]</div>
+<dl>
+<dt>Additional parameters can be specified to the interpolator including:</dt><dd><table class="colwidths-given table" id="id4">
+<caption><span class="caption-text">Finite Difference Interpolator (FDI)</span><a class="headerlink" href="#id4" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Options</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cpw</p></td>
+<td><p>Weighting of the control points default = 1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>npw</p></td>
+<td><p>Weighting of gradient norm control points default = 1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>gpw</p></td>
+<td><p>Weighting of gradient control points default = 1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>ipw</p></td>
+<td><p>weighting of interface constraints default = 1.0</p></td>
+</tr>
+<tr class="row-even"><td><p>regularisation</p></td>
+<td><p>weighting of the regularisation constraint default = 1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>operators</p></td>
+<td><p>a dictionary of numpy arrays that can be used as masks for finite difference approximation</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="solving-discrete-system">
+<h2>Solving discrete system<a class="headerlink" href="#solving-discrete-system" title="Permalink to this headline">#</a></h2>
+<p>The discrete interpolation problems are an over determined system of equations:</p>
+<div class="math notranslate nohighlight">
+\[A \cdot x = b\]</div>
+<p>Where A is a rectangular sparse matrix and a row of A represents the nodes in the discrete support.
+A is over determined.
+We are looking to find the solution vector x, this can be done by using least squares:</p>
+<div class="math notranslate nohighlight">
+\[A.T \cdot A \cdot x = A.T \cdot b\]</div>
+<p>There are many different algorithms that can be used for solving this problem and with different advantages and use cases.
+LoopStructural can be used with many different solvers and can be used with custom solvers if required.
+There are two main families of solvers that are available for solving sparse linear algeba: direct and iterative.
+Direct solvers usually try to find the inverse or pseudo inverse of the matrix.</p>
+<p>Direct solvers used in LoopStructural are:</p>
+<ul class="simple">
+<li><p>lu decomposition ‘using the scipy implementation’&lt;<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.SuperLU.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.SuperLU.html</a>&gt;</p></li>
+<li><p>cholesky decomposition using sksparse library <em>only on linux</em></p></li>
+</ul>
+<p>Iterative solvers:</p>
+<ul class="simple">
+<li><p>conjugate gradient solver - using scipy</p></li>
+<li><p>algorithmic multigrid solver - using pyamg</p></li>
+<li><p>lsqr - this solver uses the rectangular matrix directly, therefore does not require computing A.T A and A.T B. Uses scipy</p></li>
+</ul>
+<p>Using an external solver:</p>
+<p>You can also pass a function that solves</p>
+<div class="math notranslate nohighlight">
+\[A.T \cdot A \cdot x = A.T \cdot B\]</div>
+<p>to LoopStructural if you want to use another solver by using the <cite>external</cite> keyword .</p>
+<p>Note that when interpolating a subset of a mesh using a region, LoopStructural will fill the unused nodes in the interpolation support with nan.
+To return only the values that are related to the solver make sure you mask using the region.</p>
+<p>The choice of solver is somewhat dependent on the model you are creating.
+If you have a small model and a relatively large amount of memory on your computer a direct solver may be the most appropriate.</p>
+<p>If your model is large, or computer memory is a limitation an iterative solver is the best choice.
+However, iterative solvers can suffer from poor convergence if the matrix is poorly conditioned (this is possible when modeling irregular geometries).
+Solving the iterative problem can be sped up by using a preconditioner for the matrix.</p>
+<p>In the following example the Claudius test dataset is used to test the solver time.
+The same dataset is used for varying number of elements from 1,000 to 100,000 at intervals of 5,000 on a computer running ubuntu with 32gb of ram and a 4 core i7 cpu.</p>
+<p>The results are shown below where the time in seconds is plotted on a logscale.
+We can see that the direct solvers (lu, chol) are efficient for solving system with small number of elements, however increases significantly when the number of elements increases.</p>
+<img alt="../_images/solver_comparison.png" src="../_images/solver_comparison.png" />
+<p>It is clear that when modelling a large system using an iterative solver is beneficial.
+The conjugate gradient solver is the default solver for LoopStructural and performs similarly to the pyamg multigrid solver.
+Pyamg creates a coarse interpolation problem, or series of layers of coarse problems, and solves this using either a direct or iterative solver and then uses this as a preconditioner for the conjugate gradient method for a finer solution.
+Both pyamg and cg have the following parameters that can be used to specify the behaviour of the solver:</p>
+<p>With two parameters tol and atol controlling the tolerance of the</p>
+<div class="math notranslate nohighlight">
+\[norm(residual) &lt;= max(tol*norm(b), atol)\]</div>
+<p>Another parameter maxiter can be used to specify the maximum number of iterations for the alorithm.</p>
+</div>
+<div class="section" id="data-supported-interpolation">
+<h2>Data Supported Interpolation<a class="headerlink" href="#data-supported-interpolation" title="Permalink to this headline">#</a></h2>
+<p>LoopStructural provides a wrapper to the SurfE c++ library developed  Natural Resources Canada (Geological Survey of Canada) by Michael Hillier, Eric de Kemp, and Ernst Schetselaar for the purposes of 3D structural geological modelling particularly in sparse data environments.
+SurfE can be used for interpolating a GeologicalFeature in a GeologicalModel by specifying the parameter
+.. code-block:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">interpolatortype</span> <span class="o">=</span> <span class="s1">&#39;surfe&#39;</span>
+</pre></div>
+</div>
+<p>Additional parameters can be specified to the interpolator including:</p>
+<blockquote>
+<div><table class="colwidths-given table" id="id5">
+<caption><span class="caption-text">Surfe parameters</span><a class="headerlink" href="#id5" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Options</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>method</p></td>
+<td><p>single_surface, Laujaunie, horizons</p></td>
+</tr>
+<tr class="row-odd"><td><p>kernel</p></td>
+<td><p>r3,</p></td>
+</tr>
+<tr class="row-even"><td><p>greedy</p></td>
+<td><p>tuple (interface misfit, angular misfit)</p></td>
+</tr>
+<tr class="row-odd"><td><p>poly_order</p></td>
+<td><p>integer</p></td>
+</tr>
+<tr class="row-even"><td><p>radius</p></td>
+<td><p>double, radius for kernel if it uses a shape parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p>anisotropy</p></td>
+<td><p>boolean, whether to use global anisotropy</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="geological_model.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Geological Model</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="fold_modelling.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Fold modelling</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,74 @@
+LoopStructural.visualisation.LavaVuModelViewer
+==============================================
+
+.. currentmodule:: LoopStructural.visualisation
+
+.. autoclass:: LavaVuModelViewer
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LavaVuModelViewer.__init__
+      ~LavaVuModelViewer.add_box
+      ~LavaVuModelViewer.add_data
+      ~LavaVuModelViewer.add_dtm
+      ~LavaVuModelViewer.add_fault
+      ~LavaVuModelViewer.add_fault_displacements
+      ~LavaVuModelViewer.add_fold
+      ~LavaVuModelViewer.add_intersection_lineation
+      ~LavaVuModelViewer.add_isosurface
+      ~LavaVuModelViewer.add_model
+      ~LavaVuModelViewer.add_model_surfaces
+      ~LavaVuModelViewer.add_points
+      ~LavaVuModelViewer.add_scalar_field
+      ~LavaVuModelViewer.add_section
+      ~LavaVuModelViewer.add_structural_frame
+      ~LavaVuModelViewer.add_support_box
+      ~LavaVuModelViewer.add_value_data
+      ~LavaVuModelViewer.add_vector_data
+      ~LavaVuModelViewer.add_vector_field
+      ~LavaVuModelViewer.clear
+      ~LavaVuModelViewer.display
+      ~LavaVuModelViewer.export_to_webgl
+      ~LavaVuModelViewer.image
+      ~LavaVuModelViewer.image_array
+      ~LavaVuModelViewer.interactive
+      ~LavaVuModelViewer.rotate
+      ~LavaVuModelViewer.rotatex
+      ~LavaVuModelViewer.rotatey
+      ~LavaVuModelViewer.rotatez
+      ~LavaVuModelViewer.save
+      ~LavaVuModelViewer.set_viewer_rotation
+      ~LavaVuModelViewer.set_zscale
+      ~LavaVuModelViewer.unfault_grid
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LavaVuModelViewer.border
+      ~LavaVuModelViewer.camera
+      ~LavaVuModelViewer.model
+      ~LavaVuModelViewer.nelements
+      ~LavaVuModelViewer.nsteps
+      ~LavaVuModelViewer.rotation
+      ~LavaVuModelViewer.xmax
+      ~LavaVuModelViewer.xmin
+      ~LavaVuModelViewer.ymax
+      ~LavaVuModelViewer.ymin
+      ~LavaVuModelViewer.zmax
+      ~LavaVuModelViewer.zmin
+   
+   

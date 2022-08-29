@@ -1,0 +1,42 @@
+LoopStructural.modelling.core.geological\_model.GeologicalFeature
+=================================================================
+
+.. currentmodule:: LoopStructural.modelling.core.geological_model
+
+.. autoclass:: GeologicalFeature
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GeologicalFeature.__init__
+      ~GeologicalFeature.add_region
+      ~GeologicalFeature.evaluate_gradient
+      ~GeologicalFeature.evaluate_gradient_misfit
+      ~GeologicalFeature.evaluate_value
+      ~GeologicalFeature.evaluate_value_misfit
+      ~GeologicalFeature.is_valid
+      ~GeologicalFeature.max
+      ~GeologicalFeature.mean
+      ~GeologicalFeature.min
+      ~GeologicalFeature.set_model
+      ~GeologicalFeature.toggle_faults
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GeologicalFeature.model
+   
+   

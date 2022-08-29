@@ -1,0 +1,6 @@
+LoopStructural.interpolators.cython.dsi\_helper.sqrt
+====================================================
+
+.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
+
+.. autofunction:: sqrt

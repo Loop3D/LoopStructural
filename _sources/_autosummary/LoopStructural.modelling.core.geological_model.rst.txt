@@ -1,0 +1,74 @@
+LoopStructural.modelling.core.geological\_model
+===============================================
+
+.. automodule:: LoopStructural.modelling.core.geological_model
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      all_heading
+      getLogger
+      get_vectors
+      gradient_vec_names
+      log_to_file
+      normal_vector_headers
+      strike_dip_vector
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      DFI
+      DiscreteInterpolator
+      FDI
+      FaultBuilder
+      FaultSegment
+      FoldEvent
+      FoldFrame
+      FoldRotationAngle
+      FoldedFeatureBuilder
+      GeologicalFeature
+      GeologicalFeatureBuilder
+      GeologicalModel
+      IntrusionBuilder
+      IntrusionFrameBuilder
+      P2Interpolator
+      PLI
+      StructuralFrame
+      StructuralFrameBuilder
+      StructuredGrid
+      TetMesh
+      UnconformityFeature
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+      :toctree:                                          
+   
+      InterpolatorError
+      LoopException
+   
+   
+
+
+
