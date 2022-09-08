@@ -1,8 +1,9 @@
 from LoopStructural.modelling.features import (
     StructuralFrame,
-    StructuralFrameBuilder,
     GeologicalFeature,
 )
+from LoopStructural.modelling.features.builders import StructuralFrameBuilder
+
 from LoopStructural import GeologicalModel
 import numpy as np
 

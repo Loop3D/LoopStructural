@@ -1,9 +1,9 @@
-from LoopStructural.modelling.features import StructuralFrameBuilder
+from LoopStructural.modelling.features.builders import StructuralFrameBuilder
 from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
     shortest_path,
     array_from_coords,
-    find_inout_points
+    find_inout_points,
 )
 from LoopStructural.utils import getLogger
 
@@ -17,7 +17,10 @@ try:
     import skfmm as fmm
 
 except ImportError:
-    logger.error("skfmm not installed \n" "pip install scikit-fmm")
+    logger.warning(
+        "Cannot use IntrusionFrameBuilder: skfmm not installed \n"
+        "pip install scikit-fmm"
+    )
 
 
 class IntrusionFrameBuilder(StructuralFrameBuilder):
@@ -71,8 +74,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.intrusion_network_gradients = None
 
         self.velocity_field_arrays = None
-        self.IFf = None  
-        self.IFc = None  
+        self.IFf = None
+        self.IFc = None
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
@@ -177,7 +180,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             series_parameters = {}
             for i in range(len(series_list)):
 
-                series_list[i].faults_enabled = True # data points evaluated in faulted hostrock 
+                series_list[
+                    i
+                ].faults_enabled = True  # data points evaluated in faulted hostrock
                 data_temp = self.intrusion_network_data[
                     self.intrusion_network_data["intrusion_anisotropy"]
                     == series_list[i].name
@@ -259,10 +264,10 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             self.anisotropies_fault_parameters = faults_parameters
 
-    def add_steps_stratigraphic_units(self): 
+    def add_steps_stratigraphic_units(self):
         """
         adds stratigraphic contacts from before and after a step (controlled by a fault)
-        for each fault, at least one strigraphic unit must be provided. 
+        for each fault, at least one strigraphic unit must be provided.
 
 
         Parameters
@@ -281,35 +286,54 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         # set data
         intrusion_network_data = self.intrusion_network_data.copy()
-        intrusion_network_data_xyz = intrusion_network_data.loc[:,['X','Y','Z']].copy().to_numpy()
+        intrusion_network_data_xyz = (
+            intrusion_network_data.loc[:, ["X", "Y", "Z"]].copy().to_numpy()
+        )
         std_backup = 25
-        
 
         for step_i in self.intrusion_steps.keys():
-            step_structure = self.intrusion_steps[step_i].get('structure')
-            unit_from_name = self.intrusion_steps[step_i].get('unit_from')
-            series_from_name = self.intrusion_steps[step_i].get('series_from')
-            unit_from_id = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('id')
+            step_structure = self.intrusion_steps[step_i].get("structure")
+            unit_from_name = self.intrusion_steps[step_i].get("unit_from")
+            series_from_name = self.intrusion_steps[step_i].get("series_from")
+            unit_from_id = self.model.stratigraphic_column[series_from_name.name][
+                unit_from_name
+            ].get("id")
 
-            unit_to_name = self.intrusion_steps[step_i].get('unit_to')
-            series_to_name = self.intrusion_steps[step_i].get('series_to')
-            unit_to_id = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('id')
+            unit_to_name = self.intrusion_steps[step_i].get("unit_to")
+            series_to_name = self.intrusion_steps[step_i].get("series_to")
+            unit_to_id = self.model.stratigraphic_column[series_to_name.name][
+                unit_to_name
+            ].get("id")
 
-            series_from_name.faults_enabled = True # data points evaluated in faulted hostrock
-            series_to_name.faults_enabled = True # data points evaluated in faulted hostrock
+            series_from_name.faults_enabled = (
+                True  # data points evaluated in faulted hostrock
+            )
+            series_to_name.faults_enabled = (
+                True  # data points evaluated in faulted hostrock
+            )
 
-            intrusion_network_data.loc[:,'model_values'] = self.model.evaluate_model(
-                self.model.rescale(
-                    intrusion_network_data_xyz, inplace = False)
-                    )
+            intrusion_network_data.loc[:, "model_values"] = self.model.evaluate_model(
+                self.model.rescale(intrusion_network_data_xyz, inplace=False)
+            )
 
-            #check if step is within the same unit:
+            # check if step is within the same unit:
 
             if unit_from_name == unit_to_name:
-                data_points_xyz = intrusion_network_data[intrusion_network_data['model_values'] == unit_from_id].loc[:,['X','Y','Z']].copy().to_numpy()
-                series_values = series_from_name['feature'].evaluate_value(data_points_xyz)
-                series_values_mod = series_values.reshape(len(series_values),1)
-                contact_clustering = KMeans(n_clusters = 2, random_state = 0).fit(series_values_mod)
+                data_points_xyz = (
+                    intrusion_network_data[
+                        intrusion_network_data["model_values"] == unit_from_id
+                    ]
+                    .loc[:, ["X", "Y", "Z"]]
+                    .copy()
+                    .to_numpy()
+                )
+                series_values = series_from_name["feature"].evaluate_value(
+                    data_points_xyz
+                )
+                series_values_mod = series_values.reshape(len(series_values), 1)
+                contact_clustering = KMeans(n_clusters=2, random_state=0).fit(
+                    series_values_mod
+                )
 
                 # contact 0
                 z = np.ma.masked_not_equal(contact_clustering.labels_, 0)
@@ -326,62 +350,110 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 contact_1_std = np.std(contact_1_vals)
 
                 if contact_0_mean <= contact_1_mean:
-                    self.intrusion_steps[step_i]['unit_from_mean'] = contact_0_mean
-                    self.intrusion_steps[step_i]['unit_from_std'] = contact_0_std
-                    self.intrusion_steps[step_i]['unit_to_mean'] = contact_1_mean
-                    self.intrusion_steps[step_i]['unit_to_std'] = contact_1_std
+                    self.intrusion_steps[step_i]["unit_from_mean"] = contact_0_mean
+                    self.intrusion_steps[step_i]["unit_from_std"] = contact_0_std
+                    self.intrusion_steps[step_i]["unit_to_mean"] = contact_1_mean
+                    self.intrusion_steps[step_i]["unit_to_std"] = contact_1_std
 
                 else:
-                    self.intrusion_steps[step_i]['unit_from_mean'] = contact_1_mean
-                    self.intrusion_steps[step_i]['unit_from_std'] = contact_1_std
-                    self.intrusion_steps[step_i]['unit_to_mean'] = contact_0_mean
-                    self.intrusion_steps[step_i]['unit_to_std'] = contact_0_std
+                    self.intrusion_steps[step_i]["unit_from_mean"] = contact_1_mean
+                    self.intrusion_steps[step_i]["unit_from_std"] = contact_1_std
+                    self.intrusion_steps[step_i]["unit_to_mean"] = contact_0_mean
+                    self.intrusion_steps[step_i]["unit_to_std"] = contact_0_std
 
-               
-
-            else: #step between different strat units
-                data_points_from_xyz = intrusion_network_data[intrusion_network_data['model_values'] == unit_from_id].loc[:,['X','Y','Z']].copy().to_numpy()
-                step_structure_points_vals = step_structure[0].evaluate_value(data_points_from_xyz)
+            else:  # step between different strat units
+                data_points_from_xyz = (
+                    intrusion_network_data[
+                        intrusion_network_data["model_values"] == unit_from_id
+                    ]
+                    .loc[:, ["X", "Y", "Z"]]
+                    .copy()
+                    .to_numpy()
+                )
+                step_structure_points_vals = step_structure[0].evaluate_value(
+                    data_points_from_xyz
+                )
                 # print(step_structure_points_vals)
-                if len(data_points_from_xyz) ==0: #no data points in strat unit
-                    unit_from_min = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('min')
-                    unit_from_max = self.model.stratigraphic_column[series_from_name.name][unit_from_name].get('max')
-                    self.intrusion_steps[step_i]['unit_from_mean'] = unit_from_min + (unit_from_max - unit_from_min)/2
-                    self.intrusion_steps[step_i]['unit_from_std'] = std_backup
+                if len(data_points_from_xyz) == 0:  # no data points in strat unit
+                    unit_from_min = self.model.stratigraphic_column[
+                        series_from_name.name
+                    ][unit_from_name].get("min")
+                    unit_from_max = self.model.stratigraphic_column[
+                        series_from_name.name
+                    ][unit_from_name].get("max")
+                    self.intrusion_steps[step_i]["unit_from_mean"] = (
+                        unit_from_min + (unit_from_max - unit_from_min) / 2
+                    )
+                    self.intrusion_steps[step_i]["unit_from_std"] = std_backup
                 else:
-                    series_values = series_from_name['feature'].evaluate_value(data_points_from_xyz)
+                    series_values = series_from_name["feature"].evaluate_value(
+                        data_points_from_xyz
+                    )
                     # print(len(step_structure_points_vals), len(series_values))
-                    mask = step_structure_points_vals<0
-                    if len(mask) >0:
-                        series_values_mod = np.ma.compressed(np.ma.masked_array(series_values, step_structure_points_vals<0))
+                    mask = step_structure_points_vals < 0
+                    if len(mask) > 0:
+                        series_values_mod = np.ma.compressed(
+                            np.ma.masked_array(
+                                series_values, step_structure_points_vals < 0
+                            )
+                        )
                     else:
                         series_values_mod = series_values
-                    self.intrusion_steps[step_i]['unit_from_mean'] = np.nanmean(series_values_mod)
-                    self.intrusion_steps[step_i]['unit_from_std'] = np.nanstd(series_values_mod)
+                    self.intrusion_steps[step_i]["unit_from_mean"] = np.nanmean(
+                        series_values_mod
+                    )
+                    self.intrusion_steps[step_i]["unit_from_std"] = np.nanstd(
+                        series_values_mod
+                    )
 
-                if self.intrusion_steps[step_i]['unit_from_std'] == 0:
-                    self.intrusion_steps[step_i]['unit_from_std'] = std_backup
+                if self.intrusion_steps[step_i]["unit_from_std"] == 0:
+                    self.intrusion_steps[step_i]["unit_from_std"] = std_backup
 
-                data_points_to_xyz = intrusion_network_data[intrusion_network_data['model_values'] == unit_to_id].loc[:,['X','Y','Z']].copy().to_numpy()
-                step_structure_points_vals = step_structure[0].evaluate_value(data_points_to_xyz)
+                data_points_to_xyz = (
+                    intrusion_network_data[
+                        intrusion_network_data["model_values"] == unit_to_id
+                    ]
+                    .loc[:, ["X", "Y", "Z"]]
+                    .copy()
+                    .to_numpy()
+                )
+                step_structure_points_vals = step_structure[0].evaluate_value(
+                    data_points_to_xyz
+                )
                 if len(data_points_to_xyz) == 0:
-                    unit_to_min = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('min')
-                    unit_to_max = self.model.stratigraphic_column[series_to_name.name][unit_to_name].get('max')
-                    self.intrusion_steps[step_i]['unit_to_mean'] = unit_to_min + (unit_to_max - unit_to_min)/2
-                    self.intrusion_steps[step_i]['unit_to_std'] = std_backup
+                    unit_to_min = self.model.stratigraphic_column[series_to_name.name][
+                        unit_to_name
+                    ].get("min")
+                    unit_to_max = self.model.stratigraphic_column[series_to_name.name][
+                        unit_to_name
+                    ].get("max")
+                    self.intrusion_steps[step_i]["unit_to_mean"] = (
+                        unit_to_min + (unit_to_max - unit_to_min) / 2
+                    )
+                    self.intrusion_steps[step_i]["unit_to_std"] = std_backup
                 else:
-                    series_values = series_to_name['feature'].evaluate_value(data_points_to_xyz)
+                    series_values = series_to_name["feature"].evaluate_value(
+                        data_points_to_xyz
+                    )
                     # print(len(step_structure_points_vals), len(series_values))
-                    mask = step_structure_points_vals>0
-                    if len(mask) >0:
-                        series_values_mod = np.ma.compressed(np.ma.masked_array(series_values, step_structure_points_vals>0))
+                    mask = step_structure_points_vals > 0
+                    if len(mask) > 0:
+                        series_values_mod = np.ma.compressed(
+                            np.ma.masked_array(
+                                series_values, step_structure_points_vals > 0
+                            )
+                        )
                     else:
                         series_values_mod = series_values
-                    self.intrusion_steps[step_i]['unit_to_mean'] = np.nanmean(series_values_mod)
-                    self.intrusion_steps[step_i]['unit_to_std'] = np.nanstd(series_values_mod)
+                    self.intrusion_steps[step_i]["unit_to_mean"] = np.nanmean(
+                        series_values_mod
+                    )
+                    self.intrusion_steps[step_i]["unit_to_std"] = np.nanstd(
+                        series_values_mod
+                    )
 
-                if self.intrusion_steps[step_i]['unit_to_std'] == 0:
-                    self.intrusion_steps[step_i]['unit_to_std'] = std_backup
+                if self.intrusion_steps[step_i]["unit_to_std"] == 0:
+                    self.intrusion_steps[step_i]["unit_to_std"] = std_backup
 
     def set_intrusion_network_parameters(
         self, intrusion_data, intrusion_network_input, **kwargs
@@ -414,26 +486,24 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         self.set_intrusion_network_data(intrusion_data)
 
-        if self.intrusion_network_type == 'interpolated':
+        if self.intrusion_network_type == "interpolated":
 
-            intrusion_steps = intrusion_network_input.get(
-                "intrusion_steps", None)
+            intrusion_steps = intrusion_network_input.get("intrusion_steps", None)
             if intrusion_steps is not None:
-                
+
                 self.intrusion_steps = intrusion_steps
 
                 self.delta_contacts = intrusion_network_input.get(
-                        "delta_c", [1]*len(intrusion_steps)
-                        )
+                    "delta_c", [1] * len(intrusion_steps)
+                )
 
                 self.delta_faults = intrusion_network_input.get(
                     "delta_f", [1] * len(intrusion_steps)
                 )
 
-                self.add_steps_stratigraphic_units() #update steps parameters
+                self.add_steps_stratigraphic_units()  # update steps parameters
 
-            
-                # set fault anisotropies and compute parameters 
+                # set fault anisotropies and compute parameters
                 fault_anisotropies = intrusion_network_input.get(
                     "structures_anisotropies", None
                 )
@@ -441,16 +511,17 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 if fault_anisotropies is None:
                     fault_anisotropies = []
                     for step in self.intrusion_steps.keys():
-                        fault_anisotropies.append(self.intrusion_steps[step].get('structure'))
+                        fault_anisotropies.append(
+                            self.intrusion_steps[step].get("structure")
+                        )
 
                 self.add_faults_anisotropies(fault_anisotropies)
 
-            # add contact anisotropies list 
+            # add contact anisotropies list
             contact_anisotropies = intrusion_network_input.get(
                 "contact_anisotropies", None
             )
             self.anisotropies_series_list = contact_anisotropies
-                
 
         if self.intrusion_network_type == "shortest path":
 
@@ -519,7 +590,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         Ic = np.zeros([len(self.grid_to_evaluate_ifx), n_series])
 
         delta_list = delta
-
 
         for i, contact_id in enumerate(sorted(self.anisotropies_series_parameters)):
             series_id = self.anisotropies_series_parameters[contact_id][0]
@@ -680,13 +750,13 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             # 2. More constraints if steps present:
             if self.intrusion_steps is not None:
-              
+
                 If = self.indicator_function_faults(delta=self.delta_faults)
-        
+
                 if len(np.where(If == 1)[0]) == 0:
                     logger.error("No faults identified, increase value of delta_f")
 
-                If_sum = np.sum(If, axis = 1) #.reshape(len(If),1)
+                If_sum = np.sum(If, axis=1)  # .reshape(len(If),1)
 
                 # evaluate grid points in series
 
@@ -701,96 +771,145 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                         delta_contact0 = delta_contact
                         delta_contact1 = delta_contact
 
-                    step_fault = self.intrusion_steps[step_i].get('structure')
-                    series_from_name = self.intrusion_steps[step_i].get('series_from')
-                    series_to_name = self.intrusion_steps[step_i].get('series_to')
+                    step_fault = self.intrusion_steps[step_i].get("structure")
+                    series_from_name = self.intrusion_steps[step_i].get("series_from")
+                    series_to_name = self.intrusion_steps[step_i].get("series_to")
 
                     series_from_name.faults_enabled = True
                     series_to_name.faults_enabled = True
 
                     fault_gridpoints_vals = step_fault[0].evaluate_value(grid_points)
-                    fault_gridpoints_grads = step_fault[0].evaluate_gradient(grid_points)
+                    fault_gridpoints_grads = step_fault[0].evaluate_gradient(
+                        grid_points
+                    )
 
-                    series_from_gridpoints_vals = series_from_name["feature"].evaluate_value(grid_points)
+                    series_from_gridpoints_vals = series_from_name[
+                        "feature"
+                    ].evaluate_value(grid_points)
                     if series_from_name == series_to_name:
                         series_to_gridpoints_vals = series_from_gridpoints_vals
 
                     else:
-                        series_to_gridpoints_vals = series_to_name["feature"].evaluate_value(grid_points)
+                        series_to_gridpoints_vals = series_to_name[
+                            "feature"
+                        ].evaluate_value(grid_points)
 
-                    contacts0_val_min = self.intrusion_steps[step_i].get('unit_from_mean') - (self.intrusion_steps[step_i].get('unit_from_std')*delta_contact0)
-                    contacts0_val_max = self.intrusion_steps[step_i].get('unit_from_mean') + (self.intrusion_steps[step_i].get('unit_from_std')*delta_contact0)
-                    contacts1_val_min = self.intrusion_steps[step_i].get('unit_to_mean') - (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact1)
-                    contacts1_val_max = self.intrusion_steps[step_i].get('unit_to_mean') + (self.intrusion_steps[step_i].get('unit_to_std')*delta_contact1)
-
-                    self.intrusion_steps[step_i]['constraints_hw'] = grid_points[
-                        np.logical_and(
-                            If_sum == 0, (fault_gridpoints_vals >=0) & (series_from_gridpoints_vals >= contacts0_val_min) & (series_from_gridpoints_vals <= contacts0_val_max))]
-                    
-                    self.intrusion_steps[step_i]['constraints_fw'] = grid_points[
-                        np.logical_and(
-                            If_sum == 0, (fault_gridpoints_vals < 0) & (series_from_gridpoints_vals >= contacts0_val_min) & (series_from_gridpoints_vals <= contacts0_val_max))]
-                   
-                    fault_i_points = grid_points[np.logical_and(
-                        If_sum == 0, np.logical_or(
-                            (fault_gridpoints_vals >=0) & (
-                                series_from_gridpoints_vals >= contacts0_val_min) & (
-                                    series_from_gridpoints_vals <= contacts0_val_max),
-                                    (
-                                        fault_gridpoints_vals < 0) & (
-                                            series_to_gridpoints_vals >= contacts1_val_min) & (
-                                                series_to_gridpoints_vals <= contacts1_val_max)
-                        )
+                    contacts0_val_min = self.intrusion_steps[step_i].get(
+                        "unit_from_mean"
+                    ) - (
+                        self.intrusion_steps[step_i].get("unit_from_std")
+                        * delta_contact0
                     )
+                    contacts0_val_max = self.intrusion_steps[step_i].get(
+                        "unit_from_mean"
+                    ) + (
+                        self.intrusion_steps[step_i].get("unit_from_std")
+                        * delta_contact0
+                    )
+                    contacts1_val_min = self.intrusion_steps[step_i].get(
+                        "unit_to_mean"
+                    ) - (
+                        self.intrusion_steps[step_i].get("unit_to_std") * delta_contact1
+                    )
+                    contacts1_val_max = self.intrusion_steps[step_i].get(
+                        "unit_to_mean"
+                    ) + (
+                        self.intrusion_steps[step_i].get("unit_to_std") * delta_contact1
+                    )
+
+                    self.intrusion_steps[step_i]["constraints_hw"] = grid_points[
+                        np.logical_and(
+                            If_sum == 0,
+                            (fault_gridpoints_vals >= 0)
+                            & (series_from_gridpoints_vals >= contacts0_val_min)
+                            & (series_from_gridpoints_vals <= contacts0_val_max),
+                        )
+                    ]
+
+                    self.intrusion_steps[step_i]["constraints_fw"] = grid_points[
+                        np.logical_and(
+                            If_sum == 0,
+                            (fault_gridpoints_vals < 0)
+                            & (series_from_gridpoints_vals >= contacts0_val_min)
+                            & (series_from_gridpoints_vals <= contacts0_val_max),
+                        )
+                    ]
+
+                    fault_i_points = grid_points[
+                        np.logical_and(
+                            If_sum == 0,
+                            np.logical_or(
+                                (fault_gridpoints_vals >= 0)
+                                & (series_from_gridpoints_vals >= contacts0_val_min)
+                                & (series_from_gridpoints_vals <= contacts0_val_max),
+                                (fault_gridpoints_vals < 0)
+                                & (series_to_gridpoints_vals >= contacts1_val_min)
+                                & (series_to_gridpoints_vals <= contacts1_val_max),
+                            ),
+                        )
                     ]
 
                     # #TODO
-                    # gradients_in_fault = 
+                    # gradients_in_fault =
 
-                    intrusion_network_points = np.vstack([intrusion_network_points, fault_i_points])
+                    intrusion_network_points = np.vstack(
+                        [intrusion_network_points, fault_i_points]
+                    )
 
-                    splits_from_sill_name = self.intrusion_steps[step_i].get('splits_from', None)
+                    splits_from_sill_name = self.intrusion_steps[step_i].get(
+                        "splits_from", None
+                    )
 
-                    #check if sill comes from anothe sill 
-                    #(add all the constraint from original sill, this have to be changed and adapted so it adds constraints for specific faults)
+                    # check if sill comes from anothe sill
+                    # (add all the constraint from original sill, this have to be changed and adapted so it adds constraints for specific faults)
 
                     if splits_from_sill_name is not None:
-                        splits_from_sill_steps = self.model.__getitem__(splits_from_sill_name).intrusion_frame.builder.intrusion_steps
+                        splits_from_sill_steps = self.model.__getitem__(
+                            splits_from_sill_name
+                        ).intrusion_frame.builder.intrusion_steps
                         for j, step_j in enumerate(splits_from_sill_steps.keys()):
-                            step_j_hg_constraints = splits_from_sill_steps[step_j].get('constraints_hw')
-                            intrusion_network_points = np.vstack([intrusion_network_points, step_j_hg_constraints])
-        
+                            step_j_hg_constraints = splits_from_sill_steps[step_j].get(
+                                "constraints_hw"
+                            )
+                            intrusion_network_points = np.vstack(
+                                [intrusion_network_points, step_j_hg_constraints]
+                            )
 
             self.intrusion_network_points = intrusion_network_points
-           
- 
+
             # 3. Gradient contraints for intrusion frame coord0
             # Evaluate points in gradient of stratigraphy, and exclude points around faults
 
             series_id = self.anisotropies_series_list[0]
             series_id.faults_enabled = True
-            strat_gradient_grid_points = series_id["feature"].evaluate_gradient(grid_points)
-                
+            strat_gradient_grid_points = series_id["feature"].evaluate_gradient(
+                grid_points
+            )
+
             # If intrusion network is built usinf roof/top contact, then change vector direction
-            if self.intrusion_network_contact == 'roof' or self.intrusion_network_contact == 'top':
-                grid_points_inflation = strat_gradient_grid_points*(-1)
+            if (
+                self.intrusion_network_contact == "roof"
+                or self.intrusion_network_contact == "top"
+            ):
+                grid_points_inflation = strat_gradient_grid_points * (-1)
             else:
                 grid_points_inflation = strat_gradient_grid_points
-              
-            grid_points_and_inflation_all = np.hstack([grid_points, grid_points_inflation])
-            
-            if self.intrusion_steps is None:  
-                If_sum = np.zeros(len(grid_points_and_inflation_all)).T #e.g. no faults afecting the intrusion
-            
-            grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
+
+            grid_points_and_inflation_all = np.hstack(
+                [grid_points, grid_points_inflation]
+            )
+
+            if self.intrusion_steps is None:
+                If_sum = np.zeros(
+                    len(grid_points_and_inflation_all)
+                ).T  # e.g. no faults afecting the intrusion
+
+            grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0]
             self.intrusion_network_gradients = grid_points_and_inflation
-         
-            
-            return intrusion_network_points       
 
-        
+            return intrusion_network_points
+
         elif self.intrusion_network_type == "shortest path":
-
 
             grid_points, spacing = self.create_grid_for_indicator_fxs()
 
@@ -996,7 +1115,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         for j in range(len(IF[0])):
 
-            IF_temp = IF[:,j]
+            IF_temp = IF[:, j]
             If_points_temp = grid_points[IF_temp == 1]
             If_points.append(If_points_temp)
 
@@ -1022,26 +1141,27 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         coord_0_values["feature_name"] = self.name
         coord_0_values["w"] = 1
 
-        intrusion_frame_data_temp = pd.concat(
-            [intrusion_frame_data, coord_0_values]
-        )
+        intrusion_frame_data_temp = pd.concat([intrusion_frame_data, coord_0_values])
 
         # if self.intrusion_network_gradients is not None:
-        coord_0_data = intrusion_frame_data[intrusion_frame_data['coord'] == 0].copy()
+        coord_0_data = intrusion_frame_data[intrusion_frame_data["coord"] == 0].copy()
         if len(coord_0_data) == 0:
             np.random.shuffle(self.intrusion_network_gradients)
-            sliced_grads = self.intrusion_network_gradients[:200,:]
+            sliced_grads = self.intrusion_network_gradients[:200, :]
 
-            coord_0_grads = pd.DataFrame(sliced_grads[:,:6], columns=["X", "Y", "Z", 'gx', 'gy', 'gz'])
+            coord_0_grads = pd.DataFrame(
+                sliced_grads[:, :6], columns=["X", "Y", "Z", "gx", "gy", "gz"]
+            )
             coord_0_grads["coord"] = 0
             coord_0_grads["feature_name"] = self.name
             coord_0_grads["w"] = 1
 
-            intrusion_frame_data_complete = pd.concat([intrusion_frame_data_temp, coord_0_grads])
-        
+            intrusion_frame_data_complete = pd.concat(
+                [intrusion_frame_data_temp, coord_0_grads]
+            )
+
         else:
             intrusion_frame_data_complete = intrusion_frame_data_temp
-        
 
         self.add_data_from_data_frame(intrusion_frame_data_complete)
         self.update_geometry(intrusion_frame_data_complete[["X", "Y", "Z"]].to_numpy())

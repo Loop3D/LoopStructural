@@ -1,6 +1,7 @@
 from skimage.measure import marching_cubes
 import pandas as pd
 import numpy as np
+from LoopStructural.modelling.features import FeatureType
 
 from LoopStructural.utils import getLogger
 
@@ -26,7 +27,7 @@ def calculate_fault_intersections(model, threshold=0.001):
     """
     fault_names = []
     for f in model.features:
-        if f.type == "fault":
+        if f.type == FeatureType.FAULT:
             fault_names.append(f.name)
     fault_matrix = pd.DataFrame(columns=fault_names)
     for f in fault_names:

@@ -1,5 +1,5 @@
 from LoopStructural import GeologicalModel
-from LoopStructural.modelling.fault import FaultSegment
+from LoopStructural.modelling.features.fault import FaultSegment
 import pandas as pd
 
 

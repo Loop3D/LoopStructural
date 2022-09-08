@@ -23,14 +23,17 @@ try:
     import geostatspy.GSLIB as GSLIB  # GSLIB utilities, viz and wrapped functions
 
 except ImportError:
-    logger.error("GeostatPy not installed \n" "pip install geostatspy")
+    logger.warning(
+        "Cannot use Intrusions: GeostatPy not installed \n" "pip install geostatspy"
+    )
     raise ImportError("GSLIB")
 try:
     import geostatspy.geostats as geostats  # GSLIB converted to Python
 except ImportError:
-    logger.error("GeostatPy not installed \n" "pip install geostatspy")
+    logger.warning(
+        "Cannot use Intrusions: GeostatPy not installed \n" "pip install geostatspy"
+    )
     raise ImportError("geostats")
-
 
 
 class IntrusionBuilder:
@@ -354,14 +357,13 @@ class IntrusionBuilder:
             "ndmin": ndmin,
             "ndmax": ndmax,
             "radius": radius,
-            "nugget" : nugget,
-            "nst" : nst,
-            "it1" : it1,
-            "cc1" : cc1,
-            "azi1" : azi1,
-            "hmaj1" : hmaj1,
-            "hmin1" : hmin1
-
+            "nugget": nugget,
+            "nst": nst,
+            "it1": it1,
+            "cc1": cc1,
+            "azi1": azi1,
+            "hmaj1": hmaj1,
+            "hmin1": hmin1,
         }
 
         self.lateral_sgs_parameters = l_parameters
@@ -442,13 +444,13 @@ class IntrusionBuilder:
             "ndmin": ndmin,
             "ndmax": ndmax,
             "radius": radius,
-            "nugget" : nugget,
-            "nst" : nst,
-            "it1" : it1,
-            "cc1" : cc1,
-            "azi1" : azi1,
-            "hmaj1" : hmaj1,
-            "hmin1" : hmin1
+            "nugget": nugget,
+            "nst": nst,
+            "it1": it1,
+            "cc1": cc1,
+            "azi1": azi1,
+            "hmaj1": hmaj1,
+            "hmin1": hmin1,
         }
 
         self.vertical_sgs_parameters = g_parameters
@@ -479,7 +481,7 @@ class IntrusionBuilder:
         azi1 = self.lateral_sgs_parameters.get("azi1")
         hmaj1 = self.lateral_sgs_parameters.get("hmaj1")
         hmin1 = self.lateral_sgs_parameters.get("hmin1")
-        
+
         self.lateral_sgs_variogram = GSLIB.make_variogram(
             nugget, nst, it1, cc1, azi1, hmaj1, hmin1
         )
@@ -793,6 +795,9 @@ class IntrusionBuilder:
             vario=self.lateral_sgs_variogram
             )
         
+        zmin = self.lateral_sgs_parameters.get("zmin_lmax")
+        zmax = self.lateral_sgs_parameters.get("zmax_lmax")
+
         zmin = self.lateral_sgs_parameters.get("zmin_lmax")
         zmax = self.lateral_sgs_parameters.get("zmax_lmax")
 

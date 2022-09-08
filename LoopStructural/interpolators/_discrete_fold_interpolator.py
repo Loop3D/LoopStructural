@@ -10,8 +10,12 @@ from LoopStructural.interpolators import PiecewiseLinearInterpolator, Interpolat
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
+try:
+    from ._cython.dsi_helper import fold_cg
+except:
+    from ._python.dsi_helper import fold_cg
 
-from .cython.dsi_helper import fold_cg
+    logger.warning("Cython compiled code not found, using python version")
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
@@ -250,5 +254,5 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0])
             idc = np.array(idc[:ncons, :])
             self.add_constraints_to_least_squares(
-                A, B, fold_regularisation[2], idc, name="fold regularisation 3"
+                A, B, idc, fold_regularisation[2], name="fold regularisation 3"
             )

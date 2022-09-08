@@ -29,3 +29,4 @@ try:
 except ImportError as e:
     logger.warning("Vtk export disabled: pip install meshio")
 from ._scalar_field import ScalarField
+from ._dash_view import DashView

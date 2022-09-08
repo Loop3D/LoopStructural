@@ -23,6 +23,8 @@ class ProcessInputData:
         colours=None,
         use_thickness=None,
         fault_edge_properties=None,
+        origin=None,
+        maximum=None,
     ):
         """Object to generate loopstructural input dataset from a geological map
 
@@ -60,6 +62,7 @@ class ProcessInputData:
         network then only fault locations, orientations edges and properties are required
         """
         self._stratigraphic_order = None
+        self.stratigraphy = False
         self.stratigraphic_order = stratigraphic_order
         self._thicknesses = thicknesses
         self._use_thickness = use_thickness
@@ -81,9 +84,15 @@ class ProcessInputData:
         self._fault_locations = None
         self.fault_locations = fault_locations
         # self._fault_dimensions = None
-        self._fault_properties = None
-        self.fault_properties = fault_properties
         self._fault_network = None
+        self._fault_properties = None
+        if fault_properties is not None:
+            self.fault_properties = fault_properties
+        elif fault_locations is not None:
+            self.fault_properties = pd.DataFrame(
+                self.fault_locations["feature_name"].unique(), columns=["name"]
+            ).set_index("name")
+
         if fault_edges is not None and fault_edge_properties is not None:
             self.set_fault_network(fault_edges, fault_edge_properties)  # = fault_graph
         self._fault_stratigraphy = fault_stratigraphy
@@ -95,6 +104,26 @@ class ProcessInputData:
         # flags
         self._foliation_properties = {}  # empty dictionary of foliation parameters
         self.foliation_properties = None
+        self._origin = None
+        self.origin = origin
+        self._maximum = None
+        self.maximum = maximum
+
+    @property
+    def origin(self):
+        return self._origin
+
+    @origin.setter
+    def origin(self, origin):
+        self._origin = origin
+
+    @property
+    def maximum(self):
+        return self._maximum
+
+    @maximum.setter
+    def maximum(self, maximum):
+        self._maximum = maximum
 
     @property
     def stratigraphic_order(self):
@@ -102,6 +131,9 @@ class ProcessInputData:
 
     @stratigraphic_order.setter
     def stratigraphic_order(self, stratigraphic_order):
+        if stratigraphic_order is None:
+            logger.warning("No stratigraphic order provided")
+            return
         if isinstance(stratigraphic_order[0][1], list) == False:
             raise TypeError(
                 "Stratigraphic_order must of the format [[('group_name',['unit1','unit2']),('group_name2',['unit3','unit4'])]]"
@@ -110,6 +142,7 @@ class ProcessInputData:
             raise TypeError("Stratigraphic_order must be a list")
         if isinstance(stratigraphic_order[0][1][0], str) == False:
             raise TypeError("Stratigraphic_order elements must be strings")
+        self.stratigraphy = True
         self._stratigraphic_order = stratigraphic_order
 
     @property
@@ -118,6 +151,7 @@ class ProcessInputData:
 
     @colours.setter
     def colours(self, colours):
+
         if colours is None:
             self._colours = {}
             for s in self.stratigraphic_name:
@@ -129,25 +163,26 @@ class ProcessInputData:
     def stratigraphic_column(self):
         stratigraphic_column = {}
         # add stratigraphy into the column
-        unit_id = 0
-        val = self._stratigraphic_value()
-        for name, sg in self._stratigraphic_order:
-            stratigraphic_column[name] = {}
-            for i, g in enumerate(reversed(sg)):
-                if g in self.thicknesses:
-                    stratigraphic_column[name][g] = {
-                        "max": val[g] + self.thicknesses[g],
-                        "min": val[g],
-                        "id": unit_id,
-                        "colour": self.colours[g],
-                    }
-                    if i == 0:
-                        stratigraphic_column[name][g]["min"] = -np.inf
-                    if i == len(sg) - 1:
-                        stratigraphic_column[name][g]["max"] = np.inf
+        if self.stratigraphy:
+            unit_id = 0
+            val = self._stratigraphic_value()
+            for name, sg in self._stratigraphic_order:
+                stratigraphic_column[name] = {}
+                for i, g in enumerate(reversed(sg)):
+                    if g in self.thicknesses:
+                        stratigraphic_column[name][g] = {
+                            "max": val[g] + self.thicknesses[g],
+                            "min": val[g],
+                            "id": unit_id,
+                            "colour": self.colours[g],
+                        }
+                        if i == 0:
+                            stratigraphic_column[name][g]["min"] = 0
+                        if i == len(sg) - 1:
+                            stratigraphic_column[name][g]["max"] = np.inf
 
-                unit_id += 1
-        # add faults into the column
+                    unit_id += 1
+            # add faults into the column
         if self.fault_properties is not None:
             stratigraphic_column["faults"] = self.fault_properties.to_dict("index")
         return stratigraphic_column
@@ -227,6 +262,8 @@ class ProcessInputData:
 
     @foliation_properties.setter
     def foliation_properties(self, foliation_properties):
+        if self.stratigraphic_order == None:
+            return
         if foliation_properties is None:
             for k in self.stratigraphic_column.keys():
                 if k != "faults":
@@ -244,21 +281,21 @@ class ProcessInputData:
             return
 
         fault_properties = fault_properties.copy()
-        if (
-            "centreEasting" not in fault_properties.columns
-            or "centreNorthing" not in fault_properties.columns
-            or "centreAltitude" not in fault_properties
-        ):
-            fault_properties["centreEasting"] = np.nan
-            fault_properties["centreNorthing"] = np.nan
-            fault_properties["centreAltitude"] = np.nan
-            for fname in fault_properties.index:
-                pts = self.fault_locations.loc[
-                    self.fault_locations["feature_name"] == fname, ["X", "Y", "Z"]
-                ]
-                fault_properties.loc[
-                    fname, ["centreEasting", "centreNorthing", "centreAltitude"]
-                ] = np.nanmean(pts, axis=0)
+        # if (
+        #     "centreEasting" not in fault_properties.columns
+        #     or "centreNorthing" not in fault_properties.columns
+        #     or "centreAltitude" not in fault_properties
+        # ):
+        fault_properties["centreEasting"] = np.nan
+        fault_properties["centreNorthing"] = np.nan
+        fault_properties["centreAltitude"] = np.nan
+        for fname in fault_properties.index:
+            pts = self.fault_locations.loc[
+                self.fault_locations["feature_name"] == fname, ["X", "Y", "Z"]
+            ]
+            fault_properties.loc[
+                fname, ["centreEasting", "centreNorthing", "centreAltitude"]
+            ] = np.nanmean(pts, axis=0)
         if (
             "avgNormalEasting" not in fault_properties.columns
             or "avgNormalNorthing" not in fault_properties.columns
@@ -312,6 +349,14 @@ class ProcessInputData:
                             "avgSlipDirAltitude",
                         ],
                     ] = np.mean(pts, axis=0)
+        if "displacement" not in fault_properties.columns:
+            fault_properties["displacement"] = 0
+            logger.warning(
+                "Fault displacement not provided, setting to 0. \n\
+                This will result in only a fault surface, no displacement on older features"
+            )
+            # faults need a displacement, if we don't know it set as 0 so that the surface is built
+
         self._fault_properties = fault_properties
         self._fault_network = FaultNetwork(list(self.fault_properties.index))
 
@@ -377,7 +422,9 @@ class ProcessInputData:
     @property
     def stratigraphic_name(self):
         names = []
-        for name, sg in self._stratigraphic_order:
+        if self.stratigraphic_order is None:
+            return names
+        for name, sg in self.stratigraphic_order:
             for g in sg:
                 names.append(g)
         return names
@@ -396,7 +443,7 @@ class ProcessInputData:
             value = 0.0  # reset for each supergroup
             for g in reversed(sg):
                 if g not in self.thicknesses:
-                    logger.warning("No thicknesses for {g}")
+                    logger.warning(f"No thicknesses for {g}")
                     stratigraphic_value[g] = np.nan
                 else:
                     stratigraphic_value[g] = value
@@ -485,14 +532,45 @@ class ProcessInputData:
         if "polarity" not in contact_orientations.columns:
             contact_orientations["polarity"] = 1.0
         contact_orientations = contact_orientations.copy()
+        if (
+            "nx" not in contact_orientations.columns
+            or "ny" not in contact_orientations.columns
+            or "nz" not in contact_orientations.columns
+        ):
+            if (
+                "strike" not in contact_orientations.columns
+                and "azimuth" in contact_orientations.columns
+            ):
+                contact_orientations["strike"] = contact_orientations["azimuth"] - 90
+            if (
+                "strike" not in contact_orientations.columns
+                and "dipdir" in contact_orientations.columns
+            ):
+                contact_orientations["strike"] = contact_orientations["dipdir"] - 90
+            if (
+                "strike" not in contact_orientations.columns
+                and "dipDir" in contact_orientations.columns
+            ):
+                contact_orientations["strike"] = contact_orientations["dipDir"] - 90
+            if (
+                "strike" in contact_orientations.columns
+                and "dip" in contact_orientations.columns
+            ):
+                contact_orientations["nx"] = np.nan
+                contact_orientations["ny"] = np.nan
+                contact_orientations["nz"] = np.nan
+                contact_orientations[["nx", "ny", "nz"]] = strike_dip_vector(
+                    contact_orientations["strike"], contact_orientations["dip"]
+                )
+            if (
+                "nx" not in contact_orientations.columns
+                or "ny" not in contact_orientations.columns
+                or "nz" not in contact_orientations.columns
+            ):
+                raise ValueError(
+                    "Contact orientation data must contain either strike/dipdir, dip, or nx, ny, nz"
+                )
 
-        contact_orientations["strike"] = contact_orientations["azimuth"] - 90
-        contact_orientations["nx"] = np.nan
-        contact_orientations["ny"] = np.nan
-        contact_orientations["nz"] = np.nan
-        contact_orientations[["nx", "ny", "nz"]] = strike_dip_vector(
-            contact_orientations["strike"], contact_orientations["dip"]
-        )
         self._update_feature_names(contact_orientations)
         self._contact_orientations = contact_orientations[
             ["X", "Y", "Z", "nx", "ny", "nz", "feature_name", "polarity"]
@@ -515,13 +593,41 @@ class ProcessInputData:
             return
         fault_orientations = fault_orientations.copy()
         fault_orientations["coord"] = 0
-        fault_orientations["gx"] = np.nan
-        fault_orientations["gy"] = np.nan
-        fault_orientations["gz"] = np.nan
-        fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
-            fault_orientations["strike"], fault_orientations["dip"]
-        )
-        fault_orientations["feature_name"] = fault_orientations["fault_name"]
+        if (
+            "gx" not in fault_orientations.columns
+            or "gy" not in fault_orientations.columns
+            or "gz" not in fault_orientations.columns
+        ):
+            if (
+                "strike" not in fault_orientations.columns
+                and "azimuth" in fault_orientations.columns
+            ):
+                fault_orientations["strike"] = fault_orientations["azimuth"] - 90
+            if (
+                "strike" not in fault_orientations.columns
+                and "dipdir" in fault_orientations.columns
+            ):
+                fault_orientations["strike"] = fault_orientations["dipdir"] - 90
+            if (
+                "strike" not in fault_orientations.columns
+                and "dipDir" in fault_orientations.columns
+            ):
+                fault_orientations["strike"] = fault_orientations["dipDir"] - 90
+            fault_orientations["gx"] = np.nan
+            fault_orientations["gy"] = np.nan
+            fault_orientations["gz"] = np.nan
+            fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
+                fault_orientations["strike"], fault_orientations["dip"]
+            )
+        if (
+            "feature_name" not in fault_orientations.columns
+            and "fault_name" in fault_orientations.columns
+        ):
+            fault_orientations["feature_name"] = fault_orientations["fault_name"]
+        if "feature_name" not in fault_orientations.columns:
+            raise ValueError(
+                "Fault orientation data must contain feature_name or fault_name"
+            )
         self._fault_orientations = fault_orientations[
             ["X", "Y", "Z", "gx", "gy", "gz", "coord", "feature_name"]
         ]
@@ -544,7 +650,15 @@ class ProcessInputData:
         fault_locations = fault_locations.copy()
         fault_locations["coord"] = 0
         fault_locations["val"] = 0
-        fault_locations["feature_name"] = fault_locations["fault_name"]
+        if (
+            "feature_name" not in fault_locations.columns
+            and "fault_name" in fault_locations.columns
+        ):
+            fault_locations["feature_name"] = fault_locations["fault_name"]
+        if "feature_name" not in fault_locations.columns:
+            raise ValueError(
+                "Fault location data must contain feature_name or fault_name"
+            )
         self._fault_locations = fault_locations[
             ["X", "Y", "Z", "val", "feature_name", "coord"]
         ]
