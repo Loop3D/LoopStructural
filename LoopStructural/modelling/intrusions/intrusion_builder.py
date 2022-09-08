@@ -9,10 +9,6 @@ from scipy.interpolate import Rbf
 
 from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
-    shortest_path,
-    element_neighbour,
-    index_min,
-    new_inlet,
 )
 
 from .geometric_scaling_functions import *

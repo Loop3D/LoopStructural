@@ -65,6 +65,8 @@ class BaseFeature:
         # causes circular import, could delay import?
         if type(model) == GeologicalModel:
             self._model = model
+        elif model is None:
+            return
         else:
             raise TypeError("Model must be a GeologicalModel")
 

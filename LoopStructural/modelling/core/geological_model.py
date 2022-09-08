@@ -1123,10 +1123,6 @@ class GeologicalModel:
             logger.error("Libraries not installed")
             raise Exception("Libraries not installed")
 
-        self.parameters["features"].append(
-            {"feature_type": "intrusion", "feature_name": intrusion_name, **kwargs}
-        )
-
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
         intrusion_frame_data = self.data[
             self.data["feature_name"] == intrusion_frame_name

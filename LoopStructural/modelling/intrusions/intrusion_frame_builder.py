@@ -188,9 +188,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     == series_list[i].name
                 ].copy()
                 data_array_temp = data_temp.loc[:, ["X", "Y", "Z"]].to_numpy()
-                series_i_vals = series_list[i]["feature"].evaluate_value(
-                    data_array_temp
-                )
+                series_i_vals = series_list[i].evaluate_value(data_array_temp)
                 series_array = np.zeros([len(data_array_temp), 4])
                 series_array[:, :3] = data_array_temp
                 series_array[:, 3] = series_i_vals
@@ -327,9 +325,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     .copy()
                     .to_numpy()
                 )
-                series_values = series_from_name["feature"].evaluate_value(
-                    data_points_xyz
-                )
+                series_values = series_from_name.evaluate_value(data_points_xyz)
                 series_values_mod = series_values.reshape(len(series_values), 1)
                 contact_clustering = KMeans(n_clusters=2, random_state=0).fit(
                     series_values_mod
@@ -386,7 +382,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     )
                     self.intrusion_steps[step_i]["unit_from_std"] = std_backup
                 else:
-                    series_values = series_from_name["feature"].evaluate_value(
+                    series_values = series_from_name.evaluate_value(
                         data_points_from_xyz
                     )
                     # print(len(step_structure_points_vals), len(series_values))
@@ -432,9 +428,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     )
                     self.intrusion_steps[step_i]["unit_to_std"] = std_backup
                 else:
-                    series_values = series_to_name["feature"].evaluate_value(
-                        data_points_to_xyz
-                    )
+                    series_values = series_to_name.evaluate_value(data_points_to_xyz)
                     # print(len(step_structure_points_vals), len(series_values))
                     mask = step_structure_points_vals > 0
                     if len(mask) > 0:
@@ -597,7 +591,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             seriesi_std = self.anisotropies_series_parameters[contact_id][2]
 
             series_id.faults_enabled = True
-            seriesi_values = series_id["feature"].evaluate_value(grid_points)
+            seriesi_values = series_id.evaluate_value(grid_points)
 
             # apend associated scalar field values to each anisotropy
             self.anisotropies_series_parameters[contact_id].append(seriesi_values)
@@ -783,16 +777,12 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                         grid_points
                     )
 
-                    series_from_gridpoints_vals = series_from_name[
-                        "feature"
-                    ].evaluate_value(grid_points)
+                    series_from_gridpoints_vals = series_from_name.evaluate_value(grid_points)
                     if series_from_name == series_to_name:
                         series_to_gridpoints_vals = series_from_gridpoints_vals
 
                     else:
-                        series_to_gridpoints_vals = series_to_name[
-                            "feature"
-                        ].evaluate_value(grid_points)
+                        series_to_gridpoints_vals = series_to_name.evaluate_value(grid_points)
 
                     contacts0_val_min = self.intrusion_steps[step_i].get(
                         "unit_from_mean"
@@ -882,9 +872,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             series_id = self.anisotropies_series_list[0]
             series_id.faults_enabled = True
-            strat_gradient_grid_points = series_id["feature"].evaluate_gradient(
-                grid_points
-            )
+            strat_gradient_grid_points = series_id.evaluate_gradient(grid_points)
 
             # If intrusion network is built usinf roof/top contact, then change vector direction
             if (
@@ -947,9 +935,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             if (
                 inlet_anisotropy in self.anisotropies_series_list
             ):  # if inlet anisotropy type is series
-                sf_inlet_anisotropy = inlet_anisotropy["feature"].evaluate_value(
-                    grid_points
-                )
+                sf_inlet_anisotropy = inlet_anisotropy.evaluate_value(grid_points)
 
             else:  # otherwise, it is a fault:
                 sf_inlet_anisotropy = inlet_anisotropy[0].evaluate_value(grid_points)
@@ -958,9 +944,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 len(self.anisotropies_sequence) - 1
             ]
             if outlet_anisotropy in self.anisotropies_series_list:
-                sf_outlet_anisotropy = outlet_anisotropy["feature"].evaluate_value(
-                    grid_points
-                )
+                sf_outlet_anisotropy = outlet_anisotropy.evaluate_value(grid_points)
 
             else:
                 sf_outlet_anisotropy = outlet_anisotropy[0].evaluate_value(grid_points)
@@ -1137,7 +1121,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         scaled_inet_points = intrusion_network_points[:, :3]
         coord_0_values = pd.DataFrame(scaled_inet_points, columns=["X", "Y", "Z"])
         coord_0_values["val"] = 0
-        coord_0_values["coord"] = 0
+        coord_0_values["coord"] = 0 
         coord_0_values["feature_name"] = self.name
         coord_0_values["w"] = 1
 
