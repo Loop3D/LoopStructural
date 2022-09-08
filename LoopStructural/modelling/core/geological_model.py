@@ -1101,11 +1101,14 @@ class GeologicalModel:
         intrusion_network_parameters={},
         lateral_extent_sgs_parameters={},
         vertical_extent_sgs_parameters={},
-        geometric_scaling_parameters = {},
-        faults = None,
+        geometric_scaling_parameters={},
+        faults=None,
         **kwargs,
     ):
         """
+
+        Note
+        -----
         An intrusion in built in two main steps:
         (1) Intrusion builder: intrusion builder creates the intrusion structural frame.
             This object is curvilinear coordinate system of the intrusion constrained with intrusion network points,
@@ -1146,12 +1149,13 @@ class GeologicalModel:
         intrusion feature
 
         """
-        if intrusions == False:
+        if intrusions is False:
             logger.error("Libraries not installed")
             raise Exception("Libraries not installed")
 
-        self.parameters["features"].append({
-            "feature_type": "intrusion", "feature_name": intrusion_name, **kwargs})
+        self.parameters["features"].append(
+            {"feature_type": "intrusion", "feature_name": intrusion_name, **kwargs}
+        )
 
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
         intrusion_frame_data = self.data[
@@ -1195,7 +1199,7 @@ class GeologicalModel:
 
         intrusion_frame = intrusion_frame_builder.frame
 
-        self._add_faults(intrusion_frame_builder, features = faults)
+        self._add_faults(intrusion_frame_builder, features=faults)
 
         # -- create intrusion builder to simulate distance thresholds along frame coordinates
         intrusion_builder = IntrusionBuilder(
@@ -1209,7 +1213,7 @@ class GeologicalModel:
         intrusion_builder.build_arguments = {
             "lateral_extent_sgs_parameters": lateral_extent_sgs_parameters,
             "vertical_extent_sgs_parameters": vertical_extent_sgs_parameters,
-            "geometric_scaling_parameters" : geometric_scaling_parameters
+            "geometric_scaling_parameters": geometric_scaling_parameters,
         }
 
         intrusion_feature = intrusion_builder.feature
