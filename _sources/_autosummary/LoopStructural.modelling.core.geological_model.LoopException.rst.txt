@@ -1,6 +1,0 @@
-LoopStructural.modelling.core.geological\_model.LoopException
-=============================================================
-
-.. currentmodule:: LoopStructural.modelling.core.geological_model
-
-.. autoexception:: LoopException

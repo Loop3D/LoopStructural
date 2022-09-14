@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.tan
-===================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: tan

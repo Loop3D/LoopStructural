@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.atan2
-=====================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: atan2

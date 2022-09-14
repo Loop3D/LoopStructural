@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.isfinite
-========================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: isfinite

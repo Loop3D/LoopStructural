@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.tetra\_neighbours
-=================================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: tetra_neighbours

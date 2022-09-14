@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.trunc
-=====================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: trunc

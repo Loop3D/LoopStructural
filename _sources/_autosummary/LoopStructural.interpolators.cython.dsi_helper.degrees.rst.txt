@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.degrees
-=======================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: degrees

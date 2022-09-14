@@ -1,6 +1,0 @@
-LoopStructural.interpolators.cython.dsi\_helper.cosh
-====================================================
-
-.. currentmodule:: LoopStructural.interpolators.cython.dsi_helper
-
-.. autofunction:: cosh
