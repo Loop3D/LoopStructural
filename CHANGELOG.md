@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0](https://github.com/Loop3D/LoopStructural/compare/v1.4.13...v1.5.0) (2022-09-14)
+
+
+### Features
+
+* bump version to test release-please ([08d380d](https://github.com/Loop3D/LoopStructural/commit/08d380d6f3d050f752848a566f62a6d4e849ffc1))
+
+
+### Bug Fixes
+
+* setting versionfile for version.py ([6fc564e](https://github.com/Loop3D/LoopStructural/commit/6fc564e38a996888bd71804213d0495a5a6714e0))
+
+
+### Documentation
+
+* adding example for local weight change ([9a8f773](https://github.com/Loop3D/LoopStructural/commit/9a8f7732774a4ff89f4e8c20846e5bb9d6ad71b1))
+
 ### [1.4.13](https://www.github.com/Loop3D/LoopStructural/compare/v1.4.12...v1.4.13) (2022-08-29)
 
 
