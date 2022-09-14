@@ -213,10 +213,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 count = int(name.split("_")[1]) + 1
             name = base_name + "_{}".format(count)
 
-            # self.constraints[name]['A'] =  A#np.vstack([self.constraints[name]['A'],A])
-            # self.constraints[name]['B'] =  B#np.hstack([self.constraints[name]['B'], B])
-            # self.constraints[name]['idc'] = idc#np.vstack([self.constraints[name]['idc'],
-            #                                     idc])
         rows = np.tile(rows, (A.shape[-1], 1)).T
         self.constraints[name] = {
             "node_indexes": constraint_ids,
@@ -230,6 +226,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.c_ += nr
 
     def calculate_residual_for_constraints(self):
+        """Calculates Ax-B for all constraints added to the interpolator
+        This could be a proxy to identify which constraints are controlling the model
+
+        Returns
+        -------
+        np.ndarray
+            vector of Ax-B
+        """
         residuals = {}
         for constraint_name, constraint in self.constraints:
             residuals[constraint_name] = (
