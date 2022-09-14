@@ -50,7 +50,7 @@ jobs:
     needs: documentation-test
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@3.5.0
+      - uses: GoogleCloudPlatform/release-please-action@v3.5.0
         id: release
         with:
           release-type: python
