@@ -1,6 +1,6 @@
 # setup cython code
 import sys
-
+ 
 try:
     from setuptools import setup, find_packages
 except:
