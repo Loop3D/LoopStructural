@@ -50,12 +50,12 @@ jobs:
     needs: documentation-test
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@latest
+      - uses: GoogleCloudPlatform/release-please-action@v3.5.0
         id: release
         with:
           release-type: python
           package-name: LoopStructural
-          version-file: LoopStructural/version.py
+          #version-file: LoopStructural/version.py
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
   # if a release is created then run the deploy scripts for github.io, conda, pypi and docker
