@@ -29,7 +29,9 @@ class FaultBuilder(StructuralFrameBuilder):
             the maximum area around the model domain that a fault is modelled. For high displacement faults this
             may need to be large, smaller values will be result in fewer degrees of freedom = quicker interpolation
         """
-        from LoopStructural.modelling.features.fault import FaultSegment  # defer import until needed
+        from LoopStructural.modelling.features.fault import (
+            FaultSegment,
+        )  # defer import until needed
 
         StructuralFrameBuilder.__init__(
             self, interpolator, interpolators, frame=FaultSegment, **kwargs
