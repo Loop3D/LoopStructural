@@ -343,7 +343,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.ineq_constraints[name] = {"A": A, "l": l, "col": idc, "u": u, "row": rows}
         self.ineq_const_c += idc.shape[0]
 
-    def add_inequality_feature(self, feature: BaseFeature, lower=True, mask=None):
+    def add_inequality_feature(self, feature, lower=True, mask=None):
         """Add an inequality constraint to the interpolator using an existing feature.
         This will make the interpolator greater than or less than the exising feature.
         Evaluate the feature at the interpolation nodes.
