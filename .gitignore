@@ -124,7 +124,7 @@ docs/source/LoopStructural.modelling.rst
 docs/source/LoopStructural.utils.rst
 docs/source/LoopStructural.visualisation.rst
 docs/source/_autosummary/*
-docs/source/auto_examples/*
+docs/source/_auto_examples/*
 examples/*/*.png
 docs/source/test/*
 examples/*.png

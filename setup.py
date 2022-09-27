@@ -73,9 +73,9 @@ setup(
     include_package_data=True,
     package_data={
         "LoopStructural": [
+            "datasets/data/fault_trace/*",
             "datasets/data/*.csv",
             "datasets/data/*.txt",
-            "datasets/data/fault_trace",
             "datasets/data/geological_map_data/*.csv",
             "datasets/data/geological_map_data/*.txt",
         ]

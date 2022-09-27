@@ -29,7 +29,7 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
    :hidden:
 
    getting_started/index
-   auto_examples/index
+   _auto_examples/index
    user_guide/index
 
    
