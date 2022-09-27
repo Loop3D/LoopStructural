@@ -396,6 +396,16 @@ class GeologicalModel:
 
     @dtm.setter
     def dtm(self, dtm):
+        """Set a dtm to the model.
+        The dtm is a function that can be called for dtm(xy) where xy is
+        a numpy array of xy locations. The function will return an array of 
+        z values corresponding to the elevation at xy.
+
+        Parameters
+        ----------
+        dtm : callable
+            
+        """
         if not callable(dtm):
             raise BaseException(
                 "DTM must be a callable function \n"
@@ -490,7 +500,7 @@ class GeologicalModel:
             self._add_unconformity_above(feature)
         feature.model = self
 
-    def data_for_feature(self, feature_name):
+    def data_for_feature(self, feature_name:str)-> pd.DataFrame:
         return self.data.loc[self.data["feature_name"] == feature_name, :]
 
     @property
@@ -998,12 +1008,23 @@ class GeologicalModel:
         fold_frame : StructuralFrame, optional
             the fold frame for the fold if not specified uses last feature added
 
-        kwargs
+        kwargs : dict  
+            parameters passed to child functions
 
         Returns
         -------
         fold_frame : FoldFrame
             created fold frame
+
+        Notes
+        -----
+        This function build a structural frame where the first coordinate is constrained
+        with a fold interpolator.
+        Keyword arguments can be included to constrain
+
+        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
+        * :class:`LoopStructural.StructuralFrameBuilder`
+        * :meth:`LoopStructural.StructuralFrameBuilder.setup`
         """
         if not self.check_inialisation():
             return False
@@ -1269,6 +1290,13 @@ class GeologicalModel:
 
         Returns
         -------
+
+        Notes
+        -----
+
+        Additional kwargs are found in
+        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
+
         """
         if not self.check_initialisation():
             return False
@@ -1383,6 +1411,10 @@ class GeologicalModel:
         domain_Fault : GeologicalFeature
             the created domain fault
 
+        Notes
+        -----
+        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
+
         """
         interpolator = self.get_interpolator(**kwargs)
         domain_fault_feature_builder = GeologicalFeatureBuilder(
@@ -1442,6 +1474,12 @@ class GeologicalModel:
         -------
         fault : FaultSegment
             created fault
+
+        Notes
+        -----
+        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
+        * :class:`LoopStructural.modelling.features.FaultBuilder`
+        * :meth:`LoopStructural.modelling.features.FaultBuilder.setup`
         """
         if "fault_extent" in kwargs and major_axis is None:
             major_axis = kwargs["fault_extent"]
@@ -1609,7 +1647,7 @@ class GeologicalModel:
 
         return fault
 
-    def rescale(self, points, inplace=True):
+    def rescale(self, points:np.ndarray, inplace:bool=True) ->np.ndarray:
         """
         Convert from model scale to real world scale - in the future this
         should also do transformations?
@@ -1631,7 +1669,7 @@ class GeologicalModel:
         points += self.origin
         return points
 
-    def scale(self, points, inplace=True):
+    def scale(self, points:np.ndarray, inplace:bool=True)->np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space
 
