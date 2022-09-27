@@ -24,11 +24,13 @@ def generate_interpolator(interpolator='FDI'):
     maximum = np.array([1.1,1.1,1.1])
     nsteps = np.array([20,20,20])
     step_vector = (maximum-origin)/nsteps
-    if type == 'FDI':
+    if interpolator == 'FDI':
         grid = StructuredGrid(origin=origin,nsteps=nsteps,step_vector=step_vector)
         interpolator = FDI(grid)
         return interpolator
-    if type == 'PLI':
+    elif interpolator == 'PLI':
         grid = TetMesh(origin=origin,nsteps=nsteps,step_vector=step_vector)
         interpolator = PLI(grid)
         return interpolator
+    else:
+        raise ValueError(f'Invalid interpolator: {interpolator}')
