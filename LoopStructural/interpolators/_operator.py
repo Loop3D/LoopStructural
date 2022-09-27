@@ -11,7 +11,10 @@ logger = getLogger(__name__)
 
 
 class Operator(object):
-    """ """
+    """
+    Finite difference masks for adding constraints for the derivatives and second derivatives
+    Operator.Dx_mask gives derivative in x direction
+    """
 
     z = np.zeros((3, 3))
     Dx_mask = np.array([z, [[0.0, 0.0, 0.0], [-0.5, 0.0, 0.5], [0.0, 0.0, 0.0]], z])
