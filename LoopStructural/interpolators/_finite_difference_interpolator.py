@@ -17,7 +17,6 @@ logger = getLogger(__name__)
 
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
-    """ """
 
     def __init__(self, grid):
         """
@@ -227,7 +226,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
     def add_interface_constraints(
         self, w=1.0
-    ):  # for now weight all value points the same
+    ):  
         """
         Adds a constraint that defines all points
         with the same 'id' to be the same value

@@ -67,11 +67,26 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.type = InterpolatorType.BASE_DISCRETE
 
     @property
-    def nx(self):
+    def nx(self) -> int:
+        """Number of degrees of freedom for the interpolator
+
+        Returns
+        -------
+        int
+            number of degrees of freedom, positve
+        """
         return len(self.support.nodes[self.region])
 
     @property
-    def region(self):
+    def region(self) -> np.ndarray:
+        """The active region of the interpolator. A boolean
+        mask for all elements that are interpolated
+
+        Returns
+        -------
+        np.ndarray
+            
+        """
         return self.region_function(self.support.nodes).astype(bool)
 
     @property
@@ -328,8 +343,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.ineq_constraints[name] = {"A": A, "l": l, "col": idc, "u": u, "row": rows}
         self.ineq_const_c += idc.shape[0]
 
-    def add_inequality_feature(self, feature, lower=True, mask=None):
+    def add_inequality_feature(self, feature: BaseFeature, lower=True, mask=None):
+        """Add an inequality constraint to the interpolator using an existing feature.
+        This will make the interpolator greater than or less than the exising feature.
+        Evaluate the feature at the interpolation nodes.
+        Can provide a boolean mask to restrict to only some parts
 
+        Parameters
+        ----------
+        feature : BaseFeature
+            the feature that will be used to constraint the interpolator 
+        lower : bool, optional
+            lower or upper constraint, by default True
+        mask : np.ndarray, optional
+            restrict the nodes to evaluate on, by default None
+        """
         # add inequality value for the nodes of the mesh
         # flag lower determines whether the feature is a lower bound or upper bound
         # mask is just a boolean array determining which nodes to apply it to
@@ -353,7 +381,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         )
 
     def add_tangent_constraints(self, w=1.0):
-        """
+        """Adds the constraints :math:`f(X)\cdotT=0`
 
         Parameters
         ----------
@@ -503,7 +531,35 @@ class DiscreteInterpolator(GeologicalInterpolator):
         return ATA, ATB
 
     def _solve_osqp(self, P, A, q, l, u, mkl=False):
+        """Wrapper to use osqp solver
 
+        Parameters
+        ----------
+        P : _type_
+            _description_
+        A : _type_
+            _description_
+        q : _type_
+            _description_
+        l : _type_
+            _description_
+        u : _type_
+            _description_
+        mkl : bool, optional
+            _description_, by default False
+
+        Returns
+        -------
+        _type_
+            _description_
+
+        Raises
+        ------
+        LoopImportError
+            _description_
+        LoopImportError
+            _description_
+        """
         try:
             import osqp
         except ImportError:
@@ -763,7 +819,19 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.setup_interpolator()
             return self._solve(self.solver)
 
-    def evaluate_value(self, evaluation_points):
+    def evaluate_value(self, evaluation_points:np.ndarray) ->np.ndarray:
+        """Evaluate the value of the interpolator at location
+
+        Parameters
+        ----------
+        evaluation_points : np.ndarray
+            location to evaluate the interpolator
+
+        Returns
+        -------
+        np.ndarray
+            value of the interpolator
+        """
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
         mask = np.any(evaluation_points == np.nan, axis=1)
@@ -774,7 +842,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
         return evaluated
 
-    def evaluate_gradient(self, evaluation_points):
+    def evaluate_gradient(self, evaluation_points:np.ndarray)->np.ndarray:
         """
         Evaluate the gradient of the scalar field at the evaluation points
         Parameters

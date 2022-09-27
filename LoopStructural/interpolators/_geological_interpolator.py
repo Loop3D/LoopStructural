@@ -71,12 +71,14 @@ class GeologicalInterpolator:
         """
         self.propertyname = name
 
-    def set_value_constraints(self, points):
+    def set_value_constraints(self, points : np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 4-5 columns.
+            X,Y,Z,val,weight
 
         Returns
         -------
@@ -87,12 +89,14 @@ class GeologicalInterpolator:
         self.n_i = points.shape[0]
         self.up_to_date = False
 
-    def set_gradient_constraints(self, points):
+    def set_gradient_constraints(self, points : np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 7-8 columns.
+            X,Y,Z,gx,gy,gz,weight
 
         Returns
         -------
@@ -102,12 +106,14 @@ class GeologicalInterpolator:
         self.data["gradient"] = points
         self.up_to_date = False
 
-    def set_normal_constraints(self, points):
+    def set_normal_constraints(self, points: np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 7-8 columns.
+            X,Y,Z,nx,ny,nz,weight
 
         Returns
         -------
@@ -117,12 +123,14 @@ class GeologicalInterpolator:
         self.data["normal"] = points
         self.up_to_date = False
 
-    def set_tangent_constraints(self, points):
+    def set_tangent_constraints(self, points: np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 7-8 columns.
+            X,Y,Z,nx,ny,nz,weight
 
         Returns
         -------
@@ -131,11 +139,12 @@ class GeologicalInterpolator:
         self.data["tangent"] = points
         self.up_to_date = False
 
-    def set_interface_constraints(self, points):
+    def set_interface_constraints(self, points: np.ndarray):
+
         self.data["interface"] = points
         self.up_to_date = False
 
-    def set_inequality_constraints(self, points):
+    def set_inequality_constraints(self, points: np.ndarray):
         self.data["inequality"] = points
         self.up_to_date = False
 
@@ -184,10 +193,7 @@ class GeologicalInterpolator:
         numpy array
             Nx3 - X,Y,Z location of all data points
         """
-        norm = self.get_norm_constraints()
-        grad = self.get_gradient_constraints()
-        val = self.get_value_constraints()
-        return np.vstack([norm[:, :3], grad[:, :3], val[:, :3]])
+        return np.vstack([d for d in self.data.values()[:,:3]])
 
     def get_interface_constraints(self):
         """Get the location of interface constraints

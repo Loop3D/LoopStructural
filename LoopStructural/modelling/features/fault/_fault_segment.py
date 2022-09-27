@@ -141,34 +141,6 @@ class FaultSegment(StructuralFrame):
         else:
             logger.warning("Displacement not updated")
 
-    # def toggle_faults(self):
-    #     """
-    #     Toggle faults that affect this fault segment
-
-    #     Returns
-    #     -------
-
-    #     """
-    #     self.faults_enabled = ~self.faults_enabled
-    #     for i in range(3):
-    #         self.faultframe[i].toggle_faults()
-
-    # def add_region(self, region):
-    #     """
-
-    #     Parameters
-    #     ----------
-    #     region : boolean function(x,y,z)
-    #             A function that returns true if inside region, false if outside
-    #             can be passed as a lambda function e.g.
-    #             lambda pos : feature.evaluate_value(pos) > 0
-    #     Returns
-    #     -------
-
-    #     """
-
-    #     self.regions.append(region)
-
     def evaluate(self, locations):
         """
         Evaluate which side of fault

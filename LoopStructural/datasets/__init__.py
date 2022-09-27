@@ -18,3 +18,4 @@ from ._base import load_unconformity
 from ._base import load_duplex
 from ._base import load_tabular_intrusion
 from ._base import load_geological_map_data
+from ._base import load_fault_trace
