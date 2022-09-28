@@ -1,8 +1,6 @@
 """
 Base geological interpolator
 """
-import logging
-
 from LoopStructural.interpolators import InterpolatorType
 import numpy as np
 
@@ -21,9 +19,10 @@ class GeologicalInterpolator:
 
     def __init__(self):
         """
-        This class is the base class for a geological interpolator and contains all of the
-        main interface functions. Any class that is inheriting from this should be callable
-        by using any of these functions. This will enable interpolators to be interchanged.
+        This class is the base class for a geological interpolator and contains
+        all of the main interface functions. Any class that is inheriting from
+        this should be callable by using any of these functions. This will
+        enable interpolators to be interchanged.
         """
 
         self.data = {
@@ -72,75 +71,87 @@ class GeologicalInterpolator:
         """
         self.propertyname = name
 
-    def set_value_constraints(self, points):
+    def set_value_constraints(self, points : np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 4-5 columns.
+            X,Y,Z,val,weight
 
         Returns
         -------
 
         """
-
+        if points.shape[1] < 4:
+            raise ValueError('Value points must at least have X,Y,Z,val')
         self.data["value"] = points
         self.n_i = points.shape[0]
         self.up_to_date = False
 
-    def set_gradient_constraints(self, points):
+    def set_gradient_constraints(self, points : np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 7-8 columns.
+            X,Y,Z,gx,gy,gz,weight
 
         Returns
         -------
 
         """
+        if points.shape[1] < 7:
+            raise ValueError('Gradient constraints must at least have X,Y,Z,gx,gy,gz')
         self.n_g = points.shape[0]
         self.data["gradient"] = points
         self.up_to_date = False
 
-
-    def set_normal_constraints(self, points):
+    def set_normal_constraints(self, points: np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 7-8 columns.
+            X,Y,Z,nx,ny,nz,weight
 
         Returns
         -------
 
         """
+        if points.shape[1] < 7:
+            raise ValueError('Nonrmal constraints must at least have X,Y,Z,nx,ny,nz')
         self.n_n = points.shape[0]
         self.data["normal"] = points
         self.up_to_date = False
 
-
-    def set_tangent_constraints(self, points):
+    def set_tangent_constraints(self, points: np.ndarray):
         """
 
         Parameters
         ----------
-        points
+        points : np.ndarray
+            array containing the value constraints usually 7-8 columns.
+            X,Y,Z,nx,ny,nz,weight
 
         Returns
         -------
 
         """
+        if points.shape[1] < 7:
+            raise ValueError('Tangent constraints must at least have X,Y,Z,tx,ty,tz')
         self.data["tangent"] = points
         self.up_to_date = False
 
+    def set_interface_constraints(self, points: np.ndarray):
 
-    def set_interface_constraints(self, points):
         self.data["interface"] = points
         self.up_to_date = False
 
-
-    def set_inequality_constraints(self, points):
+    def set_inequality_constraints(self, points: np.ndarray):
         self.data["inequality"] = points
         self.up_to_date = False
 
@@ -189,10 +200,7 @@ class GeologicalInterpolator:
         numpy array
             Nx3 - X,Y,Z location of all data points
         """
-        norm = self.get_norm_constraints()
-        grad = self.get_gradient_constraints()
-        val = self.get_value_constraints()
-        return np.vstack([norm[:, :3], grad[:, :3], val[:, :3]])
+        return np.vstack([d for d in self.data.values()[:,:3]])
 
     def get_interface_constraints(self):
         """Get the location of interface constraints
@@ -244,9 +252,15 @@ class GeologicalInterpolator:
             self.type > InterpolatorType.BASE_DISCRETE
             and self.type < InterpolatorType.BASE_DATA_SUPPORTED
         ):
-            mask = lambda xyz: self.support.inside(xyz)
+
+            def mask(xyz):
+                return self.support.inside(xyz)
+
         else:
-            mask = lambda xyz: np.ones(xyz.shape[0], dtype=bool)
+
+            def mask(xyz):
+                return np.ones(xyz.shape[0], dtype=bool)
+
         if (
             len(
                 np.unique(

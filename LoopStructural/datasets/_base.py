@@ -132,15 +132,36 @@ def load_unconformity():
 
 
 def value_headers():
+    """Default pandas column names for location and value
+
+    Returns
+    -------
+    list
+        X,Y,Z,val
+    """
 
     return ["X", "Y", "Z", "val"]
 
 
 def strike_dip_headers():
+    """Default pandas column names for location and strike and dip
+
+    Returns
+    -------
+    list
+        X,Y,Z,strike,dip
+    """
     return ["X", "Y", "Z", "strike", "dip"]
 
 
 def normal_vector_headers():
+    """Default pandas column names for location and normal vector
+
+    Returns
+    -------
+    list
+        X,Y,Z,nx,ny,nz
+    """
     return ["X", "Y", "Z", "nx", "ny", "nz"]
 
 
@@ -160,6 +181,23 @@ def load_tabular_intrusion():
 
 
 def load_geological_map_data():
+    """An example dataset to use the processinput data class
+
+    Returns
+    -------
+    tuple
+        (
+        contacts,
+        stratigraphic_orientations,
+        stratigraphic_thickness,
+        stratigraphic_order,
+        bbox,
+        fault_locations,
+        fault_orientations,
+        fault_properties,
+        fault_edges,
+    )
+    """
     module_path = dirname(__file__)
     contacts = pd.read_csv(
         join(module_path, Path("data/geological_map_data/contacts.csv"))
@@ -217,6 +255,13 @@ def load_geological_map_data():
 
 
 def load_fault_trace():
+    """Load the fault trace dataset, requires geopandas
+
+    Returns
+    -------
+    GeoDataFrame
+        dataframe of a shapefile for two faults
+    """
     import geopandas
 
     module_path = dirname(__file__)

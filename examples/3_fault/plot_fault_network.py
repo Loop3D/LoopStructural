@@ -1,7 +1,8 @@
 """
 3b. Modelling a fault network in LoopStructural
 ===============================================
-Uses GeologicalModel, ProcessInputData and LavaVuModelViewer from LoopStructural library. Also using geopandas to read a shapefile, pandas, matplotlib and numpy."""
+Uses GeologicalModel, ProcessInputData and LavaVuModelViewer from LoopStructural library. 
+Also using geopandas to read a shapefile, pandas, matplotlib and numpy."""
 
 import LoopStructural
 
@@ -10,6 +11,7 @@ LoopStructural.__version__
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling import ProcessInputData
 from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.datasets import load_fault_trace
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,14 +19,8 @@ import numpy as np
 ##############################
 # Read shapefile
 # ~~~~~~~~~~~~~~
-# # Read the shapefile and create a point for each node of the line # # | **fault_name** | **X** | **Y** | **Z**| # | --------------- |-----| ------| -------|#  | ... | . | . | .
-
-try:
-    fault_trace = load_fault_trace()
-except:
-    print("Could not load fault trace")
-    exit()
-
+# Read the shapefile and create a point for each node of the line 
+fault_trace = load_fault_trace()
 faults = []
 for i in range(len(fault_trace)):
     for x, y in zip(
@@ -75,12 +71,22 @@ maximum = [df["X"].max() + z, df["Y"].max() + z, z]
 ##############################
 # Setting up the data
 # ~~~~~~~~~~~~~~~~~~~
-# The `ProcessInputData` class is used to convert common geological map components to the datastructures required by LoopStructural.# # To build a fault network we need to provide:# * fault locations - a table of x,y,z, and the fault name# * fault orientations - a table recording the orientation observations of the fault, e.g. strike, dip or normal vector and x,y,z, fault_name# * origin - the origin of the model bounding box# * maximum - the maximum extend of the model bounding box# * fault_edges - list of intersection relationships between faults e.g. [('fault1','fault2')] indicates that there is a intersection between fault1 and fault2# * fault_edge_properties - list of properties for the fault edges - this can be the type of intersection e.g. 'splay' or 'abut' or just the angle between the faults# * fault_properties (*optional*)  - a pandas dataframe with any kwargs for the interpolator where the index is the fault name # # Below is an example of setting the number of interpolation elements for each fault# ```Python# fault_properties = pd.DataFrame([['fault_1',1e4],#                                  ['fault_2',1e4]],#                                 columns=['fault_name','nelements']).set_index('fault_name')# ```
+# The `ProcessInputData` class is used to convert common geological map components to the datastructures required by LoopStructural.# 
+# To build a fault network we need to provide:# * fault locations - a table of x,y,z, and the fault name
+# 1. fault orientations - a table recording the orientation observations of the fault, e.g. strike, dip or normal vector and x,y,z, fault_name
+# 2. origin - the origin of the model bounding box
+# 3. maximum - the maximum extend of the model bounding box 
+# 4. fault_edges - list of intersection relationships between faults e.g. [('fault1','fault2')] indicates that there is a intersection between fault1 and fault2
+# 5. fault_edge_properties - list of properties for the fault edges - this can be the type of intersection e.g. 'splay' or 'abut' or just the angle between the faults
+# 6. fault_properties (*optional*)  - a pandas dataframe with any kwargs for the interpolator where the index is the fault name # 
+# 
+#  Below is an example of setting the number of interpolation elements for each fault
 
 ##############################
 # Modelling splay faults
 # ~~~~~~~~~~~~~~~~~~~~~~
-# A splay fault relationship is defined for any fault where the angle between the faults is less than $30^\circ$. In this example we specify the angle between the faults as $10^\circ$.
+# A splay fault relationship is defined for any fault where the angle between the faults is less than :math:`30^\circ`.
+# In this example we specify the angle between the faults as :math:`10^\circ`.
 
 processor = ProcessInputData(
     fault_orientations=ori,
@@ -103,7 +109,8 @@ view.display()
 ##############################
 # Modelling abutting faults
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
-# In this exampe we will use the same faults but specify the angle between the faults as $40^\circ$ which will change the fault relationship to be abutting rather than splay.
+# In this exampe we will use the same faults but specify the angle between the faults as :math:`40^\circ` which will change
+# the fault relationship to be abutting rather than splay.
 
 processor = ProcessInputData(
     fault_orientations=ori,

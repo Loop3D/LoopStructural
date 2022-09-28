@@ -6,7 +6,13 @@ class ScalarField:
     """A scalar field defined by a regular grid and values"""
 
     def __init__(
-        self, values, step_vector, nsteps, origin=np.zeros(3), name="scalar field"
+        self,
+        values,
+        step_vector,
+        nsteps,
+        origin=np.zeros(3),
+        name="scalar field",
+        mode="node",
     ):
         """[summary]
 
@@ -20,10 +26,13 @@ class ScalarField:
             number of steps
         name : string, optional
             name of the feature for the visualisation
+        mode : string, optional
+            property stored on nodes or as cell values, 'node' or 'cell'
         """
         self.values = values
         self.grid = StructuredGrid(origin, nsteps, step_vector)
         self.name = name
+        self.mode = mode
 
     @property
     def nodes(self):
@@ -40,10 +49,25 @@ class ScalarField:
         Returns
         -------
         numpy array
-            interpolated values
+            interpolated values, same shape as xyz
         """
-        v = self.grid.evaluate_value(xyz, self.values)
-        return v
+        xyz = self.grid.check_position(xyz)
+        if self.mode == "node":
+            return self.grid.evaluate_value(xyz, self.values)
+        if self.mode == "grid":
+            indexes = np.array(self.grid.position_to_cell_index(xyz))
+            inside = np.all(indexes >= 0, axis=0)
+            inside = np.logical_and(
+                np.all(indexes < self.grid.nsteps_cells[:, None], axis=0), inside
+            )
+            v = np.zeros(xyz.shape[0], dtype=float)
+            v[:] = np.nan
+            v[inside] = self.values[self.grid.global_cell_indicies(indexes[:, inside])]
+
+            return v
+
+    def __call__(self, xyz):
+        return self.evaluate_value(xyz)
 
     def min(self):
         return np.min(self.values)

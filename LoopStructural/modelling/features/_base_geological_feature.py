@@ -12,14 +12,16 @@ class BaseFeature:
     Base class for geological features.
     """
 
-    def __init__(self, name : str, model=None, faults: list=[], regions: list=[], builder=None):
+    def __init__(
+        self, name: str, model=None, faults: list = [], regions: list = [], builder=None
+    ):
         """Base geological feature, this is a virtucal class and should not be
         used directly. Inheret from this to implement a new type of geological
         feature or use one of the exisitng implementations
 
         Parameters
         ----------
-        name : 
+        name :
             Name of the geological feature to add
         model : GeologicalModel, optional
             the model the feature is associated with, by default None
@@ -62,11 +64,13 @@ class BaseFeature:
     @model.setter
     def model(self, model):
         from LoopStructural import GeologicalModel
+
         # causes circular import, could delay import?
         if type(model) == GeologicalModel:
             self._model = model
-        elif model is None:
-            return
+        elif not model:
+            self._model = None
+            logger.error("Model not set")
         else:
             raise TypeError("Model must be a GeologicalModel")
 
@@ -101,7 +105,7 @@ class BaseFeature:
         self.regions.append(region)
 
     def __call__(self, xyz):
-        """ Calls evaluate_value method
+        """Calls evaluate_value method
 
         Parameters
         ----------
@@ -120,6 +124,47 @@ class BaseFeature:
         Evaluate the feature at a given position.
         """
         raise NotImplementedError
+
+    def _calculate_mask(self, evaluation_points: np.ndarray) -> np.ndarray:
+        """Calculate the mask for which evaluation points need to be calculated
+
+        Parameters
+        ----------
+        evaluation_points : np.ndarray
+            location to be evaluated, Nx3 array
+
+        Returns
+        -------
+        np.ndarray
+            bool mask Nx1 ndarray
+        """
+        mask = np.zeros(evaluation_points.shape[0]).astype(bool)
+
+        mask[:] = True
+        # check regions
+        for r in self.regions:
+            # try:
+            mask = np.logical_and(mask, r(evaluation_points))
+        return mask
+
+    def _apply_faults(self, evaluation_points: np.ndarray) -> np.ndarray:
+        """Calculate the restored location of the points given any faults if faults are enabled
+
+        Parameters
+        ----------
+        evaluation_points : np.ndarray
+            location to be evaluated, Nx3 array
+
+        Returns
+        -------
+        np.ndarray
+            faulted value Nx1 ndarray
+        """
+        if self.faults_enabled:
+            # check faults
+            for f in self.faults:
+                evaluation_points = f.apply_to_points(evaluation_points)
+        return evaluation_points
 
     def evaluate_gradient(self, pos):
         """

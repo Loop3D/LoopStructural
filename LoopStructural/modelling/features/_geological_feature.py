@@ -98,18 +98,8 @@ class GeologicalFeature(BaseFeature):
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
-        mask = np.zeros(evaluation_points.shape[0]).astype(bool)
-        mask[:] = True
-        # check regions
-        for r in self.regions:
-            # try:
-            mask = np.logical_and(mask, r(evaluation_points))
-            # except:
-            #     logger.error("nan slicing")
-        # apply faulting after working out which regions are visible
-        if self.faults_enabled:
-            for f in self.faults:
-                evaluation_points = f.apply_to_points(evaluation_points)
+        mask = self._calculate_mask(evaluation_points)
+        evaluation_points = self._apply_faults(evaluation_points)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate value for {self.name}")
         else:
@@ -134,18 +124,8 @@ class GeologicalFeature(BaseFeature):
         self.builder.up_to_date()
         v = np.zeros(evaluation_points.shape)
         v[:] = np.nan
-        mask = np.zeros(evaluation_points.shape[0]).astype(bool)
-        mask[:] = True
-        # check regions
-        for r in self.regions:
-            try:
-                mask = np.logical_and(mask, r(evaluation_points))
-            except:
-                logger.error("nan slicing caught")
-        # apply faulting after working out which regions are visible
-        if self.faults_enabled:
-            for f in self.faults:
-                evaluation_points = f.apply_to_points(evaluation_points)
+        mask = self._calculate_mask(evaluation_points)
+        evaluation_points = self._apply_faults(evaluation_points)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")
         else:

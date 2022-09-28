@@ -7,7 +7,6 @@ import pandas as pd
 
 from LoopStructural.utils import getLogger
 
-logger = getLogger(__name__)
 
 from LoopStructural.interpolators import GeologicalInterpolator
 from LoopStructural.utils.helper import (
@@ -25,8 +24,9 @@ from LoopStructural.modelling.features.builders import BaseBuilder
 from LoopStructural.utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from LoopStructural.utils import get_data_axis_aligned_bounding_box
 from LoopStructural.utils import RegionEverywhere
+
+logger = getLogger(__name__)
 
 
 class GeologicalFeatureBuilder(BaseBuilder):
@@ -34,7 +34,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self,
         interpolator: GeologicalInterpolator,
         name="Feature",
-        region=None,
+        interpolation_region=None,
         **kwargs,
     ):
         """
@@ -58,10 +58,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._interpolator = interpolator
         self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
-        if region is None:
-            self.region = RegionEverywhere()
-        else:
-            self.region = region
+
         header = (
             xyz_names()
             + val_name()
@@ -78,7 +75,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             self._name,
             self._interpolator,
             builder=self,
-            regions=[self.region],
+            regions=[],
             faults=self.faults,
         )
         self._orthogonal_features = {}
@@ -107,8 +104,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
     def add_orthogonal_feature(self, feature, w=1.0, region=None, step=1, B=0):
         """
-        Add a constraint to the interpolator so that the gradient of an exisitng feature is orthogonal
-        to the feature being built. E.g. dot product between gradients should be = 0
+        Add a constraint to the interpolator so that the gradient of an exisitng
+        feature is orthogonal to the feature being built. E.g. dot product
+        between gradients should be = 0
 
         Parameters
         ----------
@@ -125,8 +123,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         Notes
         -----
-        The constraint can be applied to a random subset of the tetrahedral elements in the mesh
-        in theory this shu
+        The constraint can be applied to a random subset of the tetrahedral
+        elements in the mesh
         """
         try:
             step = int(step)  # cast as int in case it was a float
@@ -152,7 +150,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         -------
 
         """
-        if self.data_added == True:
+        if self.data_added:
             return
         # first move the data for the fault
         logger.info(f"Adding {len(self.faults)} faults to {self.name}")
@@ -420,7 +418,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
             )
 
     def check_interpolation_geometry(self, data):
-        """Check the interpolation support geometry to data to make sure everything fits"""
+        """Check the interpolation support geometry
+        to data to make sure everything fits"""
         origin = self.interpolator.support.origin
         maximum = self.interpolator.support.maximum
         print(origin, maximum)
@@ -461,14 +460,22 @@ class GeologicalFeatureBuilder(BaseBuilder):
             if np.any(np.min(bb[0, :]) < self.interpolator.support.origin):
                 neworigin = np.min([self.interpolator.support.origin, bb[0, :]], axis=0)
                 logger.info(
-                    f"Changing origin of support for {self.name} from {self.interpolator.support.origin[0]} {self.interpolator.support.origin[1]} {self.interpolator.support.origin[2]} to {neworigin[0]} {neworigin[1]} {neworigin[2]}"
+                    f"Changing origin of support for {self.name} from \
+                        {self.interpolator.support.origin[0]} \
+                        {self.interpolator.support.origin[1]} \
+                        {self.interpolator.support.origin[2]} \
+                        to {neworigin[0]} {neworigin[1]} {neworigin[2]}"
                 )
 
                 self.interpolator.support.origin = neworigin
             if np.any(np.max(bb[0, :]) < self.interpolator.support.maximum):
                 newmax = np.max([self.interpolator.support.maximum, bb[0, :]], axis=0)
                 logger.info(
-                    "Changing origin of support for {self.name} from {self.interpolator.support.maximum[0]} {self.interpolator.support.maximum[1]} {self.interpolator.support.maximum[2]} to {newmax[0]} {newmax[1]} {newmax[2]}"
+                    f"Changing origin of support for {self.name} from \
+                        from {self.interpolator.support.maximum[0]} \
+                        {self.interpolator.support.maximum[1]} \
+                            {self.interpolator.support.maximum[2]} \
+                                to {newmax[0]} {newmax[1]} {newmax[2]}"
                 )
 
                 self.interpolator.support.maximum = newmax

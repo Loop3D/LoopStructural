@@ -1,7 +1,17 @@
 """
 4.a Building a model using the ProcessInputData
 ===============================================
-There is a disconnect between the input data required by 3D modelling software and a geological map. In LoopStructural the geological model is a collection of implicit functions that can be mapped to the distribution of stratigraphic units and the location of fault surfaces. Each implicit function is approximated from the observations of the stratigraphy, this requires grouping conformable geological units together as a singla implicit function, mapping the different stratigraphic horizons to a value of the implicit function and determining the relationship with geological structures such as faults. In this tutorial the **ProcessInputData** class will be used to convert geologically meaningful datasets to input for LoopStructural. The **ProcessInputData** class uses:* stratigraphic contacts* stratigraphic orientations* stratigraphic thickness* stratigraphic order To build a model of stratigraphic horizons and:* fault locations* fault orientations * fault properties* fault edges To use incorporate faults into the geological model. """
+There is a disconnect between the input data required by 3D modelling software and a geological map. 
+In LoopStructural the geological model is a collection of implicit functions that can be mapped to 
+the distribution of stratigraphic units and the location of fault surfaces. Each implicit function 
+is approximated from the observations of the stratigraphy, this requires grouping conformable geological 
+units together as a singla implicit function, mapping the different stratigraphic horizons to a value of 
+the implicit function and determining the relationship with geological structures such as faults. 
+In this tutorial the **ProcessInputData** class will be used to convert geologically meaningful datasets to input for LoopStructural. 
+The **ProcessInputData** class uses:
+* stratigraphic contacts* stratigraphic orientations* stratigraphic thickness* stratigraphic order 
+To build a model of stratigraphic horizons and:* fault locations* fault orientations * fault properties* fault edges 
+To use incorporate faults into the geological model. """
 
 ##############################
 # Imports
@@ -56,14 +66,16 @@ ax.set_title("Contact data")
 ##############################
 # Stratigraphic orientations
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Stratigraphic orientations needs to have X, Y, Z and either azimuth and dip, dipdirection and dip, strike and dip (RH thumb rule) or the vector components of the normal vector (nx, ny, nz)
+# Stratigraphic orientations needs to have X, Y, Z and either azimuth and dip, dipdirection and dip, strike 
+# and dip (RH thumb rule) or the vector components of the normal vector (nx, ny, nz)
 
 stratigraphic_orientations
 
 ##############################
 # Stratigraphic thickness
 # ~~~~~~~~~~~~~~~~~~~~~~~
-# Stratigraphic thickness should be a dictionary containing the unit name (which should be in the contacts table) and the corresponding thickness of this unit.
+# Stratigraphic thickness should be a dictionary containing the unit name (which should be in the contacts table) 
+# and the corresponding thickness of this unit.
 
 thicknesses
 
@@ -81,7 +93,8 @@ bbox
 ##############################
 # Stratigraphic column
 # ~~~~~~~~~~~~~~~~~~~~
-# The order of stratrigraphic units is defined a list of tuples containing the name of the group and the order of units within the group. For example there are 7 units in the following example that form two groups.
+# The order of stratrigraphic units is defined a list of tuples containing the name of the group and the 
+# order of units within the group. For example there are 7 units in the following example that form two groups.
 
 # example nested list
 [
@@ -96,7 +109,8 @@ order = [("supergroup_0", list(stratigraphic_order["unit name"]))]
 ##############################
 # Building a stratigraphic model
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# A ProcessInputData onject can be built from these datasets using the argument names. A full list of possible arguments can be found in the documentation.
+# A ProcessInputData onject can be built from these datasets using the argument names. 
+# A full list of possible arguments can be found in the documentation.
 
 
 processor = ProcessInputData(

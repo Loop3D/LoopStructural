@@ -40,6 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          cp CHANGELOG.md docs/source/getting_started/CHANGELOG.md
           docker build . -t=lsdocs -f docs/Dockerfile 
           docker run -v $(pwd):/LoopStructural lsdocs bash LoopStructural/docs/build_docs.sh
       
@@ -49,11 +50,12 @@ jobs:
     needs: documentation-test
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v2
+      - uses: GoogleCloudPlatform/release-please-action@v3.5.0
         id: release
         with:
           release-type: python
           package-name: LoopStructural
+          #version-file: LoopStructural/version.py
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
   # if a release is created then run the deploy scripts for github.io, conda, pypi and docker
@@ -64,6 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          cp CHANGELOG.md docs/source/getting_started/CHANGELOG.md
           docker build . -t=lsdocs -f docs/Dockerfile 
           docker run -v $(pwd):/LoopStructural lsdocs bash LoopStructural/docs/build_docs.sh
       - name: Deploy 🚀
@@ -146,6 +149,7 @@ jobs:
     name: Build wheels
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
@@ -156,7 +160,7 @@ jobs:
         env:
           CIBW_ARCHS_MACOS: x86_64 universal2
           CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
-          CIBW_BEFORE_BUILD: "pip install numpy==1.18 cython" #make sure numpy is the same version as required by LS
+          CIBW_BEFORE_BUILD: "pip install numpy cython" #make sure numpy is the same version as required by LS
 
       - name: Publish wheels to PyPI
         env:

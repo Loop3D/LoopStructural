@@ -121,7 +121,8 @@ class FaultBuilder(StructuralFrameBuilder):
             )
             if len(distance) == 0 or np.sum(distance) == 0:
                 logger.warning("There is no fault trace for {}".format(self.name))
-                # this can mean there is only a single data point for the fault, its not critical
+                # this can mean there is only a single data point for
+                # the fault, its not critical
                 # but probably means the fault isn't well defined.
                 # add any data anyway - usually just orientation data
                 self.add_data_from_data_frame(data)
@@ -142,8 +143,7 @@ class FaultBuilder(StructuralFrameBuilder):
         slip_vector /= np.linalg.norm(slip_vector)
         # check if slip vector is inside fault plane, if not project onto fault plane
         # if not np.isclose(normal_vector @ slip_vector, 0):
-        #     logger.info("{} : projecting slip vector onto fault plane".format(self.name))
-        #     slip_vector = np.cross(normal_vector, np.cross(slip_vector ,normal_vector))
+
         strike_vector = np.cross(normal_vector, slip_vector)
         self.fault_strike_vector = strike_vector
 
@@ -159,7 +159,7 @@ class FaultBuilder(StructuralFrameBuilder):
 
                 # choose whether to add points -1,1 to constrain fault frame or a scaled
                 # vector
-                if points == True:
+                if points:
                     data.loc[
                         len(data), ["X", "Y", "Z", "feature_name", "val", "coord", "w"]
                     ] = [
@@ -199,15 +199,18 @@ class FaultBuilder(StructuralFrameBuilder):
                     data.loc[mask, ["gx", "gy", "gz"]] /= np.linalg.norm(
                         data.loc[mask, ["gx", "gy", "gz"]], axis=1
                     )[:, None]
-                    # scale vector so that the distance between -1 and 1 is the minor axis length
+                    # scale vector so that the distance between -1
+                    # and 1 is the minor axis length
                     data.loc[mask, ["gx", "gy", "gz"]] /= minor_axis * 0.5
                     mask = np.logical_and(data["coord"] == 0, ~np.isnan(data["nx"]))
                     data.loc[mask, ["nx", "ny", "nz"]] /= np.linalg.norm(
                         data.loc[mask, ["nx", "ny", "nz"]], axis=1
                     )[:, None]
-                    # scale vector so that the distance between -1 and 1 is the minor axis length
+                    # scale vector so that the distance between -1
+                    # and 1 is the minor axis length
                     data.loc[mask, ["nx", "ny", "nz"]] /= minor_axis * 0.5
-                    # self.builders[0].add_orthogonal_feature(self, feature, w=1.0, region=None, step=1, B=0):
+                    # self.builders[0].add_orthogonal_feature(self,
+                    #  feature, w=1.0, region=None, step=1, B=0):
 
             if major_axis is not None:
                 fault_tips[0, :] = fault_center[:3] + strike_vector * 0.5 * major_axis
