@@ -1,5 +1,5 @@
 import pytest
-from generate_interpolator import generate_data, generate_interpolator
+from tests.generators.generate_interpolator import generate_data, generate_interpolator
 @pytest.mark.parameterize("interpolator,value,grad",[('FDI',True,False),('FDI',False,True),('FDI',True,True),('FDI',True,False)])
 def test_get_data_locations(interpolator,grad,value):
     data = generate_data(value,grad)
