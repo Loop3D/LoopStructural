@@ -11,7 +11,7 @@ from LoopStructural.modelling.intrusions import rectangle_function, parallelepip
 from LoopStructural.datasets import load_tabular_intrusion
 data, boundary_points = load_tabular_intrusion()
 
-def test_intrusion_freame_builder():
+def test_intrusion_frame_builder():
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
     model.data = data
     model.nsteps = [10,10,10]
@@ -115,9 +115,9 @@ def test_intrusion_builder():
     assert len(intrusion_feature.lateral_simulated_thresholds) > 0
     assert len(intrusion_feature.growth_simulated_thresholds) > 0
     
-if __name__ == "__main__":
-    test_intrusion_freame_builder()
-    test_intrusion_builder()
-if __name__ == "__main__":
-    test_intrusion_freame_builder()
-    test_intrusion_builder()
+# if __name__ == "__main__":
+#     test_intrusion_freame_builder()
+#     test_intrusion_builder()
+# if __name__ == "__main__":
+#     test_intrusion_freame_builder()
+#     test_intrusion_builder()
