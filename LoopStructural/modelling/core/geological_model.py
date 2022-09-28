@@ -1072,7 +1072,7 @@ class GeologicalModel:
         lateral_extent_sgs_parameters={},
         vertical_extent_sgs_parameters={},
         geometric_scaling_parameters={},
-        faults=None,
+        faults=None, #LG seems unused?
         **kwargs,
     ):
         """
@@ -1142,7 +1142,7 @@ class GeologicalModel:
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
         )
-        intrusion_frame_builder.post_intrusion_faults = faults
+        intrusion_frame_builder.post_intrusion_faults = faults #LG unused?
 
         # -- create intrusion network
         intrusion_frame_builder.set_intrusion_network_parameters(

@@ -1,4 +1,5 @@
 from LoopStructural.modelling.features.builders import StructuralFrameBuilder
+from LoopStructural.modelling.features import BaseFeature
 from LoopStructural.modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
     shortest_path,
@@ -153,7 +154,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         return grid_points, spacing
 
-    def add_contact_anisotropies(self, series_list=None, **kwargs):
+    def add_contact_anisotropies(self, series_list=[], **kwargs):
         """
         Add to the intrusion network the anisotropies likely
         exploited by the intrusion (series-type geological features)
@@ -219,7 +220,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             self.anisotropies_series_parameters = series_parameters
 
-    def add_faults_anisotropies(self, fault_list=None):
+    def add_faults_anisotropies(self, fault_list=[]):
         """
         Add to the intrusion network the anisotropies likely
         exploited by the intrusion (fault-type geological features)
@@ -504,7 +505,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                             self.intrusion_steps[step].get("structure")
                         )
 
-                self.add_faults_anisotropies(fault_anisotropies)
+                    self.add_faults_anisotropies(fault_anisotropies)
 
             # add contact anisotropies list
             contact_anisotropies = intrusion_network_input.get(
@@ -516,22 +517,22 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             # set the sequence of anisotropies to follow by the shortest path algorithm
             self.anisotropies_sequence = intrusion_network_input.get(
-                "shortest_path_sequence", None
+                "shortest_path_sequence", []
             )
 
             # set velocity parameters for the search of the shortest path
             self.velocity_parameters = intrusion_network_input.get(
-                "velocity_parameters", None
+                "velocity_parameters", []
             )
 
             # set axis for shortest path algorithm
             self.shortestpath_sections_axis = intrusion_network_input.get(
-                "shortest_path_axis", None
+                "shortest_path_axis", []
             )
 
             # add contact anisotropies and compute parameters for shortest path algorithm
             contact_anisotropies = intrusion_network_input.get(
-                "contact_anisotropies", None
+                "contact_anisotropies", []
             )
             # set number of contacts
             self.number_of_contacts = intrusion_network_input.get(
@@ -541,7 +542,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             # set fault anisotropies and compute parameters for shortest path algorithm
             fault_anisotropies = intrusion_network_input.get(
-                "structures_anisotropies", None
+                "structures_anisotropies", []
             )
             self.add_faults_anisotropies(fault_anisotropies)
 
@@ -670,18 +671,18 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         """
 
         # if no velocity parameters, assign velocities increasing with the order of emplacement
-        if self.velocity_parameters == None:
-            velocity_parameters = np.arange(len(self.anisotropies_sequence)) + 10
+        if self.velocity_parameters == None or len(self.velocity_parameters)==0:
+            velocity_parameters = np.arange(len(self.anisotropies_sequence)) + 10 #TODO why +10?
             self.velocity_parameters = velocity_parameters
         else:
             velocity_parameters = self.velocity_parameters.copy()
-
+        
         # assing velocity parameters k to each anisotropies
         # contacts anisotropies
         IcKc = 0
         IcIc = 0
         anisotropies_sequence_copy = self.anisotropies_sequence.copy()
-        if self.anisotropies_series_list != None:
+        if self.anisotropies_series_list:
             Kc = np.zeros(len(self.anisotropies_series_parameters))
             for i, key in enumerate(self.anisotropies_series_parameters.keys()):
                 series_id = self.anisotropies_series_parameters[key][0]
@@ -710,7 +711,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         return velocity_field
 
-    def create_intrusion_network(self, **kwargs):
+    def create_intrusion_network(self, **kwargs) -> np.ndarray:
 
         """
         Created a numpy array containing (x,y,z) coordinates of intrusion network points
@@ -720,7 +721,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         Returns
         -------
-        intrusion_network_points = numpy array
+        intrusion_network_points : np.ndarray
         """
 
         # --- check type of intrusion network
@@ -768,7 +769,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     series_from_name = self.intrusion_steps[step_i].get("series_from")
                     series_to_name = self.intrusion_steps[step_i].get("series_to")
 
-                    # TODO LG to as FA why this is done? aren't faults
+                    # TODO LG to ask FA why this is done? aren't faults
                     # enabled by default? If they ar disabled, should
                     # they get turned back off after this?
                     series_from_name.faults_enabled = True
@@ -873,31 +874,33 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             # 3. Gradient contraints for intrusion frame coord0
             # Evaluate points in gradient of stratigraphy, and exclude points around faults
+            if self.anisotropies_series_list:
+                series_id = self.anisotropies_series_list[0]
+                if not isinstance(series_id,BaseFeature):
+                    raise TypeError(f'Cannot set anisotropy with {type(series_id)}, must be a geological feature')
+                series_id.faults_enabled = True
+                strat_gradient_grid_points = series_id.evaluate_gradient(grid_points)
 
-            series_id = self.anisotropies_series_list[0]
-            series_id.faults_enabled = True
-            strat_gradient_grid_points = series_id.evaluate_gradient(grid_points)
+                # If intrusion network is built usinf roof/top contact, then change vector direction
+                if (
+                    self.intrusion_network_contact == "roof"
+                    or self.intrusion_network_contact == "top"
+                ):
+                    grid_points_inflation = strat_gradient_grid_points * (-1)
+                else:
+                    grid_points_inflation = strat_gradient_grid_points
 
-            # If intrusion network is built usinf roof/top contact, then change vector direction
-            if (
-                self.intrusion_network_contact == "roof"
-                or self.intrusion_network_contact == "top"
-            ):
-                grid_points_inflation = strat_gradient_grid_points * (-1)
-            else:
-                grid_points_inflation = strat_gradient_grid_points
+                grid_points_and_inflation_all = np.hstack(
+                    [grid_points, grid_points_inflation]
+                )
 
-            grid_points_and_inflation_all = np.hstack(
-                [grid_points, grid_points_inflation]
-            )
+                if self.intrusion_steps is None:
+                    If_sum = np.zeros(
+                        len(grid_points_and_inflation_all)
+                    ).T  # e.g. no faults afecting the intrusion
 
-            if self.intrusion_steps is None:
-                If_sum = np.zeros(
-                    len(grid_points_and_inflation_all)
-                ).T  # e.g. no faults afecting the intrusion
-
-            grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0]
-            self.intrusion_network_gradients = grid_points_and_inflation
+                grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0]
+                self.intrusion_network_gradients = grid_points_and_inflation
 
             return intrusion_network_points
 
