@@ -69,7 +69,10 @@ class GeologicalFeatureBuilder(BaseBuilder):
         )
         self.data = pd.DataFrame(columns=header)
         self.data_added = False
-        self._interpolator.set_region(region=self.region)
+        self._interpolation_region = None
+        self.interpolation_region = interpolation_region
+        if self.interpolation_region is not None:
+            self._interpolator.set_region(region=self.interpolation_region)
 
         self._feature = GeologicalFeature(
             self._name,
@@ -80,7 +83,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}
-
+        
     
 
     @property
