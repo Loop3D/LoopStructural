@@ -123,5 +123,60 @@ The utils module is a container for utility functions that are used throughout t
 
 
 
+Testing 
+~~~~~~~~~~~~~~~~~~~~~~
+LoopStructural uses a combination of unit tests, integration tests and end to end tests.
+Any new modules/functions should be accompanied by a unit test.
+A unit test is the small independent test that ensures the basic functionality of the block of code is working. 
+A good unit test suite for a block of code will test different possible scenarios to ensure that the correct behaviour
+is observed when the appropriate parameters are provided and when incorrect parameters are provided.
 
+LoopStructual uses the testing framework `pytest` for running the testing.
+Unit tests should be placed in the `tests\unit` directory and files containing tests should be prepended with the prefix `test_`. 
+Test datasets can be generated using pytest fixtures. 
+A fixture is a function that can be called by a test for a range of predefined parameters.
+For example a fixture to generate different discrete interpolators would be
 
+.. code-block::
+    from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI, \
+                                            PiecewiseLinearInterpolator as PLI
+    from LoopStructural.interpolators import StructuredGrid, TetMesh
+
+    import pytest
+    import numpy as np
+
+    @pytest.fixture(params=['FDI','PLI'])
+    def interpolator(request):
+        interpolator = request.param
+        origin = np.array([-0.1,-0.1,-0.1])
+        maximum = np.array([1.1,1.1,1.1])
+        nsteps = np.array([20,20,20])
+        step_vector = (maximum-origin)/nsteps
+        if interpolator == 'FDI':
+            grid = StructuredGrid(origin=origin,nsteps=nsteps,step_vector=step_vector)
+            interpolator = FDI(grid)
+            return interpolator
+        elif interpolator == 'PLI':
+            grid = TetMesh(origin=origin,nsteps=nsteps,step_vector=step_vector)
+            interpolator = PLI(grid)
+            return interpolator
+        else:
+            raise ValueError(f'Invalid interpolator: {interpolator}')
+
+This fixture can then be called by any test in the testing suite:
+
+.. code-block:
+    
+    from LoopStructural.interpolators import GeologicalInterpolator
+
+    def test_interpolator(interpolator):
+        """Test whether the discrete interpolators are a subclass of GeologicalInterpolator
+        """
+        assert isinstance(interpolator, GeologicalInterpolator) 
+        
+Unit tests should be as small as possible and require minimal computation to test whether they are working. 
+Ideally the unit test will only be testing a very small portion of code. 
+An integration test may be a more substantial test, which will test whether multiple sections of code act as they 
+are intended.
+An end to end test will be a complete geological modelling workflow and will require significant computational time.
+End to end tests should be used sparingly as identifying the true cause of a failed test may be challenging. 
