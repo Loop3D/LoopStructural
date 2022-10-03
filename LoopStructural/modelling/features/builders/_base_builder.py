@@ -1,7 +1,23 @@
 class BaseBuilder:
     def __init__(self, name="Feature"):
+        """Base builder that provides a template for
+        implementing different builders.
+        
+
+        Parameters
+        ----------
+        name : str, optional
+            The name of the feature being built. The name needs to be unique
+            for the model, by default "Feature"
+        
+        Notes
+        ------
+        The interpolation/work should only be done when .build() is called
+        .feature should return a reference to the feature, which may not be up 
+        to date.
+        If the build arguments are changed, this will flag that the feature needs to be rebuilt
+        """
         self._name = name
-        self._feature = None
         self._feature = None
         self._up_to_date = False
         self._build_arguments = {}
