@@ -35,11 +35,11 @@ class GeologicalFeature(BaseFeature):
 
     def __init__(
         self,
-        name : str,
-        interpolator : GeologicalInterpolator,
+        name: str,
+        interpolator: GeologicalInterpolator,
         builder=None,
-        regions : list=[],
-        faults : list =[],
+        regions: list = [],
+        faults: list = [],
         model=None,
     ):
         """Default constructor for geological feature
@@ -73,7 +73,7 @@ class GeologicalFeature(BaseFeature):
     def set_model(self, model):
         self.model = model
 
-    def evaluate_value(self, evaluation_points : np.ndarray) -> np.ndarray:
+    def evaluate_value(self, evaluation_points: np.ndarray) -> np.ndarray:
         """
         Evaluate the scalar field value of the geological feature at the locations
         specified
@@ -106,7 +106,7 @@ class GeologicalFeature(BaseFeature):
             v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         return v
 
-    def evaluate_gradient(self, evaluation_points : np.ndarray) -> np.ndarray:
+    def evaluate_gradient(self, evaluation_points: np.ndarray) -> np.ndarray:
         """
 
         Parameters
@@ -172,4 +172,3 @@ class GeologicalFeature(BaseFeature):
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
         diff /= self.max() - self.min()
         return diff
-

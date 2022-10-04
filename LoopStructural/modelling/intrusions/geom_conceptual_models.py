@@ -5,6 +5,7 @@ from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
+
 def ellipse_function(lateral_contact_data, minP=None, maxP=None, minS=None, maxS=None):
 
     if minP == None:

@@ -85,7 +85,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Returns
         -------
         np.ndarray
-            
+
         """
         return self.region_function(self.support.nodes).astype(bool)
 
@@ -352,7 +352,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Parameters
         ----------
         feature : BaseFeature
-            the feature that will be used to constraint the interpolator 
+            the feature that will be used to constraint the interpolator
         lower : bool, optional
             lower or upper constraint, by default True
         mask : np.ndarray, optional
@@ -819,7 +819,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.setup_interpolator()
             return self._solve(self.solver)
 
-    def evaluate_value(self, evaluation_points:np.ndarray) ->np.ndarray:
+    def evaluate_value(self, evaluation_points: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at location
 
         Parameters
@@ -842,7 +842,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
         return evaluated
 
-    def evaluate_gradient(self, evaluation_points:np.ndarray)->np.ndarray:
+    def evaluate_gradient(self, evaluation_points: np.ndarray) -> np.ndarray:
         """
         Evaluate the gradient of the scalar field at the evaluation points
         Parameters

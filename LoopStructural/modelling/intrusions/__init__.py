@@ -8,4 +8,3 @@ from .geom_conceptual_models import (
     obliquecone_function,
 )
 from .geometric_scaling_functions import *
-

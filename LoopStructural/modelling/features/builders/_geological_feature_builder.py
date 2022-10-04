@@ -83,8 +83,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}
-        
-    
 
     @property
     def interpolator(self):

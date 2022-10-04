@@ -11,7 +11,7 @@ logger = getLogger(__name__)
 
 
 class StructuralFrame(BaseFeature):
-    def __init__(self, name : str, features: list, fold=None):
+    def __init__(self, name: str, features: list, fold=None):
         """
         Structural frame is a curvilinear coordinate system defined by
         structural observations associated with a fault or fold.

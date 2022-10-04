@@ -2,18 +2,18 @@ class BaseBuilder:
     def __init__(self, name="Feature"):
         """Base builder that provides a template for
         implementing different builders.
-        
+
 
         Parameters
         ----------
         name : str, optional
             The name of the feature being built. The name needs to be unique
             for the model, by default "Feature"
-        
+
         Notes
         ------
         The interpolation/work should only be done when .build() is called
-        .feature should return a reference to the feature, which may not be up 
+        .feature should return a reference to the feature, which may not be up
         to date.
         If the build arguments are changed, this will flag that the feature needs to be rebuilt
         """
@@ -43,8 +43,10 @@ class BaseBuilder:
     def update(self):
         self.build(**self.build_arguments)
 
-    def build(self,**kwargs):
-        raise NotImplementedError('BaseBuilder should be inherited and build method overwritten')
+    def build(self, **kwargs):
+        raise NotImplementedError(
+            "BaseBuilder should be inherited and build method overwritten"
+        )
 
     @property
     def name(self):

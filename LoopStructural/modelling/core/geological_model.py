@@ -398,13 +398,13 @@ class GeologicalModel:
     def dtm(self, dtm):
         """Set a dtm to the model.
         The dtm is a function that can be called for dtm(xy) where xy is
-        a numpy array of xy locations. The function will return an array of 
+        a numpy array of xy locations. The function will return an array of
         z values corresponding to the elevation at xy.
 
         Parameters
         ----------
         dtm : callable
-            
+
         """
         if not callable(dtm):
             raise BaseException(
@@ -508,7 +508,7 @@ class GeologicalModel:
             self._add_unconformity_above(feature)
         feature.model = self
 
-    def data_for_feature(self, feature_name:str)-> pd.DataFrame:
+    def data_for_feature(self, feature_name: str) -> pd.DataFrame:
         return self.data.loc[self.data["feature_name"] == feature_name, :]
 
     @property
@@ -1016,7 +1016,7 @@ class GeologicalModel:
         fold_frame : StructuralFrame, optional
             the fold frame for the fold if not specified uses last feature added
 
-        kwargs : dict  
+        kwargs : dict
             parameters passed to child functions
 
         Returns
@@ -1089,7 +1089,7 @@ class GeologicalModel:
         lateral_extent_sgs_parameters={},
         vertical_extent_sgs_parameters={},
         geometric_scaling_parameters={},
-        faults=None, #LG seems unused?
+        faults=None,  # LG seems unused?
         **kwargs,
     ):
         """
@@ -1162,7 +1162,7 @@ class GeologicalModel:
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
         )
-        intrusion_frame_builder.post_intrusion_faults = faults #LG unused?
+        intrusion_frame_builder.post_intrusion_faults = faults  # LG unused?
 
         # -- create intrusion network
         intrusion_frame_builder.set_intrusion_network_parameters(
@@ -1664,7 +1664,7 @@ class GeologicalModel:
 
         return fault
 
-    def rescale(self, points:np.ndarray, inplace:bool=True) ->np.ndarray:
+    def rescale(self, points: np.ndarray, inplace: bool = True) -> np.ndarray:
         """
         Convert from model scale to real world scale - in the future this
         should also do transformations?
@@ -1686,7 +1686,7 @@ class GeologicalModel:
         points += self.origin
         return points
 
-    def scale(self, points:np.ndarray, inplace:bool=True)->np.ndarray:
+    def scale(self, points: np.ndarray, inplace: bool = True) -> np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space
 

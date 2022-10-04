@@ -671,12 +671,14 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         """
 
         # if no velocity parameters, assign velocities increasing with the order of emplacement
-        if self.velocity_parameters == None or len(self.velocity_parameters)==0:
-            velocity_parameters = np.arange(len(self.anisotropies_sequence)) + 10 #TODO why +10?
+        if self.velocity_parameters == None or len(self.velocity_parameters) == 0:
+            velocity_parameters = (
+                np.arange(len(self.anisotropies_sequence)) + 10
+            )  # TODO why +10?
             self.velocity_parameters = velocity_parameters
         else:
             velocity_parameters = self.velocity_parameters.copy()
-        
+
         # assing velocity parameters k to each anisotropies
         # contacts anisotropies
         IcKc = 0
@@ -876,8 +878,10 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             # Evaluate points in gradient of stratigraphy, and exclude points around faults
             if self.anisotropies_series_list:
                 series_id = self.anisotropies_series_list[0]
-                if not isinstance(series_id,BaseFeature):
-                    raise TypeError(f'Cannot set anisotropy with {type(series_id)}, must be a geological feature')
+                if not isinstance(series_id, BaseFeature):
+                    raise TypeError(
+                        f"Cannot set anisotropy with {type(series_id)}, must be a geological feature"
+                    )
                 series_id.faults_enabled = True
                 strat_gradient_grid_points = series_id.evaluate_gradient(grid_points)
 
