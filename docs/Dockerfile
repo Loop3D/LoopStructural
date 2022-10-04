@@ -9,7 +9,27 @@ RUN apt-get update -qq && \
     g++ \
     libc-dev \
     make
-RUN conda install -c conda-forge theano cython numpy pandas imageio scipy matplotlib  sphinx sphinx-gallery sphinxcontrib-bibtex sphinx_rtd_theme myst-parser scikit-learn scikit-image pyamg flake8 pytest networkx -y
+RUN conda install -c conda-forge\
+    theano\
+    cython\
+    numpy\ 
+    pandas\ 
+    imageio\ 
+    scipy\ 
+    matplotlib\  
+    sphinx\
+    sphinx-gallery\ 
+    sphinxcontrib-bibtex\ 
+    sphinx_rtd_theme\ 
+    myst-parser\ 
+    scikit-learn\ 
+    scikit-image\ 
+    pyamg\ 
+    flake8\
+    pytest\
+    networkx\
+    geopandas\
+    -y
 RUN pip install lavavu-osmesa 
 RUN conda install -c conda-forge pydata-sphinx-theme 
 RUN mkdir LoopStructural
