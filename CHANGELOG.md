@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.5.2](https://github.com/Loop3D/LoopStructural/compare/v1.5.1...v1.5.2) (2022-10-11)
+
+
+### Bug Fixes
+
+* adding BaseBuilder to builders init ([7f56fdd](https://github.com/Loop3D/LoopStructural/commit/7f56fdd72c8edeb188217f4314c02179c1ba790e))
+* adding checks for data size in interpolator ([ea8ccca](https://github.com/Loop3D/LoopStructural/commit/ea8cccacfa7b91f92b08eb697dadd48740bd7c65))
+* adding old auto_examples directory ([cefe790](https://github.com/Loop3D/LoopStructural/commit/cefe790e1e93bfe6c727800707fcb8ecdc0bdeaf))
+* code review for intrusions ([debc391](https://github.com/Loop3D/LoopStructural/commit/debc391501d6ccb86769ab7109c80cf8a3c32ffa))
+* creating basebuilder ([3480e3d](https://github.com/Loop3D/LoopStructural/commit/3480e3dec5c4260fdb96f42ea68499445be42d6b))
+* feature builder sets interpolator interpolation__region ([520cc01](https://github.com/Loop3D/LoopStructural/commit/520cc013bc1ceb4cbace9afcfa224a6239c3e726))
+* formatting ([9cb79cb](https://github.com/Loop3D/LoopStructural/commit/9cb79cb91327ccf777630dadfe782e2434475bc3))
+* starting unit id @ 1 means basement =0 ([ba627bb](https://github.com/Loop3D/LoopStructural/commit/ba627bbe5d251efc6c2adf7036930aea477588a4))
+
+
+### Documentation
+
+* adding basic testing guideline ([7c6ccef](https://github.com/Loop3D/LoopStructural/commit/7c6ccefbf04fb293453a7f13b04b2371e956ece3))
+* adding docstrings ([ffe9614](https://github.com/Loop3D/LoopStructural/commit/ffe9614bcfecf1606fb1130e976df7264987e597))
+* adding geopandas to documentation docker ([ab443ab](https://github.com/Loop3D/LoopStructural/commit/ab443ab7c9dd8e14038782319ae82fa70896ae58))
+* adding links to kwargs in docstring ([6e3a6e2](https://github.com/Loop3D/LoopStructural/commit/6e3a6e2b809842c13bf0700192a098d0f46f6c40))
+* fixed bug with documentation not being generated ([994d5dc](https://github.com/Loop3D/LoopStructural/commit/994d5dc20d4e44840271b4bcf1df6e5c5325ffa1))
+
 ## [1.5.1](https://github.com/Loop3D/LoopStructural/compare/v1.5.0...v1.5.1) (2022-09-15)
 
 
