@@ -164,7 +164,7 @@ class ProcessInputData:
         stratigraphic_column = {}
         # add stratigraphy into the column
         if self.stratigraphy:
-            unit_id = 0
+            unit_id = 1
             val = self._stratigraphic_value()
             for name, sg in self._stratigraphic_order:
                 stratigraphic_column[name] = {}

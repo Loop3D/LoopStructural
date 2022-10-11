@@ -49,7 +49,6 @@ def ellipse_function(lateral_contact_data, minP=None, maxP=None, minS=None, maxS
 def rectangle_function(
     lateral_contact_data, minP=None, maxP=None, minS=None, maxS=None
 ):
-    import math
 
     if minP == None:
         minP = lateral_contact_data["coord1"].min()

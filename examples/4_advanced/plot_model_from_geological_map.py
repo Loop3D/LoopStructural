@@ -66,7 +66,7 @@ ax.set_title("Contact data")
 ##############################
 # Stratigraphic orientations
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Stratigraphic orientations needs to have X, Y, Z and either azimuth and dip, dipdirection and dip, strike 
+# Stratigraphic orientations needs to have X, Y, Z and either azimuth and dip, dipdirection and dip, strike
 # and dip (RH thumb rule) or the vector components of the normal vector (nx, ny, nz)
 
 stratigraphic_orientations
@@ -74,7 +74,7 @@ stratigraphic_orientations
 ##############################
 # Stratigraphic thickness
 # ~~~~~~~~~~~~~~~~~~~~~~~
-# Stratigraphic thickness should be a dictionary containing the unit name (which should be in the contacts table) 
+# Stratigraphic thickness should be a dictionary containing the unit name (which should be in the contacts table)
 # and the corresponding thickness of this unit.
 
 thicknesses
@@ -93,7 +93,7 @@ bbox
 ##############################
 # Stratigraphic column
 # ~~~~~~~~~~~~~~~~~~~~
-# The order of stratrigraphic units is defined a list of tuples containing the name of the group and the 
+# The order of stratrigraphic units is defined a list of tuples containing the name of the group and the
 # order of units within the group. For example there are 7 units in the following example that form two groups.
 
 # example nested list
@@ -109,7 +109,7 @@ order = [("supergroup_0", list(stratigraphic_order["unit name"]))]
 ##############################
 # Building a stratigraphic model
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# A ProcessInputData onject can be built from these datasets using the argument names. 
+# A ProcessInputData onject can be built from these datasets using the argument names.
 # A full list of possible arguments can be found in the documentation.
 
 

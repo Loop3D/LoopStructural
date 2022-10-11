@@ -9,7 +9,6 @@ def test_create_and_add_fault():
         [
             [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
             # [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
-
             [0.5, 0.5, 0.5, 1, 0, 0, 1, "fault", 0],
             [0.5, 0.5, 0.5, 0, 0, 1, 2, "fault", 0],
         ],
@@ -24,13 +23,13 @@ def test_create_and_add_fault():
     )
     assert isinstance(model["fault"], FaultSegment)
 
+
 def test_fault_displacement():
     model = GeologicalModel([0, 0, 0], [1, 1, 1])
     data = pd.DataFrame(
         [
             [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
             # [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
-
             [0.5, 0.5, 0.5, 1, 0, 0, 1, "fault", 0],
             [0.5, 0.5, 0.5, 0, 0, 1, 2, "fault", 0],
         ],
@@ -52,7 +51,6 @@ def test_fault_evaluate():
         [
             [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
             # [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
-
             [0.5, 0.5, 0.5, 1, 0, 0, 1, "fault", 0],
             [0.5, 0.5, 0.5, 0, 0, 1, 2, "fault", 0],
         ],
@@ -66,6 +64,7 @@ def test_fault_evaluate():
         # force_mesh_geometry=True
     )
     assert isinstance(model["fault"], FaultSegment)
+
 
 def test_fault_inside_volume():
     model = GeologicalModel([0, 0, 0], [1, 1, 1])
@@ -73,7 +72,6 @@ def test_fault_inside_volume():
         [
             [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
             # [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
-
             [0.5, 0.5, 0.5, 1, 0, 0, 1, "fault", 0],
             [0.5, 0.5, 0.5, 0, 0, 1, 2, "fault", 0],
         ],
@@ -87,6 +85,7 @@ def test_fault_inside_volume():
         # force_mesh_geometry=True
     )
     assert isinstance(model["fault"], FaultSegment)
+
 
 def test_fault_add_abutting():
     model = GeologicalModel([0, 0, 0], [1, 1, 1])
@@ -94,7 +93,6 @@ def test_fault_add_abutting():
         [
             [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
             # [0.5, 0.5, 0.5, 0, 1, 0, 0, "fault", 0],
-
             [0.5, 0.5, 0.5, 1, 0, 0, 1, "fault", 0],
             [0.5, 0.5, 0.5, 0, 0, 1, 2, "fault", 0],
         ],
@@ -108,6 +106,7 @@ def test_fault_add_abutting():
         # force_mesh_geometry=True
     )
     assert isinstance(model["fault"], FaultSegment)
+
 
 if __name__ == "__main__":
     test_create_and_add_fault()

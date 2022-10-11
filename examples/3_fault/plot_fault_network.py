@@ -19,7 +19,7 @@ import numpy as np
 ##############################
 # Read shapefile
 # ~~~~~~~~~~~~~~
-# Read the shapefile and create a point for each node of the line 
+# Read the shapefile and create a point for each node of the line
 fault_trace = load_fault_trace()
 faults = []
 for i in range(len(fault_trace)):
@@ -71,15 +71,15 @@ maximum = [df["X"].max() + z, df["Y"].max() + z, z]
 ##############################
 # Setting up the data
 # ~~~~~~~~~~~~~~~~~~~
-# The `ProcessInputData` class is used to convert common geological map components to the datastructures required by LoopStructural.# 
+# The `ProcessInputData` class is used to convert common geological map components to the datastructures required by LoopStructural.#
 # To build a fault network we need to provide:# * fault locations - a table of x,y,z, and the fault name
 # 1. fault orientations - a table recording the orientation observations of the fault, e.g. strike, dip or normal vector and x,y,z, fault_name
 # 2. origin - the origin of the model bounding box
-# 3. maximum - the maximum extend of the model bounding box 
+# 3. maximum - the maximum extend of the model bounding box
 # 4. fault_edges - list of intersection relationships between faults e.g. [('fault1','fault2')] indicates that there is a intersection between fault1 and fault2
 # 5. fault_edge_properties - list of properties for the fault edges - this can be the type of intersection e.g. 'splay' or 'abut' or just the angle between the faults
-# 6. fault_properties (*optional*)  - a pandas dataframe with any kwargs for the interpolator where the index is the fault name # 
-# 
+# 6. fault_properties (*optional*)  - a pandas dataframe with any kwargs for the interpolator where the index is the fault name #
+#
 #  Below is an example of setting the number of interpolation elements for each fault
 
 ##############################

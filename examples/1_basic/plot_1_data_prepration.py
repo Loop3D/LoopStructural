@@ -57,21 +57,21 @@ This tutorial will demonstrate how to setup a basic geological model for using w
 #
 import numpy as np
 
-extent = np.zeros((3,2))
-extent[:,1] = 10
+extent = np.zeros((3, 2))
+extent[:, 1] = 10
 
-x = np.linspace(0,10,10)
-y = np.linspace(0,10,10)
+x = np.linspace(0, 10, 10)
+y = np.linspace(0, 10, 10)
 
-xx,yy = np.meshgrid(x,y)
+xx, yy = np.meshgrid(x, y)
 zz = np.zeros_like(xx)
 zz[:] = 1 + np.random.random(zz.shape)
 val = np.zeros_like(xx)
 val[:] = 0
-surface_1 = np.array([xx.flatten(),yy.flatten(),zz.flatten(),val.flatten()]).T
+surface_1 = np.array([xx.flatten(), yy.flatten(), zz.flatten(), val.flatten()]).T
 zz[:] = 5 + np.random.random(zz.shape)
 val[:] = 1
-surface_2 = np.array([xx.flatten(),yy.flatten(),zz.flatten(),val.flatten()]).T
+surface_2 = np.array([xx.flatten(), yy.flatten(), zz.flatten(), val.flatten()]).T
 
 ##########################################################################################
 # Creating LoopStructural dataset
@@ -91,8 +91,8 @@ surface_2 = np.array([xx.flatten(),yy.flatten(),zz.flatten(),val.flatten()]).T
 
 import pandas as pd
 
-data = pd.DataFrame(np.vstack([surface_1,surface_2]),columns=['X','Y','Z','val'])
-data['feature_name'] = 'conformable'
+data = pd.DataFrame(np.vstack([surface_1, surface_2]), columns=["X", "Y", "Z", "val"])
+data["feature_name"] = "conformable"
 data.head()
 
 ###############################################################################################
@@ -106,7 +106,7 @@ data.head()
 
 from LoopStructural import GeologicalModel
 
-model = GeologicalModel(extent[:,0],extent[:,1])
+model = GeologicalModel(extent[:, 0], extent[:, 1])
 model.set_model_data(data)
 
 ###############################################################################################
@@ -115,7 +115,7 @@ model.set_model_data(data)
 # We can create a geological feature using the create_and_add_foliation method.
 # This returns a To build a scalar field representing the
 
-conformable_feature = model.create_and_add_foliation('conformable')
+conformable_feature = model.create_and_add_foliation("conformable")
 
 ###############################################################################################
 # Visualising a 2-D section
@@ -124,40 +124,44 @@ conformable_feature = model.create_and_add_foliation('conformable')
 # * for the scalar field value at a location
 # * for the gradient of the scalar field at a location
 # To evaluate a model feature (scalar value or gradient) use the:
-# :code:`model.evaluate_feature_value(feature_name, locations)` or 
+# :code:`model.evaluate_feature_value(feature_name, locations)` or
 # :code:`model.evaluate_feature_gradient(feature_name, locations)`
-# Where the feature_name is the string naming the feature and locations is a numpy array of 
+# Where the feature_name is the string naming the feature and locations is a numpy array of
 # xyz coordinates.
-# 
+#
 # In the following example we will use matplotlib to visualise these results however, the
-# next tutorial will show how to use the lavavu visualisation model.  
+# next tutorial will show how to use the lavavu visualisation model.
 
 
 import matplotlib.pyplot as plt
 
 # X section
-y = np.linspace(0,10,100)
-z = np.linspace(0,10,100)
+y = np.linspace(0, 10, 100)
+z = np.linspace(0, 10, 100)
 
-yy, zz = np.meshgrid(y,z)
+yy, zz = np.meshgrid(y, z)
 xx = np.zeros_like(yy)
 xx[:] = 5
 
-vals = model.evaluate_feature_value('conformable',np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
-fig, ax = plt.subplots(1,2,figsize=(20,10))
-ax[0].contourf(vals.reshape((100,100)),extent=(0,10,0,10))
-ax[0].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
+vals = model.evaluate_feature_value(
+    "conformable", np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+)
+fig, ax = plt.subplots(1, 2, figsize=(20, 10))
+ax[0].contourf(vals.reshape((100, 100)), extent=(0, 10, 0, 10))
+ax[0].contour(vals.reshape((100, 100)), [0, 1], extent=(0, 10, 0, 10))
 
 # Y section
-x = np.linspace(0,10,100)
-z = np.linspace(0,10,100)
+x = np.linspace(0, 10, 100)
+z = np.linspace(0, 10, 100)
 
-xx, zz = np.meshgrid(x,z)
+xx, zz = np.meshgrid(x, z)
 yy = np.zeros_like(xx)
 yy[:] = 5
 
-vals = model.evaluate_feature_value('conformable',np.array([xx.flatten(),yy.flatten(),zz.flatten()]).T)
-ax[1].contourf(vals.reshape((100,100)),extent=(0,10,0,10))
-ax[1].contour(vals.reshape((100,100)),[0,1],extent=(0,10,0,10))
+vals = model.evaluate_feature_value(
+    "conformable", np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+)
+ax[1].contourf(vals.reshape((100, 100)), extent=(0, 10, 0, 10))
+ax[1].contour(vals.reshape((100, 100)), [0, 1], extent=(0, 10, 0, 10))
 
 plt.show()

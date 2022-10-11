@@ -314,7 +314,7 @@ class StructuredGrid(BaseStructuredSupport):
         # print(idc[inside,:], self.n_nodes,inside)
 
         if idc.shape[0] != inside.shape[0]:
-            raise ValueError('index does not match number of nodes')
+            raise ValueError("index does not match number of nodes")
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
 
@@ -364,19 +364,32 @@ class StructuredGrid(BaseStructuredSupport):
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
-        if np.max(idc[inside,:]) > property_array.shape[0]:
+        if np.max(idc[inside, :]) > property_array.shape[0]:
             cix, ciy, ciz = self.position_to_cell_index(evaluation_points)
             if np.all(cix[inside] < self.nsteps_cells[0]) == False:
-                print(evaluation_points[inside,:][cix[inside] < self.nsteps_cells[0],0],self.origin[0],self.maximum[0])
+                print(
+                    evaluation_points[inside, :][cix[inside] < self.nsteps_cells[0], 0],
+                    self.origin[0],
+                    self.maximum[0],
+                )
             if np.all(ciy[inside] < self.nsteps_cells[1]) == False:
-                print(evaluation_points[inside,:][ciy[inside] < self.nsteps_cells[1],1],self.origin[1],self.maximum[1])
+                print(
+                    evaluation_points[inside, :][ciy[inside] < self.nsteps_cells[1], 1],
+                    self.origin[1],
+                    self.maximum[1],
+                )
             if np.all(ciz[inside] < self.nsteps_cells[2]) == False:
-                print(ciz[inside],self.nsteps_cells[2])
-                print(self.step_vector, self.nsteps_cells,self.nsteps)
-                print(evaluation_points[inside,:][~(ciz[inside] < self.nsteps_cells[2]),2],self.origin[2],self.maximum[2])
-            
+                print(ciz[inside], self.nsteps_cells[2])
+                print(self.step_vector, self.nsteps_cells, self.nsteps)
+                print(
+                    evaluation_points[inside, :][
+                        ~(ciz[inside] < self.nsteps_cells[2]), 2
+                    ],
+                    self.origin[2],
+                    self.maximum[2],
+                )
 
-            raise ValueError('index does not match number of nodes')
+            raise ValueError("index does not match number of nodes")
         T[inside, 0, :] *= property_array[idc[inside, :]]
         T[inside, 1, :] *= property_array[idc[inside, :]]
         T[inside, 2, :] *= property_array[idc[inside, :]]

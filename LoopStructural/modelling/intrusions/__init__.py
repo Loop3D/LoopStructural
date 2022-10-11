@@ -7,3 +7,4 @@ from .geom_conceptual_models import (
     parallelepiped_function,
     obliquecone_function,
 )
+from .geometric_scaling_functions import *

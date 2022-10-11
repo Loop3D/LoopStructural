@@ -17,7 +17,6 @@ logger = getLogger(__name__)
 
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
-
     def __init__(self, grid):
         """
         Finite difference interpolation on a regular cartesian grid
@@ -224,9 +223,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                         value constraints not added: outside of model bounding box"
                 )
 
-    def add_interface_constraints(
-        self, w=1.0
-    ):  
+    def add_interface_constraints(self, w=1.0):
         """
         Adds a constraint that defines all points
         with the same 'id' to be the same value

@@ -1,6 +1,7 @@
 """
 Feature builder
 """
+
 import numpy as np
 import pandas as pd
 
@@ -19,6 +20,7 @@ from LoopStructural.utils.helper import (
     inequality_name,
 )
 from LoopStructural.modelling.features import GeologicalFeature
+from LoopStructural.modelling.features.builders import BaseBuilder
 from LoopStructural.utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
@@ -27,7 +29,7 @@ from LoopStructural.utils import RegionEverywhere
 logger = getLogger(__name__)
 
 
-class GeologicalFeatureBuilder:
+class GeologicalFeatureBuilder(BaseBuilder):
     def __init__(
         self,
         interpolator: GeologicalInterpolator,
@@ -46,14 +48,14 @@ class GeologicalFeatureBuilder:
             defining whether the location (xyz) should be included in the
         kwargs - name of the feature, region to interpolate the feature
         """
-        if not issubclass(type(interpolator), GeologicalInterpolator):
+        BaseBuilder.__init__(self, name)
+        if issubclass(type(interpolator), GeologicalInterpolator) == False:
             raise TypeError(
                 "interpolator is {} and must be a GeologicalInterpolator".format(
                     type(interpolator)
                 )
             )
         self._interpolator = interpolator
-        self._name = name
         self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
 
@@ -66,15 +68,12 @@ class GeologicalFeatureBuilder:
             + weight_name()
         )
         self.data = pd.DataFrame(columns=header)
-        self.faults = []
         self.data_added = False
         self._interpolation_region = None
         self.interpolation_region = interpolation_region
         if self.interpolation_region is not None:
             self._interpolator.set_region(region=self.interpolation_region)
-        self._feature = None
-        self._up_to_date = False
-        self._build_arguments = {}
+
         self._feature = GeologicalFeature(
             self._name,
             self._interpolator,
@@ -86,90 +85,8 @@ class GeologicalFeatureBuilder:
         self._equality_constraints = {}
 
     @property
-    def interpolation_region(self):
-        return self._interpolation_region
-
-    @interpolation_region.setter
-    def interpolation_region(self, interpolation_region):
-        if interpolation_region is not None:
-            self._interpolation_region = interpolation_region
-            self._interpolator.set_region(region=self._interpolation_region)
-        else:
-            self._interpolation_region = RegionEverywhere()
-            self._interpolator.set_region(region=self._interpolation_region)
-        self._up_to_date = False
-
-    @property
-    def feature(self):
-        return self._feature
-
-    @property
-    def build_arguments(self):
-        return self._build_arguments
-
-    @build_arguments.setter
-    def build_arguments(self, build_arguments):
-        # self._build_arguments = {}
-        for k, i in build_arguments.items():
-            if i != self._build_arguments.get(k, None):
-                self._build_arguments[k] = i
-                # if build_arguments change then flag to reinterpolate
-                self._up_to_date = False
-
-    def update(self):
-        self.build(**self.build_arguments)
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
     def interpolator(self):
         return self._interpolator
-
-    def up_to_date(self, callback=None):
-        """
-        check if the feature is uptodate
-        if its not update.
-
-        Parameters
-        ----------
-        callback : function
-            a function that is called when the feature is updated
-
-        """
-        for f in self.faults:
-            f.builder.up_to_date(callback=callback)
-        # has anything changed in the builder since we built the feature? if so update
-        if not self._up_to_date:
-            self.update()
-            if callable(callback):
-                callback(1)
-            return
-        # check if the interpolator is up to date, if not solve
-        if not self._interpolator.up_to_date:
-            self.update()
-            if callable(callback):
-                callback(1)
-            return
-        if callable(callback):
-            callback(1)
-
-    def add_fault(self, fault):
-        """
-        Add a fault to the geological feature builder
-
-        Parameters
-        ----------
-        fault : FaultSegment
-            A faultsegment to add to the geological feature
-
-        Returns
-        -------
-
-        """
-        self._up_to_date = False
-        self.faults.append(fault)
 
     def add_data_from_data_frame(self, data_frame, overwrite=False):
         """

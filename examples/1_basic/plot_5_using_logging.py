@@ -22,8 +22,8 @@ Lets have a look at the logging from the Claudius model.
 """
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer 
-from LoopStructural.datasets import load_claudius #demo data 
+from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.datasets import load_claudius  # demo data
 from LoopStructural import log_to_file
 import pandas as pd
 import numpy as np
@@ -32,39 +32,45 @@ import numpy as np
 # Specify a log file
 # ~~~~~~~~~~~~~~~~~~~~
 
-log_to_file('logging_demo_log.log')
+log_to_file("logging_demo_log.log")
 
 ##################################################################################################
 # Create model
 # ~~~~~~~~~~~~~~~~~~~~
 data, bb = load_claudius()
-model = GeologicalModel(bb[0,:],bb[1,:])
+model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
 
-vals = [0,60,250,330,600]
-strat_column = {'strati':{}}
-for i in range(len(vals)-1):
-    strat_column['strati']['unit_{}'.format(i)] = {'min':vals[i],'max':vals[i+1],'id':i}
+vals = [0, 60, 250, 330, 600]
+strat_column = {"strati": {}}
+for i in range(len(vals) - 1):
+    strat_column["strati"]["unit_{}".format(i)] = {
+        "min": vals[i],
+        "max": vals[i + 1],
+        "id": i,
+    }
 model.set_stratigraphic_column(strat_column)
-strati = model.create_and_add_foliation("strati",
-                                           interpolatortype="FDI", # try changing this to 'PLI'
-                                           nelements=1e4, # try changing between 1e3 and 5e4
-                                           buffer=0.3,
-                                           solver='pyamg',
-                                           damp=True
-                                          )
-viewer = LavaVuModelViewer(model,background="white")
+strati = model.create_and_add_foliation(
+    "strati",
+    interpolatortype="FDI",  # try changing this to 'PLI'
+    nelements=1e4,  # try changing between 1e3 and 5e4
+    buffer=0.3,
+    solver="pyamg",
+    damp=True,
+)
+viewer = LavaVuModelViewer(model, background="white")
 viewer.add_model_surfaces()
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 #################################################################################################
 # Looking at the log file
 # ~~~~~~~~~~~~~~~~~~~~~~~
-# Here are the first 10 lines of the log file. 
-# Most operations in loopstructural are recorded and this will allow you to identify whether 
+# Here are the first 10 lines of the log file.
+# Most operations in loopstructural are recorded and this will allow you to identify whether
 # an operation is not occuring as you would expect.
 
 from itertools import islice
+
 # with open('logging_demo_log.log') as inf:
 #     for line in islice(inf, 0, 11):
 #         print(line)
@@ -77,34 +83,39 @@ from itertools import islice
 
 from LoopStructural import log_to_console
 
-log_to_console('info') 
+log_to_console("info")
 
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer 
-from LoopStructural.datasets import load_claudius #demo data 
+from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.datasets import load_claudius  # demo data
 
 import pandas as pd
 import numpy as np
 
 
 data, bb = load_claudius()
-model = GeologicalModel(bb[0,:],bb[1,:])
+model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
 
-vals = [0,60,250,330,600]
-strat_column = {'strati':{}}
-for i in range(len(vals)-1):
-    strat_column['strati']['unit_{}'.format(i)] = {'min':vals[i],'max':vals[i+1],'id':i}
+vals = [0, 60, 250, 330, 600]
+strat_column = {"strati": {}}
+for i in range(len(vals) - 1):
+    strat_column["strati"]["unit_{}".format(i)] = {
+        "min": vals[i],
+        "max": vals[i + 1],
+        "id": i,
+    }
 model.set_stratigraphic_column(strat_column)
-strati = model.create_and_add_foliation("strati",
-                                           interpolatortype="FDI", # try changing this to 'PLI'
-                                           nelements=1e4, # try changing between 1e3 and 5e4
-                                           buffer=0.3,
-                                           solver='pyamg',
-                                           damp=True
-                                          )
-viewer = LavaVuModelViewer(model,background="white")
+strati = model.create_and_add_foliation(
+    "strati",
+    interpolatortype="FDI",  # try changing this to 'PLI'
+    nelements=1e4,  # try changing between 1e3 and 5e4
+    buffer=0.3,
+    solver="pyamg",
+    damp=True,
+)
+viewer = LavaVuModelViewer(model, background="white")
 viewer.add_model_surfaces()
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()

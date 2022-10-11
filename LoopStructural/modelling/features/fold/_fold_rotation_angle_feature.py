@@ -19,7 +19,7 @@ class FoldRotationAngleFeature(BaseFeature):
         model=None,
         faults=[],
         regions=[],
-        builder = None
+        builder=None,
     ):
         """
 

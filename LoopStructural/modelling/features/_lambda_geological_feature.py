@@ -44,7 +44,7 @@ class LambdaGeologicalFeature(BaseFeature):
         self.function = function
         self.gradient_function = gradient_function
 
-    def evaluate_value(self, xyz : np.ndarray) -> np.ndarray:
+    def evaluate_value(self, xyz: np.ndarray) -> np.ndarray:
         """_summary_
 
         Parameters
@@ -64,7 +64,7 @@ class LambdaGeologicalFeature(BaseFeature):
             v[:] = self.function(xyz)
         return v
 
-    def evaluate_gradient(self, xyz : np.ndarray) -> np.ndarray:
+    def evaluate_gradient(self, xyz: np.ndarray) -> np.ndarray:
         """_summary_
 
         Parameters
