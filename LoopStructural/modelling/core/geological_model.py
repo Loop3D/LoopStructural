@@ -1098,7 +1098,7 @@ class GeologicalModel:
         intrusion_frame_name,
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        intrusion_network_parameters={},
+        intrusion_frame_parameters={},
         lateral_extent_sgs_parameters={},
         vertical_extent_sgs_parameters={},
         geometric_scaling_parameters = {},
@@ -1174,16 +1174,16 @@ class GeologicalModel:
         )
         intrusion_frame_builder.post_intrusion_faults = faults
 
-        # -- create intrusion network
-        intrusion_frame_builder.set_intrusion_network_parameters(
-            intrusion_data, intrusion_network_parameters
+        # -- create intrusion frame 
+        # using intrusion intrusion structures (steps and marginal faults) and flow/inflation measurements
+        if len(intrusion_frame_parameters) == 0:
+            logger.error('Please specify parameters to build intrusion frame')
+        intrusion_frame_builder.set_intrusion_frame_parameters(
+            intrusion_data, intrusion_frame_parameters
         )
-        intrusion_network_geometry = intrusion_frame_builder.create_intrusion_network()
+        intrusion_frame_builder.create_constraints_for_c0()
 
-        # -- create intrusion frame using intrusion network points and flow/inflation measurements
-        intrusion_frame_builder.set_intrusion_frame_data(
-            intrusion_frame_data, intrusion_network_geometry
-        )
+        intrusion_frame_builder.set_intrusion_frame_data(intrusion_frame_data)
 
         ## -- create intrusion frame
         intrusion_frame_builder.setup(
@@ -1196,6 +1196,7 @@ class GeologicalModel:
         intrusion_frame = intrusion_frame_builder.frame
 
         self._add_faults(intrusion_frame_builder, features = faults)
+        
 
         # -- create intrusion builder to simulate distance thresholds along frame coordinates
         intrusion_builder = IntrusionBuilder(
@@ -1215,6 +1216,7 @@ class GeologicalModel:
         intrusion_feature = intrusion_builder.feature
         # self._add_faults(intrusion_feature, features = faults)
         self._add_feature(intrusion_feature)
+        # self._add_faults(intrusion_feature)
 
         return intrusion_feature
 
