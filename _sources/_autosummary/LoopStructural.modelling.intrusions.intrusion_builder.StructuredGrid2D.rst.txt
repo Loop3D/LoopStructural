@@ -1,0 +1,50 @@
+LoopStructural.modelling.intrusions.intrusion\_builder.StructuredGrid2D
+=======================================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_builder
+
+.. autoclass:: StructuredGrid2D
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~StructuredGrid2D.__init__
+      ~StructuredGrid2D.bilinear
+      ~StructuredGrid2D.calcul_T
+      ~StructuredGrid2D.cell_centres
+      ~StructuredGrid2D.cell_corner_indexes
+      ~StructuredGrid2D.check_position
+      ~StructuredGrid2D.evaluate_gradient
+      ~StructuredGrid2D.evaluate_value
+      ~StructuredGrid2D.global_index_to_cell_index
+      ~StructuredGrid2D.global_indicies
+      ~StructuredGrid2D.inside
+      ~StructuredGrid2D.neighbour_global_indexes
+      ~StructuredGrid2D.node_indexes_to_position
+      ~StructuredGrid2D.position_to_cell_corners
+      ~StructuredGrid2D.position_to_cell_index
+      ~StructuredGrid2D.position_to_dof_coefs
+      ~StructuredGrid2D.position_to_local_coordinates
+      ~StructuredGrid2D.print_geometry
+      ~StructuredGrid2D.update_property
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~StructuredGrid2D.barycentre
+      ~StructuredGrid2D.nodes
+   
+   

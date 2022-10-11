@@ -1,0 +1,35 @@
+LoopStructural.modelling.core.stratigraphic\_column
+===================================================
+
+.. automodule:: LoopStructural.modelling.core.stratigraphic_column
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseStratigraphicColumnElement
+      Lithology
+      StratigraphicColumn
+      StratigraphicUnit
+   
+   
+
+   
+   
+   
+
+
+

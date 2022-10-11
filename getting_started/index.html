@@ -1,0 +1,588 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Getting Started &#8212; LoopStructural 0.1 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/index';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Loop Structural" href="../index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item current active">
+                    <a class="nav-link" href="#">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_autosummary/LoopStructural.html">
+                        LoopStructural
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
+            </li>
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
+    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item current active">
+                    <a class="nav-link" href="#">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_autosummary/LoopStructural.html">
+                        LoopStructural
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
+            </li>
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
+    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loopstructural_design.html">LoopStructural design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-from-pip-or-conda">Installing from pip or conda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-loopstructural-from-source">Compiling LoopStructural from source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#docker">Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="background.html#intepreting-a-map-into-model-input">Intepreting a map into model input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="background.html#automatic-intepretation-into-a-model-using-map2loop">Automatic intepretation into a model using map2loop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about.html#background-of-implicit-surface-modelling">Background of Implicit Surface Modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributors_guide.html">Contribute</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributors_guide.html#issues">Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contributors_guide.html#questions">Questions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributors_guide.html#bug-reports">Bug reports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributors_guide.html#feature-requests">Feature requests</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contributors_guide.html#contributing-new-code">Contributing new code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributors_guide.html#commit-messages">Commit messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributors_guide.html#version-numbering">Version numbering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contributors_guide.html#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributors_guide.html#license">License</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loopstructural_design.html">LoopStructural design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="loopstructural_design.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loopstructural_design.html#context">Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loopstructural_design.html#goals-and-non-goals">Goals and Non-Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loopstructural_design.html#existing-solutions">Existing Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loopstructural_design.html#technical-architecture">Technical Architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="loopstructural_design.html#interpolators">1. interpolators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loopstructural_design.html#modelling">2. modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loopstructural_design.html#visualisation">3. visualisation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="loopstructural_design.html#d-visualisation">3D visualisation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="loopstructural_design.html#utils">4. utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="loopstructural_design.html#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id1">1.5.2 (2022-10-11)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#bug-fixes">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id2">1.5.1 (2022-09-15)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id3">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id4">1.5.0 (2022-09-14)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id5">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id6">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id7">1.4.13 (2022-08-29)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id8">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id9">1.4.12 (2022-08-27)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id10">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id11">1.4.11 (2022-08-10)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id12">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id13">1.4.10 (2022-07-20)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id14">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id15">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id16">1.4.9 (2022-05-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id17">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id18">1.4.8 (2022-05-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id19">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id20">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id21">1.4.7 (2022-05-04)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id22">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id23">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id24">1.4.6 (2022-04-26)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id25">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id26">1.4.5 (2022-04-14)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id27">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id28">1.4.4 (2022-03-21)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id29">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#performance-improvements">Performance Improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id30">1.4.3 (2022-02-21)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id31">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id32">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id33">1.4.2 (2022-02-07)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id34">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id35">1.4.1 (2021-12-06)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id36">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id37">1.4.0 (2021-12-06)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id38">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id39">1.3.12 (2021-12-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id40">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id41">1.3.11 (2021-11-29)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id42">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id43">1.3.10 (2021-11-10)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id44">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id45">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id46">1.3.9 (2021-11-10)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id47">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id48">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id49">1.3.8 (2021-11-08)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id50">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id51">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id52">1.3.7 (2021-10-13)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id53">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id54">1.3.6 (2021-10-12)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id55">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id56">1.3.5 (2021-10-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id57">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id58">1.3.4 (2021-10-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id59">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id60">1.3.3 (2021-09-29)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id61">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id62">1.3.2 (2021-09-28)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id63">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id64">1.3.1 (2021-09-28)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id65">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id66">1.3.0 (2021-09-27)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id67">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id68">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id69">1.2.4 (2021-09-07)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id70">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id71">1.2.3 (2021-09-07)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id72">Bug Fixes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="../index.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Loop Structural</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="installation.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Installation</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="../_sources/getting_started/index.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

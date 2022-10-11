@@ -1,0 +1,45 @@
+LoopStructural.modelling
+========================
+
+.. automodule:: LoopStructural.modelling
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      ProcessInputData
+      Map2LoopProcessor
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst                 
+   :recursive:
+
+   LoopStructural.modelling.core
+   LoopStructural.modelling.features
+   LoopStructural.modelling.input
+   LoopStructural.modelling.intrusions
+

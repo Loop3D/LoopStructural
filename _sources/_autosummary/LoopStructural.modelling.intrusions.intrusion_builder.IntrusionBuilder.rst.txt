@@ -1,0 +1,49 @@
+LoopStructural.modelling.intrusions.intrusion\_builder.IntrusionBuilder
+=======================================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_builder
+
+.. autoclass:: IntrusionBuilder
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~IntrusionBuilder.__init__
+      ~IntrusionBuilder.add_fault
+      ~IntrusionBuilder.build
+      ~IntrusionBuilder.create_grid_for_simulation
+      ~IntrusionBuilder.interpolate_lateral_thresholds
+      ~IntrusionBuilder.make_g_sgs_variogram
+      ~IntrusionBuilder.make_l_sgs_variogram
+      ~IntrusionBuilder.prepare_data
+      ~IntrusionBuilder.set_conceptual_models_parameters
+      ~IntrusionBuilder.set_data_for_extent_simulation
+      ~IntrusionBuilder.set_g_sgs_GSLIBparameters
+      ~IntrusionBuilder.set_l_sgs_GSLIBparameters
+      ~IntrusionBuilder.simulate_growth_thresholds
+      ~IntrusionBuilder.simulate_growth_thresholds_original
+      ~IntrusionBuilder.simulate_lateral_thresholds
+      ~IntrusionBuilder.simulate_lateral_thresholds_original
+      ~IntrusionBuilder.up_to_date
+      ~IntrusionBuilder.update
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~IntrusionBuilder.build_arguments
+      ~IntrusionBuilder.feature
+   
+   

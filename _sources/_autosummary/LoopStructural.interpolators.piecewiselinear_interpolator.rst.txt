@@ -1,0 +1,45 @@
+LoopStructural.interpolators.piecewiselinear\_interpolator
+==========================================================
+
+.. automodule:: LoopStructural.interpolators.piecewiselinear_interpolator
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      cg
+      fold_cg
+      getLogger
+      get_vectors
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      DiscreteInterpolator
+      InterpolatorType
+      PiecewiseLinearInterpolator
+   
+   
+
+   
+   
+   
+
+
+

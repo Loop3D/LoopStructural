@@ -1,0 +1,6 @@
+LoopStructural.datasets.load\_intrusion
+=======================================
+
+.. currentmodule:: LoopStructural.datasets
+
+.. autofunction:: load_intrusion

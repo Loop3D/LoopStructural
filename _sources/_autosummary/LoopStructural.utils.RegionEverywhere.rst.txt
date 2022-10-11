@@ -1,0 +1,25 @@
+LoopStructural.utils.RegionEverywhere
+=====================================
+
+.. currentmodule:: LoopStructural.utils
+
+.. autoclass:: RegionEverywhere
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RegionEverywhere.__init__
+   
+   
+
+   
+   
+   

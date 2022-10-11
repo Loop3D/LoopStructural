@@ -1,0 +1,48 @@
+﻿LoopStructural
+==============
+
+.. automodule:: LoopStructural
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      GeologicalModel
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst                 
+   :recursive:
+
+   LoopStructural.analysis
+   LoopStructural.datasets
+   LoopStructural.interpolators
+   LoopStructural.modelling
+   LoopStructural.probability
+   LoopStructural.utils
+   LoopStructural.version
+   LoopStructural.visualisation
+

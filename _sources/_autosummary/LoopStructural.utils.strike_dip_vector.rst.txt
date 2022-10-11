@@ -1,0 +1,6 @@
+LoopStructural.utils.strike\_dip\_vector
+========================================
+
+.. currentmodule:: LoopStructural.utils
+
+.. autofunction:: strike_dip_vector

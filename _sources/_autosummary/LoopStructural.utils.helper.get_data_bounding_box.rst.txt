@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.get\_data\_bounding\_box
+====================================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: get_data_bounding_box

@@ -1,0 +1,42 @@
+LoopStructural.utils.exceptions
+===============================
+
+.. automodule:: LoopStructural.utils.exceptions
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+      :toctree:                                          
+   
+      InterpolatorError
+      LoopException
+      LoopImportError
+      LoopTypeError
+      LoopValueError
+   
+   
+
+
+

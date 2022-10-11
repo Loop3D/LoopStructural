@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoopStructural.interpolators.supports.P2UnstructuredTetMesh &#8212; LoopStructural 0.1 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.supports.P2UnstructuredTetMesh';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../getting_started/index.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="LoopStructural.html">
+                        LoopStructural
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
+            </li>
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
+    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../getting_started/index.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="LoopStructural.html">
+                        LoopStructural
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
+            </li>
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
+    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <div class="section" id="loopstructural-interpolators-supports-p2unstructuredtetmesh">
+<h1>LoopStructural.interpolators.supports.P2UnstructuredTetMesh<a class="headerlink" href="#loopstructural-interpolators-supports-p2unstructuredtetmesh" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.supports.</span></span><span class="sig-name descname"><span class="pre">P2UnstructuredTetMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aabb_nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.supports.UnStructuredTetMesh.html#LoopStructural.interpolators.supports.UnStructuredTetMesh" title="LoopStructural.interpolators.supports._3d_unstructured_tetra.UnStructuredTetMesh"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnStructuredTetMesh</span></code></a></p>
+<p>An unstructured mesh defined by nodes, elements and neighbours
+An axis aligned bounding box (AABB) is used to speed up finding
+which tetra a point is in.
+The aabb grid is calculated so that there are approximately 10 tetra per
+element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>array</em><em> or </em><em>array like</em>) – container of vertex locations</p></li>
+<li><p><strong>elements</strong> (<em>array</em><em> or </em><em>array like</em><em>, </em><em>dtype cast to long</em>) – container of tetra indicies</p></li>
+<li><p><strong>neighbours</strong> (<em>array</em><em> or </em><em>array like</em><em>, </em><em>dtype cast to long</em>) – array containing element neighbours</p></li>
+<li><p><strong>aabb_nsteps</strong> (<em>list</em><em>, </em><em>optional</em>) – force nsteps for aabb, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aabb_nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>An unstructured mesh defined by nodes, elements and neighbours
+An axis aligned bounding box (AABB) is used to speed up finding
+which tetra a point is in.
+The aabb grid is calculated so that there are approximately 10 tetra per
+element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>array</em><em> or </em><em>array like</em>) – container of vertex locations</p></li>
+<li><p><strong>elements</strong> (<em>array</em><em> or </em><em>array like</em><em>, </em><em>dtype cast to long</em>) – container of tetra indicies</p></li>
+<li><p><strong>neighbours</strong> (<em>array</em><em> or </em><em>array like</em><em>, </em><em>dtype cast to long</em>) – array containing element neighbours</p></li>
+<li><p><strong>aabb_nsteps</strong> (<em>list</em><em>, </em><em>optional</em>) – force nsteps for aabb, by default None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.__init__" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(nodes, elements, neighbours[, ...])</p></td>
+<td><p>An unstructured mesh defined by nodes, elements and neighbours An axis aligned bounding box (AABB) is used to speed up finding which tetra a point is in.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_d2" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_d2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_d2</span></code></a>(pos, prop)</p></td>
+<td><p>Evaluate the second derivative of the interpolant d2x, dxdy, d2y, dxdz dydz d2dz</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_gradient" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(pos, property_array)</p></td>
+<td><p>Evaluate the gradient of an interpolant at the locations</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_shape</span></code></a>(locations)</p></td>
+<td><p>Convenience function returning barycentric coords</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_d2" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_d2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_shape_d2</span></code></a>(indexes)</p></td>
+<td><p>evaluate second derivatives of shape functions in s and t</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_derivatives" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_derivatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_shape_derivatives</span></code></a>(locations[, elements])</p></td>
+<td><p>compute dN/ds (1st row), dN/dt(2nd row)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_value" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(pos, property_array)</p></td>
+<td><p>Evaluate value of interpolant</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_for_location" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_for_location</span></code></a>(points)</p></td>
+<td><p>Determine the tetrahedron from a numpy array of points</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradient_for_location" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradient_for_location"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_gradient_for_location</span></code></a>(pos)</p></td>
+<td><p>Get the gradient of the tetra for a location</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradients" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_gradients</span></code></a>([elements])</p></td>
+<td><p>Get the gradients of all tetras</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_elements</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_neighbours" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_neighbours"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_neighbours</span></code></a>()</p></td>
+<td><p>This function goes through all of the elements in the mesh and assembles a numpy array with the neighbours for each element</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_quadrature_points" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_quadrature_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quadrature_points</span></code></a>([npts])</p></td>
+<td><p>Calculate the quadrature points for the triangle using 3 points these points are at the barycentric coordinates of (1/6,1/6), (1/6,2/3), (2/3,1/6) All points are weighted equally at 1/6</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inside</span></code>(pos)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.element_size" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.element_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_size</span></code></a></p></td>
+<td><p>Calculate the volume of a tetrahedron using the 4 corners volume = abs(det(A))/6 where A is the jacobian of the corners</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_cells</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ntetra</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_norm" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_element_norm</span></code></a></p></td>
+<td><p>Get the normal to all of the shared elements</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_size" title="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_element_size</span></code></a></p></td>
+<td><p>Get the area of the share triangle</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.element_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">element_size</span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.element_size" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculate the volume of a tetrahedron using the 4 corners
+volume = abs(det(A))/6 where A is the jacobian of the corners</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>_type_</em> – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_d2">
+<span class="sig-name descname"><span class="pre">evaluate_d2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_d2" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate the second derivative of the interpolant
+d2x, dxdy, d2y, dxdz dydz d2dz</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>prop - numpy</em>) – locations</p></li>
+<li><p><strong>array</strong> – property values at nodes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_gradient">
+<span class="sig-name descname"><span class="pre">evaluate_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_gradient" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate the gradient of an interpolant at the locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>pos - numpy</em>) – locations</p></li>
+<li><p><strong>string</strong> (<em>prop -</em>) – property to evaluate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape">
+<span class="sig-name descname"><span class="pre">evaluate_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape" title="Permalink to this definition">#</a></dt>
+<dd><p>Convenience function returning barycentric coords</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_d2">
+<span class="sig-name descname"><span class="pre">evaluate_shape_d2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_d2" title="Permalink to this definition">#</a></dt>
+<dd><p>evaluate second derivatives of shape functions in s and t</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indexes</strong> (<em>np.ndarray</em>) – array of indexes</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – array of second derivative shape function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_derivatives">
+<span class="sig-name descname"><span class="pre">evaluate_shape_derivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_shape_derivatives" title="Permalink to this definition">#</a></dt>
+<dd><p>compute dN/ds (1st row), dN/dt(2nd row)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>locations</strong> (<em>np.array</em>) – location (n,3) array</p></li>
+<li><p><strong>elements</strong> (<em>np.array</em><em>, </em><em>optional</em>) – indexes to calculate shape function for. Used when evaluating quad points
+on faces as two tetra hold the point by default None
+When it is none, the index is calculated from the location</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – array of shape paramters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_value">
+<span class="sig-name descname"><span class="pre">evaluate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.evaluate_value" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate value of interpolant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>pos - numpy</em>) – locations</p></li>
+<li><p><strong>string</strong> (<em>prop -</em>) – property name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_for_location">
+<span class="sig-name descname"><span class="pre">get_element_for_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_for_location" title="Permalink to this definition">#</a></dt>
+<dd><p>Determine the tetrahedron from a numpy array of points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>np.array</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradient_for_location">
+<span class="sig-name descname"><span class="pre">get_element_gradient_for_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradient_for_location" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the gradient of the tetra for a location</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradients">
+<span class="sig-name descname"><span class="pre">get_element_gradients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_element_gradients" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the gradients of all tetras</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>elements</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_neighbours">
+<span class="sig-name descname"><span class="pre">get_neighbours</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_neighbours" title="Permalink to this definition">#</a></dt>
+<dd><p>This function goes through all of the elements in the mesh and assembles a numpy array
+with the neighbours for each element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_quadrature_points">
+<span class="sig-name descname"><span class="pre">get_quadrature_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.get_quadrature_points" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculate the quadrature points for the triangle using 3 points
+these points are at the barycentric coordinates of (1/6,1/6), (1/6,2/3), (2/3,1/6)
+All points are weighted equally at 1/6</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>npts</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_, by default 3</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>_type_</em> – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_norm">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shared_element_norm</span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_norm" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the normal to all of the shared elements</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shared_element_size</span></span><a class="headerlink" href="#LoopStructural.interpolators.supports.P2UnstructuredTetMesh.shared_element_size" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the area of the share triangle</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="../_sources/_autosummary/LoopStructural.interpolators.supports.P2UnstructuredTetMesh.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

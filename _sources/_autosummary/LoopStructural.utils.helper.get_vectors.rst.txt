@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.get\_vectors
+========================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: get_vectors

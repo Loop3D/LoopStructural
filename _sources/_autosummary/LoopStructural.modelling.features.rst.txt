@@ -1,0 +1,59 @@
+LoopStructural.modelling.features
+=================================
+
+.. automodule:: LoopStructural.modelling.features
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      getLogger
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      AnalyticalGeologicalFeature
+      BaseFeature
+      CrossProductGeologicalFeature
+      FeatureType
+      GeologicalFeature
+      IntEnum
+      LambdaGeologicalFeature
+      StructuralFrame
+      UnconformityFeature
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst                 
+   :recursive:
+
+   LoopStructural.modelling.features.builders
+   LoopStructural.modelling.features.fault
+   LoopStructural.modelling.features.fold
+

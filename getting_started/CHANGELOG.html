@@ -1,0 +1,1436 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Changelog &#8212; LoopStructural 0.1 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/CHANGELOG';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="../_auto_examples/index.html" />
+    <link rel="prev" title="LoopStructural design" href="loopstructural_design.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item current active">
+                    <a class="nav-link" href="index.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_autosummary/LoopStructural.html">
+                        LoopStructural
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
+            </li>
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
+    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item current active">
+                    <a class="nav-link" href="index.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../_autosummary/LoopStructural.html">
+                        LoopStructural
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
+            </li>
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
+    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors_guide.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loopstructural_design.html">LoopStructural design</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Changelog</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading">#</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference external" href="https://github.com/Loop3D/LoopStructural/compare/v1.5.1...v1.5.2">1.5.2</a> (2022-10-11)<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<div class="section" id="bug-fixes">
+<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding BaseBuilder to builders init (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/7f56fdd72c8edeb188217f4314c02179c1ba790e">7f56fdd</a>)</p></li>
+<li><p>adding checks for data size in interpolator (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/ea8cccacfa7b91f92b08eb697dadd48740bd7c65">ea8ccca</a>)</p></li>
+<li><p>adding old auto_examples directory (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/cefe790e1e93bfe6c727800707fcb8ecdc0bdeaf">cefe790</a>)</p></li>
+<li><p>code review for intrusions (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/debc391501d6ccb86769ab7109c80cf8a3c32ffa">debc391</a>)</p></li>
+<li><p>creating basebuilder (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/3480e3dec5c4260fdb96f42ea68499445be42d6b">3480e3d</a>)</p></li>
+<li><p>feature builder sets interpolator interpolation__region (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/520cc013bc1ceb4cbace9afcfa224a6239c3e726">520cc01</a>)</p></li>
+<li><p>formatting (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/9cb79cb91327ccf777630dadfe782e2434475bc3">9cb79cb</a>)</p></li>
+<li><p>starting unit id &#64; 1 means basement =0 (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/ba627bbe5d251efc6c2adf7036930aea477588a4">ba627bb</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding basic testing guideline (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/7c6ccefbf04fb293453a7f13b04b2371e956ece3">7c6ccef</a>)</p></li>
+<li><p>adding docstrings (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/ffe9614bcfecf1606fb1130e976df7264987e597">ffe9614</a>)</p></li>
+<li><p>adding geopandas to documentation docker (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/ab443ab7c9dd8e14038782319ae82fa70896ae58">ab443ab</a>)</p></li>
+<li><p>adding links to kwargs in docstring (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/6e3a6e2b809842c13bf0700192a098d0f46f6c40">6e3a6e2</a>)</p></li>
+<li><p>fixed bug with documentation not being generated (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/994d5dc20d4e44840271b4bcf1df6e5c5325ffa1">994d5dc</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2><a class="reference external" href="https://github.com/Loop3D/LoopStructural/compare/v1.5.0...v1.5.1">1.5.1</a> (2022-09-15)<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<div class="section" id="id3">
+<h3>Bug Fixes<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>bump (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/d175b99f925734b32d62b6b50d2ed2064ebfedc5">d175b99</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="https://github.com/Loop3D/LoopStructural/compare/v1.4.13...v1.5.0">1.5.0</a> (2022-09-14)<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<div class="section" id="features">
+<h3>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>bump version to test release-please (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/08d380d6f3d050f752848a566f62a6d4e849ffc1">08d380d</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>Bug Fixes<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>setting versionfile for version.py (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/6fc564e38a996888bd71804213d0495a5a6714e0">6fc564e</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h3>Documentation<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding example for local weight change (<a class="reference external" href="https://github.com/Loop3D/LoopStructural/commit/9a8f7732774a4ff89f4e8c20846e5bb9d6ad71b1">9a8f773</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id7">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.12...v1.4.13">1.4.13</a> (2022-08-29)<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id8">
+<h3>Bug Fixes<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>removing example that crashes docs (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/63a9ce907339e8a12395b4f7b1bf150e5b537e18">63a9ce9</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.11...v1.4.12">1.4.12</a> (2022-08-27)<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id10">
+<h3>Bug Fixes<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>enabling fault network example (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5560d3f03aee7213dec7088b0e07f8a4150935f4">5560d3f</a>)</p></li>
+<li><p>failfast in strategy (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2f3304ee40220ac1b5f49ddf6b29d6a2e524520b">2f3304e</a>)</p></li>
+<li><p>path to copy change log (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c0617555acb1f1f57247c1fa7138e9a412f06207">c061755</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.10...v1.4.11">1.4.11</a> (2022-08-10)<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id12">
+<h3>Bug Fixes<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>add data for structural frame, adds data for all coordinates (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6ebdf842071d8822053008c6e7a19eb8c0131414">6ebdf84</a>)</p></li>
+<li><p>adding new dataset for fault, map in installer (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b32edf3a739b51347db9233d8b35a8f92fa5bbb5">b32edf3</a>)</p></li>
+<li><p>basal unconformities cropping lowest surface (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5c47ef6020b2d2c1da53e771db5dac1308d870db">5c47ef6</a>)</p></li>
+<li><p>faults not added to features because using string not enum (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/faf71ee6584d3da63e77343847dfbcfafefb4b21">faf71ee</a>)</p></li>
+<li><p>faults were not faulting unconformities (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ec520fa88f7b0c0efeb1c80516b6b77967cd7982">ec520fa</a>)</p></li>
+<li><p>geological map example stratigraphic order loaded incorrectly (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b98397b6adafc279f0bfa9701a77b8b79f779aed">b98397b</a>)</p></li>
+<li><p>single group surfaces not plotting, changed min strat column to 0 (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/44481a3155b0dafcbe009f148625362dbcda1770">44481a3</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id13">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.9...v1.4.10">1.4.10</a> (2022-07-20)<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id14">
+<h3>Bug Fixes<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:bug: unconformities weren’t working. (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/304335d0421297ca026fa26a2e6fed2e4c16332b">304335d</a>)</p></li>
+<li><p>adding loopjson encoder (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ec1b84e7881977d7ec1fec7ecf00b45770f5d832">ec1b84e</a>)</p></li>
+<li><p>adding more informative errors to p2 tetra (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c63cae7e9c03be10b566d4b5b85987956d164a78">c63cae7</a>)</p></li>
+<li><p>adding python alternatives for cg and fold cg (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5ffef3b482e1fedaaf2ec6a6c8c44a392d6def6f">5ffef3b</a>)</p></li>
+<li><p>catch all exceptions, raise import (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a071416cb602db135c9fa9d67d99ceb79ddb0407">a071416</a>)</p></li>
+<li><p>catch dfi import error (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f9c8aa0b04996dd5ad887871b950b2851c4310bb">f9c8aa0</a>)</p></li>
+<li><p>catch modulenotfound raise importerror (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/836ee843f418956fc9bd578868030eba537960e2">836ee84</a>)</p></li>
+<li><p>don’t add unconformity if base feature is None (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/be4d8ac220d1fe9a58738652ccf823631cab607e">be4d8ac</a>)</p></li>
+<li><p>faults enabled bug, ~ does not flip boolean, changing to not (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/0c6878837e8eeb24b2ca9009cced0a8ecb6750ac">0c68788</a>)</p></li>
+<li><p>feature type enums renaming (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/616b55440944055d284484381ace2d068e5259c1">616b554</a>)</p></li>
+<li><p>featuretype enum (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c2567465855b9a8ae6a97c1ded5972ec18a89b30">c256746</a>)</p></li>
+<li><p>fold cg (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a35f41a0a1f2be50e9d15ae8d4e2d92877526eff">a35f41a</a>)</p></li>
+<li><p>lavavu.camera bug when keys are missing (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b554c3c143b27e592672f87d1982ae455779aade">b554c3c</a>)</p></li>
+<li><p>missing enum (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bc34bb4e8cb07a006529c26a7982b3e2b3ea0241">bc34bb4</a>)</p></li>
+<li><p>model plotter uses BaseFeature to check type (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a2bd0f01a7c297ecf01fc0c612dc0d123ac16702">a2bd0f0</a>)</p></li>
+<li><p>pli import is optional (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6347742847460821a11ce840af51972f0b5df43b">6347742</a>)</p></li>
+<li><p>raise error if cython can’t be imported (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f5b82ebf96e7b93052693f99af783ea18511aa48">f5b82eb</a>)</p></li>
+<li><p>recursive error fix (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f3180f3beaae36a424be1de7f2512800fbe39022">f3180f3</a>)</p></li>
+<li><p>renaming enums to be consistent with calls (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/57ed44349c5b8f04e967d049f55aa35f1440e324">57ed443</a>)</p></li>
+<li><p>unconformities causing nan slicing due to recurvsive error (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/728fc5f053345ae6901631bf60bd1d2457574d66">728fc5f</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>Documentation<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:memo: added example for plotting unconformities (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bad53a01e21e39dcdbdc3a5c218e9c9957050f9b">bad53a0</a>)</p></li>
+<li><p>fixing new documentation so that data can be loaded (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7ac5a0d1752c6aad2e8f5112ec4d6efeaa93dd20">7ac5a0d</a>)</p></li>
+<li><p>missing variable (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7df88a2111c259de367b734a095452a747b8a019">7df88a2</a>)</p></li>
+<li><p>renaming cython to _cython so its not included in docs (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/27e88a1d4f3c8f3461481972fc1b13fda7513f0d">27e88a1</a>)</p></li>
+<li><p>trying to ignore cython (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6582d0c8381588e8f59c623641c7d8ce451891fc">6582d0c</a>)</p></li>
+<li><p>updating documentation (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/493beeac3ade0b35c49895d91c64aa8926d9a3b7">493beea</a>)</p></li>
+<li><p>using docker to build docs (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f499aae76107e09e15d2b9ce56e75fa9b2e0560b">f499aae</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id16">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.8...v1.4.9">1.4.9</a> (2022-05-05)<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id17">
+<h3>Documentation<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>fixing docs ci (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2e0d47292ccc20c071256cbb51ac8736c6851f9e">2e0d472</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id18">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.7...v1.4.8">1.4.8</a> (2022-05-05)<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id19">
+<h3>Bug Fixes<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:bug: faults where feature name given not fault_name were crashing (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/dae9e92f4b2f94ebcaefe85dfc419bfdef69b43a">dae9e92</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id20">
+<h3>Documentation<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding geopandas to doc test (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b6613a91fd158405ac01d8c9675618bcb6e6af12">b6613a9</a>)</p></li>
+<li><p>fixing fault network example (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6f4f2fcba8e1e708c17acfa569d6592f0a33c9d6">6f4f2fc</a>)</p></li>
+<li><p>refactoring documentation + adding new example (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d15ba6c391af889e0a0e57f4eced126fe6521461">d15ba6c</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id21">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.6...v1.4.7">1.4.7</a> (2022-05-04)<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id22">
+<h3>Bug Fixes<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:bug: fault function attribute is now a property accessor (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3b9cc2e29d10d5b05af12da23ac8ccc6c2dca11a">3b9cc2e</a>)</p></li>
+<li><p>:zap: flag not uptodate when build arguments change (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6f8002911af8d52def836bc555193cfe20485d9c">6f80029</a>)</p></li>
+<li><p>changing import error message to warning (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/de22530702a55ce322ae5cbfeeaa8c0ed6dd2875">de22530</a>)</p></li>
+<li><p>fold frame bug for refolded folds (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bf272d19c55338421d24edda9255d184b5ce60e3">bf272d1</a>)</p></li>
+<li><p>if downthrow not provided estimate abutting direction (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5a7c8d5ee16b1f8d080e496894507f1ef09ed102">5a7c8d5</a>)</p></li>
+<li><p>temp disable fault centre from project file (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/44d813d4f4b66fffcbce97099b92e2c04ceb4294">44d813d</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id23">
+<h3>Documentation<a class="headerlink" href="#id23" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:memo: updating docs for pydata, actually committing changes (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/be33a6fe2d8bd1d8f69117203c7bc460706eda9c">be33a6f</a>)</p></li>
+<li><p>:memo: updating documentation to use pydata theme (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c5b28d5238663d581c661bc4220487253cba4eca">c5b28d5</a>)</p></li>
+<li><p>adding fault network example (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2bcbfac75cc06312a7bb55e9abd5c06a01abbaeb">2bcbfac</a>)</p></li>
+<li><p>adding more to design document (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/8322c6036f95cb5e382e54176e6d73200d55bf27">8322c60</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id24">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.5...v1.4.6">1.4.6</a> (2022-04-26)<a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id25">
+<h3>Bug Fixes<a class="headerlink" href="#id25" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:ambulance: quick fix for projectfile import error (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/34fb1d695b101cfbefbcb5f8e8bbb0449e170c18">34fb1d6</a>)</p></li>
+<li><p>:ambulance: try 2, catching loopimporterror as well as import error (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5db6a8113d5dd0f6f2c3c59078cbd812f4aecafb">5db6a81</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id26">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.4...v1.4.5">1.4.5</a> (2022-04-14)<a class="headerlink" href="#id26" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id27">
+<h3>Bug Fixes<a class="headerlink" href="#id27" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:art: adding LoopProjectFileProcessor to modeling init (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/fa1c8f7333d4c387988ddf3969e51958df5d123a">fa1c8f7</a>)</p></li>
+<li><p>:bug: adding origin and maximum to the data processor (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bb7b811bf773ffbeeafb270188ed1ee4992afa01">bb7b811</a>)</p></li>
+<li><p>:bug: adding scaling to splay faults to reduce bubbles (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7d618fedfa6ca9adb8f3c2040cc2ac93630ce2cd">7d618fe</a>)</p></li>
+<li><p>:bug: can add faults even when stratigraphic column hasn’t been set (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/33366f926924f73ba8139c9d87e59c7ba09d06a2">33366f9</a>)</p></li>
+<li><p>:bug: fault geometry weren’t being set if they were calculated from the fault trace (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ddec5cb45259186aef4bde2bbf98e0bd3f518079">ddec5cb</a>)</p></li>
+<li><p>:bug: fixing warning message with divide by 0 (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ebd12ff6a0af0a312076327a2ab26a03a5333661">ebd12ff</a>)</p></li>
+<li><p>bug with fold constraints causing crash (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3abb65e47d2f90f9f2e2500ddbe0d362bec136fb">3abb65e</a>)</p></li>
+<li><p>bug with fold interpolator (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/8d94ca4cd8aa2ff7de17cae6b53f77a3abc06af4">8d94ca4</a>)</p></li>
+<li><p>temp disable splay fault (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/721270e942258c9c220aaaaaf01391e36d9af958">721270e</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id28">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.3...v1.4.4">1.4.4</a> (2022-03-21)<a class="headerlink" href="#id28" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id29">
+<h3>Bug Fixes<a class="headerlink" href="#id29" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:ambulance: import failing when surfepy not install (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5041ad6692cbcd5f3a58b9edb2fc8168e73905ec">5041ad6</a>)</p></li>
+<li><p>:ambulance: number of steps was actually number of cells causing issues with indexing (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/88b8fee380cf50a35801247a3c430d84eb4e14f4">88b8fee</a>)</p></li>
+<li><p>:ambulance: surfe import was failing (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/63d61a4253a9b10cbc7e4e07ae73d42fbd1aa84e">63d61a4</a>)</p></li>
+<li><p>:bug: fixed bug with fault clipping, uses normal direction to infer hanging wall side away from interpolated surfaces (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7ea9beb33993a82f87686c530f7f4d4851a6b8f9">7ea9beb</a>)</p></li>
+<li><p>:bug: small fixes for making sure model update is called when params are changed (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a22ed6112e5cde81577523fdb142bfee446128ad">a22ed61</a>)</p></li>
+<li><p>:bug: stratigraphic column was not covering scalar field range. (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/990e0f48cd02af1965418f3371d2e267e6affdb8">990e0f4</a>)</p></li>
+<li><p>:bug: weight for p2 interpolator wasn’t being applied (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5002a8a69cdf1d69d52a36f877b81a49c8e86fa1">5002a8a</a>)</p></li>
+<li><p>:fire: changes fault slip warning to info (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/16d16d7442f2f2a96ca457ec82ee3ebe5b7e1929">16d16d7</a>)</p></li>
+<li><p>:rotating_light: fixig pylint error (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d5c99cdaffc94e4d6883de395923ae0278f23fe0">d5c99cd</a>)</p></li>
+<li><p>:sparkles: adding config class for storing module wide configs (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9407ff7b523160786430e390491a49b62dd631d0">9407ff7</a>)</p></li>
+<li><p>:sparkles: faults/fault builder now store the fault geometry parameters (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f92749b22494bb418f219a19f4f880f6278ee946">f92749b</a>)</p></li>
+<li><p>:sparkles: flagging interpolator not up to date when data changes (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/96c8ddbe29d7f6e61efac89d6d0d9fca0d750089">96c8ddb</a>)</p></li>
+<li><p>:sparkles: intrusionbuilder–&gt;intrusionframebuilder, intrusionbuilder will build intrusionfeature (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7d5935c53c751096c1ca019dd0df31a71991f767">7d5935c</a>)</p></li>
+<li><p>adding debugging code for indexing structured grid (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/59e130a422db5a547d8fca4a228811074d7b5af6">59e130a</a>)</p></li>
+<li><p>adding intrusion dependencies to setup.py (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/08f6a224d2479814fc00cedb70013299f0617bdb">08f6a22</a>)</p></li>
+<li><p>adding logger and remove unused files (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bd3f428d65c0ce369b4b36970e7abce11a68abeb">bd3f428</a>)</p></li>
+<li><p>change logs (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b8000db5caa6638360d4e1d9ace5ca59f8e3397a">b8000db</a>)</p></li>
+<li><p>change pandas append to concat (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/51bbf5e69fc62f902d2be7bb6706edab879c4401">51bbf5e</a>)</p></li>
+<li><p>changing ckmeans to sklearn kmeans (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/60f3ec5d6761e4bde94ea8dd1a56e16afa5506d6">60f3ec5</a>)</p></li>
+<li><p>fixing import warnings (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3b5c0f3a3b48d39cc5f7ddac664aec99b3cf91c0">3b5c0f3</a>)</p></li>
+<li><p>improvements in modified scalar field (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d1de75d01b8131f150fc936f1ff4d74b71ef588d">d1de75d</a>)</p></li>
+<li><p>Intrusion Builder class (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f697ee62e4c948c74083f5762bb0b9333a8d8086">f697ee6</a>)</p></li>
+<li><p>intrusion feature containing pre IBody fxs (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/cd6fe6103505fb7f36eeacf91fcead01de17b951">cd6fe61</a>)</p></li>
+<li><p>merge origin/intrusion to local intrusion (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2507b33b5a45267eddd0a7c944a5250a3d457db1">2507b33</a>)</p></li>
+<li><p>moving config to own file (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3dc2a199bbe8cae904255c575c32c718004580c1">3dc2a19</a>)</p></li>
+<li><p>remove of ckwrap library (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/e5ddf5ee9f96e995809cfb0426c2a78beb506c9f">e5ddf5e</a>)</p></li>
+<li><p>temp removing rotate from structured support (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2e2d1c6774eb597f099488d3f83f0af4dddc7702">2e2d1c6</a>)</p></li>
+<li><p>unit tests for intrusions (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/85b9b4b034ffb13a811bc30ea4ccf7487b7e257e">85b9b4b</a>)</p></li>
+<li><p>update of builder (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/cdf7ebb5e70ea238a426d6161928d86cd818b38a">cdf7ebb</a>)</p></li>
+<li><p>update of conceptual models (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/948beef1cf8cadf516ec20610fb89d878bddcc0f">948beef</a>)</p></li>
+<li><p>update of intrusion module (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bba0163fc4d93def34a5fbb38d948e9c13280802">bba0163</a>)</p></li>
+<li><p>update skfmm import (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ea855f03902e093855f3c1046ceabb9243b5dd90">ea855f0</a>)</p></li>
+<li><p>variogram parameters now in set_sgs_parameters (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/26ca7b37ac298ab0c99446820324e56e758f8223">26ca7b3</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="performance-improvements">
+<h3>Performance Improvements<a class="headerlink" href="#performance-improvements" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:zap: reducing memory for unstructured tetra (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1ee5dd6934602aff82c280429e62f18c699cef2e">1ee5dd6</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id30">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.2...v1.4.3">1.4.3</a> (2022-02-21)<a class="headerlink" href="#id30" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id31">
+<h3>Bug Fixes<a class="headerlink" href="#id31" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:ambulance: added scale parameter for calculate_topo matrix. (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/839e0e07fd8333c70ca71c0d8cf356ccd2e9e604">839e0e0</a>)</p></li>
+<li><p>:bug: adding experimental flag for loopstructural (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f810479f6d057d21f9229ae645d39257b051d906">f810479</a>)</p></li>
+<li><p>:bug: changes support barycentre to property (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d2e1f0b54d71eb2cdae3a92e9fcbce9a7e189d26">d2e1f0b</a>)</p></li>
+<li><p>:bug: fixing bugs for flake8 (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9dce30c012ba6543a7936275a4452c25d30412fc">9dce30c</a>)</p></li>
+<li><p>:bug: small changes to pass tests. (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/14c758044d36962b6b63d7af7dd6783638539023">14c7580</a>)</p></li>
+<li><p>:zap: changing aabb to sparse matrix (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2cbdab7feb1cafe4491766f056b3fe58e32ac706">2cbdab7</a>)</p></li>
+<li><p>adding isnan to inequality check (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d7803005971e8e72663ebe2538251407079cb30b">d780300</a>)</p></li>
+<li><p>adding node inequality constraints (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/de3391403a7012895f7bf1bf170862ca2cfa6ed7">de33914</a>)</p></li>
+<li><p>adding option to use mkl (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/22883ba59c13476ff77f91265268d10e56cd8a84">22883ba</a>)</p></li>
+<li><p>adding p2 interpolator for 3d :) (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5d0acfb99458f2cacfbbfe099164e32ebe2a6d3b">5d0acfb</a>)</p></li>
+<li><p>bug with equality constraints (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b192cff05987b6ad9350ade53208943afca18823">b192cff</a>)</p></li>
+<li><p>changing base unstructred support to work (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/50ca16b70ddafd29ead061e153fe2b0652ca0e2b">50ca16b</a>)</p></li>
+<li><p>correct ordering of shape functions (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6f2f113abb42a14c4b5278a635066f1696bf062d">6f2f113</a>)</p></li>
+<li><p>minor fix to variogram saving wavelength guess as attribute (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2dbc29e0696fe25bc3f55afb6cee1bea7bb9d9f1">2dbc29e</a>)</p></li>
+<li><p>modifying for 3d/generic case. (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c6a8ea3dcfdb7098d9e77df83f87e0f50036b670">c6a8ea3</a>)</p></li>
+<li><p>norm constraints p2 (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/93d31654a9403f285a5ce3e4cfc3c6b4f91becf5">93d3165</a>)</p></li>
+<li><p>region funct type incorrect causing (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a5d27f1569e0337971cc4997c673333ff1842d83">a5d27f1</a>)</p></li>
+<li><p>storing constraints as numpy array (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6c753799019e19bb69d8621d5020787d5c42339f">6c75379</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id32">
+<h3>Documentation<a class="headerlink" href="#id32" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:memo: adding warning that analysis module is experimental (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/0574e57bc639fe809b3e9b02531ce0e10742ea36">0574e57</a>)</p></li>
+<li><p>:memo: updating documentation for evaluate model (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1dcc716c6ae5cb0c77a54bf794ee14e077a874ce">1dcc716</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id33">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.1...v1.4.2">1.4.2</a> (2022-02-07)<a class="headerlink" href="#id33" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id34">
+<h3>Bug Fixes<a class="headerlink" href="#id34" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>actually fixing divide by zero (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ef4d7d036a24730a5c296f8e7779d76e405b98ce">ef4d7d0</a>)</p></li>
+<li><p>added function for plotting structural frames (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/69dbc6d12999952d6266d003e8e7bda37551670c">69dbc6d</a>)</p></li>
+<li><p>adding mpl syntax for 3d view points (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/cc7788f62f82b4bdc4bba242c394212ed94e6d5d">cc7788f</a>)</p></li>
+<li><p>bug where data is not float (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/e6f7e1fb6c09d4702bc49218d5b7b4e73385de7a">e6f7e1f</a>)</p></li>
+<li><p>bug with calculating average fault ori (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a2099cd0477a18a6448d5e556795b0e40a1f05a6">a2099cd</a>)</p></li>
+<li><p>commenting out osqp (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c2fd2da4c5f6b84424cbd0fa0f3e940b7cadeb4f">c2fd2da</a>)</p></li>
+<li><p>crashing when all constraints of a type outside of box (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7907f5814a4e2a0672c3fb73616325e533549809">7907f58</a>)</p></li>
+<li><p>extra checks (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ba6f39134e02daf996e59fd321d2698ce1dee040">ba6f391</a>)</p></li>
+<li><p>fault interpolation taking a long time (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/78fa9163bc0b5fd84ef93302541dbf2da474749b">78fa916</a>)</p></li>
+<li><p>faults interpolation mesh was not being adjusted (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/33722f6c103701a7c7bf5dadb88c3bd422752622">33722f6</a>)</p></li>
+<li><p>faults not rescaling when incorrect norm vectors used (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9706f255c612af4ea702c89f870826eed380167b">9706f25</a>)</p></li>
+<li><p>faults not visible in model (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/32cbb2a849c7f0c87da4adc2485013973eb2380b">32cbb2a</a>)</p></li>
+<li><p>faults with no value data not interpolating (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bf55ec684cd4635f7396a4245a79b2e9adf81697">bf55ec6</a>)</p></li>
+<li><p>interpolator type is now an enum (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/81975524f9ee487d8de489501b5fd2455150d20f">8197552</a>)</p></li>
+<li><p>norm constraint out of model cause crash (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/20692e21dd7b97911e1b38f66ba405dfc152cb5f">20692e2</a>)</p></li>
+<li><p>number of constraints warning message (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9abcc042947b06f80db121aa48f9a9c1f0648b81">9abcc04</a>)</p></li>
+<li><p>removed divide by 0 error (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9f17489cf8f233651778e817f7fd9c3258bc7d9f">9f17489</a>)</p></li>
+<li><p>updating logging (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f77f9156dfae6a58ea4a31b4b577dd2f207d2b8a">f77f915</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id35">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.4.0...v1.4.1">1.4.1</a> (2021-12-06)<a class="headerlink" href="#id35" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id36">
+<h3>Bug Fixes<a class="headerlink" href="#id36" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>updating github workflow  (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/84b4017030089b51e81b34e2faa52f9526ad6c74">84b4017</a>)</p></li>
+<li><p>updating version number manually  (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1f11571cc743f6b366898471ce4dbd4dbffd337b">1f11571</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id37">
+<h2><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.12...v1.4.0">1.4.0</a> (2021-12-06)<a class="headerlink" href="#id37" title="Permalink to this heading">#</a></h2>
+<div class="section" id="id38">
+<h3>Features<a class="headerlink" href="#id38" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>bumping version (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/e50a35eaef77d873794a1d0efa362601882152ff">e50a35e</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id39">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.11...v1.3.12">1.3.12</a> (2021-12-05)<a class="headerlink" href="#id39" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id40">
+<h3>Bug Fixes<a class="headerlink" href="#id40" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding polarity to LS datastructure (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/61842f0b2f4bf72fd53e0d5834a89e2a996e4f1a">61842f0</a>)</p></li>
+<li><p>error creating mesh for faults (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7efe910e3afc716d6cd7de69eb2c534cf9d8a1b0">7efe910</a>)</p></li>
+<li><p>gradient norm used for folds when fold (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/36f9cff04ad6dde5fdefdf3feead3984a21e3fc4">36f9cff</a>)</p></li>
+<li><p>splot not working for overturned folds (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2e185b52a5544723aa8d34f5e87d6449acf39668">2e185b5</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id41">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.10...v1.3.11">1.3.11</a> (2021-11-29)<a class="headerlink" href="#id41" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id42">
+<h3>Bug Fixes<a class="headerlink" href="#id42" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>added fault stratigraphy relation to processor (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ac864d86b4cd670f00dc60a59782d144536268d4">ac864d8</a>)</p></li>
+<li><p>added project file processor (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/855a69088fb49d18407a2a4404e775b71c2dc0bb">855a690</a>)</p></li>
+<li><p>bugfix crash when evaluating feature (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d24f656f75f955c46c706619daad5212a3a48160">d24f656</a>)</p></li>
+<li><p>fault support resized for all faults (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/63ea5ec89e210cc986c02d526cedd4590d374679">63ea5ec</a>)</p></li>
+<li><p>formatting (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a2f4fee13cfd825e9ffd0800f61f6ee452e5bb61">a2f4fee</a>)</p></li>
+<li><p>formatting (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/06d7e327bf59de23340018d1a842ba1b21deb0e4">06d7e32</a>)</p></li>
+<li><p>missing argument from test + typo (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/dee158aed45624d8a711a5efb665c9555f1b4712">dee158a</a>)</p></li>
+<li><p>multiple faults not applied to stratigraphy data (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d7f468944c6300424caefbaf3e59911dde71cae5">d7f4689</a>)</p></li>
+<li><p>only host version built on action (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/8c7d058f9526a648e06b2f25c32ecddcc0233bb8">8c7d058</a>)</p></li>
+<li><p>typo in variable names, AAT instead of ATA (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6a1a98ff7fbf1e16c28cc71f9e167633af429937">6a1a98f</a>)</p></li>
+<li><p>updating github ci for conda build (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3525ec1a602d2b3a8b735f2b8d9c8b380f87331f">3525ec1</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id43">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.9...v1.3.10">1.3.10</a> (2021-11-10)<a class="headerlink" href="#id43" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id44">
+<h3>Bug Fixes<a class="headerlink" href="#id44" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>conda build for all python (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/04757b506a095a3d53b914f951305c9f34da1a0d">04757b5</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id45">
+<h3>Documentation<a class="headerlink" href="#id45" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>fixing documentation autobuild (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/54e0bc934a12cdda56c8d5a2112f7f61b2c68412">54e0bc9</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id46">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.8...v1.3.9">1.3.9</a> (2021-11-10)<a class="headerlink" href="#id46" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id47">
+<h3>Bug Fixes<a class="headerlink" href="#id47" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>added points argument to faultframe builder (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/4588d3c6436666d951dfc84755701b0b7cb95140">4588d3c</a>)</p></li>
+<li><p>bugfix thickness=False not working for processor (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/45e3f8f12dbae1a7343eda27819b55d48f321cef">45e3f8f</a>)</p></li>
+<li><p>fault frame build using scaled vector (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/87bc4e29dff30d234732526c97210c7b3d01ad2b">87bc4e2</a>)</p></li>
+<li><p>fdi bug was weigthing grad by volume (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7cd6296fd46b23643fbca66f653e18828632f069">7cd6296</a>)</p></li>
+<li><p>passing verb argument to pyamg solve (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/52c277d819ab202bb03e5e7116719dbcc3ea2778">52c277d</a>)</p></li>
+<li><p>reducing default fault buffer from .4 to .2 (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/328013e09210098e38f02ee6fad65f10c54fa067">328013e</a>)</p></li>
+<li><p>removing _ from pli constraint names (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/08473c3d90844e74ba7fb68a3b7bc7290ce56ac8">08473c3</a>)</p></li>
+<li><p>typos (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c67fc54b3aedd84a48ff709d32d69ba3c5489f99">c67fc54</a>)</p></li>
+<li><p>updating docker image (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ff2becd59c248a461838a5385adcf885edc5f3b5">ff2becd</a>)</p></li>
+<li><p>weight can be float or int (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d2c469fc8e5279de116f066ba61d2833dbc16e7f">d2c469f</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id48">
+<h3>Documentation<a class="headerlink" href="#id48" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>updating docs to use releaseplease changelog (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/cbc86909efe5480c6c1d4bcef874c9b2d4dcea1d">cbc8690</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id49">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.7...v1.3.8">1.3.8</a> (2021-11-08)<a class="headerlink" href="#id49" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id50">
+<h3>Bug Fixes<a class="headerlink" href="#id50" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding cython code for getting neighbour pairs (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/65a0a44e182adc16b62d6e38bb9cf941b777e3ef">65a0a44</a>)</p></li>
+<li><p>adding origin to scalar field (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/8bfeb54e5475e9d9b15fabe9b291373e9747777f">8bfeb54</a>)</p></li>
+<li><p>bugfix for pli weighting (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1ce7380d4ba000bad004bbcbb308b8889b18fe31">1ce7380</a>)</p></li>
+<li><p>faults are more generic (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/4fc462736a0d7a8ff5e1ebfa012b116123087933">4fc4627</a>)</p></li>
+<li><p>fold builder was adding data twice (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/770e66656f8aa5ea381130ac3822222bddd2a77b">770e666</a>)</p></li>
+<li><p>fold rotation angle calculated incorrectly (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/aea51bf2610a4ca284db258d8f6ece2f4b597ac6">aea51bf</a>)</p></li>
+<li><p>generalising support functions for grid and tetra (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/761fd03671126b3d8200f19126ea12fb5b5e5166">761fd03</a>)</p></li>
+<li><p>gradient constraints in pli weighted by vol (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9b487fd588830ec008facc922241db46a1e832d2">9b487fd</a>)</p></li>
+<li><p>kwargs weren’t being passed to fold builder (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d5135c5642bb25d34406bbc65349725f1d88b60f">d5135c5</a>)</p></li>
+<li><p>matrix assembly based on constraints dict (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/20407e4a051611cbcdd7a01486a31e2aa9ee45cb">20407e4</a>)</p></li>
+<li><p>need to put exception type to get message (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/16c01eaf971769af6b7c6abe664a002faed42551">16c01ea</a>)</p></li>
+<li><p>nonlinear will replace discrete class (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/86816d12d1d8b883f2529d9a114c382a005a2bb3">86816d1</a>)</p></li>
+<li><p>normalise rows of interpolation matrix (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ae315d2122808594863e7903e6be221a5e0a48c1">ae315d2</a>)</p></li>
+<li><p>normalise vector for cg (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f8cf221ce3b707e676f16aa04a634fb3ff45d15b">f8cf221</a>)</p></li>
+<li><p>plot vector field crashing (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/e35f6b214ccf448022f53e7b0d892b9e022c766b">e35f6b2</a>)</p></li>
+<li><p>pytest failed (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9136c991e7feee6a1e7ffce76745d7c74c9a0357">9136c99</a>)</p></li>
+<li><p>removing sign change for rotation angle (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7ab33fd63742f4350bf729537bd5b423d6f84274">7ab33fd</a>)</p></li>
+<li><p>speed up (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/e5b53d87d2cd9bf3afa6d1390bcc6d593f885467">e5b53d8</a>)</p></li>
+<li><p>speeding up interface constraints (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3f4a845be37fbb85b07260ae8d62dc7b46aaf26c">3f4a845</a>)</p></li>
+<li><p>weighting fdi using volume of element (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/665e4fe70bbcd310ca3dfb2b957cfe1f25af2b3c">665e4fe</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id51">
+<h3>Documentation<a class="headerlink" href="#id51" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding debugging guide (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/540b5ac381bfe3a3b92170f0c1d3b5a2ba5e07de">540b5ac</a>)</p></li>
+<li><p>updating to issue form, using scipy for a template (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/70b3a67581d2c3802dbed225c6e7057633d9eff3">70b3a67</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id52">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.6...v1.3.7">1.3.7</a> (2021-10-13)<a class="headerlink" href="#id52" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id53">
+<h3>Bug Fixes<a class="headerlink" href="#id53" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>abutting fault polarity was being calculated inconsistently. (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c77681f466070587e235ccaa1ff6f6fd7b87db92">c77681f</a>)</p></li>
+<li><p>adding folded fold frame creates a fold frame not structural frame (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/36aa4b34adfd625766e5ad61e1212f20fabfcdbf">36aa4b3</a>)</p></li>
+<li><p>call to update feature when initialising rotation angle plotter (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b97f017e583f0190cce030b940a8a6888d436a35">b97f017</a>)</p></li>
+<li><p>setting default for viewer to model = none (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/8aec0e493dd16e6725e2eed1ad2b859549580cc1">8aec0e4</a>)</p></li>
+<li><p>support box is now rescaled for plot (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/672379059ad97a63edf6ec77740d4d37f8a332b9">6723790</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id54">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.5...v1.3.6">1.3.6</a> (2021-10-12)<a class="headerlink" href="#id54" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id55">
+<h3>Bug Fixes<a class="headerlink" href="#id55" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>removing invalid classifiers (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5d8de8782cbfb41ebf229d5e87ac53f6c06f65c3">5d8de87</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id56">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.4...v1.3.5">1.3.5</a> (2021-10-11)<a class="headerlink" href="#id56" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id57">
+<h3>Bug Fixes<a class="headerlink" href="#id57" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding aabb (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/512f0a3ec2dddfe0032a03a1d5f24c1a039ddc9e">512f0a3</a>)</p></li>
+<li><p>adding gradient option for m2l wrapper (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/cdce6e8887f771d274ef68ad6ad94b25f745a3d5">cdce6e8</a>)</p></li>
+<li><p>adding option to define custom mesh builder for pli (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b21fa8c309590c6dd85ea28f0c456a7acb854df2">b21fa8c</a>)</p></li>
+<li><p>changed to boolean logic for aabb (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f5a5f9b811220f534c2b667a652d063ad530294f">f5a5f9b</a>)</p></li>
+<li><p>cleaning up (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/262a89da9be5aabb3462b5a35dfea830eda6c728">262a89d</a>)</p></li>
+<li><p>incorrect indexing for FDI grad constraints (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d6b82808e8f2716de313a9695293902b499bc27f">d6b8280</a>)</p></li>
+<li><p>move cg call to interpolator (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/53492a2436c6b90cf1ebe7a10283a5d8e5e49749">53492a2</a>)</p></li>
+<li><p>moved generic methods to base class (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/23ec7889500863bf6f3a43e8b8b5c9a30433a190">23ec788</a>)</p></li>
+<li><p>names kwarg wasn’t used for multiple slices (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/daebcf04ca0558c2f19ac60646d2e7adca8ef08a">daebcf0</a>)</p></li>
+<li><p>pli grad constraint weights were divided by 3 (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/cedcffb2577257baa3bd30dc5e38ff7c5451b37a">cedcffb</a>)</p></li>
+<li><p>removing old lavavu wrapper, name wasn’t (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9226f40cdebd2d65ef4d723dfbc5c736a003051c">9226f40</a>)</p></li>
+<li><p>renaming mesh to support for PLI (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2d0731740958bd8ef284aa7f7f8d73f6d45734de">2d07317</a>)</p></li>
+<li><p>setup.py codec and filename error (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/479ae2b9f9805fb2061da9ae9aa7e5dac9c2f49f">479ae2b</a>)</p></li>
+<li><p>unstructured mesh seems to work (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3bd5e248a2be44812c0d689c60ac0fa33e1c2e31">3bd5e24</a>)</p></li>
+<li><p>updating setup.py to include metadata for pypi (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/fea4317b11a7bdbeffadc8c69f9ffc08ada4b3ca">fea4317</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id58">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.3...v1.3.4">1.3.4</a> (2021-10-05)<a class="headerlink" href="#id58" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id59">
+<h3>Bug Fixes<a class="headerlink" href="#id59" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding loop specific exceptions and project file (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a7664d261f3c6524c3e29f2c0e082ef6b5512813">a7664d2</a>)</p></li>
+<li><p>adding non-linear constraint template (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/03b9e734dd058dc774dc4c755efc0a7e247e5d92">03b9e73</a>)</p></li>
+<li><p>adding non-linear constraint template (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1be8a45473828c90dc56eb23f698e8f20970a609">1be8a45</a>)</p></li>
+<li><p>boolean operator in surfe wrapper (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f11816e9d1ed92076e5d9719aead0a4e3ad206a0">f11816e</a>)</p></li>
+<li><p>bugfix for gradient constraints (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5fbbb08733c2fbdf2975a143d996ae18a4711959">5fbbb08</a>)</p></li>
+<li><p>constant fold axis was referencing fold_frame (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/2050b68b6ac837cb5113fdce481a78540fc1bdf5">2050b68</a>)</p></li>
+<li><p>intersection visualisation was using the (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1cf531b51a82228133d47d2be6485d742e180e6d">1cf531b</a>)</p></li>
+<li><p>method names for FDI/PLI are consistent (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/aebba23b84c894e1bee75200547514793b32b4ae">aebba23</a>)</p></li>
+<li><p>structural frame weights were being overwritten by (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/15e7f23fa4207ce4ded440a99637e0d950010558">15e7f23</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id60">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.2...v1.3.3">1.3.3</a> (2021-09-29)<a class="headerlink" href="#id60" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id61">
+<h3>Bug Fixes<a class="headerlink" href="#id61" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>kernel parameter for surfe wasn’t being applied (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/4e99bbf942467d39d82f1ee8acfe52174b45bb7b">4e99bbf</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id62">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.1...v1.3.2">1.3.2</a> (2021-09-28)<a class="headerlink" href="#id62" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id63">
+<h3>Bug Fixes<a class="headerlink" href="#id63" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding missing functions to lavavu wrapper (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/8a7b92ca149c4798a977181c77bbc7338c2d3457">8a7b92c</a>)</p></li>
+<li><p>adding tangents to surfepy wrapper (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1c0917e4b821383281fb8b507c44bf55fa9f3103">1c0917e</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id64">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.3.0...v1.3.1">1.3.1</a> (2021-09-28)<a class="headerlink" href="#id64" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id65">
+<h3>Bug Fixes<a class="headerlink" href="#id65" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>updating workflows to run on edited  (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/5b051f4b58e56c08a6a0f5f9366733879be7761c">5b051f4</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id66">
+<h2><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.2.4...v1.3.0">1.3.0</a> (2021-09-27)<a class="headerlink" href="#id66" title="Permalink to this heading">#</a></h2>
+<div class="section" id="id67">
+<h3>Features<a class="headerlink" href="#id67" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>updating viewer to use base class (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7c314a057c7217d6e120eb2398a7955e32dfa62f">7c314a0</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id68">
+<h3>Bug Fixes<a class="headerlink" href="#id68" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>adding base plotting class for easy inheritance (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1a9614d6f3ebf63e073f261de5346a49c326b275">1a9614d</a>)</p></li>
+<li><p>adding builders for fold and folded frame (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/a6b61fb0660f37d890377a7f30a4b00b4f13a879">a6b61fb</a>)</p></li>
+<li><p>adding callback function to builder update (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1eca6f59e18f3f4b116e6f3c7396860ee26dae47">1eca6f5</a>)</p></li>
+<li><p>adding callback to model.update (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/1fe5fad5a8c4ec70ef691899e942299481ede189">1fe5fad</a>)</p></li>
+<li><p>adding callbackfunction to isosurface (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/038df51d1f9fedc4499012350b02e7debbda50ef">038df51</a>)</p></li>
+<li><p>adding check to see if a feature is valid. (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/c9bd3b0e1871e4b6d8644ea26dbba4f6ad3cc80c">c9bd3b0</a>)</p></li>
+<li><p>adding exception if fold frame hasn’t (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/59a9d66ec1a86a22d86fe0556d1401dde8db5afb">59a9d66</a>)</p></li>
+<li><p>adding exception when modelling faults with surfe (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/15806d74a8841cb6532f95f678021c26145279be">15806d7</a>)</p></li>
+<li><p>adding function to generate cmap and range for (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6354712a5907ac22c4a59d7269760b00779afa74">6354712</a>)</p></li>
+<li><p>adding lavavu subclass (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b3c042fb87a376d107a3b39e551731f19fc2e6d3">b3c042f</a>)</p></li>
+<li><p>adding loop exception for interpolator (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f43a583f8e793c2690f45246fb6d2b9c1da08e95">f43a583</a>)</p></li>
+<li><p>adding set item for fold frame to change (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7d975bd3a7bc0dcbf2ecb7336e193f50a05b96d9">7d975bd</a>)</p></li>
+<li><p>adding vtk export (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7e7d63a2044713eba77e8176915d591a3b6a621d">7e7d63a</a>)</p></li>
+<li><p>changing structural frames to have a setup (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d6fcdea0efee978f5aba8845c2edd6aee5d22139">d6fcdea</a>)</p></li>
+<li><p>checking type for vector plotter + adding name (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/19c7d5e7f0bfbccd78aec6fabe52c39e9ecba5b0">19c7d5e</a>)</p></li>
+<li><p>cmap not being passed for add_isosurface (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/491fb34ceb16290f08016dac605ac43234baab83">491fb34</a>)</p></li>
+<li><p>creating specific builder for folded foliations (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b40ba9a90294cc79ddbddc19bc1ded6591f43d07">b40ba9a</a>)</p></li>
+<li><p>end of day fold frame (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6c4998126fb12356cb31e173bd3638c4854efb8b">6c49981</a>)</p></li>
+<li><p>error to catch when not enough data (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bdd93ea928b428cb4ca2da3313eb7603b78d3afd">bdd93ea</a>)</p></li>
+<li><p>import vtk exception (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/01005b3fb7a0483d0b2947f84d482810db1e3617">01005b3</a>)</p></li>
+<li><p>process data doesn’t allow bad formatted (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/b9f83649cfebe825acc8f5f2e8839867e6a06cb4">b9f8364</a>)</p></li>
+<li><p>removing function to calculate intersection, (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9080877707456a86fe36649218ef27e29a660bf1">9080877</a>)</p></li>
+<li><p>removing kwargs that have value of None (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/ce05b5f7e142e49dfc7bb5d67bf635bc47349d0d">ce05b5f</a>)</p></li>
+<li><p>removing normalisation from (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/3216d07efdca58f445afdfcc06de631c10c8f654">3216d07</a>)</p></li>
+<li><p>removing specific builder for folded fold frame (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/9eed793cb9be6b62422b7e1237f7e77ea841ff83">9eed793</a>)</p></li>
+<li><p>sections can be painted with a feature (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/905eeb1406d3cf0c9110de3bef8288577a37807a">905eeb1</a>)</p></li>
+<li><p>transitioning fold frame building into (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7d12b3b92d4f7f83f61553257716e26375024b06">7d12b3b</a>)</p></li>
+<li><p>typo in parameter (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/917711a4beeee4b90a203aae0de6a52772766c88">917711a</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id69">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.2.3...v1.2.4">1.2.4</a> (2021-09-07)<a class="headerlink" href="#id69" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id70">
+<h3>Bug Fixes<a class="headerlink" href="#id70" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>changing ci to run on published (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/7c043f0fa70ec51b4b5728db5f0da9432e9cae37">7c043f0</a>)</p></li>
+<li><p>pip publish run on release published (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/bbc0e38fcb16e695b0f35bf910cf3f203ef854fc">bbc0e38</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id71">
+<h3><a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/compare/v1.2.2...v1.2.3">1.2.3</a> (2021-09-07)<a class="headerlink" href="#id71" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="id72">
+<h3>Bug Fixes<a class="headerlink" href="#id72" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>:green_heart: axis label missing from PLI mesh (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/d52ad3fd50318717fe555c69136322e21fd26442">d52ad3f</a>)</p></li>
+<li><p>adding release-please action (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/be808dd59b5503796a44b4835295bdc00c7829f7">be808dd</a>)</p></li>
+<li><p>changing branch for release-please to master (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/f0ce0d46df050fb903063ede91412db3cb882c00">f0ce0d4</a>)</p></li>
+<li><p>changing version inclusion (<a class="reference external" href="https://www.github.com/Loop3D/LoopStructural/commit/6efca29d0c08a23f363314c7fcc5f29c025447c0">6efca29</a>)</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="loopstructural_design.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">LoopStructural design</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../_auto_examples/index.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Examples</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   1.5.2 (2022-10-11)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bug-fixes">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#documentation">
+     Documentation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   1.5.1 (2022-09-15)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id3">
+     Bug Fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   1.5.0 (2022-09-14)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#features">
+     Features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id5">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id7">
+     1.4.13 (2022-08-29)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id8">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id9">
+     1.4.12 (2022-08-27)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id10">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id11">
+     1.4.11 (2022-08-10)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id12">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id13">
+     1.4.10 (2022-07-20)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id14">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id15">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id16">
+     1.4.9 (2022-05-05)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id17">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id18">
+     1.4.8 (2022-05-05)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id19">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id20">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id21">
+     1.4.7 (2022-05-04)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id22">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id23">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id24">
+     1.4.6 (2022-04-26)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id25">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id26">
+     1.4.5 (2022-04-14)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id27">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id28">
+     1.4.4 (2022-03-21)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id29">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#performance-improvements">
+     Performance Improvements
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id30">
+     1.4.3 (2022-02-21)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id31">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id32">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id33">
+     1.4.2 (2022-02-07)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id34">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id35">
+     1.4.1 (2021-12-06)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id36">
+     Bug Fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id37">
+   1.4.0 (2021-12-06)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id38">
+     Features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id39">
+     1.3.12 (2021-12-05)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id40">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id41">
+     1.3.11 (2021-11-29)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id42">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id43">
+     1.3.10 (2021-11-10)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id44">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id45">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id46">
+     1.3.9 (2021-11-10)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id47">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id48">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id49">
+     1.3.8 (2021-11-08)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id50">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id51">
+     Documentation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id52">
+     1.3.7 (2021-10-13)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id53">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id54">
+     1.3.6 (2021-10-12)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id55">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id56">
+     1.3.5 (2021-10-11)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id57">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id58">
+     1.3.4 (2021-10-05)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id59">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id60">
+     1.3.3 (2021-09-29)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id61">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id62">
+     1.3.2 (2021-09-28)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id63">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id64">
+     1.3.1 (2021-09-28)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id65">
+     Bug Fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id66">
+   1.3.0 (2021-09-27)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id67">
+     Features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id68">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id69">
+     1.2.4 (2021-09-07)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id70">
+     Bug Fixes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id71">
+     1.2.3 (2021-09-07)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id72">
+     Bug Fixes
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="../_sources/getting_started/CHANGELOG.md.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

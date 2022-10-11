@@ -1,0 +1,47 @@
+LoopStructural.modelling.intrusions.intrusion\_frame\_builder
+=============================================================
+
+.. automodule:: LoopStructural.modelling.intrusions.intrusion_frame_builder
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      array_from_coords
+      find_inout_points
+      getLogger
+      grid_from_array
+      shortest_path
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseFeature
+      IntrusionFrameBuilder
+      KMeans
+      StructuralFrameBuilder
+   
+   
+
+   
+   
+   
+
+
+

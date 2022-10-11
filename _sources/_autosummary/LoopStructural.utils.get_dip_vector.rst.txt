@@ -1,0 +1,6 @@
+LoopStructural.utils.get\_dip\_vector
+=====================================
+
+.. currentmodule:: LoopStructural.utils
+
+.. autofunction:: get_dip_vector

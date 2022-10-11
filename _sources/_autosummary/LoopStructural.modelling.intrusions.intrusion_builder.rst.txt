@@ -1,0 +1,47 @@
+LoopStructural.modelling.intrusions.intrusion\_builder
+======================================================
+
+.. automodule:: LoopStructural.modelling.intrusions.intrusion_builder
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      contact_pts_using_geometric_scaling
+      geometric_scaling_parameters
+      getLogger
+      grid_from_array
+      thickness_from_geometric_scaling
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      IntrusionBuilder
+      IntrusionFeature
+      Rbf
+      StructuredGrid2D
+   
+   
+
+   
+   
+   
+
+
+

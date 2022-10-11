@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.all\_heading
+========================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: all_heading

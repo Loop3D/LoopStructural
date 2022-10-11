@@ -1,0 +1,36 @@
+LoopStructural.utils.regions
+============================
+
+.. automodule:: LoopStructural.utils.regions
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      BaseRegion
+      NegativeRegion
+      PositiveRegion
+      RegionEverywhere
+      RegionFunction
+   
+   
+
+   
+   
+   
+
+
+

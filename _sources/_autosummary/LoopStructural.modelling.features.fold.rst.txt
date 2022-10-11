@@ -1,0 +1,44 @@
+LoopStructural.modelling.features.fold
+======================================
+
+.. automodule:: LoopStructural.modelling.features.fold
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      fourier_series
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      FoldEvent
+      FoldFrame
+      FoldRotationAngle
+      FoldRotationAngleFeature
+      SVariogram
+   
+   
+
+   
+   
+   
+
+
+

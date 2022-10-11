@@ -1,0 +1,37 @@
+LoopStructural.modelling.features.fault
+=======================================
+
+.. automodule:: LoopStructural.modelling.features.fault
+  
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      Composite
+      CubicFunction
+      FaultDisplacementFeature
+      FaultSegment
+      Ones
+      Zeros
+   
+   
+
+   
+   
+   
+
+
+

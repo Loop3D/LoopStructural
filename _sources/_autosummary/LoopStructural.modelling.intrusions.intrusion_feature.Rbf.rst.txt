@@ -1,0 +1,31 @@
+LoopStructural.modelling.intrusions.intrusion\_feature.Rbf
+==========================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_feature
+
+.. autoclass:: Rbf
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Rbf.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Rbf.A
+   
+   

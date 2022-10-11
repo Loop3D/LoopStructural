@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.contact\_pts\_using\_geometric\_scaling
+===========================================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions
+
+.. autofunction:: contact_pts_using_geometric_scaling

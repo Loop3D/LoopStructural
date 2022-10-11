@@ -1,0 +1,37 @@
+LoopStructural.modelling.features.LambdaGeologicalFeature
+=========================================================
+
+.. currentmodule:: LoopStructural.modelling.features
+
+.. autoclass:: LambdaGeologicalFeature
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LambdaGeologicalFeature.__init__
+      ~LambdaGeologicalFeature.add_region
+      ~LambdaGeologicalFeature.evaluate_gradient
+      ~LambdaGeologicalFeature.evaluate_value
+      ~LambdaGeologicalFeature.max
+      ~LambdaGeologicalFeature.min
+      ~LambdaGeologicalFeature.toggle_faults
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LambdaGeologicalFeature.model
+   
+   

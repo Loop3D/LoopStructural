@@ -1,0 +1,6 @@
+LoopStructural.probability.getLogger
+====================================
+
+.. currentmodule:: LoopStructural.probability
+
+.. autofunction:: getLogger

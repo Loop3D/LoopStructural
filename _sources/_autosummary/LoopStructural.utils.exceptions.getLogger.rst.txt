@@ -1,0 +1,6 @@
+LoopStructural.utils.exceptions.getLogger
+=========================================
+
+.. currentmodule:: LoopStructural.utils.exceptions
+
+.. autofunction:: getLogger

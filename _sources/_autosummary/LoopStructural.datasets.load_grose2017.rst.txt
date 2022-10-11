@@ -1,0 +1,6 @@
+LoopStructural.datasets.load\_grose2017
+=======================================
+
+.. currentmodule:: LoopStructural.datasets
+
+.. autofunction:: load_grose2017

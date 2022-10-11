@@ -1,0 +1,6 @@
+LoopStructural.modelling.core.geological\_model.log\_to\_file
+=============================================================
+
+.. currentmodule:: LoopStructural.modelling.core.geological_model
+
+.. autofunction:: log_to_file

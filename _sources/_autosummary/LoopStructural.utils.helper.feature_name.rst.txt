@@ -1,0 +1,6 @@
+LoopStructural.utils.helper.feature\_name
+=========================================
+
+.. currentmodule:: LoopStructural.utils.helper
+
+.. autofunction:: feature_name

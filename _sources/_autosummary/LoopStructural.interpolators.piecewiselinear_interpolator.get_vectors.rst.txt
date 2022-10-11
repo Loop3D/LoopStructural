@@ -1,0 +1,6 @@
+LoopStructural.interpolators.piecewiselinear\_interpolator.get\_vectors
+=======================================================================
+
+.. currentmodule:: LoopStructural.interpolators.piecewiselinear_interpolator
+
+.. autofunction:: get_vectors

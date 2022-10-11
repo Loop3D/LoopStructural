@@ -1,0 +1,65 @@
+LoopStructural.utils.helper
+===========================
+
+.. automodule:: LoopStructural.utils.helper
+  
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      all_heading
+      coord_name
+      create_box
+      create_surface
+      empty_dataframe
+      feature_name
+      getLogger
+      get_data_axis_aligned_bounding_box
+      get_data_bounding_box
+      get_data_bounding_box_map
+      get_dip_vector
+      get_strike_vector
+      get_vectors
+      gradient_vec_names
+      inequality_name
+      interface_name
+      normal_vec_names
+      normal_vector_to_strike_and_dip
+      plunge_and_plunge_dir_to_vector
+      polarity_name
+      rotation
+      strike_dip_vector
+      tangent_vec_names
+      val_name
+      weight_name
+      xyz_names
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:                                          
+      :template: custom-class-template.rst
+      :recursive:              
+   
+      PCA
+   
+   
+
+   
+   
+   
+
+
+

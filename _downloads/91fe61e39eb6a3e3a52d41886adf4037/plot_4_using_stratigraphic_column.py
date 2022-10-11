@@ -1,0 +1,61 @@
+"""
+1d. Using Stratigraphic Columns
+===============================
+We will use the previous example Creating a model with multiple geological features, dealing with unconformities.
+
+"""
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_claudius
+from LoopStructural.visualisation import LavaVuModelViewer
+
+import pandas as pd
+import numpy as np
+
+data, bb = load_claudius()
+data = data.reset_index()
+
+data.loc[:, "val"] *= -1
+data.loc[:, ["nx", "ny", "nz"]] *= -1
+
+data.loc[792, "feature_name"] = "strati2"
+data.loc[792, ["nx", "ny", "nz"]] = [0, 0, 1]
+data.loc[792, "val"] = 0
+
+model = GeologicalModel(bb[0, :], bb[1, :])
+model.set_model_data(data)
+
+strati2 = model.create_and_add_foliation(
+    "strati2", interpolatortype="PLI", nelements=1e4, solver="pyamg"
+)
+uc = model.add_unconformity(strati2, 1)
+
+strati = model.create_and_add_foliation(
+    "strati", interpolatortype="PLI", nelements=1e4, solver="pyamg"
+)
+
+########################################################################
+# Stratigraphic columns
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# We define the stratigraphic column using a nested dictionary
+
+stratigraphic_column = {}
+stratigraphic_column["strati2"] = {}
+stratigraphic_column["strati2"]["unit1"] = {"min": 1, "max": 10, "id": 0}
+stratigraphic_column["strati"] = {}
+stratigraphic_column["strati"]["unit2"] = {"min": -60, "max": 0, "id": 1}
+stratigraphic_column["strati"]["unit3"] = {"min": -250, "max": -60, "id": 2}
+stratigraphic_column["strati"]["unit4"] = {"min": -330, "max": -250, "id": 3}
+stratigraphic_column["strati"]["unit5"] = {"min": -np.inf, "max": -330, "id": 4}
+
+########################################################
+# Adding stratigraphic column to the model
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The stratigraphic column can be added to the geological model. Allowing
+# for the `model.evaluate_model(xyz)` function to be called.
+
+model.set_stratigraphic_column(stratigraphic_column)
+
+viewer = LavaVuModelViewer(model)
+viewer.add_model(cmap="tab20")
+viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.display()

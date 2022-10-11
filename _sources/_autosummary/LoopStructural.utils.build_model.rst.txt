@@ -1,0 +1,6 @@
+LoopStructural.utils.build\_model
+=================================
+
+.. currentmodule:: LoopStructural.utils
+
+.. autofunction:: build_model
