@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from LoopStructural.modelling.features.geological_feature import GeologicalFeature
 
 # import logging
 from LoopStructural.utils import getLogger
@@ -10,7 +11,7 @@ from scipy.interpolate import Rbf
 logger = getLogger(__name__)
 
 
-class IntrusionFeature:
+class IntrusionFeature(GeologicalFeature):
     """
     Intrusion feature is a class to represent an intrusion, using a distance scalar field to the intrusion contact.
     Threshold distances are simulated along the intrusion frame coordinates, and simulation are constrained
@@ -32,6 +33,8 @@ class IntrusionFeature:
         intrusion_feature :  IntrusionFeature
 
         """
+
+        GeologicalFeature.__init__(self, name = name, interpolator=None)
 
         self.name = name
         self.model = model
@@ -133,9 +136,23 @@ class IntrusionFeature:
     def set_model(self, model):
         self.model = model
 
-    def evaluate_value_original(self, points):
+    def add_marginal_fault(self, fault):
+        """
+        This function adds a marginal fault to the intrusion. 
+        It is for plutons whose emplacement is controlled by marginal faults
+        that generates roof uplift or floor depression.
+
+        Returns
+        -------
 
         """
+
+        self.builder.add_marginal_fault(fault)
+
+    def evaluate_value_with_SGS(self, points):
+
+        """
+        CURRENTLY NOT BEING USED / SEPT 2022
         Computes a distance scalar field to the intrusion contact (isovalue = 0).
 
         Parameters
@@ -463,6 +480,12 @@ class IntrusionFeature:
 
         # ---> returns indicator function and scalar field with isovalue 0 = intrusion boundary
 
+        if self.intrusion_frame.builder.marginal_faults is not None:
+            self.intrusion_frame[0].faults_enabled = False
+            self.intrusion_frame[1].faults_enabled = False
+            self.intrusion_frame[2].faults_enabled = False
+
+
         # compute coordinates values for each evaluated point
         intrusion_coord0_pts = self.intrusion_frame[0].evaluate_value(points)
         intrusion_coord1_pts = self.intrusion_frame[1].evaluate_value(points)
@@ -490,45 +513,6 @@ class IntrusionFeature:
             thresholds, residuals, conceptual = self.interpolated_vertical_thresholds(intrusion_coord1_pts, intrusion_coord2_pts)
             g_minside_threshold = thresholds[1]
             g_maxside_threshold = thresholds[0]
-
-            # simulated values (dataframe to array)
-            # simulation_g_data_coord1 = simulation_g_data["coord1"].to_numpy()
-            # simulation_g_data_coord2 = simulation_g_data["coord2"].to_numpy()
-            # simulated_gmin_values = simulation_g_data["g_minimum"].to_numpy()
-            # simulated_gmax_values = simulation_g_data["g_maximum"].to_numpy()
-
-            # # find index of closest value to each point being evaluated, and assign simulated s thresholds
-            # pi_p = abs(
-            #     intrusion_coord1_pts[:, None] - simulation_g_data_coord1[None, :]
-            # )  # p_points - p_simulated_data
-            # si_s = abs(
-            #     intrusion_coord2_pts[:, None] - simulation_g_data_coord2[None, :]
-            # )
-
-            # s_min = np.around(
-            #     si_s / (si_s.min(axis=1)[:, None] + np.finfo("float").eps), 2
-            # )  # flag with 1 the minimum value
-            # p_min = np.around(
-            #     pi_p / (pi_p.min(axis=1)[:, None] + np.finfo("float").eps), 2
-            # )  # flag with 1 the minimum value
-
-            # indexG = np.argmin(abs(1 - (s_min * p_min)), axis=1)
-
-            # for i in range(len(intrusion_coord0_pts)):
-            #     g_minside_threshold[i] = simulated_gmin_values[indexG[i]]
-            #     g_maxside_threshold[i] = simulated_gmax_values[indexG[i]]
-
-            # indicator_fxG_boolean = (g_minside_threshold <= intrusion_coord0_pts) * (
-            #     intrusion_coord0_pts <= g_maxside_threshold
-            # )
-            # indicator_fxG = indicator_fxG_boolean.astype("int64")
-
-        # indicator_fx_boolean = indicator_fxS_boolean * indicator_fxG_boolean
-        # indicator_fx = indicator_fx_boolean.astype("int64")
-
-        #         ------- intrusion_sf: final distance scalar field
-        # Transform the scalar fields given by the frame coordinates, using the thresholds.
-        # This aims to generate a scalar field with its isovalue = 0 on the intrusion contact
 
         mid_point = g_minside_threshold + (
             (g_maxside_threshold - g_minside_threshold) / 2
@@ -572,6 +556,11 @@ class IntrusionFeature:
             - e * mod_Gmin_thresholds
             + f * mod_Gmax_thresholds
         )*(-1)   # multiply by (-1) so intrusions can be used as unconformities
+
+        # if self.intrusion_frame.builder.marginal_faults is not None:
+        #     for fault in self.intrusion_frame.builder.marginal_faults.keys():
+        #         intrusion_sf
+        #     self.intrusion_frame.builder.marginal_faults
 
         self.evaluated_points = [
             points,
