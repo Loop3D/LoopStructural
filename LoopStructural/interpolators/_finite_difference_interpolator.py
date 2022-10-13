@@ -17,8 +17,6 @@ logger = getLogger(__name__)
 
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
-    """ """
-
     def __init__(self, grid):
         """
         Finite difference interpolation on a regular cartesian grid
@@ -64,8 +62,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         Notes
         -----
-        Default masks are the second derivative in x,y,z direction and the second derivative of x wrt
-        y and y wrt z and z wrt x. Custom masks can be used by specifying the operator as a 3d numpy array
+        Default masks are the second derivative in x,y,z direction and the second
+        derivative of x wrt y and y wrt z and z wrt x. Custom masks can be used
+        by specifying the operator as a 3d numpy array
         e.g. [ [ [ 0 0 0 ]
                  [ 0 1 0 ]
                  [ 0 0 0 ] ]
@@ -181,10 +180,19 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} value constraints not added: outside of model bounding box"
+                    f"{self.propertyname}: {np.sum(~inside)} \
+                        value constraints not added: outside of model bounding box"
                 )
 
     def add_inequality_constraints(self, w=1.0):
+        """add inequality constraints to the interpolator
+        only works if using osqp solver.
+
+        Parameters
+        ----------
+        w : float, optional
+            weight of constraint in lsqr system, by default 1.0
+        """
         points = self.get_inequality_constraints()
         # check that we have added some points
         if points.shape[0] > 0:
@@ -211,14 +219,14 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} value constraints not added: outside of model bounding box"
+                    f"{self.propertyname}: {np.sum(~inside)} \
+                        value constraints not added: outside of model bounding box"
                 )
 
-    def add_interface_constraints(
-        self, w=1.0
-    ):  # for now weight all value points the same
+    def add_interface_constraints(self, w=1.0):
         """
-        Adds a constraint that defines all points with the same 'id' to be the same value
+        Adds a constraint that defines all points
+        with the same 'id' to be the same value
         Sets all P1-P2 = 0 for all pairs of points
 
         Parameters
@@ -256,7 +264,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 interface_A = np.hstack(
                     [A[mask, :][ij[:, 0], :], -A[mask, :][ij[:, 1], :]]
                 )
-                # interface_A = interface_A.reshape((interface_A.shape[0]*interface_A.shape[0],A.shape[1]))
                 interface_idc = np.hstack(
                     [idc[mask, :][ij[:, 0], :], idc[mask, :][ij[:, 1], :]]
                 )
@@ -268,7 +275,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
                 gi[self.region] = np.arange(0, self.nx)
                 interface_idc = gi[interface_idc]
-                # interface_idc = np.tile(interface_idc,(interface_idc.shape[0],1)).reshape(interface_A.shape)#flatten()
                 outside = ~np.any(interface_idc == -1, axis=1)
                 self.add_constraints_to_least_squares(
                     interface_A[outside, :],
@@ -330,7 +336,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} norm constraints not added: outside of model bounding box"
+                    f"{self.propertyname}: {np.sum(~inside)} \
+                        norm constraints not added: outside of model bounding box"
                 )
 
     def add_norm_constraints(self, w=1.0):
@@ -394,17 +401,23 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} norm constraints not added: outside of model bounding box"
+                    f"{self.propertyname}: {np.sum(~inside)} \
+                        norm constraints not added: outside of model bounding box"
                 )
+            self.up_to_date = False
 
-    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
+    def add_gradient_orthogonal_constraints(
+        self, points: np.ndarray, vector: np.ndarray, w: float = 1.0, B: float = 0
+    ):
         """
         constraints scalar field to be orthogonal to a given vector
 
         Parameters
         ----------
-        elements : np.array
-        normals : np.array
+        points : np.darray
+            location to add gradient orthogonal constraint
+        vector : np.darray
+            vector to be orthogonal to, should be the same shape as points
         w : double
         B : np.array
 
@@ -414,8 +427,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
-            # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
-
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
@@ -430,7 +441,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
             # normalise vector and scale element gradient matrix by norm as well
             norm = np.linalg.norm(vector, axis=1)
-            vector /= norm[:, None]
+            vector[norm > 0, :] /= norm[norm > 0, None]
+
             # normalise element vector to unit vector for dot product
             (
                 vertices,
@@ -438,18 +450,20 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 elements,
                 inside_,
             ) = self.support.get_element_gradient_for_location(points[inside, :3])
-            T /= norm[:, None, None]
+            T[norm > 0, :, :] /= norm[norm > 0, None, None]
 
             # dot product of vector and element gradient = 0
             A = np.einsum("ij,ijk->ik", vector[inside, :3], T)
-            B = np.zeros(points[inside, :].shape[0])
+            B = np.zeros(points[inside, :].shape[0]) + B
             self.add_constraints_to_least_squares(
                 A, B, idc[inside, :], w=w * self.vol, name="gradient orthogonal"
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} gradient constraints not added: outside of model bounding box"
+                    f"{self.propertyname}: {np.sum(~inside)} \
+                        gradient constraints not added: outside of model bounding box"
                 )
+            self.up_to_date = False
 
     def add_regularisation(self, operator, w=0.1):
         """

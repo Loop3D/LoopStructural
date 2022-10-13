@@ -1,3 +1,4 @@
+from pyrsistent import v
 from .model_plotter import BaseModelPlotter
 from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopImportError
@@ -27,7 +28,9 @@ def close_all():
 class LavaVuModelViewer(BaseModelPlotter):
     def __init__(self, model=None, bounding_box=None, nsteps=None, **kwargs):
         if lavavu is None:
-            logger.error("Lavavu isn't installed: pip install lavavu")
+            logger.error(
+                "Cannot use LavaVuModelViewer: Lavavu isn't installed \n pip install lavavu"
+            )
             return
         self._id_name = "{}-{}".format(str(hex(id(self))), len(_OPEN_VIEWERS))
         _OPEN_VIEWERS[self._id_name] = self
@@ -43,7 +46,9 @@ class LavaVuModelViewer(BaseModelPlotter):
             self.nsteps = model.nsteps
             logger.debug("Using bounding box from model")
         if self.bounding_box is None or self.nsteps is None:
-            logger.error("Plot area has not been defined.")
+            logger.warning(
+                "Limited functionality for plot, bounding box is not defined."
+            )
         self.bounding_box = np.array(self.bounding_box)
 
     def _parse_kwargs(self, kwargs):
@@ -54,9 +59,9 @@ class LavaVuModelViewer(BaseModelPlotter):
 
     def _add_surface(
         self,
-        vertices,
-        faces,
-        name,
+        vertices: np.ndarray,
+        faces: np.ndarray,
+        name: str,
         colour="red",
         paint_with=None,
         paint_with_value=None,
@@ -91,14 +96,23 @@ class LavaVuModelViewer(BaseModelPlotter):
             # calculate the mode value, just to get the most common value
             surfaceval = np.zeros(vertices.shape[0])
             if isinstance(paint_with, GeologicalFeature):
+                # paint with a geological feature
+                # TODO make sure everything that could be
+                # a feature derives from the same base
+                # class, currently structuralframes and
+                # faults don't work here..
+                # or just change to using __call__
                 surfaceval[:] = paint_with.evaluate_value(
                     self.model.scale(vertices, inplace=False)
                 )
+                print(surfaceval)
                 surf.values(surfaceval, "paint_with")
             if callable(paint_with):
+                # paint with a callable function e.g. (xyz)->value
                 surfaceval[:] = paint_with(self.model.scale(vertices))
                 surf.values(surfaceval, "paint_with")
             if isinstance(paint_with, (float, int)):
+                # paint with array a constant value
                 surfaceval[:] = paint_with
                 surf.values(surfaceval, "paint_with")
             surf["colourby"] = "paint_with"
@@ -107,7 +121,7 @@ class LavaVuModelViewer(BaseModelPlotter):
             vmax = kwargs.get("vmax", np.nanmax(surfaceval))
             surf.colourmap(cmap, range=(vmin, vmax))
 
-    def _add_points(self, points, name, value=None, c=None, **kwargs):
+    def _add_points(self, points: np.ndarray, name: str, value=None, c=None, **kwargs):
         """Virtual function to be overwritten by subclasses for adding points to the viewer
 
         Parameters
@@ -139,7 +153,14 @@ class LavaVuModelViewer(BaseModelPlotter):
             cmap = kwargs.get("cmap", self.default_cmap)
             p.colourmap(cmap, range=(vmin, vmax))
 
-    def _add_vector_marker(self, location, vector, name, symbol_type="arrow", **kwargs):
+    def _add_vector_marker(
+        self,
+        location: np.ndarray,
+        vector: np.ndarray,
+        name: str,
+        symbol_type="arrow",
+        **kwargs
+    ):
         """Virtual function to be overwritten by subclasses for adding vectors to the viewer
 
         Parameters
@@ -390,6 +411,12 @@ class LavaVuModelViewer(BaseModelPlotter):
 
     @camera.setter
     def camera(self, camera):
+        # for some reason lavavu complains if the keys
+        # attributes aren't already in the dict, so add them and then
+        # call camera
+        for key, value in camera.items():
+            self.lv[key] = value
+
         self.lv.camera(camera)
 
     @property

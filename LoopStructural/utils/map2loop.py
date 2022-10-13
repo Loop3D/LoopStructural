@@ -280,7 +280,8 @@ def process_map2loop(m2l_directory, flags={}):
         max_displacement[f] = displacements_numpy[index, 0]
         downthrow_dir[f] = displacements_numpy[index, [1, 3, 4]]
         if displacements_numpy[index, 1] == 1.0:
-            logger.info("Estimating downthrow direction using fault intersections")
+            pass
+            # raise ValueError('Downthrow direction is not defined for fault {}'.format(f))
             # fault_intersection_angles[f]
         if np.abs(displacements_numpy[index, 1] - displacements_numpy[index, 2]) > 90:
             # fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]=-fault_orientations.loc[fault_orientations['formation'] == f, ['gx','gy','gy']]
@@ -339,17 +340,6 @@ def process_map2loop(m2l_directory, flags={}):
         fault_edges[1, :] = fault_centers[:3] - normal_vector * fault_centers[4]
         fault_tips[0, :] = fault_centers[:3] + strike_vector * fault_centers[5]
         fault_tips[1, :] = fault_centers[:3] - strike_vector * fault_centers[5]
-        # fault_depth[0,:] = fault_centers[:3]+slip_vector*fault_centers[5]
-        # fault_depth[1,:] = fault_centers[:3]-slip_vector*fault_centers[5]
-        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[0,0],fault_edges[0,1],fault_edges[0,2],f,1,0]
-        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_edges[1,0],fault_edges[1,1],fault_edges[1,2],f,-1,0]
-        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[0,0],fault_tips[0,1],fault_tips[0,2],f,1,2]
-        # fault_locations.loc[len(fault_locations),['X','Y','Z','formation','val','coord']] = [fault_tips[1,0],fault_tips[1,1],fault_tips[1,2],f,-1,2]
-        # # add strike vector to constraint fault extent
-        # fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','DipDirection','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, fault_centers[3]-90,2]
-        # fault_orientations.loc[len(fault_orientations),['X','Y','Z','formation','dip','coord']] = [fault_centers[0],fault_centers[1],fault_centers[2],f, 0,2]
-
-        # print('downthro',displacements_numpy[index, 1])
 
     fault_orientations["strike"] = fault_orientations["DipDirection"] - 90
     fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
@@ -357,10 +347,6 @@ def process_map2loop(m2l_directory, flags={}):
     )
     for g in groups["group"].unique():
         groups.loc[groups["group"] == g, "group"] = supergroups[g]
-    # fault_orientations['strike'] = fault_orientations['DipDirection'] - 90
-    # fault_orientations['gx'] = np.nan
-    # fault_orientations['gy'] = np.nan
-    # fault_orientations['gz'] = np.nan
 
     fault_orientations.drop(
         ["strike", "DipDirection", "dip", "DipPolarity"], inplace=True, axis=1

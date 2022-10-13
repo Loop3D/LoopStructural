@@ -132,15 +132,36 @@ def load_unconformity():
 
 
 def value_headers():
+    """Default pandas column names for location and value
+
+    Returns
+    -------
+    list
+        X,Y,Z,val
+    """
 
     return ["X", "Y", "Z", "val"]
 
 
 def strike_dip_headers():
+    """Default pandas column names for location and strike and dip
+
+    Returns
+    -------
+    list
+        X,Y,Z,strike,dip
+    """
     return ["X", "Y", "Z", "strike", "dip"]
 
 
 def normal_vector_headers():
+    """Default pandas column names for location and normal vector
+
+    Returns
+    -------
+    list
+        X,Y,Z,nx,ny,nz
+    """
     return ["X", "Y", "Z", "nx", "ny", "nz"]
 
 
@@ -157,3 +178,95 @@ def load_tabular_intrusion():
     data = pd.read_csv(join(module_path, Path("data/tabular_intrusion.csv")))
     bb = np.array([[0, 0, 0], [5, 5, 5]])
     return data, bb
+
+
+def load_geological_map_data():
+    """An example dataset to use the processinput data class
+
+    Returns
+    -------
+    tuple
+        (
+        contacts,
+        stratigraphic_orientations,
+        stratigraphic_thickness,
+        stratigraphic_order,
+        bbox,
+        fault_locations,
+        fault_orientations,
+        fault_properties,
+        fault_edges,
+    )
+    """
+    module_path = dirname(__file__)
+    contacts = pd.read_csv(
+        join(module_path, Path("data/geological_map_data/contacts.csv"))
+    )
+    stratigraphic_orientations = pd.read_csv(
+        join(
+            module_path, Path("data/geological_map_data/stratigraphic_orientations.csv")
+        )
+    )
+    stratigraphic_thickness = pd.read_csv(
+        join(module_path, Path("data/geological_map_data/stratigraphic_thickness.csv")),
+        skiprows=1,
+        names=["name", "thickness"],
+    )
+    stratigraphic_order = pd.read_csv(
+        join(module_path, Path("data/geological_map_data/stratigraphic_order.csv")),
+        skiprows=1,
+        names=["order", "unit name"],
+    )
+    bbox = pd.read_csv(
+        join(module_path, Path("data/geological_map_data/bbox.csv")),
+        index_col=0,
+        header=None,
+        names=["X", "Y", "Z"],
+    )
+    fault_properties = pd.read_csv(
+        join(module_path, Path("data/geological_map_data/fault_displacement.csv")),
+        index_col=0,
+    )
+    fault_edges = []
+    with open(
+        join(module_path, Path("data/geological_map_data/fault_edges.txt")), "r"
+    ) as f:
+        for l in f.read().split("\n"):
+            faults = l.split(",")
+            if len(faults) == 2:
+                fault_edges.append((faults[0], faults[1]))
+    fault_locations = pd.read_csv(
+        join(module_path, Path("data/geological_map_data/fault_locations.csv"))
+    )
+    fault_orientations = pd.read_csv(
+        join(module_path, Path("data/geological_map_data/fault_orientations.csv"))
+    )
+    return (
+        contacts,
+        stratigraphic_orientations,
+        stratigraphic_thickness,
+        stratigraphic_order,
+        bbox,
+        fault_locations,
+        fault_orientations,
+        fault_properties,
+        fault_edges,
+    )
+
+
+def load_fault_trace():
+    """Load the fault trace dataset, requires geopandas
+
+    Returns
+    -------
+    GeoDataFrame
+        dataframe of a shapefile for two faults
+    """
+    import geopandas
+
+    module_path = dirname(__file__)
+
+    fault_trace = geopandas.read_file(
+        join(module_path, Path("data/fault_trace/fault_trace.shp"))
+    )
+    return fault_trace

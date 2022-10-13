@@ -23,7 +23,7 @@ The project benefits from in-kind contributions from the Geological Survey of Ca
 If you want to use LoopStructural the easiest way to get started is to use a docker container and a jupyter notebook environment
 
 1. Pull the loopstructural docker image `docker pull lachlangrose/loopstructural`
-2. Start a docker container `docker run -it -p 8888:8888 lachlangrose/loopstructural`
+2. Start a docker container `docker run -it -p 8888:8888 lachlangrose/loopstructural` 
 
 ## Documentation
 The LoopStructural documentation can be found [here](https://loop3d.github.io/LoopStructural)

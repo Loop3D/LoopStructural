@@ -37,7 +37,7 @@ Visualization of the scalar field.
 
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
-from LoopStructural.datasets import load_claudius #demo data
+from LoopStructural.datasets import load_claudius  # demo data
 
 import pandas as pd
 import glob
@@ -47,53 +47,60 @@ import numpy as np
 ######################################################################
 # The data for this example can be imported from the example datasets
 # module in loopstructural.
-# 
+#
 
 data, bb = load_claudius()
 
-data['val'].unique()
+data["val"].unique()
 
 
 ######################################################################
 # GeologicalModel
 # ~~~~~~~~~~~~~~~
-# 
+#
 # To create a ``GeologicalModel`` the origin (lower left) and max extent
 # (upper right) of the model area need to be specified. In this example
 # these are provided in the bb array.
-# 
+#
 
-model = GeologicalModel(bb[0,:],bb[1,:])
+model = GeologicalModel(bb[0, :], bb[1, :])
 
 
 ######################################################################
 # A pandas dataframe with appropriate columns can be used to link the data
-# to the geological model. 
+# to the geological model.
 #
-# * ``X`` is the x coordinate 
-# * ``Y`` is the y # coordinate 
-# * ``Z`` is the z coordinate 
-# * ``feature_name`` is a name to link the data to a model object 
-# * ``val`` is the value of the scalar field which represents the 
+# * ``X`` is the x coordinate
+# * ``Y`` is the y # coordinate
+# * ``Z`` is the z coordinate
+# * ``feature_name`` is a name to link the data to a model object
+# * ``val`` is the value of the scalar field which represents the
 # distance from a reference horizon. It is comparable
-# to the relative thickness 
+# to the relative thickness
 #
-# * ``nx`` is the x component of the normal vector to the surface gradient 
-# * ``ny`` is the y component of the normal vector to the surface gradient 
-# * ``nz`` is the z component of the normal vector to the surface gradeint 
-# * ``strike`` is the strike angle 
+# * ``nx`` is the x component of the normal vector to the surface gradient
+# * ``ny`` is the y component of the normal vector to the surface gradient
+# * ``nz`` is the z component of the normal vector to the surface gradeint
+# * ``strike`` is the strike angle
 # * ``dip`` is the dip angle
-# 
+#
 # Having a look at the data for this example by looking at the top of the
 # dataframe and then using a 3D plot
-# 
+#
 
-data['feature_name'].unique()
+data["feature_name"].unique()
 
-viewer = LavaVuModelViewer(background='white')
-viewer.add_value_data(data[~np.isnan(data['val'])][['X','Y','Z']],data[~np.isnan(data['val'])]['val'],name='value points')
-viewer.add_vector_data(data[~np.isnan(data['nx'])][['X','Y','Z']],
-                       data[~np.isnan(data['nx'])][['nx','ny','nz']],name='orientation points')
+viewer = LavaVuModelViewer(background="white")
+viewer.add_value_data(
+    data[~np.isnan(data["val"])][["X", "Y", "Z"]],
+    data[~np.isnan(data["val"])]["val"],
+    name="value points",
+)
+viewer.add_vector_data(
+    data[~np.isnan(data["nx"])][["X", "Y", "Z"]],
+    data[~np.isnan(data["nx"])][["nx", "ny", "nz"]],
+    name="orientation points",
+)
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 
@@ -101,7 +108,7 @@ viewer.display()
 ######################################################################
 # The pandas dataframe can be linked to the ``GeologicalModel`` using
 # ``.set_model_data(dataframe``
-# 
+#
 
 model.set_model_data(data)
 
@@ -111,58 +118,61 @@ model.set_model_data(data)
 # geological features within a model and how these features interact. This
 # controls the topology of the different geological features in the model.
 # Different geological features can be added to the geological model such
-# as: 
-# * Foliations 
-# * Faults 
-# * Unconformities 
-# * Folded foliations 
+# as:
+# * Foliations
+# * Faults
+# * Unconformities
+# * Folded foliations
 # *  Structural Frames
-# 
+#
 # In this example we will only add a foliation using the function
-# 
+#
 # .. code:: python
-# 
+#
 #    model.create_and_add_foliation(name)
-# 
+#
 # where name is the name in the ``feature_name`` field, other parameters we
-# specified are the: 
+# specified are the:
 # * ``interpolatortype`` - we can either use a
 # PiecewiseLinearInterpolator ``PLI``, a FiniteDifferenceInterpolator
-# ``FDI`` or a radial basis interpolator ``surfe`` 
+# ``FDI`` or a radial basis interpolator ``surfe``
 # * ``nelements - int`` is the how many elements are used to discretize the resulting solution
 # * ``buffer - float`` buffer percentage around the model area
 # * ``solver`` - the algorithm to solve the least squares problem e.g.
 # ``lu`` for lower upper decomposition, ``cg`` for conjugate gradient,
-# ``pyamg`` for an algorithmic multigrid solver 
+# ``pyamg`` for an algorithmic multigrid solver
 # * ``damp - bool`` - whether to add a small number to the diagonal of the interpolation
 # matrix for discrete interpolators - this can help speed up the solver
 # and makes the solution more stable for some interpolators
-# 
+#
 
-vals = [0,60,250,330,600]
+vals = [0, 60, 250, 330, 600]
 
-strat_column = {'strati':{}}
-for i in range(len(vals)-1):
-    strat_column['strati']['unit_{}'.format(i)] = {'min':vals[i],'max':vals[i+1],'id':i}
-    
-
+strat_column = {"strati": {}}
+for i in range(len(vals) - 1):
+    strat_column["strati"]["unit_{}".format(i)] = {
+        "min": vals[i],
+        "max": vals[i + 1],
+        "id": i,
+    }
 
 
 model.set_stratigraphic_column(strat_column)
 
-strati = model.create_and_add_foliation("strati",
-                                           interpolatortype="FDI", # try changing this to 'PLI'
-                                           nelements=1e4, # try changing between 1e3 and 5e4
-                                           buffer=0.3,
-                                           solver='pyamg',
-                                           damp=True
-                                          )
+strati = model.create_and_add_foliation(
+    "strati",
+    interpolatortype="FDI",  # try changing this to 'PLI'
+    nelements=1e4,  # try changing between 1e3 and 5e4
+    buffer=0.3,
+    solver="pyamg",
+    damp=True,
+)
 ######################################################################
 # Plot the surfaces
 # ------------------------------------
 
 viewer = LavaVuModelViewer(model)
-viewer.add_model_surfaces(cmap='tab20')
+viewer.add_model_surfaces(cmap="tab20")
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 
@@ -171,10 +181,6 @@ viewer.display()
 # -------------------
 
 viewer = LavaVuModelViewer(model)
-viewer.add_model(cmap='tab20')
+viewer.add_model(cmap="tab20")
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
-
-
-
-

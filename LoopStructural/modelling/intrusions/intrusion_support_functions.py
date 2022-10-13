@@ -6,6 +6,7 @@ from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 
+
 def sort_2_arrays(main_array, array):
     """
     Sort two arrays, considering values of only the main array
@@ -43,7 +44,7 @@ def findMinDiff(arr, n):
 
     """
     # Initialize difference as infinite
-    diff = 10**20
+    diff = 10 ** 20
 
     for i in range(n - 1):
         for j in range(i + 1, n):
@@ -177,9 +178,15 @@ def shortest_path(inlet, outlet, time_map):
 
     while True:
         i = i + 1
-        time_temp_inlet = time_map[temp_inlet[0], temp_inlet[1]]  # obtain time value of temporary outlet
-        neighbors = element_neighbour(temp_inlet, time_map, inet)  # identify neighbours elements of temporary outlet
-        direction = index_min(neighbors)  # obtain the location (index min) of minimun difference
+        time_temp_inlet = time_map[
+            temp_inlet[0], temp_inlet[1]
+        ]  # obtain time value of temporary outlet
+        neighbors = element_neighbour(
+            temp_inlet, time_map, inet
+        )  # identify neighbours elements of temporary outlet
+        direction = index_min(
+            neighbors
+        )  # obtain the location (index min) of minimun difference
 
         if direction == 10:
             break
@@ -341,7 +348,7 @@ def index_min(array):
         if array[i] >= 0:
             index_array.update({i: array[i]})
 
-    if len(index_array.values())> 0:        
+    if len(index_array.values()) > 0:
 
         minimum_val = min(index_array.values())
 
@@ -349,7 +356,8 @@ def index_min(array):
             if value == minimum_val:
                 index_min = key
 
-    else: index_min = 10
+    else:
+        index_min = 10
 
     return index_min
 

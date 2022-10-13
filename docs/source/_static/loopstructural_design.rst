@@ -1,1 +1,0 @@
-LoopStructural design      

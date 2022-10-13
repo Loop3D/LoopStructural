@@ -2,16 +2,19 @@
 Piecewise linear interpolator
 """
 import numpy as np
-from LoopStructural.interpolators.cython.dsi_helper import cg, fold_cg
+from LoopStructural.utils import getLogger
 
+logger = getLogger(__name__)
+try:
+    from LoopStructural.interpolators._cython.dsi_helper import cg, fold_cg
+except:
+    from LoopStructural.interpolators._python.dsi_helper import cg, fold_cg
+
+    logger.warning("Using python code not compiled cython code, this will be slower")
 from LoopStructural.interpolators import DiscreteInterpolator
 from LoopStructural.interpolators import InterpolatorType
 
 from LoopStructural.utils.helper import get_vectors
-
-from LoopStructural.utils import getLogger
-
-logger = getLogger(__name__)
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
@@ -223,16 +226,12 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # e, inside = self.support.elements_for_array(points[:, :3])
             # nodes = self.support.nodes[self.support.elements[e]]
             vecs = vertices[:, 1:, :] - vertices[:, 0, None, :]
-            vol = np.abs(np.linalg.det(vecs)) / 6
             norm = np.linalg.norm(points[:, 3:6], axis=1)
             points[:, 3:6] /= norm[:, None]
             element_gradients /= norm[:, None, None]
             # d_t *= vol[:,None,None]
             strike_vector, dip_vector = get_vectors(points[:, 3:6])
             A = np.einsum("ji,ijk->ik", strike_vector, element_gradients)
-
-            # A *= vol[:, None]
-
             gi = np.zeros(self.support.n_nodes).astype(int)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx).astype(int)
@@ -352,7 +351,8 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         self, w=1.0
     ):  # for now weight all value points the same
         """
-        Adds a constraint that defines all points with the same 'id' to be the same value
+        Adds a constraint that defines all points with the same
+        'id' to be the same value
         Sets all P1-P2 = 0 for all pairs of points
 
         Parameters
@@ -388,7 +388,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                 interface_A = np.hstack(
                     [A[mask, :][ij[:, 0], :], -A[mask, :][ij[:, 1], :]]
                 )
-                # interface_A = interface_A.reshape((interface_A.shape[0]*interface_A.shape[0],A.shape[1]))
                 interface_idc = np.hstack(
                     [idc[mask, :][ij[:, 0], :], idc[mask, :][ij[:, 1], :]]
                 )
@@ -400,7 +399,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
 
                 gi[self.region] = np.arange(0, self.nx)
                 interface_idc = gi[interface_idc]
-                # interface_idc = np.tile(interface_idc,(interface_idc.shape[0],1)).reshape(interface_A.shape)#flatten()
                 outside = ~np.any(interface_idc == -1, axis=1)
                 self.add_constraints_to_least_squares(
                     interface_A[outside, :],
@@ -410,16 +408,22 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                     name="interface_{}".format(unique_id),
                 )
 
-    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
+    def add_gradient_orthogonal_constraints(
+        self, points: np.ndarray, vector: np.ndarray, w: float = 1.0, B: float = 0
+    ):
         """
         constraints scalar field to be orthogonal to a given vector
 
         Parameters
         ----------
-        position
-        normals
-        w
-        B
+        points : np.ndarray
+            location of constraints
+        vector : np.ndarray
+            vector to be orthogonal to
+        w : float, default 1.0
+            weight of constraint in interpolator
+        B : float, default 0
+            vector dot gradient = B, orthogonal = 0
 
         Returns
         -------
