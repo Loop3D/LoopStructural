@@ -12,8 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 class P1Interpolator(DiscreteInterpolator):
-    """ """
-
     def __init__(self, mesh):
         """
         Piecewise Linear Interpolator

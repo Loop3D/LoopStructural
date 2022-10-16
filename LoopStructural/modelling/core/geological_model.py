@@ -989,7 +989,6 @@ class GeologicalModel:
         )
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
-        self._add_faults(series_builder)
         # build feature
 
         kwargs["tol"] = tol
@@ -1522,6 +1521,10 @@ class GeologicalModel:
 
         if tol is None:
             tol = self.tol
+            # divide the tolerance by half of the minor axis, as this is the equivalent of the distance
+            # of the unit vector
+            if minor_axis:
+                tol *= minor_axis / 2
 
         if displacement == 0:
             logger.warning(f"{fault_surface_data} displacement is 0")

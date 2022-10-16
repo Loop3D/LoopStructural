@@ -3,6 +3,7 @@ Discrete interpolator base for least squares
 """
 import logging
 
+from time import time
 import numpy as np
 from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
@@ -704,6 +705,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs["callback"] = kwargs["callback"]
         if precon is not None:
             cgargs["M"] = precon(A)
+        print(cgargs)
         return sla.cg(A, B, **cgargs)[0][: self.nx]
 
     def _solve_pyamg(self, A, B, tol=1e-12, x0=None, verb=False, **kwargs):
@@ -743,6 +745,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        starttime = time()
         logger.info("Solving interpolation for {}".format(self.propertyname))
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
@@ -799,6 +802,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
             return
         self.valid = True
+        print(f"Solving interpolation: {self.propertyname} took: {time()-starttime}")
 
     def update(self):
         """

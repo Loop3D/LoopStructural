@@ -18,8 +18,6 @@ from LoopStructural.utils.helper import get_vectors
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
-    """ """
-
     def __init__(self, support):
         """
         Piecewise Linear Interpolator
