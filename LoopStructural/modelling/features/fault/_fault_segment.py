@@ -55,7 +55,7 @@ class FaultSegment(StructuralFrame):
     @faultfunction.setter
     def faultfunction(self, value):
         if callable(value):
-            self.faultfunction = value
+            self._faultfunction = value
         elif isinstance(value, str) and value == "BaseFault":
             self._faultfunction = BaseFault.fault_displacement
         else:
