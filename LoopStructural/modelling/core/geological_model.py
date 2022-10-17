@@ -1185,7 +1185,7 @@ class GeologicalModel:
 
         intrusion_frame = intrusion_frame_builder.frame
 
-        self._add_faults(intrusion_frame_builder, features = faults)
+        self._add_faults(intrusion_frame_builder)
         
 
         # -- create intrusion builder to simulate distance thresholds along frame coordinates
@@ -1205,7 +1205,7 @@ class GeologicalModel:
         intrusion_feature = intrusion_builder.feature
         # self._add_faults(intrusion_feature, features = faults)
         self._add_feature(intrusion_feature)
-        # self._add_faults(intrusion_feature)
+        # self._add_faults(intrusion_builder)
 
         return intrusion_feature
 
