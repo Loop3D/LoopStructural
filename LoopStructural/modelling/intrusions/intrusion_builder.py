@@ -4,6 +4,7 @@ import pandas as pd
 from LoopStructural.utils import getLogger
 from .intrusion_feature import IntrusionFeature
 from LoopStructural.interpolators import StructuredGrid2D
+from LoopStructural.modelling.features.builders import BaseBuilder
 
 from scipy.interpolate import Rbf
 
@@ -33,8 +34,25 @@ except ImportError:
     raise ImportError("geostats")
 
 
-class IntrusionBuilder:
-    def __init__(self, frame, model=None, name="intrusion"):
+class IntrusionBuilder():
+    def __init__(
+        self,
+        frame, 
+        model=None,
+        name="intrusion builder"):
+
+        """
+        Constructor for an IntrusionBuilder
+        Sets up interpolators of vertical and lateral contacts
+
+        Parameters
+        ----------
+
+        """
+
+
+        # BaseBuilder.__init__(self, name = name)
+
         self.name = name
         self.intrusion_frame = frame
         self._up_to_date = False
@@ -66,6 +84,7 @@ class IntrusionBuilder:
         self.model = model
         self._build_arguments = {}
         self.width_data = [True, True]
+        self.thickness_data = False
 
         # self.simulationGSLIB_s_outcome = None
         self.growth_simulated_thresholds_grid = None
@@ -175,17 +194,18 @@ class IntrusionBuilder:
         if self.data is None or self.data.shape[0] == 0:
             raise ValueError("Cannot create intrusion with no data")
 
-        if self.marginal_fault is not None:
-            #add fault trace points to constrain conceptual model
-            marginal_fault_trace_data = self.marginal_fault.faultframe.builder[0].data.copy()
-            marginal_fault_trace_data_val = marginal_fault_trace_data[marginal_fault_trace_data['val'] == 0].loc[:,['X','Y','Z']].copy()
-            marginal_fault_trace_data_val.loc[:,'intrusion_side'] = True
+        # if self.marginal_fault is not None:
+        #     #add fault trace points to constrain conceptual model
+        #     marginal_fault_trace_data = self.marginal_fault.faultframe.builder[0].data.copy()
+        #     marginal_fault_trace_data_val = marginal_fault_trace_data[marginal_fault_trace_data['val'] == 0].loc[:,['X','Y','Z']].copy()
+        #     marginal_fault_trace_data_val.loc[:,'intrusion_side'] = True
 
-            intrusion_data = pd.concat([self.data, marginal_fault_trace_data_val])
+        #     intrusion_data = pd.concat([self.data, marginal_fault_trace_data_val])
 
-        else:
-            intrusion_data = self.data.copy()
+        # else:
+        #     intrusion_data = self.data.copy()
         
+        intrusion_data = self.data.copy()
         
         data_xyz = intrusion_data.loc[:, ["X", "Y", "Z"]].to_numpy()
         intrusion_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(data_xyz)
@@ -246,64 +266,72 @@ class IntrusionBuilder:
         intrusion_network_data.reset_index(inplace=True)
 
         # -- if no data points for roof or floor, use geometric scaling to create points for SGS
-        if self.intrusion_frame.builder.other_contact_data.shape[0] == 0:  # <3 (minimum number of data for SGS is 3)
-            other_contact_data_temp1 = self.intrusion_frame.builder.other_contact_data
+        if self.intrusion_frame.builder.other_contact_data.shape[0] == 0: # <3 (minimum number of data for SGS is 3)
+            print(len(geometric_scaling_parameters))
+            if len(geometric_scaling_parameters) == 0:
+                self.thickness_data = False
+                other_contact_data_xyz = intrusion_network_data_xyz 
+                other_contact_data = intrusion_network_data
 
-            intrusion_type = geometric_scaling_parameters.get("intrusion_type", None)
-            intrusion_length = geometric_scaling_parameters.get(
-                "intrusion_length", None
-            )
-            inflation_vector = geometric_scaling_parameters.get(
-                "inflation_vector", np.array([[0, 0, 1]])
-            )
-            thickness = geometric_scaling_parameters.get("thickness", None)
+            else:
+                other_contact_data_temp1 = self.intrusion_frame.builder.other_contact_data
 
-            if (
-                self.intrusion_frame.builder.intrusion_network_contact == "floor"
-                or self.intrusion_frame.builder.intrusion_network_contact == "base"
-            ):
+                intrusion_type = geometric_scaling_parameters.get("intrusion_type", None)
+                intrusion_length = geometric_scaling_parameters.get(
+                    "intrusion_length", None
+                )
                 inflation_vector = geometric_scaling_parameters.get(
                     "inflation_vector", np.array([[0, 0, 1]])
                 )
-            else:
-                inflation_vector = geometric_scaling_parameters.get(
-                    "inflation_vector", np.array([[0, 0, -1]])
-                )
+                thickness = geometric_scaling_parameters.get("thickness", None)
 
-            if intrusion_length == None and thickness == None:
-                raise ValueError(
-                    "No {} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary".format(
-                        self.intrusion_frame.builder.intrusion_other_contact
+                if (
+                    self.intrusion_frame.builder.intrusion_network_contact == "floor"
+                    or self.intrusion_frame.builder.intrusion_network_contact == "base"
+                ):
+                    inflation_vector = geometric_scaling_parameters.get(
+                        "inflation_vector", np.array([[0, 0, 1]])
                     )
-                )
-
-            else: # -- create synthetic data using geometric scaling
-                estimated_thickness = thickness
-                if estimated_thickness == None:
-                    estimated_thickness = thickness_from_geometric_scaling(
-                        intrusion_length, intrusion_type
+                else:
+                    inflation_vector = geometric_scaling_parameters.get(
+                        "inflation_vector", np.array([[0, 0, -1]])
                     )
 
-                print(
-                    "Building intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
-                        round(estimated_thickness)
+                if intrusion_length == None and thickness == None:
+                    raise ValueError(
+                        "No {} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary".format(
+                            self.intrusion_frame.builder.intrusion_other_contact
+                        )
                     )
-                )
-                (
-                    other_contact_data_temp2,
-                    other_contact_data_xyz_temp,
-                ) = contact_pts_using_geometric_scaling(
-                    estimated_thickness, intrusion_network_data, inflation_vector
-                )
 
-                other_contact_data = pd.concat(
-                    [other_contact_data_temp1, other_contact_data_temp2]
-                )
-                other_contact_data_xyz = other_contact_data.loc[
-                    :, ["X", "Y", "Z"]
-                ].to_numpy()
+                else: # -- create synthetic data using geometric scaling
+                    estimated_thickness = thickness
+                    if estimated_thickness == None:
+                        estimated_thickness = thickness_from_geometric_scaling(
+                            intrusion_length, intrusion_type
+                        )
+
+                    print(
+                        "Building intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
+                            round(estimated_thickness)
+                        )
+                    )
+                    (
+                        other_contact_data_temp2,
+                        other_contact_data_xyz_temp,
+                    ) = contact_pts_using_geometric_scaling(
+                        estimated_thickness, intrusion_network_data, inflation_vector
+                    )
+
+                    other_contact_data = pd.concat(
+                        [other_contact_data_temp1, other_contact_data_temp2]
+                    )
+                    other_contact_data_xyz = other_contact_data.loc[
+                        :, ["X", "Y", "Z"]
+                    ].to_numpy()
 
         else:
+            self.thickness_data = True
             other_contact_data_xyz = (
                 self.intrusion_frame.builder.other_contact_data.loc[
                     :, ["X", "Y", "Z"]
@@ -562,6 +590,7 @@ class IntrusionBuilder:
         grid_points_coord1 = self.simulation_grid[2]
 
         modelcover, minP, maxP, minL, maxL = self.lateral_extent_model()
+        mean_c0 = self.vertical_extent_model()
 
         if minL == None:
             minL = min(
@@ -599,7 +628,11 @@ class IntrusionBuilder:
             )
 
         # extra parameters for growth
-        mean_growth = self.vertical_contact_data[1].loc[:, "coord0"].mean()
+        if mean_c0 == None:
+            mean_growth = self.vertical_contact_data[1].loc[:, "coord0"].mean()
+        else:
+            mean_growth = mean_c0
+        
         maxG = self.vertical_contact_data[1]["coord0"].max()
         coord_PL_for_maxG = (
             self.vertical_contact_data[1][
@@ -622,6 +655,7 @@ class IntrusionBuilder:
         self.conceptual_model_parameters["vertex"] = vertex
 
     def add_marginal_fault(self, fault):
+        #DETELE
 
         self.marginal_fault = fault
 
@@ -1458,12 +1492,6 @@ class IntrusionBuilder:
         -------
         """
 
-        # -- Get grid points and evaluated values in the intrusion frame
-        # grid_points = self.simulation_grid
-        # grid_points_coord0 = self.simulation_grid[1]
-        # grid_points_coord1 = self.simulation_grid[2]
-        # grid_points_coord2 = self.simulation_grid[3]
-
         # -- Generate data frame containing input data for simulation
         inet_data = self.vertical_contact_data[0]
         other_contact_data = self.vertical_contact_data[1]
@@ -1495,6 +1523,9 @@ class IntrusionBuilder:
         ].copy()
         inputsimdata_maxG.loc[:, "g_residual"] = data_residual_G
         inputsimdata_maxG.loc[:, "g_conceptual"] = data_conceptual_G[:, 1]
+
+        if self.thickness_data == False:
+            inputsimdata_maxG.loc[:, "g_residual"] = 0
 
         # --- growth simulation input data for intrusion network conditioning
         inputsimdata_inetG = inet_data.loc[
