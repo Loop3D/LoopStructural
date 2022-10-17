@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from LoopStructural.modelling.features.geological_feature import GeologicalFeature
+from LoopStructural.modelling.features import BaseFeature
 
 # import logging
 from LoopStructural.utils import getLogger
@@ -11,7 +11,7 @@ from scipy.interpolate import Rbf
 logger = getLogger(__name__)
 
 
-class IntrusionFeature(GeologicalFeature):
+class IntrusionFeature(BaseFeature):
     """
     Intrusion feature is a class to represent an intrusion, using a distance scalar field to the intrusion contact.
     Threshold distances are simulated along the intrusion frame coordinates, and simulation are constrained
@@ -34,7 +34,7 @@ class IntrusionFeature(GeologicalFeature):
 
         """
 
-        GeologicalFeature.__init__(self, name = name, interpolator=None)
+        BaseFeature.__init__(self, name = name)
 
         self.name = name
         self.model = model
@@ -47,7 +47,7 @@ class IntrusionFeature(GeologicalFeature):
         self._lateral_simulated_thresholds = None
         self._growth_simulated_thresholds = None
         self._growth_simulated_thresholds_grid = None
-        self.test = None
+        self.assisting_faults = {}
 
     @property
     def lateral_simulated_thresholds(self):
@@ -147,6 +147,10 @@ class IntrusionFeature(GeologicalFeature):
         """
 
         self.builder.add_marginal_fault(fault)
+
+    def add_assisting_faults(self, faults_dictionary):
+
+        self.assisting_faults = faults_dictionary
 
     def evaluate_value_with_SGS(self, points):
 
@@ -464,10 +468,6 @@ class IntrusionFeature(GeologicalFeature):
         )
 
         residuals = maxG_residual_interpolator(points_coord1, points_coord2)
-        # residuals[points_coord1>maxG_maxP] = maxG_maxP_value
-        # residuals[points_coord1<maxG_minP] = maxG_minP_value
-        # residuals[points_coord2>maxG_maxL] = maxG_maxL_value
-        # residuals[points_coord2<maxG_minL] = maxG_minL_value
         thresholds = maxG_conceptual_model - residuals
 
         residual_values.append(residuals)
@@ -511,16 +511,26 @@ class IntrusionFeature(GeologicalFeature):
 
         # ---> returns indicator function and scalar field with isovalue 0 = intrusion boundary
 
-        if self.intrusion_frame.builder.marginal_faults is not None:
-            self.intrusion_frame[0].faults_enabled = False
-            self.intrusion_frame[1].faults_enabled = False
-            self.intrusion_frame[2].faults_enabled = False
+        # if self.intrusion_frame.builder.marginal_faults is not None:
+        #     print('marginal fault')
+        #     points = self._apply_faults(points)
+        #     self.intrusion_frame[0].faults_enabled = False
+        #     self.intrusion_frame[1].faults_enabled = False
+        #     self.intrusion_frame[2].faults_enabled = False
 
 
         # compute coordinates values for each evaluated point
         intrusion_coord0_pts = self.intrusion_frame[0].evaluate_value(points)
         intrusion_coord1_pts = self.intrusion_frame[1].evaluate_value(points)
         intrusion_coord2_pts = self.intrusion_frame[2].evaluate_value(points)
+
+        self.evaluated_points = [
+            points,
+            intrusion_coord0_pts,
+            intrusion_coord1_pts,
+            intrusion_coord2_pts,
+            
+        ]
 
         # ------ lateral extent thresholds for each of the evaluated points -------------
 
@@ -532,10 +542,17 @@ class IntrusionFeature(GeologicalFeature):
             thresholds, residuals, conceptual = self.interpolated_lateral_thresholds(
                 intrusion_coord1_pts
             )
-            s_minside_threshold = thresholds[0]
-            s_maxside_threshold = thresholds[1]
 
-            self.test = [residuals, conceptual]
+            if self.intrusion_frame.builder.marginal_faults is not None:
+                s_minside_threshold = np.zeros_like(intrusion_coord2_pts)
+                s_maxside_threshold = thresholds[1]
+
+
+            else:
+                s_minside_threshold = thresholds[0]
+                s_maxside_threshold = thresholds[1]
+
+
 
         if simulation_g_data is None:
             print("No simulation for vertical extent")
@@ -548,6 +565,15 @@ class IntrusionFeature(GeologicalFeature):
             )
             g_minside_threshold = thresholds[1]
             g_maxside_threshold = thresholds[0]
+
+            if len(self.assisting_faults) > 0:
+                fault = self.assisting_faults.get('structure')
+                weight = self.assisting_faults.get('asymmetry_weight',1)
+                evaluation_points_in_fault = fault[0].evaluate_value(points)
+                g_maxside_threshold[evaluation_points_in_fault>=0] = g_maxside_threshold[evaluation_points_in_fault>=0]*weight
+
+            # self.evaluated_points.append(g_minside_threshold, g_maxside_threshold)
+
 
         mid_point = g_minside_threshold + (
             (g_maxside_threshold - g_minside_threshold) / 2
@@ -599,12 +625,7 @@ class IntrusionFeature(GeologicalFeature):
         #         intrusion_sf
         #     self.intrusion_frame.builder.marginal_faults
 
-        self.evaluated_points = [
-            points,
-            intrusion_coord0_pts,
-            intrusion_coord1_pts,
-            intrusion_coord2_pts,
-        ]
+        
         # self.intrusion_indicator_function = indicator_fx
 
         return intrusion_sf
