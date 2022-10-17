@@ -48,6 +48,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.model = model
         self.minimum_origin = self.model.bounding_box[0, :]
         self.maximum_maximum = self.model.bounding_box[1, :]
+        self.faults = []
 
         # -- intrusion frame parameters
         self.intrusion_network_contact = None
@@ -107,6 +108,27 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         """
         self.model = model
 
+    def add_fault(self, fault):
+        """
+        Add a fault to the geological feature builder
+
+        Parameters
+        ----------
+        fault : FaultSegment
+            A faultsegment to add to the geological feature
+
+        Returns
+        -------
+
+        """
+
+        
+
+        self._up_to_date = False
+        self.faults.append(fault)
+        for i in range(3):
+            self.builders[i].add_fault(fault)
+
     def set_intrusion_frame_c0_data(self, intrusion_data):
         """
         Separate data between roof and floor contacts
@@ -131,6 +153,10 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         other_contact_data = intrusion_data[
             intrusion_data["intrusion_contact_type"] == other_contact
         ]
+
+        for f in self.faults:
+            intrusion_network_data.loc[:, ['X','Y','Z']] = f.apply_to_points(intrusion_network_data.loc[:, ['X','Y','Z']].to_numpy())
+            other_contact_data.loc[:, ['X','Y','Z']] = f.apply_to_points(other_contact_data.loc[:, ['X','Y','Z']].to_numpy())
 
 
         self.intrusion_other_contact = other_contact
@@ -245,28 +271,28 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             self.anisotropies_fault_list.append(fault_list)
             faults_parameters = {}
             for i in range(len(fault_list)):
+                fault = fault_list[i]
+                data_temp = self.intrusion_network_data[
+                    self.intrusion_network_data["intrusion_anisotropy"] == fault.name
+                ].copy()
+                data_array_temp = data_temp.loc[:, ["X", "Y", "Z"]].to_numpy()
 
-            data_temp = self.intrusion_network_data[
-                self.intrusion_network_data["intrusion_anisotropy"] == fault.name
-            ].copy()
-            data_array_temp = data_temp.loc[:, ["X", "Y", "Z"]].to_numpy()
+                if data_temp.empty:
+                    fault_i_mean = 0
+                    fault_i_std = 0.1
 
-            if data_temp.empty:
-                fault_i_mean = 0
-                fault_i_std = 0.1
+                else:
+                    # evaluate the value of the fault, evaluate_value called on a fault
+                    # will return the scalar field value of the main structural feature
+                    fault_i_vals = fault[0].evaluate_value(data_array_temp)
+                    fault_i_mean = np.mean(fault_i_vals)
+                    fault_i_std = np.std(fault_i_vals)
 
-            else:
-                # evaluate the value of the fault, evaluate_value called on a fault
-                # will return the scalar field value of the main structural feature
-                fault_i_vals = fault.evaluate_value(data_array_temp)
-                fault_i_mean = np.mean(fault_i_vals)
-                fault_i_std = np.std(fault_i_vals)
-
-                self.anisotropies_fault_parameters[fault_list[i].name] = [
-                    fault_list[i],
-                    fault_i_mean,
-                    fault_i_std,
-                    ]
+                    self.anisotropies_fault_parameters[fault_list[i].name] = [
+                        fault_list[i],
+                        fault_i_mean,
+                        fault_i_std,
+                        ]
 
             # self.anisotropies_fault_parameters = faults_parameters
 
@@ -381,7 +407,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     self.intrusion_steps[step_i]['unit_from_mean'] = unit_from_min + (unit_from_max - unit_from_min)/2
                     self.intrusion_steps[step_i]['unit_from_std'] = std_backup
                 else:
-                    series_values = series_from_name['feature'].evaluate_value(data_points_from_xyz)
+                    series_values = series_from_name.evaluate_value(data_points_from_xyz)
                     mask = step_structure_points_vals<0
                     if len(mask) >0:
                         series_values_mod = np.ma.compressed(np.ma.masked_array(series_values, step_structure_points_vals<0))
@@ -414,7 +440,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     step["unit_to_mean"] = unit_to_min + (unit_to_max - unit_to_min) / 2
                     step["unit_to_std"] = std_backup
                 else:
-                    series_values = series_to_name['feature'].evaluate_value(data_points_to_xyz)
+                    series_values = series_to_name.evaluate_value(data_points_to_xyz)
                     mask = step_structure_points_vals>0
                     if len(mask) >0:
                         series_values_mod = np.ma.compressed(np.ma.masked_array(series_values, step_structure_points_vals>0))
@@ -455,7 +481,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             emplacement_mechanisms = self.marginal_faults[fault_i].get('emplacement_mechanism')
             series_name = self.marginal_faults[fault_i].get('series')
 
-            series_values_temp = series_name['feature'].evaluate_value(intrusion_frame_c0_data_xyz)
+            series_values_temp = series_name.evaluate_value(intrusion_frame_c0_data_xyz)
             faults_values_temp = marginal_fault[0].evaluate_value(intrusion_frame_c0_data_xyz)
 
             if block == 'hanging wall':
@@ -572,43 +598,43 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         if self.intrusion_network_type == "shortest path":
 
             # set the sequence of anisotropies to follow by the shortest path algorithm
-            self.anisotropies_sequence = intrusion_network_input.get(
+            self.anisotropies_sequence = intrusion_frame_parameters.get(
                 "shortest_path_sequence", []
             )
 
             # set velocity parameters for the search of the shortest path
-            self.velocity_parameters = intrusion_network_input.get(
+            self.velocity_parameters = intrusion_frame_parameters.get(
                 "velocity_parameters", []
             )
 
             # set axis for shortest path algorithm
-            self.shortestpath_sections_axis = intrusion_network_input.get(
+            self.shortestpath_sections_axis = intrusion_frame_parameters.get(
                 "shortest_path_axis", []
             )
 
             # add contact anisotropies and compute parameters for shortest path algorithm
-            contact_anisotropies = intrusion_network_input.get(
+            contact_anisotropies = intrusion_frame_parameters.get(
                 "contact_anisotropies", []
             )
             # set number of contacts
-            self.number_of_contacts = intrusion_network_input.get(
+            self.number_of_contacts = intrusion_frame_parameters.get(
                 "number_contacts", [1] * len(contact_anisotropies)
             )
             self.add_contact_anisotropies(contact_anisotropies)
 
             # set fault anisotropies and compute parameters for shortest path algorithm
-            fault_anisotropies = intrusion_network_input.get(
+            fault_anisotropies = intrusion_frame_parameters.get(
                 "structures_anisotropies", []
             )
             self.add_faults_anisotropies(fault_anisotropies)
 
             # set delta_c for indicator function
-            self.delta_contacts = intrusion_network_input.get(
+            self.delta_contacts = intrusion_frame_parameters.get(
                 "delta_c", [1] * np.sum(np.array(self.number_of_contacts))
             )
 
             # set delta_f for indicator function
-            self.delta_faults = intrusion_network_input.get(
+            self.delta_faults = intrusion_frame_parameters.get(
                 "delta_f", [1] * len(self.anisotropies_fault_list)
             )
 
@@ -890,7 +916,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                                         fault_gridpoints_vals < 0) & (
                                             series_to_gridpoints_vals >= contacts1_val_min) & (
                                                 series_to_gridpoints_vals <= contacts1_val_max)
-                        )
+                        ))
                     ]
 
                     fault_i_points = grid_points[
@@ -953,7 +979,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     series_name = self.marginal_faults[fault_i].get('series')
 
                     fault_gridpoints_vals = marginal_fault[0].evaluate_value(grid_points)
-                    series_gridpoints_vals = series_name["feature"].evaluate_value(grid_points)
+                    series_gridpoints_vals = series_name.evaluate_value(grid_points)
 
                     contact_min = self.marginal_faults[fault_i].get('series_mean') - (self.marginal_faults[fault_i].get('series_std')*delta_contact)
                     contact_max = self.marginal_faults[fault_i].get('series_mean') + (self.marginal_faults[fault_i].get('series_std')*delta_contact)
@@ -993,7 +1019,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             series_id = self.anisotropies_series_list[0]
             series_id.faults_enabled = True
-            strat_gradient_grid_points = series_id["feature"].evaluate_gradient(grid_points)
+            strat_gradient_grid_points = series_id.evaluate_gradient(grid_points)
                 
             # If intrusion frame c0 is built usinf roof/top contact, then change vector direction
             if self.intrusion_network_contact == 'roof' or self.intrusion_network_contact == 'top':
