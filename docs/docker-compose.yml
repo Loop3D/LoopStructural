@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  structural:
+    build:
+      context: ./
+    volumes:
+      - ../:/LoopStructural
+    command: ./LoopStructural/docs/build_docs.sh
