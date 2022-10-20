@@ -10,7 +10,6 @@ RUN apt-get update -qq && \
     libc-dev \
     make
 RUN conda install -c conda-forge\
-    theano\
     cython\
     numpy\ 
     pandas\ 
