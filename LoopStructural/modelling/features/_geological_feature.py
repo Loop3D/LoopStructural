@@ -172,3 +172,16 @@ class GeologicalFeature(BaseFeature):
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
         diff /= self.max() - self.min()
         return diff
+
+    def copy(self, name=None):
+        if not name:
+            name = f"{self.name}_copy"
+        feature = GeologicalFeature(
+            name=name,
+            faults=self.faults,
+            regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
+            builder=self.builder,
+            model=self.model,
+            interpolator=self.interpolator,
+        )
+        return feature

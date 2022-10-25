@@ -1,5 +1,5 @@
 import logging
-from LoopStructural.modelling.features import BaseFeature
+from LoopStructural.modelling.features import BaseFeature, StructuralFrame
 
 from LoopStructural.utils import getLogger
 
@@ -30,7 +30,7 @@ class FaultDisplacementFeature(BaseFeature):
         BaseFeature.__init__(
             self, f"{name}_displacement", model, faults, regions, builder
         )
-        self.fault_frame = fault_frame
+        self.fault_frame = StructuralFrame(f'{fault_frame.name}_displacementframe',[fault_frame[0].copy(),fault_frame[1].copy(),fault_frame[2].copy()])
         self.displacement = displacement
 
     def evaluate_value(self, location):
