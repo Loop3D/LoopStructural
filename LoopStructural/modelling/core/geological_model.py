@@ -1523,8 +1523,8 @@ class GeologicalModel:
             tol = self.tol
             # divide the tolerance by half of the minor axis, as this is the equivalent of the distance
             # of the unit vector
-            if minor_axis:
-                tol *= minor_axis / 2
+            # if minor_axis:
+                # tol *= 0.1*minor_axis 
 
         if displacement == 0:
             logger.warning(f"{fault_surface_data} displacement is 0")
