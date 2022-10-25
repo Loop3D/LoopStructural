@@ -87,7 +87,19 @@ class GeologicalFeatureBuilder(BaseBuilder):
     @property
     def interpolator(self):
         return self._interpolator
+    @property
+    def interpolation_region(self):
+        return self._interpolation_region
 
+    @interpolation_region.setter
+    def interpolation_region(self, interpolation_region):
+        if interpolation_region is not None:
+            self._interpolation_region = interpolation_region
+            self._interpolator.set_region(region=self._interpolation_region)
+        else:
+            self._interpolation_region = RegionEverywhere()
+            self._interpolator.set_region(region=self._interpolation_region)
+        self._up_to_date = False
     def add_data_from_data_frame(self, data_frame, overwrite=False):
         """
         Extract data from a pandas dataframe with columns for

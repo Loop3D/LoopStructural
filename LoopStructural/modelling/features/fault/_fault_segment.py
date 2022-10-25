@@ -368,6 +368,7 @@ class FaultSegment(StructuralFrame):
         return newp
 
     def add_abutting_fault(self, abutting_fault_feature, positive=None):
+        
         # check whether the fault is on the hanging wall or footwall of abutting fault
         abutting_region = None
         if positive is None:
