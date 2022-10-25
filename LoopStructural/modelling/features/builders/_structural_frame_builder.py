@@ -152,6 +152,8 @@ class StructuralFrameBuilder:
         # set regularisation so the the main surface (foliation, fault) is smooth
         # and the fields are allowed to vary more
         regularisation = kwargs.pop("regularisation", [1.0, 1.0, 1.0])
+        if isinstance(regularisation, (int, float)):
+            regularisation = np.zeros(3)+regularisation 
         # initialise features as none then where data exists build
         if len(self.builders[0].data) > 0:
             logger.info(f"Building {self.name} coordinate 0")
