@@ -42,7 +42,6 @@ class FaultSegment(StructuralFrame):
         self.steps = steps
         self.regions = []
         self.faults_enabled = True
-        self.model = None
 
         self.builder = None
         self.splay = {}

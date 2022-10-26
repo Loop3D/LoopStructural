@@ -35,6 +35,7 @@ class FaultBuilder(StructuralFrameBuilder):
         StructuralFrameBuilder.__init__(
             self, interpolator, interpolators, frame=FaultSegment, **kwargs
         )
+        self.frame.model = model
         self.model = model
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array(

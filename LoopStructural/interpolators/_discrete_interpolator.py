@@ -800,7 +800,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
             return
         self.valid = True
-        print(f"Solving interpolation: {self.propertyname} took: {time()-starttime}")
+        logging.info(f"Solving interpolation: {self.propertyname} took: {time()-starttime}")
 
     def update(self):
         """
