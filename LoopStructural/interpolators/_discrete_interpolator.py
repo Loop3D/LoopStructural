@@ -705,7 +705,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cgargs["callback"] = kwargs["callback"]
         if precon is not None:
             cgargs["M"] = precon(A)
-        print(cgargs)
         return sla.cg(A, B, **cgargs)[0][: self.nx]
 
     def _solve_pyamg(self, A, B, tol=1e-12, x0=None, verb=False, **kwargs):
@@ -746,7 +745,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         starttime = time()
-        logger.info("Solving interpolation for {}".format(self.propertyname))
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         damp = True
