@@ -326,7 +326,9 @@
 <li class="toctree-l1"><a class="reference internal" href="interpolation_options.html">Implicit Interpolators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fold_modelling.html">Fold modelling</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Fault modelling</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="visualisation.html">Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging LoopStructural</a></li>
 </ul>
 
   </div>
@@ -424,6 +426,18 @@ The hanging wall of the fault is identified by the positive component of the fau
 <p>If <cite>faultfunction</cite> is used the displacement used is provided by faultfunction(coord_0,coord_1,coord_2) for every location in the model.
 A generic faultfunction can be used by passing <cite>faultfunction=`BaseFault</cite>.</p>
 </div>
+<div class="section" id="how-fault-modelling-works">
+<h1>How fault modelling works<a class="headerlink" href="#how-fault-modelling-works" title="Permalink to this heading">#</a></h1>
+<p>Faults are modelled in LoopStructural by applying a kinematic operator to the geological feature that is being modelled.
+The kinematic operator applies the kinematics of the fault in reverse to effectively restore observations or locations to their position prior to faulting.
+For example to interpolated a folded surface we first construct a fault frame using the observations of the fault surface and slip direction.
+The displacement of the fault can be constrained using a function of the fault coordinates.</p>
+<img src="../_images/fault_frame_figure.png" srcset="../_images/fault_frame_figure.png" alt="figure showing fault frame" class = "sphx-glr-single-img"/><p>The fault can then be added to the older features that are faulted.
+Before interpolating a geological feature the associated faults, stored in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.BaseFeature.faults</span></code> attribute of t are applied to the data points constraining the interpolation.
+The geological feature can be built using the restored data.
+When the feature is evaluated, the locations being evaluated are first past through the list of faults using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.BaseFeature._apply_faults()</span></code>.
+The <cite>apply_faults</cite> method should be called whenever <a class="reference internal" href="../_autosummary/LoopStructural.modelling.features.BaseFeature.html#LoopStructural.modelling.features.BaseFeature.evaluate_value" title="LoopStructural.modelling.features.BaseFeature.evaluate_value"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.BaseFeature.evaluate_value()</span></code></a> or <a class="reference internal" href="../_autosummary/LoopStructural.modelling.features.BaseFeature.html#LoopStructural.modelling.features.BaseFeature.evaluate_gradient" title="LoopStructural.modelling.features.BaseFeature.evaluate_gradient"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LoopStructural.modelling.features.BaseFeature.evaluate_gradient()</span></code></a> are overriden.</p>
+</div>
 
 
             </article>
@@ -456,6 +470,28 @@ A generic faultfunction can be used by passing <cite>faultfunction=`BaseFault</c
           
             <div class="bd-sidebar-secondary bd-toc">
               
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Fault modelling
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-fault-modelling-works">
+   How fault modelling works
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
 <div class="toc-item">
   
 <div id="searchbox"></div>

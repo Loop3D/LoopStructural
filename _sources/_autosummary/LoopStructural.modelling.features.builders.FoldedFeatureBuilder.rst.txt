@@ -49,6 +49,7 @@ LoopStructural.modelling.features.builders.FoldedFeatureBuilder
    
       ~FoldedFeatureBuilder.build_arguments
       ~FoldedFeatureBuilder.feature
+      ~FoldedFeatureBuilder.interpolation_region
       ~FoldedFeatureBuilder.interpolator
       ~FoldedFeatureBuilder.name
    

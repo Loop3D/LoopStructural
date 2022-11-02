@@ -42,6 +42,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/debugging';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural" href="../_autosummary/LoopStructural.html" />
+    <link rel="prev" title="Visualisation" href="visualisation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -124,7 +126,7 @@
                 </li>
                 
 
-                <li class="nav-item">
+                <li class="nav-item current active">
                     <a class="nav-link" href="index.html">
                         User Guide
                     </a>
@@ -214,7 +216,7 @@
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
   
   <div class="sidebar-header-items sidebar-primary__section">
@@ -243,7 +245,7 @@
                 </li>
                 
 
-                <li class="nav-item">
+                <li class="nav-item current active">
                     <a class="nav-link" href="index.html">
                         User Guide
                     </a>
@@ -310,6 +312,29 @@
     
   </div>
 
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="input_data.html">Input data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geological_model.html">Geological Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpolation_options.html">Implicit Interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fold_modelling.html">Fold modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fault_modelling.html">Fault modelling</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="visualisation.html">Visualisation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Debugging LoopStructural</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
   
 
   
@@ -387,9 +412,6 @@ Smaller values mean the solution will be a closer fit to the data + regularisati
 <li><p>Check how many elements you are using, <code class="code docutils literal notranslate"><span class="pre">1e5</span></code> should take under 5 minutes on a modern laptop</p></li>
 <li><p>How many faults are associated with the feature? <code class="code docutils literal notranslate"><span class="pre">len(feature.faults)</span></code>, you can remove the faults by setting this to an empty list</p></li>
 </ul>
-<ul class="simple">
-<li></li>
-</ul>
 </div>
 </div>
 <div class="section" id="folds">
@@ -420,6 +442,10 @@ the correct parameterisation.</p>
 <ul class="simple">
 <li><p>Increase the resolution of the visualisation mesh <code class="code docutils literal notranslate"><span class="pre">view.nelements=1e6</span></code></p></li>
 <li><p>Is the fault parallel to the feature being faulted?</p></li>
+<li><p>Has the fault been added to the feature being faulted?</p></li>
+</ul>
+<ul class="simple">
+<li><p>Is the fault displacement vector correct? Add the vector field to the visualisation</p></li>
 </ul>
 </div>
 </div>
@@ -433,6 +459,20 @@ the correct parameterisation.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="visualisation.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Visualisation</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../_autosummary/LoopStructural.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">LoopStructural</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
 </div>
             </footer>
             

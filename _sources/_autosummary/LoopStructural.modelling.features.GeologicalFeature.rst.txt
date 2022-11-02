@@ -18,6 +18,7 @@ LoopStructural.modelling.features.GeologicalFeature
    
       ~GeologicalFeature.__init__
       ~GeologicalFeature.add_region
+      ~GeologicalFeature.copy
       ~GeologicalFeature.evaluate_gradient
       ~GeologicalFeature.evaluate_gradient_misfit
       ~GeologicalFeature.evaluate_value

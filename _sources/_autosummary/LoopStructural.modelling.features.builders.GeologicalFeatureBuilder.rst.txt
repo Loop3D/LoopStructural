@@ -47,6 +47,7 @@ LoopStructural.modelling.features.builders.GeologicalFeatureBuilder
    
       ~GeologicalFeatureBuilder.build_arguments
       ~GeologicalFeatureBuilder.feature
+      ~GeologicalFeatureBuilder.interpolation_region
       ~GeologicalFeatureBuilder.interpolator
       ~GeologicalFeatureBuilder.name
    

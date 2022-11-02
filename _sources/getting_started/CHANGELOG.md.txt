@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.5.3](https://github.com/Loop3D/LoopStructural/compare/v1.5.2...v1.5.3) (2022-11-02)
+
+
+### Bug Fixes
+
+* adding copy method to geological feature ([01651cb](https://github.com/Loop3D/LoopStructural/commit/01651cb1a685462c375c9b379de8be345f6241f7))
+* adding debugging page to doc index ([a09aa0d](https://github.com/Loop3D/LoopStructural/commit/a09aa0d276b797436a91a8d6197d171db7909b58))
+* adding interpolation back to builder ([1a537aa](https://github.com/Loop3D/LoopStructural/commit/1a537aa6ed06264de0ad40aae28d4cc672cdab6c))
+* allow regularisation to be set for faults using processor ([07920dc](https://github.com/Loop3D/LoopStructural/commit/07920dc076c0147e962da24378188abe28a2931e))
+* model set for fault segment ([3eb0328](https://github.com/Loop3D/LoopStructural/commit/3eb03281c7e343cff781402bcc0828a7a4b63285))
+* remove prints while solving ([3aae8a9](https://github.com/Loop3D/LoopStructural/commit/3aae8a9e6c2240dc2917bae10aa3e43b9194bbf0))
+* removing theano from docs docker ([a706575](https://github.com/Loop3D/LoopStructural/commit/a706575fc8c9828bf97cb1a7e419f3b5ad833303))
+* tolerance geological modle ([fbc7e4a](https://github.com/Loop3D/LoopStructural/commit/fbc7e4a95c9618b7f8bacea4929e01da4ce83c19))
+* updating dockerfile ([70ea4f7](https://github.com/Loop3D/LoopStructural/commit/70ea4f72334ca1dcd31b83129a315cf9aabdba0f))
+* updating dockerfile so that it builds ([0e5482a](https://github.com/Loop3D/LoopStructural/commit/0e5482a9e1b7b353827c2db53920efe5df33a080))
+
+
+### Documentation
+
+* adding more documentation on structural frames and faults ([2fab248](https://github.com/Loop3D/LoopStructural/commit/2fab2483b16207576052ffa1e7f809e1bf08b92e))
+* path for fault frame image ([921cd19](https://github.com/Loop3D/LoopStructural/commit/921cd195ec492571ac6fe68abca51159ce7258df))
+
 ## [1.5.2](https://github.com/Loop3D/LoopStructural/compare/v1.5.1...v1.5.2) (2022-10-11)
 
 

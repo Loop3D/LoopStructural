@@ -18,6 +18,7 @@ LoopStructural.modelling.core.geological\_model.UnconformityFeature
    
       ~UnconformityFeature.__init__
       ~UnconformityFeature.add_region
+      ~UnconformityFeature.copy
       ~UnconformityFeature.evaluate
       ~UnconformityFeature.evaluate_gradient
       ~UnconformityFeature.evaluate_gradient_misfit

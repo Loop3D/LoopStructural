@@ -5,10 +5,10 @@
 
 Computation times
 =================
-**01:13.584** total execution time for **_auto_examples_3_fault** files:
+**01:13.920** total execution time for **_auto_examples_3_fault** files:
 
 +--------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py` (``plot_faulted_intrusion.py``) | 00:47.516 | 0.0 MB |
+| :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py` (``plot_faulted_intrusion.py``) | 00:47.827 | 0.0 MB |
 +--------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr__auto_examples_3_fault_plot_fault_network.py` (``plot_fault_network.py``)         | 00:26.068 | 0.0 MB |
+| :ref:`sphx_glr__auto_examples_3_fault_plot_fault_network.py` (``plot_fault_network.py``)         | 00:26.092 | 0.0 MB |
 +--------------------------------------------------------------------------------------------------+-----------+--------+
