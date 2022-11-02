@@ -66,9 +66,9 @@ The kinematic operator applies the kinematics of the fault in reverse to effecti
 For example to interpolated a folded surface we first construct a fault frame using the observations of the fault surface and slip direction. 
 The displacement of the fault can be constrained using a function of the fault coordinates.
 
-.. image-sg:: /images/fault_frame.png
+.. image-sg:: /images/fault_frame_figure.png
    :alt: figure showing fault frame 
-   :srcset: /images/fault_frame.png
+   :srcset: /images/fault_frame_figure.png
    :class: sphx-glr-single-img
 
 The fault can then be added to the older features that are faulted.
