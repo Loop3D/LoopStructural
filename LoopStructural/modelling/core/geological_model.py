@@ -62,14 +62,13 @@ from LoopStructural.utils.helper import (
     get_vectors,
 )
 
-intrusions = True
-try:
-    from LoopStructural.modelling.intrusions import IntrusionBuilder
-
-    from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
-except ImportError as e:
-    print(e)
-    intrusions = False
+# intrusions = True
+# try:
+from LoopStructural.modelling.intrusions import IntrusionBuilder
+from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
+# except ImportError as e:
+#     print(e)
+#     intrusions = False
 
 logger = getLogger(__name__)
 
@@ -1083,13 +1082,12 @@ class GeologicalModel:
         self,
         intrusion_name,
         intrusion_frame_name,
+        intrusion_frame_parameters={},
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        intrusion_frame_parameters={},
-        lateral_extent_sgs_parameters={},
-        vertical_extent_sgs_parameters={},
+        parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
-        faults=None,  # LG seems unused?
+        # faults=None,  # LG seems unused?
         **kwargs,
     ):
         """
@@ -1117,16 +1115,7 @@ class GeologicalModel:
             geometrical conceptual model for simulation of lateral extent
         intrusion_vertical_extent_model = function,
             geometrical conceptual model for simulation of vertical extent
-        intrusion_network_parameters : dictionary, optional
-            contact :
-        string, contact of the intrusion to be used to create the network (roof or floor)
-            type : string, type of algorithm to create the intrusion network (interpolated or shortest path).
-        Shortest path is recommended when intrusion contact is not well constrained
-            contacts_anisotropies : list
-         of series-type features involved in intrusion emplacement
-            structures_anisotropies : list
-         of fault-type features involved in intrusion emplacement
-            sequence_anisotropies : list of anisotropies to look for the shortest path. It could be only starting and end point.
+        intrusion_network_parameters = dictionary,
         lateral_extent_sgs_parameters = dictionary, optional
             parameters for sequential gaussian simulation of lateral extent
         vertical_extent_sgs_parameters = dictionary, optional
@@ -1139,9 +1128,9 @@ class GeologicalModel:
         intrusion feature
 
         """
-        if intrusions is False:
-            logger.error("Libraries not installed")
-            raise Exception("Libraries not installed")
+        # if intrusions is False:
+        #     logger.error("Libraries not installed")
+        #     raise Exception("Libraries not installed")
 
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
         intrusion_frame_data = self.data[
@@ -1162,10 +1151,11 @@ class GeologicalModel:
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
         )
-        intrusion_frame_builder.post_intrusion_faults = faults  # LG unused?
 
-        # -- create intrusion frame 
-        # using intrusion intrusion structures (steps and marginal faults) and flow/inflation measurements
+        self._add_faults(intrusion_frame_builder)
+        # intrusion_frame_builder.post_intrusion_faults = faults  # LG unused?
+
+        # -- create intrusion frame using intrusion structures (steps and marginal faults) and flow/inflation measurements
         if len(intrusion_frame_parameters) == 0:
             logger.error('Please specify parameters to build intrusion frame')
         intrusion_frame_builder.set_intrusion_frame_parameters(
@@ -1183,29 +1173,24 @@ class GeologicalModel:
             gxygz=weights[2],
         )
 
-        intrusion_frame = intrusion_frame_builder.frame
+        intrusion_frame = intrusion_frame_builder.frame        
 
-        self._add_faults(intrusion_frame_builder)
-        
-
-        # -- create intrusion builder to simulate distance thresholds along frame coordinates
+        # -- create intrusion builder to compute distance thresholds along the frame coordinates
         intrusion_builder = IntrusionBuilder(
-            intrusion_frame, model=self, name=f"{intrusion_name}_feature"
+            intrusion_frame, model=self, interpolator = interpolator, name=f"{intrusion_name}_feature", **kwargs
         )
         intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
         intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
 
-        # logger.info("setting data for thresholds simulation")
-        intrusion_builder.set_data_for_extent_simulation(intrusion_data)
+        intrusion_builder.set_data_for_extent_calculation(intrusion_data)
+
         intrusion_builder.build_arguments = {
-            "lateral_extent_sgs_parameters": lateral_extent_sgs_parameters,
-            "vertical_extent_sgs_parameters": vertical_extent_sgs_parameters,
+            "parameters_for_extent_sgs": parameters_for_extent_sgs,
             "geometric_scaling_parameters": geometric_scaling_parameters,
         }
+
         intrusion_feature = intrusion_builder.feature
-        # self._add_faults(intrusion_feature, features = faults)
         self._add_feature(intrusion_feature)
-        # self._add_faults(intrusion_builder)
 
         return intrusion_feature
 

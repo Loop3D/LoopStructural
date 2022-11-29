@@ -4,7 +4,7 @@ import pandas as pd
 from LoopStructural.utils import getLogger
 from .intrusion_feature import IntrusionFeature
 from LoopStructural.interpolators import StructuredGrid2D
-from LoopStructural.modelling.features.builders import BaseBuilder
+# from LoopStructural.modelling.features.builders import BaseBuilder
 
 from scipy.interpolate import Rbf
 
@@ -16,22 +16,22 @@ from .geometric_scaling_functions import *
 
 logger = getLogger(__name__)
 
-# import GSLIB library
-try:
-    import geostatspy.GSLIB as GSLIB  # GSLIB utilities, viz and wrapped functions
+# # import GSLIB library
+# try:
+#     import geostatspy.GSLIB as GSLIB  # GSLIB utilities, viz and wrapped functions
 
-except ImportError:
-    logger.warning(
-        "Cannot use Intrusions: GeostatPy not installed \n" "pip install geostatspy"
-    )
-    raise ImportError("GSLIB")
-try:
-    import geostatspy.geostats as geostats  # GSLIB converted to Python
-except ImportError:
-    logger.warning(
-        "Cannot use Intrusions: GeostatPy not installed \n" "pip install geostatspy"
-    )
-    raise ImportError("geostats")
+# except ImportError:
+#     logger.warning(
+#         "Cannot use Intrusions: GeostatPy not installed \n" "pip install geostatspy"
+#     )
+#     raise ImportError("GSLIB")
+# try:
+#     import geostatspy.geostats as geostats  # GSLIB converted to Python
+# except ImportError:
+#     logger.warning(
+#         "Cannot use Intrusions: GeostatPy not installed \n" "pip install geostatspy"
+#     )
+#     raise ImportError("geostats")
 
 
 class IntrusionBuilder():
@@ -39,7 +39,9 @@ class IntrusionBuilder():
         self,
         frame, 
         model=None,
-        name="intrusion builder"):
+        name="intrusion builder",
+        interpolator = None,
+        **kwargs):
 
         """
         Constructor for an IntrusionBuilder
@@ -50,49 +52,58 @@ class IntrusionBuilder():
 
         """
 
-
         # BaseBuilder.__init__(self, name = name)
 
         self.name = name
         self.intrusion_frame = frame
         self._up_to_date = False
-        self.faults = []
+        self.model = model
+        # self.faults = []
         self._feature = IntrusionFeature(
-            frame=frame, builder=self, faults=self.faults, name=self.name
+            frame=frame, 
+            builder=self,
+            interpolator = interpolator, 
+            # faults=self.faults, 
+            name=self.name
         )
 
-        # contact data:
-        self.lateral_contact_data = None
-        self.vertical_contact_data = None
+        if 'intrusion_extent_calculation' in kwargs:
+            if kwargs['intrusion_extent_calculation'] == 'SGS':
+                self.intrusion_extent_calculation = 'SGS'
+            else:
+                logger.warning(kwargs['intrusion_extent_calculation'])
+                self.intrusion_extent_calculation = 'interpolated'
 
-        # sequential gaussian simulation parameters:
-        self.lateral_sgs_parameters = None
-        self.vertical_sgs_parameters = None
+        else:
+            self.intrusion_extent_calculation = 'interpolated'
 
-        self.lateral_sgs_variogram = None
-        self.vertical_sgs_variogram = None
-
-        self.lateral_sgs_input_data = None
-        self.vertical_sgs_input_data = None
-
-        # self.lateral_extent_sgs_parameters = None
-        # self.vertical_extent_sgs_parameters = None
-
-        self.simulation_grid = None
+        self._build_arguments = {}
         self.data = None
         self.data_prepared = False
-        self.model = model
-        self._build_arguments = {}
-        self.width_data = [True, True]
+        self.lateral_contact_data = None
+        self.vertical_contact_data = None
+        self.lateral_extent_model = None 
+        self.vertical_extent_model = None
+        self.width_data = [True, True]  
         self.thickness_data = False
+        
 
-        # self.simulationGSLIB_s_outcome = None
-        self.growth_simulated_thresholds_grid = None
+        self.data_for_lateral_extent_calculation = None
+        self.data_for_vertical_extent_calculation = None
+        self.evaluation_grid = None
         self.conceptual_model_parameters = {}
 
-        self.lateral_conceptual_model_parameters = {}
-        self.marginal_fault = None
+        # self.growth_simulated_thresholds_grid = None
 
+        if self.intrusion_extent_calculation == 'SGS':
+            # sequential gaussian simulation parameters (deprecated method):
+            self.lateral_sgs_parameters = None
+            self.vertical_sgs_parameters = None
+            self.lateral_sgs_variogram = None
+            self.vertical_sgs_variogram = None
+            
+        
+        
     @property
     def feature(self):
         return self._feature
@@ -119,23 +130,7 @@ class IntrusionBuilder():
                 f"Cannot update build arguments with {type(arguments)}, must be a dictionary"
             )
 
-    def add_fault(self, fault):
-        """
-        Add a fault to the intrusion feature builder
-
-        Parameters
-        ----------
-        fault : FaultSegment
-            A faultsegment to add to the geological feature
-
-        Returns
-        -------
-
-        """
-        self._up_to_date = False
-        self.faults.append(fault)
-
-    def create_grid_for_simulation(self, spacing=None):
+    def create_grid_for_evaluation(self, spacing=None):
         """
         Create the grid points in which to simulate vertical and lateral
 
@@ -158,7 +153,7 @@ class IntrusionBuilder():
 
         grid_points_coord2 = self.intrusion_frame[2].evaluate_value(grid_points)
 
-        self.simulation_grid = [
+        self.evaluation_grid = [
             grid_points,
             grid_points_coord0,
             grid_points_coord1,
@@ -166,8 +161,8 @@ class IntrusionBuilder():
             spacing,
         ]
 
-    def set_data_for_extent_simulation(self, intrusion_data):
-        """Set data for lateral extent (distances in L axis)  and vertical extent (distances in G axis) simulation.
+    def set_data_for_extent_calculation(self, intrusion_data):
+        """Set data for lateral extent (distances in c2 axis)  and vertical extent (distances in c0 axis) simulation.
 
         Parameters
         ----------
@@ -193,18 +188,7 @@ class IntrusionBuilder():
         """
         if self.data is None or self.data.shape[0] == 0:
             raise ValueError("Cannot create intrusion with no data")
-
-        # if self.marginal_fault is not None:
-        #     #add fault trace points to constrain conceptual model
-        #     marginal_fault_trace_data = self.marginal_fault.faultframe.builder[0].data.copy()
-        #     marginal_fault_trace_data_val = marginal_fault_trace_data[marginal_fault_trace_data['val'] == 0].loc[:,['X','Y','Z']].copy()
-        #     marginal_fault_trace_data_val.loc[:,'intrusion_side'] = True
-
-        #     intrusion_data = pd.concat([self.data, marginal_fault_trace_data_val])
-
-        # else:
-        #     intrusion_data = self.data.copy()
-        
+      
         intrusion_data = self.data.copy()
         
         data_xyz = intrusion_data.loc[:, ["X", "Y", "Z"]].to_numpy()
@@ -212,8 +196,8 @@ class IntrusionBuilder():
         intrusion_data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(data_xyz)
         intrusion_data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(data_xyz)
 
-        # -- separate data between both sides of the intrusion, using intrusion axis (i.e. coord2 = 0)
-        
+        # -- separate data between both sides of the intrusion, using intrusion axis (i.e., coord2 = 0)
+    
         data_minside = intrusion_data[
             (intrusion_data["intrusion_side"] == True) & (intrusion_data["coord2"] <= 0)
         ].copy()
@@ -224,13 +208,13 @@ class IntrusionBuilder():
         ].copy()
         data_maxside.reset_index(inplace=True, drop=True)
 
-        if data_minside.shape[0] <3: # minimum three input data for SGS simulation
+        if data_minside.shape[0] <3: # minimum three input data for interpolation/SGS
             self.width_data[0] = False
 
         else:
             self.width_data[0] = True
 
-        if data_maxside.shape[0] <3: # minimum three input data for SGS simulation
+        if data_maxside.shape[0] <3: # minimum three input data for interpolation/SGS
             self.width_data[1] = False
 
         else:
@@ -266,10 +250,9 @@ class IntrusionBuilder():
         intrusion_network_data.reset_index(inplace=True)
 
         # -- if no data points for roof or floor, use geometric scaling to create points for SGS
-        if self.intrusion_frame.builder.other_contact_data.shape[0] == 0: # <3 (minimum number of data for SGS is 3)
-            print(len(geometric_scaling_parameters))
+        if self.intrusion_frame.builder.other_contact_data.shape[0] == 0: 
             if len(geometric_scaling_parameters) == 0:
-                self.thickness_data = False
+                self.thickness_data = False #set to False, so other_contact is constrained only with conceptual model.
                 other_contact_data_xyz = intrusion_network_data_xyz 
                 other_contact_data = intrusion_network_data
 
@@ -304,7 +287,7 @@ class IntrusionBuilder():
                         )
                     )
 
-                else: # -- create synthetic data using geometric scaling
+                else: # -- create synthetic data to constrain interpolation using geometric scaling
                     estimated_thickness = thickness
                     if estimated_thickness == None:
                         estimated_thickness = thickness_from_geometric_scaling(
@@ -312,7 +295,7 @@ class IntrusionBuilder():
                         )
 
                     print(
-                        "Building intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
+                        "Building tabular intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
                             round(estimated_thickness)
                         )
                     )
@@ -354,6 +337,287 @@ class IntrusionBuilder():
 
         self.vertical_contact_data = [intrusion_network_data, other_contact_data]
         self.data_prepared = True
+
+    def set_conceptual_models_parameters(self):
+        """ Creates a dictionary of parameters used for conceptual models.
+        These parameters includes the basic parameters for the functions representing the conceptual models of the intrusion geometry.
+        
+        """
+
+        grid_points_coord1 = self.evaluation_grid[2]
+
+        modelcover, minP, maxP, minL, maxL = self.lateral_extent_model()
+        mean_c0 = self.vertical_extent_model()
+
+        if minL == None:
+            minL = min(
+                self.vertical_contact_data[0]["coord2"].min(),
+                self.vertical_contact_data[1]["coord2"].min(),
+                self.lateral_contact_data[0]["coord2"].min(),
+            )
+
+        if maxL == None:
+            maxL = max(
+                self.vertical_contact_data[0]["coord2"].max(),
+                self.vertical_contact_data[1]["coord2"].max(),
+                self.lateral_contact_data[0]["coord2"].max(),
+            )
+
+        if minL < 0 and maxL < 0:
+            maxL = minL * -1
+
+        if minL > 0 and maxL > 0:
+            minL = maxL * -1
+
+        if modelcover == True:
+            minP = np.nanmin(grid_points_coord1)
+            maxP = np.nanmax(grid_points_coord1)
+        else:
+            if minP == None:
+                minP = min(
+                    self.vertical_contact_data[0]["coord1"].min(),
+                    self.vertical_contact_data[1]["coord1"].min(),
+                    self.lateral_contact_data[0]["coord1"].min(),
+                )
+            if maxP == None:
+                maxP = max(
+                    self.vertical_contact_data[0]["coord1"].max(),
+                    self.vertical_contact_data[1]["coord1"].max(),
+                    self.lateral_contact_data[0]["coord1"].max(),
+                )
+
+        # extra parameters for growth
+        if mean_c0 == None:
+            mean_growth = self.vertical_contact_data[1].loc[:, "coord0"].mean()
+        else:
+            mean_growth = mean_c0
+        
+        maxG = self.vertical_contact_data[1]["coord0"].max()
+        coord_PL_for_maxG = (
+            self.vertical_contact_data[1][
+                self.vertical_contact_data[1].coord0
+                == self.vertical_contact_data[1].coord0.max()
+            ]
+            .loc[:, ["coord1", "coord2"]]
+            .to_numpy()
+        )
+
+        vertex = [coord_PL_for_maxG[0][0], coord_PL_for_maxG[0][1], maxG]
+
+        self.conceptual_model_parameters["minP"] = minP
+        self.conceptual_model_parameters["maxP"] = maxP
+        self.conceptual_model_parameters["minL"] = minL
+        self.conceptual_model_parameters["maxL"] = maxL
+        self.conceptual_model_parameters["model_cover"] = modelcover
+        self.conceptual_model_parameters["mean_growth"] = mean_growth
+        self.conceptual_model_parameters["vertex"] = vertex
+
+    def set_data_for_lateral_thresholds(self):
+        """
+        Sets the data for the interpolation of lateral thresholds.
+        Computes conceptual and residual values
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        """
+
+        # -- generate data frame containing input data for simulation
+
+        self.set_conceptual_models_parameters()
+
+        minP = self.conceptual_model_parameters.get("minP")
+        maxP = self.conceptual_model_parameters.get("maxP")
+        minL = self.conceptual_model_parameters.get("minL")
+        maxL = self.conceptual_model_parameters.get("maxL")
+
+        if self.width_data[0] == False:  # i.e., no lateral data for side L<0
+            print(
+                "Not enought lateral data for simulation of side L<0, Using roof/floor data to condition the conceptual model"
+            )
+
+            # -- try using vertical data to set some points and run SGS
+            vertical_data = pd.concat(
+                [self.vertical_contact_data[0], self.vertical_contact_data[1]]
+            )
+            vertical_data.loc[
+                :, ["conceptual_maxside", "conceptual_minside"]
+            ] = self.lateral_extent_model(
+                lateral_contact_data=vertical_data,
+                minP=minP,
+                maxP=maxP,
+                minS=minL,
+                maxS=maxL,
+            )
+
+            data_minL_temp = vertical_data[vertical_data["coord2"] < 0].copy()
+
+            inputsimdata_minL = data_minL_temp[data_minL_temp['coord2'] <= data_minL_temp['conceptual_minside']].loc[
+                    :,['X','Y','Z','coord0','coord1','coord2','conceptual_minside']].copy()
+            inputsimdata_minL.loc[:,'l_residual'] = inputsimdata_minL.loc[
+                :,'conceptual_minside'] - inputsimdata_minL.loc[:,'coord2']
+            inputsimdata_minL.rename(columns={'conceptual_minside': 'l_conceptual'}, inplace = True)
+            inputsimdata_minL.reset_index(inplace = True)
+            inputsimdata_minL.drop_duplicates(
+                subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
+                inplace = True)
+
+            if len(inputsimdata_minL) < 3:
+                # create random points along coordinate 1, and evaluate them in conceptual model. Residual = 0. Add points to dataframe containing input for sgs
+                print(
+                    "Simulation of lateral side L<0: No enought roof/floor data to condition the conceptual model, lateral contact equivalent to conceptual"
+                )
+
+                random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
+                conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+                inputsimdata_minL_ = pd.DataFrame(np.vstack([conceptual_l[:,1],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
+                inputsimdata_minL_.loc[:,'l_residual'] = 0
+                inputsimdata_minL = pd.concat([inputsimdata_minL, inputsimdata_minL_])
+
+            inputsimdata_minL.loc[:, "ref_coord"] = 0
+
+        else:
+            # -- Side of intrusion with coord2<0 (l<0)
+            data_minL = self.lateral_contact_data[1]
+            data_conceptual_minL = self.lateral_extent_model(
+                lateral_contact_data=data_minL,
+                minP=minP,
+                maxP=maxP,
+                minS=minL,
+                maxS=maxL,
+            )
+            data_residual_minL = (
+                data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
+            ).to_numpy()
+            inputsimdata_minL = data_minL.loc[
+                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+            ].copy()
+            inputsimdata_minL.loc[:, "l_residual"] = data_residual_minL
+            inputsimdata_minL.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
+
+            inputsimdata_minL.reset_index(inplace=True)
+            inputsimdata_minL.loc[:, "ref_coord"] = 0
+
+        if self.width_data[1] == False:  # i.e., no lateral data for side L>0
+            print(
+                "Not enought lateral data for simulation of side L>=0, Using roof/floor data to condition the conceptual model"
+            )
+
+            # -- try using vertical data to set some points and run SGS
+            vertical_data = pd.concat(
+                [self.vertical_contact_data[0], self.vertical_contact_data[1]]
+            )
+            vertical_data.loc[
+                :, ["conceptual_maxside", "conceptual_minside"]
+            ] = self.lateral_extent_model(
+                lateral_contact_data=vertical_data,
+                minP=minP,
+                maxP=maxP,
+                minS=minL,
+                maxS=maxL,
+            )
+
+            data_maxL_temp = vertical_data[vertical_data["coord2"] >= 0].copy()
+
+            inputsimdata_maxL = data_maxL_temp[data_maxL_temp['coord2'] >= data_maxL_temp['conceptual_maxside']].loc[:,['X','Y','Z','coord0','coord1','coord2','conceptual_maxside']].copy()
+            inputsimdata_maxL.loc[:,'l_residual'] = inputsimdata_maxL.loc[:,'conceptual_maxside'] - inputsimdata_maxL.loc[:,'coord2']
+            inputsimdata_maxL.rename(columns={'conceptual_maxside': 'l_conceptual'}, inplace = True)
+            inputsimdata_maxL.reset_index(inplace = True)
+            inputsimdata_maxL.drop_duplicates(
+                subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
+                inplace = True)
+
+            if len(inputsimdata_maxL) < 3:
+                print(
+                    "Simulation of lateral side L>=0: No enought roof/floor data to condition the conceptual model, lateral contact equivalent to conceptual"
+                )
+                # create random points along coordinate 1, and evaluate them conceptual model. Residual = 0. Add points to dataframe containing input for sgs
+                random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
+                conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+                inputsimdata_maxL_ = pd.DataFrame(np.vstack([conceptual_l[:,0],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
+                inputsimdata_maxL_.loc[:,'l_residual'] = 0
+                inputsimdata_maxL = pd.concat([inputsimdata_maxL, inputsimdata_maxL_])
+
+            inputsimdata_maxL.loc[:, "ref_coord"] = 0
+
+        else:
+            data_maxL = self.lateral_contact_data[2]
+            data_conceptual_maxL = self.lateral_extent_model(
+                lateral_contact_data=data_maxL,
+                minP=minP,
+                maxP=maxP,
+                minS=minL,
+                maxS=maxL,
+            )
+            data_residual_maxL = (
+                data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
+            ).to_numpy()
+            inputsimdata_maxL = data_maxL.loc[
+                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+            ].copy()
+            inputsimdata_maxL.loc[:, "l_residual"] = data_residual_maxL
+            inputsimdata_maxL.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
+
+            inputsimdata_maxL.reset_index(inplace=True)
+            inputsimdata_maxL.loc[:, "ref_coord"] = 0
+
+        self.data_for_lateral_extent_calculation = [inputsimdata_minL, inputsimdata_maxL]
+
+    def set_data_for_vertical_thresholds(self):
+        """
+        Sets the data for the interpolation of the vertical thresholds.
+        Computes conceptual and residual values
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        """
+
+        # -- Generate data frame containing input data for simulation
+        inet_data = self.vertical_contact_data[0]
+        other_contact_data = self.vertical_contact_data[1]
+
+        # # --- parameters for conceptual model
+        minP = self.conceptual_model_parameters.get("minP")
+        maxP = self.conceptual_model_parameters.get("maxP")
+        minL = self.conceptual_model_parameters.get("minL")
+        maxL = self.conceptual_model_parameters.get("maxL")
+        meanG = self.conceptual_model_parameters.get("mean_growth")
+        vertex = self.conceptual_model_parameters.get("vertex")
+
+        # --- growth simulation input data (max G, simulation of contact opposite to intrusion network)
+
+        data_conceptual_G = self.vertical_extent_model(
+            other_contact_data,
+            mean_growth=meanG,
+            minP=minP,
+            maxP=maxP,
+            minS=minL,
+            maxS=maxL,
+            vertex=vertex,
+        )
+        data_residual_G = (
+            data_conceptual_G[:, 1] - other_contact_data.loc[:, "coord0"]
+        ).to_numpy()
+        inputsimdata_maxG = other_contact_data.loc[
+            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+        ].copy()
+        inputsimdata_maxG.loc[:, "g_residual"] = data_residual_G
+        inputsimdata_maxG.loc[:, "g_conceptual"] = data_conceptual_G[:, 1]
+
+        if self.thickness_data == False:
+            inputsimdata_maxG.loc[:, "g_residual"] = 0
+
+        # --- growth simulation input data for intrusion network conditioning
+        inputsimdata_inetG = inet_data.loc[
+            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
+        ].copy()
+
+        self.data_for_vertical_extent_calculation = [inputsimdata_maxG, inputsimdata_inetG]
 
     def set_l_sgs_GSLIBparameters(self, lateral_simulation_parameters):
         """
@@ -581,85 +845,7 @@ class IntrusionBuilder():
             nugget, nst, it1, cc1, azi1, hmaj1, hmin1
         )
 
-    def set_conceptual_models_parameters(self):
-        """ Creates a dictionary of parameters used for conceptual models.
-        These parameters includes the basic parameters for the functions representing the conceptual models of the intrusion geometry.
-        
-        """
-
-        grid_points_coord1 = self.simulation_grid[2]
-
-        modelcover, minP, maxP, minL, maxL = self.lateral_extent_model()
-        mean_c0 = self.vertical_extent_model()
-
-        if minL == None:
-            minL = min(
-                self.vertical_contact_data[0]["coord2"].min(),
-                self.vertical_contact_data[1]["coord2"].min(),
-                self.lateral_contact_data[0]["coord2"].min(),
-            )
-
-        if maxL == None:
-            maxL = max(
-                self.vertical_contact_data[0]["coord2"].max(),
-                self.vertical_contact_data[1]["coord2"].max(),
-                self.lateral_contact_data[0]["coord2"].max(),
-            )
-
-        if minL < 0 and maxL < 0:
-            maxL = minL * -1
-
-        if minL > 0 and maxL > 0:
-            minL = maxL * -1
-
-        if modelcover == True:
-            minP = np.nanmin(grid_points_coord1)
-            maxP = np.nanmax(grid_points_coord1)
-        else:
-            minP = min(
-                self.vertical_contact_data[0]["coord1"].min(),
-                self.vertical_contact_data[1]["coord1"].min(),
-                self.lateral_contact_data[0]["coord1"].min(),
-            )
-            maxP = max(
-                self.vertical_contact_data[0]["coord1"].max(),
-                self.vertical_contact_data[1]["coord1"].max(),
-                self.lateral_contact_data[0]["coord1"].max(),
-            )
-
-        # extra parameters for growth
-        if mean_c0 == None:
-            mean_growth = self.vertical_contact_data[1].loc[:, "coord0"].mean()
-        else:
-            mean_growth = mean_c0
-        
-        maxG = self.vertical_contact_data[1]["coord0"].max()
-        coord_PL_for_maxG = (
-            self.vertical_contact_data[1][
-                self.vertical_contact_data[1].coord0
-                == self.vertical_contact_data[1].coord0.max()
-            ]
-            .loc[:, ["coord1", "coord2"]]
-            .to_numpy()
-        )
-
-        vertex = [coord_PL_for_maxG[0][0], coord_PL_for_maxG[0][1], maxG]
-
-        # conceptual_model_parameters = {}
-        self.conceptual_model_parameters["minP"] = minP
-        self.conceptual_model_parameters["maxP"] = maxP
-        self.conceptual_model_parameters["minL"] = minL
-        self.conceptual_model_parameters["maxL"] = maxL
-        self.conceptual_model_parameters["model_cover"] = modelcover
-        self.conceptual_model_parameters["mean_growth"] = mean_growth
-        self.conceptual_model_parameters["vertex"] = vertex
-
-    def add_marginal_fault(self, fault):
-        #DETELE
-
-        self.marginal_fault = fault
-
-    def simulate_lateral_thresholds_original(self):
+    def simulate_lateral_thresholds(self):
         """
         Simulate residual values along L frame axis,
         and compute l thresholds for each point of a pre-defined grid
@@ -673,7 +859,7 @@ class IntrusionBuilder():
         """
 
         # -- get grid points and evaluated values in the intrusion frame
-        grid_points_coord1 = self.simulation_grid[2]
+        grid_points_coord1 = self.evaluation_grid[2]
 
         self.set_conceptual_models_parameters()
 
@@ -845,7 +1031,7 @@ class IntrusionBuilder():
             inputsimdata_maxL.reset_index(inplace=True)
             inputsimdata_maxL.loc[:, "ref_coord"] = 0
 
-        self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
+        self.data_for_lateral_extent_calculation = [inputsimdata_minL, inputsimdata_maxL]
 
         # -- Compute simulation parameters if not defined
         # ---- compute lower and uper fence of simulated values using quartiles
@@ -921,10 +1107,9 @@ class IntrusionBuilder():
         ndmax = self.lateral_sgs_parameters.get("ndmax")
         radius = self.lateral_sgs_parameters.get("radius")
 
-        # self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
 
         l_min_simulation = geostats.sgsim(
-            self.lateral_sgs_input_data[0],
+            self.data_for_lateral_extent_calculation[0],
             "coord1",
             "ref_coord",
             "l_residual",
@@ -975,7 +1160,7 @@ class IntrusionBuilder():
         zmax = self.lateral_sgs_parameters.get("zmax_lmax")
 
         l_max_simulation = geostats.sgsim(
-            self.lateral_sgs_input_data[1],
+            self.data_for_lateral_extent_calculation[1],
             "coord1",
             "ref_coord",
             "l_residual",
@@ -1069,167 +1254,7 @@ class IntrusionBuilder():
 
         self.lateral_simulated_thresholds = lateral_thresholds
 
-    def set_data_for_lateral_thresholds(self):
-        """
-        Sets the data for the interpolation of lateral thresholds.
-        Computes conceptual and residual values
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        """
-
-        # -- get grid points and evaluated values in the intrusion frame
-
-        # grid_points_coord1 = self.simulation_grid[2]
-
-        # -- generate data frame containing input data for simulation
-
-        self.set_conceptual_models_parameters()
-
-        minP = self.conceptual_model_parameters.get("minP")
-        maxP = self.conceptual_model_parameters.get("maxP")
-        minL = self.conceptual_model_parameters.get("minL")
-        maxL = self.conceptual_model_parameters.get("maxL")
-
-        if self.width_data[0] == False:  # i.e., no lateral data for side L<0
-            print(
-                "Not enought lateral data for simulation of side L<0, Using roof/floor data to condition the conceptual model"
-            )
-
-            # -- try using vertical data to set some points and run SGS
-            vertical_data = pd.concat(
-                [self.vertical_contact_data[0], self.vertical_contact_data[1]]
-            )
-            vertical_data.loc[
-                :, ["conceptual_maxside", "conceptual_minside"]
-            ] = self.lateral_extent_model(
-                lateral_contact_data=vertical_data,
-                minP=minP,
-                maxP=maxP,
-                minS=minL,
-                maxS=maxL,
-            )
-
-            data_minL_temp = vertical_data[vertical_data["coord2"] < 0].copy()
-
-            inputsimdata_minL = data_minL_temp[data_minL_temp['coord2'] <= data_minL_temp['conceptual_minside']].loc[
-                    :,['X','Y','Z','coord0','coord1','coord2','conceptual_minside']].copy()
-            inputsimdata_minL.loc[:,'l_residual'] = inputsimdata_minL.loc[
-                :,'conceptual_minside'] - inputsimdata_minL.loc[:,'coord2']
-            inputsimdata_minL.rename(columns={'conceptual_minside': 'l_conceptual'}, inplace = True)
-            inputsimdata_minL.reset_index(inplace = True)
-            inputsimdata_minL.drop_duplicates(
-                subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
-                inplace = True)
-
-            if len(inputsimdata_minL) < 3:
-                # create random points along coordinate 1, and evaluate them in conceptual model. Residual = 0. Add points to dataframe containing input for sgs
-                print(
-                    "Simulation of lateral side L<0: No enought roof/floor data to condition the conceptual model, lateral contact equivalent to conceptual"
-                )
-
-                random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
-                conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
-                inputsimdata_minL_ = pd.DataFrame(np.vstack([conceptual_l[:,1],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
-                inputsimdata_minL_.loc[:,'l_residual'] = 0
-                inputsimdata_minL = pd.concat([inputsimdata_minL, inputsimdata_minL_])
-
-            inputsimdata_minL.loc[:, "ref_coord"] = 0
-
-        else:
-            # -- Side of intrusion with coord2<0 (l<0)
-            data_minL = self.lateral_contact_data[1]
-            data_conceptual_minL = self.lateral_extent_model(
-                lateral_contact_data=data_minL,
-                minP=minP,
-                maxP=maxP,
-                minS=minL,
-                maxS=maxL,
-            )
-            data_residual_minL = (
-                data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
-            ).to_numpy()
-            inputsimdata_minL = data_minL.loc[
-                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-            ].copy()
-            inputsimdata_minL.loc[:, "l_residual"] = data_residual_minL
-            inputsimdata_minL.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
-
-            inputsimdata_minL.reset_index(inplace=True)
-            inputsimdata_minL.loc[:, "ref_coord"] = 0
-
-        if self.width_data[1] == False:  # i.e., no lateral data for side L>0
-            print(
-                "Not enought lateral data for simulation of side L>=0, Using roof/floor data to condition the conceptual model"
-            )
-
-            # -- try using vertical data to set some points and run SGS
-            vertical_data = pd.concat(
-                [self.vertical_contact_data[0], self.vertical_contact_data[1]]
-            )
-            vertical_data.loc[
-                :, ["conceptual_maxside", "conceptual_minside"]
-            ] = self.lateral_extent_model(
-                lateral_contact_data=vertical_data,
-                minP=minP,
-                maxP=maxP,
-                minS=minL,
-                maxS=maxL,
-            )
-
-            data_maxL_temp = vertical_data[vertical_data["coord2"] >= 0].copy()
-
-            inputsimdata_maxL = data_maxL_temp[data_maxL_temp['coord2'] >= data_maxL_temp['conceptual_maxside']].loc[:,['X','Y','Z','coord0','coord1','coord2','conceptual_maxside']].copy()
-            inputsimdata_maxL.loc[:,'l_residual'] = inputsimdata_maxL.loc[:,'conceptual_maxside'] - inputsimdata_maxL.loc[:,'coord2']
-            inputsimdata_maxL.rename(columns={'conceptual_maxside': 'l_conceptual'}, inplace = True)
-            inputsimdata_maxL.reset_index(inplace = True)
-            inputsimdata_maxL.drop_duplicates(
-                subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
-                inplace = True)
-
-            if len(inputsimdata_maxL) < 3:
-                print(
-                    "Simulation of lateral side L>=0: No enought roof/floor data to condition the conceptual model, lateral contact equivalent to conceptual"
-                )
-                # create random points along coordinate 1, and evaluate them conceptual model. Residual = 0. Add points to dataframe containing input for sgs
-                random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
-                conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
-                inputsimdata_maxL_ = pd.DataFrame(np.vstack([conceptual_l[:,0],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
-                inputsimdata_maxL_.loc[:,'l_residual'] = 0
-                inputsimdata_maxL = pd.concat([inputsimdata_maxL, inputsimdata_maxL_])
-
-            inputsimdata_maxL.loc[:, "ref_coord"] = 0
-
-        else:
-            data_maxL = self.lateral_contact_data[2]
-            data_conceptual_maxL = self.lateral_extent_model(
-                lateral_contact_data=data_maxL,
-                minP=minP,
-                maxP=maxP,
-                minS=minL,
-                maxS=maxL,
-            )
-            data_residual_maxL = (
-                data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
-            ).to_numpy()
-            inputsimdata_maxL = data_maxL.loc[
-                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-            ].copy()
-            inputsimdata_maxL.loc[:, "l_residual"] = data_residual_maxL
-            inputsimdata_maxL.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
-
-            inputsimdata_maxL.reset_index(inplace=True)
-            inputsimdata_maxL.loc[:, "ref_coord"] = 0
-
-        self.lateral_sgs_input_data = [inputsimdata_minL, inputsimdata_maxL]
-
-    def interpolate_lateral_thresholds(self):
-        return "TO DO"
-
-    def simulate_growth_thresholds_original(self):
+    def simulate_growth_thresholds(self):
         """
         Simulate g residual values and compute g thresholds for each point of a pre-defined grid.
         Computes two sets of g thresholds: one to constraint the contact opposite to the intrusion network (using residual values),
@@ -1244,10 +1269,10 @@ class IntrusionBuilder():
         """
 
         # -- Get grid points and evaluated values in the intrusion frame
-        grid_points = self.simulation_grid
-        grid_points_coord0 = self.simulation_grid[1]
-        grid_points_coord1 = self.simulation_grid[2]
-        grid_points_coord2 = self.simulation_grid[3]
+        grid_points = self.evaluation_grid
+        grid_points_coord0 = self.evaluation_grid[1]
+        grid_points_coord1 = self.evaluation_grid[2]
+        grid_points_coord2 = self.evaluation_grid[3]
 
         # -- Generate data frame containing input data for simulation
         inet_data = self.vertical_contact_data[0]
@@ -1286,7 +1311,7 @@ class IntrusionBuilder():
             :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
         ].copy()
 
-        self.vertical_sgs_input_data = [inputsimdata_maxG, inputsimdata_inetG]
+        self.data_for_vertical_extent_calculation = [inputsimdata_maxG, inputsimdata_inetG]
 
         # Simulation
         # --- compute simulation parameters if not defined
@@ -1480,68 +1505,15 @@ class IntrusionBuilder():
         self.growth_simulated_thresholds = simulation_g_threshold
         self.growth_simulated_thresholds_grid = grid_for_growth_evaluation
 
-    def set_data_for_vertical_thresholds(self):
-        """
-        Sets the data for the interpolation of the vertical thresholds.
-        Computes conceptual and residual values
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        """
-
-        # -- Generate data frame containing input data for simulation
-        inet_data = self.vertical_contact_data[0]
-        other_contact_data = self.vertical_contact_data[1]
-
-        # # --- parameters for conceptual model
-        minP = self.conceptual_model_parameters.get("minP")
-        maxP = self.conceptual_model_parameters.get("maxP")
-        minL = self.conceptual_model_parameters.get("minL")
-        maxL = self.conceptual_model_parameters.get("maxL")
-        meanG = self.conceptual_model_parameters.get("mean_growth")
-        vertex = self.conceptual_model_parameters.get("vertex")
-
-        # --- growth simulation input data (max G, simulation of contact opposite to intrusion network)
-
-        data_conceptual_G = self.vertical_extent_model(
-            other_contact_data,
-            mean_growth=meanG,
-            minP=minP,
-            maxP=maxP,
-            minS=minL,
-            maxS=maxL,
-            vertex=vertex,
-        )
-        data_residual_G = (
-            data_conceptual_G[:, 1] - other_contact_data.loc[:, "coord0"]
-        ).to_numpy()
-        inputsimdata_maxG = other_contact_data.loc[
-            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-        ].copy()
-        inputsimdata_maxG.loc[:, "g_residual"] = data_residual_G
-        inputsimdata_maxG.loc[:, "g_conceptual"] = data_conceptual_G[:, 1]
-
-        if self.thickness_data == False:
-            inputsimdata_maxG.loc[:, "g_residual"] = 0
-
-        # --- growth simulation input data for intrusion network conditioning
-        inputsimdata_inetG = inet_data.loc[
-            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-        ].copy()
-
-        self.vertical_sgs_input_data = [inputsimdata_maxG, inputsimdata_inetG]
-
     def build(
         self,
-        vertical_extent_sgs_parameters={},
-        lateral_extent_sgs_parameters={},
+        parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
         **kwargs,
     ):
-        """Main building function for intrusion. Calculates variogram and simulate thresholds along frame axes
+        """Main building function for intrusion. 
+        Set up interpolators for extent calculation
+        If SGS --> Calculates variogram and simulate thresholds along frame axes
 
         Parameters
         ----------
@@ -1551,18 +1523,26 @@ class IntrusionBuilder():
             parameters for the vertical sequential gaussian simulation, by default {}
         """
         self.prepare_data(geometric_scaling_parameters)
-        self.create_grid_for_simulation()
-        self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
-        self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
-        self.make_l_sgs_variogram()
-        self.make_g_sgs_variogram()
-        self.set_data_for_lateral_thresholds()
-        self.set_data_for_vertical_thresholds()
-        self.feature.growth_simulated_thresholds = [] #self.growth_simulated_thresholds
-        self.feature.lateral_simulated_thresholds = [] #self.lateral_simulated_thresholds
-        self.feature.growth_simulated_thresholds_grid = self.growth_simulated_thresholds_grid
-      
+        self.create_grid_for_evaluation()
 
+        if self.intrusion_extent_calculation == 'SGS':
+
+            lateral_extent_sgs_parameters = parameters_for_extent_sgs.get('lateral_extent_sgs_parameters', {})
+            vertical_extent_sgs_parameters = parameters_for_extent_sgs.get('vertical_extent_sgs_parameters', {})           
+            self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
+            self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
+            self.make_l_sgs_variogram()
+            self.make_g_sgs_variogram()
+            self.simulate_lateral_thresholds()
+            self.simulate_growth_thresholds()
+
+        elif self.intrusion_extent_calculation == 'interpolated':
+            self.set_data_for_lateral_thresholds()
+            self.set_data_for_vertical_thresholds()
+        # self.feature.growth_simulated_thresholds = [] #self.growth_simulated_thresholds
+        # self.feature.lateral_simulated_thresholds = [] #self.lateral_simulated_thresholds
+        # self.feature.growth_simulated_thresholds_grid = self.growth_simulated_thresholds_grid
+      
     def update(self):
         self.build(**self.build_arguments)
         self._up_to_date = True
