@@ -96,7 +96,7 @@ def write_feat_surfs(
         surf.faces = faces
         surf.normals = normals
         surf.values = values
-        surf.name = model["featurename"].name.replace(" ", "-")
+        surf.name = featurename.replace(" ", "-")
 
     except (ValueError, RuntimeError) as e:
         logger.debug(f"Exception creating feature surface {featurename}: {e}")
