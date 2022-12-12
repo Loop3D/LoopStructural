@@ -9,11 +9,11 @@ from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
 from scipy.sparse.linalg import norm
 from sklearn.preprocessing import normalize
-from LoopStructural.interpolators import InterpolatorType
+from ..interpolators import InterpolatorType
 
-from LoopStructural.interpolators import GeologicalInterpolator
-from LoopStructural.utils import getLogger
-from LoopStructural.utils.exceptions import LoopImportError
+from ..interpolators import GeologicalInterpolator
+from ..utils import getLogger
+from ..utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 

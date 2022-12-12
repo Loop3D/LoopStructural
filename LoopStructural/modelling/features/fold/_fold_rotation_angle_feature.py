@@ -1,9 +1,9 @@
 import logging
 
 import numpy as np
-from LoopStructural.modelling.features import BaseFeature
+from ....modelling.features import BaseFeature
 
-from LoopStructural.utils import getLogger
+from ....utils import getLogger
 
 logger = getLogger(__name__)
 

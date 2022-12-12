@@ -1,7 +1,7 @@
 import numpy as np
-from LoopStructural.modelling.features import BaseFeature
-from LoopStructural.utils import getLogger
-from LoopStructural.modelling.features import FeatureType
+from ...modelling.features import BaseFeature
+from ...utils import getLogger
+from ...modelling.features import FeatureType
 
 logger = getLogger(__name__)
 

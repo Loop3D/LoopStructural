@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
 
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 from .intrusion_feature import IntrusionFeature
-from LoopStructural.interpolators import StructuredGrid2D
+from ...interpolators import StructuredGrid2D
 
 from scipy.interpolate import Rbf
 
-from LoopStructural.modelling.intrusions.intrusion_support_functions import (
+from ...modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
 )
 

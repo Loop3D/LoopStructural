@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 # import logging
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 from scipy.interpolate import NearestNDInterpolator
 from scipy.interpolate import interp1d
 from scipy.interpolate import Rbf

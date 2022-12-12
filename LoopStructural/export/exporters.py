@@ -13,7 +13,7 @@ from LoopStructural.utils.helper import create_box
 from LoopStructural.export.file_formats import FileFormat
 
 
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
 

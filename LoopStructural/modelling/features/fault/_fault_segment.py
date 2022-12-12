@@ -1,10 +1,10 @@
-from LoopStructural.modelling.features.fault._fault_function_feature import (
+from ....modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
-from LoopStructural.modelling.features import FeatureType
-from LoopStructural.modelling.features.fault._fault_function import BaseFault
-from LoopStructural.utils import getLogger, NegativeRegion, PositiveRegion
-from LoopStructural.modelling.features import StructuralFrame
+from ....modelling.features import FeatureType
+from ....modelling.features.fault._fault_function import BaseFault
+from ....utils import getLogger, NegativeRegion, PositiveRegion
+from ....modelling.features import StructuralFrame
 
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
@@ -367,7 +367,7 @@ class FaultSegment(StructuralFrame):
         return newp
 
     def add_abutting_fault(self, abutting_fault_feature, positive=None):
-        
+
         # check whether the fault is on the hanging wall or footwall of abutting fault
         abutting_region = None
         if positive is None:

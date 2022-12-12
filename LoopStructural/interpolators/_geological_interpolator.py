@@ -1,10 +1,10 @@
 """
 Base geological interpolator
 """
-from LoopStructural.interpolators import InterpolatorType
+from ..interpolators import InterpolatorType
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
 

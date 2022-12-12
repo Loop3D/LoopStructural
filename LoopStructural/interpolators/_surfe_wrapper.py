@@ -3,13 +3,13 @@ Wrapper for using surfepy
 """
 import sys, os
 
-from LoopStructural.utils.helper import get_vectors
-from LoopStructural.interpolators import GeologicalInterpolator
+from ..utils.helper import get_vectors
+from ..interpolators import GeologicalInterpolator
 
 import logging
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
 import surfepy

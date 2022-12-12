@@ -5,11 +5,11 @@ Feature builder
 import numpy as np
 import pandas as pd
 
-from LoopStructural.utils import getLogger
+from ....utils import getLogger
 
 
-from LoopStructural.interpolators import GeologicalInterpolator
-from LoopStructural.utils.helper import (
+from ....interpolators import GeologicalInterpolator
+from ....utils.helper import (
     xyz_names,
     val_name,
     normal_vec_names,
@@ -19,12 +19,12 @@ from LoopStructural.utils.helper import (
     interface_name,
     inequality_name,
 )
-from LoopStructural.modelling.features import GeologicalFeature
-from LoopStructural.modelling.features.builders import BaseBuilder
-from LoopStructural.utils.helper import (
+from ....modelling.features import GeologicalFeature
+from ....modelling.features.builders import BaseBuilder
+from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from LoopStructural.utils import RegionEverywhere
+from ....utils import RegionEverywhere
 
 logger = getLogger(__name__)
 
@@ -87,6 +87,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
     @property
     def interpolator(self):
         return self._interpolator
+
     @property
     def interpolation_region(self):
         return self._interpolation_region
@@ -100,6 +101,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             self._interpolation_region = RegionEverywhere()
             self._interpolator.set_region(region=self._interpolation_region)
         self._up_to_date = False
+
     def add_data_from_data_frame(self, data_frame, overwrite=False):
         """
         Extract data from a pandas dataframe with columns for

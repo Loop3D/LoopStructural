@@ -1,61 +1,61 @@
 """
 Main entry point for creating a geological model
 """
-from LoopStructural.utils import getLogger, log_to_file
+from ...utils import getLogger, log_to_file
 
 import numpy as np
 import pandas as pd
 
 try:
-    from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+    from ...interpolators import DiscreteFoldInterpolator as DFI
 
     dfi = True
 except ImportError:
     dfi = False
-from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
+from ...interpolators import FiniteDifferenceInterpolator as FDI
 
 try:
-    from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+    from ...interpolators import PiecewiseLinearInterpolator as PLI
 
     pli = True
 except ImportError:
     pli = False
 
 # if LoopStructural.experimental:
-from LoopStructural.interpolators import P2Interpolator
+from ...interpolators import P2Interpolator
 
 try:
-    from LoopStructural.interpolators import SurfeRBFInterpolator as Surfe
+    from ...interpolators import SurfeRBFInterpolator as Surfe
 
     surfe = True
 
 except ImportError:
     surfe = False
 
-from LoopStructural.interpolators import StructuredGrid
-from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.features.fault import FaultSegment
-from LoopStructural.interpolators import DiscreteInterpolator
+from ...interpolators import StructuredGrid
+from ...interpolators import TetMesh
+from ...modelling.features.fault import FaultSegment
+from ...interpolators import DiscreteInterpolator
 
-from LoopStructural.modelling.features.builders import (
+from ...modelling.features.builders import (
     FaultBuilder,
     GeologicalFeatureBuilder,
     StructuralFrameBuilder,
     FoldedFeatureBuilder,
 )
-from LoopStructural.modelling.features import (
+from ...modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
     FeatureType,
 )
-from LoopStructural.modelling.features.fold import (
+from ...modelling.features.fold import (
     FoldEvent,
     FoldFrame,
 )
 
-from LoopStructural.utils.exceptions import InterpolatorError
-from LoopStructural.utils.helper import (
+from ...utils.exceptions import InterpolatorError
+from ...utils.helper import (
     all_heading,
     gradient_vec_names,
     strike_dip_vector,
@@ -64,9 +64,9 @@ from LoopStructural.utils.helper import (
 
 intrusions = True
 try:
-    from LoopStructural.modelling.intrusions import IntrusionBuilder
+    from ...modelling.intrusions import IntrusionBuilder
 
-    from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
+    from ...modelling.intrusions import IntrusionFrameBuilder
 except ImportError as e:
     print(e)
     intrusions = False
@@ -1524,7 +1524,7 @@ class GeologicalModel:
             # divide the tolerance by half of the minor axis, as this is the equivalent of the distance
             # of the unit vector
             # if minor_axis:
-                # tol *= 0.1*minor_axis 
+            # tol *= 0.1*minor_axis
 
         if displacement == 0:
             logger.warning(f"{fault_surface_data} displacement is 0")

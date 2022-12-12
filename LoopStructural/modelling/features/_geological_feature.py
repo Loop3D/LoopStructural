@@ -1,13 +1,13 @@
 """
 Geological features
 """
-from LoopStructural.modelling.features import BaseFeature
-from LoopStructural.utils import getLogger
-from LoopStructural.modelling.features import FeatureType
-from LoopStructural.interpolators import GeologicalInterpolator
+from ...modelling.features import BaseFeature
+from ...utils import getLogger
+from ...modelling.features import FeatureType
+from ...interpolators import GeologicalInterpolator
 import numpy as np
 
-from LoopStructural.utils import getLogger, LoopValueError
+from ...utils import getLogger, LoopValueError
 
 logger = getLogger(__name__)
 
@@ -18,7 +18,7 @@ class GeologicalFeature(BaseFeature):
     model. For example foliations, fault planes, fold rotation angles etc.
 
     Attributes
-    ----------
+    ---------- 
     name : string
         should be a unique name for the geological feature
     support : a ScalarField

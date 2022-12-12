@@ -1,7 +1,7 @@
 from ._structural_frame_builder import StructuralFrameBuilder
 
 import numpy as np
-from LoopStructural.utils import getLogger
+from ....utils import getLogger
 
 logger = getLogger(__name__)
 
@@ -32,6 +32,7 @@ class FaultBuilder(StructuralFrameBuilder):
         from LoopStructural.modelling.features.fault import (
             FaultSegment,
         )  # defer import until needed
+
         StructuralFrameBuilder.__init__(
             self, interpolator, interpolators, frame=FaultSegment, **kwargs
         )
@@ -152,17 +153,23 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_depth = np.zeros((2, 3))
         data.reset_index(inplace=True)
         if not self.fault_major_axis:
-            logger.warning(f'Fault major axis is not set and cannot be determined from the fault trace. \
+            logger.warning(
+                f"Fault major axis is not set and cannot be determined from the fault trace. \
             This will result in a fault that is represented by a 1 unit major axis. \
-            If this is not intended add major_axis to fault parameters.')
+            If this is not intended add major_axis to fault parameters."
+            )
         if not self.fault_intermediate_axis:
-            logger.warning(f'Fault intermediate axis is not set and cannot be determined from the fault trace. \
+            logger.warning(
+                f"Fault intermediate axis is not set and cannot be determined from the fault trace. \
             This will result in a fault that is represented by a 1 unit intermediate axis. \
-            If this is not intended add intermediate_axis to fault parameters.')
+            If this is not intended add intermediate_axis to fault parameters."
+            )
         if not self.fault_minor_axis:
-            logger.warning(f'Fault minor axis is not set and cannot be determined from the fault trace. \
+            logger.warning(
+                f"Fault minor axis is not set and cannot be determined from the fault trace. \
             This will result in a fault that is represented by a 1 unit minor axis. \
-            If this is not intended add minor_axis to fault parameters.')
+            If this is not intended add minor_axis to fault parameters."
+            )
         if fault_center is not None:
             if minor_axis is not None:
                 fault_edges[0, :] = fault_center[:3] + normal_vector * minor_axis

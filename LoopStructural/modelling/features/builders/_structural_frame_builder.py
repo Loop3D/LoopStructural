@@ -6,14 +6,14 @@ import logging
 
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from ....utils import getLogger
 
 logger = getLogger(__name__)
 
 
-from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
-from LoopStructural.modelling.features.builders import FoldedFeatureBuilder
-from LoopStructural.modelling.features import StructuralFrame
+from ....modelling.features.builders import GeologicalFeatureBuilder
+from ....modelling.features.builders import FoldedFeatureBuilder
+from ....modelling.features import StructuralFrame
 
 
 class StructuralFrameBuilder:

@@ -3,12 +3,12 @@ import logging
 import numpy as np
 from scipy.optimize import curve_fit
 
-from LoopStructural.modelling.features.fold._fold_rotation_angle_feature import (
+from ....modelling.features.fold._fold_rotation_angle_feature import (
     fourier_series,
 )
-from LoopStructural.modelling.features.fold import SVariogram
+from ....modelling.features.fold import SVariogram
 
-from LoopStructural.utils import getLogger
+from ....utils import getLogger
 
 logger = getLogger(__name__)
 

@@ -5,9 +5,9 @@ import logging
 
 import numpy as np
 
-from LoopStructural.interpolators import PiecewiseLinearInterpolator, InterpolatorType
+from ..interpolators import PiecewiseLinearInterpolator, InterpolatorType
 
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
 try:

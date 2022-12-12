@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from .fault_network import FaultNetwork
-from LoopStructural.utils import strike_dip_vector
-from LoopStructural.utils import getLogger
+from ...utils import strike_dip_vector
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 
