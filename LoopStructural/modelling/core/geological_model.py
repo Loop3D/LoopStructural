@@ -1538,8 +1538,8 @@ class GeologicalModel:
         Notes
         -----
         * :meth:`LoopStructural.GeologicalModel.get_interpolator`
-        * :class:`LoopStructural.modelling.features.FaultBuilder`
-        * :meth:`LoopStructural.modelling.features.FaultBuilder.setup`
+        * :class:`LoopStructural.modelling.features.builders.FaultBuilder`
+        * :meth:`LoopStructural.modelling.features.builders.FaultBuilder.setup`
         """
         if "fault_extent" in kwargs and major_axis is None:
             major_axis = kwargs["fault_extent"]
