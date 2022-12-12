@@ -28,6 +28,7 @@ RUN conda install -c conda-forge\
     pytest\
     networkx\
     geopandas\
+    meshio\
     -y
 RUN pip install lavavu-osmesa 
 RUN conda install -c conda-forge pydata-sphinx-theme 
