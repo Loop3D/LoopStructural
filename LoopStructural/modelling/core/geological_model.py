@@ -244,6 +244,11 @@ class GeologicalModel:
         -------
         (GeologicalModel, dict)
             the created geological model and a dictionary of the map2loop data
+
+        Notes
+        ------
+        For additional information see :class:`LoopStructural.modelling.input.Map2LoopProcessor`
+        and :meth:`LoopStructural.GeologicalModel.from_processor`
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
 
@@ -274,6 +279,19 @@ class GeologicalModel:
 
     @classmethod
     def from_processor(cls, processor):
+        """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
+        This object stores the observations and order of the geological features
+
+        Parameters
+        ----------
+        processor : ProcessInputData
+            any type of ProcessInputData
+
+        Returns
+        -------
+        GeologicalModel
+            a model with all of the features, need to call model.update() to run interpolation
+        """
         logger.info("Creating model from processor")
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
@@ -416,6 +434,13 @@ class GeologicalModel:
 
     @property
     def faults(self):
+        """Get all of the fault features in the model
+
+        Returns
+        -------
+        list
+            a list of :class:`LoopStructural.modelling.features.FaultSegment`
+        """
         faults = []
         for f in self.features:
             if type(f) == FaultSegment:
@@ -450,7 +475,13 @@ class GeologicalModel:
         return self.feature_name_index.keys()
 
     def fault_names(self):
+        """Get name of all faults in the model
 
+        Returns
+        -------
+        list
+            list of the names of the faults in the model
+        """
         return [f.name for f in self.faults]
 
     def check_inialisation(self):
@@ -509,6 +540,18 @@ class GeologicalModel:
         feature.model = self
 
     def data_for_feature(self, feature_name: str) -> pd.DataFrame:
+        """Get all of the data associated with a geological feature
+
+        Parameters
+        ----------
+        feature_name : str
+            the unique identifying name of the feature
+
+        Returns
+        -------
+        pd.DataFrame
+            data frame containing all of the data in the model associated with this feature
+        """
         return self.data.loc[self.data["feature_name"] == feature_name, :]
 
     @property
@@ -680,6 +723,31 @@ class GeologicalModel:
 
         Returns
         -------
+        interpolator : GeologicalInterpolator
+            A geological interpolator
+
+        Notes
+        -----
+        This method will create a geological interpolator for the bounding box of the model. A
+        buffer area is added to the interpolation region to avoid boundaries and issues with faults.
+        This function wil create a :class:`LoopStructural.interpolators.GeologicalInterpolator` which can either be:
+        A discrete interpolator :class:`LoopStructural.interpolators.DiscreteInterpolator`
+
+        - 'FDI' :class:`LoopStructural.interpolators.FiniteDifferenceInterpolator`
+        - 'PLI' :class:`LoopStructural.interpolators.PiecewiseLinearInterpolator`
+        - 'P1'  :class:`LoopStructural.interpolators.P1Interpolator`
+        - 'DFI' :class:`LoopStructural.interpolators.DiscreteFoldInterpolator`
+        - 'P2'  :class:`LoopStructural.interpolators.P2Interpolator`
+        or
+
+        - 'surfe'  :class:`LoopStructural.interpolators.SurfeRBFInterpolator`
+
+        The discrete interpolators will require a support.
+
+        - 'PLI','DFI','P1Interpolator','P2Interpolator' :class:`LoopStructural.interpolators.supports.TetMesh` or you can provide another
+          mesh builder which returns :class:`LoopStructural.interpolators.support.UnStructuredTetMesh`
+
+        - 'FDI' :class:`LoopStructural.interpolators.supports.StructuredGrid`
         """
         bb = np.copy(self.bounding_box)
         # add a buffer to the interpolation domain, this is necessary for
@@ -839,6 +907,18 @@ class GeologicalModel:
         -------
         feature : GeologicalFeature
             the created geological feature
+
+        Notes
+        ------
+        This function creates an instance of a
+        :class:`LoopStructural.modelling.features.builders.GeologicalFeatureBuilder` and will return
+        a :class:`LoopStructural.modelling.features.builders.GeologicalFeature`
+        The feature is not interpolated until either
+        :meth:`LoopStructural.modelling.features.builders.GeologicalFeature.evaluate_value` is called or
+        :meth:`LoopStructural.modelling.core.GeologicalModel.update`
+
+        An interpolator will be chosen by calling :meth:`LoopStructural.GeologicalModel.get_interpolator`
+
         """
         if not self.check_inialisation():
             logger.warning(f"{series_surface_data} not added, model not initialised")
