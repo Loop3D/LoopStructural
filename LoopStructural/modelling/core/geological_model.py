@@ -948,42 +948,6 @@ class GeologicalModel:
         self._add_feature(series_feature)
         return series_feature
 
-    def create_and_add_dtm(self, series_surface_data, **kwargs):
-        """
-        Parameters
-        ----------
-        series_surface_data : string
-            corresponding to the feature_name in the data
-        kwargs
-
-        Returns
-        -------
-        feature : GeologicalFeature
-            the created geological feature
-        """
-        if not self.check_inialisation():
-            return False
-
-        interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureBuilder(
-            interpolator, name=series_surface_data, **kwargs
-        )
-        # add data
-        series_data = self.data[self.data["feature_name"] == series_surface_data]
-        if series_data.shape[0] == 0:
-            logger.warning("No data for {series_surface_data}, skipping")
-            return
-        series_builder.add_data_from_data_frame(series_data)
-        # self._add_faults(series_builder)
-
-        # build feature
-        # series_feature = series_builder.build(**kwargs)
-        series_feature = series_builder.feature
-        series_builder.build_arguments = kwargs
-        series_feature.type = "dtm"
-        self._add_feature(series_feature)
-        return series_feature
-
     def create_and_add_fold_frame(self, foldframe_data, tol=None, **kwargs):
         """
         Parameters
