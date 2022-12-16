@@ -15,16 +15,6 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 
-# try:
-#     import skfmm as fmm
-
-# except ImportError:
-#     logger.warning(
-#         "Cannot use IntrusionFrameBuilder: skfmm not installed \n"
-#         "pip install scikit-fmm"
-#     )
-
-
 class IntrusionFrameBuilder(StructuralFrameBuilder):
     def __init__(self, interpolator=None, interpolators=None, model=None, **kwargs):
         """IntrusionBuilder set up the intrusion frame to build an intrusion
@@ -72,15 +62,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.frame_c0_gradients = None
 
         self.IFf = None  
-        self.IFc = None  
-
-        #-- parameters for shortest path algortihm (FAN: REMOVE)
-        self.anisotropies_sequence = None
-        self.velocity_parameters = None
-        self.shortestpath_sections_axis = None
-        self.number_of_contacts = None
-        self.velocity_field_arrays = None
-        
+        self.IFc = None          
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
@@ -440,7 +422,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 if step["unit_to_std"] == 0:
                     step["unit_to_std"] = std_backup
 
-
     def set_marginal_faults_parameters(self): 
         """
         Use intrusion contact data (reference contact for intrusion frame) to compute the parameters related to each fault. 
@@ -466,7 +447,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         for fault_i in self.marginal_faults.keys():
             marginal_fault = self.marginal_faults[fault_i].get('structure')
             block = self.marginal_faults[fault_i].get('block') #hanging wall or foot wall
-            emplacement_mechanisms = self.marginal_faults[fault_i].get('emplacement_mechanism')
+            emplacement_mechanism = self.marginal_faults[fault_i].get('emplacement_mechanism')
             series_name = self.marginal_faults[fault_i].get('series')
 
             series_values_temp = series_name.evaluate_value(intrusion_frame_c0_data_xyz)
@@ -515,115 +496,66 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             "contact", "floor"
             )
 
-        self.intrusion_network_type = intrusion_frame_parameters.get(
-            "type", "interpolated"
-        )
-
         self.set_intrusion_frame_c0_data(intrusion_data) #separates roof and floor data
 
-        if self.intrusion_network_type == "interpolated":
+        # if self.intrusion_network_type == "interpolated":
 
-            self.gradients_constraints_weight = intrusion_frame_parameters.get(
-                "g_w", None)
+        self.gradients_constraints_weight = intrusion_frame_parameters.get(
+            "g_w", None)
 
-            intrusion_steps = intrusion_frame_parameters.get(
-                "intrusion_steps", None)
+        intrusion_steps = intrusion_frame_parameters.get(
+            "intrusion_steps", None)
 
-            marginal_faults = intrusion_frame_parameters.get(
-                "marginal_faults", None)
+        marginal_faults = intrusion_frame_parameters.get(
+            "marginal_faults", None)
 
-            if intrusion_steps is not None:
+        if intrusion_steps is not None:
 
-                self.intrusion_steps = intrusion_steps
+            self.intrusion_steps = intrusion_steps
 
-                self.delta_contacts = intrusion_frame_parameters.get(
-                        "delta_c", [1]*len(intrusion_steps)
-                        )
+            self.delta_contacts = intrusion_frame_parameters.get(
+                    "delta_c", [1]*len(intrusion_steps)
+                    )
 
-                self.delta_faults = intrusion_frame_parameters.get(
-                    "delta_f", [1] * len(intrusion_steps)
+            self.delta_faults = intrusion_frame_parameters.get(
+                "delta_f", [1] * len(intrusion_steps)
+            )
+
+            self.set_intrusion_steps_parameters() #function to compute steps parameters
+
+            fault_anisotropies = []
+            for step in self.intrusion_steps.keys():
+                fault_anisotropies.append(self.intrusion_steps[step].get('structure'))
+
+            self.add_faults_anisotropies(fault_anisotropies)
+
+        if marginal_faults is not None:
+
+            self.marginal_faults = marginal_faults
+
+            self.delta_contacts = intrusion_frame_parameters.get(
+                "delta_c", [1]*len(marginal_faults)
                 )
 
-                self.set_intrusion_steps_parameters() #function to compute steps parameters
+            self.delta_faults = intrusion_frame_parameters.get(
+                "delta_f", [1] * len(marginal_faults)
+                )
 
-                fault_anisotropies = []
-                for step in self.intrusion_steps.keys():
-                    fault_anisotropies.append(self.intrusion_steps[step].get('structure'))
+            self.set_marginal_faults_parameters()
+
+            fault_anisotropies = []
+            for fault in self.marginal_faults.keys():
+                fault_anisotropies.append(self.marginal_faults[fault].get('structure'))
 
                 self.add_faults_anisotropies(fault_anisotropies)
 
-            if marginal_faults is not None:
 
-                self.marginal_faults = marginal_faults
-
-                self.delta_contacts = intrusion_frame_parameters.get(
-                    "delta_c", [1]*len(marginal_faults)
-                    )
-
-                self.delta_faults = intrusion_frame_parameters.get(
-                    "delta_f", [1] * len(marginal_faults)
-                    )
-
-                self.set_marginal_faults_parameters()
-
-                fault_anisotropies = []
-                for fault in self.marginal_faults.keys():
-                    fault_anisotropies.append(self.marginal_faults[fault].get('structure'))
-
-                    self.add_faults_anisotropies(fault_anisotropies)
-
-
-            # add contact anisotropies list 
-            contact_anisotropies = intrusion_frame_parameters.get(
-                "contact_anisotropies", None
-                )
+        # add contact anisotropies list 
+        contact_anisotropies = intrusion_frame_parameters.get(
+            "contact_anisotropies", None
+            )
             
-            self.anisotropies_series_list = contact_anisotropies
-
-        if self.intrusion_network_type == "shortest path":
-
-            logger.warning('Shortest path method to constrain coordinate 0 of intrusion frame is deprecated')
-
-            # set the sequence of anisotropies to follow by the shortest path algorithm
-            self.anisotropies_sequence = intrusion_frame_parameters.get(
-                "shortest_path_sequence", []
-            )
-
-            # set velocity parameters for the search of the shortest path
-            self.velocity_parameters = intrusion_frame_parameters.get(
-                "velocity_parameters", []
-            )
-
-            # set axis for shortest path algorithm
-            self.shortestpath_sections_axis = intrusion_frame_parameters.get(
-                "shortest_path_axis", []
-            )
-
-            # add contact anisotropies and compute parameters for shortest path algorithm
-            contact_anisotropies = intrusion_frame_parameters.get(
-                "contact_anisotropies", []
-            )
-            # set number of contacts
-            self.number_of_contacts = intrusion_frame_parameters.get(
-                "number_contacts", [1] * len(contact_anisotropies)
-            )
-            self.add_contact_anisotropies(contact_anisotropies)
-
-            # set fault anisotropies and compute parameters for shortest path algorithm
-            fault_anisotropies = intrusion_frame_parameters.get(
-                "structures_anisotropies", []
-            )
-            self.add_faults_anisotropies(fault_anisotropies)
-
-            # set delta_c for indicator function
-            self.delta_contacts = intrusion_frame_parameters.get(
-                "delta_c", [1] * np.sum(np.array(self.number_of_contacts))
-            )
-
-            # set delta_f for indicator function
-            self.delta_faults = intrusion_frame_parameters.get(
-                "delta_f", [1] * len(self.anisotropies_fault_list)
-            )
+        self.anisotropies_series_list = contact_anisotropies
 
     def indicator_function_contacts(self, delta=None):
         """
@@ -721,73 +653,13 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.IFf = If
         return If
 
-    def compute_velocity_field(self, indicator_fx_contacts, indicator_fx_faults):
-        """
-        Function to compute velocity field to be used in the shortest path search.
-        A velocity parameter is assign to each point of the grid, depending on
-        which anisotropy is found at each grid point
-
-        Velocity field
-            K(x) = sum(Ic+Kc) + (1-sum(Ic))*sum(If*Kf)
-        where Ic and Kc are the indicator function and velocity parameters for contacts,
-        and If,Kf are the indicator function and velocity parameters for faults.
-
-        Parameters
-        ----------
-        spacing = list/array with spacing value for X,Y,Z
-
-        Returns
-        -------
-        """
-
-        # if no velocity parameters, assign velocities increasing with the order of emplacement
-        if self.velocity_parameters == None or len(self.velocity_parameters) == 0:
-            velocity_parameters = (
-                np.arange(len(self.anisotropies_sequence)) + 10
-            )  # TODO why +10?
-            self.velocity_parameters = velocity_parameters
-        else:
-            velocity_parameters = self.velocity_parameters.copy()
-
-        # assing velocity parameters k to each anisotropies
-        # contacts anisotropies
-        IcKc = 0
-        IcIc = 0
-        anisotropies_sequence_copy = self.anisotropies_sequence.copy()
-        if self.anisotropies_series_list:
-            Kc = np.zeros(len(self.anisotropies_series_parameters))
-            for i, key in enumerate(self.anisotropies_series_parameters.keys()):
-                series_id = self.anisotropies_series_parameters[key][0]
-                for j in range(len(anisotropies_sequence_copy)):
-                    if series_id == anisotropies_sequence_copy[j]:
-                        Kc[i] = velocity_parameters[j]
-                        anisotropies_sequence_copy[j] = None
-                        break
-            IcKc = np.dot(indicator_fx_contacts, Kc)
-            IcIc = np.zeros(len(indicator_fx_contacts))
-            for k in range(len(indicator_fx_contacts[0])):
-                IcIc = IcIc + indicator_fx_contacts[:, k]
-
-        # faults anisotropies
-        IfKf = 0
-        if self.anisotropies_fault_list != None:
-            Kf = np.zeros(len(self.anisotropies_fault_list))
-            for i in range(len(Kf)):
-                for j in range(len(velocity_parameters)):
-                    if self.anisotropies_fault_list[i] == self.anisotropies_sequence[j]:
-                        Kf[i] = velocity_parameters[j]
-
-            IfKf = np.dot(indicator_fx_faults, Kf)
-
-        velocity_field = (IcKc + ((1 - IcIc) * IfKf)) + 0.1
-
-        return velocity_field
-
     def create_constraints_for_c0(self, **kwargs):
 
         """
-        Created a numpy array containing (x,y,z) coordinates of intrusion reference contact for intrusion frame c0
-        --- Currently only works if steps or marginal faults are present ---
+        Creates a numpy array containing (x,y,z) coordinates of synthetic points located 
+        in the intrusion reference contact. 
+        The intrusion reference contact is the one used to build c0 of the intrusion frame.
+        --- Currently only works if steps OR marginal faults are present ---
 
         Parameters
         ----------
@@ -797,394 +669,205 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         intrusion_contact_points = numpy array
         """
 
-        # --- check type of intrusion network
-        # if not self.intrusion_network_type:
-        #     logger.error(
-        #         "Specify type of intrusion network: 'interpolated' or 'shortest path'"
-        #     )
-
-        if self.intrusion_network_type == "interpolated":
-
-            # --- data points of intrusion reference contact (roof or floor)
-            inet_points_xyz = self.intrusion_network_data.loc[
-                :, ["X", "Y", "Z"]
+        # --- data points of intrusion reference contact (roof or floor)
+        inet_points_xyz = self.intrusion_network_data.loc[
+            :, ["X", "Y", "Z"]
             ].to_numpy()
 
-            intrusion_reference_contact_points = inet_points_xyz
+        intrusion_reference_contact_points = inet_points_xyz
 
-            grid_points, spacing = self.create_grid_for_indicator_fxs()
+        grid_points, spacing = self.create_grid_for_indicator_fxs()
 
-            # --- more constraints if steps or marginal fault is present:
-            if self.intrusion_steps is not None:
+        # --- more constraints if steps or marginal fault is present:
+        if self.intrusion_steps is not None:
 
-                If = self.indicator_function_faults(delta=self.delta_faults)
+            If = self.indicator_function_faults(delta=self.delta_faults)
 
-                if len(np.where(If == 1)[0]) == 0:
-                    logger.error("No faults identified, you may increase the value of delta_f")
+            if len(np.where(If == 1)[0]) == 0:
+                logger.error("No faults identified, you may increase the value of delta_f")
 
-                If_sum = np.sum(If, axis=1)
+            If_sum = np.sum(If, axis=1)
 
-                # -- evaluate grid points in series
+            # -- evaluate grid points in series
 
-                for i, step_i in enumerate(self.intrusion_steps.keys()):
-                    delta_contact = self.delta_contacts[i]
-                    if type(delta_contact) is list:
-                        delta_contact0 = delta_contact[0]
-                        delta_contact1 = delta_contact[1]
-                    else:
-                        delta_contact0 = delta_contact
-                        delta_contact1 = delta_contact
+            for i, step_i in enumerate(self.intrusion_steps.keys()):
+                delta_contact = self.delta_contacts[i]
+                if type(delta_contact) is list:
+                    delta_contact0 = delta_contact[0]
+                    delta_contact1 = delta_contact[1]
+                else:
+                    delta_contact0 = delta_contact
+                    delta_contact1 = delta_contact
 
-                    step_fault = self.intrusion_steps[step_i].get("structure")
-                    series_from_name = self.intrusion_steps[step_i].get("series_from")
-                    series_to_name = self.intrusion_steps[step_i].get("series_to")
+                step_fault = self.intrusion_steps[step_i].get("structure")
+                series_from_name = self.intrusion_steps[step_i].get("series_from")
+                series_to_name = self.intrusion_steps[step_i].get("series_to")
 
 
-                    fault_gridpoints_vals = step_fault[0].evaluate_value(grid_points)
+                fault_gridpoints_vals = step_fault[0].evaluate_value(grid_points)
 
-                    series_from_gridpoints_vals = series_from_name.evaluate_value(
+                series_from_gridpoints_vals = series_from_name.evaluate_value(
+                    grid_points
+                )
+
+                if series_from_name == series_to_name:
+                    series_to_gridpoints_vals = series_from_gridpoints_vals
+
+                else:
+                    series_to_gridpoints_vals = series_to_name.evaluate_value(
                         grid_points
                     )
 
-                    if series_from_name == series_to_name:
-                        series_to_gridpoints_vals = series_from_gridpoints_vals
+                contacts0_val_min = self.intrusion_steps[step_i].get(
+                    "unit_from_mean"
+                ) - (
+                    self.intrusion_steps[step_i].get("unit_from_std")
+                    * delta_contact0
+                )
+                contacts0_val_max = self.intrusion_steps[step_i].get(
+                    "unit_from_mean"
+                ) + (
+                    self.intrusion_steps[step_i].get("unit_from_std")
+                    * delta_contact0
+                )
+                contacts1_val_min = self.intrusion_steps[step_i].get(
+                    "unit_to_mean"
+                ) - (
+                    self.intrusion_steps[step_i].get("unit_to_std") * delta_contact1
+                )
+                contacts1_val_max = self.intrusion_steps[step_i].get(
+                    "unit_to_mean"
+                ) + (
+                    self.intrusion_steps[step_i].get("unit_to_std") * delta_contact1
+                )
 
-                    else:
-                        series_to_gridpoints_vals = series_to_name.evaluate_value(
-                            grid_points
-                        )
+                self.intrusion_steps[step_i]["constraints_hw"] = grid_points[
+                    np.logical_and(
+                        If_sum == 0,
+                        (fault_gridpoints_vals >= 0)
+                        & (series_from_gridpoints_vals >= contacts0_val_min)
+                        & (series_from_gridpoints_vals <= contacts0_val_max),
+                    )
+                ]
 
-                    contacts0_val_min = self.intrusion_steps[step_i].get(
-                        "unit_from_mean"
-                    ) - (
-                        self.intrusion_steps[step_i].get("unit_from_std")
-                        * delta_contact0
-                    )
-                    contacts0_val_max = self.intrusion_steps[step_i].get(
-                        "unit_from_mean"
-                    ) + (
-                        self.intrusion_steps[step_i].get("unit_from_std")
-                        * delta_contact0
-                    )
-                    contacts1_val_min = self.intrusion_steps[step_i].get(
-                        "unit_to_mean"
-                    ) - (
-                        self.intrusion_steps[step_i].get("unit_to_std") * delta_contact1
-                    )
-                    contacts1_val_max = self.intrusion_steps[step_i].get(
-                        "unit_to_mean"
-                    ) + (
-                        self.intrusion_steps[step_i].get("unit_to_std") * delta_contact1
-                    )
-
-                    self.intrusion_steps[step_i]["constraints_hw"] = grid_points[
-                        np.logical_and(
-                            If_sum == 0,
-                            (fault_gridpoints_vals >= 0)
-                            & (series_from_gridpoints_vals >= contacts0_val_min)
-                            & (series_from_gridpoints_vals <= contacts0_val_max),
-                        )
-                    ]
-
-                    self.intrusion_steps[step_i]["constraints_fw"] = grid_points[
-                        np.logical_and(
-                            If_sum == 0, (fault_gridpoints_vals < 0) & (series_from_gridpoints_vals >= contacts0_val_min) & (series_from_gridpoints_vals <= contacts0_val_max))]
+                self.intrusion_steps[step_i]["constraints_fw"] = grid_points[
+                    np.logical_and(
+                        If_sum == 0, (fault_gridpoints_vals < 0) & (series_from_gridpoints_vals >= contacts0_val_min) & (series_from_gridpoints_vals <= contacts0_val_max))]
                    
-                    step_i_constraints_temp = grid_points[np.logical_and(
-                        If_sum == 0, np.logical_or(
-                            (fault_gridpoints_vals >=0) & (
-                                series_from_gridpoints_vals >= contacts0_val_min) & (
-                                    series_from_gridpoints_vals <= contacts0_val_max),
-                                    (
-                                        fault_gridpoints_vals < 0) & (
-                                            series_to_gridpoints_vals >= contacts1_val_min) & (
-                                                series_to_gridpoints_vals <= contacts1_val_max)
-                        ))
-                    ]
+                step_i_constraints_temp = grid_points[np.logical_and(
+                    If_sum == 0, np.logical_or(
+                        (fault_gridpoints_vals >=0) & (
+                            series_from_gridpoints_vals >= contacts0_val_min) & (
+                                series_from_gridpoints_vals <= contacts0_val_max),
+                                (
+                                    fault_gridpoints_vals < 0) & (
+                                        series_to_gridpoints_vals >= contacts1_val_min) & (
+                                            series_to_gridpoints_vals <= contacts1_val_max)
+                    ))
+                ]
 
-                    region = self.intrusion_steps[step_i].get('region', None)
-                    if region == None:
-                        step_i_constraints = step_i_constraints_temp
-                    else:
-                        mask = region(step_i_constraints_temp)
-                        step_i_constraints = step_i_constraints_temp[mask]
+                region = self.intrusion_steps[step_i].get('region', None)
+                if region == None:
+                    step_i_constraints = step_i_constraints_temp
+                else:
+                    mask = region(step_i_constraints_temp)
+                    step_i_constraints = step_i_constraints_temp[mask]
 
  
 
-                    intrusion_reference_contact_points = np.vstack([intrusion_reference_contact_points, step_i_constraints])
+                intrusion_reference_contact_points = np.vstack([intrusion_reference_contact_points, step_i_constraints])
 
-                    splits_from_sill_name = self.intrusion_steps[step_i].get(
-                        "splits_from", None
-                    )
+                splits_from_sill_name = self.intrusion_steps[step_i].get(
+                    "splits_from", None
+                )
 
-                    # check if sill comes from anothe sill
-                    # (add all the constraint from original sill, this have to be changed and adapted so it adds constraints for specific faults)
+                # check if sill comes from anothe sill
+                # (add all the constraint from original sill, this have to be changed and adapted so it adds constraints for specific faults)
 
-                    if splits_from_sill_name is not None:
-                        splits_from_sill_steps = self.model.__getitem__(
-                            splits_from_sill_name
-                        ).intrusion_frame.builder.intrusion_steps
-                        for j, step_j in enumerate(splits_from_sill_steps.keys()):
-                            step_j_hg_constraints = splits_from_sill_steps[step_j].get('constraints_hw')
-                            intrusion_reference_contact_points = np.vstack([intrusion_reference_contact_points, step_j_hg_constraints])
+                if splits_from_sill_name is not None:
+                    splits_from_sill_steps = self.model.__getitem__(
+                        splits_from_sill_name
+                    ).intrusion_frame.builder.intrusion_steps
+                    for j, step_j in enumerate(splits_from_sill_steps.keys()):
+                        step_j_hg_constraints = splits_from_sill_steps[step_j].get('constraints_hw')
+                        intrusion_reference_contact_points = np.vstack([intrusion_reference_contact_points, step_j_hg_constraints])
 
                     
-                    # --- more constraints if steps or marginal fault is present:
-            if self.marginal_faults is not None:
+            # --- more constraints if steps or marginal fault is present:
+        if self.marginal_faults is not None:
               
-                If = self.indicator_function_faults(delta=self.delta_faults)
+            If = self.indicator_function_faults(delta=self.delta_faults)
         
-                if len(np.where(If == 1)[0]) == 0:
-                    logger.error("No faults identified, yo may increase value of delta_f")
+            if len(np.where(If == 1)[0]) == 0:
+                logger.error("No faults identified, yo may increase value of delta_f")
 
-                If_sum = np.sum(If, axis = 1)
+            If_sum = np.sum(If, axis = 1)
 
-                # evaluate grid points in series
-                for i, fault_i in enumerate(self.marginal_faults.keys()):
-                    delta_contact = self.marginal_faults[fault_i].get('delta_c',1)
-                    marginal_fault = self.marginal_faults[fault_i].get('structure')
-                    block = self.marginal_faults[fault_i].get('block') #hanging wall or foot wall
-                    emplacement_mechanisms = self.marginal_faults[fault_i].get('emplacement_mechanism')
-                    series_name = self.marginal_faults[fault_i].get('series')
+            # evaluate grid points in series
+            for i, fault_i in enumerate(self.marginal_faults.keys()):
+                delta_contact = self.marginal_faults[fault_i].get('delta_c',1)
+                marginal_fault = self.marginal_faults[fault_i].get('structure')
+                block = self.marginal_faults[fault_i].get('block') #hanging wall or foot wall
+                emplacement_mechanisms = self.marginal_faults[fault_i].get('emplacement_mechanism')
+                series_name = self.marginal_faults[fault_i].get('series')
 
-                    fault_gridpoints_vals = marginal_fault[0].evaluate_value(grid_points)
-                    series_gridpoints_vals = series_name.evaluate_value(grid_points)
+                fault_gridpoints_vals = marginal_fault[0].evaluate_value(grid_points)
+                series_gridpoints_vals = series_name.evaluate_value(grid_points)
 
-                    contact_min = self.marginal_faults[fault_i].get('series_mean') - (self.marginal_faults[fault_i].get('series_std')*delta_contact)
-                    contact_max = self.marginal_faults[fault_i].get('series_mean') + (self.marginal_faults[fault_i].get('series_std')*delta_contact)
+                contact_min = self.marginal_faults[fault_i].get('series_mean') - (self.marginal_faults[fault_i].get('series_std')*delta_contact)
+                contact_max = self.marginal_faults[fault_i].get('series_mean') + (self.marginal_faults[fault_i].get('series_std')*delta_contact)
 
-                    if block == 'hanging wall':
-                        marginalfault_i_constraints_temp = grid_points[np.logical_and(
-                            If_sum == 0, np.logical_and(
-                                fault_gridpoints_vals >= 0,np.logical_and(series_gridpoints_vals >= contact_min,series_gridpoints_vals <= contact_max))
-                                )
-                                ]
+                if block == 'hanging wall':
+                    marginalfault_i_constraints_temp = grid_points[np.logical_and(
+                        If_sum == 0, np.logical_and(
+                            fault_gridpoints_vals >= 0,np.logical_and(series_gridpoints_vals >= contact_min,series_gridpoints_vals <= contact_max))
+                            )
+                            ]
 
-                    elif block == 'foot wall':
-                        marginalfault_i_constraints_temp = grid_points[np.logical_and(
-                            If_sum == 0, np.logical_and(
-                                fault_gridpoints_vals <= 0,np.logical_and(series_gridpoints_vals >= contact_min,series_gridpoints_vals <= contact_max))
-                                )
-                                ]
+                elif block == 'foot wall':
+                    marginalfault_i_constraints_temp = grid_points[np.logical_and(
+                        If_sum == 0, np.logical_and(
+                            fault_gridpoints_vals <= 0,np.logical_and(series_gridpoints_vals >= contact_min,series_gridpoints_vals <= contact_max))
+                            )
+                            ]
 
-                    region = self.marginal_faults[fault_i].get('region', None)
-                    if region == None:
-                        marginalfault_i_constraints = marginalfault_i_constraints_temp
-                    else:
-                        mask = region(marginalfault_i_constraints_temp)
-                        marginalfault_i_constraints = marginalfault_i_constraints_temp[mask]
+                    
+                region = self.marginal_faults[fault_i].get('region', None)
+
+                if region == None:
+                    marginalfault_i_constraints = marginalfault_i_constraints_temp
+                else:
+                    mask = region(marginalfault_i_constraints_temp)
+                    marginalfault_i_constraints = marginalfault_i_constraints_temp[mask]
 
  
 
-                    intrusion_reference_contact_points = np.vstack([intrusion_reference_contact_points, marginalfault_i_constraints])
+                intrusion_reference_contact_points = np.vstack([intrusion_reference_contact_points, marginalfault_i_constraints])
         
 
-            self.frame_c0_points = intrusion_reference_contact_points
+        self.frame_c0_points = intrusion_reference_contact_points
            
  
-            # -- Gradient contraints for intrusion frame c0
-            # currently only used if no inflation data, and for one/main series anisotropy
-            # Evaluate points in gradient of stratigraphy, and exclude points around faults
+        # -- Gradient contraints for intrusion frame c0
+        # currently only used if no inflation data, and for one/main series anisotropy
+        # Evaluate points in gradient of stratigraphy, and exclude points around faults
 
-            series_id = self.anisotropies_series_list[0]
-            stratigraphy_gradient_grid_points = series_id.evaluate_gradient(grid_points)
+        series_id = self.anisotropies_series_list[0]
+        stratigraphy_gradient_grid_points = series_id.evaluate_gradient(grid_points)
                 
-            # If intrusion frame c0 is built usinf roof/top contact, then change vector direction
-            if self.intrusion_network_contact == 'roof' or self.intrusion_network_contact == 'top':
-                grid_points_inflation = stratigraphy_gradient_grid_points*(-1)
-            else:
-                grid_points_inflation = stratigraphy_gradient_grid_points
+        # If intrusion frame c0 is built usinf roof/top contact, then change vector direction
+        if self.intrusion_network_contact == 'roof' or self.intrusion_network_contact == 'top':
+            grid_points_inflation = stratigraphy_gradient_grid_points*(-1)
+        else:
+            grid_points_inflation = stratigraphy_gradient_grid_points
               
-            grid_points_and_inflation_all = np.hstack([grid_points, grid_points_inflation])
+        grid_points_and_inflation_all = np.hstack([grid_points, grid_points_inflation])
             
-            if self.intrusion_steps is None:  
-                If_sum = np.zeros(len(grid_points_and_inflation_all)).T #mask for region without faults afecting the intrusion
+        if self.intrusion_steps is None:  
+            If_sum = np.zeros(len(grid_points_and_inflation_all)).T #mask for region without faults afecting the intrusion
             
-            grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
-            self.frame_c0_gradients = grid_points_and_inflation
-
-        elif self.intrusion_network_type == "shortest path":
-            logger.warning('Shortest path method to constrain coordinate 0 of intrusion frame is deprecated')
-
-
-            grid_points, spacing = self.create_grid_for_indicator_fxs()
-
-            # --- check axis
-            if self.shortestpath_sections_axis == "X":
-                section_axis = "X"
-                other_axis = "Y"
-                nxm = spacing[1] * spacing[2]
-            elif self.shortestpath_sections_axis == "Y":
-                section_axis = "Y"
-                other_axis = "X"
-                nxm = spacing[0] * spacing[2]
-            else:
-                logger.error(
-                    "Specify axis ('X' or 'Y') to create sections for the search of the shortest path"
-                )
-
-            # --- compute indicator functions and velocity field
-            Ic = self.indicator_function_contacts(delta=self.delta_contacts)
-
-            # --------- check if any anisotropy is indetified by indicator functions:
-            if len(np.where(Ic == 1)[0]) == 0:
-                logger.error("No anisotropy identified, increase value of delta_c")
-
-            If = self.indicator_function_faults(delta=self.delta_faults)
-            # --------- check if any fault is indetified by indicator functions:
-            if len(np.where(If == 1)[0]) == 0:
-                logger.error("No faults identified, increase value of delta_f")
-
-            velocity_field = self.compute_velocity_field(Ic, If)
-
-            # --- find first (inlet) and last (outlet) anisotropies in anisotropies sequence, and compute associated scalar fields
-            inlet_anisotropy = self.anisotropies_sequence[0]
-
-            if (
-                inlet_anisotropy in self.anisotropies_series_list
-            ):  # if inlet anisotropy type is series
-                sf_inlet_anisotropy = inlet_anisotropy.evaluate_value(grid_points)
-
-            else:  # otherwise, it is a fault:
-                sf_inlet_anisotropy = inlet_anisotropy[0].evaluate_value(grid_points)
-
-            outlet_anisotropy = self.anisotropies_sequence[
-                len(self.anisotropies_sequence) - 1
-            ]
-            if outlet_anisotropy in self.anisotropies_series_list:
-                sf_outlet_anisotropy = outlet_anisotropy.evaluate_value(grid_points)
-
-            else:
-                sf_outlet_anisotropy = outlet_anisotropy[0].evaluate_value(grid_points)
-
-            # create dataframe containing grid points, velocity values
-            nodes = np.linspace(0, len(grid_points), len(grid_points))
-            medium = np.zeros((len(grid_points), 7))
-            medium[:, 0] = nodes.T
-            medium[:, 1:4] = grid_points
-            medium[:, 4] = velocity_field
-            medium[:, 5] = sf_inlet_anisotropy
-            medium[:, 6] = sf_outlet_anisotropy
-            medium_df = pd.DataFrame(
-                medium,
-                columns=["node", "X", "Y", "Z", "k_field", "sf_inlet", "sf_outlet"],
-            )
-
-            medium_df.sort_values(
-                [other_axis, section_axis, "Z"],
-                ascending=[True, False, False],
-                inplace=True,
-            )
-
-            # Separate data in sections and store them in medium_sections list
-            axis_values = medium_df[section_axis].unique()
-            medium_sections = []
-            for y in range(len(axis_values)):
-                section_df = medium_df[medium_df[section_axis] == axis_values[y]].copy()
-
-                section_temp = np.zeros([nxm, 7])
-                section_temp[:, 0] = section_df.loc[:, "node"]
-                section_temp[:, 1] = section_df.loc[:, "X"]
-                section_temp[:, 2] = section_df.loc[:, "Y"]
-                section_temp[:, 3] = section_df.loc[:, "Z"]
-                section_temp[:, 4] = section_df.loc[:, "k_field"]
-                section_temp[:, 5] = section_df.loc[:, "sf_inlet"]
-                section_temp[:, 6] = section_df.loc[:, "sf_outlet"]
-
-                medium_sections.append(section_temp)
-
-            # Convert each section into arrays containing different set of values
-            nodes_arrays = []
-            velocity_field_arrays = []
-            sf_inlet_arrays = []
-            sf_outlet_arrays = []
-            inlet_pt_array = []
-            outlet_pt_array = []
-            initial_point_array = []
-            time_maps_array = []
-            shortest_path_array = []
-            shortest_path_coords = []
-
-            for i in range(len(medium_sections)):
-                df_temp = pd.DataFrame(
-                    medium_sections[i],
-                    columns=["node", "X", "Y", "Z", "k_field", "sf_inlet", "sf_outlet"],
-                )
-                df_temp.sort_values(
-                    [other_axis, "Z"], ascending=[True, False], inplace=True
-                )
-
-                # nodes array of each section
-                nodes_temp = array_from_coords(df_temp, section_axis, 0)
-                nodes_arrays.append(nodes_temp)
-
-                # velocity field arrays
-                velocity_field_temp = array_from_coords(df_temp, section_axis, 4)
-                velocity_field_arrays.append(velocity_field_temp)
-
-                # array with scalar field associated to first anisotropy (inlet)
-                sf_inlet_temp = array_from_coords(df_temp, section_axis, 5)
-                sf_inlet_arrays.append(sf_inlet_temp)
-
-                # array with scalar field associated to last anisotropy (outlet)
-                sf_outlet_temp = array_from_coords(df_temp, section_axis, 6)
-                sf_outlet_arrays.append(sf_outlet_temp)
-
-                inlet_temp, outlet_temp = find_inout_points(
-                    velocity_field_temp, self.velocity_parameters
-                )
-                inlet_pt_array.append(inlet_temp)
-                outlet_pt_array.append(outlet_temp)
-                initial_pt_array_temp = np.ones(
-                    [len(df_temp["Z"].unique()), len(df_temp[other_axis].unique())]
-                )
-                initial_pt_array_temp[outlet_temp[0], outlet_temp[1]] = 0
-                initial_point_array.append(initial_pt_array_temp)
-
-                time_map_temp = fmm.travel_time(
-                    initial_pt_array_temp, velocity_field_temp, order=1
-                )
-                time_maps_array.append(time_map_temp)
-
-                shortest_path_section = shortest_path(
-                    inlet_temp, outlet_temp, time_map_temp
-                )
-                shortest_path_array.append(shortest_path_section)
-
-                shortest_path_coords_section = grid_from_array(
-                    shortest_path_section,
-                    [section_axis, axis_values[i]],
-                    self.model.bounding_box[0],
-                    self.model.bounding_box[1],
-                )
-                shortest_path_coords.append(shortest_path_coords_section)
-
-            # create array of shortest path points
-            shortest_path_coords_temp = shortest_path_coords[0]
-            for i in range(len(shortest_path_coords) - 1):
-                shortest_path_coords_temp = np.vstack(
-                    [shortest_path_coords_temp, shortest_path_coords[i + 1]]
-                )
-
-            mask = np.ma.masked_not_equal(shortest_path_coords_temp[:, 5], 0)
-            x = np.ma.compressed(
-                np.ma.masked_array(shortest_path_coords_temp[:, 2], mask.mask)
-            )
-            y = np.ma.compressed(
-                np.ma.masked_array(shortest_path_coords_temp[:, 3], mask.mask)
-            )
-            z = np.ma.compressed(
-                np.ma.masked_array(shortest_path_coords_temp[:, 4], mask.mask)
-            )
-            i = np.ma.compressed(
-                np.ma.masked_array(shortest_path_coords_temp[:, 5], mask.mask)
-            )
-            shortest_path_points = np.array([x, y, z, i]).T
-
-            self.frame_c0_points = shortest_path_points
-
-            self.velocity_field_arrays = velocity_field_arrays
-            return shortest_path_points
+        grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
+        self.frame_c0_gradients = grid_points_and_inflation
 
     def get_indicator_function_points(self, ifx_type="contacts"):
         """returns the points indicated as p[art of contact or fault anisotropies.
