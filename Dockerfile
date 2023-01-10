@@ -71,16 +71,15 @@ ENTRYPOINT ["/tini", "--"]
 USER ${NB_USER}
 
 RUN mkdir notebooks
-RUN git clone https://github.com/Loop3D/LoopStructural.git 
 RUN git clone https://github.com/Loop3D/map2loop-2.git map2loop
 RUN git clone https://github.com/Loop3D/LoopProjectFile.git 
 RUN git clone https://github.com/TOMOFAST/Tomofast-x.git
-RUN pip install -e LoopStructural
+RUN pip install LoopStructural
 RUN pip install -e map2loop
 RUN pip install -e LoopProjectFile
 # WORKDIR Tomofast-x
 # RUN make
-WORKDIR ${HOME}
+WORKDIR ${HOME}/notebooks
 # RUN pip install -e LoopStructural
 CMD ["jupyter", "lab", "--ip='0.0.0.0'", "--NotebookApp.token=''", "--no-browser" ]
 
