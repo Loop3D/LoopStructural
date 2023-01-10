@@ -9,6 +9,7 @@ RUN apt-get update -qq && \
     g++ \
     libc-dev \
     make
+RUN conda install python=3.8 -y
 RUN conda install -c conda-forge\
     cython\
     numpy\ 
