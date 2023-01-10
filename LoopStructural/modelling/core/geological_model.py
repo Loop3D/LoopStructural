@@ -147,7 +147,7 @@ class GeologicalModel:
         # print('tet')
         if logfile:
             self.logfile = logfile
-            log_to_file(logfile, loglevel)
+            log_to_file(logfile, level=loglevel)
 
         logger.info("Initialising geological model")
         self.features = []
@@ -1009,6 +1009,15 @@ class GeologicalModel:
         -------
         feature : GeologicalFeature
             created geological feature
+
+        Notes
+        -----
+
+        - Building a folded foliation uses the fold interpolation code from Laurent et al., 2016
+        and fold profile fitting from Grose et al., 2017. For more information about the fold modelling
+        see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
+        :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
+
         """
         if not self.check_inialisation():
             return False
@@ -1073,9 +1082,13 @@ class GeologicalModel:
         with a fold interpolator.
         Keyword arguments can be included to constrain
 
-        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
-        * :class:`LoopStructural.StructuralFrameBuilder`
-        * :meth:`LoopStructural.StructuralFrameBuilder.setup`
+        - :meth:`LoopStructural.GeologicalModel.get_interpolator`
+        - :class:`LoopStructural.StructuralFrameBuilder`
+        - :meth:`LoopStructural.StructuralFrameBuilder.setup`
+         - Building a folded foliation uses the fold interpolation code from Laurent et al., 2016
+        and fold profile fitting from Grose et al., 2017. For more information about the fold modelling
+        see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
+        :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
         """
         if not self.check_inialisation():
             return False
