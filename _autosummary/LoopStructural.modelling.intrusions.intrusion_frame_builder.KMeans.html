@@ -6,24 +6,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans &#8212; LoopStructural 0.1 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -32,14 +32,15 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -51,6 +52,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -113,37 +118,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../user_guide/index.html">
-                        User Guide
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="LoopStructural.html">
-                        LoopStructural
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -151,19 +159,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -198,11 +208,13 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -232,37 +244,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../user_guide/index.html">
-                        User Guide
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="LoopStructural.html">
-                        LoopStructural
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -275,11 +290,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -659,6 +674,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.MapView.html">LoopStructural.visualisation.MapView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.RotationAnglePlotter.html">LoopStructural.visualisation.RotationAnglePlotter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.ScalarField.html">LoopStructural.visualisation.ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.VtkExporter.html">LoopStructural.visualisation.VtkExporter</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.visualisation.lavavu.html">LoopStructural.visualisation.lavavu</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.close_all.html">LoopStructural.visualisation.lavavu.close_all</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.getLogger.html">LoopStructural.visualisation.lavavu.getLogger</a></li>
@@ -705,6 +721,14 @@
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html">LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView</a></li>
 </ul>
 </li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.html">LoopStructural.visualisation.vtk_exporter</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-40"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.getLogger.html">LoopStructural.visualisation.vtk_exporter.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html">LoopStructural.visualisation.vtk_exporter.BaseModelPlotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html">LoopStructural.visualisation.vtk_exporter.GeologicalFeature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.VtkExporter.html">LoopStructural.visualisation.vtk_exporter.VtkExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.LoopImportError.html">LoopStructural.visualisation.vtk_exporter.LoopImportError</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -721,8 +745,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -739,7 +766,7 @@
 <h1>LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans<a class="headerlink" href="#loopstructural-modelling-intrusions-intrusion-frame-builder-kmeans" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.intrusions.intrusion_frame_builder.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lloyd'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.intrusions.intrusion_frame_builder.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lloyd'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BaseKMeans</span></code></p>
 <p>K-Means clustering.</p>
 <p>Read more in the <span class="xref std std-ref">User Guide</span>.</p>
@@ -748,12 +775,13 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_clusters</strong> (<em>int</em><em>, </em><em>default=8</em>) – The number of clusters to form as well as the number of
 centroids to generate.</p></li>
-<li><p><strong>init</strong> (<em>{'k-means++'</em><em>, </em><em>'random'}</em><em>, </em><em>callable</em><em> or </em><em>array-like of shape</em><em>             (</em><em>n_clusters</em><em>, </em><em>n_features</em><em>)</em><em>, </em><em>default='k-means++'</em>) – <p>Method for initialization:</p>
+<li><p><strong>init</strong> (<em>{'k-means++'</em><em>, </em><em>'random'}</em><em>, </em><em>callable</em><em> or </em><em>array-like</em><em> of </em><em>shape</em><em>             (</em><em>n_clusters</em><em>, </em><em>n_features</em><em>)</em><em>, </em><em>default='k-means++'</em>) – <p>Method for initialization:</p>
 <p>’k-means++’ : selects initial cluster centroids using sampling based on
 an empirical probability distribution of the points’ contribution to the
-overall inertia. This technique speeds up convergence, and is
-theoretically proven to be <span class="math notranslate nohighlight">\(\mathcal{O}(\log k)\)</span>-optimal.
-See the description of <cite>n_init</cite> for more details.</p>
+overall inertia. This technique speeds up convergence. The algorithm
+implemented is “greedy k-means++”. It differs from the vanilla k-means++
+by making several trials at each sampling step and choosing the bestcentroid
+among them.</p>
 <p>’random’: choose <cite>n_clusters</cite> observations (rows) at random from data
 for the initial centroids.</p>
 <p>If an array is passed, it should be of shape (n_clusters, n_features)
@@ -761,9 +789,19 @@ and gives the initial centers.</p>
 <p>If a callable is passed, it should take arguments X, n_clusters and a
 random state and return an initialization.</p>
 </p></li>
-<li><p><strong>n_init</strong> (<em>int</em><em>, </em><em>default=10</em>) – Number of time the k-means algorithm will be run with different
-centroid seeds. The final results will be the best output of
-n_init consecutive runs in terms of inertia.</p></li>
+<li><p><strong>n_init</strong> (<em>'auto'</em><em> or </em><em>int</em><em>, </em><em>default=10</em>) – <p>Number of times the k-means algorithm is run with different centroid
+seeds. The final results is the best output of <cite>n_init</cite> consecutive runs
+in terms of inertia. Several runs are recommended for sparse
+high-dimensional problems (see <span class="xref std std-ref">kmeans_sparse_high_dim</span>).</p>
+<p>When <cite>n_init=’auto’</cite>, the number of runs will be 10 if using
+<cite>init=’random’</cite>, and 1 if using <cite>init=’kmeans++’</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.2: </span>Added ‘auto’ option for <cite>n_init</cite>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.4: </span>Default value for <cite>n_init</cite> will change from 10 to <cite>‘auto’</cite> in version 1.4.</p>
+</div>
+</p></li>
 <li><p><strong>max_iter</strong> (<em>int</em><em>, </em><em>default=300</em>) – Maximum number of iterations of the k-means algorithm for a
 single run.</p></li>
 <li><p><strong>tol</strong> (<em>float</em><em>, </em><em>default=1e-4</em>) – Relative tolerance with regards to Frobenius norm of the difference
@@ -887,8 +925,9 @@ has feature names that are all strings.</p>
 <p>The average complexity is given by O(k n T), where n is the number of
 samples and T is the number of iteration.</p>
 <p>The worst case complexity is given by O(n^(k+2/p)) with
-n = n_samples, p = n_features. (D. Arthur and S. Vassilvitskii,
-‘How slow is the k-means method?’ SoCG2006)</p>
+n = n_samples, p = n_features.
+Refer to <a href="#id1"><span class="problematic" id="id2">:doi:`&quot;How slow is the k-means method?&quot; D. Arthur and S. Vassilvitskii -
+SoCG2006.&lt;10.1145/1137856.1137880&gt;`</span></a> for more details.</p>
 <p>In practice, the k-means algorithm is very fast (one of the fastest
 clustering algorithms available), but it falls in local minima. That’s why
 it can be useful to restart it several times.</p>
@@ -903,7 +942,7 @@ set.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
 <span class="gp">... </span>              <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kmeans</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kmeans</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kmeans</span><span class="o">.</span><span class="n">labels_</span>
 <span class="go">array([1, 1, 1, 0, 0, 0], dtype=int32)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kmeans</span><span class="o">.</span><span class="n">predict</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
@@ -915,7 +954,7 @@ set.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lloyd'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lloyd'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
@@ -949,10 +988,13 @@ set.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.score" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X[, y, sample_weight])</p></td>
 <td><p>Opposite of the value of X on the K-means objective.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_params" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_output" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_output</span></code></a>(*[, transform])</p></td>
+<td><p>Set output container.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_params" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.transform" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.transform" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X)</p></td>
 <td><p>Transform X to a cluster-distance space.</p></td>
 </tr>
 </tbody>
@@ -964,13 +1006,13 @@ set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix} of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training instances to cluster. It must be noted that the data
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training instances to cluster. It must be noted that the data
 will be converted to C ordering, which will cause a memory
 copy if the given data is not C-contiguous.
 If a sparse matrix is passed, a copy will be made if it’s not in
 CSR format.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Not used, present here for API consistency by convention.</p></li>
-<li><p><strong>sample_weight</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – <p>The weights for each observation in X. If None, all observations
+<li><p><strong>sample_weight</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – <p>The weights for each observation in X. If None, all observations
 are assigned equal weight.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 0.20.</span></p>
@@ -993,9 +1035,9 @@ predict(X).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix} of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to transform.</p></li>
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to transform.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Not used, present here for API consistency by convention.</p></li>
-<li><p><strong>sample_weight</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
+<li><p><strong>sample_weight</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
 are assigned equal weight.</p></li>
 </ul>
 </dd>
@@ -1013,9 +1055,9 @@ are assigned equal weight.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix} of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to transform.</p></li>
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to transform.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Not used, present here for API consistency by convention.</p></li>
-<li><p><strong>sample_weight</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
+<li><p><strong>sample_weight</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
 are assigned equal weight.</p></li>
 </ul>
 </dd>
@@ -1029,9 +1071,12 @@ are assigned equal weight.</p></li>
 <dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.get_feature_names_out">
 <span class="sig-name descname"><span class="pre">get_feature_names_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.get_feature_names_out" title="Permalink to this definition">#</a></dt>
 <dd><p>Get output feature names for transformation.</p>
+<p>The feature names out will prefixed by the lowercased class name. For
+example, if the transformer outputs 3 features, then the feature names
+out are: <cite>[“class_name0”, “class_name1”, “class_name2”]</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_features</strong> (<em>array-like of str</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Only used to validate feature names with the names seen in <a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>.</p>
+<dd class="field-odd"><p><strong>input_features</strong> (<em>array-like</em><em> of </em><em>str</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Only used to validate feature names with the names seen in <a class="reference internal" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit" title="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>feature_names_out</strong> (<em>ndarray of str objects</em>) – Transformed feature names.</p>
@@ -1064,8 +1109,8 @@ the closest code in the code book.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix} of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to predict.</p></li>
-<li><p><strong>sample_weight</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to predict.</p></li>
+<li><p><strong>sample_weight</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
 are assigned equal weight.</p></li>
 </ul>
 </dd>
@@ -1082,14 +1127,36 @@ are assigned equal weight.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix} of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data.</p></li>
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Not used, present here for API consistency by convention.</p></li>
-<li><p><strong>sample_weight</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
+<li><p><strong>sample_weight</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – The weights for each observation in X. If None, all observations
 are assigned equal weight.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>score</strong> (<em>float</em>) – Opposite of the value of X on the K-means objective.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_output">
+<span class="sig-name descname"><span class="pre">set_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Set output container.</p>
+<p>See <span class="xref std std-ref">sphx_glr_auto_examples_miscellaneous_plot_set_output.py</span>
+for an example on how to use the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transform</strong> (<em>{&quot;default&quot;</em><em>, </em><em>&quot;pandas&quot;}</em><em>, </em><em>default=None</em>) – <p>Configure output of <cite>transform</cite> and <cite>fit_transform</cite>.</p>
+<ul class="simple">
+<li><p><cite>”default”</cite>: Default output format of a transformer</p></li>
+<li><p><cite>”pandas”</cite>: DataFrame output</p></li>
+<li><p><cite>None</cite>: Transform configuration is unchanged</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> (<em>estimator instance</em>) – Estimator instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1121,7 +1188,7 @@ centers. Note that even if X is sparse, the array returned by
 <cite>transform</cite> will typically be dense.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix} of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to transform.</p>
+<dd class="field-odd"><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data to transform.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>X_new</strong> (<em>ndarray of shape (n_samples, n_clusters)</em>) – X transformed in the new space.</p>
@@ -1166,6 +1233,182 @@ centers. Note that even if X is sparse, the array returned by
               
 <div class="toc-item">
   
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     KMeans
+    </span>
+   </code>
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.cluster_centers_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.cluster_centers_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.labels_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.labels_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.inertia_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.inertia_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.n_iter_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.n_iter_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.n_features_in_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.n_features_in_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.feature_names_in_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.feature_names_in_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.fit()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit_predict">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.fit_predict()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.fit_transform">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.fit_transform()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.get_feature_names_out">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.get_feature_names_out()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.get_params">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.get_params()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.predict">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.predict()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.score">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.score()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_output">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.set_output()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_params">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.set_params()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.transform">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       KMeans.transform()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
 <div id="searchbox"></div>
 </div>
 
@@ -1200,7 +1443,8 @@ centers. Note that even if X is sparse, the array returned by
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

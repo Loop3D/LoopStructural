@@ -41,7 +41,6 @@
    LoopStructural.datasets
    LoopStructural.interpolators
    LoopStructural.modelling
-   LoopStructural.probability
    LoopStructural.utils
    LoopStructural.version
    LoopStructural.visualisation

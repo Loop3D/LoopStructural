@@ -26,11 +26,18 @@ LoopStructural.utils.helper.PCA
       ~PCA.inverse_transform
       ~PCA.score
       ~PCA.score_samples
+      ~PCA.set_output
       ~PCA.set_params
       ~PCA.transform
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PCA.n_features_
    
    

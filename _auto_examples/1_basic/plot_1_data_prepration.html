@@ -6,24 +6,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>1a. Getting started &#8212; LoopStructural 0.1 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
@@ -32,13 +32,15 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_auto_examples/1_basic/plot_1_data_prepration';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -51,6 +53,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -113,37 +119,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/index.html">
                         User Guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../_autosummary/LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../../_autosummary/LoopStructural.html">
-                        LoopStructural
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -151,19 +160,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -198,11 +209,13 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -232,37 +245,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/index.html">
                         User Guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../_autosummary/LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../../_autosummary/LoopStructural.html">
-                        LoopStructural
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -275,11 +291,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -359,8 +375,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -494,7 +513,7 @@ for the interpolator to be able to find a solution.</p>
       <th>0</th>
       <td>0.000000</td>
       <td>0.0</td>
-      <td>1.720931</td>
+      <td>1.451092</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -502,7 +521,7 @@ for the interpolator to be able to find a solution.</p>
       <th>1</th>
       <td>1.111111</td>
       <td>0.0</td>
-      <td>1.703935</td>
+      <td>1.285540</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -510,7 +529,7 @@ for the interpolator to be able to find a solution.</p>
       <th>2</th>
       <td>2.222222</td>
       <td>0.0</td>
-      <td>1.175460</td>
+      <td>1.920913</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -518,7 +537,7 @@ for the interpolator to be able to find a solution.</p>
       <th>3</th>
       <td>3.333333</td>
       <td>0.0</td>
-      <td>1.539008</td>
+      <td>1.823729</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -526,7 +545,7 @@ for the interpolator to be able to find a solution.</p>
       <th>4</th>
       <td>4.444444</td>
       <td>0.0</td>
-      <td>1.892433</td>
+      <td>1.468822</td>
       <td>0.0</td>
       <td>conformable</td>
     </tr>
@@ -603,7 +622,7 @@ next tutorial will show how to use the lavavu visualisation model.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_1_data_prepration_001.png" srcset="../../_images/sphx_glr_plot_1_data_prepration_001.png" alt="plot 1 data prepration" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.903 seconds)</p>
+<img src="../../_images/sphx_glr_plot_1_data_prepration_001.png" srcset="../../_images/sphx_glr_plot_1_data_prepration_001.png" alt="plot 1 data prepration" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.242 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-1-data-prepration-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5b80d54180c1f98650b928cda7bb440f/plot_1_data_prepration.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_1_data_prepration.py</span></code></a></p>
@@ -730,7 +749,8 @@ next tutorial will show how to use the lavavu visualisation model.</p>
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

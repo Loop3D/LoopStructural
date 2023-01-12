@@ -6,24 +6,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoopStructural.utils.helper.PCA &#8212; LoopStructural 0.1 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -32,13 +32,15 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.utils.helper.PCA';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -50,6 +52,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -112,37 +118,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../user_guide/index.html">
-                        User Guide
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="LoopStructural.html">
-                        LoopStructural
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -150,19 +159,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -197,11 +208,13 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -231,37 +244,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../user_guide/index.html">
-                        User Guide
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="LoopStructural.html">
-                        LoopStructural
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -274,11 +290,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -658,6 +674,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.MapView.html">LoopStructural.visualisation.MapView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.RotationAnglePlotter.html">LoopStructural.visualisation.RotationAnglePlotter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.ScalarField.html">LoopStructural.visualisation.ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.VtkExporter.html">LoopStructural.visualisation.VtkExporter</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.visualisation.lavavu.html">LoopStructural.visualisation.lavavu</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.close_all.html">LoopStructural.visualisation.lavavu.close_all</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.getLogger.html">LoopStructural.visualisation.lavavu.getLogger</a></li>
@@ -704,6 +721,14 @@
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html">LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView</a></li>
 </ul>
 </li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.html">LoopStructural.visualisation.vtk_exporter</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-40"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.getLogger.html">LoopStructural.visualisation.vtk_exporter.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html">LoopStructural.visualisation.vtk_exporter.BaseModelPlotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html">LoopStructural.visualisation.vtk_exporter.GeologicalFeature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.VtkExporter.html">LoopStructural.visualisation.vtk_exporter.VtkExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.LoopImportError.html">LoopStructural.visualisation.vtk_exporter.LoopImportError</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -720,8 +745,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -850,7 +878,7 @@ See <span class="xref std std-term">Glossary</span>.</p>
 <dd><p>Principal axes in feature space, representing the directions of
 maximum variance in the data. Equivalently, the right singular
 vectors of the centered input data, parallel to its eigenvectors.
-The components are sorted by <code class="docutils literal notranslate"><span class="pre">explained_variance_</span></code>.</p>
+The components are sorted by decreasing <code class="docutils literal notranslate"><span class="pre">explained_variance_</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>ndarray of shape (n_components, n_features)</p>
@@ -1106,11 +1134,26 @@ Applied and Computational Harmonic Analysis, 30(1), 47-68.
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.score_samples" title="LoopStructural.utils.helper.PCA.score_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score_samples</span></code></a>(X)</p></td>
 <td><p>Return the log-likelihood of each sample.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.set_params" title="LoopStructural.utils.helper.PCA.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.set_output" title="LoopStructural.utils.helper.PCA.set_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_output</span></code></a>(*[, transform])</p></td>
+<td><p>Set output container.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.set_params" title="LoopStructural.utils.helper.PCA.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.transform" title="LoopStructural.utils.helper.PCA.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.transform" title="LoopStructural.utils.helper.PCA.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X)</p></td>
 <td><p>Apply dimensionality reduction to X.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.n_features_" title="LoopStructural.utils.helper.PCA.n_features_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_features_</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -1121,7 +1164,7 @@ Applied and Computational Harmonic Analysis, 30(1), 47-68.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where <cite>n_samples</cite> is the number of samples
+<li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_features</cite> is the number of features.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Ignored.</p></li>
 </ul>
@@ -1139,7 +1182,7 @@ and <cite>n_features</cite> is the number of features.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where <cite>n_samples</cite> is the number of samples
+<li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_features</cite> is the number of features.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Ignored.</p></li>
 </ul>
@@ -1171,9 +1214,12 @@ noise variances.</p>
 <dt class="sig sig-object py" id="LoopStructural.utils.helper.PCA.get_feature_names_out">
 <span class="sig-name descname"><span class="pre">get_feature_names_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.get_feature_names_out" title="Permalink to this definition">#</a></dt>
 <dd><p>Get output feature names for transformation.</p>
+<p>The feature names out will prefixed by the lowercased class name. For
+example, if the transformer outputs 3 features, then the feature names
+out are: <cite>[“class_name0”, “class_name1”, “class_name2”]</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_features</strong> (<em>array-like of str</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Only used to validate feature names with the names seen in <a class="reference internal" href="#LoopStructural.utils.helper.PCA.fit" title="LoopStructural.utils.helper.PCA.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>.</p>
+<dd class="field-odd"><p><strong>input_features</strong> (<em>array-like</em><em> of </em><em>str</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Only used to validate feature names with the names seen in <a class="reference internal" href="#LoopStructural.utils.helper.PCA.fit" title="LoopStructural.utils.helper.PCA.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>feature_names_out</strong> (<em>ndarray of str objects</em>) – Transformed feature names.</p>
@@ -1216,7 +1262,7 @@ the matrix inversion lemma for efficiency.</p>
 <p>In other words, return an input <cite>X_original</cite> whose transform would be X.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_components</em><em>)</em>) – New data, where <cite>n_samples</cite> is the number of samples
+<dd class="field-odd"><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_components</em><em>)</em>) – New data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_components</cite> is the number of components.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1239,7 +1285,7 @@ or <a class="reference external" href="http://www.miketipping.com/papers/met-mpp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p></li>
+<li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Ignored.</p></li>
 </ul>
 </dd>
@@ -1258,10 +1304,32 @@ by C. Bishop, 12.2.1 p. 574
 or <a class="reference external" href="http://www.miketipping.com/papers/met-mppca.pdf">http://www.miketipping.com/papers/met-mppca.pdf</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p>
+<dd class="field-odd"><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>ll</strong> (<em>ndarray of shape (n_samples,)</em>) – Log-likelihood of each sample under the current model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.utils.helper.PCA.set_output">
+<span class="sig-name descname"><span class="pre">set_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.set_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Set output container.</p>
+<p>See <span class="xref std std-ref">sphx_glr_auto_examples_miscellaneous_plot_set_output.py</span>
+for an example on how to use the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transform</strong> (<em>{&quot;default&quot;</em><em>, </em><em>&quot;pandas&quot;}</em><em>, </em><em>default=None</em>) – <p>Configure output of <cite>transform</cite> and <cite>fit_transform</cite>.</p>
+<ul class="simple">
+<li><p><cite>”default”</cite>: Default output format of a transformer</p></li>
+<li><p><cite>”pandas”</cite>: DataFrame output</p></li>
+<li><p><cite>None</cite>: Transform configuration is unchanged</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> (<em>estimator instance</em>) – Estimator instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1292,7 +1360,7 @@ possible to update each component of a nested object.</p>
 from a training set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data, where <cite>n_samples</cite> is the number of samples
+<dd class="field-odd"><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_features</cite> is the number of features.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1339,6 +1407,245 @@ is the number of samples and <cite>n_components</cite> is the number of the comp
               
 <div class="toc-item">
   
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     PCA
+    </span>
+   </code>
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.components_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.components_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.explained_variance_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.explained_variance_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.explained_variance_ratio_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.explained_variance_ratio_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.singular_values_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.singular_values_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.mean_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.mean_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_components_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.n_components_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_features_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.n_features_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_samples_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.n_samples_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.noise_variance_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.noise_variance_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_features_in_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.n_features_in_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.feature_names_in_">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.feature_names_in_
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.fit">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.fit()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.fit_transform">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.fit_transform()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_covariance">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.get_covariance()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_feature_names_out">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.get_feature_names_out()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_params">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.get_params()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_precision">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.get_precision()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.inverse_transform">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.inverse_transform()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.score">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.score()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.score_samples">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.score_samples()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.set_output">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.set_output()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.set_params">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.set_params()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.transform">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       PCA.transform()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
 <div id="searchbox"></div>
 </div>
 
@@ -1373,7 +1680,8 @@ is the number of samples and <cite>n_components</cite> is the number of the comp
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

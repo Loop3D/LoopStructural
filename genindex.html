@@ -6,24 +6,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; LoopStructural 0.1 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
@@ -32,13 +32,15 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
@@ -48,6 +50,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -110,37 +116,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="user_guide/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="user_guide/index.html">
                         User Guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="_autosummary/LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="_autosummary/LoopStructural.html">
-                        LoopStructural
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -148,19 +157,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -195,11 +206,13 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -229,37 +242,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="user_guide/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="user_guide/index.html">
                         User Guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="_autosummary/LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="_autosummary/LoopStructural.html">
-                        LoopStructural
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -272,11 +288,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -318,8 +334,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -636,6 +655,14 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html#LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.__init__">(LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.__init__">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.__init__">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.__init__">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.__init__">(LoopStructural.visualisation.VtkExporter method)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -659,6 +686,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_box">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_box">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_box">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_box">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_box">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_callback">add_callback() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
@@ -731,6 +764,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.MapView.html#LoopStructural.visualisation.MapView.add_data">(LoopStructural.visualisation.MapView method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_data">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_data">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_data">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_data">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultBuilder.html#LoopStructural.modelling.core.geological_model.FaultBuilder.add_data_from_data_frame">add_data_from_data_frame() (LoopStructural.modelling.core.geological_model.FaultBuilder method)</a>
@@ -836,6 +875,12 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_fault_displacements">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_fault_displacements">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_fault_displacements">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_fault_displacements">(LoopStructural.visualisation.VtkExporter method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder.html#LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder.add_faults_anisotropies">add_faults_anisotropies() (LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder method)</a>
 
@@ -855,6 +900,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_fold">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_fold">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_fold">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_fold">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_fold">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.add_fold_constraints">add_fold_constraints() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
@@ -929,8 +980,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.P2Interpolator.html#LoopStructural.modelling.core.geological_model.P2Interpolator.add_inequality_feature">(LoopStructural.modelling.core.geological_model.P2Interpolator method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.add_interface_constraints">add_interface_constraints() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
 
       <ul>
@@ -941,6 +990,8 @@
         <li><a href="_autosummary/LoopStructural.interpolators.PiecewiseLinearInterpolator.html#LoopStructural.interpolators.PiecewiseLinearInterpolator.add_interface_constraints">(LoopStructural.interpolators.PiecewiseLinearInterpolator method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.visualisation.DashView.html#LoopStructural.visualisation.DashView.add_isosurface">add_isosurface() (LoopStructural.visualisation.DashView method)</a>
 
       <ul>
@@ -951,6 +1002,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_isosurface">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_isosurface">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_isosurface">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_isosurface">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.DashView.html#LoopStructural.visualisation.DashView.add_model">add_model() (LoopStructural.visualisation.DashView method)</a>
@@ -968,6 +1025,12 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_model">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_model">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_model">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_model">(LoopStructural.visualisation.VtkExporter method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.DashView.html#LoopStructural.visualisation.DashView.add_model_surfaces">add_model_surfaces() (LoopStructural.visualisation.DashView method)</a>
 
@@ -979,6 +1042,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_model_surfaces">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_model_surfaces">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_model_surfaces">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_model_surfaces">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_model_surfaces">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.add_norm_constraints">add_norm_constraints() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
@@ -1017,6 +1086,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_points">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_points">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_points">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_points">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_points">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultSegment.html#LoopStructural.modelling.core.geological_model.FaultSegment.add_region">add_region() (LoopStructural.modelling.core.geological_model.FaultSegment method)</a>
@@ -1062,6 +1137,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.add_region">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.add_region">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_regularisation">add_regularisation() (LoopStructural.interpolators.FiniteDifferenceInterpolator method)</a>
 </li>
@@ -1080,6 +1157,12 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_scalar_field">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_scalar_field">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_scalar_field">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_scalar_field">(LoopStructural.visualisation.VtkExporter method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.DashView.html#LoopStructural.visualisation.DashView.add_section">add_section() (LoopStructural.visualisation.DashView method)</a>
 
@@ -1091,6 +1174,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_section">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_section">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_section">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_section">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_section">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder.html#LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder.add_steps_stratigraphic_units">add_steps_stratigraphic_units() (LoopStructural.modelling.core.geological_model.IntrusionFrameBuilder method)</a>
@@ -1148,6 +1237,12 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_value_data">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_value_data">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_value_data">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_value_data">(LoopStructural.visualisation.VtkExporter method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator.html#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_vaue_constraints">add_vaue_constraints() (LoopStructural.interpolators.FiniteDifferenceInterpolator method)</a>
 </li>
@@ -1162,6 +1257,12 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_vector_data">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_vector_data">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_vector_data">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_vector_data">(LoopStructural.visualisation.VtkExporter method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.DashView.html#LoopStructural.visualisation.DashView.add_vector_field">add_vector_field() (LoopStructural.visualisation.DashView method)</a>
 
@@ -1173,6 +1274,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_vector_field">(LoopStructural.visualisation.LavaVuModelViewer method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.add_vector_field">(LoopStructural.visualisation.model_plotter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.add_vector_field">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.add_vector_field">(LoopStructural.visualisation.vtk_exporter.VtkExporter method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.add_vector_field">(LoopStructural.visualisation.VtkExporter method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.all_heading.html#LoopStructural.modelling.core.geological_model.all_heading">all_heading() (in module LoopStructural.modelling.core.geological_model)</a>
@@ -1245,6 +1352,8 @@
 
       <ul>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter">(class in LoopStructural.visualisation.model_plotter)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter">(class in LoopStructural.visualisation.vtk_exporter)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.regions.BaseRegion.html#LoopStructural.utils.regions.BaseRegion">BaseRegion (class in LoopStructural.utils.regions)</a>
@@ -1453,10 +1562,10 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.lavavu.close_all.html#LoopStructural.visualisation.lavavu.close_all">close_all() (in module LoopStructural.visualisation.lavavu)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.cluster_centers_">cluster_centers_ (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.cluster_centers_">cluster_centers_ (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans attribute)</a>
+</li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.colorbar">colorbar (LoopStructural.visualisation.stratigraphic_column.PatchCollection attribute)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.components_">components_ (LoopStructural.utils.helper.PCA attribute)</a>
@@ -1517,12 +1626,6 @@
 
       <ul>
         <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_domain_fault">(LoopStructural.modelling.core.geological_model.GeologicalModel method)</a>
-</li>
-      </ul></li>
-      <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_dtm">create_and_add_dtm() (LoopStructural.GeologicalModel method)</a>
-
-      <ul>
-        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_dtm">(LoopStructural.modelling.core.geological_model.GeologicalModel method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_fault">create_and_add_fault() (LoopStructural.GeologicalModel method)</a>
@@ -1655,6 +1758,14 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.data">(LoopStructural.visualisation.lavavu.GeologicalFeature attribute)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.data">(LoopStructural.visualisation.model_plotter.GeologicalFeature attribute)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.data">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data_for_feature">data_for_feature() (LoopStructural.GeologicalModel method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.data_for_feature">(LoopStructural.modelling.core.geological_model.GeologicalModel method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.debug">debug() (LoopStructural.interpolators.DiscreteFoldInterpolator method)</a>
@@ -1888,6 +1999,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.evaluate_gradient">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.evaluate_gradient">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.evaluate_gradient_misfit">evaluate_gradient_misfit() (LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
 
@@ -1901,6 +2014,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.evaluate_gradient_misfit">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_gradient_misfit">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.evaluate_gradient_misfit">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.evaluate_model">evaluate_model() (LoopStructural.GeologicalModel method)</a>
@@ -2054,6 +2169,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.ScalarField.html#LoopStructural.visualisation.ScalarField.evaluate_value">(LoopStructural.visualisation.ScalarField method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.evaluate_value">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.evaluate_value_misfit">evaluate_value_misfit() (LoopStructural.modelling.core.geological_model.GeologicalFeature method)</a>
 
@@ -2067,6 +2184,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.evaluate_value_misfit">(LoopStructural.visualisation.lavavu.GeologicalFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.evaluate_value_misfit">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.evaluate_value_misfit">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html#LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.evaluate_value_original">evaluate_value_original() (LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature method)</a>
@@ -2093,6 +2212,12 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.fault_names">fault_names() (LoopStructural.GeologicalModel method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.fault_names">(LoopStructural.modelling.core.geological_model.GeologicalModel method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultBuilder.html#LoopStructural.modelling.core.geological_model.FaultBuilder">FaultBuilder (class in LoopStructural.modelling.core.geological_model)</a>
 
       <ul>
@@ -2109,9 +2234,13 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.input.fault_network.FaultNetworkIter.html#LoopStructural.modelling.input.fault_network.FaultNetworkIter">FaultNetworkIter (class in LoopStructural.modelling.input.fault_network)</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.faults">faults (LoopStructural.modelling.core.geological_model.GeologicalFeature attribute)</a>
+      <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.faults">faults (LoopStructural.GeologicalModel property)</a>
 
       <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature.faults">(LoopStructural.modelling.core.geological_model.GeologicalFeature attribute)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.faults">(LoopStructural.modelling.core.geological_model.GeologicalModel property)</a>
+</li>
         <li><a href="_autosummary/LoopStructural.modelling.features.AnalyticalGeologicalFeature.html#LoopStructural.modelling.features.AnalyticalGeologicalFeature.faults">(LoopStructural.modelling.features.AnalyticalGeologicalFeature attribute)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature.faults">(LoopStructural.modelling.features.GeologicalFeature attribute)</a>
@@ -2119,6 +2248,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.faults">(LoopStructural.visualisation.lavavu.GeologicalFeature attribute)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.faults">(LoopStructural.visualisation.model_plotter.GeologicalFeature attribute)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.faults">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature attribute)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.FaultSegment.html#LoopStructural.modelling.core.geological_model.FaultSegment">FaultSegment (class in LoopStructural.modelling.core.geological_model)</a>
@@ -2173,10 +2304,10 @@
         <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_support_functions.find_inout_points.html#LoopStructural.modelling.intrusions.intrusion_support_functions.find_inout_points">(in module LoopStructural.modelling.intrusions.intrusion_support_functions)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/LoopStructural.modelling.features.fold.SVariogram.html#LoopStructural.modelling.features.fold.SVariogram.find_wavelengths">find_wavelengths() (LoopStructural.modelling.features.fold.SVariogram method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/LoopStructural.modelling.features.fold.SVariogram.html#LoopStructural.modelling.features.fold.SVariogram.find_wavelengths">find_wavelengths() (LoopStructural.modelling.features.fold.SVariogram method)</a>
+</li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_support_functions.findMinDiff.html#LoopStructural.modelling.intrusions.intrusion_support_functions.findMinDiff">findMinDiff() (in module LoopStructural.modelling.intrusions.intrusion_support_functions)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.findobj">findobj() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
@@ -2249,6 +2380,12 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator.from_piecewise_linear_and_fold">from_piecewise_linear_and_fold() (LoopStructural.interpolators.DiscreteFoldInterpolator class method)</a>
 </li>
+      <li><a href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.from_processor">from_processor() (LoopStructural.GeologicalModel class method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.from_processor">(LoopStructural.modelling.core.geological_model.GeologicalModel class method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.fromkeys">fromkeys() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
 
       <ul>
@@ -2277,6 +2414,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature">(class in LoopStructural.visualisation.lavavu)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature">(class in LoopStructural.visualisation.model_plotter)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature">(class in LoopStructural.visualisation.vtk_exporter)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.core.geological_model.GeologicalFeatureBuilder.html#LoopStructural.modelling.core.geological_model.GeologicalFeatureBuilder">GeologicalFeatureBuilder (class in LoopStructural.modelling.core.geological_model)</a>
@@ -3002,6 +3141,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.rotation_angle_plotter.getLogger.html#LoopStructural.visualisation.rotation_angle_plotter.getLogger">(in module LoopStructural.visualisation.rotation_angle_plotter)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.getLogger.html#LoopStructural.visualisation.vtk_exporter.getLogger">(in module LoopStructural.visualisation.vtk_exporter)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid.global_cell_indicies">global_cell_indicies() (LoopStructural.interpolators.StructuredGrid method)</a>
 
@@ -3297,7 +3438,7 @@
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.LoopException.html#LoopStructural.utils.LoopException">LoopException</a>, <a href="_autosummary/LoopStructural.utils.exceptions.LoopException.html#LoopStructural.utils.exceptions.LoopException">[1]</a>
 </li>
-      <li><a href="_autosummary/LoopStructural.utils.LoopImportError.html#LoopStructural.utils.LoopImportError">LoopImportError</a>, <a href="_autosummary/LoopStructural.utils.exceptions.LoopImportError.html#LoopStructural.utils.exceptions.LoopImportError">[1]</a>, <a href="_autosummary/LoopStructural.visualisation.lavavu.LoopImportError.html#LoopStructural.visualisation.lavavu.LoopImportError">[2]</a>, <a href="_autosummary/LoopStructural.visualisation.model_plotter.LoopImportError.html#LoopStructural.visualisation.model_plotter.LoopImportError">[3]</a>
+      <li><a href="_autosummary/LoopStructural.utils.LoopImportError.html#LoopStructural.utils.LoopImportError">LoopImportError</a>, <a href="_autosummary/LoopStructural.utils.exceptions.LoopImportError.html#LoopStructural.utils.exceptions.LoopImportError">[1]</a>, <a href="_autosummary/LoopStructural.visualisation.lavavu.LoopImportError.html#LoopStructural.visualisation.lavavu.LoopImportError">[2]</a>, <a href="_autosummary/LoopStructural.visualisation.model_plotter.LoopImportError.html#LoopStructural.visualisation.model_plotter.LoopImportError">[3]</a>, <a href="_autosummary/LoopStructural.visualisation.vtk_exporter.LoopImportError.html#LoopStructural.visualisation.vtk_exporter.LoopImportError">[4]</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.LoopJSONEncoder.html#LoopStructural.utils.LoopJSONEncoder">LoopJSONEncoder (class in LoopStructural.utils)</a>
 
@@ -3417,8 +3558,6 @@
         <li><a href="_autosummary/LoopStructural.modelling.input.fault_network.html#module-LoopStructural.modelling.input.fault_network">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     LoopStructural.modelling.input.map2loop_processor
 
@@ -3426,6 +3565,8 @@
         <li><a href="_autosummary/LoopStructural.modelling.input.map2loop_processor.html#module-LoopStructural.modelling.input.map2loop_processor">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     LoopStructural.modelling.input.process_data
 
@@ -3615,6 +3756,13 @@
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.html#module-LoopStructural.visualisation.stratigraphic_column">module</a>
 </li>
       </ul></li>
+      <li>
+    LoopStructural.visualisation.vtk_exporter
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.html#module-LoopStructural.visualisation.vtk_exporter">module</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.config.LoopStructuralConfig.html#LoopStructural.utils.config.LoopStructuralConfig">LoopStructuralConfig (class in LoopStructural.utils.config)</a>
 </li>
       <li><a href="_autosummary/LoopStructural.utils.LoopTypeError.html#LoopStructural.utils.LoopTypeError">LoopTypeError</a>, <a href="_autosummary/LoopStructural.utils.exceptions.LoopTypeError.html#LoopStructural.utils.exceptions.LoopTypeError">[1]</a>
@@ -3708,6 +3856,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.max">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.max">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.mean_">mean_ (LoopStructural.utils.helper.PCA attribute)</a>
 </li>
@@ -3753,6 +3903,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.min">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.min">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.min">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -3867,6 +4019,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.html#module-LoopStructural.visualisation.stratigraphic_column">LoopStructural.visualisation.stratigraphic_column</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.html#module-LoopStructural.visualisation.vtk_exporter">LoopStructural.visualisation.vtk_exporter</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover">mouseover (LoopStructural.visualisation.stratigraphic_column.PatchCollection property)</a>
 
@@ -3910,6 +4064,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.name">(LoopStructural.visualisation.lavavu.GeologicalFeature attribute)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.name">(LoopStructural.visualisation.model_plotter.GeologicalFeature attribute)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.name">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature attribute)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.interpolators.P1Unstructured2d.html#LoopStructural.interpolators.P1Unstructured2d.ncps">ncps (LoopStructural.interpolators.P1Unstructured2d property)</a>
@@ -3956,6 +4112,12 @@
         <li><a href="_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.nelements">(LoopStructural.visualisation.LavaVuModelViewer property)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter.nelements">(LoopStructural.visualisation.model_plotter.BaseModelPlotter property)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html#LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.nelements">(LoopStructural.visualisation.vtk_exporter.BaseModelPlotter property)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter.nelements">(LoopStructural.visualisation.vtk_exporter.VtkExporter property)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter.nelements">(LoopStructural.visualisation.VtkExporter property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -4312,6 +4474,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature.region">(LoopStructural.visualisation.lavavu.GeologicalFeature attribute)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.region">(LoopStructural.visualisation.model_plotter.GeologicalFeature attribute)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.region">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature attribute)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.utils.RegionEverywhere.html#LoopStructural.utils.RegionEverywhere">RegionEverywhere (class in LoopStructural.utils)</a>
@@ -4838,6 +5002,12 @@
 </li>
       <li><a href="_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.html#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets">set_offsets() (LoopStructural.visualisation.stratigraphic_column.PatchCollection method)</a>
 </li>
+      <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_output">set_output() (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans method)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.utils.helper.PCA.html#LoopStructural.utils.helper.PCA.set_output">(LoopStructural.utils.helper.PCA method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html#LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.set_params">set_params() (LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans method)</a>
 
       <ul>
@@ -5253,6 +5423,8 @@
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.support">(LoopStructural.visualisation.model_plotter.GeologicalFeature attribute)</a>
 </li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.support">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature attribute)</a>
+</li>
       </ul></li>
       <li><a href="_autosummary/LoopStructural.modelling.features.fold.SVariogram.html#LoopStructural.modelling.features.fold.SVariogram">SVariogram (class in LoopStructural.modelling.features.fold)</a>
 </li>
@@ -5336,6 +5508,8 @@
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.GeologicalFeature.html#LoopStructural.visualisation.model_plotter.GeologicalFeature.toggle_faults">(LoopStructural.visualisation.model_plotter.GeologicalFeature method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame.toggle_faults">(LoopStructural.visualisation.model_plotter.StructuralFrame method)</a>
+</li>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature.toggle_faults">(LoopStructural.visualisation.vtk_exporter.GeologicalFeature method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -5454,14 +5628,20 @@
 </li>
       <li><a href="_autosummary/LoopStructural.datasets.value_headers.html#LoopStructural.datasets.value_headers">value_headers() (in module LoopStructural.datasets)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.Lithology.html#LoopStructural.modelling.core.stratigraphic_column.Lithology.values">values() (LoopStructural.modelling.core.stratigraphic_column.Lithology method)</a>
 
       <ul>
         <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn.values">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicColumn method)</a>
 </li>
         <li><a href="_autosummary/LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.html#LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit.values">(LoopStructural.modelling.core.stratigraphic_column.StratigraphicUnit method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/LoopStructural.visualisation.VtkExporter.html#LoopStructural.visualisation.VtkExporter">VtkExporter (class in LoopStructural.visualisation)</a>
+
+      <ul>
+        <li><a href="_autosummary/LoopStructural.visualisation.vtk_exporter.VtkExporter.html#LoopStructural.visualisation.vtk_exporter.VtkExporter">(class in LoopStructural.visualisation.vtk_exporter)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -5553,7 +5733,8 @@
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
   <footer class="bd-footer"><div class="bd-footer__inner container">
   
@@ -5568,9 +5749,19 @@
   </div>
   
   <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

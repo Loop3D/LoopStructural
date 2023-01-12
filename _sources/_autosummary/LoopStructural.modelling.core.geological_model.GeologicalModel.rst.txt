@@ -21,7 +21,6 @@ LoopStructural.modelling.core.geological\_model.GeologicalModel
       ~GeologicalModel.add_unconformity
       ~GeologicalModel.check_inialisation
       ~GeologicalModel.create_and_add_domain_fault
-      ~GeologicalModel.create_and_add_dtm
       ~GeologicalModel.create_and_add_fault
       ~GeologicalModel.create_and_add_fold_frame
       ~GeologicalModel.create_and_add_folded_fold_frame

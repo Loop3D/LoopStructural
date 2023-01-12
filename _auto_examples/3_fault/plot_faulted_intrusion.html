@@ -6,24 +6,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>3a. Modelling faults using structural frames &#8212; LoopStructural 0.1 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
@@ -32,13 +32,15 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_auto_examples/3_fault/plot_faulted_intrusion';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -50,6 +52,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -112,37 +118,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/index.html">
                         User Guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../_autosummary/LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../../_autosummary/LoopStructural.html">
-                        LoopStructural
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -150,19 +159,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -197,11 +208,13 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -231,37 +244,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../user_guide/index.html">
                         User Guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../_autosummary/LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../../_autosummary/LoopStructural.html">
-                        LoopStructural
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -274,11 +290,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -358,8 +374,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -413,7 +432,7 @@ representative of modelling an intrusion.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_faulted_intrusion_001.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_001.png" alt="plot faulted intrusion" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.contour.QuadContourSet object at 0x7f22f7e80f70&gt;
+<img src="../../_images/sphx_glr_plot_faulted_intrusion_001.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_001.png" alt="plot faulted intrusion" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.contour.QuadContourSet object at 0x7fe23ec0cbe0&gt;
 </pre></div>
 </div>
 <p>LoopStructural applies structural frames to the fault geometry to
@@ -477,14 +496,14 @@ fault frame and an expected displacement model.</p>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/4 [00:00&lt;?, ?it/s]
 Interpolating fault:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Interpolating fault:  50%|#####     | 2/4 [00:00&lt;00:00, 10.15it/s]
-Interpolating strati:  75%|#######5  | 3/4 [00:00&lt;00:00, 10.15it/s]
-Interpolating strati: : 6it [00:19, 10.15it/s]
-Interpolating strati: : 7it [00:43,  6.72s/it]
-Interpolating strati: : 7it [00:43,  6.15s/it]
+Interpolating fault:  50%|#####     | 2/4 [00:00&lt;00:00, 10.51it/s]
+Interpolating strati:  75%|#######5  | 3/4 [00:00&lt;00:00, 10.51it/s]
+Interpolating strati: : 6it [00:20, 10.51it/s]
+Interpolating strati: : 7it [00:56,  8.89s/it]
+Interpolating strati: : 7it [00:56,  8.13s/it]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.827 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  1.799 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-3-fault-plot-faulted-intrusion-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/04532e9070b5c0b939ac0b7eacbbf993/plot_faulted_intrusion.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_faulted_intrusion.py</span></code></a></p>
@@ -581,7 +600,8 @@ Interpolating strati: : 7it [00:43,  6.15s/it]
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

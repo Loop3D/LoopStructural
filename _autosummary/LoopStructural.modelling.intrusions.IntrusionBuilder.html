@@ -6,24 +6,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoopStructural.modelling.intrusions.IntrusionBuilder &#8212; LoopStructural 0.1 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -32,13 +32,15 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.modelling.intrusions.IntrusionBuilder';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -50,6 +52,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -112,37 +118,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../user_guide/index.html">
-                        User Guide
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="LoopStructural.html">
-                        LoopStructural
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -150,19 +159,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -197,11 +208,13 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -231,37 +244,40 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../getting_started/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../_auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="LoopStructural.html">
+                        LoopStructural
+                      </a>
+                    </li>
                 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="../user_guide/index.html">
-                        User Guide
-                    </a>
+                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
                 </li>
                 
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="LoopStructural.html">
-                        LoopStructural
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://www.loop3d.org">Loop3d<i class="fa-solid fa-up-right-from-square"></i></a>
-            </li>
     </ul>
 </nav>
       </div>
@@ -274,11 +290,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -658,6 +674,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.MapView.html">LoopStructural.visualisation.MapView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.RotationAnglePlotter.html">LoopStructural.visualisation.RotationAnglePlotter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.ScalarField.html">LoopStructural.visualisation.ScalarField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.visualisation.VtkExporter.html">LoopStructural.visualisation.VtkExporter</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.visualisation.lavavu.html">LoopStructural.visualisation.lavavu</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.close_all.html">LoopStructural.visualisation.lavavu.close_all</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.lavavu.getLogger.html">LoopStructural.visualisation.lavavu.getLogger</a></li>
@@ -704,6 +721,14 @@
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView.html">LoopStructural.visualisation.stratigraphic_column.StratigraphicColumnView</a></li>
 </ul>
 </li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.html">LoopStructural.visualisation.vtk_exporter</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-40"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.getLogger.html">LoopStructural.visualisation.vtk_exporter.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.BaseModelPlotter.html">LoopStructural.visualisation.vtk_exporter.BaseModelPlotter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html">LoopStructural.visualisation.vtk_exporter.GeologicalFeature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.VtkExporter.html">LoopStructural.visualisation.vtk_exporter.VtkExporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.LoopImportError.html">LoopStructural.visualisation.vtk_exporter.LoopImportError</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -720,8 +745,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -871,13 +899,13 @@ By default: variogram with no nugget effect, 1 spherical nested structure, isotr
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<em>azi1 = 90                          # azimuth of this nested</em>) – </p></li>
+<li><p><strong>structure</strong> (<em>azi1 = 90                          # azimuth</em><em> of </em><em>this nested</em>) – </p></li>
 <li><p><strong>spherical</strong> (<em>it1 = 1                            # nested structure type</em><em> (</em><em>1 -</em>) – </p></li>
 <li><p><strong>exponential</strong> (<em>2 -</em>) – </p></li>
 <li><p><strong>Gaussian</strong><strong>)</strong> (<em>3 -</em>) – </p></li>
 <li><p><strong>nugget</strong> (<em>cc1 = 1                            # One structure and no</em>) – </p></li>
 <li><p><strong>structure</strong> – </p></li>
-<li><p><strong>direction</strong> (<em>hmaj1 = 9999 ; hmin1 = 9999   # range of this nested structure in the major</em><em> (</em><em>hmaj1</em><em>) </em><em>and minor</em><em> (</em><em>hmin1</em><em>)</em>) – </p></li>
+<li><p><strong>direction</strong> (<em>hmaj1 = 9999 ; hmin1 = 9999   # range</em><em> of </em><em>this nested structure in the major</em><em> (</em><em>hmaj1</em><em>) </em><em>and minor</em><em> (</em><em>hmin1</em><em>)</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -892,13 +920,13 @@ By default: variogram with no nugget effect, 1 spherical nested structure, isotr
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>--&gt;</strong> (<em>python dictionary with the following parameters</em>) – </p></li>
-<li><p><strong>structure</strong> (<em>azi1 = 90                          # azimuth of this nested</em>) – </p></li>
+<li><p><strong>structure</strong> (<em>azi1 = 90                          # azimuth</em><em> of </em><em>this nested</em>) – </p></li>
 <li><p><strong>spherical</strong> (<em>it1 = 1                            # nested structure type</em><em> (</em><em>1 -</em>) – </p></li>
 <li><p><strong>exponential</strong> (<em>2 -</em>) – </p></li>
 <li><p><strong>Gaussian</strong><strong>)</strong> (<em>3 -</em>) – </p></li>
 <li><p><strong>nugget</strong> (<em>cc1 = 1                            # One structure and no</em>) – </p></li>
 <li><p><strong>structure</strong> – </p></li>
-<li><p><strong>direction</strong> (<em>hmaj1 = 9999 ; hmin1 = 9999   # range of this nested structure in the major</em><em> (</em><em>hmaj1</em><em>) </em><em>and minor</em><em> (</em><em>hmin1</em><em>)</em>) – </p></li>
+<li><p><strong>direction</strong> (<em>hmaj1 = 9999 ; hmin1 = 9999   # range</em><em> of </em><em>this nested structure in the major</em><em> (</em><em>hmaj1</em><em>) </em><em>and minor</em><em> (</em><em>hmin1</em><em>)</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -923,24 +951,24 @@ By default: variogram with no nugget effect, 1 spherical nested structure, isotr
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vertical_simulation_parameters</strong> (<em>python dictionary with the following parameters --&gt;</em>) – </p></li>
-<li><p><strong>tmin</strong> (<em>all values</em><em>, </em><em>regardless of which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
-<li><p><strong>tmax</strong> (<em>all values</em><em>, </em><em>regardless of which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
+<li><p><strong>tmin</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
+<li><p><strong>tmax</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
 <li><p><strong>itrans</strong> (<em>0 - no transformation requiered</em><em>, </em><em>data already nscored / 1 - for transformation</em>) – </p></li>
-<li><p><strong>ktype</strong> (<em>type of interpolation</em><em>, </em><em>0 for simple kriging - 1 for ordinary kriging</em>) – </p></li>
-<li><p><strong>nx</strong> (<em>Numbers of blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>ny</strong> (<em>Numbers of blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>xmn</strong> (<em>Centre of the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>ymn</strong> (<em>Centre of the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>xsiz</strong> (<em>Size of blocks</em>) – </p></li>
-<li><p><strong>ysiz</strong> (<em>Size of blocks</em>) – </p></li>
+<li><p><strong>ktype</strong> (<em>type</em><em> of </em><em>interpolation</em><em>, </em><em>0 for simple kriging - 1 for ordinary kriging</em>) – </p></li>
+<li><p><strong>nx</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
+<li><p><strong>ny</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
+<li><p><strong>xmn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
+<li><p><strong>ymn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
+<li><p><strong>xsiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
+<li><p><strong>ysiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
 <li><p><strong>zmin</strong> (<em>The minimum and maximum allowable data values for maximum g simulation</em><em> (</em><em>contact opposite to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
 <li><p><strong>zmax</strong> (<em>The minimum and maximum allowable data values for maximum g simulation</em><em> (</em><em>contact opposite to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
 <li><p><strong>zmin2</strong> (<em>The minimum and maximum allowable data values for minimum g simulation</em><em> (</em><em>simultion to condition model to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
 <li><p><strong>zmax2</strong> (<em>The minimum and maximum allowable data values for minimum g simulation</em><em> (</em><em>simultion to condition model to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
-<li><p><strong>nxdis</strong> (<em>Number of discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>nydis</strong> (<em>Number of discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>ndmin</strong> (<em>The minimum and maximum number of original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
-<li><p><strong>ndmax</strong> (<em>The minimum and maximum number of original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
+<li><p><strong>nxdis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
+<li><p><strong>nydis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
+<li><p><strong>ndmin</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
+<li><p><strong>ndmax</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
 <li><p><strong>radius</strong> (<em>The maximum isotropic search radius.</em>) – </p></li>
 </ul>
 </dd>
@@ -955,22 +983,22 @@ By default: variogram with no nugget effect, 1 spherical nested structure, isotr
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lateral_simulation_parameters</strong> (<em>python dictionary with the following parameters --&gt;</em>) – </p></li>
-<li><p><strong>tmin</strong> (<em>all values</em><em>, </em><em>regardless of which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
-<li><p><strong>tmax</strong> (<em>all values</em><em>, </em><em>regardless of which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
+<li><p><strong>tmin</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
+<li><p><strong>tmax</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
 <li><p><strong>itrans</strong> (<em>0 - no transformation requiered</em><em>, </em><em>data already nscored / 1 - for transformation</em>) – </p></li>
-<li><p><strong>ktype</strong> (<em>type of interpolation</em><em>, </em><em>0 for simple kriging - 1 for ordinary kriging</em>) – </p></li>
-<li><p><strong>nx</strong> (<em>Numbers of blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>ny</strong> (<em>Numbers of blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>xmn</strong> (<em>Centre of the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>ymn</strong> (<em>Centre of the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>xsiz</strong> (<em>Size of blocks</em>) – </p></li>
-<li><p><strong>ysiz</strong> (<em>Size of blocks</em>) – </p></li>
+<li><p><strong>ktype</strong> (<em>type</em><em> of </em><em>interpolation</em><em>, </em><em>0 for simple kriging - 1 for ordinary kriging</em>) – </p></li>
+<li><p><strong>nx</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
+<li><p><strong>ny</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
+<li><p><strong>xmn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
+<li><p><strong>ymn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
+<li><p><strong>xsiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
+<li><p><strong>ysiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
 <li><p><strong>zmin</strong> (<em>The minimum and maximum allowable data values. These are used in the back-transformation procedure.</em>) – </p></li>
 <li><p><strong>zmax</strong> (<em>The minimum and maximum allowable data values. These are used in the back-transformation procedure.</em>) – </p></li>
-<li><p><strong>nxdis</strong> (<em>Number of discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>nydis</strong> (<em>Number of discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>ndmin</strong> (<em>The minimum and maximum number of original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
-<li><p><strong>ndmax</strong> (<em>The minimum and maximum number of original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
+<li><p><strong>nxdis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
+<li><p><strong>nydis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
+<li><p><strong>ndmin</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
+<li><p><strong>ndmax</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
 <li><p><strong>radius</strong> (<em>The maximum isotropic search radius.</em>) – </p></li>
 </ul>
 </dd>
@@ -1056,6 +1084,155 @@ if its not update.</p>
               
 <div class="toc-item">
   
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     IntrusionBuilder
+    </span>
+   </code>
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.add_fault">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.add_fault()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.build">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.build()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_simulation">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.create_grid_for_simulation()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_g_sgs_variogram">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.make_g_sgs_variogram()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_l_sgs_variogram">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.make_l_sgs_variogram()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_simulation">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.set_data_for_extent_simulation()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_g_sgs_GSLIBparameters">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.set_g_sgs_GSLIBparameters()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_l_sgs_GSLIBparameters">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.set_l_sgs_GSLIBparameters()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.simulate_growth_thresholds()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds_original">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.simulate_growth_thresholds_original()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.simulate_lateral_thresholds()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds_original">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.simulate_lateral_thresholds_original()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.up_to_date">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       IntrusionBuilder.up_to_date()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
 <div id="searchbox"></div>
 </div>
 
@@ -1090,7 +1267,8 @@ if its not update.</p>
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

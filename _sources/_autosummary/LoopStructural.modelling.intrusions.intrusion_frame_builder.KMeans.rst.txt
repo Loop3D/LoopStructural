@@ -24,6 +24,7 @@ LoopStructural.modelling.intrusions.intrusion\_frame\_builder.KMeans
       ~KMeans.get_params
       ~KMeans.predict
       ~KMeans.score
+      ~KMeans.set_output
       ~KMeans.set_params
       ~KMeans.transform
    

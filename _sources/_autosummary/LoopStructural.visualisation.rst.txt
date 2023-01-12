@@ -33,6 +33,7 @@ LoopStructural.visualisation
       MapView
       RotationAnglePlotter
       ScalarField
+      VtkExporter
    
    
 
