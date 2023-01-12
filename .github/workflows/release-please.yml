@@ -142,8 +142,22 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
         dockerfile: Dockerfile
         tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
+  make_sdist:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    name: Make SDist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Build SDist
+      run: pipx run build --sdist
 
-  pypi-deploy:
+    - uses: actions/upload-artifact@v3
+      with:
+        path: dist/*.tar.gz
+        
+  build_wheels:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
     name: Build wheels
@@ -161,11 +175,21 @@ jobs:
           CIBW_ARCHS_MACOS: x86_64 universal2
           CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310*"
           CIBW_BEFORE_BUILD: "pip install numpy cython" #make sure numpy is the same version as required by LS
-
-      - name: Publish wheels to PyPI
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run : |
-          pip install twine
-          python -m twine upload ./wheelhouse/*.whl  
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+          
+  upload_to_pypi:
+    needs: [build_wheels,make_sdist]
+    runs-on: ubuntu-latest
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+          name: artifact
+          path: dist
+    - uses: pypa/gh-action-pypi-publish@v1.5.0
+      with:
+        user: ${{ secrets.PYPI_USERNAME }}
+        password: ${{ secrets.PYPI_PASSWORD }}
+    
