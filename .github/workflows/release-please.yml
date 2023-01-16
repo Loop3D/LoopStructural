@@ -198,8 +198,8 @@ jobs:
         user: ${{ secrets.PYPI_USERNAME }}
         password: ${{ secrets.PYPI_PASSWORD }}
     - name: upload all files to conda-forge
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-        run: |
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+      run: |
            anaconda upload --label main conda/*/*.tar.bz2 
     
