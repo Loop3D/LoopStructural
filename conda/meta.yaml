@@ -14,7 +14,7 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - Cython
+    - Cython 
     - numpy
   host:
     - pip
@@ -36,7 +36,6 @@ test:
     - numpy
     - pandas
     - loopstructural
-
 
 
 about:

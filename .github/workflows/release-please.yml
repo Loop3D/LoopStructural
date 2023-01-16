@@ -43,7 +43,10 @@ jobs:
           cp CHANGELOG.md docs/source/getting_started/CHANGELOG.md
           docker build . -t=lsdocs -f docs/Dockerfile 
           docker run -v $(pwd):/LoopStructural lsdocs bash LoopStructural/docs/build_docs.sh
-      
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: docs/build/html
 
   release-please:
     runs-on: ubuntu-latest
@@ -103,8 +106,8 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
         shell: bash -l {0}
         run: |
-           conda install -c conda-forge conda-build scikit-build numpy=1.20 cython anaconda-client -y
-           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda
+           conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client -y
+           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda --numpy 1.22
            conda install anaconda-client -y
       - name: upload artifacts
         uses: actions/upload-artifact@v3
@@ -147,8 +150,7 @@ jobs:
   #       tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
 
   make_sdist:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    needs: ["documentation-test", "continuous-integration"]
     name: Make SDist
     runs-on: ubuntu-latest
     steps:
@@ -162,8 +164,7 @@ jobs:
         path: dist/*.tar.gz
         
   build_wheels:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    needs: ["documentation-test", "continuous-integration"]
     name: Build wheels
     runs-on: ${{ matrix.os }}
     strategy:
@@ -196,4 +197,9 @@ jobs:
       with:
         user: ${{ secrets.PYPI_USERNAME }}
         password: ${{ secrets.PYPI_PASSWORD }}
+    - name: upload all files to conda-forge
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+        run: |
+           anaconda upload --label main conda/*/*.tar.bz2 
     
