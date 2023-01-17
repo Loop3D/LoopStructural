@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.5](https://github.com/Loop3D/LoopStructural/compare/v1.5.4...v1.5.5) (2023-01-17)
+
+
+### Bug Fixes
+
+* adding numpy and cython to sdist ([c6ff2e1](https://github.com/Loop3D/LoopStructural/commit/c6ff2e11794ebe45f4ce393d67b309ffae1d4868))
+* ci formatting ([44d434f](https://github.com/Loop3D/LoopStructural/commit/44d434f68706cdefa359194a189f03c8db52f280))
+* fix numpy to 1.21 ([13e0796](https://github.com/Loop3D/LoopStructural/commit/13e0796a64d22b485168ba6fd198b68e0e70c6ec))
+
 ## [1.5.4](https://github.com/Loop3D/LoopStructural/compare/v1.5.3...v1.5.4) (2023-01-12)
 
 
