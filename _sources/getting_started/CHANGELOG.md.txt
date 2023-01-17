@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.5.5](https://github.com/Loop3D/LoopStructural/compare/v1.5.4...v1.5.5) (2023-01-17)
+
+
+### Bug Fixes
+
+* adding numpy and cython to sdist ([c6ff2e1](https://github.com/Loop3D/LoopStructural/commit/c6ff2e11794ebe45f4ce393d67b309ffae1d4868))
+* ci formatting ([44d434f](https://github.com/Loop3D/LoopStructural/commit/44d434f68706cdefa359194a189f03c8db52f280))
+* fix numpy to 1.21 ([13e0796](https://github.com/Loop3D/LoopStructural/commit/13e0796a64d22b485168ba6fd198b68e0e70c6ec))
+
+## [1.5.4](https://github.com/Loop3D/LoopStructural/compare/v1.5.3...v1.5.4) (2023-01-12)
+
+
+### Bug Fixes
+
+* absolute import to relative import ([0ff0ba9](https://github.com/Loop3D/LoopStructural/commit/0ff0ba95f5efa4a543232a901b8fcc1ad542a216))
+* adding meshio to docs docker ([12ca5d3](https://github.com/Loop3D/LoopStructural/commit/12ca5d3e477e10cbf5737b112acba1c039358f80))
+* disabling fault_network example ([c390b7c](https://github.com/Loop3D/LoopStructural/commit/c390b7cd2a823b8445c38fdc7561681647749d07))
+* fixing bug with fault network example ([283cdfe](https://github.com/Loop3D/LoopStructural/commit/283cdfe6b01129fa741e0005168a0f10372a8e89))
+* incorrect variable in process data ([1776269](https://github.com/Loop3D/LoopStructural/commit/177626955ed3cd9ec6221eed2b774afccc989930))
+* lock python to 3.8 for lavavu ([f38b6a1](https://github.com/Loop3D/LoopStructural/commit/f38b6a12e31da188278d020470dd57cee6cd223f))
+* making dockerfile use pypi code ([6462c41](https://github.com/Loop3D/LoopStructural/commit/6462c4101741f32389d1484f6f4c466ec2c576c8))
+* removing old create dtm function ([b559674](https://github.com/Loop3D/LoopStructural/commit/b559674d46580706bc4136bd561db5f14dfc076f))
+* removing probability module ([5b0b6a2](https://github.com/Loop3D/LoopStructural/commit/5b0b6a2cca303066439c6e9d634798fdfeb93535))
+* typo in feature exporter ([a735e9f](https://github.com/Loop3D/LoopStructural/commit/a735e9ffcfe2d42dff06a28752194aa4b44829ec))
+
+
+### Documentation
+
+* fixing lavavu version ([a993f60](https://github.com/Loop3D/LoopStructural/commit/a993f6053d0814b36ac128ffceef7dffda9fb719))
+* rename builder to builders ([d332399](https://github.com/Loop3D/LoopStructural/commit/d33239921623dbd909cc94bc31353e4b2ff11efd))
+
 ## [1.5.3](https://github.com/Loop3D/LoopStructural/compare/v1.5.2...v1.5.3) (2022-11-02)
 
 
