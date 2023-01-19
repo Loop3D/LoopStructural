@@ -1252,7 +1252,7 @@ used for removing the callback with <cite>.remove_callback</cite> later.</p>
 <li><p><strong>point</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – The point (x, y) to check, in target coordinates of
 <code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. These are display coordinates for patches
 that are added to a figure or axes.</p></li>
-<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Add an additional margin on the patch in target coordinates of
+<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional margin on the patch in target coordinates of
 <code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. See <cite>.Path.contains_point</cite> for further
 details.</p></li>
 </ul>
@@ -1297,7 +1297,7 @@ transform them first:</p>
 <li><p><strong>points</strong> (<em>(</em><em>N</em><em>, </em><em>2</em><em>) </em><em>array</em>) – The points to check, in target coordinates of
 <code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. These are display coordinates for patches
 that are added to a figure or axes. Columns contain x and y values.</p></li>
-<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Add an additional margin on the patch in target coordinates of
+<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional margin on the patch in target coordinates of
 <code class="docutils literal notranslate"><span class="pre">self.get_transform()</span></code>. See <cite>.Path.contains_point</cite> for further
 details.</p></li>
 </ul>
@@ -1704,7 +1704,7 @@ transformation.</p>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.Polygon.get_verts">
 <span class="sig-name descname"><span class="pre">get_verts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.get_verts" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a copy of the vertices used in this patch.</p>
-<p>If the patch contains Bezier curves, the curves will be interpolated by
+<p>If the patch contains Bézier curves, the curves will be interpolated by
 line segments.  To access the curves as curves, use <cite>get_path</cite>.</p>
 </dd></dl>
 
@@ -1958,7 +1958,7 @@ all other patches.</p>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_on">
 <span class="sig-name descname"><span class="pre">set_clip_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.Polygon.set_clip_on" title="Permalink to this definition">#</a></dt>
 <dd><p>Set whether the artist uses clipping.</p>
-<p>When False artists will be visible outside of the Axes which
+<p>When False, artists will be visible outside the Axes which
 can lead to unexpected results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2387,7 +2387,7 @@ segments, round to the nearest pixel center.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Unlike <cite>~.path.Path</cite>, we do not ignore the last input vertex. If the
+<p>Unlike <cite>.Path</cite>, we do not ignore the last input vertex. If the
 polygon is meant to be closed, and the last point of the polygon is not
 equal to the first, we assume that the user has not explicitly passed a
 <code class="docutils literal notranslate"><span class="pre">CLOSEPOLY</span></code> vertex, and add it ourselves.</p>

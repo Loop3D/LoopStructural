@@ -201,7 +201,7 @@ In this example we specify the angle between the faults as :math:`10^\circ`.
 
  .. code-block:: none
 
-      0%|          | 0/6 [00:00<?, ?it/s]    Interpolating fault_1:   0%|          | 0/6 [00:00<?, ?it/s]    Interpolating fault_1:  17%|#6        | 1/6 [00:19<01:38, 19.80s/it]    Interpolating fault_1:  33%|###3      | 2/6 [00:19<00:32,  8.22s/it]    Interpolating fault_2:  50%|#####     | 3/6 [00:19<00:24,  8.22s/it]    Interpolating fault_2:  83%|########3 | 5/6 [00:26<00:03,  3.81s/it]    Interpolating fault_2: 100%|##########| 6/6 [00:26<00:00,  4.35s/it]
+      0%|          | 0/6 [00:00<?, ?it/s]    Interpolating fault_1:   0%|          | 0/6 [00:00<?, ?it/s]    Interpolating fault_1:  17%|#6        | 1/6 [00:28<02:23, 28.76s/it]    Interpolating fault_1:  33%|###3      | 2/6 [00:28<00:47, 11.98s/it]    Interpolating fault_2:  50%|#####     | 3/6 [00:28<00:35, 11.98s/it]    Interpolating fault_2:  83%|########3 | 5/6 [00:37<00:05,  5.45s/it]    Interpolating fault_2: 100%|##########| 6/6 [00:37<00:00,  6.26s/it]
 
 
 
@@ -251,7 +251,7 @@ the fault relationship to be abutting rather than splay.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  36.670 seconds)
+   **Total running time of the script:** ( 0 minutes  53.578 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_fault_network.py:

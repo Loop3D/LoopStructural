@@ -137,8 +137,8 @@ Modelling S1
 
  .. code-block:: none
 
-    [ 1641.48140003  1716.9948311   1785.4748773  ... -4447.28576142
-     -4578.09785174 -4708.87055282]
+    [ 1695.65452657  1771.62056059  1843.01680994 ... -4399.52381891
+     -4530.79496619 -4659.30512198]
 
 
 
@@ -177,7 +177,7 @@ S2/S1 S-Plots
  .. code-block:: none
 
 
-    [<matplotlib.lines.Line2D object at 0x7fb0d42a8460>]
+    [<matplotlib.lines.Line2D object at 0x7f7816b64700>]
 
 
 
@@ -220,8 +220,8 @@ Modelling S0
 
  .. code-block:: none
 
-    [ -447.60318295  -349.24691244  -251.92230363 ...  -961.79332589
-     -1021.65862303 -1079.14925988]
+    [-212.26340017 -175.73233124 -139.69526278 ... -249.19048421 -271.96436664
+     -295.80720862]
 
 
 
@@ -272,7 +272,7 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  2.273 seconds)
+   **Total running time of the script:** ( 1 minutes  34.161 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_refolded_folds.py:

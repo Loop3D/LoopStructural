@@ -215,10 +215,10 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
  .. code-block:: none
 
-    [ 353.27219054  353.27941939  353.50232288 ... -148.00299304 -148.5821538
-     -149.39664783]
-    [-129.06281772 -127.44475076 -125.82848009 ... -129.87060415 -128.50641881
-     -126.28428657]
+    [ 353.26912456  353.27642998  353.49900671 ... -147.99981422 -148.57893729
+     -149.39354148]
+    [-129.06070585 -127.44158129 -125.82426925 ... -129.8693745  -128.50435324
+     -126.28112935]
 
 
 
@@ -226,7 +226,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.186 seconds)
+   **Total running time of the script:** ( 0 minutes  3.295 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:
