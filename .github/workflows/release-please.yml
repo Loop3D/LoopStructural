@@ -112,42 +112,9 @@ jobs:
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         with:
+          name: conda
           path: conda
-      # - name: upload windows
-      #   env:
-      #     ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-      #   if: matrix.os == 'windows-latest'
-      #   shell: bash -l {0}
-      #   run: |
-      #      anaconda upload --label main conda/win-64/*.tar.bz2 
-      # - name: upload linux
-      #   env:
-      #     ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-      #   if: matrix.os == 'ubuntu-latest'
-      #   shell: bash -l {0}
-      #   run: |
-      #      anaconda upload --label main conda/linux-64/*.tar.bz2 
-      # - name: upload macosx
-      #   env:
-      #     ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-      #   if: matrix.os == 'macos-latest'
-      #   shell: bash -l {0}
-      #   run: |
-      #       anaconda upload --label main conda/osx-64/*.tar.bz2
-  # docker-deploy:
-  #   needs: release-please
-  #   if: ${{ needs.release-please.outputs.release_created }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@master
-  #   - name: Publish to Registry
-  #     uses: elgohr/Publish-Docker-Github-Action@master
-  #     with:
-  #       name: loop3d/loopstructural
-  #       username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #       password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  #       dockerfile: Dockerfile
-  #       tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
+     
 
   make_sdist:
     needs: ["documentation-test", "continuous-integration"]
@@ -163,6 +130,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
+        name: dist
         path: dist/*.tar.gz
         
   build_wheels:
@@ -184,6 +152,7 @@ jobs:
           CIBW_BEFORE_BUILD: "pip install numpy cython" #make sure numpy is the same version as required by LS
       - uses: actions/upload-artifact@v3
         with:
+          name: wheelhouse
           path: ./wheelhouse/*.whl
           
   upload_to_pypi:
@@ -193,8 +162,16 @@ jobs:
     steps:
     - uses: actions/download-artifact@v3
       with:
-          name: artifact
+          name: dist
           path: dist
+    - uses: actions/download-artifact@v3
+      with:
+          name: conda
+          path: conda
+    - uses: actions/download-artifact@v3
+      with:
+          name: wheelhouse
+          path: wheelhouse 
     - uses: pypa/gh-action-pypi-publish@v1.5.0
       with:
         user: ${{ secrets.PYPI_USERNAME }}
