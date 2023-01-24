@@ -156,7 +156,7 @@ jobs:
           path: ./wheelhouse/*.whl
           
   upload_to_pypi:
-    needs: ["build_wheels","make_sdist","conda-deploy"]
+    needs: ["release-please","build_wheels","make_sdist","conda-deploy"]
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
