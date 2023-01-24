@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.8](https://github.com/Loop3D/LoopStructural/compare/v1.5.7...v1.5.8) (2023-01-24)
+
+
+### Bug Fixes
+
+* force version bump again ([a38f60d](https://github.com/Loop3D/LoopStructural/commit/a38f60d79a95c12e5a4f45cb9359569e710781cf))
+
 ## [1.5.7](https://github.com/Loop3D/LoopStructural/compare/v1.5.6...v1.5.7) (2023-01-23)
 
 
