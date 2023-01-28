@@ -77,10 +77,10 @@ class IntrusionBuilder():
 
         self.marginal_faults = self._feature.intrusion_frame.builder.marginal_faults
 
-        if self.marginal_faults is not None:
-            for fault_i in self.marginal_faults.keys():
-                marginal_fault = self.marginal_faults[fault_i].get('structure')
-                self.intrusion_frame[2] = marginal_fault[0]
+        # if self.marginal_faults is not None:
+        #     for fault_i in self.marginal_faults.keys():
+        #         marginal_fault = self.marginal_faults[fault_i].get('structure')
+        #         self.intrusion_frame[2] = marginal_fault[0]
 
 
         # self.growth_simulated_thresholds_grid = None
@@ -426,49 +426,35 @@ class IntrusionBuilder():
 
         if self.width_data[0] == False:  # i.e., no lateral data for side L<0
             print(
-                "Not enought lateral data for simulation of side L<0, Using roof/floor data to condition the conceptual model"
+                "Not enought lateral data to constrain side L<0. Conceptual model will be used to constrain lateral extent"
             )
 
-            # -- try using vertical data to set some points and run interpolation
-            # -- only use points outside the conceptual model
-            vertical_data = pd.concat(
-                [self.vertical_contact_data[0], self.vertical_contact_data[1]]
-            )
-            vertical_data.loc[
-                :, ["conceptual_maxside", "conceptual_minside"]
-            ] = self.lateral_extent_model(
-                lateral_contact_data=vertical_data,
-                minP=minP,
-                maxP=maxP,
-                minS=minL,
-                maxS=maxL,
-            )
+            random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
+            conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+            data_for_min_L = pd.DataFrame(np.vstack([conceptual_l[:,1],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
+            data_for_min_L.loc[:,'l_residual'] = 0
+            
 
-            data_minL_temp = vertical_data[vertical_data["coord2"] < 0].copy()
-
-            data_for_min_L = data_minL_temp[data_minL_temp['coord2'] <= data_minL_temp['conceptual_minside']].loc[
-                    :,['X','Y','Z','coord0','coord1','coord2','conceptual_minside']].copy()
-            data_for_min_L.loc[:,'l_residual'] = data_for_min_L.loc[
-                :,'conceptual_minside'] - data_for_min_L.loc[:,'coord2']
-            data_for_min_L.rename(columns={'conceptual_minside': 'l_conceptual'}, inplace = True)
-            data_for_min_L.reset_index(inplace = True)
-            data_for_min_L.drop_duplicates(
-                subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
-                inplace = True)
-
-            if len(data_for_min_L) < 3:
-                # create random points along coordinate 1, and evaluate them in conceptual model. Residual = 0. Add points to dataframe containing input for sgs
-                print(
-                    "Simulation of lateral side L<0: No enought roof/floor data to condition the conceptual model, lateral contact equivalent to conceptual"
-                )
-
-                random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
-                conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
-                data_for_min_L_ = pd.DataFrame(np.vstack([conceptual_l[:,1],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
-                data_for_min_L_.loc[:,'l_residual'] = 0
+            if len(self.lateral_contact_data[1]) > 0:
+                data_minL = self.lateral_contact_data[1]
+                data_conceptual_minL = self.lateral_extent_model(
+                    lateral_contact_data=data_minL,
+                    minP=minP,
+                    maxP=maxP,
+                    minS=minL,
+                    maxS=maxL,
+                    )
+                data_residual_minL = (data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]).to_numpy()
+                data_for_min_L_ = data_minL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
+                data_for_min_L_.loc[:, "l_residual"] = data_residual_minL
+                data_for_min_L_.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
+                data_for_min_L_.reset_index(inplace=True)
                 data_for_min_L = pd.concat([data_for_min_L, data_for_min_L_])
 
-            data_for_min_L.loc[:, "ref_coord"] = 0
+            
+            data_for_min_L['l_residual'] = data_for_min_L['l_residual'].astype(float)
+            data_for_min_L['coord1'] = data_for_min_L['coord1'].astype(float) 
+          
 
         else:
             # -- Side of intrusion with coord2<0 (l<0)
@@ -480,59 +466,42 @@ class IntrusionBuilder():
                 minS=minL,
                 maxS=maxL,
             )
-            data_residual_minL = (
-                data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
-            ).to_numpy()
-            data_for_min_L = data_minL.loc[
-                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-            ].copy()
+            data_residual_minL = (data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]).to_numpy()
+            data_for_min_L = data_minL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
             data_for_min_L.loc[:, "l_residual"] = data_residual_minL
             data_for_min_L.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
-
             data_for_min_L.reset_index(inplace=True)
-            data_for_min_L.loc[:, "ref_coord"] = 0
+            # data_for_min_L.loc[:, "ref_coord"] = 0
 
         if self.width_data[1] == False:  # i.e., no lateral data for side L>0
             print(
-                "Not enought lateral data for simulation of side L>=0, Using roof/floor data to condition the conceptual model"
+                "Not enought lateral data to constrain side L>0. Conceptual model will be used to constrain lateral extent"
             )
 
-            # -- try using vertical data to set some points and run SGS
-            vertical_data = pd.concat(
-                [self.vertical_contact_data[0], self.vertical_contact_data[1]]
-            )
-            vertical_data.loc[
-                :, ["conceptual_maxside", "conceptual_minside"]
-            ] = self.lateral_extent_model(
-                lateral_contact_data=vertical_data,
-                minP=minP,
-                maxP=maxP,
-                minS=minL,
-                maxS=maxL,
-            )
-
-            data_maxL_temp = vertical_data[vertical_data["coord2"] >= 0].copy()
-
-            data_for_max_L = data_maxL_temp[data_maxL_temp['coord2'] >= data_maxL_temp['conceptual_maxside']].loc[:,['X','Y','Z','coord0','coord1','coord2','conceptual_maxside']].copy()
-            data_for_max_L.loc[:,'l_residual'] = data_for_max_L.loc[:,'conceptual_maxside'] - data_for_max_L.loc[:,'coord2']
-            data_for_max_L.rename(columns={'conceptual_maxside': 'l_conceptual'}, inplace = True)
-            data_for_max_L.reset_index(inplace = True)
-            data_for_max_L.drop_duplicates(
-                subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
-                inplace = True)
-
-            if len(data_for_max_L) < 3:
-                print(
-                    "Simulation of lateral side L>=0: No enought roof/floor data to condition the conceptual model, lateral contact equivalent to conceptual"
+            random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
+            conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
+            data_for_max_L = pd.DataFrame(np.vstack([conceptual_l[:,0],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
+            data_for_max_L.loc[:,'l_residual'] = 0
+            
+            if len(self.lateral_contact_data[2]) > 0:
+                data_maxL = self.lateral_contact_data[2]
+                data_conceptual_maxL = self.lateral_extent_model(
+                    lateral_contact_data=data_maxL,
+                    minP=minP,
+                    maxP=maxP,
+                    minS=minL,
+                    maxS=maxL,
                 )
-                # create random points along coordinate 1, and evaluate them conceptual model. Residual = 0. Add points to dataframe containing input for sgs
-                random_p = pd.DataFrame(np.random.uniform(minP, maxP, 10), columns = ['coord1'])
-                conceptual_l = self.lateral_extent_model(lateral_contact_data=random_p, minP=minP, maxP=maxP, minS=minL, maxS=maxL)
-                data_for_max_L_ = pd.DataFrame(np.vstack([conceptual_l[:,0],random_p.loc[:,'coord1'].to_numpy()]).T, columns = ['l_conceptual','coord1'])
-                data_for_max_L_.loc[:,'l_residual'] = 0
+                data_residual_maxL = (data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]).to_numpy()
+                data_for_max_L_ = data_maxL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
+                data_for_max_L_.loc[:, "l_residual"] = data_residual_maxL
+                data_for_max_L_.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
+                data_for_max_L_.reset_index(inplace=True)
                 data_for_max_L = pd.concat([data_for_max_L, data_for_max_L_])
+          
 
-            data_for_max_L.loc[:, "ref_coord"] = 0
+            data_for_max_L['l_residual'] = data_for_max_L['l_residual'].astype(float) 
+            data_for_max_L['coord1'] = data_for_max_L['coord1'].astype(float)
 
         else:
             data_maxL = self.lateral_contact_data[2]
@@ -543,17 +512,54 @@ class IntrusionBuilder():
                 minS=minL,
                 maxS=maxL,
             )
-            data_residual_maxL = (
-                data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
-            ).to_numpy()
-            data_for_max_L = data_maxL.loc[
-                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-            ].copy()
+            data_residual_maxL = (data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]).to_numpy()
+            data_for_max_L = data_maxL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
             data_for_max_L.loc[:, "l_residual"] = data_residual_maxL
             data_for_max_L.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
-
             data_for_max_L.reset_index(inplace=True)
-            data_for_max_L.loc[:, "ref_coord"] = 0
+            # data_for_max_L.loc[:, "ref_coord"] = 0
+
+        
+        # check if roof or floor data outside of conceptual model. 
+        # if so, add as constraints to conceptual model.
+        vertical_data = pd.concat([self.vertical_contact_data[0], self.vertical_contact_data[1]])
+        vertical_data.loc[:, ["conceptual_maxside", "conceptual_minside"]] = self.lateral_extent_model(
+            lateral_contact_data=vertical_data,
+            minP=minP,
+            maxP=maxP,
+            minS=minL,
+            maxS=maxL,
+            )
+
+        data_minL_temp = vertical_data[vertical_data["coord2"] < 0].copy()
+        data_for_min_L_ = data_minL_temp[data_minL_temp['coord2'] < data_minL_temp['conceptual_minside']].loc[:,['X','Y','Z','coord0','coord1','coord2','conceptual_minside']].copy()
+        data_for_min_L_.loc[:,'l_residual'] = data_for_min_L_.loc[:,'conceptual_minside'] - data_for_min_L_.loc[:,'coord2']
+        data_for_min_L_.rename(columns={'conceptual_minside': 'l_conceptual'}, inplace = True)
+        data_for_min_L_.reset_index(inplace = True)
+        data_for_min_L_.drop_duplicates(subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], inplace = True)
+
+        if len(data_for_min_L_) >0:
+            print('adding data from roof/floor to constrain L<0')
+            data_for_min_L = pd.concat([data_for_min_L, data_for_min_L_])
+
+        data_maxL_temp = vertical_data[vertical_data["coord2"] >= 0].copy()
+        data_for_max_L_ = data_maxL_temp[data_maxL_temp['coord2'] > data_maxL_temp['conceptual_maxside']].loc[:,['X','Y','Z','coord0','coord1','coord2','conceptual_maxside']].copy()
+        data_for_max_L_.loc[:,'l_residual'] = data_for_max_L_.loc[:,'conceptual_maxside'] - data_for_max_L_.loc[:,'coord2']
+        data_for_max_L_.rename(columns={'conceptual_maxside': 'l_conceptual'}, inplace = True)
+        data_for_max_L_.reset_index(inplace = True)
+        data_for_max_L_.drop_duplicates(
+            subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
+            inplace = True)
+
+        if len(data_for_max_L_) >0:
+            print('adding data from roof/floor to constrain L>0')
+            data_for_max_L = pd.concat([data_for_max_L, data_for_max_L_])
+
+        
+        data_for_min_L['l_residual'] = data_for_min_L['l_residual'].astype(float)
+        data_for_min_L['coord1'] = data_for_min_L['coord1'].astype(float) 
+        data_for_max_L['l_residual'] = data_for_max_L['l_residual'].astype(float) 
+        data_for_max_L['coord1'] = data_for_max_L['coord1'].astype(float)
 
         self.data_for_lateral_extent_calculation = [data_for_min_L, data_for_max_L]
 
@@ -625,14 +631,18 @@ class IntrusionBuilder():
             inputsimdata_maxG_.loc[:, "g_conceptual"] = data_conceptual_G_[:, 1]
             inputsimdata_maxG_.loc[:, "g_residual"] = 0
 
-            inputsimdata_maxG = pd.concat(inputsimdata_maxG, inputsimdata_maxG_)
+            inputsimdata_maxG_complete = pd.concat([inputsimdata_maxG, inputsimdata_maxG_])
+
+        else:
+            inputsimdata_maxG_complete = inputsimdata_maxG
+
 
         # --- growth simulation input data for intrusion network conditioning
         inputsimdata_inetG = inet_data.loc[
             :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
         ].copy()
 
-        self.data_for_vertical_extent_calculation = [inputsimdata_maxG, inputsimdata_inetG]
+        self.data_for_vertical_extent_calculation = [inputsimdata_maxG_complete, inputsimdata_inetG]
 
     def build(
         self,

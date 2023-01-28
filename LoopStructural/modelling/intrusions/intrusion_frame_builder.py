@@ -342,7 +342,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 contact_0_mean = np.mean(contact_0_vals)
                 contact_0_std = np.std(contact_0_vals)
 
-                if contact_0_std == 0:
+                if contact_0_std == 0 or np.isnan(contact_0_std)==True:
                     contact_0_std = std_backup
 
                 # contact 1
@@ -352,7 +352,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 contact_1_mean = np.mean(contact_1_vals)
                 contact_1_std = np.std(contact_1_vals)
 
-                if contact_1_std == 0:
+                if contact_1_std == 0 or np.isnan(contact_1_std)==True:
                     contact_1_std = std_backup
 
                 if contact_0_mean <= contact_1_mean:
@@ -418,6 +418,14 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                         series_values_mod = series_values
                     step["unit_to_mean"] = np.nanmean(series_values_mod)
                     step["unit_to_std"] = np.nanstd(series_values_mod)
+                    check_mean = step["unit_to_mean"]
+                    check_std = step["unit_to_std"]
+                
+                    if np.isnan(check_mean) == True:
+                        step["unit_to_mean"] = 40
+
+                    if np.isnan(check_std) == True:
+                        step["unit_to_std"] = std_backup
 
                 if step["unit_to_std"] == 0:
                     step["unit_to_std"] = std_backup

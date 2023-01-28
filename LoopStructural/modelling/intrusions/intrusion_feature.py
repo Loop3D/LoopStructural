@@ -120,12 +120,12 @@ class IntrusionFeature(BaseFeature):
         inputsimdata_maxL = self.builder.data_for_lateral_extent_calculation[1]
 
         minL_inputdata_coord1 = inputsimdata_minL.coord1.to_numpy()
-        minL_inputdata_coord2 = inputsimdata_minL.coord2.to_numpy()
+        # minL_inputdata_coord2 = inputsimdata_minL.coord2.to_numpy()
         minL_inputdata_residual = inputsimdata_minL.l_residual.to_numpy()
         # minL_inputdata_conceptual = inputsimdata_minL.l_conceptual.to_numpy()
 
         maxL_inputdata_coord1 = inputsimdata_maxL.coord1.to_numpy()
-        maxL_inputdata_coord2 = inputsimdata_maxL.coord2.to_numpy()
+        # maxL_inputdata_coord2 = inputsimdata_maxL.coord2.to_numpy()
         maxL_inputdata_residual = inputsimdata_maxL.l_residual.to_numpy()
         # maxL_inputdata_conceptual = inputsimdata_maxL.l_conceptual.to_numpy()
 
@@ -322,7 +322,7 @@ class IntrusionFeature(BaseFeature):
             )
 
         if self.intrusion_frame.builder.marginal_faults is not None:
-            c2_minside_threshold = np.zeros_like(intrusion_coord2_pts)
+            c2_minside_threshold = thresholds[0] #np.zeros_like(intrusion_coord2_pts)
             c2_maxside_threshold = thresholds[1]
 
 
