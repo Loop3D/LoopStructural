@@ -68,6 +68,7 @@ class IntrusionBuilder():
         self.vertical_extent_model = None
         self.width_data = [True, True]  
         self.thickness_data = False
+        self.constrain_sides_with_rooffloor_data = False
         
 
         self.data_for_lateral_extent_calculation = None
@@ -522,6 +523,7 @@ class IntrusionBuilder():
         
         # check if roof or floor data outside of conceptual model. 
         # if so, add as constraints to conceptual model.
+
         vertical_data = pd.concat([self.vertical_contact_data[0], self.vertical_contact_data[1]])
         vertical_data.loc[:, ["conceptual_maxside", "conceptual_minside"]] = self.lateral_extent_model(
             lateral_contact_data=vertical_data,
@@ -538,7 +540,7 @@ class IntrusionBuilder():
         data_for_min_L_.reset_index(inplace = True)
         data_for_min_L_.drop_duplicates(subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], inplace = True)
 
-        if len(data_for_min_L_) >0:
+        if len(data_for_min_L_) >0 and self.constrain_sides_with_rooffloor_data == True:
             print('adding data from roof/floor to constrain L<0')
             data_for_min_L = pd.concat([data_for_min_L, data_for_min_L_])
 
@@ -551,7 +553,7 @@ class IntrusionBuilder():
             subset = ['X','Y','Z','coord0','coord1','coord2','l_conceptual','l_residual'], 
             inplace = True)
 
-        if len(data_for_max_L_) >0:
+        if len(data_for_max_L_) >0 and self.constrain_sides_with_rooffloor_data == True:
             print('adding data from roof/floor to constrain L>0')
             data_for_max_L = pd.concat([data_for_max_L, data_for_max_L_])
 
