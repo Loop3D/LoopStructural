@@ -555,7 +555,7 @@ class GeologicalModel:
         return self.data.loc[self.data["feature_name"] == feature_name, :]
 
     @property
-    def data(self):
+    def data(self) -> pd.DataFrame:
         return self._data
 
     @data.setter
@@ -614,7 +614,7 @@ class GeologicalModel:
                     self._data[h] = 1.0
         # LS wants polarity as -1 or 1, change 0 to -1
         self._data.loc[self._data["polarity"] == 0, "polarity"] = -1.0
-        self.data.loc[np.isnan(self.data["w"]), "w"] = 1.0
+        self._data.loc[np.isnan(self._data["w"]), "w"] = 1.0
         if "strike" in self._data and "dip" in self._data:
             logger.info("Converting strike and dip to vectors")
             mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
@@ -1527,6 +1527,7 @@ class GeologicalModel:
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
+        faults=[],
         **kwargs,
     ):
         """
@@ -1602,10 +1603,11 @@ class GeologicalModel:
         fault_frame_builder = FaultBuilder(
             interpolator, name=fault_surface_data, model=self, **kwargs
         )
+        self._add_faults(fault_frame_builder)
         # add data
-        fault_frame_data = self.data[
+        fault_frame_data = self.data.loc[
             self.data["feature_name"] == fault_surface_data
-        ].copy()
+        ]
         trace_mask = np.logical_and(
             fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
         )
