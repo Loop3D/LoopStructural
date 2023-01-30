@@ -168,13 +168,13 @@ jobs:
       with:
           name: conda
           path: conda
-    - uses: conda-incubator/setup-miniconda@v2
     - uses: pypa/gh-action-pypi-publish@v1.6.4
       with:
         skip_existing: true
         verbose: true
         user: ${{ secrets.PYPI_USERNAME }}
         password: ${{ secrets.PYPI_PASSWORD }}
+    - uses: conda-incubator/setup-miniconda@v2
     - name: upload all files to conda-forge
       env:
         ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
