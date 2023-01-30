@@ -145,7 +145,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v1.10.0
+        uses: pypa/cibuildwheel@v2.12.0
         env:
           CIBW_ARCHS_MACOS: x86_64 universal2
           CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310*"
@@ -169,8 +169,10 @@ jobs:
           name: conda
           path: conda
     - uses: conda-incubator/setup-miniconda@v2
-    - uses: pypa/gh-action-pypi-publish@v1.5.0
+    - uses: pypa/gh-action-pypi-publish@v1.6.4
       with:
+        skip_existing: true
+        verbose: true
         user: ${{ secrets.PYPI_USERNAME }}
         password: ${{ secrets.PYPI_PASSWORD }}
     - name: upload all files to conda-forge
