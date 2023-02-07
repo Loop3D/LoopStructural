@@ -25,3 +25,43 @@ def interpolator(request):
         return interpolator
     else:
         raise ValueError(f"Invalid interpolator: {interpolator}")
+
+
+@pytest.fixture(params=[1e3, 1e4, 4e4])
+def nelements(request):
+    nelements = request.param
+    return nelements
+
+
+@pytest.fixture(params=["PLI", "FDI"])
+def interpolator_type(request):
+    interpolator_type = request.param
+    return interpolator_type
+
+
+@pytest.fixture(params=["grid", "tetra"])
+def support(request):
+    support_type = request.param
+    if support_type == "grid":
+        return StructuredGrid()
+    if support_type == "tetra":
+        return TetMesh()
+
+
+@pytest.fixture(params=["grid", "tetra"])
+def support_class(request):
+    support_type = request.param
+    if support_type == "grid":
+        return StructuredGrid
+    if support_type == "tetra":
+        return TetMesh
+
+
+@pytest.fixture(params=["everywhere", "restricted"])
+def region_func(request):
+    region_type = request.param
+
+    if region_type == "restricted":
+        return lambda xyz: xyz[:, 0] > 0.5
+    if region_type == "everywhere":
+        return lambda xyz: np.ones(xyz.shape[0], dtype=bool)

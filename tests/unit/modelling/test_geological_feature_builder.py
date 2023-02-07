@@ -1,18 +1,21 @@
 import pytest
 from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
+from tests.fixtures.horizontal_data import horizontal_data
 
 
-@pytest.mark.skip("not currently working 4-10-2022")
 def test_geological_feature_builder_constructor(interpolator):
-    builder = GeologicalFeatureBuilder()
-    pass
+    builder = GeologicalFeatureBuilder(interpolator)
+    assert builder.interpolator == interpolator
 
 
 def test_get_interpolator():
     pass
 
 
-def test_add_data_to_interpolator():
+def test_add_data_to_interpolator(interpolator, horizontal_data):
+    builder = GeologicalFeatureBuilder(interpolator)
+    builder.add_data_from_data_frame(horizontal_data)
+    # assert builder.data.shape =
     pass
 
 
@@ -56,4 +59,8 @@ def test_not_up_to_date():
 
 
 def test_get_feature():
+    pass
+
+
+def test_change_up_to_date():
     pass
