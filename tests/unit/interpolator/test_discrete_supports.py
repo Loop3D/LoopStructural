@@ -95,8 +95,9 @@ def test_evaluate_gradient2(support_class):
 
 def test_get_element(support):
     point = support.barycentre[[0], :]
-    idc, inside = support.position_to_cell_corners(point)
-    bary = np.mean(support.nodes[idc, :], axis=0)
+    vertices, dof, idc, inside = support.get_element_for_location(point)
+    print(vertices)
+    bary = np.mean(vertices, axis=1)
     assert np.sum(point - bary) == 0
 
 
