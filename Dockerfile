@@ -1,22 +1,54 @@
 FROM continuumio/miniconda3
 LABEL maintainer="lachlan.grose@monash.edu"
+#This docker image has been adapted from the lavavu dockerfile
+# install things
 
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     gcc \
     g++ \
-    libc-dev
-    
-RUN conda install -c loop3d -c conda-forge map2loop python=3.7 -y
-RUN conda install -c conda-forge pip scikit-learn cython numpy==1.20.1 pandas scipy pymc3 jupyter pyamg -y
-RUN conda install -c conda-forge ipywidgets
-RUN conda install -c conda-forge ipyleaflet
-RUN conda install -c conda-forge folium
+    libc-dev \
+    gfortran \
+    openmpi-bin \
+    libopenmpi-dev \ 
+    make 
+# RUN conda install -c conda-forge python=3.9 -y
+RUN conda install -c conda-forge -c loop3d python=3.9\
+    pip \
+    map2model\
+    hjson\
+    owslib\
+    beartype\
+    gdal=3.5.2\
+    rasterio=1.2.10 \
+    meshio\
+    scikit-fmm\
+    statsmodels\
+    numba\
+    scikit-learn \
+    cython \
+    numpy \
+    pandas \
+    scipy \
+    pymc3 \
+    jupyter \
+    pyamg \
+    # arviz==0.11.0 \
+    pygraphviz \
+    geopandas \
+    shapely \
+    ipywidgets \
+    ipyleaflet \
+    folium \
+    jupyterlab \
+    nodejs \
+    rasterio\
+    geopandas\
+    -y
+
 RUN pip install ipyfilechooser
 RUN jupyter nbextension enable --py --sys-prefix ipyleaflet
-RUN pip install lavavu-osmesa
-COPY LoopStructural LoopStructural
-RUN pip install LoopStructural
+RUN pip install lavavu-osmesa=1.8.32 geostatspy mplstereonet
 
 ENV NB_USER jovyan
 ENV NB_UID 1000
@@ -28,15 +60,9 @@ RUN adduser --disabled-password \
     ${NB_USER}
 WORKDIR ${HOME}
 
-USER ${NB_USER}
-
-
 USER root
 RUN chown -R ${NB_UID} ${HOME}
 
-
-
-RUN conda install -c conda-forge jupyterlab nodejs -y
 RUN pip install snakeviz
 
 # Add Tini
@@ -44,12 +70,22 @@ ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
+
 USER ${NB_USER}
 
 RUN mkdir notebooks
-WORKDIR notebooks
+RUN git clone https://github.com/Loop3D/map2loop-2.git map2loop
+RUN git clone https://github.com/Loop3D/LoopProjectFile.git 
+RUN git clone https://github.com/TOMOFAST/Tomofast-x.git
+RUN pip install LoopStructural
+RUN pip install -e map2loop
+RUN pip install -e LoopProjectFile
+# WORKDIR Tomofast-x
+# RUN make
+WORKDIR ${HOME}/notebooks
+
 # RUN pip install -e LoopStructural
-CMD ["jupyter", "notebook", "--ip='0.0.0.0'", "--NotebookApp.token=''", "--no-browser" ]
+CMD ["jupyter", "lab", "--ip='0.0.0.0'", "--NotebookApp.token=''", "--no-browser" ]
 
 EXPOSE 8050
 EXPOSE 8080:8090

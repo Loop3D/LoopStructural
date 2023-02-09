@@ -1,5 +1,5 @@
 from _base import load_claudius
-from LoopStructural import GeologicalModel
+from .. import GeologicalModel
 
 vis = True
 try:

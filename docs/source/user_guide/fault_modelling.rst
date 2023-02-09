@@ -58,3 +58,22 @@ The hanging wall of the fault is identified by the positive component of the fau
 
 If `faultfunction` is used the displacement used is provided by faultfunction(coord_0,coord_1,coord_2) for every location in the model.
 A generic faultfunction can be used by passing `faultfunction=`BaseFault`.
+
+How fault modelling works
+=========================
+Faults are modelled in LoopStructural by applying a kinematic operator to the geological feature that is being modelled. 
+The kinematic operator applies the kinematics of the fault in reverse to effectively restore observations or locations to their position prior to faulting. 
+For example to interpolated a folded surface we first construct a fault frame using the observations of the fault surface and slip direction. 
+The displacement of the fault can be constrained using a function of the fault coordinates.
+
+.. image-sg:: /images/fault_frame_figure.png
+   :alt: figure showing fault frame 
+   :srcset: /images/fault_frame_figure.png
+   :class: sphx-glr-single-img
+
+The fault can then be added to the older features that are faulted.
+Before interpolating a geological feature the associated faults, stored in the :attr:`LoopStructural.modelling.features.BaseFeature.faults` attribute of t are applied to the data points constraining the interpolation.
+The geological feature can be built using the restored data. 
+When the feature is evaluated, the locations being evaluated are first past through the list of faults using the :meth:`LoopStructural.modelling.features.BaseFeature._apply_faults`.
+The `apply_faults` method should be called whenever :meth:`LoopStructural.modelling.features.BaseFeature.evaluate_value` or :meth:`LoopStructural.modelling.features.BaseFeature.evaluate_gradient` are overriden.
+

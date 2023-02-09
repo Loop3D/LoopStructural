@@ -5,8 +5,8 @@ import logging
 
 import numpy as np
 
-from LoopStructural.interpolators import DiscreteInterpolator
-from LoopStructural.utils.helper import get_vectors
+from ..interpolators import DiscreteInterpolator
+from ..utils.helper import get_vectors
 
 logger = logging.getLogger(__name__)
 

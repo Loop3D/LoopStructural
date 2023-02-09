@@ -1,5 +1,5 @@
-from LoopStructural.utils import getLogger
-from LoopStructural.utils import LoopImportError
+from ..utils import getLogger
+from ..utils import LoopImportError
 
 logger = getLogger(__name__)
 
@@ -13,13 +13,13 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
-from LoopStructural.modelling.features import (
+from ..modelling.features import (
     FeatureType,
     GeologicalFeature,
     BaseFeature,
     StructuralFrame,
 )
-from LoopStructural.utils.helper import create_surface, get_vectors, create_box
+from ..utils.helper import create_surface, get_vectors, create_box
 
 
 class BaseModelPlotter:

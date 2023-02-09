@@ -22,7 +22,7 @@ __all__ = [
 ]
 from enum import IntEnum
 
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 import LoopStructural
 
 logger = getLogger(__name__)
@@ -46,9 +46,9 @@ class InterpolatorType(IntEnum):
     SURFE = 11
 
 
-from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
-from LoopStructural.interpolators._discrete_interpolator import DiscreteInterpolator
-from LoopStructural.interpolators.supports import (
+from ..interpolators._geological_interpolator import GeologicalInterpolator
+from ..interpolators._discrete_interpolator import DiscreteInterpolator
+from ..interpolators.supports import (
     TetMesh,
     StructuredGrid,
     UnStructuredTetMesh,
@@ -59,18 +59,18 @@ from LoopStructural.interpolators.supports import (
 )
 
 
-from LoopStructural.interpolators._finite_difference_interpolator import (
+from ..interpolators._finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
-from LoopStructural.interpolators.piecewiselinear_interpolator import (
+from ..interpolators.piecewiselinear_interpolator import (
     PiecewiseLinearInterpolator,
 )
-from LoopStructural.interpolators._discrete_fold_interpolator import (
+from ..interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
 
 try:
-    from LoopStructural.interpolators._surfe_wrapper import SurfeRBFInterpolator
+    from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
 except ImportError:
     logger.warning('Can\'t import surfepy - to install "pip install surfe"')
 

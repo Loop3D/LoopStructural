@@ -1,5 +1,5 @@
-from LoopStructural.modelling.features import GeologicalFeature
-from LoopStructural.modelling.features import FeatureType
+from ...modelling.features import GeologicalFeature
+from ...modelling.features import FeatureType
 
 import numpy as np
 

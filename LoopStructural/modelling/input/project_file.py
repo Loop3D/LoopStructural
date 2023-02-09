@@ -1,4 +1,4 @@
-from LoopStructural.utils import LoopImportError, LoopTypeError, LoopValueError
+from ...utils import LoopImportError, LoopTypeError, LoopValueError
 
 try:
     from LoopProjectFile import ProjectFile
@@ -9,7 +9,7 @@ from .process_data import ProcessInputData
 import numpy as np
 import pandas as pd
 from matplotlib.colors import to_hex
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 

@@ -1,7 +1,7 @@
 from .model_plotter import BaseModelPlotter
-from LoopStructural.utils import getLogger
-from LoopStructural.utils import LoopImportError
-from LoopStructural.modelling.features import GeologicalFeature
+from ..utils import getLogger
+from ..utils import LoopImportError
+from ..modelling.features import GeologicalFeature
 from matplotlib.colors import to_rgb
 
 logger = getLogger(__name__)

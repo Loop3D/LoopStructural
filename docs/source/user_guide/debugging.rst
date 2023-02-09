@@ -48,7 +48,7 @@ Interpolator is taking a long time
     feature.faults = []
     feature.update()
 
-- 
+ 
 
 Folds
 -----
@@ -67,6 +67,7 @@ should be visible.
 
 Faults
 ------
+
 No displacement
 ~~~~~~~~~~~~~~~
 - Check that the displacement is large enough that it should be visible. E.g. compare displacement to model bounding box
@@ -79,6 +80,19 @@ No displacement
 
 - Increase the resolution of the visualisation mesh :code:`view.nelements=1e6`
 - Is the fault parallel to the feature being faulted?
+- Has the fault been added to the feature being faulted?
+
+.. code-block:
+    print([f.name for f in faulted_feature.faults])
+
+- Is the fault displacement vector correct? Add the vector field to the visualisation
+
+.. code-block:
+    view = LavaVuModelViewer(model)
+    view.add_vector_field(model['fault'][1],locations=model.regular_grid()[::200]) #random 200 locations
+    view.add_isosurface(model['fault'][0],0)
+    view.interactive()
+
 
 
 
