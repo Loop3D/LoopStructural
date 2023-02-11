@@ -1146,7 +1146,8 @@ class GeologicalModel:
         nelements = kwargs.get("nelements", 1e2)
 
         weights = [gxxgz, gxxgy, gyxgz]
-        interpolator = self.get_interpolator(interpolatortype=interpolatortype)
+
+        interpolator = self.get_interpolator(interpolatortype=interpolatortype, **kwargs)
 
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
@@ -1325,7 +1326,7 @@ class GeologicalModel:
         uc_feature_base.type = "unconformity_base"
         # uc_feature = UnconformityFeature(uc_feature_base,0)
         # iterate over existing features and add the unconformity as a
-        # region so the feature is only
+        # region so the feature is only 
         # evaluated where the unconformity is positive
         return self.add_unconformity(uc_feature_base, 0)
 
