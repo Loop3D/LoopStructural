@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from ....utils import getLogger
 
 logger = getLogger(__name__)
 
@@ -21,11 +21,11 @@ class CubicFunction:
         self.w = None
 
     def add_cstr(self, x, y):
-        self.A.append([x ** 3, x ** 2, x, 1.0])
+        self.A.append([x**3, x**2, x, 1.0])
         self.B.append(y)
 
     def add_grad(self, x, g):
-        self.A.append([3 * x ** 2, 2 * x, 1.0, 0.0])
+        self.A.append([3 * x**2, 2 * x, 1.0, 0.0])
         self.B.append(g)
 
     def add_max(self, max_v):
@@ -44,16 +44,16 @@ class CubicFunction:
             ATA = A.T @ A
             ATB = A.T @ B
             self.w = np.linalg.lstsq(ATA, ATB, rcond=None)[0]
-        eva = self.w[0] * v ** 3 + self.w[1] * v ** 2 + self.w[2] * v + self.w[3]
+        eva = self.w[0] * v**3 + self.w[1] * v**2 + self.w[2] * v + self.w[3]
         eva[v > self.max_v] = (
-            self.w[0] * self.max_v ** 3
-            + self.w[1] * self.max_v ** 2
+            self.w[0] * self.max_v**3
+            + self.w[1] * self.max_v**2
             + self.w[2] * self.max_v
             + self.w[3]
         )
         eva[v < self.min_v] = (
-            self.w[0] * self.min_v ** 3
-            + self.w[1] * self.min_v ** 2
+            self.w[0] * self.min_v**3
+            + self.w[1] * self.min_v**2
             + self.w[2] * self.min_v
             + self.w[3]
         )

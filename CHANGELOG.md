@@ -1,5 +1,50 @@
 # Changelog
 
+## [1.5.3](https://github.com/Loop3D/LoopStructural/compare/v1.5.2...v1.5.3) (2022-11-02)
+
+
+### Bug Fixes
+
+* adding copy method to geological feature ([01651cb](https://github.com/Loop3D/LoopStructural/commit/01651cb1a685462c375c9b379de8be345f6241f7))
+* adding debugging page to doc index ([a09aa0d](https://github.com/Loop3D/LoopStructural/commit/a09aa0d276b797436a91a8d6197d171db7909b58))
+* adding interpolation back to builder ([1a537aa](https://github.com/Loop3D/LoopStructural/commit/1a537aa6ed06264de0ad40aae28d4cc672cdab6c))
+* allow regularisation to be set for faults using processor ([07920dc](https://github.com/Loop3D/LoopStructural/commit/07920dc076c0147e962da24378188abe28a2931e))
+* model set for fault segment ([3eb0328](https://github.com/Loop3D/LoopStructural/commit/3eb03281c7e343cff781402bcc0828a7a4b63285))
+* remove prints while solving ([3aae8a9](https://github.com/Loop3D/LoopStructural/commit/3aae8a9e6c2240dc2917bae10aa3e43b9194bbf0))
+* removing theano from docs docker ([a706575](https://github.com/Loop3D/LoopStructural/commit/a706575fc8c9828bf97cb1a7e419f3b5ad833303))
+* tolerance geological modle ([fbc7e4a](https://github.com/Loop3D/LoopStructural/commit/fbc7e4a95c9618b7f8bacea4929e01da4ce83c19))
+* updating dockerfile ([70ea4f7](https://github.com/Loop3D/LoopStructural/commit/70ea4f72334ca1dcd31b83129a315cf9aabdba0f))
+* updating dockerfile so that it builds ([0e5482a](https://github.com/Loop3D/LoopStructural/commit/0e5482a9e1b7b353827c2db53920efe5df33a080))
+
+
+### Documentation
+
+* adding more documentation on structural frames and faults ([2fab248](https://github.com/Loop3D/LoopStructural/commit/2fab2483b16207576052ffa1e7f809e1bf08b92e))
+* path for fault frame image ([921cd19](https://github.com/Loop3D/LoopStructural/commit/921cd195ec492571ac6fe68abca51159ce7258df))
+
+## [1.5.2](https://github.com/Loop3D/LoopStructural/compare/v1.5.1...v1.5.2) (2022-10-11)
+
+
+### Bug Fixes
+
+* adding BaseBuilder to builders init ([7f56fdd](https://github.com/Loop3D/LoopStructural/commit/7f56fdd72c8edeb188217f4314c02179c1ba790e))
+* adding checks for data size in interpolator ([ea8ccca](https://github.com/Loop3D/LoopStructural/commit/ea8cccacfa7b91f92b08eb697dadd48740bd7c65))
+* adding old auto_examples directory ([cefe790](https://github.com/Loop3D/LoopStructural/commit/cefe790e1e93bfe6c727800707fcb8ecdc0bdeaf))
+* code review for intrusions ([debc391](https://github.com/Loop3D/LoopStructural/commit/debc391501d6ccb86769ab7109c80cf8a3c32ffa))
+* creating basebuilder ([3480e3d](https://github.com/Loop3D/LoopStructural/commit/3480e3dec5c4260fdb96f42ea68499445be42d6b))
+* feature builder sets interpolator interpolation__region ([520cc01](https://github.com/Loop3D/LoopStructural/commit/520cc013bc1ceb4cbace9afcfa224a6239c3e726))
+* formatting ([9cb79cb](https://github.com/Loop3D/LoopStructural/commit/9cb79cb91327ccf777630dadfe782e2434475bc3))
+* starting unit id @ 1 means basement =0 ([ba627bb](https://github.com/Loop3D/LoopStructural/commit/ba627bbe5d251efc6c2adf7036930aea477588a4))
+
+
+### Documentation
+
+* adding basic testing guideline ([7c6ccef](https://github.com/Loop3D/LoopStructural/commit/7c6ccefbf04fb293453a7f13b04b2371e956ece3))
+* adding docstrings ([ffe9614](https://github.com/Loop3D/LoopStructural/commit/ffe9614bcfecf1606fb1130e976df7264987e597))
+* adding geopandas to documentation docker ([ab443ab](https://github.com/Loop3D/LoopStructural/commit/ab443ab7c9dd8e14038782319ae82fa70896ae58))
+* adding links to kwargs in docstring ([6e3a6e2](https://github.com/Loop3D/LoopStructural/commit/6e3a6e2b809842c13bf0700192a098d0f46f6c40))
+* fixed bug with documentation not being generated ([994d5dc](https://github.com/Loop3D/LoopStructural/commit/994d5dc20d4e44840271b4bcf1df6e5c5325ffa1))
+
 ## [1.5.1](https://github.com/Loop3D/LoopStructural/compare/v1.5.0...v1.5.1) (2022-09-15)
 
 

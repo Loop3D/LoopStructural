@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import random
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 
@@ -44,7 +44,7 @@ def findMinDiff(arr, n):
 
     """
     # Initialize difference as infinite
-    diff = 10 ** 20
+    diff = 10**20
 
     for i in range(n - 1):
         for j in range(i + 1, n):

@@ -3,10 +3,10 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
-from LoopStructural.modelling.features import FeatureType
+from ..modelling.features import FeatureType
 
 
 class MapView:

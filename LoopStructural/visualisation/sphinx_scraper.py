@@ -1,4 +1,4 @@
-from LoopStructural.visualisation import lavavu as model_visualisation
+from ..visualisation import lavavu as model_visualisation
 
 
 def _get_loop_visualisation_scraper():

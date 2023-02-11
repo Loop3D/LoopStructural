@@ -5,11 +5,11 @@ Feature builder
 import numpy as np
 import pandas as pd
 
-from LoopStructural.utils import getLogger
+from ....utils import getLogger
 
 
-from LoopStructural.interpolators import GeologicalInterpolator
-from LoopStructural.utils.helper import (
+from ....interpolators import GeologicalInterpolator
+from ....utils.helper import (
     xyz_names,
     val_name,
     normal_vec_names,
@@ -19,12 +19,13 @@ from LoopStructural.utils.helper import (
     interface_name,
     inequality_name,
 )
-from LoopStructural.modelling.features import GeologicalFeature
-from LoopStructural.modelling.features.builders import BaseBuilder
-from LoopStructural.utils.helper import (
+from ....modelling.features import GeologicalFeature
+from ....modelling.features.builders import BaseBuilder
+from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from LoopStructural.utils import RegionEverywhere
+from ....utils import RegionEverywhere
+from ....interpolators import DiscreteInterpolator
 
 logger = getLogger(__name__)
 
@@ -87,6 +88,20 @@ class GeologicalFeatureBuilder(BaseBuilder):
     @property
     def interpolator(self):
         return self._interpolator
+
+    @property
+    def interpolation_region(self):
+        return self._interpolation_region
+
+    @interpolation_region.setter
+    def interpolation_region(self, interpolation_region):
+        if interpolation_region is not None:
+            self._interpolation_region = interpolation_region
+            self._interpolator.set_region(region=self._interpolation_region)
+        else:
+            self._interpolation_region = RegionEverywhere()
+            self._interpolator.set_region(region=self._interpolation_region)
+        self._up_to_date = False
 
     def add_data_from_data_frame(self, data_frame, overwrite=False):
         """
@@ -254,20 +269,21 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._up_to_date = False
 
     def install_gradient_constraint(self):
-        for g in self._orthogonal_features.values():
-            feature, w, region, step, B = g
-            vector = feature.evaluate_gradient(self.interpolator.support.barycentre)
-            norm = np.linalg.norm(vector, axis=1)
+        if issubclass(type(self.interpolator), DiscreteInterpolator):
+            for g in self._orthogonal_features.values():
+                feature, w, region, step, B = g
+                vector = feature.evaluate_gradient(self.interpolator.support.barycentre)
+                norm = np.linalg.norm(vector, axis=1)
 
-            vector[norm > 0] /= norm[norm > 0, None]
-            element_idx = np.arange(self.interpolator.support.n_elements)
-            np.random.shuffle(element_idx)
-            self.interpolator.add_gradient_orthogonal_constraints(
-                self.interpolator.support.barycentre[element_idx[::step], :],
-                vector[element_idx[::step], :],
-                w=w,
-                B=B,
-            )
+                vector[norm > 0] /= norm[norm > 0, None]
+                element_idx = np.arange(self.interpolator.support.n_elements)
+                np.random.shuffle(element_idx)
+                self.interpolator.add_gradient_orthogonal_constraints(
+                    self.interpolator.support.barycentre[element_idx[::step], :],
+                    vector[element_idx[::step], :],
+                    w=w,
+                    B=B,
+                )
 
     def add_equality_constraints(self, feature, region, scalefactor=1.0):
 

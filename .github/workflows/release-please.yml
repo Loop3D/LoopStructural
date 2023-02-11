@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest",  "windows-latest"] #"macos-latest",
-        python-version: ["3.7","3.8","3.9"]
+        python-version: ["3.7","3.8","3.9","3.10"]
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
@@ -18,7 +18,7 @@ jobs:
       - name: Installing dependencies
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge cython numpy scipy scikit-image scikit-learn pyamg flake8 pytest networkx osqp numba statsmodels scikit-fmm matplotlib -y
+          conda install -c conda-forge cython numpy scipy scikit-image scikit-learn pyamg flake8 pytest networkx osqp matplotlib -y
       - name: Checking formatting of code
         shell: bash -l {0}
         run: |
@@ -84,7 +84,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest",  "windows-latest","macos-latest"]
-        python-version: ["3.9","3.8","3.7"]
+        python-version: ["3.10","3.9","3.8","3.7"]
     steps:
       - uses: conda-incubator/setup-miniconda@v2
         with:
@@ -159,7 +159,7 @@ jobs:
         uses: joerick/cibuildwheel@v1.10.0
         env:
           CIBW_ARCHS_MACOS: x86_64 universal2
-          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310*"
           CIBW_BEFORE_BUILD: "pip install numpy cython" #make sure numpy is the same version as required by LS
 
       - name: Publish wheels to PyPI

@@ -17,7 +17,7 @@ from LoopStructural.datasets import load_tabular_intrusion
 data, boundary_points = load_tabular_intrusion()
 
 
-@pytest.mark.skip("not currently working 4-10-2022")
+# @pytest.mark.skip("not currently working 4-10-2022")
 def test_intrusion_frame_builder():
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
     model.data = data
@@ -90,7 +90,7 @@ def test_intrusion_frame_builder():
     assert isinstance(intrusion_frame, StructuralFrame)
 
 
-@pytest.mark.skip("not currently working 4-10-2022")
+# @pytest.mark.skip("not currently working 4-10-2022")
 def test_intrusion_builder():
 
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])

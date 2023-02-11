@@ -9,8 +9,8 @@ RUN apt-get update -qq && \
     g++ \
     libc-dev \
     make
+RUN conda install python=3.8 -y
 RUN conda install -c conda-forge\
-    theano\
     cython\
     numpy\ 
     pandas\ 
@@ -29,7 +29,8 @@ RUN conda install -c conda-forge\
     pytest\
     networkx\
     geopandas\
+    meshio\
     -y
-RUN pip install lavavu-osmesa 
+RUN pip install lavavu-osmesa==1.8.32
 RUN conda install -c conda-forge pydata-sphinx-theme 
 RUN mkdir LoopStructural

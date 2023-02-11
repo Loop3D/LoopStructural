@@ -1,5 +1,5 @@
 from enum import IntEnum
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 
 
 class FeatureType(IntEnum):

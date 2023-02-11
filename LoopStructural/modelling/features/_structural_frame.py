@@ -2,10 +2,10 @@
 Structural frames
 """
 import logging
-from LoopStructural.modelling.features import BaseFeature
+from ..features import BaseFeature
 import numpy as np
-from LoopStructural.utils import getLogger
-from LoopStructural.modelling.features import FeatureType
+from ...utils import getLogger
+from ..features import FeatureType
 
 logger = getLogger(__name__)
 

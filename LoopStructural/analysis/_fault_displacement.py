@@ -1,6 +1,6 @@
 import numpy as np
 from ._plane_fit import PlaneFitFeature
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
 

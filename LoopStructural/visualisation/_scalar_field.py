@@ -1,4 +1,4 @@
-from LoopStructural.interpolators import StructuredGrid
+from ..interpolators import StructuredGrid
 import numpy as np
 
 

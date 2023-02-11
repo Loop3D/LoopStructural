@@ -1,9 +1,9 @@
 from skimage.measure import marching_cubes
 import pandas as pd
 import numpy as np
-from LoopStructural.modelling.features import FeatureType
+from ..modelling.features import FeatureType
 
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
 

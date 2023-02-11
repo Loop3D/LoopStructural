@@ -218,7 +218,7 @@ class BaseStructuredSupport:
             return False
         return pos
 
-    def _global_indicies(self, indexes, nsteps):
+    def _global_indicies(self, indexes: np.ndarray, nsteps: np.ndarray) -> np.ndarray:
         """
         Convert from cell indexes to global cell index
 
@@ -285,7 +285,9 @@ class BaseStructuredSupport:
         inside = self.inside(pos)
         ix, iy, iz = self.position_to_cell_index(pos)
         cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
-        globalidx = self.global_indicies(np.dstack([cornersx, cornersy, cornersz]).T)
+        globalidx = self.global_node_indicies(
+            np.dstack([cornersx, cornersy, cornersz]).T
+        )
         # if global index is not inside the support set to -1
         globalidx[~inside] = -1
         return globalidx, inside
@@ -360,7 +362,7 @@ class BaseStructuredSupport:
         z_index = global_index // self.nsteps[0, None] // self.nsteps[1, None]
         return x_index, y_index, z_index
 
-    def global_node_indicies(self, indexes):
+    def global_node_indicies(self, indexes) -> np.ndarray:
         """
         Convert from node indexes to global node index
 
@@ -374,7 +376,7 @@ class BaseStructuredSupport:
         """
         return self._global_indicies(indexes, self.nsteps)
 
-    def global_cell_indicies(self, indexes):
+    def global_cell_indicies(self, indexes) -> np.ndarray:
         """
         Convert from cell indexes to global cell index
 

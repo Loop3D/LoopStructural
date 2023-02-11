@@ -1,74 +1,71 @@
 """
 Main entry point for creating a geological model
 """
-from LoopStructural.utils import getLogger, log_to_file
+from ...utils import getLogger, log_to_file
 
 import numpy as np
 import pandas as pd
 
 try:
-    from LoopStructural.interpolators import DiscreteFoldInterpolator as DFI
+    from ...interpolators import DiscreteFoldInterpolator as DFI
 
     dfi = True
 except ImportError:
     dfi = False
-from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
+from ...interpolators import FiniteDifferenceInterpolator as FDI
 
 try:
-    from LoopStructural.interpolators import PiecewiseLinearInterpolator as PLI
+    from ...interpolators import PiecewiseLinearInterpolator as PLI
 
     pli = True
 except ImportError:
     pli = False
 
 # if LoopStructural.experimental:
-from LoopStructural.interpolators import P2Interpolator
+from ...interpolators import P2Interpolator
 
 try:
-    from LoopStructural.interpolators import SurfeRBFInterpolator as Surfe
+    from ...interpolators import SurfeRBFInterpolator as Surfe
 
     surfe = True
 
 except ImportError:
     surfe = False
 
-from LoopStructural.interpolators import StructuredGrid
-from LoopStructural.interpolators import TetMesh
-from LoopStructural.modelling.features.fault import FaultSegment
-from LoopStructural.interpolators import DiscreteInterpolator
+from ...interpolators import StructuredGrid
+from ...interpolators import TetMesh
+from ...modelling.features.fault import FaultSegment
+from ...interpolators import DiscreteInterpolator
 
-from LoopStructural.modelling.features.builders import (
+from ...modelling.features.builders import (
     FaultBuilder,
     GeologicalFeatureBuilder,
     StructuralFrameBuilder,
     FoldedFeatureBuilder,
 )
-from LoopStructural.modelling.features import (
+from ...modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
     FeatureType,
 )
-from LoopStructural.modelling.features.fold import (
+from ...modelling.features.fold import (
     FoldEvent,
     FoldFrame,
 )
 
-from LoopStructural.utils.exceptions import InterpolatorError
-from LoopStructural.utils.helper import (
+from ...utils.exceptions import InterpolatorError
+from ...utils.helper import (
     all_heading,
     gradient_vec_names,
     strike_dip_vector,
     get_vectors,
 )
 
-# intrusions = True
-# try:
-from LoopStructural.modelling.intrusions import IntrusionBuilder
-from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
-# except ImportError as e:
-#     print(e)
-#     intrusions = False
+from ...modelling.intrusions import IntrusionBuilder
+
+from ...modelling.intrusions import IntrusionFrameBuilder
+
 
 logger = getLogger(__name__)
 
@@ -146,7 +143,7 @@ class GeologicalModel:
         # print('tet')
         if logfile:
             self.logfile = logfile
-            log_to_file(logfile, loglevel)
+            log_to_file(logfile, level=loglevel)
 
         logger.info("Initialising geological model")
         self.features = []
@@ -243,6 +240,11 @@ class GeologicalModel:
         -------
         (GeologicalModel, dict)
             the created geological model and a dictionary of the map2loop data
+
+        Notes
+        ------
+        For additional information see :class:`LoopStructural.modelling.input.Map2LoopProcessor`
+        and :meth:`LoopStructural.GeologicalModel.from_processor`
         """
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
 
@@ -273,6 +275,19 @@ class GeologicalModel:
 
     @classmethod
     def from_processor(cls, processor):
+        """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
+        This object stores the observations and order of the geological features
+
+        Parameters
+        ----------
+        processor : ProcessInputData
+            any type of ProcessInputData
+
+        Returns
+        -------
+        GeologicalModel
+            a model with all of the features, need to call model.update() to run interpolation
+        """
         logger.info("Creating model from processor")
         model = GeologicalModel(processor.origin, processor.maximum)
         model.data = processor.data
@@ -415,6 +430,13 @@ class GeologicalModel:
 
     @property
     def faults(self):
+        """Get all of the fault features in the model
+
+        Returns
+        -------
+        list
+            a list of :class:`LoopStructural.modelling.features.FaultSegment`
+        """
         faults = []
         for f in self.features:
             if type(f) == FaultSegment:
@@ -449,7 +471,13 @@ class GeologicalModel:
         return self.feature_name_index.keys()
 
     def fault_names(self):
+        """Get name of all faults in the model
 
+        Returns
+        -------
+        list
+            list of the names of the faults in the model
+        """
         return [f.name for f in self.faults]
 
     def check_inialisation(self):
@@ -508,10 +536,22 @@ class GeologicalModel:
         feature.model = self
 
     def data_for_feature(self, feature_name: str) -> pd.DataFrame:
+        """Get all of the data associated with a geological feature
+
+        Parameters
+        ----------
+        feature_name : str
+            the unique identifying name of the feature
+
+        Returns
+        -------
+        pd.DataFrame
+            data frame containing all of the data in the model associated with this feature
+        """
         return self.data.loc[self.data["feature_name"] == feature_name, :]
 
     @property
-    def data(self):
+    def data(self) -> pd.DataFrame:
         return self._data
 
     @data.setter
@@ -570,7 +610,7 @@ class GeologicalModel:
                     self._data[h] = 1.0
         # LS wants polarity as -1 or 1, change 0 to -1
         self._data.loc[self._data["polarity"] == 0, "polarity"] = -1.0
-        self.data.loc[np.isnan(self.data["w"]), "w"] = 1.0
+        self._data.loc[np.isnan(self._data["w"]), "w"] = 1.0
         if "strike" in self._data and "dip" in self._data:
             logger.info("Converting strike and dip to vectors")
             mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
@@ -679,6 +719,31 @@ class GeologicalModel:
 
         Returns
         -------
+        interpolator : GeologicalInterpolator
+            A geological interpolator
+
+        Notes
+        -----
+        This method will create a geological interpolator for the bounding box of the model. A
+        buffer area is added to the interpolation region to avoid boundaries and issues with faults.
+        This function wil create a :class:`LoopStructural.interpolators.GeologicalInterpolator` which can either be:
+        A discrete interpolator :class:`LoopStructural.interpolators.DiscreteInterpolator`
+
+        - 'FDI' :class:`LoopStructural.interpolators.FiniteDifferenceInterpolator`
+        - 'PLI' :class:`LoopStructural.interpolators.PiecewiseLinearInterpolator`
+        - 'P1'  :class:`LoopStructural.interpolators.P1Interpolator`
+        - 'DFI' :class:`LoopStructural.interpolators.DiscreteFoldInterpolator`
+        - 'P2'  :class:`LoopStructural.interpolators.P2Interpolator`
+        or
+
+        - 'surfe'  :class:`LoopStructural.interpolators.SurfeRBFInterpolator`
+
+        The discrete interpolators will require a support.
+
+        - 'PLI','DFI','P1Interpolator','P2Interpolator' :class:`LoopStructural.interpolators.supports.TetMesh` or you can provide another
+          mesh builder which returns :class:`LoopStructural.interpolators.support.UnStructuredTetMesh`
+
+        - 'FDI' :class:`LoopStructural.interpolators.supports.StructuredGrid`
         """
         bb = np.copy(self.bounding_box)
         # add a buffer to the interpolation domain, this is necessary for
@@ -838,6 +903,18 @@ class GeologicalModel:
         -------
         feature : GeologicalFeature
             the created geological feature
+
+        Notes
+        ------
+        This function creates an instance of a
+        :class:`LoopStructural.modelling.features.builders.GeologicalFeatureBuilder` and will return
+        a :class:`LoopStructural.modelling.features.builders.GeologicalFeature`
+        The feature is not interpolated until either
+        :meth:`LoopStructural.modelling.features.builders.GeologicalFeature.evaluate_value` is called or
+        :meth:`LoopStructural.modelling.core.GeologicalModel.update`
+
+        An interpolator will be chosen by calling :meth:`LoopStructural.GeologicalModel.get_interpolator`
+
         """
         if not self.check_inialisation():
             logger.warning(f"{series_surface_data} not added, model not initialised")
@@ -864,42 +941,6 @@ class GeologicalModel:
         series_builder.build_arguments = kwargs
         series_builder.build_arguments["tol"] = tol
         series_feature.type = FeatureType.INTERPOLATED
-        self._add_feature(series_feature)
-        return series_feature
-
-    def create_and_add_dtm(self, series_surface_data, **kwargs):
-        """
-        Parameters
-        ----------
-        series_surface_data : string
-            corresponding to the feature_name in the data
-        kwargs
-
-        Returns
-        -------
-        feature : GeologicalFeature
-            the created geological feature
-        """
-        if not self.check_inialisation():
-            return False
-
-        interpolator = self.get_interpolator(**kwargs)
-        series_builder = GeologicalFeatureBuilder(
-            interpolator, name=series_surface_data, **kwargs
-        )
-        # add data
-        series_data = self.data[self.data["feature_name"] == series_surface_data]
-        if series_data.shape[0] == 0:
-            logger.warning("No data for {series_surface_data}, skipping")
-            return
-        series_builder.add_data_from_data_frame(series_data)
-        # self._add_faults(series_builder)
-
-        # build feature
-        # series_feature = series_builder.build(**kwargs)
-        series_feature = series_builder.feature
-        series_builder.build_arguments = kwargs
-        series_feature.type = "dtm"
         self._add_feature(series_feature)
         return series_feature
 
@@ -964,6 +1005,15 @@ class GeologicalModel:
         -------
         feature : GeologicalFeature
             created geological feature
+
+        Notes
+        -----
+
+        - Building a folded foliation uses the fold interpolation code from Laurent et al., 2016
+        and fold profile fitting from Grose et al., 2017. For more information about the fold modelling
+        see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
+        :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
+
         """
         if not self.check_inialisation():
             return False
@@ -988,7 +1038,6 @@ class GeologicalModel:
         )
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
-        self._add_faults(series_builder)
         # build feature
 
         kwargs["tol"] = tol
@@ -1029,9 +1078,13 @@ class GeologicalModel:
         with a fold interpolator.
         Keyword arguments can be included to constrain
 
-        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
-        * :class:`LoopStructural.StructuralFrameBuilder`
-        * :meth:`LoopStructural.StructuralFrameBuilder.setup`
+        - :meth:`LoopStructural.GeologicalModel.get_interpolator`
+        - :class:`LoopStructural.StructuralFrameBuilder`
+        - :meth:`LoopStructural.StructuralFrameBuilder.setup`
+         - Building a folded foliation uses the fold interpolation code from Laurent et al., 2016
+        and fold profile fitting from Grose et al., 2017. For more information about the fold modelling
+        see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
+        :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
         """
         if not self.check_inialisation():
             return False
@@ -1458,6 +1511,7 @@ class GeologicalModel:
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
+        faults=[],
         **kwargs,
     ):
         """
@@ -1482,8 +1536,8 @@ class GeologicalModel:
         Notes
         -----
         * :meth:`LoopStructural.GeologicalModel.get_interpolator`
-        * :class:`LoopStructural.modelling.features.FaultBuilder`
-        * :meth:`LoopStructural.modelling.features.FaultBuilder.setup`
+        * :class:`LoopStructural.modelling.features.builders.FaultBuilder`
+        * :meth:`LoopStructural.modelling.features.builders.FaultBuilder.setup`
         """
         if "fault_extent" in kwargs and major_axis is None:
             major_axis = kwargs["fault_extent"]
@@ -1509,6 +1563,10 @@ class GeologicalModel:
 
         if tol is None:
             tol = self.tol
+            # divide the tolerance by half of the minor axis, as this is the equivalent of the distance
+            # of the unit vector
+            # if minor_axis:
+            # tol *= 0.1*minor_axis
 
         if displacement == 0:
             logger.warning(f"{fault_surface_data} displacement is 0")
@@ -1529,10 +1587,11 @@ class GeologicalModel:
         fault_frame_builder = FaultBuilder(
             interpolator, name=fault_surface_data, model=self, **kwargs
         )
+        self._add_faults(fault_frame_builder)
         # add data
-        fault_frame_data = self.data[
+        fault_frame_data = self.data.loc[
             self.data["feature_name"] == fault_surface_data
-        ].copy()
+        ]
         trace_mask = np.logical_and(
             fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
         )

@@ -3,16 +3,15 @@ Discrete interpolator base for least squares
 """
 import logging
 
+from time import time
 import numpy as np
 from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
-from scipy.sparse.linalg import norm
-from sklearn.preprocessing import normalize
-from LoopStructural.interpolators import InterpolatorType
+from ..interpolators import InterpolatorType
 
-from LoopStructural.interpolators import GeologicalInterpolator
-from LoopStructural.utils import getLogger
-from LoopStructural.utils.exceptions import LoopImportError
+from ..interpolators import GeologicalInterpolator
+from ..utils import getLogger
+from ..utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 
@@ -87,6 +86,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         np.ndarray
 
         """
+
         return self.region_function(self.support.nodes).astype(bool)
 
     @property
@@ -125,7 +125,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         # evaluate the region function on the support to determine
         # which nodes are inside update region map and degrees of freedom
-        self.region_function = region
+        print("Cannot use region")
+        # self.region_function = region
         logger.info(
             "Interpolation now uses region and has {} degrees of freedom".format(
                 self.nx
@@ -743,7 +744,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
-        logger.info("Solving interpolation for {}".format(self.propertyname))
+        starttime = time()
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         damp = True
@@ -799,6 +800,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
             return
         self.valid = True
+        logging.info(
+            f"Solving interpolation: {self.propertyname} took: {time()-starttime}"
+        )
 
     def update(self):
         """

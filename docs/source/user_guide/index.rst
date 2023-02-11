@@ -10,3 +10,4 @@ User Guide
    fold_modelling
    fault_modelling
    visualisation
+   debugging

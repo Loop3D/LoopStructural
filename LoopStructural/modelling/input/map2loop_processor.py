@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import networkx
 
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 

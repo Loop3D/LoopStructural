@@ -1,13 +1,13 @@
 """
 Geological features
 """
-from LoopStructural.modelling.features import BaseFeature
-from LoopStructural.utils import getLogger
-from LoopStructural.modelling.features import FeatureType
-from LoopStructural.interpolators import GeologicalInterpolator
+from ...modelling.features import BaseFeature
+from ...utils import getLogger
+from ...modelling.features import FeatureType
+from ...interpolators import GeologicalInterpolator
 import numpy as np
 
-from LoopStructural.utils import getLogger, LoopValueError
+from ...utils import getLogger, LoopValueError
 
 logger = getLogger(__name__)
 
@@ -18,7 +18,7 @@ class GeologicalFeature(BaseFeature):
     model. For example foliations, fault planes, fold rotation angles etc.
 
     Attributes
-    ----------
+    ---------- 
     name : string
         should be a unique name for the geological feature
     support : a ScalarField
@@ -172,3 +172,16 @@ class GeologicalFeature(BaseFeature):
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
         diff /= self.max() - self.min()
         return diff
+
+    def copy(self, name=None):
+        if not name:
+            name = f"{self.name}_copy"
+        feature = GeologicalFeature(
+            name=name,
+            faults=self.faults,
+            regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
+            builder=self.builder,
+            model=self.model,
+            interpolator=self.interpolator,
+        )
+        return feature

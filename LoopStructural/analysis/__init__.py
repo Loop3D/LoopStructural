@@ -4,7 +4,7 @@ Analysis
 
 Various tools for analysing loopstructural models, including calculating fault intersections and fault toplogies
 """
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 import LoopStructural
 
 logger = getLogger(__name__)

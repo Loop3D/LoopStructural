@@ -3,7 +3,7 @@ import pandas as pd
 from LoopStructural.modelling.features import BaseFeature
 
 # import logging
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 from scipy.interpolate import NearestNDInterpolator
 from scipy.interpolate import interp1d
 from scipy.interpolate import Rbf

@@ -1,12 +1,12 @@
-from LoopStructural.modelling.features.builders import StructuralFrameBuilder
-from LoopStructural.modelling.features import BaseFeature
-from LoopStructural.modelling.intrusions.intrusion_support_functions import (
+from ...modelling.features.builders import StructuralFrameBuilder
+from ...modelling.features import BaseFeature
+from ...modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
     shortest_path,
     array_from_coords,
     find_inout_points,
 )
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 
 
 logger = getLogger(__name__)

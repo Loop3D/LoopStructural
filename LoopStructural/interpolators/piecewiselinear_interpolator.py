@@ -2,24 +2,22 @@
 Piecewise linear interpolator
 """
 import numpy as np
-from LoopStructural.utils import getLogger
+from ..utils import getLogger
 
 logger = getLogger(__name__)
 try:
-    from LoopStructural.interpolators._cython.dsi_helper import cg, fold_cg
+    from ..interpolators._cython.dsi_helper import cg, fold_cg
 except:
-    from LoopStructural.interpolators._python.dsi_helper import cg, fold_cg
+    from ..interpolators._python.dsi_helper import cg, fold_cg
 
     logger.warning("Using python code not compiled cython code, this will be slower")
-from LoopStructural.interpolators import DiscreteInterpolator
-from LoopStructural.interpolators import InterpolatorType
+from ..interpolators import DiscreteInterpolator
+from ..interpolators import InterpolatorType
 
-from LoopStructural.utils.helper import get_vectors
+from ..utils.helper import get_vectors
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):
-    """ """
-
     def __init__(self, support):
         """
         Piecewise Linear Interpolator
@@ -188,7 +186,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
+
             outside = ~np.any(idc == -1, axis=1)
+
             # w/=A.shape[0]
             self.add_constraints_to_least_squares(
                 A[outside, :], B[outside], idc[outside, :], w=w, name="regularisation"
@@ -241,12 +241,20 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             outside = ~np.any(idc == -1, axis=1)
             w *= points[:, 6]
             self.add_constraints_to_least_squares(
-                A[outside, :], B[outside], idc[outside, :], w=w, name="gradient strike"
+                A[outside, :],
+                B[outside],
+                idc[outside, :],
+                w=w[outside],
+                name="gradient strike",
             )
             A = np.einsum("ji,ijk->ik", dip_vector, element_gradients)
             # A *= vol[:, None]
             self.add_constraints_to_least_squares(
-                A[outside, :], B[outside], idc[outside, :], w=w, name="gradient dip"
+                A[outside, :],
+                B[outside],
+                idc[outside, :],
+                w=w[outside],
+                name="gradient dip",
             )
 
     def add_norm_constraints(self, w=1.0):
@@ -301,7 +309,11 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             # w /= 3
 
             self.add_constraints_to_least_squares(
-                d_t[outside, :, :], points[outside, 3:6], idc[outside], w=w, name="norm"
+                d_t[outside, :, :],
+                points[outside, 3:6],
+                idc[outside],
+                w=w[outside],
+                name="norm",
             )
 
     def add_value_constraints(self, w=1.0):  # for now weight all value points the same
@@ -341,9 +353,9 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             w *= points[inside, 4]
             self.add_constraints_to_least_squares(
                 A[outside, :],
-                points[inside, :][outside, 3] * vol[:],
+                points[inside, :][outside, 3] * vol[outside],
                 idc[outside, :],
-                w=w,
+                w=w[outside],
                 name="value",
             )
 

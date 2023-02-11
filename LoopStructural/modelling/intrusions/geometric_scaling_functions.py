@@ -5,7 +5,7 @@ import scipy.stats as sct
 
 import numpy as np
 
-from LoopStructural.utils import getLogger
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 

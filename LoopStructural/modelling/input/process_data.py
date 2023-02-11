@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from .fault_network import FaultNetwork
-from LoopStructural.utils import strike_dip_vector
-from LoopStructural.utils import getLogger
+from ...utils import strike_dip_vector
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 
@@ -90,7 +90,7 @@ class ProcessInputData:
             self.fault_properties = fault_properties
         elif fault_locations is not None:
             self.fault_properties = pd.DataFrame(
-                self.fault_locations["feature_name"].unique(), columns=["name"]
+                fault_locations["feature_name"].unique(), columns=["name"]
             ).set_index("name")
 
         if fault_edges is not None and fault_edge_properties is not None:

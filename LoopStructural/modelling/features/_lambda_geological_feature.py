@@ -1,9 +1,9 @@
 """
 Geological features
 """
-from LoopStructural.modelling.features import BaseFeature
-from LoopStructural.utils import getLogger
-from LoopStructural.modelling.features import FeatureType
+from ...modelling.features import BaseFeature
+from ...utils import getLogger
+from ...modelling.features import FeatureType
 import numpy as np
 
 logger = getLogger(__name__)
