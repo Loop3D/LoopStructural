@@ -1138,7 +1138,7 @@ class GeologicalModel:
         intrusion_frame_parameters={},
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        parameters_for_extent_sgs={},
+        # parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
         # faults=None,  # LG seems unused?
         **kwargs,
@@ -1168,11 +1168,7 @@ class GeologicalModel:
             geometrical conceptual model for simulation of lateral extent
         intrusion_vertical_extent_model = function,
             geometrical conceptual model for simulation of vertical extent
-        intrusion_network_parameters = dictionary,
-        lateral_extent_sgs_parameters = dictionary, optional
-            parameters for sequential gaussian simulation of lateral extent
-        vertical_extent_sgs_parameters = dictionary, optional
-            parameters for sequential gaussian simulation of vertical extent
+        intrusion_frame_parameters = dictionary
 
         kwargs
 
@@ -1195,12 +1191,13 @@ class GeologicalModel:
         gxxgy = kwargs.get("gxxgy", 0)
         gyxgz = kwargs.get("gyxgz", 0)
 
-        interpolatortype = kwargs.get("interpolatortype", "FDI")
+        interpolatortype = kwargs.get("interpolatortype", "PLI")
+        buffer = kwargs.get("buffer", 0.1)
         nelements = kwargs.get("nelements", 1e2)
 
         weights = [gxxgz, gxxgy, gyxgz]
 
-        interpolator = self.get_interpolator(interpolatortype=interpolatortype, **kwargs)
+        interpolator = self.get_interpolator(interpolatortype=interpolatortype, buffer = buffer)
 
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
@@ -1239,7 +1236,7 @@ class GeologicalModel:
         intrusion_builder.set_data_for_extent_calculation(intrusion_data)
 
         intrusion_builder.build_arguments = {
-            "parameters_for_extent_sgs": parameters_for_extent_sgs,
+            # "parameters_for_extent_sgs": parameters_for_extent_sgs,
             "geometric_scaling_parameters": geometric_scaling_parameters,
         }
 
@@ -1587,7 +1584,7 @@ class GeologicalModel:
         fault_frame_builder = FaultBuilder(
             interpolator, name=fault_surface_data, model=self, **kwargs
         )
-        self._add_faults(fault_frame_builder)
+        self._add_faults(fault_frame_builder,features=faults)
         # add data
         fault_frame_data = self.data.loc[
             self.data["feature_name"] == fault_surface_data
