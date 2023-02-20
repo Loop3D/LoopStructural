@@ -721,7 +721,7 @@ class IntrusionBuilder:
 
     def build(
         self,
-        parameters_for_extent_sgs={},
+        # parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
         **kwargs,
     ):
