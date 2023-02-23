@@ -391,6 +391,127 @@ class IntrusionFeature(BaseFeature):
 
         return intrusion_sf
 
+    def evaluate_value_test(self, points):
+
+        """
+        Computes a distance scalar field to the intrusion contact (isovalue = 0).
+
+        Parameters
+        ------------
+        points : numpy array (x,y,z),  points where the IntrusionFeature is evaluated.
+
+        Returns
+        ------------
+        intrusion_sf : numpy array, contains distance to intrusion contact
+
+        """
+        self.builder.up_to_date()
+
+        # compute coordinates values for each evaluated point
+        intrusion_coord0_pts = self.intrusion_frame[0].evaluate_value(points)
+        intrusion_coord1_pts = self.intrusion_frame[1].evaluate_value(points)
+        intrusion_coord2_pts = self.intrusion_frame[2].evaluate_value(points)
+
+        self.evaluated_points = [
+            points,
+            intrusion_coord0_pts,
+            intrusion_coord1_pts,
+            intrusion_coord2_pts,
+            
+        ]
+
+       
+        thresholds, residuals, conceptual = self.interpolate_lateral_thresholds(
+            intrusion_coord1_pts
+            )
+
+        if self.intrusion_frame.builder.marginal_faults is not None:
+            c2_minside_threshold = np.zeros_like(intrusion_coord2_pts)
+            c2_maxside_threshold = thresholds[1]
+
+
+        else:
+            c2_minside_threshold = thresholds[0]
+            c2_maxside_threshold = thresholds[1]
+
+
+        thresholds, residuals, conceptual = self.interpolate_vertical_thresholds(
+            intrusion_coord1_pts, intrusion_coord2_pts
+            )
+        c0_minside_threshold = thresholds[1]
+        c0_maxside_threshold = thresholds[0]
+
+
+        mid_point = c0_minside_threshold + (
+            (c0_maxside_threshold - c0_minside_threshold) / 2
+        )
+
+
+
+        mod_intrusion_coord0_pts = intrusion_coord0_pts - mid_point
+        mod_c0_minside_threshold = c0_minside_threshold - mid_point
+        mod_c0_maxside_threshold = c0_maxside_threshold + mid_point
+
+        a = (mod_intrusion_coord0_pts >= mid_point)*(c2_minside_threshold < intrusion_coord2_pts)*(intrusion_coord2_pts < c2_maxside_threshold)
+        b = (mod_intrusion_coord0_pts <= mid_point)*(c2_minside_threshold < intrusion_coord2_pts)*(intrusion_coord2_pts < c2_maxside_threshold)
+        c = (mod_intrusion_coord0_pts <= mid_point)*(mod_intrusion_coord0_pts >= mod_c0_minside_threshold)*(c2_minside_threshold < intrusion_coord2_pts)*(intrusion_coord2_pts < c2_maxside_threshold)
+
+        intrusion_sf = mod_intrusion_coord0_pts
+        intrusion_sf[a] = mod_intrusion_coord0_pts[a] - mod_c0_maxside_threshold[a]
+        intrusion_sf[b] = abs(mod_c0_minside_threshold[b] + mod_intrusion_coord0_pts[b])
+        intrusion_sf[c] = mod_intrusion_coord0_pts[c] - mod_c0_minside_threshold[c]
+
+
+        # a = intrusion_coord2_pts >= c2_maxside_threshold
+        # b = intrusion_coord2_pts <= c2_minside_threshold
+        # c = (
+        #     (c2_minside_threshold < intrusion_coord2_pts)
+        #     * (intrusion_coord2_pts < c2_maxside_threshold)
+        #     * (intrusion_coord0_pts <= c0_minside_threshold)
+        # )
+        # d = (
+        #     (c2_minside_threshold < intrusion_coord2_pts)
+        #     * (intrusion_coord2_pts < c2_maxside_threshold)
+        #     * (intrusion_coord0_pts >= c0_maxside_threshold)
+        # )
+        # e = (
+        #     (c2_minside_threshold < intrusion_coord2_pts)
+        #     * (intrusion_coord2_pts < c2_maxside_threshold)
+        #     * (mid_point >= intrusion_coord0_pts)
+        #     * (intrusion_coord0_pts > c0_minside_threshold)
+        # )
+        # f = (
+        #     (c2_minside_threshold < intrusion_coord2_pts)
+        #     * (intrusion_coord2_pts < c2_maxside_threshold)
+        #     * (mid_point < intrusion_coord0_pts)
+        #     * (intrusion_coord0_pts < c0_maxside_threshold)
+        # )
+
+        # mod_Smin_thresholds = intrusion_coord2_pts - c2_minside_threshold
+        # mod_Smax_thresholds = intrusion_coord2_pts - c2_maxside_threshold
+        # mod_Gmin_thresholds = intrusion_coord0_pts - c0_minside_threshold
+        # mod_Gmax_thresholds = intrusion_coord0_pts - c0_maxside_threshold
+
+        # intrusion_sf = (
+        #     a * mod_Smax_thresholds
+        #     + b * abs(mod_Smin_thresholds)
+        #     + c * abs(mod_Gmin_thresholds)
+        #     + d * mod_Gmax_thresholds
+        #     - e * mod_Gmin_thresholds
+        #     + f * mod_Gmax_thresholds
+        # ) * (
+        #     -1
+          # multiply by (-1) so intrusions can be used as unconformities
+
+        # if self.intrusion_frame.builder.marginal_faults is not None:
+        #     for fault in self.intrusion_frame.builder.marginal_faults.keys():
+        #         intrusion_sf
+        #     self.intrusion_frame.builder.marginal_faults
+
+        
+        # self.intrusion_indicator_function = indicator_fx
+
+        return intrusion_sf
 
     def evaluate_value_with_SGS(self, points):
 
