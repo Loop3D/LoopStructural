@@ -555,7 +555,7 @@ class GeologicalModel:
         return self._data
 
     @data.setter
-    def data(self, data):
+    def data(self, data: pd.DataFrame):
         """
         Set the data array for the model
 
@@ -1210,7 +1210,7 @@ class GeologicalModel:
 
         # -- create intrusion frame using intrusion structures (steps and marginal faults) and flow/inflation measurements
         if len(intrusion_frame_parameters) == 0:
-            logger.error('Please specify parameters to build intrusion frame')
+            logger.error("Please specify parameters to build intrusion frame")
         intrusion_frame_builder.set_intrusion_frame_parameters(
             intrusion_data, intrusion_frame_parameters
         )
@@ -1226,11 +1226,15 @@ class GeologicalModel:
             gxygz=weights[2],
         )
 
-        intrusion_frame = intrusion_frame_builder.frame        
+        intrusion_frame = intrusion_frame_builder.frame
 
         # -- create intrusion builder to compute distance thresholds along the frame coordinates
         intrusion_builder = IntrusionBuilder(
-            intrusion_frame, model=self, interpolator = interpolator, name=f"{intrusion_name}_feature", **kwargs
+            intrusion_frame,
+            model=self,
+            interpolator=interpolator,
+            name=f"{intrusion_name}_feature",
+            **kwargs,
         )
         intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
         intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
