@@ -96,9 +96,9 @@ def test_evaluate_gradient2(support_class):
 def test_get_element(support):
     point = support.barycentre[[0], :]
     vertices, dof, idc, inside = support.get_element_for_location(point)
-    print(vertices)
+    # vertices = vertices.reshape(-1, 3)
     bary = np.mean(vertices, axis=1)
-    assert np.sum(point - bary) == 0
+    assert np.isclose(np.sum(point - bary), 0)
 
 
 def test_global_to_local_coordinates():

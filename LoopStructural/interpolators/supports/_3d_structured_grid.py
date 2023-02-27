@@ -141,8 +141,6 @@ class StructuredGrid(BaseStructuredSupport):
         weights = self.trilinear(x_local, y_local, local_z)
         return weights
 
-   
-
     def neighbour_global_indexes(self, mask=None, **kwargs):
         """
         Get neighbour indexes
@@ -458,8 +456,11 @@ class StructuredGrid(BaseStructuredSupport):
             [description]
         """
         vertices, inside = self.position_to_cell_vertices(pos)
+        vertices = np.array(vertices)
+        vertices = vertices.reshape((vertices.shape[1], 8, 3))
         elements, inside = self.position_to_cell_corners(pos)
         a = self.position_to_dof_coefs(pos)
         return vertices, a.T, elements, inside
+
     def get_elements(self):
-        return 
+        return
