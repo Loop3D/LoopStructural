@@ -45,6 +45,16 @@ class IntrusionBuilder:
             name=self.name,
         )
 
+        # if 'intrusion_extent_calculation' in kwargs:
+        #     if kwargs['intrusion_extent_calculation'] == 'SGS':
+        #         self.intrusion_extent_calculation = 'SGS'
+        #     else:
+        #         logger.warning(kwargs['intrusion_extent_calculation'])
+        #         self.intrusion_extent_calculation = 'interpolated'
+
+        # else:
+        #     self.intrusion_extent_calculation = 'interpolated'
+
         self._build_arguments = {}
         self.data = None
         self.data_prepared = False
@@ -721,7 +731,7 @@ class IntrusionBuilder:
 
     def build(
         self,
-        parameters_for_extent_sgs={},
+        # parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
         **kwargs,
     ):
@@ -738,9 +748,21 @@ class IntrusionBuilder:
         """
         self.prepare_data(geometric_scaling_parameters)
         self.create_grid_for_evaluation()
+
+        # if self.intrusion_extent_calculation == 'SGS':
+
+        #     lateral_extent_sgs_parameters = parameters_for_extent_sgs.get('lateral_extent_sgs_parameters', {})
+        #     vertical_extent_sgs_parameters = parameters_for_extent_sgs.get('vertical_extent_sgs_parameters', {})           
+        #     self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
+        #     self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
+        #     self.make_l_sgs_variogram()
+        #     self.make_g_sgs_variogram()
+        #     self.simulate_lateral_thresholds()
+        #     self.simulate_growth_thresholds()
+
+        # elif self.intrusion_extent_calculation == 'interpolated':
         self.set_data_for_lateral_thresholds()
         self.set_data_for_vertical_thresholds()
-
     def update(self):
         self.build(**self.build_arguments)
         self._up_to_date = True
