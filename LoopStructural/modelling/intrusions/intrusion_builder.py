@@ -10,13 +10,14 @@ from scipy.interpolate import Rbf
 from ...modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
 )
+from .builders import BaseBuilder
 
 from .geometric_scaling_functions import *
 
 logger = getLogger(__name__)
 
 
-class IntrusionBuilder:
+class IntrusionBuilder(BaseBuilder):
     def __init__(
         self, frame, model=None, name="intrusion builder", interpolator=None, **kwargs
     ):
@@ -30,9 +31,8 @@ class IntrusionBuilder:
 
         """
 
-        # BaseBuilder.__init__(self, name = name)
+        BaseBuilder.__init__(self, name=name)
 
-        self.name = name
         self.intrusion_frame = frame
         self._up_to_date = False
         self.model = model
@@ -73,32 +73,6 @@ class IntrusionBuilder:
 
         self.marginal_faults = self._feature.intrusion_frame.builder.marginal_faults
 
-    @property
-    def feature(self):
-        return self._feature
-
-    @property
-    def build_arguments(self):
-        return self._build_arguments
-
-    @build_arguments.setter
-    def build_arguments(self, arguments):
-        """Set the build arguments and flag that
-        up to date is False
-
-        Parameters
-        ----------
-        arguments : dictionary
-            dictionary containing keys for variogram arguments
-        """
-        if type(arguments) == dict:
-            self._up_to_date = False
-            self._build_arguments = arguments
-        else:
-            logger.error(
-                f"Cannot update build arguments with {type(arguments)}, must be a dictionary"
-            )
-
     def create_grid_for_evaluation(self, spacing=None):
         """
         Create the grid points in which to simulate vertical and lateral
@@ -132,6 +106,7 @@ class IntrusionBuilder:
 
     def set_data_for_extent_calculation(self, intrusion_data):
         """Set data for lateral extent (distances in c2 axis)  and vertical extent (distances in c0 axis) simulation.
+        creates a copy of the data
 
         Parameters
         ----------
@@ -752,7 +727,7 @@ class IntrusionBuilder:
         # if self.intrusion_extent_calculation == 'SGS':
 
         #     lateral_extent_sgs_parameters = parameters_for_extent_sgs.get('lateral_extent_sgs_parameters', {})
-        #     vertical_extent_sgs_parameters = parameters_for_extent_sgs.get('vertical_extent_sgs_parameters', {})           
+        #     vertical_extent_sgs_parameters = parameters_for_extent_sgs.get('vertical_extent_sgs_parameters', {})
         #     self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
         #     self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
         #     self.make_l_sgs_variogram()
@@ -763,29 +738,3 @@ class IntrusionBuilder:
         # elif self.intrusion_extent_calculation == 'interpolated':
         self.set_data_for_lateral_thresholds()
         self.set_data_for_vertical_thresholds()
-    def update(self):
-        self.build(**self.build_arguments)
-        self._up_to_date = True
-
-    def up_to_date(self, callback=None):
-        """
-        check if the feature is uptodate
-        if its not update.
-
-        Parameters
-        ----------
-        callback : function
-            a function that is called when the feature is updated
-
-        """
-
-        # for f in self.ts:
-        #     f.builder.up_to_date(callback=callback)
-        # has anything changed in the builder since we built the feature? if so update
-        if self._up_to_date == False:
-            self.update()
-            if callable(callback):
-                callback(1)
-            return
-        if callable(callback):
-            callback(1)
