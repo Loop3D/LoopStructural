@@ -10,7 +10,7 @@ from scipy.interpolate import Rbf
 from ...modelling.intrusions.intrusion_support_functions import (
     grid_from_array,
 )
-from .builders import BaseBuilder
+from ..features.builders import BaseBuilder
 
 from .geometric_scaling_functions import *
 
@@ -19,16 +19,28 @@ logger = getLogger(__name__)
 
 class IntrusionBuilder(BaseBuilder):
     def __init__(
-        self, frame, model=None, name="intrusion builder", interpolator=None, **kwargs
+        self,
+        frame,
+        model,
+        vertical_extent_model=None,
+        lateral_extent_model=None,
+        name="intrusion builder",
+        **kwargs,
     ):
-
         """
         Constructor for an IntrusionBuilder
         Sets up interpolators of vertical and lateral contacts
 
         Parameters
         ----------
-
+        frame : StructuralFrame
+            the structural frame that the intrusion will be built using
+        model : GeologicalModel, optional
+            the geological model that the intrusion will belong to, by default None
+        name : str, optional
+            name of the intrusion, by default "intrusion builder"
+        interpolator : GeologicalInterpolator, optional
+            a geological interpolator, by default None
         """
 
         BaseBuilder.__init__(self, name=name)
@@ -36,32 +48,19 @@ class IntrusionBuilder(BaseBuilder):
         self.intrusion_frame = frame
         self._up_to_date = False
         self.model = model
-        # self.faults = []
         self._feature = IntrusionFeature(
             frame=frame,
             builder=self,
-            interpolator=interpolator,
-            # faults=self.faults,
             name=self.name,
         )
-
-        # if 'intrusion_extent_calculation' in kwargs:
-        #     if kwargs['intrusion_extent_calculation'] == 'SGS':
-        #         self.intrusion_extent_calculation = 'SGS'
-        #     else:
-        #         logger.warning(kwargs['intrusion_extent_calculation'])
-        #         self.intrusion_extent_calculation = 'interpolated'
-
-        # else:
-        #     self.intrusion_extent_calculation = 'interpolated'
 
         self._build_arguments = {}
         self.data = None
         self.data_prepared = False
         self.lateral_contact_data = None
         self.vertical_contact_data = None
-        self.lateral_extent_model = None
-        self.vertical_extent_model = None
+        self.lateral_extent_model = lateral_extent_model
+        self.vertical_extent_model = vertical_extent_model
         self.width_data = [True, True]
         self.thickness_data = False
         self.constrain_sides_with_rooffloor_data = False
@@ -79,7 +78,8 @@ class IntrusionBuilder(BaseBuilder):
 
         Parameters
         ----------
-        spacing = list/array with spacing value for X,Y,Z
+        spacing : np.array
+            list/array with spacing value for X,Y,Z
 
         Returns
         -------
@@ -104,7 +104,7 @@ class IntrusionBuilder(BaseBuilder):
             spacing,
         ]
 
-    def set_data_for_extent_calculation(self, intrusion_data):
+    def set_data_for_extent_calculation(self, intrusion_data: pd.DataFrame):
         """Set data for lateral extent (distances in c2 axis)  and vertical extent (distances in c0 axis) simulation.
         creates a copy of the data
 
@@ -300,9 +300,17 @@ class IntrusionBuilder(BaseBuilder):
 
     def set_conceptual_models_parameters(self):
         """Creates a dictionary of parameters used for conceptual models.
-        These parameters includes the basic parameters for the functions representing the conceptual models of the intrusion geometry.
+        These parameters includes the basic parameters for the functions
+        representing the conceptual models of the intrusion geometry.
 
         """
+        if (
+            callable(self.lateral_extent_model) == False
+            or callable(self.vertical_extent_model) == False
+        ):
+            raise ValueError(
+                "lateral_extent_model and vertical_extent_model must be functions"
+            )
 
         grid_points_coord1 = self.evaluation_grid[2]
 
