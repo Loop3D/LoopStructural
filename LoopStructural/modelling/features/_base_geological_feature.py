@@ -15,7 +15,7 @@ class BaseFeature:
     def __init__(
         self, name: str, model=None, faults: list = [], regions: list = [], builder=None
     ):
-        """Base geological feature, this is a virtucal class and should not be
+        """Base geological feature, this is a virtual class and should not be
         used directly. Inheret from this to implement a new type of geological
         feature or use one of the exisitng implementations
 
