@@ -1,4 +1,2 @@
-cd LoopStructural
-pip install .
-cd docs
-make html
+pip install ./LoopStructural
+make -C LoopStructural/docs html
