@@ -10,7 +10,7 @@ RUN apt-get update -qq && \
     libc-dev \
     make
 RUN conda install -c conda-forge\
-    python"<=3.9"\
+    # python"<=3.8"\
     cython\
     numpy\ 
     pandas\ 
@@ -22,10 +22,11 @@ RUN conda install -c conda-forge\
     scikit-learn\ 
     scikit-image\ 
     networkx\
-    gcc\
     # geopandas\
-    # meshio\
+    libstdcxx-ng\
+    meshio\
     -y
-RUN pip install lavavu-osmesa==1.8.32
+RUN pip install lavavu-osmesa 
+ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/lavavu_osmesa.libs
 RUN conda install -c conda-forge pydata-sphinx-theme 
 RUN mkdir LoopStructural
