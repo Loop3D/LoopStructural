@@ -9,27 +9,22 @@ RUN apt-get update -qq && \
     g++ \
     libc-dev \
     make
-RUN conda install python=3.8 -y
 RUN conda install -c conda-forge\
+    python"<=3.9"\
     cython\
     numpy\ 
     pandas\ 
-    imageio\ 
     scipy\ 
     matplotlib\  
     sphinx\
     sphinx-gallery\ 
-    sphinxcontrib-bibtex\ 
-    sphinx_rtd_theme\ 
     myst-parser\ 
     scikit-learn\ 
     scikit-image\ 
-    pyamg\ 
-    flake8\
-    pytest\
     networkx\
-    geopandas\
-    meshio\
+    gcc\
+    # geopandas\
+    # meshio\
     -y
 RUN pip install lavavu-osmesa==1.8.32
 RUN conda install -c conda-forge pydata-sphinx-theme 
