@@ -7,8 +7,6 @@ from time import time
 import numpy as np
 from scipy.sparse import coo_matrix, bmat, eye
 from scipy.sparse import linalg as sla
-from scipy.sparse.linalg import norm
-from sklearn.preprocessing import normalize
 from ..interpolators import InterpolatorType
 
 from ..interpolators import GeologicalInterpolator
@@ -88,6 +86,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         np.ndarray
 
         """
+
         return self.region_function(self.support.nodes).astype(bool)
 
     @property
@@ -126,7 +125,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         # evaluate the region function on the support to determine
         # which nodes are inside update region map and degrees of freedom
-        self.region_function = region
+        print("Cannot use region")
+        # self.region_function = region
         logger.info(
             "Interpolation now uses region and has {} degrees of freedom".format(
                 self.nx
@@ -800,7 +800,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
             return
         self.valid = True
-        logging.info(f"Solving interpolation: {self.propertyname} took: {time()-starttime}")
+        logging.info(
+            f"Solving interpolation: {self.propertyname} took: {time()-starttime}"
+        )
 
     def update(self):
         """

@@ -13,7 +13,8 @@ RUN apt-get update -qq && \
     libopenmpi-dev \ 
     make 
 # RUN conda install -c conda-forge python=3.9 -y
-RUN conda install -c conda-forge -c loop3d pip \
+RUN conda install -c conda-forge -c loop3d\
+    pip \
     map2model\
     hjson\
     owslib\
@@ -21,9 +22,6 @@ RUN conda install -c conda-forge -c loop3d pip \
     gdal=3.5.2\
     rasterio=1.2.10 \
     meshio\
-    scikit-fmm\
-    statsmodels\
-    numba\
     scikit-learn \
     cython \
     numpy \
@@ -41,11 +39,16 @@ RUN conda install -c conda-forge -c loop3d pip \
     folium \
     jupyterlab \
     nodejs \
+    rasterio\
+    geopandas\
     -y
 
 RUN pip install ipyfilechooser
 RUN jupyter nbextension enable --py --sys-prefix ipyleaflet
-RUN pip install lavavu-osmesa geostatspy mplstereonet
+RUN pip install lavavu-osmesa mplstereonet
+
+ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/lavavu/
+
 
 ENV NB_USER jovyan
 ENV NB_UID 1000
@@ -80,6 +83,7 @@ RUN pip install -e LoopProjectFile
 # WORKDIR Tomofast-x
 # RUN make
 WORKDIR ${HOME}/notebooks
+
 # RUN pip install -e LoopStructural
 CMD ["jupyter", "lab", "--ip='0.0.0.0'", "--NotebookApp.token=''", "--no-browser" ]
 

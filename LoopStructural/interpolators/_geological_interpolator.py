@@ -24,15 +24,9 @@ class GeologicalInterpolator:
         this should be callable by using any of these functions. This will
         enable interpolators to be interchanged.
         """
+        self.data = {}  # None
+        self.clean()  # init data structure
 
-        self.data = {
-            "gradient": np.zeros((0, 7)),
-            "value": np.zeros((0, 5)),
-            "normal": np.zeros((0, 7)),
-            "tangent": np.zeros((0, 7)),
-            "interface": np.zeros((0, 5)),
-            "inequality": np.zeros((0, 6)),
-        }
         self.n_g = 0
         self.n_i = 0
         self.n_n = 0
@@ -200,7 +194,7 @@ class GeologicalInterpolator:
         numpy array
             Nx3 - X,Y,Z location of all data points
         """
-        return np.vstack([d for d in self.data.values()[:, :3]])
+        return np.vstack([d[:, :3] for d in self.data.values()])
 
     def get_interface_constraints(self):
         """Get the location of interface constraints
@@ -231,7 +225,7 @@ class GeologicalInterpolator:
     def update(self):
         return False
 
-    def reset(self):
+    def clean(self):
         """
         Removes all of the data from an interpolator
 
@@ -239,6 +233,15 @@ class GeologicalInterpolator:
         -------
 
         """
+        self.data = {
+            "gradient": np.zeros((0, 7)),
+            "value": np.zeros((0, 5)),
+            "normal": np.zeros((0, 7)),
+            "tangent": np.zeros((0, 7)),
+            "interface": np.zeros((0, 5)),
+            "inequality": np.zeros((0, 6)),
+        }
+        self.up_to_date = False
         self.n_g = 0
         self.n_i = 0
         self.n_n = 0

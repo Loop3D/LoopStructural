@@ -4,14 +4,29 @@ import random as rd
 import scipy.stats as sct
 
 import numpy as np
+import pandas as pd
 
 from ...utils import getLogger
 
 logger = getLogger(__name__)
 
 
-def geometric_scaling_parameters(intrusion_type):
+def geometric_scaling_parameters(
+    intrusion_type: str,
+):
+    """
+    Get geometric scaling parameters for a given intrusion type
 
+    Parameters
+    ----------
+    intrusion_type : str
+        intrusion type
+
+    Returns
+    -------
+    tuple(float, float, float, float)
+        scaling parameters
+    """
     geom_scaling_a_avg = {
         "plutons": 0.81,
         "laccoliths": 0.92,
@@ -49,7 +64,21 @@ def geometric_scaling_parameters(intrusion_type):
     return a_avg, a_stdv, b_avg, b_stdv
 
 
-def thickness_from_geometric_scaling(length, intrusion_type):
+def thickness_from_geometric_scaling(length: float, intrusion_type: str) -> float:
+    """Calculate thickness of intrusion using geometric scaling parameters
+
+    Parameters
+    ----------
+    length : float
+        intrusion length
+    intrusion_type : str
+        type of intrusion
+
+    Returns
+    -------
+    float
+        thickness of intrusion
+    """
 
     a_avg, a_stdv, b_avg, b_stdv = geometric_scaling_parameters(intrusion_type)
 
@@ -66,8 +95,26 @@ def thickness_from_geometric_scaling(length, intrusion_type):
     return mean_t
 
 
-def contact_pts_using_geometric_scaling(thickness, points_df, inflation_vector):
+def contact_pts_using_geometric_scaling(
+    thickness: float, points_df: pd.DataFrame, inflation_vector: np.ndarray
+):
+    """Generate contact points for an intrusion using geometric scaling parameter and the
+    inflation vector to translate the points
 
+    Parameters
+    ----------
+    thickness : float
+        intrusion thickness
+    points_df : pd.DataFrame
+        dataframe of contact points
+    inflation_vector : np.ndarray
+        inflation direction of the intrusion
+
+    Returns
+    -------
+    tuple
+        contact points
+    """
     translation_vector = (
         inflation_vector
         / np.linalg.norm(inflation_vector, axis=1).reshape(1, len(inflation_vector)).T

@@ -9,7 +9,14 @@ logger = getLogger(__name__)
 
 class FoldedFeatureBuilder(GeologicalFeatureBuilder):
     def __init__(
-        self, interpolator, fold, fold_weights={}, name="Feature", region=None, **kwargs
+        self,
+        interpolator,
+        fold,
+        fold_weights={},
+        name="Feature",
+        region=None,
+        svario=True,
+        **kwargs
     ):
         """Builder for creating a geological feature using fold constraints
 
@@ -32,7 +39,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         self.fold = fold
         self.fold_weights = fold_weights
         self.kwargs = kwargs
-        self.svario = True
+        self.svario = svario
 
     def set_fold_axis(self):
         """calculates the fold axis/ fold axis rotation and adds this to the fold"""

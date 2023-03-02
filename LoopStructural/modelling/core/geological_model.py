@@ -62,14 +62,10 @@ from ...utils.helper import (
     get_vectors,
 )
 
-intrusions = True
-try:
-    from ...modelling.intrusions import IntrusionBuilder
+from ...modelling.intrusions import IntrusionBuilder
 
-    from ...modelling.intrusions import IntrusionFrameBuilder
-except ImportError as e:
-    print(e)
-    intrusions = False
+from ...modelling.intrusions import IntrusionFrameBuilder
+
 
 logger = getLogger(__name__)
 
@@ -555,11 +551,11 @@ class GeologicalModel:
         return self.data.loc[self.data["feature_name"] == feature_name, :]
 
     @property
-    def data(self):
+    def data(self) -> pd.DataFrame:
         return self._data
 
     @data.setter
-    def data(self, data):
+    def data(self, data: pd.DataFrame):
         """
         Set the data array for the model
 
@@ -614,7 +610,7 @@ class GeologicalModel:
                     self._data[h] = 1.0
         # LS wants polarity as -1 or 1, change 0 to -1
         self._data.loc[self._data["polarity"] == 0, "polarity"] = -1.0
-        self.data.loc[np.isnan(self.data["w"]), "w"] = 1.0
+        self._data.loc[np.isnan(self._data["w"]), "w"] = 1.0
         if "strike" in self._data and "dip" in self._data:
             logger.info("Converting strike and dip to vectors")
             mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
@@ -1034,7 +1030,11 @@ class GeologicalModel:
             kwargs["fold_weights"] = {}
 
         series_builder = FoldedFeatureBuilder(
-            interpolator=fold_interpolator, fold=fold, name=foliation_data, **kwargs
+            interpolator=fold_interpolator,
+            fold=fold,
+            name=foliation_data,
+            svario=svario,
+            **kwargs,
         )
 
         series_builder.add_data_from_data_frame(
@@ -1139,13 +1139,12 @@ class GeologicalModel:
         self,
         intrusion_name,
         intrusion_frame_name,
+        intrusion_frame_parameters={},
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        intrusion_network_parameters={},
-        lateral_extent_sgs_parameters={},
-        vertical_extent_sgs_parameters={},
+        # parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
-        faults=None,  # LG seems unused?
+        # faults=None,  # LG seems unused?
         **kwargs,
     ):
         """
@@ -1173,20 +1172,7 @@ class GeologicalModel:
             geometrical conceptual model for simulation of lateral extent
         intrusion_vertical_extent_model = function,
             geometrical conceptual model for simulation of vertical extent
-        intrusion_network_parameters : dictionary, optional
-            contact :
-        string, contact of the intrusion to be used to create the network (roof or floor)
-            type : string, type of algorithm to create the intrusion network (interpolated or shortest path).
-        Shortest path is recommended when intrusion contact is not well constrained
-            contacts_anisotropies : list
-         of series-type features involved in intrusion emplacement
-            structures_anisotropies : list
-         of fault-type features involved in intrusion emplacement
-            sequence_anisotropies : list of anisotropies to look for the shortest path. It could be only starting and end point.
-        lateral_extent_sgs_parameters = dictionary, optional
-            parameters for sequential gaussian simulation of lateral extent
-        vertical_extent_sgs_parameters = dictionary, optional
-            parameters for sequential gaussian simulation of vertical extent
+        intrusion_frame_parameters = dictionary
 
         kwargs
 
@@ -1195,9 +1181,9 @@ class GeologicalModel:
         intrusion feature
 
         """
-        if intrusions is False:
-            logger.error("Libraries not installed")
-            raise Exception("Libraries not installed")
+        # if intrusions is False:
+        #     logger.error("Libraries not installed")
+        #     raise Exception("Libraries not installed")
 
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
         intrusion_frame_data = self.data[
@@ -1209,28 +1195,32 @@ class GeologicalModel:
         gxxgy = kwargs.get("gxxgy", 0)
         gyxgz = kwargs.get("gyxgz", 0)
 
-        interpolatortype = kwargs.get("interpolatortype", "FDI")
+        interpolatortype = kwargs.get("interpolatortype", "PLI")
+        buffer = kwargs.get("buffer", 0.1)
         nelements = kwargs.get("nelements", 1e2)
 
         weights = [gxxgz, gxxgy, gyxgz]
-        interpolator = self.get_interpolator(interpolatortype=interpolatortype)
+
+        interpolator = self.get_interpolator(
+            interpolatortype=interpolatortype, buffer=buffer
+        )
 
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
         )
-        intrusion_frame_builder.post_intrusion_faults = faults  # LG unused?
 
-        # -- create intrusion network
-        intrusion_frame_builder.set_intrusion_network_parameters(
-            intrusion_data, intrusion_network_parameters
-        )
-        intrusion_network_geometry = intrusion_frame_builder.create_intrusion_network()
+        self._add_faults(intrusion_frame_builder)
+        # intrusion_frame_builder.post_intrusion_faults = faults  # LG unused?
 
-        # -- create intrusion frame using intrusion network points
-        # and flow/inflation measurements
-        intrusion_frame_builder.set_intrusion_frame_data(
-            intrusion_frame_data, intrusion_network_geometry
+        # -- create intrusion frame using intrusion structures (steps and marginal faults) and flow/inflation measurements
+        if len(intrusion_frame_parameters) == 0:
+            logger.error("Please specify parameters to build intrusion frame")
+        intrusion_frame_builder.set_intrusion_frame_parameters(
+            intrusion_data, intrusion_frame_parameters
         )
+        intrusion_frame_builder.create_constraints_for_c0()
+
+        intrusion_frame_builder.set_intrusion_frame_data(intrusion_frame_data)
 
         ## -- create intrusion frame
         intrusion_frame_builder.setup(
@@ -1242,24 +1232,23 @@ class GeologicalModel:
 
         intrusion_frame = intrusion_frame_builder.frame
 
-        self._add_faults(intrusion_frame_builder, features=faults)
-
-        # -- create intrusion builder to simulate distance thresholds along frame coordinates
+        # -- create intrusion builder to compute distance thresholds along the frame coordinates
         intrusion_builder = IntrusionBuilder(
-            intrusion_frame, model=self, name=f"{intrusion_name}_feature"
+            intrusion_frame,
+            model=self,
+            # interpolator=interpolator,
+            name=f"{intrusion_name}_feature",
+            lateral_extent_model=intrusion_lateral_extent_model,
+            vertical_extent_model=intrusion_vertical_extent_model,
+            **kwargs,
         )
-        intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
-        intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
+        intrusion_builder.set_data_for_extent_calculation(intrusion_data)
 
-        # logger.info("setting data for thresholds simulation")
-        intrusion_builder.set_data_for_extent_simulation(intrusion_data)
         intrusion_builder.build_arguments = {
-            "lateral_extent_sgs_parameters": lateral_extent_sgs_parameters,
-            "vertical_extent_sgs_parameters": vertical_extent_sgs_parameters,
             "geometric_scaling_parameters": geometric_scaling_parameters,
         }
+
         intrusion_feature = intrusion_builder.feature
-        # self._add_faults(intrusion_feature, features = faults)
         self._add_feature(intrusion_feature)
 
         return intrusion_feature
@@ -1353,51 +1342,6 @@ class GeologicalModel:
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
                 feature.add_region(f)
                 break
-
-    def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
-        """
-        Parameters
-        ----------
-        unconformity_surface_data : string
-            name of the unconformity data in the data frame
-
-        Returns
-        -------
-
-        Notes
-        -----
-
-        Additional kwargs are found in
-        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
-
-        """
-        if not self.check_initialisation():
-            return False
-        interpolator = self.get_interpolator(**kwargs)
-        unconformity_feature_builder = GeologicalFeatureBuilder(
-            interpolator, name=unconformity_surface_data
-        )
-        # add data
-        unconformity_data = self.data[
-            self.data["feature_name"] == unconformity_surface_data
-        ]
-
-        unconformity_feature_builder.add_data_from_data_frame(unconformity_data)
-        # look through existing features if there is a fault before an
-        # unconformity
-        # then add to the feature, once we get to an unconformity stop
-        self._add_faults(unconformity_feature_builder)
-
-        # build feature
-        # uc_feature_base = unconformity_feature_builder.build(**kwargs)
-        uc_feature_base = unconformity_feature_builder.feature
-        unconformity_feature_builder.build_arguments = kwargs
-        uc_feature_base.type = "unconformity_base"
-        # uc_feature = UnconformityFeature(uc_feature_base,0)
-        # iterate over existing features and add the unconformity as a
-        # region so the feature is only
-        # evaluated where the unconformity is positive
-        return self.add_unconformity(uc_feature_base, 0)
 
     def add_unconformity(
         self, feature: GeologicalFeature, value: float
@@ -1527,6 +1471,7 @@ class GeologicalModel:
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
+        faults=[],
         **kwargs,
     ):
         """
@@ -1602,10 +1547,11 @@ class GeologicalModel:
         fault_frame_builder = FaultBuilder(
             interpolator, name=fault_surface_data, model=self, **kwargs
         )
+        self._add_faults(fault_frame_builder, features=faults)
         # add data
-        fault_frame_data = self.data[
+        fault_frame_data = self.data.loc[
             self.data["feature_name"] == fault_surface_data
-        ].copy()
+        ]
         trace_mask = np.logical_and(
             fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
         )

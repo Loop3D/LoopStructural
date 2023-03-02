@@ -13,7 +13,8 @@ RUN apt-get update -qq && \
     libopenmpi-dev \ 
     make 
 # RUN conda install -c conda-forge python=3.9 -y
-RUN conda install -c conda-forge pip \
+RUN conda install -c conda-forge "python<=3.9" \
+    pip \
     scikit-learn \
     cython \
     numpy \
@@ -31,11 +32,12 @@ RUN conda install -c conda-forge pip \
     folium \
     jupyterlab \
     nodejs \
+    rasterio\
     -y
 
 RUN pip install ipyfilechooser
 RUN jupyter nbextension enable --py --sys-prefix ipyleaflet
-RUN pip install lavavu-osmesa
+RUN pip install lavavu-osmesa==1.8.32 pyevtk
 
 ENV NB_USER jovyan
 ENV NB_UID 1000
