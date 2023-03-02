@@ -370,7 +370,6 @@ class IntrusionBuilder(BaseBuilder):
             .to_numpy()
         )
 
-        vertex = [coord_PL_for_maxG[0][0], coord_PL_for_maxG[0][1], maxG]
 
         self.conceptual_model_parameters["minP"] = minP
         self.conceptual_model_parameters["maxP"] = maxP
@@ -378,7 +377,7 @@ class IntrusionBuilder(BaseBuilder):
         self.conceptual_model_parameters["maxL"] = maxL
         self.conceptual_model_parameters["model_cover"] = modelcover
         self.conceptual_model_parameters["mean_growth"] = mean_growth
-        self.conceptual_model_parameters["vertex"] = vertex
+        self.conceptual_model_parameters["vertex"] =  [coord_PL_for_maxG[0][0], coord_PL_for_maxG[0][1], maxG]
 
     def set_data_for_lateral_thresholds(self):
         """
@@ -732,17 +731,6 @@ class IntrusionBuilder(BaseBuilder):
         self.prepare_data(geometric_scaling_parameters)
         self.create_grid_for_evaluation()
 
-        # if self.intrusion_extent_calculation == 'SGS':
-
-        #     lateral_extent_sgs_parameters = parameters_for_extent_sgs.get('lateral_extent_sgs_parameters', {})
-        #     vertical_extent_sgs_parameters = parameters_for_extent_sgs.get('vertical_extent_sgs_parameters', {})
-        #     self.set_l_sgs_GSLIBparameters(lateral_extent_sgs_parameters)
-        #     self.set_g_sgs_GSLIBparameters(vertical_extent_sgs_parameters)
-        #     self.make_l_sgs_variogram()
-        #     self.make_g_sgs_variogram()
-        #     self.simulate_lateral_thresholds()
-        #     self.simulate_growth_thresholds()
-
-        # elif self.intrusion_extent_calculation == 'interpolated':
+        
         self.set_data_for_lateral_thresholds()
         self.set_data_for_vertical_thresholds()
