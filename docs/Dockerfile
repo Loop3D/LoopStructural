@@ -26,6 +26,7 @@ RUN conda install -c conda-forge\
     libstdcxx-ng\
     meshio\
     -y
+RUN pip install git+https://github.com/geopandas/geopandas.git@v0.10.2
 RUN pip install lavavu-osmesa 
 ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/lavavu_osmesa.libs
 RUN conda install -c conda-forge pydata-sphinx-theme 
