@@ -650,10 +650,15 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             # apend associated scalar field values to each anisotropy
             self.anisotropies_fault_parameters[fault_id].append(faulti_values)
 
+            if type(delta)==list:
+                delta_f = delta[i]
+            else:
+                delta_f = delta
+
             If[
                 np.logical_and(
-                    (faulti_mean - faulti_std * delta[i]) <= faulti_values,
-                    faulti_values <= (faulti_mean + faulti_std * delta[i]),
+                    (faulti_mean - faulti_std * delta_f) <= faulti_values,
+                    faulti_values <= (faulti_mean + faulti_std * delta_f),
                 ),
                 i,
             ] = 1
@@ -873,6 +878,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             
         if self.intrusion_steps is None:  
             If_sum = np.zeros(len(grid_points_and_inflation_all)).T #mask for region without faults afecting the intrusion
+
+        If = self.indicator_function_faults(delta=100000) #to consider gradients outside area of faults.
+        If_sum = np.sum(If, axis = 1)    
             
         grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
         self.frame_c0_gradients = grid_points_and_inflation
