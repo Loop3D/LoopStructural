@@ -40,6 +40,7 @@ LoopStructural.modelling.input
 
    LoopStructural.modelling.input.fault_network
    LoopStructural.modelling.input.map2loop_processor
+   LoopStructural.modelling.input.ponicode
    LoopStructural.modelling.input.process_data
    LoopStructural.modelling.input.project_file
 

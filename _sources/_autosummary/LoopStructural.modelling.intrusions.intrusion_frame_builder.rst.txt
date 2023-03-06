@@ -33,6 +33,7 @@ LoopStructural.modelling.intrusions.intrusion\_frame\_builder
       :recursive:              
    
       BaseFeature
+      FaultSegment
       IntrusionFrameBuilder
       KMeans
       StructuralFrameBuilder

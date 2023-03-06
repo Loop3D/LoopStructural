@@ -424,6 +424,13 @@ field box.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Cannot use region
+    Cannot use region
+
 
 
 
@@ -516,6 +523,19 @@ shown in B and C.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+
 
 
 
@@ -549,7 +569,7 @@ Plotting the fold rotation angles
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  17.687 seconds)
+   **Total running time of the script:** ( 0 minutes  16.584 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_adding_folds_to_surfaces.py:

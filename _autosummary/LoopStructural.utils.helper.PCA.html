@@ -1,10 +1,14 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>LoopStructural.utils.helper.PCA &#8212; LoopStructural 0.1 documentation</title>
   
   
@@ -15,15 +19,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -32,13 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.utils.helper.PCA';</script>
@@ -46,78 +47,87 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.utils.json_encoder" href="LoopStructural.utils.json_encoder.html" />
     <link rel="prev" title="LoopStructural.utils.helper.xyz_names" href="LoopStructural.utils.helper.xyz_names.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../index.html">
-
   
   
   
-  
-  
-  
-  
-
   
   
     <p class="title logo__title">LoopStructural 0.1 documentation</p>
   
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class="col-lg-9 navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -152,32 +162,39 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
+  </button>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -186,7 +203,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -197,53 +215,58 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -278,27 +301,28 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
+  </ul>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -307,7 +331,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -318,24 +343,21 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
-    <ul class="nav bd-sidenav">
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="LoopStructural.GeologicalModel.html">LoopStructural.GeologicalModel</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
@@ -476,6 +498,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.html">LoopStructural.modelling.input.map2loop_processor.ProcessInputData</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.input.ponicode.html">LoopStructural.modelling.input.ponicode</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.input.process_data.html">LoopStructural.modelling.input.process_data</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.getLogger.html">LoopStructural.modelling.input.process_data.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.strike_dip_vector.html">LoopStructural.modelling.input.process_data.strike_dip_vector</a></li>
@@ -486,23 +509,20 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.html">LoopStructural.modelling.intrusions</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.ellipse_function.html">LoopStructural.modelling.intrusions.ellipse_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.getLogger.html">LoopStructural.modelling.intrusions.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.constant_function.html">LoopStructural.modelling.intrusions.constant_function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.obliquecone_function.html">LoopStructural.modelling.intrusions.obliquecone_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.parallelepiped_function.html">LoopStructural.modelling.intrusions.parallelepiped_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.rectangle_function.html">LoopStructural.modelling.intrusions.rectangle_function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.thickness_from_geometric_scaling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionBuilder.html">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFeature.html">LoopStructural.modelling.intrusions.IntrusionFeature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.IntrusionFrameBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionBuilder.html">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.html">LoopStructural.modelling.intrusions.geom_conceptual_models</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger.html">LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_functions.html">LoopStructural.modelling.intrusions.geometric_scaling_functions</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -518,6 +538,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.getLogger.html">LoopStructural.modelling.intrusions.intrusion_builder.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.Rbf.html">LoopStructural.modelling.intrusions.intrusion_builder.Rbf</a></li>
@@ -526,6 +547,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.html">LoopStructural.modelling.intrusions.intrusion_feature</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.getLogger.html">LoopStructural.modelling.intrusions.intrusion_feature.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html">LoopStructural.modelling.intrusions.intrusion_feature.FeatureType</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator.html">LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.Rbf.html">LoopStructural.modelling.intrusions.intrusion_feature.Rbf</a></li>
@@ -539,6 +562,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder</a></li>
@@ -732,41 +756,75 @@
 </ul>
 </li>
 </ul>
-
-  </div>
-</nav>
+</div>
+</nav></div>
     </div>
-  </div>
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-  <div class="section" id="loopstructural-utils-helper-pca">
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.html" class="nav-link">LoopStructural</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.utils.helper.html" class="nav-link">LoopStructural.utils.helper</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">LoopStructural.utils.helper.PCA</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="loopstructural-utils-helper-pca">
 <h1>LoopStructural.utils.helper.PCA<a class="headerlink" href="#loopstructural-utils-helper-pca" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.utils.helper.PCA">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.utils.helper.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whiten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svd_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterated_power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_oversamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_iteration_normalizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.utils.helper.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whiten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svd_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterated_power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BasePCA</span></code></p>
 <p>Principal component analysis (PCA).</p>
 <p>Linear dimensionality reduction using Singular Value Decomposition of the
@@ -781,7 +839,7 @@ truncated SVD.</p>
 <code class="xref py py-class docutils literal notranslate"><span class="pre">TruncatedSVD</span></code> for an alternative with sparse data.</p>
 <p>Read more in the <span class="xref std std-ref">User Guide</span>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_components</strong> (<em>int</em><em>, </em><em>float</em><em> or </em><em>'mle'</em><em>, </em><em>default=None</em>) – <p>Number of components to keep.
 if n_components is not set all components are kept:</p>
@@ -847,21 +905,6 @@ Must be of range [0, infinity).</p>
 <p><span class="versionmodified added">New in version 0.18.0.</span></p>
 </div>
 </p></li>
-<li><p><strong>n_oversamples</strong> (<em>int</em><em>, </em><em>default=10</em>) – <p>This parameter is only relevant when <cite>svd_solver=”randomized”</cite>.
-It corresponds to the additional number of random vectors to sample the
-range of <cite>X</cite> so as to ensure proper conditioning. See
-<code class="xref py py-func docutils literal notranslate"><span class="pre">randomized_svd()</span></code> for more details.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.1.</span></p>
-</div>
-</p></li>
-<li><p><strong>power_iteration_normalizer</strong> (<em>{'auto'</em><em>, </em><em>'QR'</em><em>, </em><em>'LU'</em><em>, </em><em>'none'}</em><em>, </em><em>default='auto'</em>) – <p>Power iteration normalizer for randomized SVD solver.
-Not used by ARPACK. See <code class="xref py py-func docutils literal notranslate"><span class="pre">randomized_svd()</span></code>
-for more details.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.1.</span></p>
-</div>
-</p></li>
 <li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>RandomState instance</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – <p>Used when the ‘arpack’ or ‘randomized’ solvers are used. Pass an int
 for reproducible results across multiple function calls.
 See <span class="xref std std-term">Glossary</span>.</p>
@@ -878,9 +921,9 @@ See <span class="xref std std-term">Glossary</span>.</p>
 <dd><p>Principal axes in feature space, representing the directions of
 maximum variance in the data. Equivalently, the right singular
 vectors of the centered input data, parallel to its eigenvectors.
-The components are sorted by decreasing <code class="docutils literal notranslate"><span class="pre">explained_variance_</span></code>.</p>
+The components are sorted by <code class="docutils literal notranslate"><span class="pre">explained_variance_</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_components, n_features)</p>
 </dd>
 </dl>
@@ -897,7 +940,7 @@ of the covariance matrix of X.</p>
 <p><span class="versionmodified added">New in version 0.18.</span></p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_components,)</p>
 </dd>
 </dl>
@@ -910,7 +953,7 @@ of the covariance matrix of X.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">n_components</span></code> is not set then all components are stored and the
 sum of the ratios is equal to 1.0.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_components,)</p>
 </dd>
 </dl>
@@ -926,7 +969,7 @@ variables in the lower-dimensional space.</p>
 <p><span class="versionmodified added">New in version 0.19.</span></p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_components,)</p>
 </dd>
 </dl>
@@ -938,7 +981,7 @@ variables in the lower-dimensional space.</p>
 <dd><p>Per-feature empirical mean, estimated from the training set.</p>
 <p>Equal to <cite>X.mean(axis=0)</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_features,)</p>
 </dd>
 </dl>
@@ -953,7 +996,7 @@ number is estimated from input data. Otherwise it equals the parameter
 n_components, or the lesser value of n_features and n_samples
 if n_components is None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -964,7 +1007,7 @@ if n_components is None.</p>
 <span class="sig-name descname"><span class="pre">n_features_</span></span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.n_features_" title="Permalink to this definition">#</a></dt>
 <dd><p>Number of features in the training data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -975,7 +1018,7 @@ if n_components is None.</p>
 <span class="sig-name descname"><span class="pre">n_samples_</span></span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.n_samples_" title="Permalink to this definition">#</a></dt>
 <dd><p>Number of samples in the training data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -992,7 +1035,7 @@ compute the estimated data covariance and score samples.</p>
 <p>Equal to the average of (min(n_features, n_samples) - n_components)
 smallest eigenvalues of the covariance matrix of X.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -1006,7 +1049,7 @@ smallest eigenvalues of the covariance matrix of X.</p>
 <p><span class="versionmodified added">New in version 0.24.</span></p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -1021,7 +1064,7 @@ has feature names that are all strings.</p>
 <p><span class="versionmodified added">New in version 1.0.</span></p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (<cite>n_features_in_</cite>,)</p>
 </dd>
 </dl>
@@ -1051,16 +1094,14 @@ Series B (Statistical Methodology), 61(3), 611-622.</a>
 via the score and score_samples methods.</p>
 <p>For svd_solver == ‘arpack’, refer to <cite>scipy.sparse.linalg.svds</cite>.</p>
 <p>For svd_solver == ‘randomized’, see:
-<a href="#id1"><span class="problematic" id="id2">:doi:`Halko, N., Martinsson, P. G., and Tropp, J. A. (2011).
-&quot;Finding structure with randomness: Probabilistic algorithms for
-constructing approximate matrix decompositions&quot;.
-SIAM review, 53(2), 217-288.
-&lt;10.1137/090771806&gt;`</span></a>
+<a class="reference external" href="https://doi.org/10.1137/090771806">Halko, N., Martinsson, P. G., and Tropp, J. A. (2011).
+“Finding structure with randomness: Probabilistic algorithms for
+constructing approximate matrix decompositions”.
+SIAM review, 53(2), 217-288.</a>
 and also
-<a href="#id3"><span class="problematic" id="id4">:doi:`Martinsson, P. G., Rokhlin, V., and Tygert, M. (2011).
-&quot;A randomized algorithm for the decomposition of matrices&quot;.
-Applied and Computational Harmonic Analysis, 30(1), 47-68.
-&lt;10.1016/j.acha.2010.02.003&gt;`</span></a></p>
+<a class="reference external" href="https://doi.org/10.1016/j.acha.2010.02.003">Martinsson, P. G., Rokhlin, V., and Tygert, M. (2011).
+“A randomized algorithm for the decomposition of matrices”.
+Applied and Computational Harmonic Analysis, 30(1), 47-68</a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
@@ -1094,15 +1135,11 @@ Applied and Computational Harmonic Analysis, 30(1), 47-68.
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.utils.helper.PCA.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whiten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svd_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterated_power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_oversamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_iteration_normalizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whiten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svd_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterated_power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.__init__" title="LoopStructural.utils.helper.PCA.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([n_components, copy, whiten, ...])</p></td>
 <td><p></p></td>
@@ -1116,26 +1153,20 @@ Applied and Computational Harmonic Analysis, 30(1), 47-68.
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.get_covariance" title="LoopStructural.utils.helper.PCA.get_covariance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_covariance</span></code></a>()</p></td>
 <td><p>Compute data covariance with the generative model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.get_feature_names_out" title="LoopStructural.utils.helper.PCA.get_feature_names_out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_names_out</span></code></a>([input_features])</p></td>
-<td><p>Get output feature names for transformation.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.get_params" title="LoopStructural.utils.helper.PCA.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.get_params" title="LoopStructural.utils.helper.PCA.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.get_precision" title="LoopStructural.utils.helper.PCA.get_precision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_precision</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.get_precision" title="LoopStructural.utils.helper.PCA.get_precision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_precision</span></code></a>()</p></td>
 <td><p>Compute data precision matrix with the generative model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.inverse_transform" title="LoopStructural.utils.helper.PCA.inverse_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inverse_transform</span></code></a>(X)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.inverse_transform" title="LoopStructural.utils.helper.PCA.inverse_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inverse_transform</span></code></a>(X)</p></td>
 <td><p>Transform data back to its original space.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.score" title="LoopStructural.utils.helper.PCA.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X[, y])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.score" title="LoopStructural.utils.helper.PCA.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X[, y])</p></td>
 <td><p>Return the average log-likelihood of all samples.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.score_samples" title="LoopStructural.utils.helper.PCA.score_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score_samples</span></code></a>(X)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.score_samples" title="LoopStructural.utils.helper.PCA.score_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score_samples</span></code></a>(X)</p></td>
 <td><p>Return the log-likelihood of each sample.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.set_output" title="LoopStructural.utils.helper.PCA.set_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_output</span></code></a>(*[, transform])</p></td>
-<td><p>Set output container.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.set_params" title="LoopStructural.utils.helper.PCA.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>
@@ -1145,31 +1176,19 @@ Applied and Computational Harmonic Analysis, 30(1), 47-68.
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.utils.helper.PCA.n_features_" title="LoopStructural.utils.helper.PCA.n_features_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_features_</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.utils.helper.PCA.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.fit" title="Permalink to this definition">#</a></dt>
 <dd><p>Fit the model with X.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_features</cite> is the number of features.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Ignored.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> (<em>object</em>) – Returns the instance itself.</p>
 </dd>
 </dl>
@@ -1180,14 +1199,14 @@ and <cite>n_features</cite> is the number of features.</p></li>
 <span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.fit_transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Fit the model with X and apply the dimensionality reduction on X.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_features</cite> is the number of features.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Ignored.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>X_new</strong> (<em>ndarray of shape (n_samples, n_components)</em>) – Transformed values.</p>
 </dd>
 </dl>
@@ -1204,25 +1223,8 @@ C-ordered array, use ‘np.ascontiguousarray’.</p>
 where S**2 contains the explained variances, and sigma2 contains the
 noise variances.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cov</strong> (<em>array of shape=(n_features, n_features)</em>) – Estimated covariance of data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.utils.helper.PCA.get_feature_names_out">
-<span class="sig-name descname"><span class="pre">get_feature_names_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.get_feature_names_out" title="Permalink to this definition">#</a></dt>
-<dd><p>Get output feature names for transformation.</p>
-<p>The feature names out will prefixed by the lowercased class name. For
-example, if the transformer outputs 3 features, then the feature names
-out are: <cite>[“class_name0”, “class_name1”, “class_name2”]</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_features</strong> (<em>array-like</em><em> of </em><em>str</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Only used to validate feature names with the names seen in <a class="reference internal" href="#LoopStructural.utils.helper.PCA.fit" title="LoopStructural.utils.helper.PCA.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>feature_names_out</strong> (<em>ndarray of str objects</em>) – Transformed feature names.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1232,11 +1234,11 @@ out are: <cite>[“class_name0”, “class_name1”, “class_name2”]</cite>.
 <span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.get_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Get parameters for this estimator.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>deep</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, will return the parameters for this estimator and
 contained subobjects that are estimators.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – Parameter names mapped to their values.</p>
 </dd>
 </dl>
@@ -1249,7 +1251,7 @@ contained subobjects that are estimators.</p>
 <p>Equals the inverse of the covariance but computed with
 the matrix inversion lemma for efficiency.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>precision</strong> (<em>array, shape=(n_features, n_features)</em>) – Estimated precision of data.</p>
 </dd>
 </dl>
@@ -1261,11 +1263,11 @@ the matrix inversion lemma for efficiency.</p>
 <dd><p>Transform data back to its original space.</p>
 <p>In other words, return an input <cite>X_original</cite> whose transform would be X.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_components</em><em>)</em>) – New data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_components</cite> is the number of components.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>X_original array-like of shape (n_samples, n_features)</em> – Original data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_features</cite> is the number of features.</p>
 </dd>
@@ -1283,13 +1285,13 @@ exact inverse operation, which includes reversing whitening.</p>
 by C. Bishop, 12.2.1 p. 574
 or <a class="reference external" href="http://www.miketipping.com/papers/met-mppca.pdf">http://www.miketipping.com/papers/met-mppca.pdf</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – Ignored.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ll</strong> (<em>float</em>) – Average log-likelihood of the samples under the current model.</p>
 </dd>
 </dl>
@@ -1303,33 +1305,11 @@ or <a class="reference external" href="http://www.miketipping.com/papers/met-mpp
 by C. Bishop, 12.2.1 p. 574
 or <a class="reference external" href="http://www.miketipping.com/papers/met-mppca.pdf">http://www.miketipping.com/papers/met-mppca.pdf</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The data.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ll</strong> (<em>ndarray of shape (n_samples,)</em>) – Log-likelihood of each sample under the current model.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.utils.helper.PCA.set_output">
-<span class="sig-name descname"><span class="pre">set_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.utils.helper.PCA.set_output" title="Permalink to this definition">#</a></dt>
-<dd><p>Set output container.</p>
-<p>See <span class="xref std std-ref">sphx_glr_auto_examples_miscellaneous_plot_set_output.py</span>
-for an example on how to use the API.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>transform</strong> (<em>{&quot;default&quot;</em><em>, </em><em>&quot;pandas&quot;}</em><em>, </em><em>default=None</em>) – <p>Configure output of <cite>transform</cite> and <cite>fit_transform</cite>.</p>
-<ul class="simple">
-<li><p><cite>”default”</cite>: Default output format of a transformer</p></li>
-<li><p><cite>”pandas”</cite>: DataFrame output</p></li>
-<li><p><cite>None</cite>: Transform configuration is unchanged</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>self</strong> (<em>estimator instance</em>) – Estimator instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1343,10 +1323,10 @@ for an example on how to use the API.</p>
 parameters of the form <code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s
 possible to update each component of a nested object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>**params</strong> (<em>dict</em>) – Estimator parameters.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> (<em>estimator instance</em>) – Estimator instance.</p>
 </dd>
 </dl>
@@ -1359,11 +1339,11 @@ possible to update each component of a nested object.</p>
 <p>X is projected on the first principal components previously extracted
 from a training set.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – New data, where <cite>n_samples</cite> is the number of samples
 and <cite>n_features</cite> is the number of features.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>X_new</strong> (<em>array-like of shape (n_samples, n_components)</em>) – Projection of X in the first principal components, where <cite>n_samples</cite>
 is the number of samples and <cite>n_components</cite> is the number of the components.</p>
 </dd>
@@ -1372,316 +1352,100 @@ is the number of samples and <cite>n_components</cite> is the number of the comp
 
 </dd></dl>
 
-</div>
+</section>
 
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="LoopStructural.utils.helper.xyz_names.html" title="previous page">
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="LoopStructural.utils.helper.xyz_names.html"
+       title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">LoopStructural.utils.helper.xyz_names</p>
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">LoopStructural.utils.helper.xyz_names</p>
       </div>
-  </a>
-  <a class='right-next' id="next-link" href="LoopStructural.utils.json_encoder.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">LoopStructural.utils.json_encoder</p>
-  </div>
-  <i class="fa-solid fa-angle-right"></i>
-  </a>
+    </a>
+    <a class="right-next"
+       href="LoopStructural.utils.json_encoder.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural.utils.json_encoder</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </footer>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-</div>
-<nav id="bd-toc-nav" class="page-toc">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     PCA
-    </span>
-   </code>
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.components_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.components_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.explained_variance_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.explained_variance_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.explained_variance_ratio_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.explained_variance_ratio_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.singular_values_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.singular_values_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.mean_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.mean_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_components_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.n_components_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_features_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.n_features_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_samples_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.n_samples_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.noise_variance_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.noise_variance_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_features_in_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.n_features_in_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.feature_names_in_">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.feature_names_in_
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.fit">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.fit()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.fit_transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.fit_transform()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_covariance">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.get_covariance()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_feature_names_out">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.get_feature_names_out()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_params">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.get_params()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_precision">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.get_precision()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.inverse_transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.inverse_transform()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.score">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.score()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.score_samples">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.score_samples()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.set_output">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.set_output()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.set_params">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.set_params()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PCA.transform()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-</nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-<div class="tocsection sourcelink">
-    <a href="../_sources/_autosummary/LoopStructural.utils.helper.PCA.rst.txt">
-        <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-</div>
-
-</div>
-
             </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA"><code class="docutils literal notranslate"><span class="pre">PCA</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.components_"><code class="docutils literal notranslate"><span class="pre">PCA.components_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.explained_variance_"><code class="docutils literal notranslate"><span class="pre">PCA.explained_variance_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.explained_variance_ratio_"><code class="docutils literal notranslate"><span class="pre">PCA.explained_variance_ratio_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.singular_values_"><code class="docutils literal notranslate"><span class="pre">PCA.singular_values_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.mean_"><code class="docutils literal notranslate"><span class="pre">PCA.mean_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_components_"><code class="docutils literal notranslate"><span class="pre">PCA.n_components_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_features_"><code class="docutils literal notranslate"><span class="pre">PCA.n_features_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_samples_"><code class="docutils literal notranslate"><span class="pre">PCA.n_samples_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.noise_variance_"><code class="docutils literal notranslate"><span class="pre">PCA.noise_variance_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.n_features_in_"><code class="docutils literal notranslate"><span class="pre">PCA.n_features_in_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.feature_names_in_"><code class="docutils literal notranslate"><span class="pre">PCA.feature_names_in_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.__init__"><code class="docutils literal notranslate"><span class="pre">PCA.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.fit"><code class="docutils literal notranslate"><span class="pre">PCA.fit()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.fit_transform"><code class="docutils literal notranslate"><span class="pre">PCA.fit_transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_covariance"><code class="docutils literal notranslate"><span class="pre">PCA.get_covariance()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_params"><code class="docutils literal notranslate"><span class="pre">PCA.get_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.get_precision"><code class="docutils literal notranslate"><span class="pre">PCA.get_precision()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.inverse_transform"><code class="docutils literal notranslate"><span class="pre">PCA.inverse_transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.score"><code class="docutils literal notranslate"><span class="pre">PCA.score()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.score_samples"><code class="docutils literal notranslate"><span class="pre">PCA.score_samples()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.set_params"><code class="docutils literal notranslate"><span class="pre">PCA.set_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.utils.helper.PCA.transform"><code class="docutils literal notranslate"><span class="pre">PCA.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_autosummary/LoopStructural.utils.helper.PCA.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

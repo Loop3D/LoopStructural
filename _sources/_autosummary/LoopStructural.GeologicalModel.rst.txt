@@ -27,7 +27,6 @@ LoopStructural.GeologicalModel
       ~GeologicalModel.create_and_add_folded_foliation
       ~GeologicalModel.create_and_add_foliation
       ~GeologicalModel.create_and_add_intrusion
-      ~GeologicalModel.create_and_add_unconformity
       ~GeologicalModel.data_for_feature
       ~GeologicalModel.evaluate_fault_displacements
       ~GeologicalModel.evaluate_feature_gradient

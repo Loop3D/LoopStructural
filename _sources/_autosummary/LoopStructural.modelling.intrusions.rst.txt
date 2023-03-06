@@ -15,14 +15,12 @@ LoopStructural.modelling.intrusions
       :toctree:
       :recursive:
    
-      contact_pts_using_geometric_scaling
       ellipse_function
-      geometric_scaling_parameters
-      getLogger
+      constant_function
       obliquecone_function
-      parallelepiped_function
-      rectangle_function
+      geometric_scaling_parameters
       thickness_from_geometric_scaling
+      contact_pts_using_geometric_scaling
    
    
 
@@ -35,9 +33,9 @@ LoopStructural.modelling.intrusions
       :template: custom-class-template.rst
       :recursive:              
    
-      IntrusionBuilder
       IntrusionFeature
       IntrusionFrameBuilder
+      IntrusionBuilder
    
    
 

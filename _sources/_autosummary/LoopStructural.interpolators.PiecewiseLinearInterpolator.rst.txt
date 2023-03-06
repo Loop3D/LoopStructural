@@ -31,6 +31,7 @@ LoopStructural.interpolators.PiecewiseLinearInterpolator
       ~PiecewiseLinearInterpolator.add_value_constraints
       ~PiecewiseLinearInterpolator.build_matrix
       ~PiecewiseLinearInterpolator.calculate_residual_for_constraints
+      ~PiecewiseLinearInterpolator.clean
       ~PiecewiseLinearInterpolator.copy
       ~PiecewiseLinearInterpolator.debug
       ~PiecewiseLinearInterpolator.evaluate_gradient

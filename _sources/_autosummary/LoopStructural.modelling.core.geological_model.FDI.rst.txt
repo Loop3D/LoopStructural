@@ -33,6 +33,7 @@ LoopStructural.modelling.core.geological\_model.FDI
       ~FDI.assemble_inner
       ~FDI.build_matrix
       ~FDI.calculate_residual_for_constraints
+      ~FDI.clean
       ~FDI.copy
       ~FDI.debug
       ~FDI.evaluate_gradient

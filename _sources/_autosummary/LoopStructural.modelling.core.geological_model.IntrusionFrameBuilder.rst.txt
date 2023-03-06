@@ -21,16 +21,16 @@ LoopStructural.modelling.core.geological\_model.IntrusionFrameBuilder
       ~IntrusionFrameBuilder.add_data_from_data_frame
       ~IntrusionFrameBuilder.add_fault
       ~IntrusionFrameBuilder.add_faults_anisotropies
-      ~IntrusionFrameBuilder.add_steps_stratigraphic_units
-      ~IntrusionFrameBuilder.compute_velocity_field
+      ~IntrusionFrameBuilder.create_constraints_for_c0
       ~IntrusionFrameBuilder.create_grid_for_indicator_fxs
-      ~IntrusionFrameBuilder.create_intrusion_network
       ~IntrusionFrameBuilder.get_indicator_function_points
       ~IntrusionFrameBuilder.indicator_function_contacts
       ~IntrusionFrameBuilder.indicator_function_faults
+      ~IntrusionFrameBuilder.set_intrusion_frame_c0_data
       ~IntrusionFrameBuilder.set_intrusion_frame_data
-      ~IntrusionFrameBuilder.set_intrusion_network_data
-      ~IntrusionFrameBuilder.set_intrusion_network_parameters
+      ~IntrusionFrameBuilder.set_intrusion_frame_parameters
+      ~IntrusionFrameBuilder.set_intrusion_steps_parameters
+      ~IntrusionFrameBuilder.set_marginal_faults_parameters
       ~IntrusionFrameBuilder.set_model
       ~IntrusionFrameBuilder.setup
       ~IntrusionFrameBuilder.up_to_date

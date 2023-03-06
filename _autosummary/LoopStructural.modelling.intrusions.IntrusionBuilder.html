@@ -1,10 +1,14 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>LoopStructural.modelling.intrusions.IntrusionBuilder &#8212; LoopStructural 0.1 documentation</title>
   
   
@@ -15,15 +19,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -32,92 +36,98 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.modelling.intrusions.IntrusionBuilder';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.modelling.intrusions.IntrusionFeature" href="LoopStructural.modelling.intrusions.IntrusionFeature.html" />
-    <link rel="prev" title="LoopStructural.modelling.intrusions.thickness_from_geometric_scaling" href="LoopStructural.modelling.intrusions.thickness_from_geometric_scaling.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+    <link rel="next" title="LoopStructural.modelling.intrusions.geom_conceptual_models" href="LoopStructural.modelling.intrusions.geom_conceptual_models.html" />
+    <link rel="prev" title="LoopStructural.modelling.intrusions.IntrusionFrameBuilder" href="LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../index.html">
-
   
   
   
-  
-  
-  
-  
-
   
   
     <p class="title logo__title">LoopStructural 0.1 documentation</p>
   
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class="col-lg-9 navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -152,32 +162,39 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
+  </button>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -186,7 +203,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -197,53 +215,58 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -278,27 +301,28 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
+  </ul>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -307,7 +331,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -318,24 +343,21 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
-    <ul class="nav bd-sidenav">
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="LoopStructural.GeologicalModel.html">LoopStructural.GeologicalModel</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
@@ -476,6 +498,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.html">LoopStructural.modelling.input.map2loop_processor.ProcessInputData</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.input.ponicode.html">LoopStructural.modelling.input.ponicode</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.input.process_data.html">LoopStructural.modelling.input.process_data</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.getLogger.html">LoopStructural.modelling.input.process_data.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.strike_dip_vector.html">LoopStructural.modelling.input.process_data.strike_dip_vector</a></li>
@@ -486,23 +509,20 @@
 </ul>
 </li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.html">LoopStructural.modelling.intrusions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.ellipse_function.html">LoopStructural.modelling.intrusions.ellipse_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.getLogger.html">LoopStructural.modelling.intrusions.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.constant_function.html">LoopStructural.modelling.intrusions.constant_function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.obliquecone_function.html">LoopStructural.modelling.intrusions.obliquecone_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.parallelepiped_function.html">LoopStructural.modelling.intrusions.parallelepiped_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.rectangle_function.html">LoopStructural.modelling.intrusions.rectangle_function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.thickness_from_geometric_scaling</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFeature.html">LoopStructural.modelling.intrusions.IntrusionFeature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.IntrusionFrameBuilder</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.html">LoopStructural.modelling.intrusions.geom_conceptual_models</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger.html">LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_functions.html">LoopStructural.modelling.intrusions.geometric_scaling_functions</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -518,6 +538,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.getLogger.html">LoopStructural.modelling.intrusions.intrusion_builder.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.Rbf.html">LoopStructural.modelling.intrusions.intrusion_builder.Rbf</a></li>
@@ -526,6 +547,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.html">LoopStructural.modelling.intrusions.intrusion_feature</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.getLogger.html">LoopStructural.modelling.intrusions.intrusion_feature.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html">LoopStructural.modelling.intrusions.intrusion_feature.FeatureType</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator.html">LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.Rbf.html">LoopStructural.modelling.intrusions.intrusion_feature.Rbf</a></li>
@@ -539,6 +562,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder</a></li>
@@ -732,101 +756,137 @@
 </ul>
 </li>
 </ul>
-
-  </div>
-</nav>
+</div>
+</nav></div>
     </div>
-  </div>
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-  <div class="section" id="loopstructural-modelling-intrusions-intrusionbuilder">
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.html" class="nav-link">LoopStructural</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.modelling.intrusions.html" class="nav-link">LoopStructural.modelling.intrusions</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">LoopStructural.modelling.intrusions.IntrusionBuilder</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="loopstructural-modelling-intrusions-intrusionbuilder">
 <h1>LoopStructural.modelling.intrusions.IntrusionBuilder<a class="headerlink" href="#loopstructural-modelling-intrusions-intrusionbuilder" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.intrusions.</span></span><span class="sig-name descname"><span class="pre">IntrusionBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intrusion'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.intrusions.</span></span><span class="sig-name descname"><span class="pre">IntrusionBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_extent_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lateral_extent_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intrusion</span> <span class="pre">builder'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder.html#LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder" title="LoopStructural.modelling.features.builders._base_builder.BaseBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBuilder</span></code></a></p>
+<p>Constructor for an IntrusionBuilder
+Sets up interpolators of vertical and lateral contacts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> (<a class="reference internal" href="LoopStructural.modelling.core.geological_model.StructuralFrame.html#LoopStructural.modelling.core.geological_model.StructuralFrame" title="LoopStructural.modelling.core.geological_model.StructuralFrame"><em>StructuralFrame</em></a>) – the structural frame that the intrusion will be built using</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel"><em>GeologicalModel</em></a><em>, </em><em>optional</em>) – the geological model that the intrusion will belong to, by default None</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the intrusion, by default “intrusion builder”</p></li>
+<li><p><strong>interpolator</strong> (<a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator" title="LoopStructural.interpolators.GeologicalInterpolator"><em>GeologicalInterpolator</em></a><em>, </em><em>optional</em>) – a geological interpolator, by default None</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intrusion'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_extent_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lateral_extent_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intrusion</span> <span class="pre">builder'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Constructor for an IntrusionBuilder
+Sets up interpolators of vertical and lateral contacts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> (<a class="reference internal" href="LoopStructural.modelling.core.geological_model.StructuralFrame.html#LoopStructural.modelling.core.geological_model.StructuralFrame" title="LoopStructural.modelling.core.geological_model.StructuralFrame"><em>StructuralFrame</em></a>) – the structural frame that the intrusion will be built using</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel"><em>GeologicalModel</em></a><em>, </em><em>optional</em>) – the geological model that the intrusion will belong to, by default None</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the intrusion, by default “intrusion builder”</p></li>
+<li><p><strong>interpolator</strong> (<a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator" title="LoopStructural.interpolators.GeologicalInterpolator"><em>GeologicalInterpolator</em></a><em>, </em><em>optional</em>) – a geological interpolator, by default None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.__init__" title="LoopStructural.modelling.intrusions.IntrusionBuilder.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(frame[, model, name])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.__init__" title="LoopStructural.modelling.intrusions.IntrusionBuilder.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(frame, model[, ...])</p></td>
+<td><p>Constructor for an IntrusionBuilder Sets up interpolators of vertical and lateral contacts</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.add_fault" title="LoopStructural.modelling.intrusions.IntrusionBuilder.add_fault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_fault</span></code></a>(fault)</p></td>
-<td><p>Add a fault to the intrusion feature builder</p></td>
+<td><p>Add a fault to the geological feature builder</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.build" title="LoopStructural.modelling.intrusions.IntrusionBuilder.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>([vertical_extent_sgs_parameters, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.build" title="LoopStructural.modelling.intrusions.IntrusionBuilder.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>([geometric_scaling_parameters])</p></td>
 <td><p>Main building function for intrusion.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_simulation" title="LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_grid_for_simulation</span></code></a>([spacing])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_geometry_using_geometric_scaling</span></code>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_evaluation" title="LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_evaluation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_grid_for_evaluation</span></code></a>([spacing])</p></td>
 <td><p>Create the grid points in which to simulate vertical and lateral</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_lateral_thresholds</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.prepare_data" title="LoopStructural.modelling.intrusions.IntrusionBuilder.prepare_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_data</span></code></a>(geometric_scaling_parameters)</p></td>
+<td><p>Prepare the data to compute distance thresholds along the frame coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_g_sgs_variogram" title="LoopStructural.modelling.intrusions.IntrusionBuilder.make_g_sgs_variogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_g_sgs_variogram</span></code></a>()</p></td>
-<td><p>Make variogram for vertical extent simulation By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_conceptual_models_parameters" title="LoopStructural.modelling.intrusions.IntrusionBuilder.set_conceptual_models_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_conceptual_models_parameters</span></code></a>()</p></td>
+<td><p>Creates a dictionary of parameters used for conceptual models.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_l_sgs_variogram" title="LoopStructural.modelling.intrusions.IntrusionBuilder.make_l_sgs_variogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_l_sgs_variogram</span></code></a>()</p></td>
-<td><p>Make variogram for lateral extent simulation By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_calculation" title="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_calculation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data_for_extent_calculation</span></code></a>(intrusion_data)</p></td>
+<td><p>Set data for lateral extent (distances in c2 axis)  and vertical extent (distances in c0 axis) simulation.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_data</span></code>(geometric_scaling_parameters)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_lateral_thresholds" title="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_lateral_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data_for_lateral_thresholds</span></code></a>()</p></td>
+<td><p>Sets the data for the interpolation of lateral thresholds.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_conceptual_models_parameters</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_simulation" title="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data_for_extent_simulation</span></code></a>(intrusion_data)</p></td>
-<td><p>Set data for lateral extent (distances in L axis)  and vertical extent (distances in G axis) simulation.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_g_sgs_GSLIBparameters" title="LoopStructural.modelling.intrusions.IntrusionBuilder.set_g_sgs_GSLIBparameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_g_sgs_GSLIBparameters</span></code></a>(...)</p></td>
-<td><p>Simulation parameters for growth (vertical) extent simulation</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_l_sgs_GSLIBparameters" title="LoopStructural.modelling.intrusions.IntrusionBuilder.set_l_sgs_GSLIBparameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_l_sgs_GSLIBparameters</span></code></a>(...)</p></td>
-<td><p>Simulation parameters for lateral extent simulation</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds" title="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_growth_thresholds</span></code></a>()</p></td>
-<td><p>Simulate g residual values and compute g thresholds for each point of a pre-defined grid.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds_original" title="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds_original"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_growth_thresholds_original</span></code></a>()</p></td>
-<td><p>Simulate g residual values and compute g thresholds for each point of a pre-defined grid.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds" title="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_lateral_thresholds</span></code></a>()</p></td>
-<td><p>Simulate residual values along L frame axis, and compute l thresholds for each point of a pre-defined grid</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds_original" title="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds_original"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_lateral_thresholds_original</span></code></a>()</p></td>
-<td><p>Simulate residual values along L frame axis, and compute l thresholds for each point of a pre-defined grid</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_vertical_thresholds" title="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_vertical_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data_for_vertical_thresholds</span></code></a>()</p></td>
+<td><p>Sets the data for the interpolation of the vertical thresholds.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.up_to_date" title="LoopStructural.modelling.intrusions.IntrusionBuilder.up_to_date"><code class="xref py py-obj docutils literal notranslate"><span class="pre">up_to_date</span></code></a>([callback])</p></td>
 <td><p>check if the feature is uptodate if its not update.</p></td>
@@ -838,10 +898,6 @@
 </table>
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_arguments</span></code></p></td>
 <td><p></p></td>
@@ -849,14 +905,17 @@
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">feature</span></code></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.add_fault">
 <span class="sig-name descname"><span class="pre">add_fault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fault</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.add_fault" title="Permalink to this definition">#</a></dt>
-<dd><p>Add a fault to the intrusion feature builder</p>
+<dd><p>Add a fault to the geological feature builder</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>fault</strong> (<a class="reference internal" href="LoopStructural.modelling.core.geological_model.FaultSegment.html#LoopStructural.modelling.core.geological_model.FaultSegment" title="LoopStructural.modelling.core.geological_model.FaultSegment"><em>FaultSegment</em></a>) – A faultsegment to add to the geological feature</p>
 </dd>
 </dl>
@@ -864,10 +923,12 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.build">
-<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertical_extent_sgs_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lateral_extent_sgs_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometric_scaling_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.build" title="Permalink to this definition">#</a></dt>
-<dd><p>Main building function for intrusion. Calculates variogram and simulate thresholds along frame axes</p>
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometric_scaling_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.build" title="Permalink to this definition">#</a></dt>
+<dd><p>Main building function for intrusion.
+Set up interpolators for extent calculation
+If SGS –&gt; Calculates variogram and simulate thresholds along frame axes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vertical_extent_sgs_parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters for the vertical sequential gaussian simulation, by default {}</p></li>
 <li><p><strong>lateral_extent_sgs_parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters for the vertical sequential gaussian simulation, by default {}</p></li>
@@ -877,162 +938,65 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_simulation">
-<span class="sig-name descname"><span class="pre">create_grid_for_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_simulation" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_evaluation">
+<span class="sig-name descname"><span class="pre">create_grid_for_evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_evaluation" title="Permalink to this definition">#</a></dt>
 <dd><p>Create the grid points in which to simulate vertical and lateral</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>spacing = list/array with spacing value for</em>) – </p></li>
-<li><p><strong>Y</strong> – </p></li>
-<li><p><strong>Z</strong> – </p></li>
-</ul>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spacing</strong> (<em>np.array</em>) – list/array with spacing value for X,Y,Z</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.make_g_sgs_variogram">
-<span class="sig-name descname"><span class="pre">make_g_sgs_variogram</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_g_sgs_variogram" title="Permalink to this definition">#</a></dt>
-<dd><p>Make variogram for vertical extent simulation
-By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<em>azi1 = 90                          # azimuth</em><em> of </em><em>this nested</em>) – </p></li>
-<li><p><strong>spherical</strong> (<em>it1 = 1                            # nested structure type</em><em> (</em><em>1 -</em>) – </p></li>
-<li><p><strong>exponential</strong> (<em>2 -</em>) – </p></li>
-<li><p><strong>Gaussian</strong><strong>)</strong> (<em>3 -</em>) – </p></li>
-<li><p><strong>nugget</strong> (<em>cc1 = 1                            # One structure and no</em>) – </p></li>
-<li><p><strong>structure</strong> – </p></li>
-<li><p><strong>direction</strong> (<em>hmaj1 = 9999 ; hmin1 = 9999   # range</em><em> of </em><em>this nested structure in the major</em><em> (</em><em>hmaj1</em><em>) </em><em>and minor</em><em> (</em><em>hmin1</em><em>)</em>) – </p></li>
-</ul>
+<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.prepare_data">
+<span class="sig-name descname"><span class="pre">prepare_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometric_scaling_parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.prepare_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Prepare the data to compute distance thresholds along the frame coordinates.
+These distance thresholds represent the contact of the intrusion.</p>
+<ol class="arabic simple">
+<li><p>Select lateral data and separate it between sides (i.e., c2&gt;0 or c2&lt;0)</p></li>
+<li><dl class="simple">
+<dt>Separate data between roof and floor contact data.</dt><dd><p>If there are only data for one of the contact (only roof or floor contact),
+it can use geometric scaling to create synthetic data of the opposite contact.
+This assumes constant thickness.</p>
 </dd>
 </dl>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.make_l_sgs_variogram">
-<span class="sig-name descname"><span class="pre">make_l_sgs_variogram</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_l_sgs_variogram" title="Permalink to this definition">#</a></dt>
-<dd><p>Make variogram for lateral extent simulation
-By default: variogram with no nugget effect, 1 spherical nested structure, isotropic and infinite range</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>--&gt;</strong> (<em>python dictionary with the following parameters</em>) – </p></li>
-<li><p><strong>structure</strong> (<em>azi1 = 90                          # azimuth</em><em> of </em><em>this nested</em>) – </p></li>
-<li><p><strong>spherical</strong> (<em>it1 = 1                            # nested structure type</em><em> (</em><em>1 -</em>) – </p></li>
-<li><p><strong>exponential</strong> (<em>2 -</em>) – </p></li>
-<li><p><strong>Gaussian</strong><strong>)</strong> (<em>3 -</em>) – </p></li>
-<li><p><strong>nugget</strong> (<em>cc1 = 1                            # One structure and no</em>) – </p></li>
-<li><p><strong>structure</strong> – </p></li>
-<li><p><strong>direction</strong> (<em>hmaj1 = 9999 ; hmin1 = 9999   # range</em><em> of </em><em>this nested structure in the major</em><em> (</em><em>hmaj1</em><em>) </em><em>and minor</em><em> (</em><em>hmin1</em><em>)</em>) – </p></li>
-</ul>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.set_conceptual_models_parameters">
+<span class="sig-name descname"><span class="pre">set_conceptual_models_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_conceptual_models_parameters" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a dictionary of parameters used for conceptual models.
+These parameters includes the basic parameters for the functions
+representing the conceptual models of the intrusion geometry.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_simulation">
-<span class="sig-name descname"><span class="pre">set_data_for_extent_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intrusion_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_simulation" title="Permalink to this definition">#</a></dt>
-<dd><p>Set data for lateral extent (distances in L axis)  and vertical extent (distances in G axis) simulation.</p>
+<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_calculation">
+<span class="sig-name descname"><span class="pre">set_data_for_extent_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intrusion_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_calculation" title="Permalink to this definition">#</a></dt>
+<dd><p>Set data for lateral extent (distances in c2 axis)  and vertical extent (distances in c0 axis) simulation.
+creates a copy of the data</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>intrusion_data</strong> (<em>DataFrame</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.set_g_sgs_GSLIBparameters">
-<span class="sig-name descname"><span class="pre">set_g_sgs_GSLIBparameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertical_simulation_parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_g_sgs_GSLIBparameters" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulation parameters for growth (vertical) extent simulation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>vertical_simulation_parameters</strong> (<em>python dictionary with the following parameters --&gt;</em>) – </p></li>
-<li><p><strong>tmin</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
-<li><p><strong>tmax</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
-<li><p><strong>itrans</strong> (<em>0 - no transformation requiered</em><em>, </em><em>data already nscored / 1 - for transformation</em>) – </p></li>
-<li><p><strong>ktype</strong> (<em>type</em><em> of </em><em>interpolation</em><em>, </em><em>0 for simple kriging - 1 for ordinary kriging</em>) – </p></li>
-<li><p><strong>nx</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>ny</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>xmn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>ymn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>xsiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
-<li><p><strong>ysiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
-<li><p><strong>zmin</strong> (<em>The minimum and maximum allowable data values for maximum g simulation</em><em> (</em><em>contact opposite to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
-<li><p><strong>zmax</strong> (<em>The minimum and maximum allowable data values for maximum g simulation</em><em> (</em><em>contact opposite to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
-<li><p><strong>zmin2</strong> (<em>The minimum and maximum allowable data values for minimum g simulation</em><em> (</em><em>simultion to condition model to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
-<li><p><strong>zmax2</strong> (<em>The minimum and maximum allowable data values for minimum g simulation</em><em> (</em><em>simultion to condition model to intrusion network</em><em>)</em><em>.</em>) – These are used in the back-transformation procedure.</p></li>
-<li><p><strong>nxdis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>nydis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>ndmin</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
-<li><p><strong>ndmax</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
-<li><p><strong>radius</strong> (<em>The maximum isotropic search radius.</em>) – </p></li>
-</ul>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_lateral_thresholds">
+<span class="sig-name descname"><span class="pre">set_data_for_lateral_thresholds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_lateral_thresholds" title="Permalink to this definition">#</a></dt>
+<dd><p>Sets the data for the interpolation of lateral thresholds.
+Computes conceptual and residual values</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.set_l_sgs_GSLIBparameters">
-<span class="sig-name descname"><span class="pre">set_l_sgs_GSLIBparameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lateral_simulation_parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_l_sgs_GSLIBparameters" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulation parameters for lateral extent simulation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lateral_simulation_parameters</strong> (<em>python dictionary with the following parameters --&gt;</em>) – </p></li>
-<li><p><strong>tmin</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
-<li><p><strong>tmax</strong> (<em>all values</em><em>, </em><em>regardless</em><em> of </em><em>which variable</em><em>, </em><em>strictly less than tmin and greater than</em><em> or </em><em>equal to tmax are ignored.</em>) – </p></li>
-<li><p><strong>itrans</strong> (<em>0 - no transformation requiered</em><em>, </em><em>data already nscored / 1 - for transformation</em>) – </p></li>
-<li><p><strong>ktype</strong> (<em>type</em><em> of </em><em>interpolation</em><em>, </em><em>0 for simple kriging - 1 for ordinary kriging</em>) – </p></li>
-<li><p><strong>nx</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>ny</strong> (<em>Numbers</em><em> of </em><em>blocks. Grid node indices ix</em><em>, </em><em>iy increase from 1 to nx</em><em>, </em><em>ny respectively</em><em> (</em><em>in the positive x</em><em>,</em><em>y direction</em><em>)</em><em>.</em>) – </p></li>
-<li><p><strong>xmn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>ymn</strong> (<em>Centre</em><em> of </em><em>the first block</em><em> (</em><em>xmn</em><em>,</em><em>ymn</em><em>)</em>) – </p></li>
-<li><p><strong>xsiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
-<li><p><strong>ysiz</strong> (<em>Size</em><em> of </em><em>blocks</em>) – </p></li>
-<li><p><strong>zmin</strong> (<em>The minimum and maximum allowable data values. These are used in the back-transformation procedure.</em>) – </p></li>
-<li><p><strong>zmax</strong> (<em>The minimum and maximum allowable data values. These are used in the back-transformation procedure.</em>) – </p></li>
-<li><p><strong>nxdis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>nydis</strong> (<em>Number</em><em> of </em><em>discretization points for a block. If both nxdis and nydis are set to 1</em><em>, </em><em>then point kriging is performed.</em>) – </p></li>
-<li><p><strong>ndmin</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
-<li><p><strong>ndmax</strong> (<em>The minimum and maximum number</em><em> of </em><em>original data that should be used to simulate a grid node. If there are fewer than ndmin data points</em><em>, </em><em>the node is not simulated.</em>) – </p></li>
-<li><p><strong>radius</strong> (<em>The maximum isotropic search radius.</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds">
-<span class="sig-name descname"><span class="pre">simulate_growth_thresholds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulate g residual values and compute g thresholds for each point of a pre-defined grid.
-Computes two sets of g thresholds: one to constraint the contact opposite to the intrusion network (using residual values),
-and another one to better condition the intrusion network contact to the data.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds_original">
-<span class="sig-name descname"><span class="pre">simulate_growth_thresholds_original</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds_original" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulate g residual values and compute g thresholds for each point of a pre-defined grid.
-Computes two sets of g thresholds: one to constraint the contact opposite to the intrusion network (using residual values),
-and another one to better condition the intrusion network contact to the data.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds">
-<span class="sig-name descname"><span class="pre">simulate_lateral_thresholds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulate residual values along L frame axis,
-and compute l thresholds for each point of a pre-defined grid</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds_original">
-<span class="sig-name descname"><span class="pre">simulate_lateral_thresholds_original</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds_original" title="Permalink to this definition">#</a></dt>
-<dd><p>Simulate residual values along L frame axis,
-and compute l thresholds for each point of a pre-defined grid</p>
+<dt class="sig sig-object py" id="LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_vertical_thresholds">
+<span class="sig-name descname"><span class="pre">set_data_for_vertical_thresholds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_vertical_thresholds" title="Permalink to this definition">#</a></dt>
+<dd><p>Sets the data for the interpolation of the vertical thresholds.
+Computes conceptual and residual values</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1041,7 +1005,7 @@ and compute l thresholds for each point of a pre-defined grid</p>
 <dd><p>check if the feature is uptodate
 if its not update.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>callback</strong> (<em>function</em>) – a function that is called when the feature is updated</p>
 </dd>
 </dl>
@@ -1049,226 +1013,88 @@ if its not update.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="LoopStructural.modelling.intrusions.thickness_from_geometric_scaling.html" title="previous page">
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html"
+       title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">LoopStructural.modelling.intrusions.thickness_from_geometric_scaling</p>
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">LoopStructural.modelling.intrusions.IntrusionFrameBuilder</p>
       </div>
-  </a>
-  <a class='right-next' id="next-link" href="LoopStructural.modelling.intrusions.IntrusionFeature.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">LoopStructural.modelling.intrusions.IntrusionFeature</p>
-  </div>
-  <i class="fa-solid fa-angle-right"></i>
-  </a>
+    </a>
+    <a class="right-next"
+       href="LoopStructural.modelling.intrusions.geom_conceptual_models.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural.modelling.intrusions.geom_conceptual_models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </footer>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-</div>
-<nav id="bd-toc-nav" class="page-toc">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     IntrusionBuilder
-    </span>
-   </code>
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.add_fault">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.add_fault()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.build">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.build()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_simulation">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.create_grid_for_simulation()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_g_sgs_variogram">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.make_g_sgs_variogram()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.make_l_sgs_variogram">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.make_l_sgs_variogram()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_simulation">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.set_data_for_extent_simulation()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_g_sgs_GSLIBparameters">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.set_g_sgs_GSLIBparameters()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_l_sgs_GSLIBparameters">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.set_l_sgs_GSLIBparameters()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.simulate_growth_thresholds()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_growth_thresholds_original">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.simulate_growth_thresholds_original()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.simulate_lateral_thresholds()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.simulate_lateral_thresholds_original">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.simulate_lateral_thresholds_original()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.up_to_date">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       IntrusionBuilder.up_to_date()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-</nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-<div class="tocsection sourcelink">
-    <a href="../_sources/_autosummary/LoopStructural.modelling.intrusions.IntrusionBuilder.rst.txt">
-        <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-</div>
-
-</div>
-
             </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.__init__"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.add_fault"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.add_fault()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.build"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.build()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.create_grid_for_evaluation"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.create_grid_for_evaluation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.prepare_data"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.prepare_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_conceptual_models_parameters"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.set_conceptual_models_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_extent_calculation"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.set_data_for_extent_calculation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_lateral_thresholds"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.set_data_for_lateral_thresholds()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.set_data_for_vertical_thresholds"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.set_data_for_vertical_thresholds()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.modelling.intrusions.IntrusionBuilder.up_to_date"><code class="docutils literal notranslate"><span class="pre">IntrusionBuilder.up_to_date()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_autosummary/LoopStructural.modelling.intrusions.IntrusionBuilder.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

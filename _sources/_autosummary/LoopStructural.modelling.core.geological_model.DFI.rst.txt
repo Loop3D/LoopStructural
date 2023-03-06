@@ -32,6 +32,7 @@ LoopStructural.modelling.core.geological\_model.DFI
       ~DFI.add_value_constraints
       ~DFI.build_matrix
       ~DFI.calculate_residual_for_constraints
+      ~DFI.clean
       ~DFI.copy
       ~DFI.debug
       ~DFI.evaluate_gradient

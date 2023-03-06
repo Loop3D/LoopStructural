@@ -15,11 +15,10 @@ LoopStructural.modelling.intrusions.geom\_conceptual\_models
       :toctree:
       :recursive:
    
+      constant_function
       ellipse_function
       getLogger
       obliquecone_function
-      parallelepiped_function
-      rectangle_function
    
    
 

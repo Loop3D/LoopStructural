@@ -185,6 +185,13 @@ Build model with weight 1.0 for the control points (cpw) and gradient normal con
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Cannot use region
+    Cannot use region
+
 
 
 
@@ -213,6 +220,13 @@ Change weights to
    :srcset: /_auto_examples/1_basic/images/sphx_glr_plot_7_local_weights_002.png
    :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Cannot use region
+    Cannot use region
 
 
 
@@ -248,13 +262,20 @@ in the North of the model.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Cannot use region
+    Cannot use region
+
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.866 seconds)
+   **Total running time of the script:** ( 0 minutes  7.227 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_7_local_weights.py:

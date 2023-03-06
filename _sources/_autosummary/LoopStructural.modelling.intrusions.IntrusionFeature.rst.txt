@@ -17,13 +17,15 @@ LoopStructural.modelling.intrusions.IntrusionFeature
    .. autosummary::
    
       ~IntrusionFeature.__init__
+      ~IntrusionFeature.add_assisting_faults
+      ~IntrusionFeature.add_region
+      ~IntrusionFeature.evaluate_gradient
       ~IntrusionFeature.evaluate_value
-      ~IntrusionFeature.evaluate_value_original
-      ~IntrusionFeature.interpolated_lateral_thresholds
-      ~IntrusionFeature.interpolated_vertical_thresholds
+      ~IntrusionFeature.evaluate_value_test
+      ~IntrusionFeature.interpolate_lateral_thresholds
+      ~IntrusionFeature.interpolate_vertical_thresholds
       ~IntrusionFeature.max
       ~IntrusionFeature.min
-      ~IntrusionFeature.set_intrusion_builder
       ~IntrusionFeature.set_intrusion_frame
       ~IntrusionFeature.set_model
       ~IntrusionFeature.toggle_faults
@@ -36,10 +38,6 @@ LoopStructural.modelling.intrusions.IntrusionFeature
 
    .. autosummary::
    
-      ~IntrusionFeature.growth_simulated_thresholds
-      ~IntrusionFeature.growth_simulated_thresholds_grid
-      ~IntrusionFeature.lateral_sgs_input_data
-      ~IntrusionFeature.lateral_simulated_thresholds
-      ~IntrusionFeature.vertical_sgs_input_data
+      ~IntrusionFeature.model
    
    

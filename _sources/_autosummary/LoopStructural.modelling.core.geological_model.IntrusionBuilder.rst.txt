@@ -19,19 +19,13 @@ LoopStructural.modelling.core.geological\_model.IntrusionBuilder
       ~IntrusionBuilder.__init__
       ~IntrusionBuilder.add_fault
       ~IntrusionBuilder.build
-      ~IntrusionBuilder.create_grid_for_simulation
-      ~IntrusionBuilder.interpolate_lateral_thresholds
-      ~IntrusionBuilder.make_g_sgs_variogram
-      ~IntrusionBuilder.make_l_sgs_variogram
+      ~IntrusionBuilder.create_geometry_using_geometric_scaling
+      ~IntrusionBuilder.create_grid_for_evaluation
       ~IntrusionBuilder.prepare_data
       ~IntrusionBuilder.set_conceptual_models_parameters
-      ~IntrusionBuilder.set_data_for_extent_simulation
-      ~IntrusionBuilder.set_g_sgs_GSLIBparameters
-      ~IntrusionBuilder.set_l_sgs_GSLIBparameters
-      ~IntrusionBuilder.simulate_growth_thresholds
-      ~IntrusionBuilder.simulate_growth_thresholds_original
-      ~IntrusionBuilder.simulate_lateral_thresholds
-      ~IntrusionBuilder.simulate_lateral_thresholds_original
+      ~IntrusionBuilder.set_data_for_extent_calculation
+      ~IntrusionBuilder.set_data_for_lateral_thresholds
+      ~IntrusionBuilder.set_data_for_vertical_thresholds
       ~IntrusionBuilder.up_to_date
       ~IntrusionBuilder.update
    
@@ -45,5 +39,6 @@ LoopStructural.modelling.core.geological\_model.IntrusionBuilder
    
       ~IntrusionBuilder.build_arguments
       ~IntrusionBuilder.feature
+      ~IntrusionBuilder.name
    
    

@@ -29,6 +29,7 @@ LoopStructural.interpolators.P2Interpolator
       ~P2Interpolator.add_value_constraints
       ~P2Interpolator.build_matrix
       ~P2Interpolator.calculate_residual_for_constraints
+      ~P2Interpolator.clean
       ~P2Interpolator.copy
       ~P2Interpolator.debug
       ~P2Interpolator.evaluate_d2

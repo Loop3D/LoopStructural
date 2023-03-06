@@ -1,0 +1,6 @@
+LoopStructural.modelling.intrusions.constant\_function
+======================================================
+
+.. currentmodule:: LoopStructural.modelling.intrusions
+
+.. autofunction:: constant_function

@@ -1,10 +1,14 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>LoopStructural.visualisation.VtkExporter &#8212; LoopStructural 0.1 documentation</title>
   
   
@@ -15,15 +19,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -32,13 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.visualisation.VtkExporter';</script>
@@ -46,78 +47,87 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.visualisation.lavavu" href="LoopStructural.visualisation.lavavu.html" />
     <link rel="prev" title="LoopStructural.visualisation.ScalarField" href="LoopStructural.visualisation.ScalarField.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../index.html">
-
   
   
   
-  
-  
-  
-  
-
   
   
     <p class="title logo__title">LoopStructural 0.1 documentation</p>
   
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class="col-lg-9 navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -152,32 +162,39 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
+  </button>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -186,7 +203,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -197,53 +215,58 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -278,27 +301,28 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
+  </ul>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -307,7 +331,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -318,24 +343,21 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
-    <ul class="nav bd-sidenav">
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="LoopStructural.GeologicalModel.html">LoopStructural.GeologicalModel</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
@@ -476,6 +498,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.html">LoopStructural.modelling.input.map2loop_processor.ProcessInputData</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.input.ponicode.html">LoopStructural.modelling.input.ponicode</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.input.process_data.html">LoopStructural.modelling.input.process_data</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.getLogger.html">LoopStructural.modelling.input.process_data.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.strike_dip_vector.html">LoopStructural.modelling.input.process_data.strike_dip_vector</a></li>
@@ -486,23 +509,20 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.html">LoopStructural.modelling.intrusions</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.ellipse_function.html">LoopStructural.modelling.intrusions.ellipse_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.getLogger.html">LoopStructural.modelling.intrusions.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.constant_function.html">LoopStructural.modelling.intrusions.constant_function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.obliquecone_function.html">LoopStructural.modelling.intrusions.obliquecone_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.parallelepiped_function.html">LoopStructural.modelling.intrusions.parallelepiped_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.rectangle_function.html">LoopStructural.modelling.intrusions.rectangle_function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.thickness_from_geometric_scaling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionBuilder.html">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFeature.html">LoopStructural.modelling.intrusions.IntrusionFeature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.IntrusionFrameBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionBuilder.html">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.html">LoopStructural.modelling.intrusions.geom_conceptual_models</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger.html">LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_functions.html">LoopStructural.modelling.intrusions.geometric_scaling_functions</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -518,6 +538,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.getLogger.html">LoopStructural.modelling.intrusions.intrusion_builder.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.Rbf.html">LoopStructural.modelling.intrusions.intrusion_builder.Rbf</a></li>
@@ -526,6 +547,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.html">LoopStructural.modelling.intrusions.intrusion_feature</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.getLogger.html">LoopStructural.modelling.intrusions.intrusion_feature.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html">LoopStructural.modelling.intrusions.intrusion_feature.FeatureType</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator.html">LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.Rbf.html">LoopStructural.modelling.intrusions.intrusion_feature.Rbf</a></li>
@@ -539,6 +562,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder</a></li>
@@ -732,44 +756,73 @@
 </ul>
 </li>
 </ul>
-
-  </div>
-</nav>
+</div>
+</nav></div>
     </div>
-  </div>
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-  <div class="section" id="loopstructural-visualisation-vtkexporter">
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.html" class="nav-link">LoopStructural</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.visualisation.html" class="nav-link">LoopStructural.visualisation</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">LoopStructural.visualisation.VtkExporter</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="loopstructural-visualisation-vtkexporter">
 <h1>LoopStructural.visualisation.VtkExporter<a class="headerlink" href="#loopstructural-visualisation-vtkexporter" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.VtkExporter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.visualisation.</span></span><span class="sig-name descname"><span class="pre">VtkExporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="LoopStructural.visualisation.model_plotter.BaseModelPlotter.html#LoopStructural.visualisation.model_plotter.BaseModelPlotter" title="LoopStructural.visualisation.model_plotter.BaseModelPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModelPlotter</span></code></a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> – </p>
 </dd>
 </dl>
@@ -777,7 +830,7 @@
 <dt class="sig sig-object py" id="LoopStructural.visualisation.VtkExporter.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.__init__" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> – </p>
 </dd>
 </dl>
@@ -785,14 +838,10 @@
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.VtkExporter.__init__" title="LoopStructural.visualisation.VtkExporter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(model, file_name[, bounding_box, ...])</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param model</dt>
+<dt class="field-odd">param model<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
@@ -855,10 +904,6 @@
 </table>
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></p></td>
 <td><p></p></td>
@@ -876,7 +921,7 @@
 <span class="sig-name descname"><span class="pre">add_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounding_box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_box" title="Permalink to this definition">#</a></dt>
 <dd><p>Adds a box to the viewer defined by a bounding box</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bounding_box</strong> (<em>np.array</em>) – [[xmin,ymin,zmin], [xmax,ymax,zmax]]</p></li>
 <li><p><strong>name</strong> (<em>string</em>) – name of object in viewer</p></li>
@@ -892,7 +937,7 @@
 <dd><p>Plot the data linked to the feature, can choose whether to plot all data types
 using value and grad kwargs</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>feature</strong> – </p></li>
 <li><p><strong>kwargs</strong> – </p></li>
@@ -907,7 +952,7 @@ using value and grad kwargs</p>
 <dd><p>Add a block model painted by the fault displacement magnitude</p>
 <p>Calls fault.displacementfeature.evaluate_value(points) for all faults</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cmap</strong> (<em>matplotlib cmap</em><em>, </em><em>optional</em>) – colourmap name or object from mpl</p>
 </dd>
 </dl>
@@ -924,7 +969,7 @@ You can update the model resolution by changing the attribute nsteps
 <span class="sig-name descname"><span class="pre">add_fold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fold</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_fold" title="Permalink to this definition">#</a></dt>
 <dd><p>Draw the vector components of the fold at the locations</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>fold - fold</em>) – </p></li>
 <li><p><strong>xyz</strong> (<em>locations - numpy array of</em>) – </p></li>
@@ -938,7 +983,7 @@ You can update the model resolution by changing the attribute nsteps
 <span class="sig-name descname"><span class="pre">add_isosurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isovalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paint_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nslices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_isosurface" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot the surface of a geological feature</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geological_feature</strong> (<a class="reference internal" href="LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature" title="LoopStructural.modelling.core.geological_model.GeologicalFeature"><em>GeologicalFeature</em></a>) – [description]</p></li>
 <li><p><strong>value</strong> (<em>float</em><em>, </em><em>optional</em>) – value of the scalar field to isosurface</p></li>
@@ -955,7 +1000,7 @@ You can update the model resolution by changing the attribute nsteps
 callback_function(verts,tri,name)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>[type]</em> – [description]</p>
 </dd>
 </dl>
@@ -967,7 +1012,7 @@ callback_function(verts,tri,name)</p></li>
 <dd><p>Add a block model painted by stratigraphic id to the viewer</p>
 <p>Calls self.model.evaluate_model() for a cube surrounding the model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cmap</strong> (<em>matplotlib cmap</em><em>, </em><em>optional</em>) – colourmap name or object from mpl</p>
 </dd>
 </dl>
@@ -984,7 +1029,7 @@ You can update the model resolution by changing the attribute nsteps
 <span class="sig-name descname"><span class="pre">add_model_surfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strati</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displacement_cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_model_surfaces" title="Permalink to this definition">#</a></dt>
 <dd><p>Add surfaces for all of the interfaces in the model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>strati</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to draw stratigraphy</p></li>
 <li><p><strong>faults</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to draw faults, by default True</p></li>
@@ -1004,7 +1049,7 @@ faults by displacement</p></li>
 <span class="sig-name descname"><span class="pre">add_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_points" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot points location in the lavavu viewer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>points</strong> (<em>numpy array</em><em> of </em><em>the points locations</em>) – </p></li>
 <li><p><strong>name</strong> (<em>string name</em><em> of </em><em>the object for lavavu</em>) – </p></li>
@@ -1019,7 +1064,7 @@ faults by displacement</p></li>
 <span class="sig-name descname"><span class="pre">add_scalar_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rainbow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paint_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_scalar_field" title="Permalink to this definition">#</a></dt>
 <dd><p>Add a block the size of the model area painted with the scalar field value</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geological_feature</strong> (<a class="reference internal" href="LoopStructural.modelling.core.geological_model.GeologicalFeature.html#LoopStructural.modelling.core.geological_model.GeologicalFeature" title="LoopStructural.modelling.core.geological_model.GeologicalFeature"><em>GeologicalFeature</em></a>) – the geological feature to colour the scalar field by</p></li>
 <li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – Name of the object for lavavu, needs to be unique for the viewer object,
@@ -1038,7 +1083,7 @@ by default uses feature name</p></li>
 <span class="sig-name descname"><span class="pre">add_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paint_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_section" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot a section/map thru the model and paint with a geological feature</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geological_feature</strong> (<em>Geological feature</em>) – The feature to paint the section with</p></li>
 <li><p><strong>axis</strong> (<em>string</em>) – which axis, x,y,z</p></li>
@@ -1054,7 +1099,7 @@ by default uses feature name</p></li>
 <span class="sig-name descname"><span class="pre">add_value_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_value_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot points data with a value component</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>position</strong> (<em>numpy array N</em><em>,</em><em>3 for xyz locations</em>) – </p></li>
 <li><p><strong>value</strong> (<em>N array</em><em> of </em><em>values</em>) – </p></li>
@@ -1070,7 +1115,7 @@ by default uses feature name</p></li>
 <span class="sig-name descname"><span class="pre">add_vector_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrow'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_vector_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot point data with a vector component into the lavavu viewer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>position</strong> (<em>numpy array N</em><em>,</em><em>3 for xyz locations</em>) – </p></li>
 <li><p><strong>vector</strong> (<em>numpy array</em><em> of </em><em>vector N</em><em>,</em><em>3</em>) – </p></li>
@@ -1086,7 +1131,7 @@ by default uses feature name</p></li>
 <span class="sig-name descname"><span class="pre">add_vector_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geological_feature</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.add_vector_field" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot the gradient of a geological feature at given locations</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geological_feature</strong> (<em>Geological Feature to evaluate gradient</em>) – </p></li>
 <li><p><strong>locations</strong> (<em>(</em><em>(</em><em>N</em><em>,</em><em>3</em><em>)</em><em>) </em><em>array</em><em> of </em><em>evaluation locations</em>) – </p></li>
@@ -1101,7 +1146,7 @@ by default uses feature name</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nelements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#LoopStructural.visualisation.VtkExporter.nelements" title="Permalink to this definition">#</a></dt>
 <dd><p>The number of elements to use for evaluating the isosurface</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>nelements</strong> (<em>int</em>) – number of elements to use for isosurfacing</p>
 </dd>
 </dl>
@@ -1109,235 +1154,93 @@ by default uses feature name</p></li>
 
 </dd></dl>
 
-</div>
+</section>
 
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="LoopStructural.visualisation.ScalarField.html" title="previous page">
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="LoopStructural.visualisation.ScalarField.html"
+       title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">LoopStructural.visualisation.ScalarField</p>
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">LoopStructural.visualisation.ScalarField</p>
       </div>
-  </a>
-  <a class='right-next' id="next-link" href="LoopStructural.visualisation.lavavu.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">LoopStructural.visualisation.lavavu</p>
-  </div>
-  <i class="fa-solid fa-angle-right"></i>
-  </a>
+    </a>
+    <a class="right-next"
+       href="LoopStructural.visualisation.lavavu.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural.visualisation.lavavu</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </footer>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-</div>
-<nav id="bd-toc-nav" class="page-toc">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     VtkExporter
-    </span>
-   </code>
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_box">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_box()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_data">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_data()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_fault_displacements">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_fault_displacements()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_fold">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_fold()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_isosurface">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_isosurface()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_model">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_model()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_model_surfaces">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_model_surfaces()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_points">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_points()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_scalar_field">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_scalar_field()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_section">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_section()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_value_data">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_value_data()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_vector_data">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_vector_data()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_vector_field">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.add_vector_field()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.nelements">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       VtkExporter.nelements
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-</nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-<div class="tocsection sourcelink">
-    <a href="../_sources/_autosummary/LoopStructural.visualisation.VtkExporter.rst.txt">
-        <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-</div>
-
-</div>
-
             </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter"><code class="docutils literal notranslate"><span class="pre">VtkExporter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.__init__"><code class="docutils literal notranslate"><span class="pre">VtkExporter.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_box"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_box()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_data"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_fault_displacements"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_fault_displacements()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_fold"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_fold()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_isosurface"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_isosurface()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_model"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_model()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_model_surfaces"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_model_surfaces()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_points"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_points()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_scalar_field"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_scalar_field()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_section"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_section()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_value_data"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_value_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_vector_data"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_vector_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.add_vector_field"><code class="docutils literal notranslate"><span class="pre">VtkExporter.add_vector_field()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.VtkExporter.nelements"><code class="docutils literal notranslate"><span class="pre">VtkExporter.nelements</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_autosummary/LoopStructural.visualisation.VtkExporter.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

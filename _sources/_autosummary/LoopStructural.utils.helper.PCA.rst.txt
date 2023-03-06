@@ -20,24 +20,16 @@ LoopStructural.utils.helper.PCA
       ~PCA.fit
       ~PCA.fit_transform
       ~PCA.get_covariance
-      ~PCA.get_feature_names_out
       ~PCA.get_params
       ~PCA.get_precision
       ~PCA.inverse_transform
       ~PCA.score
       ~PCA.score_samples
-      ~PCA.set_output
       ~PCA.set_params
       ~PCA.transform
    
    
 
    
-   
-   .. rubric:: Attributes
-
-   .. autosummary::
-   
-      ~PCA.n_features_
    
    

@@ -92,7 +92,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7f5041eb1b20>
+    <matplotlib.contour.QuadContourSet object at 0x7fbfd9b87d30>
 
 
 
@@ -183,7 +183,31 @@ fault frame and an expected displacement model.
 
  .. code-block:: none
 
-      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  50%|#####     | 2/4 [00:00<00:00,  8.07it/s]    Interpolating strati:  75%|#######5  | 3/4 [00:00<00:00,  8.07it/s]    Interpolating strati: : 7it [01:10, 10.96s/it]                         Interpolating strati: : 7it [01:10, 10.03s/it]
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    /LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:239: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+
+    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      data.loc[
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    /LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:239: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+
+    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      data.loc[
+    Cannot use region
+    Cannot use region
+      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  50%|#####     | 2/4 [00:00<00:00,  9.83it/s]    Interpolating strati:  75%|#######5  | 3/4 [00:00<00:00,  9.83it/s]    Interpolating strati: : 7it [00:46,  7.27s/it]                         Interpolating strati: : 7it [00:46,  6.65s/it]
 
 
 
@@ -191,7 +215,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  16.796 seconds)
+   **Total running time of the script:** ( 0 minutes  52.307 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_faulted_intrusion.py:

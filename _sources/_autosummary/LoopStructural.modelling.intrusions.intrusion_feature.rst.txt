@@ -28,6 +28,8 @@ LoopStructural.modelling.intrusions.intrusion\_feature
       :template: custom-class-template.rst
       :recursive:              
    
+      BaseFeature
+      FeatureType
       IntrusionFeature
       NearestNDInterpolator
       Rbf

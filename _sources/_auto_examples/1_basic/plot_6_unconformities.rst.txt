@@ -75,7 +75,13 @@ Model 3 scalar fields where the top is horizontal, the middle is dipping and the
 
  .. code-block:: none
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:  33%|###3      | 1/3 [00:01<00:02,  1.37s/it]    Interpolating unit_b:  33%|###3      | 1/3 [00:01<00:02,  1.37s/it]    Interpolating unit_b:  67%|######6   | 2/3 [00:03<00:01,  1.78s/it]    Interpolating unit_c:  67%|######6   | 2/3 [00:03<00:01,  1.78s/it]    Interpolating unit_c: 100%|##########| 3/3 [00:05<00:00,  1.69s/it]    Interpolating unit_c: 100%|##########| 3/3 [00:05<00:00,  1.67s/it]
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:  33%|###3      | 1/3 [00:01<00:02,  1.03s/it]    Interpolating unit_b:  33%|###3      | 1/3 [00:01<00:02,  1.03s/it]    Interpolating unit_b:  67%|######6   | 2/3 [00:02<00:01,  1.19s/it]    Interpolating unit_c:  67%|######6   | 2/3 [00:02<00:01,  1.19s/it]    Interpolating unit_c: 100%|##########| 3/3 [00:03<00:00,  1.12s/it]    Interpolating unit_c: 100%|##########| 3/3 [00:03<00:00,  1.13s/it]
 
 
 
@@ -156,6 +162,12 @@ and unit_c should not occur below unit_b isovalue of 0
 
  .. code-block:: none
 
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
 
     -----------------------------------------------------
     unit_c 1 
@@ -211,7 +223,7 @@ We can examine the model by printing the object
       unit_b_unconformity 
       unit_c 
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:  33%|###3      | 1/3 [00:01<00:03,  1.91s/it]    Interpolating unit_a_unconformity:  33%|###3      | 1/3 [00:01<00:03,  1.91s/it]    Interpolating unit_b:  67%|######6   | 2/3 [00:01<00:01,  1.91s/it]                 Interpolating unit_b: 100%|##########| 3/3 [00:04<00:00,  1.32s/it]    Interpolating unit_b_unconformity: 100%|##########| 3/3 [00:04<00:00,  1.32s/it]    Interpolating unit_c: : 4it [00:04,  1.32s/it]                                      Interpolating unit_c: : 5it [00:06,  1.14s/it]    Interpolating unit_c: : 5it [00:06,  1.22s/it]
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:  33%|###3      | 1/3 [00:01<00:02,  1.03s/it]    Interpolating unit_a_unconformity:  33%|###3      | 1/3 [00:01<00:02,  1.03s/it]    Interpolating unit_b:  67%|######6   | 2/3 [00:01<00:01,  1.03s/it]                 Interpolating unit_b: 100%|##########| 3/3 [00:02<00:00,  1.33it/s]    Interpolating unit_b_unconformity: 100%|##########| 3/3 [00:02<00:00,  1.33it/s]    Interpolating unit_c: : 4it [00:02,  1.33it/s]                                      Interpolating unit_c: : 5it [00:03,  1.58it/s]    Interpolating unit_c: : 5it [00:03,  1.48it/s]
 
 
 
@@ -290,7 +302,13 @@ between b and c to be an onlap. This means the geometry of c truncates b
 
  .. code-block:: none
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:  33%|###3      | 1/3 [00:01<00:03,  1.83s/it]    Interpolating unit_a_unconformity:  33%|###3      | 1/3 [00:01<00:03,  1.83s/it]    Interpolating unit_b:  67%|######6   | 2/3 [00:01<00:01,  1.83s/it]                 Interpolating unit_b: 100%|##########| 3/3 [00:03<00:00,  1.19s/it]    Interpolating unit_c: 100%|##########| 3/3 [00:03<00:00,  1.19s/it]    Interpolating unit_c: : 4it [00:05,  1.44s/it]                         Interpolating unit_c_unconformity: : 4it [00:05,  1.44s/it]    Interpolating unit_c_unconformity: : 5it [00:05,  1.14s/it]
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+    Cannot use region
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:  33%|###3      | 1/3 [00:01<00:02,  1.05s/it]    Interpolating unit_a_unconformity:  33%|###3      | 1/3 [00:01<00:02,  1.05s/it]    Interpolating unit_b:  67%|######6   | 2/3 [00:01<00:01,  1.05s/it]                 Interpolating unit_b: 100%|##########| 3/3 [00:02<00:00,  1.33it/s]    Interpolating unit_c: 100%|##########| 3/3 [00:02<00:00,  1.33it/s]    Interpolating unit_c: : 4it [00:03,  1.18it/s]                         Interpolating unit_c_unconformity: : 4it [00:03,  1.18it/s]    Interpolating unit_c_unconformity: : 5it [00:03,  1.48it/s]
 
 
 
@@ -340,7 +358,7 @@ Visualise the model with onlap
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  20.127 seconds)
+   **Total running time of the script:** ( 0 minutes  13.104 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_6_unconformities.py:

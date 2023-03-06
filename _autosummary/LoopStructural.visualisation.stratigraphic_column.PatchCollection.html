@@ -1,10 +1,14 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>LoopStructural.visualisation.stratigraphic_column.PatchCollection &#8212; LoopStructural 0.1 documentation</title>
   
   
@@ -15,15 +19,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -32,13 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection';</script>
@@ -46,78 +47,87 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.visualisation.stratigraphic_column.Polygon" href="LoopStructural.visualisation.stratigraphic_column.Polygon.html" />
     <link rel="prev" title="LoopStructural.visualisation.stratigraphic_column" href="LoopStructural.visualisation.stratigraphic_column.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../index.html">
-
   
   
   
-  
-  
-  
-  
-
   
   
     <p class="title logo__title">LoopStructural 0.1 documentation</p>
   
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class="col-lg-9 navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -152,32 +162,39 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
+  </button>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -186,7 +203,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -197,53 +215,58 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../getting_started/index.html">
                         Getting Started
@@ -278,27 +301,28 @@
                   </a>
                 </li>
                 
-    </ul>
-</nav>
+  </ul>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -307,7 +331,8 @@
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -318,24 +343,21 @@
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-twitter-square"></i></span>
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
-    <ul class="nav bd-sidenav">
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="LoopStructural.GeologicalModel.html">LoopStructural.GeologicalModel</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
@@ -476,6 +498,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.map2loop_processor.ProcessInputData.html">LoopStructural.modelling.input.map2loop_processor.ProcessInputData</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.input.ponicode.html">LoopStructural.modelling.input.ponicode</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.input.process_data.html">LoopStructural.modelling.input.process_data</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.getLogger.html">LoopStructural.modelling.input.process_data.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.input.process_data.strike_dip_vector.html">LoopStructural.modelling.input.process_data.strike_dip_vector</a></li>
@@ -486,23 +509,20 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.html">LoopStructural.modelling.intrusions</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.ellipse_function.html">LoopStructural.modelling.intrusions.ellipse_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.getLogger.html">LoopStructural.modelling.intrusions.getLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.constant_function.html">LoopStructural.modelling.intrusions.constant_function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.obliquecone_function.html">LoopStructural.modelling.intrusions.obliquecone_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.parallelepiped_function.html">LoopStructural.modelling.intrusions.parallelepiped_function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.rectangle_function.html">LoopStructural.modelling.intrusions.rectangle_function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_parameters.html">LoopStructural.modelling.intrusions.geometric_scaling_parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.thickness_from_geometric_scaling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionBuilder.html">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling.html">LoopStructural.modelling.intrusions.contact_pts_using_geometric_scaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFeature.html">LoopStructural.modelling.intrusions.IntrusionFeature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.IntrusionFrameBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="LoopStructural.modelling.intrusions.IntrusionBuilder.html">LoopStructural.modelling.intrusions.IntrusionBuilder</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.html">LoopStructural.modelling.intrusions.geom_conceptual_models</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.constant_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.ellipse_function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger.html">LoopStructural.modelling.intrusions.geom_conceptual_models.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.obliquecone_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.parallelepiped_function</a></li>
-<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function.html">LoopStructural.modelling.intrusions.geom_conceptual_models.rectangle_function</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.geometric_scaling_functions.html">LoopStructural.modelling.intrusions.geometric_scaling_functions</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -518,6 +538,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.getLogger.html">LoopStructural.modelling.intrusions.intrusion_builder.getLogger</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling.html">LoopStructural.modelling.intrusions.intrusion_builder.thickness_from_geometric_scaling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.BaseBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_builder.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_builder.Rbf.html">LoopStructural.modelling.intrusions.intrusion_builder.Rbf</a></li>
@@ -526,6 +547,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.html">LoopStructural.modelling.intrusions.intrusion_feature</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.getLogger.html">LoopStructural.modelling.intrusions.intrusion_feature.getLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.FeatureType.html">LoopStructural.modelling.intrusions.intrusion_feature.FeatureType</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature.html">LoopStructural.modelling.intrusions.intrusion_feature.IntrusionFeature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator.html">LoopStructural.modelling.intrusions.intrusion_feature.NearestNDInterpolator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_feature.Rbf.html">LoopStructural.modelling.intrusions.intrusion_feature.Rbf</a></li>
@@ -539,6 +562,7 @@
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.grid_from_array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.shortest_path</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.BaseFeature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.FaultSegment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.IntrusionFrameBuilder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.KMeans</a></li>
 <li class="toctree-l4"><a class="reference internal" href="LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder.html">LoopStructural.modelling.intrusions.intrusion_frame_builder.StructuralFrameBuilder</a></li>
@@ -732,37 +756,71 @@
 </ul>
 </li>
 </ul>
-
-  </div>
-</nav>
+</div>
+</nav></div>
     </div>
-  </div>
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-  <div class="section" id="loopstructural-visualisation-stratigraphic-column-patchcollection">
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.html" class="nav-link">LoopStructural</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.visualisation.stratigraphic_column.html" class="nav-link">LoopStructural.visualisation.stratigraphic_column</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">LoopStructural.visualisation.stratigraphic_column.PatchCollection</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="loopstructural-visualisation-stratigraphic-column-patchcollection">
 <h1>LoopStructural.visualisation.stratigraphic_column.PatchCollection<a class="headerlink" href="#loopstructural-visualisation-stratigraphic-column-patchcollection" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection">
@@ -773,7 +831,7 @@
 Patches. It also makes it easier to assign a colormap to a heterogeneous
 collection of patches.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>patches</strong> (list of <cite>.Patch</cite>) – A sequence of Patch objects.  This list may include
 a heterogeneous assortment of different patch types.</p></li>
@@ -798,7 +856,7 @@ mappable will be made to set the face colors.</p>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_original</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>patches</strong> (list of <cite>.Patch</cite>) – A sequence of Patch objects.  This list may include
 a heterogeneous assortment of different patch types.</p></li>
@@ -823,14 +881,10 @@ mappable will be made to set the face colors.</p>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(patches, *[, match_original])</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param patches</dt>
+<dt class="field-odd">param patches<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A sequence of Patch objects.  This list may include</p>
 </dd>
 </dl>
@@ -1195,7 +1249,7 @@ mappable will be made to set the face colors.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_urls</span></code></a>(urls)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param urls</dt>
+<dt class="field-odd">param urls<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
@@ -1222,30 +1276,23 @@ mappable will be made to set the face colors.</p>
 </table>
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">axes</span></code></a></p></td>
 <td><p>The <cite>~.axes.Axes</cite> instance the artist resides in, or <em>None</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">callbacksSM</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouseover</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouseover</span></code></a></p></td>
 <td><p>Return whether this artist is queried for custom context information when the mouse cursor moves over it.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale</span></code></a></p></td>
 <td><p>Whether the artist is 'stale' and needs to be re-drawn for the output to match the internal state of the artist.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sticky_edges</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges" title="LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sticky_edges</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> sticky edge lists for autoscaling.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zorder</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zorder</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -1256,7 +1303,7 @@ mappable will be made to set the face colors.</p>
 <dd><p>Add a callback function that will be called whenever one of the
 <cite>.Artist</cite>’s properties changes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>func</strong> (<em>callable</em>) – <p>The callback function. It must have the signature:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">artist</span><span class="p">:</span> <span class="n">Artist</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
 </pre></div>
@@ -1265,7 +1312,7 @@ mappable will be made to set the face colors.</p>
 but are ignored.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>int</em> – The observer id associated with the callback. This id can be
 used for removing the callback with <cite>.remove_callback</cite> later.</p>
 </dd>
@@ -1340,7 +1387,7 @@ have units, <em>y</em> itself is returned.</p>
 <p>This has no effect if the artist is not visible (<cite>.Artist.get_visible</cite>
 returns False).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>renderer</strong> (<cite>.RendererBase</cite> subclass.) – </p>
 </dd>
 </dl>
@@ -1354,7 +1401,7 @@ returns False).</p>
 <dd><p>Find artist objects.</p>
 <p>Recursively find all <cite>.Artist</cite> instances contained in the artist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>match</strong> – <p>A filter criterion for the matches. This can be</p>
 <ul>
@@ -1369,7 +1416,7 @@ artists of this class or its subclasses (<code class="docutils literal notransla
 <li><p><strong>include_self</strong> (<em>bool</em>) – Include <em>self</em> in the list to be checked for a match.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of <cite>.Artist</cite></p>
 </dd>
 </dl>
@@ -1477,7 +1524,7 @@ the data to a string representation.</p>
 <p>The only current use case is displaying the z-value of an <cite>.AxesImage</cite>
 in the status bar of a plot window, while moving the mouse.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>event</strong> (<cite>matplotlib.backend_bases.MouseEvent</cite>) – </p>
 </dd>
 </dl>
@@ -1622,7 +1669,7 @@ when the mouse cursor moves over it.</p>
 <span class="sig-name descname"><span class="pre">get_sketch_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_sketch_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the sketch parameters for the artist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><p><em>tuple or None</em> – A 3-tuple with the following elements:</p>
 <ul class="simple">
 <li><p><em>scale</em>: The amplitude of the wiggle perpendicular to the
@@ -1649,11 +1696,11 @@ shrunken or expanded.</p></li>
 <span class="sig-name descname"><span class="pre">get_tightbbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_tightbbox" title="Permalink to this definition">#</a></dt>
 <dd><p>Like <cite>.Artist.get_window_extent</cite>, but includes any clipping.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>renderer</strong> (<cite>.RendererBase</cite> subclass) – renderer that will be used to draw the figures (i.e.
 <code class="docutils literal notranslate"><span class="pre">fig.canvas.get_renderer()</span></code>)</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>.Bbox</cite> – The enclosing bounding box (in figure pixel coordinates).</p>
 </dd>
 </dl>
@@ -1825,7 +1872,7 @@ edgecolor or ec or edgecolors: color or list of colors or ‘face’
 facecolor or facecolors or fc: color or list of colors
 figure: <cite>.Figure</cite>
 gid: str
-hatch: {‘/’, ‘\’, ‘|’, ‘-‘, ‘+’, ‘x’, ‘o’, ‘O’, ‘.’, ‘*’}
+hatch: {‘/’, ‘\’, ‘|’, ‘-’, ‘+’, ‘x’, ‘o’, ‘O’, ‘.’, ‘*’}
 in_layout: bool
 joinstyle: <cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}
 label: object
@@ -1862,7 +1909,7 @@ zorder: float</p>
 <span class="sig-name descname"><span class="pre">set_agg_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_agg_filter" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the agg filter.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filter_func</strong> (<em>callable</em>) – <p>A filter function, which takes a (m, n, depth) float array
 and a dpi value, and returns a (m, n, depth) array and two
 offsets from the bottom left corner of the image</p>
@@ -1876,7 +1923,7 @@ offsets from the bottom left corner of the image</p>
 <span class="sig-name descname"><span class="pre">set_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_alpha" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the alpha value used for blending - not supported on all backends.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>alpha</strong> (<em>array-like</em><em> or </em><em>scalar</em><em> or </em><em>None</em>) – All values must be within the 0-1 range, inclusive.
 Masked values and nans are not supported.</p>
 </dd>
@@ -1894,7 +1941,7 @@ using blitting.</p>
 <p>See also <cite>matplotlib.animation</cite> and
 <span class="xref std std-doc">/tutorials/advanced/blitting</span>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
 </dd>
 </dl>
@@ -1905,7 +1952,7 @@ using blitting.</p>
 <span class="sig-name descname"><span class="pre">set_antialiased</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_antialiased" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the antialiasing state for rendering.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>aa</strong> (<em>bool</em><em> or </em><em>list</em><em> of </em><em>bools</em>) – </p>
 </dd>
 </dl>
@@ -1922,7 +1969,7 @@ using blitting.</p>
 <span class="sig-name descname"><span class="pre">set_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_array" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the value array from array-like <em>A</em>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>A</strong> (<em>array-like</em><em> or </em><em>None</em>) – <p>The values that are mapped to colors.</p>
 <p>The base class <cite>.ScalarMappable</cite> does not make any assumptions on
 the dimensionality and shape of the value array <em>A</em>.</p>
@@ -1936,7 +1983,7 @@ the dimensionality and shape of the value array <em>A</em>.</p>
 <span class="sig-name descname"><span class="pre">set_capstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_capstyle" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the <cite>.CapStyle</cite> for the collection (for all its elements).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cs</strong> (<cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}) – </p>
 </dd>
 </dl>
@@ -1947,7 +1994,7 @@ the dimensionality and shape of the value array <em>A</em>.</p>
 <span class="sig-name descname"><span class="pre">set_clim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clim" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the norm limits for image scaling.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vmin</strong> (<em>float</em>) – <p>The limits.</p>
 <p>The limits may also be passed as a tuple (<em>vmin</em>, <em>vmax</em>) as a
@@ -1967,8 +2014,10 @@ single positional argument.</p>
 <span class="sig-name descname"><span class="pre">set_clip_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clipbox</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_box" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the artist’s clip <cite>.Bbox</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>clipbox</strong> (<cite>.Bbox</cite>) – </p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>clipbox</strong> (<cite>.Bbox</cite>) – Typically would be created from a <cite>.TransformedBbox</cite>. For
+instance <code class="docutils literal notranslate"><span class="pre">TransformedBbox(Bbox([[0,</span> <span class="pre">0],</span> <span class="pre">[1,</span> <span class="pre">1]]),</span> <span class="pre">ax.transAxes)</span></code>
+is the default clipping for an artist added to an Axes.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1980,7 +2029,7 @@ single positional argument.</p>
 <p>When False, artists will be visible outside the Axes which
 can lead to unexpected results.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
 </dd>
 </dl>
@@ -1991,7 +2040,7 @@ can lead to unexpected results.</p>
 <span class="sig-name descname"><span class="pre">set_clip_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the artist’s clip path.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<cite>.Patch</cite> or <cite>.Path</cite> or <cite>.TransformedPath</cite> or None) – The clip path. If given a <cite>.Path</cite>, <em>transform</em> must be provided as
 well. If <em>None</em>, a previously set clip path is removed.</p></li>
@@ -2014,7 +2063,7 @@ parameter.</p>
 <span class="sig-name descname"><span class="pre">set_cmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_cmap" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the colormap for luminance data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cmap</strong> (<cite>.Colormap</cite> or str or None) – </p>
 </dd>
 </dl>
@@ -2025,7 +2074,7 @@ parameter.</p>
 <span class="sig-name descname"><span class="pre">set_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_color" title="Permalink to this definition">#</a></dt>
 <dd><p>Set both the edgecolor and the facecolor.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>list</em><em> of </em><em>RGBA tuples</em>) – </p>
 </dd>
 </dl>
@@ -2052,7 +2101,7 @@ parameter.</p>
 <span class="sig-name descname"><span class="pre">set_edgecolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolor" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the edgecolor(s) of the collection.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>list</em><em> of </em><em>colors</em><em> or </em><em>'face'</em>) – The collection edgecolor(s).  If a sequence, the patches cycle
 through it.  If ‘face’, match the facecolor.</p>
 </dd>
@@ -2073,7 +2122,7 @@ have same color), or a sequence of colors; if it is a sequence the
 patches will cycle through the sequence.</p>
 <p>If <em>c</em> is ‘none’, the patch will not be filled.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>c</strong> (<em>color</em><em> or </em><em>list</em><em> of </em><em>colors</em>) – </p>
 </dd>
 </dl>
@@ -2096,7 +2145,7 @@ patches will cycle through the sequence.</p>
 <span class="sig-name descname"><span class="pre">set_figure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_figure" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the <cite>.Figure</cite> instance the artist belongs to.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>fig</strong> (<cite>.Figure</cite>) – </p>
 </dd>
 </dl>
@@ -2107,7 +2156,7 @@ patches will cycle through the sequence.</p>
 <span class="sig-name descname"><span class="pre">set_gid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_gid" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the (group) id for the artist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>gid</strong> (<em>str</em>) – </p>
 </dd>
 </dl>
@@ -2139,7 +2188,7 @@ backends only.</p>
 can only be specified for the collection as a whole, not separately
 for each member.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>hatch</strong> (<em>{'/'</em><em>, </em><em>'\'</em><em>, </em><em>'</em><em>|</em><em>'</em><em>, </em><em>'-'</em><em>, </em><em>'+'</em><em>, </em><em>'x'</em><em>, </em><em>'o'</em><em>, </em><em>'O'</em><em>, </em><em>'.'</em><em>, </em><em>'*'}</em>) – </p>
 </dd>
 </dl>
@@ -2153,7 +2202,7 @@ E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_gu
 <cite>.Figure.tight_layout()</cite>, and
 <code class="docutils literal notranslate"><span class="pre">fig.savefig(fname,</span> <span class="pre">bbox_inches='tight')</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>in_layout</strong> (<em>bool</em>) – </p>
 </dd>
 </dl>
@@ -2164,7 +2213,7 @@ E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_gu
 <span class="sig-name descname"><span class="pre">set_joinstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">js</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the <cite>.JoinStyle</cite> for the collection (for all its elements).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>js</strong> (<cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}) – </p>
 </dd>
 </dl>
@@ -2175,7 +2224,7 @@ E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_gu
 <span class="sig-name descname"><span class="pre">set_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_label" title="Permalink to this definition">#</a></dt>
 <dd><p>Set a label that will be displayed in the legend.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>s</strong> (<em>object</em>) – <em>s</em> will be converted to a string by calling <cite>str</cite>.</p>
 </dd>
 </dl>
@@ -2186,10 +2235,6 @@ E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_gu
 <span class="sig-name descname"><span class="pre">set_linestyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyle" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the linestyle(s) for the collection.</p>
 <table class="table">
-<colgroup>
-<col style="width: 61%" />
-<col style="width: 39%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>linestyle</p></th>
 <th class="head"><p>description</p></th>
@@ -2216,8 +2261,8 @@ E.g. <span class="xref std std-doc">/tutorials/intermediate/constrainedlayout_gu
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">onoffseq</span></code> is an even length tuple of on and off ink in points.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ls</strong> (<em>str</em><em> or </em><em>tuple</em><em> or </em><em>list thereof</em>) – Valid values for individual linestyles include {‘-‘, ‘–’, ‘-.’,
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ls</strong> (<em>str</em><em> or </em><em>tuple</em><em> or </em><em>list thereof</em>) – Valid values for individual linestyles include {‘-’, ‘–’, ‘-.’,
 ‘:’, ‘’, (offset, on-off-seq)}. See <cite>.Line2D.set_linestyle</cite> for a
 complete description.</p>
 </dd>
@@ -2237,7 +2282,7 @@ complete description.</p>
 or a sequence; if it is a sequence the patches will cycle
 through the sequence</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>lw</strong> (<em>float</em><em> or </em><em>list</em><em> of </em><em>floats</em>) – </p>
 </dd>
 </dl>
@@ -2267,7 +2312,7 @@ through the sequence</p>
 <dd><p>Set whether this artist is queried for custom context information when
 the mouse cursor moves over it.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>mouseover</strong> (<em>bool</em>) – </p>
 </dd>
 </dl>
@@ -2282,7 +2327,7 @@ the mouse cursor moves over it.</p>
 <span class="sig-name descname"><span class="pre">set_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the normalization instance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>norm</strong> (<cite>.Normalize</cite> or str or None) – </p>
 </dd>
 </dl>
@@ -2297,7 +2342,7 @@ on the colorbar to default.</p>
 <span class="sig-name descname"><span class="pre">set_offset_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset_transform</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the artist offset transform.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>offset_transform</strong> (<cite>.Transform</cite>) – </p>
 </dd>
 </dl>
@@ -2308,7 +2353,7 @@ on the colorbar to default.</p>
 <span class="sig-name descname"><span class="pre">set_offsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offsets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the offsets for the collection.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>offsets</strong> (<em>(</em><em>N</em><em>, </em><em>2</em><em>) or </em><em>(</em><em>2</em><em>,</em><em>) </em><em>array-like</em>) – </p>
 </dd>
 </dl>
@@ -2319,7 +2364,7 @@ on the colorbar to default.</p>
 <span class="sig-name descname"><span class="pre">set_path_effects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_effects</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_path_effects" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the path effects.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path_effects</strong> (<cite>.AbstractPathEffect</cite>) – </p>
 </dd>
 </dl>
@@ -2330,7 +2375,7 @@ on the colorbar to default.</p>
 <span class="sig-name descname"><span class="pre">set_picker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">picker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_picker" title="Permalink to this definition">#</a></dt>
 <dd><p>Define the picking behavior of the artist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>picker</strong> (<em>None</em><em> or </em><em>bool</em><em> or </em><em>float</em><em> or </em><em>callable</em>) – <p>This can be one of the following:</p>
 <ul>
 <li><p><em>None</em>: Picking is disabled for this artist (default).</p></li>
@@ -2365,7 +2410,7 @@ properties you want added to the PickEvent attributes.</p>
 <span class="sig-name descname"><span class="pre">set_pickradius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pickradius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_pickradius" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the pick radius used for containment tests.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pickradius</strong> (<em>float</em>) – Pick radius, in points.</p>
 </dd>
 </dl>
@@ -2381,7 +2426,7 @@ effect and a warning will be issued.</p>
 <p>This setting is ignored for pixel-based output.</p>
 <p>See also <span class="xref std std-doc">/gallery/misc/rasterization_demo</span>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>rasterized</strong> (<em>bool</em>) – </p>
 </dd>
 </dl>
@@ -2392,7 +2437,7 @@ effect and a warning will be issued.</p>
 <span class="sig-name descname"><span class="pre">set_sketch_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the sketch parameters.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scale</strong> (<em>float</em><em>, </em><em>optional</em>) – The amplitude of the wiggle perpendicular to the source
 line, in pixels.  If scale is <cite>None</cite>, or not provided, no
@@ -2423,7 +2468,7 @@ value, so that the resulting image will really contain a 1px wide
 black line.</p>
 <p>Snapping is currently only supported by the Agg and MacOSX backends.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>snap</strong> (<em>bool</em><em> or </em><em>None</em>) – <p>Possible values:</p>
 <ul class="simple">
 <li><p><em>True</em>: Snap vertices to the nearest pixel center.</p></li>
@@ -2447,7 +2492,7 @@ segments, round to the nearest pixel center.</p></li>
 <span class="sig-name descname"><span class="pre">set_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the artist transform.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>t</strong> (<cite>.Transform</cite>) – </p>
 </dd>
 </dl>
@@ -2458,7 +2503,7 @@ segments, round to the nearest pixel center.</p></li>
 <span class="sig-name descname"><span class="pre">set_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_url" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the url for the artist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – </p>
 </dd>
 </dl>
@@ -2468,7 +2513,7 @@ segments, round to the nearest pixel center.</p></li>
 <dt class="sig sig-object py" id="LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls">
 <span class="sig-name descname"><span class="pre">set_urls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>urls</strong> (<em>list</em><em> of </em><em>str</em><em> or </em><em>None</em>) – </p>
 </dd>
 </dl>
@@ -2482,7 +2527,7 @@ ignored by all other backends.</p>
 <span class="sig-name descname"><span class="pre">set_visible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_visible" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the artist’s visibility.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>b</strong> (<em>bool</em>) – </p>
 </dd>
 </dl>
@@ -2494,7 +2539,7 @@ ignored by all other backends.</p>
 <dd><p>Set the zorder for the artist.  Artists with lower zorder
 values are drawn first.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>level</strong> (<em>float</em>) – </p>
 </dd>
 </dl>
@@ -2534,11 +2579,11 @@ lists can be modified in place as needed.</p>
 <span class="sig-name descname"><span class="pre">to_rgba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a normalized rgba array corresponding to <em>x</em>.</p>
 <p>In the normal case, <em>x</em> is a 1D or 2D sequence of scalars, and
-the corresponding ndarray of rgba values will be returned,
+the corresponding <cite>~numpy.ndarray</cite> of rgba values will be returned,
 based on the norm and colormap set for this ScalarMappable.</p>
 <p>There is one special case, for handling images that are already
 rgb or rgba, such as might have been read from an image file.
-If <em>x</em> is an ndarray with 3 dimensions,
+If <em>x</em> is an <cite>~numpy.ndarray</cite> with 3 dimensions,
 and the last dimension is either 3 or 4, then it will be
 treated as an rgb or rgba array, and no mapping will be done.
 The array can be uint8, or it can be floating point with
@@ -2561,7 +2606,7 @@ performed, and it is assumed to be in the range (0-1).</p>
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">props</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update" title="Permalink to this definition">#</a></dt>
 <dd><p>Update this artist’s properties from the dict <em>props</em>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>props</strong> (<em>dict</em>) – </p>
 </dd>
 </dl>
@@ -2583,1180 +2628,198 @@ colors that were directly set, as appropriate.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="LoopStructural.visualisation.stratigraphic_column.html" title="previous page">
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="LoopStructural.visualisation.stratigraphic_column.html"
+       title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column</p>
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column</p>
       </div>
-  </a>
-  <a class='right-next' id="next-link" href="LoopStructural.visualisation.stratigraphic_column.Polygon.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column.Polygon</p>
-  </div>
-  <i class="fa-solid fa-angle-right"></i>
-  </a>
+    </a>
+    <a class="right-next"
+       href="LoopStructural.visualisation.stratigraphic_column.Polygon.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural.visualisation.stratigraphic_column.Polygon</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </footer>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-</div>
-<nav id="bd-toc-nav" class="page-toc">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     PatchCollection
-    </span>
-   </code>
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_callback">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.add_callback()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.autoscale()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale_None">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.autoscale_None()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.axes
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.changed()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.colorbar">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.colorbar
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.contains">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.contains()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.convert_xunits">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.convert_xunits()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.convert_yunits">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.convert_yunits()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.draw">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.draw()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.findobj">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.findobj()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.format_cursor_data">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.format_cursor_data()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_agg_filter">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_agg_filter()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_alpha">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_alpha()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_animated">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_animated()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_array">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_array()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_children">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_children()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clim">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_clim()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_box">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_clip_box()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_on">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_clip_on()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_path">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_clip_path()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cmap">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_cmap()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_cursor_data()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_dashes">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_dashes()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ec">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_ec()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_edgecolors">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_edgecolors()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_facecolors">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_facecolors()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fc">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_fc()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_figure">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_figure()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_fill()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_gid">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_gid()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_hatch">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_hatch()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_in_layout">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_in_layout()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_label">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_label()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linestyles">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_linestyles()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linewidths">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_linewidths()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ls">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_ls()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_lw">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_lw()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_mouseover">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_mouseover()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_offset_transform()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offsets">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_offsets()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_picker">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_picker()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_rasterized">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_rasterized()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_sketch_params">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_sketch_params()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_snap">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_snap()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_tightbbox">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_tightbbox()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transOffset">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_transOffset()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_transform()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transformed_clip_path_and_affine">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_transformed_clip_path_and_affine()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_url">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_url()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_urls">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_urls()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_visible">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_visible()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_window_extent">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_window_extent()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_zorder">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.get_zorder()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.have_units">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.have_units()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.is_transform_set">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.is_transform_set()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.mouseover
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.pchanged">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.pchanged()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.pick">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.pick()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.pickable">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.pickable()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.properties">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.properties()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.remove()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove_callback">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.remove_callback()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_aa">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_aa()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_agg_filter">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_agg_filter()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_alpha">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_alpha()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_animated">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_animated()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_antialiased">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_antialiased()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_antialiaseds">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_antialiaseds()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_array">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_array()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_capstyle">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_capstyle()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clim">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_clim()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_box">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_clip_box()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_on">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_clip_on()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_path">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_clip_path()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_cmap">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_cmap()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_color">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_color()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_dashes">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_dashes()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ec">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_ec()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolor">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_edgecolor()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolors">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_edgecolors()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolor">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_facecolor()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolors">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_facecolors()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_fc">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_fc()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_figure">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_figure()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_gid">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_gid()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_hatch">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_hatch()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_in_layout">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_in_layout()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_joinstyle()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_label">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_label()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyle">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_linestyle()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyles">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_linestyles()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidth">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_linewidth()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidths">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_linewidths()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ls">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_ls()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_lw">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_lw()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_mouseover">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_mouseover()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_norm()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_offset_transform()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_offsets()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_path_effects">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_path_effects()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_picker">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_picker()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_pickradius">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_pickradius()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_rasterized()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_sketch_params()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_snap">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_snap()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transOffset">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_transOffset()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_transform()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_url">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_url()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_urls()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_visible">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_visible()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_zorder">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.set_zorder()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.stale
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.sticky_edges
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.to_rgba()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.update()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.update_from()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       PatchCollection.update_scalarmappable()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-</nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-<div class="tocsection sourcelink">
-    <a href="../_sources/_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.rst.txt">
-        <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-</div>
-
-</div>
-
             </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection"><code class="docutils literal notranslate"><span class="pre">PatchCollection</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.__init__"><code class="docutils literal notranslate"><span class="pre">PatchCollection.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.add_callback"><code class="docutils literal notranslate"><span class="pre">PatchCollection.add_callback()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale"><code class="docutils literal notranslate"><span class="pre">PatchCollection.autoscale()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.autoscale_None"><code class="docutils literal notranslate"><span class="pre">PatchCollection.autoscale_None()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.axes"><code class="docutils literal notranslate"><span class="pre">PatchCollection.axes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.changed"><code class="docutils literal notranslate"><span class="pre">PatchCollection.changed()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.colorbar"><code class="docutils literal notranslate"><span class="pre">PatchCollection.colorbar</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.contains"><code class="docutils literal notranslate"><span class="pre">PatchCollection.contains()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.convert_xunits"><code class="docutils literal notranslate"><span class="pre">PatchCollection.convert_xunits()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.convert_yunits"><code class="docutils literal notranslate"><span class="pre">PatchCollection.convert_yunits()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.draw"><code class="docutils literal notranslate"><span class="pre">PatchCollection.draw()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.findobj"><code class="docutils literal notranslate"><span class="pre">PatchCollection.findobj()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.format_cursor_data"><code class="docutils literal notranslate"><span class="pre">PatchCollection.format_cursor_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_agg_filter"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_agg_filter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_alpha"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_alpha()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_animated"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_animated()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_array"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_children"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_children()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clim"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_clim()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_box"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_clip_box()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_on"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_clip_on()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_clip_path"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_clip_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cmap"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_cmap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_cursor_data"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_cursor_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_dashes"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_dashes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ec"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_ec()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_edgecolors"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_edgecolors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_facecolors"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_facecolors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fc"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_fc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_figure"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_figure()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_fill"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_fill()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_gid"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_gid()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_hatch"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_hatch()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_in_layout"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_in_layout()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_label"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_label()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linestyles"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_linestyles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_linewidths"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_linewidths()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_ls"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_ls()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_lw"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_lw()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_mouseover"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_mouseover()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offset_transform"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_offset_transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_offsets"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_offsets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_picker"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_picker()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_rasterized"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_rasterized()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_sketch_params"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_sketch_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_snap"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_snap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_tightbbox"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_tightbbox()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transOffset"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_transOffset()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transform"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_transformed_clip_path_and_affine"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_transformed_clip_path_and_affine()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_url"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_url()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_urls"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_urls()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_visible"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_visible()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_window_extent"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_window_extent()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.get_zorder"><code class="docutils literal notranslate"><span class="pre">PatchCollection.get_zorder()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.have_units"><code class="docutils literal notranslate"><span class="pre">PatchCollection.have_units()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.is_transform_set"><code class="docutils literal notranslate"><span class="pre">PatchCollection.is_transform_set()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.mouseover"><code class="docutils literal notranslate"><span class="pre">PatchCollection.mouseover</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.pchanged"><code class="docutils literal notranslate"><span class="pre">PatchCollection.pchanged()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.pick"><code class="docutils literal notranslate"><span class="pre">PatchCollection.pick()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.pickable"><code class="docutils literal notranslate"><span class="pre">PatchCollection.pickable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.properties"><code class="docutils literal notranslate"><span class="pre">PatchCollection.properties()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove"><code class="docutils literal notranslate"><span class="pre">PatchCollection.remove()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.remove_callback"><code class="docutils literal notranslate"><span class="pre">PatchCollection.remove_callback()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_aa"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_aa()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_agg_filter"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_agg_filter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_alpha"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_alpha()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_animated"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_animated()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_antialiased"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_antialiased()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_antialiaseds"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_antialiaseds()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_array"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_capstyle"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_capstyle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clim"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_clim()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_box"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_clip_box()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_on"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_clip_on()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_clip_path"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_clip_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_cmap"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_cmap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_color"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_color()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_dashes"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_dashes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ec"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_ec()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolor"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_edgecolor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_edgecolors"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_edgecolors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolor"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_facecolor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_facecolors"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_facecolors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_fc"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_fc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_figure"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_figure()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_gid"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_gid()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_hatch"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_hatch()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_in_layout"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_in_layout()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_joinstyle"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_joinstyle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_label"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_label()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyle"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_linestyle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linestyles"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_linestyles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidth"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_linewidth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_linewidths"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_linewidths()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_ls"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_ls()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_lw"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_lw()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_mouseover"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_mouseover()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_norm"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_norm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offset_transform"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_offset_transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_offsets"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_offsets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_path_effects"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_path_effects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_picker"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_picker()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_pickradius"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_pickradius()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_rasterized"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_rasterized()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_sketch_params"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_sketch_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_snap"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_snap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transOffset"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_transOffset()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_transform"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_url"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_url()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_urls"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_urls()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_visible"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_visible()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.set_zorder"><code class="docutils literal notranslate"><span class="pre">PatchCollection.set_zorder()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.stale"><code class="docutils literal notranslate"><span class="pre">PatchCollection.stale</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.sticky_edges"><code class="docutils literal notranslate"><span class="pre">PatchCollection.sticky_edges</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.to_rgba"><code class="docutils literal notranslate"><span class="pre">PatchCollection.to_rgba()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update"><code class="docutils literal notranslate"><span class="pre">PatchCollection.update()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_from"><code class="docutils literal notranslate"><span class="pre">PatchCollection.update_from()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.visualisation.stratigraphic_column.PatchCollection.update_scalarmappable"><code class="docutils literal notranslate"><span class="pre">PatchCollection.update_scalarmappable()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_autosummary/LoopStructural.visualisation.stratigraphic_column.PatchCollection.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {
