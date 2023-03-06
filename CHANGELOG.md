@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.5.9](https://github.com/Loop3D/LoopStructural/compare/v1.5.8...v1.5.9) (2023-03-06)
+
+
+### Bug Fixes
+
+* adding clean function to interpolator ([d0de548](https://github.com/Loop3D/LoopStructural/commit/d0de548f6cbc756c04b029d294c991b1fc6004e5))
+* adding geopandas to dockerfile for docs ([32637ec](https://github.com/Loop3D/LoopStructural/commit/32637ec5dea4f20334e56387e39c8d81005403c2))
+* adding type hints ([916972c](https://github.com/Loop3D/LoopStructural/commit/916972c2f8da2169bca6f0a71a53e73fcfcbe8d6))
+* all tests passing ([02a4d70](https://github.com/Loop3D/LoopStructural/commit/02a4d7015dcefd89caf6ed8852def42375fcfbb8))
+* changing build script for docs ([c0c5ba2](https://github.com/Loop3D/LoopStructural/commit/c0c5ba203389ece188648d1a3c7d57e5b12948fc))
+* check interpolator type for installing grad constraints ([bfa90ac](https://github.com/Loop3D/LoopStructural/commit/bfa90ac084e5880bd1e0a1ed1bcf5b7eb2b51c2f))
+* code changes for merge ([7aeec5c](https://github.com/Loop3D/LoopStructural/commit/7aeec5c0166b743d6fef44b8b56ebdd382adc2da))
+* code clenaing and lateral data update ([d202656](https://github.com/Loop3D/LoopStructural/commit/d20265673eb0efd1783434dea590fd8cea95eea9))
+* dockerfile python version ([49de51e](https://github.com/Loop3D/LoopStructural/commit/49de51e86ecf699d6de6aa68e579920241dd0942))
+* docs/docker building in python 3.10 ([26bfaa2](https://github.com/Loop3D/LoopStructural/commit/26bfaa2634f2c7567be9c6ce0bd67ea708238b6e))
+* fault overprinting not added to model ([750ccce](https://github.com/Loop3D/LoopStructural/commit/750ccce0c53c01cce5b994750b6402ad8ad828e6))
+* if w == 0 don't add constraint ([3aea341](https://github.com/Loop3D/LoopStructural/commit/3aea3410dfa551ef64e9772dc30fcba86c8c30dd))
+* intrusion builder uses basebuilder ([bc0004a](https://github.com/Loop3D/LoopStructural/commit/bc0004a807e61f095f30141e64b435ca559bcff3))
+* intrusions test updated ([e13a9aa](https://github.com/Loop3D/LoopStructural/commit/e13a9aaaa9bee5a7fda4800a8701906bb86a566a))
+* kwargs in interpolator ([06f39d7](https://github.com/Loop3D/LoopStructural/commit/06f39d732807366469f83f0c0be1a6b07d843f4f))
+* lateral constraint update ([c830149](https://github.com/Loop3D/LoopStructural/commit/c830149c9da44959cb5966b20bdf7a3a3b894694))
+* remove of old SGS variables ([ab87b08](https://github.com/Loop3D/LoopStructural/commit/ab87b08040f1efb502c5290d1ef5acd407b8c9fb))
+* remove temp variable ([d95394e](https://github.com/Loop3D/LoopStructural/commit/d95394ec79cc1af762d77a8b9c4dcfb4a03faac3))
+* removing global_indices ([4960168](https://github.com/Loop3D/LoopStructural/commit/49601680479de64e67a402fe54b70078e56e3dd1))
+* removing of #codes ([32c2b7e](https://github.com/Loop3D/LoopStructural/commit/32c2b7eba62ebc47381a162a8593545641c2c58f))
+* removing unused imports ([11085fe](https://github.com/Loop3D/LoopStructural/commit/11085fe988754db68aaaaccc5af5ee5007783776))
+* removing unused packages ([de08249](https://github.com/Loop3D/LoopStructural/commit/de082497756625711c0f3fb0e80c02b70f70343f))
+* slicing for weights ([75890ca](https://github.com/Loop3D/LoopStructural/commit/75890ca4ce4cf258888330776453e2528d654417))
+* svariogram parameter not being passed ([18d9fe2](https://github.com/Loop3D/LoopStructural/commit/18d9fe2f6ef27e896e4680eeac2e5ef8dd6027be))
+* type hints and formatting ([2b9dd41](https://github.com/Loop3D/LoopStructural/commit/2b9dd4134cafda56ccb3ae8b598777a7a9b6f529))
+* update of conceptual model functions ([b61e9d3](https://github.com/Loop3D/LoopStructural/commit/b61e9d356c0f226f9eb1e9a9047170d08aa2383c))
+* update of intrusion interpolation parameters ([0140cd4](https://github.com/Loop3D/LoopStructural/commit/0140cd47ea4b19d21f150a606a608f1dfa87e807))
+* updating ci action versions ([478a401](https://github.com/Loop3D/LoopStructural/commit/478a401925f1af919841080113226dc011e2be77))
+
+
+### Documentation
+
+* making dockerfile build ([0c91968](https://github.com/Loop3D/LoopStructural/commit/0c919684fc80239b5f2e0fdc7e901145f4ebfb88))
+
 ## [1.5.8](https://github.com/Loop3D/LoopStructural/compare/v1.5.7...v1.5.8) (2023-01-24)
 
 
