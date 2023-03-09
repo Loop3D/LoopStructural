@@ -134,9 +134,15 @@ class FaultBuilder(StructuralFrameBuilder):
             logger.warning(f"Fault major axis using map length: {major_axis}")
 
         if minor_axis is None:
+            logger.info(
+                f"Fault minor axis not set, using half major axis: {major_axis/2}"
+            )
             minor_axis = major_axis / 2.0
         if intermediate_axis is None:
             intermediate_axis = major_axis
+            logger.info(
+                f"Fault intermediate axis not set, using major axis: {intermediate_axis}"
+            )
         self.fault_minor_axis = minor_axis
         self.fault_major_axis = major_axis
         self.fault_intermediate_axis = intermediate_axis
