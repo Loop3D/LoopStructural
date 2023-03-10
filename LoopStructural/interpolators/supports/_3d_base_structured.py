@@ -158,7 +158,7 @@ class BaseStructuredSupport:
         """ """
         return np.einsum("ijk,ik->ij", self.rotation_xy[None, :, :], pos)
 
-    def position_to_cell_index(self, pos):
+    def position_to_cell_index(self, pos: np.ndarray) -> np.ndarray:
         """Get the indexes (i,j,k) of a cell
         that a point is inside
 
@@ -170,19 +170,20 @@ class BaseStructuredSupport:
 
         Returns
         -------
-        np.array, np.array, np.array
-            i,j,k indexes of the cell that the point is in
+        np.ndarray
+            N,3 i,j,k indexes of the cell that the point is in
         """
 
         pos = self.check_position(pos)
+        cell_indexes = np.zeros((pos.shape[0], 3), dtype=int)
 
-        ix = pos[:, 0] - self.origin[None, 0]
-        iy = pos[:, 1] - self.origin[None, 1]
-        iz = pos[:, 2] - self.origin[None, 2]
-        ix = ix // self.step_vector[None, 0]
-        iy = iy // self.step_vector[None, 1]
-        iz = iz // self.step_vector[None, 2]
-        return ix.astype(int), iy.astype(int), iz.astype(int)
+        x = pos[:, 0] - self.origin[None, 0]
+        y = pos[:, 1] - self.origin[None, 1]
+        z = pos[:, 2] - self.origin[None, 2]
+        cell_indexes[:, 0] = x // self.step_vector[None, 0]
+        cell_indexes[:, 1] = y // self.step_vector[None, 1]
+        cell_indexes[:, 2] = z // self.step_vector[None, 2]
+        return cell_indexes
 
     def position_to_cell_global_index(self, pos):
         ix, iy, iz = self.position_to_cell_index(pos)
@@ -195,7 +196,7 @@ class BaseStructuredSupport:
             inside *= pos[:, i] < self.maximum[None, i]
         return inside
 
-    def check_position(self, pos):
+    def check_position(self, pos: np.ndarray) -> np.ndarray:
         """[summary]
 
         [extended_summary]
@@ -215,7 +216,7 @@ class BaseStructuredSupport:
             pos = np.array([pos])
         if len(pos.shape) != 2:
             print("Position array needs to be a list of points or a point")
-            return False
+            raise ValueError("Position array needs to be a list of points or a point")
         return pos
 
     def _global_indicies(self, indexes: np.ndarray, nsteps: np.ndarray) -> np.ndarray:
@@ -244,10 +245,10 @@ class BaseStructuredSupport:
                 + nsteps[None, 0] * nsteps[None, 1] * indexes[:, 2]
             )
         if len(indexes.shape) == 3:
-            if indexes.shape[2] != 3 and indexes.shape[1] == 3:
-                indexes = indexes.swapaxes(1, 2)
-            if indexes.shape[2] != 3 and indexes.shape[0] == 3:
-                indexes = indexes.swapaxes(0, 2)
+            # if indexes.shape[2] != 3 and indexes.shape[1] == 3:
+            #     indexes = indexes.swapaxes(1, 2)
+            # if indexes.shape[2] != 3 and indexes.shape[0] == 3:
+            #     indexes = indexes.swapaxes(0, 2)
             if indexes.shape[2] != 3:
                 logger.error("Indexes shape {}".format(indexes.shape))
                 raise ValueError("Cell indexes needs to be NxNx3")
@@ -256,8 +257,10 @@ class BaseStructuredSupport:
                 + nsteps[None, None, 0] * indexes[:, :, 1]
                 + nsteps[None, None, 0] * nsteps[None, None, 1] * indexes[:, :, 2]
             )
+        else:
+            raise ValueError("Cell indexes need to be a 2 or 3d numpy array")
 
-    def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
+    def cell_corner_indexes(self, cell_indexes):
         """
         Returns the indexes of the corners of a cell given its location xi,
         yi, zi
@@ -272,22 +275,33 @@ class BaseStructuredSupport:
         -------
 
         """
-        xcorner = np.array([0, 1, 0, 0, 1, 0, 1, 1])
-        ycorner = np.array([0, 0, 1, 0, 0, 1, 1, 1])
-        zcorner = np.array([0, 0, 0, 1, 1, 1, 0, 1])
-        xcorners = x_cell_index[:, None] + xcorner[None, :]
-        ycorners = y_cell_index[:, None] + ycorner[None, :]
-        zcorners = z_cell_index[:, None] + zcorner[None, :]
-        return xcorners, ycorners, zcorners
+
+        corner_indexes = np.zeros((cell_indexes.shape[0], 8, 3), dtype=int)
+
+        xcorner = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+        ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
+        zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+        corner_indexes[:, :, 0] = (
+            cell_indexes[:, None, 0] + corner_indexes[:, :, 0] + xcorner[None, :]
+        )
+        corner_indexes[:, :, 1] = (
+            cell_indexes[:, None, 1] + corner_indexes[:, :, 1] + ycorner[None, :]
+        )
+        corner_indexes[:, :, 2] = (
+            cell_indexes[:, None, 2] + corner_indexes[:, :, 2] + zcorner[None, :]
+        )
+
+        return corner_indexes
 
     def position_to_cell_corners(self, pos):
 
         inside = self.inside(pos)
-        ix, iy, iz = self.position_to_cell_index(pos)
-        cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
-        globalidx = self.global_node_indicies(
-            np.dstack([cornersx, cornersy, cornersz]).T
-        )
+
+        cell_indexes = self.position_to_cell_index(pos)
+        corner_indexes = self.cell_corner_indexes(cell_indexes)
+
+        globalidx = self.global_node_indices(corner_indexes)
+
         # if global index is not inside the support set to -1
         globalidx[~inside] = -1
         return globalidx, inside
@@ -306,16 +320,18 @@ class BaseStructuredSupport:
             vertices, inside
         """
         gi, inside = self.position_to_cell_corners(pos)
-        ci, cj, ck = self.global_index_to_node_index(gi)
-        return self.node_indexes_to_position(ci, cj, ck), inside
+        node_indexes = self.global_index_to_node_index(gi)
+        return self.node_indexes_to_position(node_indexes), inside
 
-    def node_indexes_to_position(self, xindex, yindex, zindex):
-
-        x = self.origin[0] + self.step_vector[0] * xindex
-        y = self.origin[1] + self.step_vector[1] * yindex
-        z = self.origin[2] + self.step_vector[2] * zindex
-
-        return x, y, z
+    def node_indexes_to_position(self, node_indexes: np.ndarray) -> np.ndarray:
+        original_shape = node_indexes.shape
+        node_indexes = node_indexes.reshape((-1, 3))
+        xyz = np.zeros((node_indexes.shape[0], 3), dtype=float)
+        xyz[:, 0] = self.origin[0] + self.step_vector[0] * node_indexes[:, 0]
+        xyz[:, 1] = self.origin[1] + self.step_vector[1] * node_indexes[:, 1]
+        xyz[:, 2] = self.origin[2] + self.step_vector[2] * node_indexes[:, 2]
+        xyz = xyz.reshape(original_shape)
+        return xyz
 
     def global_index_to_cell_index(self, global_index):
         """
@@ -332,15 +348,15 @@ class BaseStructuredSupport:
         # determine the ijk indices for the global index.
         # remainder when dividing by nx = i
         # remained when dividing modulus of nx by ny is j
-
-        x_index = global_index % self.nsteps_cells[0, None]
-        y_index = (
+        cell_indexes = np.zeros((global_index.shape[0], 3), dtype=int)
+        cell_indexes[:, 0] = global_index % self.nsteps_cells[0, None]
+        cell_indexes[:, 1] = (
             global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
         )
-        z_index = (
+        cell_indexes[:, 2] = (
             global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         )
-        return x_index, y_index, z_index
+        return cell_indexes
 
     def global_index_to_node_index(self, global_index):
         """
@@ -357,12 +373,19 @@ class BaseStructuredSupport:
         # determine the ijk indices for the global index.
         # remainder when dividing by nx = i
         # remained when dividing modulus of nx by ny is j
-        x_index = global_index % self.nsteps[0, None]
-        y_index = global_index // self.nsteps[0, None] % self.nsteps[1, None]
-        z_index = global_index // self.nsteps[0, None] // self.nsteps[1, None]
-        return x_index, y_index, z_index
+        original_shape = global_index.shape
+        global_index = global_index.reshape((-1))
+        local_indexes = np.zeros((global_index.shape[0], 3), dtype=int)
+        local_indexes[:, 0] = global_index % self.nsteps[0, None]
+        local_indexes[:, 1] = (
+            global_index // self.nsteps[0, None] % self.nsteps[1, None]
+        )
+        local_indexes[:, 2] = (
+            global_index // self.nsteps[0, None] // self.nsteps[1, None]
+        )
+        return local_indexes.reshape(*original_shape, 3)
 
-    def global_node_indicies(self, indexes) -> np.ndarray:
+    def global_node_indices(self, indexes) -> np.ndarray:
         """
         Convert from node indexes to global node index
 
@@ -376,7 +399,7 @@ class BaseStructuredSupport:
         """
         return self._global_indicies(indexes, self.nsteps)
 
-    def global_cell_indicies(self, indexes) -> np.ndarray:
+    def global_cell_indices(self, indexes) -> np.ndarray:
         """
         Convert from cell indexes to global cell index
 
