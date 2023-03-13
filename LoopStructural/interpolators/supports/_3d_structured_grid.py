@@ -178,7 +178,6 @@ class StructuredGrid(BaseStructuredSupport):
             ).reshape((3, -1))
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
-            print(indexes.ndim)
             return
         # determine which neighbours to return default is diagonals included.
         if mask is None:

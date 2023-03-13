@@ -160,32 +160,24 @@ def test_global_index_to_cell_index(support):
 
 
 def test_global_index(support):
-    indexes = (
-        np.array(
-            np.meshgrid(
-                np.arange(0, support.nsteps[0]),
-                np.arange(0, support.nsteps[1]),
-                np.arange(0, support.nsteps[2]),
-            )
+    indexes = np.array(
+        np.meshgrid(
+            np.arange(0, support.nsteps[0]),
+            np.arange(0, support.nsteps[1]),
+            np.arange(0, support.nsteps[2]),
         )
-        .reshape(-1, 3)
-        .T
-    )
+    ).reshape(-1, 3)
     global_node_index = support.global_node_indices(indexes)
     assert np.all(global_node_index >= 0)
     assert np.all(global_node_index < support.n_nodes)
 
-    indexes = (
-        np.array(
-            np.meshgrid(
-                np.arange(0, 3),
-                np.arange(0, 1),
-                np.arange(0, 1),
-            )
+    indexes = np.array(
+        np.meshgrid(
+            np.arange(0, 3),
+            np.arange(0, 1),
+            np.arange(0, 1),
         )
-        .reshape(-1, 3)
-        .T
-    )
+    ).reshape(-1, 3)
     global_node_index = support.global_node_indices(indexes)
     assert np.all(global_node_index >= 0)
     assert np.all(global_node_index < support.n_nodes)
