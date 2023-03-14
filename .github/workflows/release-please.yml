@@ -176,6 +176,7 @@ jobs:
         password: ${{ secrets.PYPI_PASSWORD }}
     - uses: conda-incubator/setup-miniconda@v2
     - name: upload all files to conda-forge
+      shell: bash -l {0}
       env:
         ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
       run: |
