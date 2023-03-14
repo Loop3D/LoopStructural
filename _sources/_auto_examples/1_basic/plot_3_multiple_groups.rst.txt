@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_1_basic_plot_3_multiple_groups.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_3_multiple_groups.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -40,6 +40,10 @@ Creating a model with multiple geological features, dealing with unconformities.
     Cannot use region
     Cannot use region
     Cannot use region
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+      norm[i] /= length
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+      norm[i] /= length
 
 
 
@@ -92,7 +96,7 @@ Creating a model with multiple geological features, dealing with unconformities.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  21.855 seconds)
+   **Total running time of the script:** ( 0 minutes  20.404 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_multiple_groups.py:
@@ -100,6 +104,8 @@ Creating a model with multiple geological features, dealing with unconformities.
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_2_fold_plot_adding_folds_to_surfaces.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_2_fold_plot_adding_folds_to_surfaces.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -430,6 +430,8 @@ field box.
 
     Cannot use region
     Cannot use region
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+      norm[i] /= length
 
 
 
@@ -535,6 +537,8 @@ shown in B and C.
     Cannot use region
     Cannot use region
     Cannot use region
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+      norm[i] /= length
 
 
 
@@ -569,7 +573,7 @@ Plotting the fold rotation angles
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  16.584 seconds)
+   **Total running time of the script:** ( 0 minutes  17.733 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_adding_folds_to_surfaces.py:
@@ -577,6 +581,8 @@ Plotting the fold rotation angles
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_2_fold_plot_refolded_folds.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_2_fold_plot_refolded_folds.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -149,8 +149,8 @@ Modelling S1
     Cannot use region
     Cannot use region
     Cannot use region
-    [ 1692.80809015  1767.4842249   1838.13598639 ... -4397.53984649
-     -4527.56195629 -4659.21819209]
+    [ 1580.18346035  1657.24332768  1727.69356658 ... -4467.03023796
+     -4595.09347708 -4725.34573466]
 
 
 
@@ -188,8 +188,10 @@ S2/S1 S-Plots
 
  .. code-block:: none
 
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+      norm[i] /= length
 
-    [<matplotlib.lines.Line2D object at 0x7fbfdd682380>]
+    [<matplotlib.lines.Line2D object at 0x7faaacd726b0>]
 
 
 
@@ -234,8 +236,8 @@ Modelling S0
 
     Cannot use region
     Cannot use region
-    [ -424.4540719   -330.38728055  -237.83049886 ...  -902.76096937
-      -959.85837231 -1021.62886903]
+    [-300.92375602 -235.37687645 -172.11500204 ... -548.86242024 -588.0330036
+     -626.01421049]
 
 
 
@@ -286,7 +288,7 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  3.164 seconds)
+   **Total running time of the script:** ( 1 minutes  32.365 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_refolded_folds.py:
@@ -294,6 +296,8 @@ S1/S0 S-Plots
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

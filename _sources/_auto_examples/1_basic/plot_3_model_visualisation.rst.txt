@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -222,10 +222,10 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
  .. code-block:: none
 
-    [ 353.27219054  353.27941939  353.50232288 ... -148.00299304 -148.5821538
-     -149.39664783]
-    [-129.06281772 -127.44475076 -125.82848009 ... -129.87060415 -128.50641881
-     -126.28428657]
+    [ 353.27132757  353.27868135  353.5014243  ... -148.00219116 -148.58163164
+     -149.39594728]
+    [-129.06223081 -127.44377209 -125.82711411 ... -129.870309   -128.50594674
+     -126.28345774]
 
 
 
@@ -233,7 +233,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.201 seconds)
+   **Total running time of the script:** ( 0 minutes  2.536 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:
@@ -241,6 +241,8 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

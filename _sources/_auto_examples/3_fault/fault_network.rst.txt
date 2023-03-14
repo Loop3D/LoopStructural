@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_3_fault_fault_network.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_3_fault_fault_network.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -202,6 +202,8 @@ the fault relationship to be abutting rather than splay.
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

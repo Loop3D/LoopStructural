@@ -26,9 +26,11 @@ LoopStructural.interpolators.TetMesh
       ~TetMesh.get_element_gradients
       ~TetMesh.get_elements
       ~TetMesh.get_neighbours
+      ~TetMesh.global_cell_indices
       ~TetMesh.global_cell_indicies
       ~TetMesh.global_index_to_cell_index
       ~TetMesh.global_index_to_node_index
+      ~TetMesh.global_node_indices
       ~TetMesh.global_node_indicies
       ~TetMesh.inside
       ~TetMesh.node_indexes_to_position

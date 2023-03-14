@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_1_basic_plot_4_using_stratigraphic_column.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_4_using_stratigraphic_column.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -125,13 +125,22 @@ for the `model.evaluate_model(xyz)` function to be called.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+      norm[i] /= length
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+      norm[i] /= length
+
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  20.678 seconds)
+   **Total running time of the script:** ( 0 minutes  18.877 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_4_using_stratigraphic_column.py:
@@ -139,6 +148,8 @@ for the `model.evaluate_model(xyz)` function to be called.
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

@@ -444,7 +444,7 @@ document.write(`
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-3-fault-plot-faulted-intrusion-py"><span class="std std-ref">here</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-3-fault-plot-faulted-intrusion-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="a-modelling-faults-using-structural-frames">
@@ -483,7 +483,7 @@ representative of modelling an intrusion.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_faulted_intrusion_001.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_001.png" alt="plot faulted intrusion" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.contour.QuadContourSet object at 0x7fbfd9b87d30&gt;
+<img src="../../_images/sphx_glr_plot_faulted_intrusion_001.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_001.png" alt="plot faulted intrusion" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.contour.QuadContourSet object at 0x7faaa24af3a0&gt;
 </pre></div>
 </div>
 <p>LoopStructural applies structural frames to the fault geometry to
@@ -551,18 +551,20 @@ Cannot use region
 Cannot use region
 Cannot use region
 Cannot use region
-/LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:239: SettingWithCopyWarning:
+/LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:245: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame
 
 See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
   data.loc[
+/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+  norm[i] /= length
 Cannot use region
 Cannot use region
 Cannot use region
 Cannot use region
 Cannot use region
 Cannot use region
-/LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:239: SettingWithCopyWarning:
+/LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:245: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame
 
 See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
@@ -571,14 +573,20 @@ Cannot use region
 Cannot use region
 
   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Interpolating fault:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Interpolating fault:  50%|#####     | 2/4 [00:00&lt;00:00,  9.83it/s]
-Interpolating strati:  75%|#######5  | 3/4 [00:00&lt;00:00,  9.83it/s]
-Interpolating strati: : 7it [00:46,  7.27s/it]
-Interpolating strati: : 7it [00:46,  6.65s/it]
+Interpolating fault:   0%|          | 0/4 [00:00&lt;?, ?it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+  norm[i] /= length
+/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+  norm[i] /= length
+
+Interpolating fault:  50%|#####     | 2/4 [00:00&lt;00:00,  8.19it/s]
+Interpolating strati:  75%|#######5  | 3/4 [00:00&lt;00:00,  8.19it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+  norm[i] /= length
+
+Interpolating strati: : 7it [00:29,  4.63s/it]
+Interpolating strati: : 7it [00:29,  4.24s/it]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  52.307 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  36.324 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-3-fault-plot-faulted-intrusion-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/04532e9070b5c0b939ac0b7eacbbf993/plot_faulted_intrusion.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_faulted_intrusion.py</span></code></a></p>

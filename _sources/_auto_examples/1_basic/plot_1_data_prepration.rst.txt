@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_1_basic_plot_1_data_prepration.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_1_data_prepration.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -169,7 +169,7 @@ for the interpolator to be able to find a solution.
           <th>0</th>
           <td>0.000000</td>
           <td>0.0</td>
-          <td>1.237994</td>
+          <td>1.783010</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -177,7 +177,7 @@ for the interpolator to be able to find a solution.
           <th>1</th>
           <td>1.111111</td>
           <td>0.0</td>
-          <td>1.063407</td>
+          <td>1.358587</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -185,7 +185,7 @@ for the interpolator to be able to find a solution.
           <th>2</th>
           <td>2.222222</td>
           <td>0.0</td>
-          <td>1.913070</td>
+          <td>1.858859</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -193,7 +193,7 @@ for the interpolator to be able to find a solution.
           <th>3</th>
           <td>3.333333</td>
           <td>0.0</td>
-          <td>1.660126</td>
+          <td>1.728489</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -201,7 +201,7 @@ for the interpolator to be able to find a solution.
           <th>4</th>
           <td>4.444444</td>
           <td>0.0</td>
-          <td>1.546379</td>
+          <td>1.677114</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -336,7 +336,7 @@ next tutorial will show how to use the lavavu visualisation model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.032 seconds)
+   **Total running time of the script:** ( 0 minutes  1.234 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_1_data_prepration.py:
@@ -344,6 +344,8 @@ next tutorial will show how to use the lavavu visualisation model.
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

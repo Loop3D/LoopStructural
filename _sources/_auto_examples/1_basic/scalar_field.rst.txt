@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_1_basic_scalar_field.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_scalar_field.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -446,6 +446,8 @@ solution is the same for all values.
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

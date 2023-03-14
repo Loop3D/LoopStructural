@@ -18,7 +18,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_least_squares_thumb.png
-    :alt: 1a. Advanced least squares
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_least_squares.py`
 
@@ -35,7 +35,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
-    :alt: 1a. Getting started
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py`
 
@@ -52,7 +52,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
-    :alt: 1b. Implicit surface modelling
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py`
 
@@ -69,7 +69,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
-    :alt: 1c. Multiple groups
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py`
 
@@ -86,7 +86,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_3_model_visualisation_thumb.png
-    :alt: 1c. Visualising models
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py`
 
@@ -103,7 +103,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
-    :alt: 1d. Using Stratigraphic Columns
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py`
 
@@ -120,7 +120,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_5_using_logging_thumb.png
-    :alt: 1e. Using logging
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_5_using_logging.py`
 
@@ -137,7 +137,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_scalar_field_thumb.png
-    :alt: 1f. Implicit modelling: signed distance field
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_scalar_field.py`
 
@@ -154,7 +154,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_7_local_weights_thumb.png
-    :alt: 1f. Local data weighting
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_7_local_weights.py`
 
@@ -171,7 +171,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_example_surfe_thumb.png
-    :alt: 1f. Radial Basis Interpolation Using Surfe
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_example_surfe.py`
 
@@ -188,7 +188,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_6_unconformities_thumb.png
-    :alt: 1f. Unconformities
+    :alt:
 
   :ref:`sphx_glr__auto_examples_1_basic_plot_6_unconformities.py`
 

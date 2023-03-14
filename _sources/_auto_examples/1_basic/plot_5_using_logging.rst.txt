@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download__auto_examples_1_basic_plot_5_using_logging.py>`
+        :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_5_using_logging.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -126,8 +126,8 @@ Create model
 
     Cannot use region
     Cannot use region
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.04s/it]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.04s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 69.02it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.40s/it]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.40s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 61.11it/s]
 
 
 
@@ -223,8 +223,8 @@ It is also possible to change the logging level for the console log.
 
     Cannot use region
     Cannot use region
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.01s/it]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.01s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 67.82it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.47s/it]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.47s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 59.81it/s]
 
 
 
@@ -232,7 +232,7 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.771 seconds)
+   **Total running time of the script:** ( 0 minutes  6.818 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_5_using_logging.py:
@@ -240,6 +240,8 @@ It is also possible to change the logging level for the console log.
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

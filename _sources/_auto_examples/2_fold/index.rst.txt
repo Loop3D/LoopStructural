@@ -18,7 +18,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr_plot_adding_folds_to_surfaces_thumb.png
-    :alt: 2a. Modelling folds
+    :alt:
 
   :ref:`sphx_glr__auto_examples_2_fold_plot_adding_folds_to_surfaces.py`
 
@@ -35,7 +35,7 @@
 .. only:: html
 
   .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr_plot_refolded_folds_thumb.png
-    :alt: 2b. Refolded folds
+    :alt:
 
   :ref:`sphx_glr__auto_examples_2_fold_plot_refolded_folds.py`
 
