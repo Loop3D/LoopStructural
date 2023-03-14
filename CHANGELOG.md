@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.10](https://github.com/Loop3D/LoopStructural/compare/v1.5.9...v1.5.10) (2023-03-14)
+
+
+### Bug Fixes
+
+* adding 3D fault displacement function ([438e699](https://github.com/Loop3D/LoopStructural/commit/438e699842d4c97879fb5ab9a89fd2746845d41e))
+* major change for base grid ([0a49817](https://github.com/Loop3D/LoopStructural/commit/0a4981785abf671a0153cce2c4c64c1a8650602c))
+* trying to use bash to recognise anaconda command ([1ce8e32](https://github.com/Loop3D/LoopStructural/commit/1ce8e320d1fa03b5c8bda8a80a411a7361e009c6))
+* updating tetmesh class for new indexing ([e53369a](https://github.com/Loop3D/LoopStructural/commit/e53369a42a1b4b990ed5c1a88bcf7440163200e7))
+
 ## [1.5.9](https://github.com/Loop3D/LoopStructural/compare/v1.5.8...v1.5.9) (2023-03-06)
 
 
