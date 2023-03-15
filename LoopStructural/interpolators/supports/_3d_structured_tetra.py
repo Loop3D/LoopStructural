@@ -343,16 +343,24 @@ class TetMesh(BaseStructuredSupport):
                 ],
             ]
         )
+        m = np.swapaxes(m, 0, 2)
+
+        # m is the jacobian matrix of the transformation from the
+        # reference element to the current element
         # m[~inside,:,:] = np.nan
         I = np.array(
             [[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]]
         )
-        m = np.swapaxes(m, 0, 2)
+        # I is the derivative of f with respect to the reference element coordinates
         element_gradients = np.zeros_like(m)
         element_gradients[:] = np.nan
+        # element gradient is the derivative of f with respect to the current
+        # element coordinates it is calculated by multiplying the inverse of
+        # the jacobian matrix by the derivative of f with respect to the
+        # reference element coordinates the gradient of the function in an
+        # element can be calculated by multiplying the node corner values by
+        # the derivative function
         element_gradients[inside, :, :] = np.linalg.inv(m[inside, :, :])
-        # element_gradients = np.linalg.inv(m)
-
         element_gradients = element_gradients.swapaxes(1, 2)
         element_gradients = element_gradients @ I
         return vertices, element_gradients, tetras, inside

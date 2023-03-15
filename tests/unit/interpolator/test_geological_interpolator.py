@@ -58,3 +58,5 @@ def test_reset(interpolator, data):
     interpolator.clean()
     assert interpolator.get_data_locations().shape[0] == 0
     assert interpolator.up_to_date == False
+
+

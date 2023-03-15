@@ -440,7 +440,7 @@ class UnStructuredTetMesh:
 
             verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
             bc[: npts + npts_step, :][row[mask], :] = c[mask, :]
-            tetras[: npts + npts_step][row[mask]] = col[mask]
+            tetras[: npts + npts_step][row[mask]] = self.elements[col[mask]]
             inside[: npts + npts_step][row[mask]] = True
             npts += npts_step
         return verts, bc, tetras, inside

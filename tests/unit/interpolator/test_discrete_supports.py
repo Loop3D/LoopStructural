@@ -97,6 +97,12 @@ def test_evaluate_gradient2(support_class):
         assert np.all(np.isclose(np.sum(vector - n[None, :], axis=1), 0)) == True
     assert i == 9
 
+def test_evaluate_gradient_all(support):
+    assert np.all(support.evaluate_gradient(support.barycentre, support.nodes[:, 1])-np.array([0, 1, 0]) == 0)
+    assert np.all(support.evaluate_gradient(support.barycentre, support.nodes[:, 0])-np.array([1, 0, 0]) == 0)
+    assert np.all(support.evaluate_gradient(support.barycentre, support.nodes[:, 2])-np.array([0, 0, 1]) == 0)
+
+
 
 def test_get_element(support):
     point = support.barycentre[[0], :]
@@ -181,3 +187,6 @@ def test_global_index(support):
     global_node_index = support.global_node_indices(indexes)
     assert np.all(global_node_index >= 0)
     assert np.all(global_node_index < support.n_nodes)
+
+def test_get_neighbours(support):
+    

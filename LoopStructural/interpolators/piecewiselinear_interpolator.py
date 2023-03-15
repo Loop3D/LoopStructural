@@ -167,7 +167,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                 np.arange(self.support.ntetra)
             )
             region = self.region.astype("int64")
-
+            
             neighbours = self.support.get_neighbours()
             elements = self.support.get_elements()
             idc, c, ncons, area = cg(
@@ -295,6 +295,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
             d_t = element_gradients
             d_t[inside, :, :] *= vol[inside, None, None]
             # add in the element gradient matrix into the inte
+            print(tetras.shape)
             idc = np.tile(tetras[:, :], (3, 1, 1))
             idc = idc.swapaxes(0, 1)
             # idc = self.support.elements[e]
