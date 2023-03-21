@@ -445,31 +445,6 @@ class TetMesh(BaseStructuredSupport):
         z_index = global_index // self.nsteps[0, None] // self.nsteps[1, None]
         return x_index, y_index, z_index
 
-    def global_index_to_cell_index(self, global_index):
-        """
-        Convert from global indexes to xi,yi,zi
-
-        Parameters
-        ----------
-        global_index
-
-        Returns
-        -------
-
-        """
-        # determine the ijk indices for the global index.
-        # remainder when dividing by nx = i
-        # remained when dividing modulus of nx by ny is j
-
-        x_index = global_index % self.nsteps_cells[0, None]
-        y_index = (
-            global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
-        )
-        z_index = (
-            global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
-        )
-        return x_index, y_index, z_index
-
     def get_neighbours(self) -> np.ndarray:
         """
         This function goes through all of the elements in the mesh and assembles a numpy array
@@ -504,12 +479,16 @@ class TetMesh(BaseStructuredSupport):
 
         # create masks for whether cell is odd or even
         odd_mask = (
-            np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=0) % 2 == 1
+            np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=1) % 2 == 1
         )
         odd_mask = ~odd_mask.astype(bool)
 
-        # apply masks to
+        # create an array of masks, where the boolean array is used to slice
+        # the tetra index array and the second array is used to calculate the neighbours
         masks = []
+        # masks first element is the boolean mask to indicate which tetras use this rule
+        # second element is a 3x4 array where the first 3 columns are the offsets to the
+        # cells and the last column is the tetra index in the cell
         masks.append(
             [
                 np.logical_and(one_mask, odd_mask),
@@ -563,12 +542,13 @@ class TetMesh(BaseStructuredSupport):
         for m in masks:
             logic = m[0]
             mask = m[1]
-            c_xi, c_yi, c_zi = self.global_index_to_cell_index(tetra_index[logic] // 5)
+            cell_indices = self.global_index_to_cell_index(tetra_index[logic] // 5)
             # mask = np.array([[1,0,0,4],[0,0,-1,2],[0,1,0,3],[0,0,0,0]])
-            neigh_cell = np.zeros((c_xi.shape[0], 3, 3)).astype(int)
-            neigh_cell[:, :, 0] = c_xi[:, None] + mask[:, 0]
-            neigh_cell[:, :, 1] = c_yi[:, None] + mask[:, 1]
-            neigh_cell[:, :, 2] = c_zi[:, None] + mask[:, 2]
+            neigh_cell = np.zeros((cell_indices.shape[0], 3, 3)).astype(int)
+            neigh_cell[:, :, 0] = cell_indices[:, 0, None] + mask[:, 0]
+            neigh_cell[:, :, 1] = cell_indices[:, 1, None] + mask[:, 1]
+            neigh_cell[:, :, 2] = cell_indices[:, 2, None] + mask[:, 2]
+
             inside = neigh_cell[:, :, 0] >= 0
             inside = np.logical_and(inside, neigh_cell[:, :, 1] >= 0)
             inside = np.logical_and(inside, neigh_cell[:, :, 2] >= 0)
@@ -576,7 +556,7 @@ class TetMesh(BaseStructuredSupport):
             inside = np.logical_and(inside, neigh_cell[:, :, 1] < self.nsteps_cells[1])
             inside = np.logical_and(inside, neigh_cell[:, :, 2] < self.nsteps_cells[2])
 
-            global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
+            global_neighbour_idx = np.zeros((cell_indices.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
             global_neighbour_idx = (
                 neigh_cell[:, :, 0]
