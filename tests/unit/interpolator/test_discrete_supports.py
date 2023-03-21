@@ -97,11 +97,23 @@ def test_evaluate_gradient2(support_class):
         assert np.all(np.isclose(np.sum(vector - n[None, :], axis=1), 0)) == True
     assert i == 9
 
-def test_evaluate_gradient_all(support):
-    assert np.all(support.evaluate_gradient(support.barycentre, support.nodes[:, 1])-np.array([0, 1, 0]) == 0)
-    assert np.all(support.evaluate_gradient(support.barycentre, support.nodes[:, 0])-np.array([1, 0, 0]) == 0)
-    assert np.all(support.evaluate_gradient(support.barycentre, support.nodes[:, 2])-np.array([0, 0, 1]) == 0)
 
+def test_evaluate_gradient_all(support):
+    assert np.all(
+        support.evaluate_gradient(support.barycentre, support.nodes[:, 1])
+        - np.array([0, 1, 0])
+        == 0
+    )
+    assert np.all(
+        support.evaluate_gradient(support.barycentre, support.nodes[:, 0])
+        - np.array([1, 0, 0])
+        == 0
+    )
+    assert np.all(
+        support.evaluate_gradient(support.barycentre, support.nodes[:, 2])
+        - np.array([0, 0, 1])
+        == 0
+    )
 
 
 def test_get_element(support):
@@ -188,5 +200,17 @@ def test_global_index(support):
     assert np.all(global_node_index >= 0)
     assert np.all(global_node_index < support.n_nodes)
 
+
 def test_get_neighbours(support):
-    
+    if isinstance(support, TetMesh):
+        neighbours = support.get_neighbours()
+        elements = support.get_elements()
+        for e in range(support.n_elements):
+
+            for n in neighbours[e, :]:
+                i = 0
+                for v in elements[n]:
+                    if v in elements[e]:
+                        i += 1
+                print(i)
+                # assert i == 3
