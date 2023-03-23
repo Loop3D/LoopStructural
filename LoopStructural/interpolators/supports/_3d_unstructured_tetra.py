@@ -318,7 +318,7 @@ class UnStructuredTetMesh:
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(
-            c[inside, :] * property_array[self.elements[tetras][inside, :]], axis=1
+            c[inside, :] * property_array[tetras[inside, :]], axis=1
         )
         return values
 
@@ -349,7 +349,7 @@ class UnStructuredTetMesh:
         # grads = np.zeros(tetras.shape)
         values[inside, :] = (
             element_gradients[inside, :, :]
-            * property_array[self.elements[tetras][inside, None, :]]
+            * property_array[tetras[inside, None, :]]
         ).sum(2)
         length = np.sum(values[inside, :], axis=1)
         # values[inside,:] /= length[:,None]
@@ -440,10 +440,10 @@ class UnStructuredTetMesh:
 
             verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
             bc[: npts + npts_step, :][row[mask], :] = c[mask, :]
-            tetras[: npts + npts_step][row[mask]] = self.elements[col[mask]]
+            tetras[: npts + npts_step][row[mask]] = col[mask]
             inside[: npts + npts_step][row[mask]] = True
             npts += npts_step
-        return verts, bc, tetras, inside
+        return verts, bc, self.elements[tetras], inside
 
     def get_element_gradients(self, elements=None):
         """

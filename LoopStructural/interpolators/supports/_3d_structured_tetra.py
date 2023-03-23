@@ -454,117 +454,120 @@ class TetMesh(BaseStructuredSupport):
         -------
 
         """
-        # elements = self.get_elements()
-        # neighbours = np.zeros((self.ntetra,4)).astype('int64')
-        # neighbours[:] = -1
-        # tetra_neighbours(elements,neighbours)
-        # return neighbours
-        tetra_index = np.arange(0, self.ntetra)
-        neighbours = np.zeros((self.ntetra, 4)).astype("int64")
-        neighbours[:] = -9999
-        neighbours[tetra_index % 5 == 0, :] = (
-            tetra_index[tetra_index % 5 == 0, None] + np.arange(1, 5)[None, :]
-        )  # first tetra is the centre one so all of its neighbours are in the same cell
-        neighbours[tetra_index % 5 != 0, 0] = np.tile(
-            tetra_index[tetra_index % 5 == 0], (4, 1)
-        ).flatten(
-            order="F"
-        )  # add first tetra to other neighbours
-
-        # now create masks for the different tetra indexes
-        one_mask = tetra_index % 5 == 1
-        two_mask = tetra_index % 5 == 2
-        three_mask = tetra_index % 5 == 3
-        four_mask = tetra_index % 5 == 4
-
-        # create masks for whether cell is odd or even
-        odd_mask = (
-            np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=1) % 2 == 1
-        )
-        odd_mask = ~odd_mask.astype(bool)
-
-        # create an array of masks, where the boolean array is used to slice
-        # the tetra index array and the second array is used to calculate the neighbours
-        masks = []
-        # masks first element is the boolean mask to indicate which tetras use this rule
-        # second element is a 3x4 array where the first 3 columns are the offsets to the
-        # cells and the last column is the tetra index in the cell
-        masks.append(
-            [
-                np.logical_and(one_mask, odd_mask),
-                np.array([[-1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 3]]),
-            ]
-        )
-        masks.append(
-            [
-                np.logical_and(two_mask, odd_mask),
-                np.array([[1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 4]]),
-            ]
-        )
-        masks.append(
-            [
-                np.logical_and(three_mask, odd_mask),
-                np.array([[-1, 0, 0, 4], [0, -1, 0, 3], [0, 0, -1, 2]]),
-            ]
-        )
-        masks.append(
-            [
-                np.logical_and(four_mask, odd_mask),
-                np.array([[1, 0, 0, 3], [0, 1, 0, 4], [0, 0, -1, 1]]),
-            ]
-        )
-
-        masks.append(
-            [
-                np.logical_and(one_mask, ~odd_mask),
-                np.array([[1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 4]]),
-            ]
-        )
-        masks.append(
-            [
-                np.logical_and(two_mask, ~odd_mask),
-                np.array([[-1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 3]]),
-            ]
-        )
-        masks.append(
-            [
-                np.logical_and(three_mask, ~odd_mask),
-                np.array([[-1, 0, 0, 4], [0, 1, 0, 3], [0, 0, -1, 1]]),
-            ]
-        )
-        masks.append(
-            [
-                np.logical_and(four_mask, ~odd_mask),
-                np.array([[1, 0, 0, 3], [0, -1, 0, 4], [0, 0, -1, 2]]),
-            ]
-        )
-
-        for m in masks:
-            logic = m[0]
-            mask = m[1]
-            cell_indices = self.global_index_to_cell_index(tetra_index[logic] // 5)
-            # mask = np.array([[1,0,0,4],[0,0,-1,2],[0,1,0,3],[0,0,0,0]])
-            neigh_cell = np.zeros((cell_indices.shape[0], 3, 3)).astype(int)
-            neigh_cell[:, :, 0] = cell_indices[:, 0, None] + mask[:, 0]
-            neigh_cell[:, :, 1] = cell_indices[:, 1, None] + mask[:, 1]
-            neigh_cell[:, :, 2] = cell_indices[:, 2, None] + mask[:, 2]
-
-            inside = neigh_cell[:, :, 0] >= 0
-            inside = np.logical_and(inside, neigh_cell[:, :, 1] >= 0)
-            inside = np.logical_and(inside, neigh_cell[:, :, 2] >= 0)
-            inside = np.logical_and(inside, neigh_cell[:, :, 0] < self.nsteps_cells[0])
-            inside = np.logical_and(inside, neigh_cell[:, :, 1] < self.nsteps_cells[1])
-            inside = np.logical_and(inside, neigh_cell[:, :, 2] < self.nsteps_cells[2])
-
-            global_neighbour_idx = np.zeros((cell_indices.shape[0], 4)).astype(int)
-            global_neighbour_idx[:] = -1
-            global_neighbour_idx = (
-                neigh_cell[:, :, 0]
-                + neigh_cell[:, :, 1] * self.nsteps_cells[0]
-                + neigh_cell[:, :, 2] * self.nsteps_cells[0] * self.nsteps_cells[1]
-            ) * 5 + mask[:, 3]
-
-            global_neighbour_idx[~inside] = -1
-            neighbours[logic, 1:] = global_neighbour_idx
-
+        from .._cython.dsi_helper import tetra_neighbours
+        elements = self.get_elements()
+        neighbours = np.zeros((self.ntetra,4)).astype('int64')
+        neighbours[:] = -1
+        tetra_neighbours(elements,neighbours)
         return neighbours
+        # TODO find bug in this code below, it should produces the same results as above.
+        # tetra_index = np.arange(0, self.ntetra)
+        # neighbours = np.zeros((self.ntetra, 4)).astype("int64")
+        # neighbours[:] = -1
+        # neighbours[tetra_index % 5 == 0, :] = (
+        #     tetra_index[tetra_index % 5 == 0, None] + np.arange(1, 5)[None, :]
+        # )  # first tetra is the centre one so all of its neighbours are in the same cell
+        # neighbours[tetra_index % 5 != 0, 0] = np.tile(
+        #     tetra_index[tetra_index % 5 == 0], (4, 1)
+        # ).flatten(
+        #     order="F"
+        # )  # add first tetra to other neighbours
+
+        # # now create masks for the different tetra indexes
+        # one_mask = tetra_index % 5 == 1
+        # two_mask = tetra_index % 5 == 2
+        # three_mask = tetra_index % 5 == 3
+        # four_mask = tetra_index % 5 == 4
+
+        # # create masks for whether cell is odd or even
+        # odd_mask = (
+        #     np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=1) % 2 == 1
+        # )
+        # odd_mask = ~odd_mask.astype(bool)
+
+        # # create an array of masks, where the boolean array is used to slice
+        # # the tetra index array and the second array is used to calculate the neighbours
+        # masks = []
+        # # masks first element is the boolean mask to indicate which tetras use this rule
+        # # second element is a 3x4 array where the first 3 columns are the offsets to the
+        # # cells and the last column is the tetra index in the cell
+        # masks.append(
+        #     [
+        #         np.logical_and(one_mask, ~odd_mask),
+        #         np.array([[0, 0, 1, 4], [0, 1, 0, 2], [1, 0, 0, 1]]), #checked
+        #     ]
+        # )
+        # masks.append(
+        #     [
+        #         np.logical_and(two_mask, ~odd_mask),
+        #         np.array([[-1, 0, 0, 2], 
+        #                   [0, -1, 0, 1], [0, 0, 1, 3]]), #checked
+        #     ]
+        # )
+        # masks.append(
+        #     [
+        #         np.logical_and(three_mask, ~odd_mask),
+        #         np.array([[-1, 0, 0, 4], [0, 0, -1, 1], [0, 1, 0, 3]]), #checked
+        #     ]
+        # )
+        # masks.append(
+        #     [
+        #         np.logical_and(four_mask, ~odd_mask),
+        #         np.array([[0, -1, 0, 4], [0, 0, 0, -1], [1, 0, 0, 3]]), #checked
+        #     ]
+        # )
+
+        # masks.append(
+        #     [
+        #         np.logical_and(one_mask, odd_mask),
+        #         np.array([[-1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 3]]), #checked
+        #     ]
+        # )
+        # masks.append(
+        #     [
+        #         np.logical_and(two_mask, odd_mask),
+        #         np.array([[1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 4]]), # checked
+        #     ]
+        # )
+        # masks.append(
+        #     [
+        #         np.logical_and(three_mask, odd_mask),
+        #         np.array([[-1, 0, 0, 4], [0, -1, 0, 3], [0, 0, -1, 2]]), #checked
+        #     ]
+        # )
+        # masks.append(
+        #     [
+        #         np.logical_and(four_mask, odd_mask),
+        #         np.array([[1, 0, 0, 3], [0, 1, 0, 4], [0, 0, -1, 1]]), #checked
+        #     ]
+        # )
+
+        # for m in masks:
+        #     logic = m[0]
+        #     mask = m[1]
+        #     cell_indices = self.global_index_to_cell_index(tetra_index[logic] // 5)
+        #     # mask = np.array([[1,0,0,4],[0,0,-1,2],[0,1,0,3],[0,0,0,0]])
+        #     neigh_cell = np.zeros((cell_indices.shape[0], 3, 3)).astype(int)
+        #     neigh_cell[:, :, 0] = cell_indices[:, 0, None] + mask[:, 0]
+        #     neigh_cell[:, :, 1] = cell_indices[:, 1, None] + mask[:, 1]
+        #     neigh_cell[:, :, 2] = cell_indices[:, 2, None] + mask[:, 2]
+
+        #     inside = neigh_cell[:, :, 0] >= 0
+        #     inside = np.logical_and(inside, neigh_cell[:, :, 1] >= 0)
+        #     inside = np.logical_and(inside, neigh_cell[:, :, 2] >= 0)
+        #     inside = np.logical_and(inside, neigh_cell[:, :, 0] < self.nsteps_cells[0])
+        #     inside = np.logical_and(inside, neigh_cell[:, :, 1] < self.nsteps_cells[1])
+        #     inside = np.logical_and(inside, neigh_cell[:, :, 2] < self.nsteps_cells[2])
+
+        #     global_neighbour_idx = np.zeros((cell_indices.shape[0], 4)).astype(int)
+        #     global_neighbour_idx[:] = -1
+        #     global_neighbour_idx = (
+        #         neigh_cell[:, :, 0]
+        #         + neigh_cell[:, :, 1] * self.nsteps_cells[0]
+        #         + neigh_cell[:, :, 2] * self.nsteps_cells[0] * self.nsteps_cells[1]
+        #     ) * 5 + mask[:, 3]
+
+        #     global_neighbour_idx[~inside] = -1
+        #     neighbours[logic, 1:] = global_neighbour_idx
+
+        # return neighbours

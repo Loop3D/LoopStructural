@@ -212,5 +212,4 @@ def test_get_neighbours(support):
                 for v in elements[n]:
                     if v in elements[e]:
                         i += 1
-                print(i)
-                # assert i == 3
+                assert i == 3
