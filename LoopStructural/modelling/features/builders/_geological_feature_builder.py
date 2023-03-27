@@ -272,6 +272,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
         if issubclass(type(self.interpolator), DiscreteInterpolator):
             for g in self._orthogonal_features.values():
                 feature, w, region, step, B = g
+                if w == 0:
+                    continue
                 vector = feature.evaluate_gradient(self.interpolator.support.barycentre)
                 norm = np.linalg.norm(vector, axis=1)
 

@@ -13,7 +13,7 @@ RUN apt-get update -qq && \
     libopenmpi-dev \ 
     make 
 # RUN conda install -c conda-forge python=3.9 -y
-RUN conda install -c conda-forge -c loop3d python=3.9\
+RUN conda install -c conda-forge -c loop3d\
     pip \
     map2model\
     hjson\
@@ -22,9 +22,6 @@ RUN conda install -c conda-forge -c loop3d python=3.9\
     gdal=3.5.2\
     rasterio=1.2.10 \
     meshio\
-    scikit-fmm\
-    statsmodels\
-    numba\
     scikit-learn \
     cython \
     numpy \
@@ -48,7 +45,10 @@ RUN conda install -c conda-forge -c loop3d python=3.9\
 
 RUN pip install ipyfilechooser
 RUN jupyter nbextension enable --py --sys-prefix ipyleaflet
-RUN pip install lavavu-osmesa=1.8.32 geostatspy mplstereonet
+RUN pip install lavavu-osmesa mplstereonet
+
+ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/lavavu/
+
 
 ENV NB_USER jovyan
 ENV NB_UID 1000

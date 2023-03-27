@@ -555,7 +555,7 @@ class GeologicalModel:
         return self._data
 
     @data.setter
-    def data(self, data):
+    def data(self, data: pd.DataFrame):
         """
         Set the data array for the model
 
@@ -1030,7 +1030,11 @@ class GeologicalModel:
             kwargs["fold_weights"] = {}
 
         series_builder = FoldedFeatureBuilder(
-            interpolator=fold_interpolator, fold=fold, name=foliation_data, **kwargs
+            interpolator=fold_interpolator,
+            fold=fold,
+            name=foliation_data,
+            svario=svario,
+            **kwargs,
         )
 
         series_builder.add_data_from_data_frame(
@@ -1197,7 +1201,9 @@ class GeologicalModel:
 
         weights = [gxxgz, gxxgy, gyxgz]
 
-        interpolator = self.get_interpolator(interpolatortype=interpolatortype, buffer = buffer)
+        interpolator = self.get_interpolator(
+            interpolatortype=interpolatortype, buffer=buffer
+        )
 
         intrusion_frame_builder = IntrusionFrameBuilder(
             interpolator, name=intrusion_frame_name, model=self, **kwargs
@@ -1208,7 +1214,7 @@ class GeologicalModel:
 
         # -- create intrusion frame using intrusion structures (steps and marginal faults) and flow/inflation measurements
         if len(intrusion_frame_parameters) == 0:
-            logger.error('Please specify parameters to build intrusion frame')
+            logger.error("Please specify parameters to build intrusion frame")
         intrusion_frame_builder.set_intrusion_frame_parameters(
             intrusion_data, intrusion_frame_parameters
         )
@@ -1224,19 +1230,21 @@ class GeologicalModel:
             gxygz=weights[2],
         )
 
-        intrusion_frame = intrusion_frame_builder.frame        
+        intrusion_frame = intrusion_frame_builder.frame
 
         # -- create intrusion builder to compute distance thresholds along the frame coordinates
         intrusion_builder = IntrusionBuilder(
-            intrusion_frame, model=self, interpolator = interpolator, name=f"{intrusion_name}_feature", **kwargs
+            intrusion_frame,
+            model=self,
+            # interpolator=interpolator,
+            name=f"{intrusion_name}_feature",
+            lateral_extent_model=intrusion_lateral_extent_model,
+            vertical_extent_model=intrusion_vertical_extent_model,
+            **kwargs,
         )
-        intrusion_builder.lateral_extent_model = intrusion_lateral_extent_model
-        intrusion_builder.vertical_extent_model = intrusion_vertical_extent_model
-
         intrusion_builder.set_data_for_extent_calculation(intrusion_data)
 
         intrusion_builder.build_arguments = {
-            # "parameters_for_extent_sgs": parameters_for_extent_sgs,
             "geometric_scaling_parameters": geometric_scaling_parameters,
         }
 
@@ -1334,51 +1342,6 @@ class GeologicalModel:
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
                 feature.add_region(f)
                 break
-
-    def create_and_add_unconformity(self, unconformity_surface_data, **kwargs):
-        """
-        Parameters
-        ----------
-        unconformity_surface_data : string
-            name of the unconformity data in the data frame
-
-        Returns
-        -------
-
-        Notes
-        -----
-
-        Additional kwargs are found in
-        * :meth:`LoopStructural.GeologicalModel.get_interpolator`
-
-        """
-        if not self.check_initialisation():
-            return False
-        interpolator = self.get_interpolator(**kwargs)
-        unconformity_feature_builder = GeologicalFeatureBuilder(
-            interpolator, name=unconformity_surface_data
-        )
-        # add data
-        unconformity_data = self.data[
-            self.data["feature_name"] == unconformity_surface_data
-        ]
-
-        unconformity_feature_builder.add_data_from_data_frame(unconformity_data)
-        # look through existing features if there is a fault before an
-        # unconformity
-        # then add to the feature, once we get to an unconformity stop
-        self._add_faults(unconformity_feature_builder)
-
-        # build feature
-        # uc_feature_base = unconformity_feature_builder.build(**kwargs)
-        uc_feature_base = unconformity_feature_builder.feature
-        unconformity_feature_builder.build_arguments = kwargs
-        uc_feature_base.type = "unconformity_base"
-        # uc_feature = UnconformityFeature(uc_feature_base,0)
-        # iterate over existing features and add the unconformity as a
-        # region so the feature is only 
-        # evaluated where the unconformity is positive
-        return self.add_unconformity(uc_feature_base, 0)
 
     def add_unconformity(
         self, feature: GeologicalFeature, value: float
@@ -1584,7 +1547,7 @@ class GeologicalModel:
         fault_frame_builder = FaultBuilder(
             interpolator, name=fault_surface_data, model=self, **kwargs
         )
-        self._add_faults(fault_frame_builder,features=faults)
+        self._add_faults(fault_frame_builder, features=faults)
         # add data
         fault_frame_data = self.data.loc[
             self.data["feature_name"] == fault_surface_data
