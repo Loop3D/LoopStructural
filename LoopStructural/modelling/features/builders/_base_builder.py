@@ -42,6 +42,7 @@ class BaseBuilder:
 
     def update(self):
         self.build(**self.build_arguments)
+        self._up_to_date = True
 
     def build(self, **kwargs):
         raise NotImplementedError(

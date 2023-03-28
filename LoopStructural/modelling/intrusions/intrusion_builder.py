@@ -4,6 +4,7 @@ import pandas as pd
 from ...utils import getLogger
 from .intrusion_feature import IntrusionFeature
 from ...interpolators import StructuredGrid2D
+from ...interpolators import GeologicalInterpolator
 
 from scipy.interpolate import Rbf
 
@@ -20,8 +21,9 @@ logger = getLogger(__name__)
 class IntrusionBuilder(BaseBuilder):
     def __init__(
         self,
-        frame,
-        model,
+        interpolator: GeologicalInterpolator,
+        frame = None,
+        model = None,
         vertical_extent_model=None,
         lateral_extent_model=None,
         name="intrusion builder",
@@ -44,6 +46,9 @@ class IntrusionBuilder(BaseBuilder):
         """
 
         BaseBuilder.__init__(self, name=name)
+
+        self._interpolator = interpolator
+        self._interpolator.set_property_name(self._name)
 
         self.intrusion_frame = frame
         self._up_to_date = False

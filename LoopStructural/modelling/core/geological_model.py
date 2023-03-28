@@ -1234,9 +1234,9 @@ class GeologicalModel:
 
         # -- create intrusion builder to compute distance thresholds along the frame coordinates
         intrusion_builder = IntrusionBuilder(
-            intrusion_frame,
+            interpolator=interpolator,
+            frame = intrusion_frame,
             model=self,
-            # interpolator=interpolator,
             name=f"{intrusion_name}_feature",
             lateral_extent_model=intrusion_lateral_extent_model,
             vertical_extent_model=intrusion_vertical_extent_model,
