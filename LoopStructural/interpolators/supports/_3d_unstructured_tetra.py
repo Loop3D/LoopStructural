@@ -130,14 +130,16 @@ class UnStructuredTetMesh:
         maxy = np.max(self.nodes[self.elements[:, :4], 1], axis=1)
         minz = np.min(self.nodes[self.elements[:, :4], 2], axis=1)
         maxz = np.max(self.nodes[self.elements[:, :4], 2], axis=1)
-        ix, iy, iz = self.aabb_grid.global_index_to_cell_index(
+        cell_indexes = self.aabb_grid.global_index_to_cell_index(
             np.arange(self.aabb_grid.n_elements)
         )
-        cix, ciy, ciz = self.aabb_grid.cell_corner_indexes(ix, iy, iz)
-        px, py, pz = self.aabb_grid.node_indexes_to_position(cix, ciy, ciz)
-        x_boundary = px[:, [0, 1]]
-        y_boundary = py[:, [0, 2]]
-        z_boundary = pz[:, [0, 3]]
+        corners = self.aabb_grid.cell_corner_indexes(cell_indexes)
+        positions = self.aabb_grid.node_indexes_to_position(corners)
+        ## Because we known the node orders just select min/max from each
+        # coordinate. Use these to check whether the tetra is in the cell
+        x_boundary = positions[:, [0, 1], 0]
+        y_boundary = positions[:, [0, 2], 1]
+        z_boundary = positions[:, [0, 6], 2]
         a = np.logical_and(
             minx[None, :] > x_boundary[:, None, 0],
             minx[None, :] < x_boundary[:, None, 1],
@@ -396,7 +398,7 @@ class UnStructuredTetMesh:
 
             cell_index = np.array(
                 self.aabb_grid.position_to_cell_index(points[: npts + npts_step, :])
-            ).swapaxes(0, 1)
+            )
             inside = self.aabb_grid.inside(points[: npts + npts_step, :])
             global_index = (
                 cell_index[:, 0]

@@ -43,7 +43,10 @@ jobs:
           cp CHANGELOG.md docs/source/getting_started/CHANGELOG.md
           docker build . -t=lsdocs -f docs/Dockerfile 
           docker run -v $(pwd):/LoopStructural lsdocs bash LoopStructural/docs/build_docs.sh
-      
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: docs/build/html
 
   release-please:
     runs-on: ubuntu-latest
@@ -77,13 +80,12 @@ jobs:
           
   conda-deploy:
     name: Uploading to Loop3d for python ${{ matrix.os }})
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    needs: ["documentation-test", "continuous-integration"]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest",  "windows-latest","macos-latest"]
+        os: ["ubuntu-latest",  "windows-latest"]
         python-version: ["3.10","3.9","3.8","3.7"]
     steps:
       - uses: conda-incubator/setup-miniconda@v2
@@ -104,48 +106,35 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
         shell: bash -l {0}
         run: |
-           conda install -c conda-forge conda-build scikit-build numpy=1.20 cython anaconda-client -y
-           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda
+           conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client -y
+           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda --numpy 1.21
            conda install anaconda-client -y
-      - name: upload windows
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-        if: matrix.os == 'windows-latest'
-        shell: bash -l {0}
-        run: |
-           anaconda upload --label main conda/win-64/*.tar.bz2 
-      - name: upload linux
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-        if: matrix.os == 'ubuntu-latest'
-        shell: bash -l {0}
-        run: |
-           anaconda upload --label main conda/linux-64/*.tar.bz2 
-      - name: upload macosx
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-        if: matrix.os == 'macos-latest'
-        shell: bash -l {0}
-        run: |
-            anaconda upload --label main conda/osx-64/*.tar.bz2
-  docker-deploy:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: conda
+          path: conda
+     
+
+  make_sdist:
+    needs: ["documentation-test", "continuous-integration"]
+    name: Make SDist
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
-      with:
-        name: loop3d/loopstructural
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-        dockerfile: Dockerfile
-        tags: "latest,${{ env.STATE_RELEASE_VERSION }}"
+    - uses: actions/checkout@v3
+      
+    - name: Build SDist
+      run: |
+        pip install numpy cython
+        python setup.py sdist
 
-  pypi-deploy:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist/*.tar.gz
+        
+  build_wheels:
+    needs: ["documentation-test", "continuous-integration"]
     name: Build wheels
     runs-on: ${{ matrix.os }}
     strategy:
@@ -156,16 +145,41 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v1.10.0
+        uses: pypa/cibuildwheel@v2.12.0
         env:
           CIBW_ARCHS_MACOS: x86_64 universal2
           CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310*"
           CIBW_BEFORE_BUILD: "pip install numpy cython" #make sure numpy is the same version as required by LS
-
-      - name: Publish wheels to PyPI
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run : |
-          pip install twine
-          python -m twine upload ./wheelhouse/*.whl  
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: ./wheelhouse/*.whl
+          
+  upload_to_pypi:
+    needs: ["release-please","build_wheels","make_sdist","conda-deploy"]
+    runs-on: ubuntu-latest
+    #if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+          name: dist
+          path: dist
+    - uses: actions/download-artifact@v3
+      with:
+          name: conda
+          path: conda
+    - uses: pypa/gh-action-pypi-publish@v1.6.4
+      with:
+        skip_existing: true
+        verbose: true
+        user: ${{ secrets.PYPI_USERNAME }}
+        password: ${{ secrets.PYPI_PASSWORD }}
+    - uses: conda-incubator/setup-miniconda@v2
+    - name: upload all files to conda-forge
+      shell: bash -l {0}
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+      run: |
+           conda install -c anaconda anaconda-client -y
+           anaconda upload --label main conda/*/*.tar.bz2 
+    

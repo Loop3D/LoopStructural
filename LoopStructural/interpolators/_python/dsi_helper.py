@@ -1,7 +1,11 @@
 import numpy as np
 
 
-def cg(EG, neighbours, elements, nodes, region):
+def cg(EG: np.ndarray, neighbours: np.ndarray, elements: np.ndarray, nodes, region):
+    if EG.shape[0] != neighbours.shape[0] and EG.shape[0] != elements.shape[0]:
+        raise ValueError("EG and neighbours must have the same number of elements")
+    if EG.shape[2] != 4:
+        raise ValueError("EG must have 4 columns")
     Nc = 5  # numer of constraints shared nodes + independent
     Na = 4  # number of nodes
     Ns = Na - 1

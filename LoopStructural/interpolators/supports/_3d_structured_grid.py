@@ -55,25 +55,14 @@ class StructuredGrid(BaseStructuredSupport):
         numpy array
             Nx3 array of cell centres
         """
-        ix, iy, iz = self.global_index_to_cell_index(global_index)
-        x = (
-            self.origin[None, 0]
-            + self.step_vector[None, 0] * 0.5
-            + self.step_vector[None, 0] * ix
+        cell_indexes = self.global_index_to_cell_index(global_index)
+        return (
+            self.origin[None, :]
+            + self.step_vector[None, :] * (cell_indexes)
+            + self.step_vector[None, :] * 0.5
         )
-        y = (
-            self.origin[None, 1]
-            + self.step_vector[None, 1] * 0.5
-            + self.step_vector[None, 1] * iy
-        )
-        z = (
-            self.origin[None, 2]
-            + self.step_vector[None, 2] * 0.5
-            + self.step_vector[None, 2] * iz
-        )
-        return np.array([x, y, z]).T
 
-    def trilinear(self, x, y, z):
+    def trilinear(self, local_coords):
         """
         returns the trilinear interpolation for the local coordinates
         Parameters
@@ -87,18 +76,40 @@ class StructuredGrid(BaseStructuredSupport):
         array of interpolation coefficients
 
         """
-        return np.array(
-            [
-                (1 - x) * (1 - y) * (1 - z),
-                x * (1 - y) * (1 - z),
-                (1 - x) * y * (1 - z),
-                (1 - x) * (1 - y) * z,
-                x * (1 - y) * z,
-                (1 - x) * y * z,
-                x * y * (1 - z),
-                x * y * z,
-            ]
+        interpolant = np.zeros((local_coords.shape[0], 8), dtype=np.float64)
+        # interpolant[:,0] = (1 - local_coords[:, 0])* (1 - local_coords[:, 1])* (1 - local_coords[:, 2])
+        # interpolant[:,1] = local_coords[:, 0]* (1 - local_coords[:, 1])* (1 - local_coords[:, 2])
+        # interpolant[:,2] = (1 - local_coords[:, 0])* local_coords[:, 1]* (1 - local_coords[:, 2])
+        # interpolant[:,3] = (1 - local_coords[:, 0])* (1 - local_coords[:, 1])* local_coords[:, 2]
+        # interpolant[:,4] = local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        # interpolant[:,5] = (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
+        # interpolant[:,6] = local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
+        # interpolant[:,7] =  local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
+        interpolant[:, 0] = (
+            (1 - local_coords[:, 0])
+            * (1 - local_coords[:, 1])
+            * (1 - local_coords[:, 2])
         )
+        interpolant[:, 1] = (
+            local_coords[:, 0] * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
+        )
+        interpolant[:, 2] = (
+            (1 - local_coords[:, 0]) * local_coords[:, 1] * (1 - local_coords[:, 2])
+        )
+        interpolant[:, 4] = (
+            (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        )
+        interpolant[:, 5] = (
+            local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        )
+        interpolant[:, 6] = (
+            (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
+        )
+        interpolant[:, 3] = (
+            local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
+        )
+        interpolant[:, 7] = local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
+        return interpolant
 
     def position_to_local_coordinates(self, pos):
         """
@@ -115,16 +126,17 @@ class StructuredGrid(BaseStructuredSupport):
         # TODO check if inside mesh
         # pos = self.rotate(pos)
         # calculate local coordinates for positions
-        local_x = (
+        local_coords = np.zeros(pos.shape)
+        local_coords[:, 0] = (
             (pos[:, 0] - self.origin[None, 0]) % self.step_vector[None, 0]
         ) / self.step_vector[None, 0]
-        local_y = (
+        local_coords[:, 1] = (
             (pos[:, 1] - self.origin[None, 1]) % self.step_vector[None, 1]
         ) / self.step_vector[None, 1]
-        local_z = (
+        local_coords[:, 2] = (
             (pos[:, 2] - self.origin[None, 2]) % self.step_vector[None, 2]
         ) / self.step_vector[None, 2]
-        return local_x, local_y, local_z
+        return local_coords
 
     def position_to_dof_coefs(self, pos):
         """
@@ -137,8 +149,8 @@ class StructuredGrid(BaseStructuredSupport):
         -------
 
         """
-        x_local, y_local, local_z = self.position_to_local_coordinates(pos)
-        weights = self.trilinear(x_local, y_local, local_z)
+        local_coords = self.position_to_local_coordinates(pos)
+        weights = self.trilinear(local_coords)
         return weights
 
     def neighbour_global_indexes(self, mask=None, **kwargs):
@@ -166,7 +178,6 @@ class StructuredGrid(BaseStructuredSupport):
             ).reshape((3, -1))
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
-            print(indexes.ndim)
             return
         # determine which neighbours to return default is diagonals included.
         if mask is None:
@@ -298,8 +309,7 @@ class StructuredGrid(BaseStructuredSupport):
             raise ValueError("index does not match number of nodes")
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
-
-        v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :]).T
+        v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :])
         v[inside, :] *= property_array[idc[inside, :]]
 
         return np.sum(v, axis=1)
@@ -408,35 +418,35 @@ class StructuredGrid(BaseStructuredSupport):
         # cellx, celly, cellz = self.cell_corner_indexes(xindex, yindex,zindex)
         # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
         T = np.zeros((pos.shape[0], 3, 8))
-        x, y, z = self.position_to_local_coordinates(pos)
+        local_coords = self.position_to_local_coordinates(pos)
         vertices, inside = self.position_to_cell_vertices(pos)
         elements, inside = self.position_to_cell_corners(pos)
-        T[:, 0, 0] = (1 - z) * (y - 1)  # v000
-        T[:, 0, 1] = (1 - y) * (1 - z)  # (y[:, 3] - pos[:, 1]) / div
-        T[:, 0, 2] = -y * (1 - z)  # (pos[:, 1] - y[:, 0]) / div
-        T[:, 0, 3] = -(1 - y) * z  # (pos[:, 1] - y[:, 1]) / div
-        T[:, 0, 4] = (1 - y) * z
-        T[:, 0, 5] = -y * z
-        T[:, 0, 6] = y * (1 - z)
-        T[:, 0, 7] = y * z
+        T[:, 0, 0] = (1 - local_coords[:, 2]) * (local_coords[:, 1] - 1)  # v000
+        T[:, 0, 1] = (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
+        T[:, 0, 2] = -local_coords[:, 1] * (1 - local_coords[:, 2])
+        T[:, 0, 4] = -(1 - local_coords[:, 1]) * local_coords[:, 2]
+        T[:, 0, 5] = (1 - local_coords[:, 1]) * local_coords[:, 2]
+        T[:, 0, 6] = -local_coords[:, 1] * local_coords[:, 2]
+        T[:, 0, 3] = local_coords[:, 1] * (1 - local_coords[:, 2])
+        T[:, 0, 7] = local_coords[:, 1] * local_coords[:, 2]
 
-        T[:, 1, 0] = (x - 1) * (1 - z)
-        T[:, 1, 1] = -x * (1 - z)
-        T[:, 1, 2] = (1 - x) * (1 - z)
-        T[:, 1, 3] = -(1 - x) * z
-        T[:, 1, 4] = -x * z
-        T[:, 1, 5] = (1 - x) * z
-        T[:, 1, 6] = x * (1 - z)
-        T[:, 1, 7] = x * z
+        T[:, 1, 0] = (local_coords[:, 0] - 1) * (1 - local_coords[:, 2])
+        T[:, 1, 1] = -local_coords[:, 0] * (1 - local_coords[:, 2])
+        T[:, 1, 2] = (1 - local_coords[:, 0]) * (1 - local_coords[:, 2])
+        T[:, 1, 4] = -(1 - local_coords[:, 0]) * local_coords[:, 2]
+        T[:, 1, 5] = -local_coords[:, 0] * local_coords[:, 2]
+        T[:, 1, 6] = (1 - local_coords[:, 0]) * local_coords[:, 2]
+        T[:, 1, 3] = local_coords[:, 0] * (1 - local_coords[:, 2])
+        T[:, 1, 7] = local_coords[:, 0] * local_coords[:, 2]
 
-        T[:, 2, 0] = -(1 - x) * (1 - y)
-        T[:, 2, 1] = -x * (1 - y)
-        T[:, 2, 2] = -(1 - x) * y
-        T[:, 2, 3] = (1 - x) * (1 - y)
-        T[:, 2, 4] = x * (1 - y)
-        T[:, 2, 5] = (1 - x) * y
-        T[:, 2, 6] = -x * y
-        T[:, 2, 7] = x * y
+        T[:, 2, 0] = -(1 - local_coords[:, 0]) * (1 - local_coords[:, 1])
+        T[:, 2, 1] = -local_coords[:, 0] * (1 - local_coords[:, 1])
+        T[:, 2, 2] = -(1 - local_coords[:, 0]) * local_coords[:, 1]
+        T[:, 2, 4] = (1 - local_coords[:, 0]) * (1 - local_coords[:, 1])
+        T[:, 2, 5] = local_coords[:, 0] * (1 - local_coords[:, 1])
+        T[:, 2, 6] = (1 - local_coords[:, 0]) * local_coords[:, 1]
+        T[:, 2, 3] = -local_coords[:, 0] * local_coords[:, 1]
+        T[:, 2, 7] = local_coords[:, 0] * local_coords[:, 1]
         T /= self.step_vector[0]
 
         return vertices, T, elements, inside
@@ -457,7 +467,8 @@ class StructuredGrid(BaseStructuredSupport):
         """
         vertices, inside = self.position_to_cell_vertices(pos)
         vertices = np.array(vertices)
-        vertices = vertices.reshape((vertices.shape[1], 8, 3))
+        # print("ver", vertices.shape)
+        # vertices = vertices.reshape((vertices.shape[1], 8, 3))
         elements, inside = self.position_to_cell_corners(pos)
         a = self.position_to_dof_coefs(pos)
         return vertices, a.T, elements, inside

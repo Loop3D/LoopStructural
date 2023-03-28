@@ -160,7 +160,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
             # print(points[inside,:].shape)
-
             gi = np.zeros(self.support.n_nodes, dtype=int)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx, dtype=int)
@@ -172,7 +171,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # a*=w
             # a/=np.product(self.support.step_vector)
             self.add_constraints_to_least_squares(
-                a.T,
+                a,
                 points[inside, 3],
                 idc[inside, :],
                 w=w * points[inside, 4],

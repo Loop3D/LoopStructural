@@ -143,27 +143,26 @@ class TetMesh(BaseStructuredSupport):
         pos = np.array(pos)
         inside = self.inside(pos)
         # initialise array for tetrahedron vertices
-        vertices = np.zeros((5, 4, pos.shape[0], 3))
+        vertices = np.zeros((pos.shape[0], 5, 4, 3))
         vertices[:] = np.nan
         # get cell indexes
-        c_xi, c_yi, c_zi = self.position_to_cell_index(pos)
-
+        cell_indexes = self.position_to_cell_index(pos)
         # determine if using +ve or -ve mask
-        even_mask = (c_xi + c_yi + c_zi) % 2 == 0
+        even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
         # get cell corners
-        xi, yi, zi = self.cell_corner_indexes(
-            c_xi, c_yi, c_zi
+        corner_indexes = self.cell_corner_indexes(
+            cell_indexes
         )  # global_index_to_node_index(gi)
         # convert to node locations
-        nodes = self.node_indexes_to_position(xi, yi, zi).T
+        nodes = self.node_indexes_to_position(corner_indexes)
 
-        vertices[:, :, even_mask, :] = nodes[:, even_mask, :][
-            self.tetra_mask_even, :, :
+        vertices[even_mask, :, :, :] = nodes[even_mask, :, :][
+            :, self.tetra_mask_even, :
         ]
-        vertices[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
+        vertices[~even_mask, :, :, :] = nodes[~even_mask, :, :][:, self.tetra_mask, :]
         # changing order to points, tetra, nodes, coord
-        vertices = vertices.swapaxes(0, 2)
-        vertices = vertices.swapaxes(1, 2)
+        # vertices = vertices.swapaxes(0, 2)
+        # vertices = vertices.swapaxes(1, 2)
         # use scalar triple product to calculate barycentric coords
 
         vap = pos[:, None, :] - vertices[:, :, 0, :]
@@ -191,14 +190,13 @@ class TetMesh(BaseStructuredSupport):
 
         inside = np.logical_and(inside, np.any(mask, axis=1))
         # get cell corners
-        xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
         # create mask to see which cells are even
-        even_mask = (c_xi + c_yi + c_zi) % 2 == 0
+        even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
         # create global node index list
-        gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
+        gi = self.global_node_indices(corner_indexes)
+        # gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
         # container for tetras
-        tetras = np.zeros((xi.shape[0], 5, 4)).astype(int)
-
+        tetras = np.zeros((corner_indexes.shape[0], 5, 4)).astype(int)
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
         inside = np.logical_and(inside, self.inside(pos))
@@ -229,15 +227,12 @@ class TetMesh(BaseStructuredSupport):
         y = np.arange(0, self.nsteps_cells[1])
         z = np.arange(0, self.nsteps_cells[2])
 
-        c_xi, c_yi, c_zi = np.meshgrid(x, y, z, indexing="ij")
-        c_xi = c_xi.flatten(order="F")
-        c_yi = c_yi.flatten(order="F")
-        c_zi = c_zi.flatten(order="F")
+        cell_indexes = np.array(np.meshgrid(x, y, z, indexing="ij")).reshape(3, -1).T
         # get cell corners
-        xi, yi, zi = self.cell_corner_indexes(c_xi, c_yi, c_zi)
-        even_mask = (c_xi + c_yi + c_zi) % 2 == 0
-        gi = xi + yi * self.nsteps[0] + zi * self.nsteps[0] * self.nsteps[1]
-        tetras = np.zeros((c_xi.shape[0], 5, 4)).astype("int64")
+        cell_corners = self.cell_corner_indexes(cell_indexes)
+        even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
+        gi = self.global_node_indices(cell_corners)
+        tetras = np.zeros((cell_corners.shape[0], 5, 4)).astype("int64")
         tetras[even_mask, :, :] = gi[even_mask, :][:, self.tetra_mask_even]
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
 
@@ -261,25 +256,25 @@ class TetMesh(BaseStructuredSupport):
         y = np.arange(0, self.nsteps_cells[1])
         z = np.arange(0, self.nsteps_cells[2])
 
-        c_xi, c_yi, c_zi = np.meshgrid(x, y, z, indexing="ij")
-        c_xi = c_xi.flatten(order="F")
-        c_yi = c_yi.flatten(order="F")
-        c_zi = c_zi.flatten(order="F")
-        even_mask = (c_xi + c_yi + c_zi) % 2 == 0
+        cell_indexes = np.array(np.meshgrid(x, y, z, indexing="ij")).reshape(3, -1).T
+        # c_xi = c_xi.flatten(order="F")
+        # c_yi = c_yi.flatten(order="F")
+        # c_zi = c_zi.flatten(order="F")
+        even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
         # get cell corners
-        xi, yi, zi = self.cell_corner_indexes(
-            c_xi, c_yi, c_zi
+        corner_indexes = self.cell_corner_indexes(
+            cell_indexes
         )  # global_index_to_node_index(gi)
         # convert to node locations
-        nodes = self.node_indexes_to_position(xi, yi, zi).T
+        nodes = self.node_indexes_to_position(corner_indexes)
 
-        points = np.zeros((5, 4, self.n_cells, 3))
-        points[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
-        points[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
+        points = np.zeros((self.n_cells, 5, 4, 3))
+        points[even_mask, :, :, :] = nodes[even_mask, :, :][:, self.tetra_mask_even, :]
+        points[~even_mask, :, :, :] = nodes[~even_mask, :, :][:, self.tetra_mask, :]
 
         # changing order to points, tetra, nodes, coord
-        points = points.swapaxes(0, 2)
-        points = points.swapaxes(1, 2)
+        # points = points.swapaxes(0, 2)
+        # points = points.swapaxes(1, 2)
 
         ps = points.reshape(
             points.shape[0] * points.shape[1], points.shape[2], points.shape[3]
@@ -402,72 +397,25 @@ class TetMesh(BaseStructuredSupport):
             * indexes[:, :, 2]
         )
 
-    def cell_corner_indexes(self, x_cell_index, y_cell_index, z_cell_index):
-        """
-        Returns the indexes of the corners of a cell given its location xi,
-        yi, zi
+    # def position_to_cell_corners(self, pos: np.ndarray) -> np.ndarray:
+    #     """
+    #     Find the nodes that belong to a cell which contains a point
 
-        Parameters
-        ----------
-        x_cell_index
-        y_cell_index
-        z_cell_index
+    #     Parameters
+    #     ----------
+    #     pos
 
-        Returns
-        -------
+    #     Returns
+    #     -------
 
-        """
-        x_cell_index = np.array(x_cell_index)
-        y_cell_index = np.array(y_cell_index)
-        z_cell_index = np.array(z_cell_index)
-
-        xcorner = np.array([0, 1, 0, 1, 0, 1, 0, 1])
-        ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
-        zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
-        xcorners = x_cell_index[:, None] + xcorner[None, :]
-        ycorners = y_cell_index[:, None] + ycorner[None, :]
-        zcorners = z_cell_index[:, None] + zcorner[None, :]
-        return xcorners, ycorners, zcorners
-
-    def position_to_cell_corners(self, pos: np.ndarray) -> np.ndarray:
-        """
-        Find the nodes that belong to a cell which contains a point
-
-        Parameters
-        ----------
-        pos
-
-        Returns
-        -------
-
-        """
-        inside = self.inside(pos)
-        ix, iy, iz = self.position_to_cell_index(pos)
-        cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
-        globalidx = self.global_cell_indicies(
-            np.dstack([cornersx, cornersy, cornersz]).T
-        )
-        return globalidx, inside
-
-    def node_indexes_to_position(self, xindex, yindex, zindex):
-        """
-        Get the xyz position from the node coordinates
-
-        Parameters
-        ----------
-        xindex
-        yindex
-        zindex
-
-        Returns
-        -------
-
-        """
-        x = self.origin[0] + self.step_vector[0] * xindex
-        y = self.origin[1] + self.step_vector[1] * yindex
-        z = self.origin[2] + self.step_vector[2] * zindex
-
-        return np.array([x, y, z])
+    #     """
+    #     inside = self.inside(pos)
+    #     ix, iy, iz = self.position_to_cell_index(pos)
+    #     cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
+    #     globalidx = self.global_cell_indicies(
+    #         np.dstack([cornersx, cornersy, cornersz]).T
+    #     )
+    #     return globalidx, inside
 
     def global_index_to_node_index(self, global_index: np.ndarray):
         """
