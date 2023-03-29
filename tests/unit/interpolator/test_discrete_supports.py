@@ -209,6 +209,8 @@ def test_get_neighbours(support):
 
             for n in neighbours[e, :]:
                 i = 0
+                if n == -1:
+                    continue
                 for v in elements[n]:
                     if v in elements[e]:
                         i += 1

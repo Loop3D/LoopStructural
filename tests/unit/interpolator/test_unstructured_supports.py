@@ -50,5 +50,4 @@ def test_get_elements():
     # check if the calculated tetra from the mesh method using aabb
     # is the same as using the barycentric coordinates on all elelemts for
     # all points
-    print(elements[tetra_idx] - elements[tetra])
-    assert np.all(elements[tetra_idx] - elements[tetra] == 0)
+    assert np.all(elements[tetra_idx] - tetra == 0)
