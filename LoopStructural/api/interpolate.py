@@ -1,0 +1,1 @@
+from LoopStructural.interpolators import PiecewiseLinearInterpolator
