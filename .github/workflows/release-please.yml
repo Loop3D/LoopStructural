@@ -29,6 +29,7 @@ jobs:
       - name: Building and install 
         shell: bash -l {0}
         run: |
+          python setup.py install build_ext --inplace
           pip install .
       - name: pytest
         shell: bash -l {0}
