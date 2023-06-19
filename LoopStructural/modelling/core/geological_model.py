@@ -1455,9 +1455,8 @@ class GeologicalModel:
         self._add_domain_fault_below(domain_fault)
 
         domain_fault_uc = UnconformityFeature(domain_fault, 0)
-        # iterate over existing features and add the unconformity as a
-        # region so the feature is only
-        # evaluated where the unconformity is positive
+        # iterate over existing features and add the unconformity as a region
+        # so the feature is only evaluated where the unconformity is positive
         return domain_fault_uc
 
     def create_and_add_fault(
@@ -1551,7 +1550,7 @@ class GeologicalModel:
         # add data
         fault_frame_data = self.data.loc[
             self.data["feature_name"] == fault_surface_data
-        ]
+        ].copy()
         trace_mask = np.logical_and(
             fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
         )

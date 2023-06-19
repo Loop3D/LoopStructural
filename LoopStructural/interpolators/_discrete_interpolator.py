@@ -125,10 +125,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         # evaluate the region function on the support to determine
         # which nodes are inside update region map and degrees of freedom
-        print("Cannot use region")
         # self.region_function = region
         logger.info(
-            "Interpolation now uses region and has {} degrees of freedom".format(
+            "Cannot use region at the moment. Interpolation now uses region and has {} degrees of freedom".format(
                 self.nx
             )
         )
