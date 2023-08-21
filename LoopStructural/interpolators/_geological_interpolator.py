@@ -48,6 +48,25 @@ class GeologicalInterpolator:
         name += f"{self.n_g + self.n_i + self.n_n + self.n_t} total points\n"
         return name
 
+    def to_json(self):
+        """
+        Returns a json representation of the geological interpolator
+
+        Returns
+        -------
+        json : dict
+            json representation of the geological interpolator
+        """
+        json = {}
+        json["type"] = self.type
+        json["name"] = self.propertyname
+        json["constraints"] = self.constraints
+        json["data"] = self.data
+        json["type"] = self.type
+        json["dof"] = self.nx
+        json["up_to_date"] = self.up_to_date
+        return json
+
     def set_region(self, **kwargs):
         pass
 
@@ -141,7 +160,6 @@ class GeologicalInterpolator:
         self.up_to_date = False
 
     def set_interface_constraints(self, points: np.ndarray):
-
         self.data["interface"] = points
         self.up_to_date = False
 

@@ -148,8 +148,9 @@ class GeologicalModel:
         logger.info("Initialising geological model")
         self.features = []
         self.feature_name_index = {}
-        self._data = None
-        self.data = data
+        self._data = pd.DataFrame()  # None
+        if data is not None:
+            self.data = data
         self.nsteps = nsteps
 
         # we want to rescale the model area so that the maximum length is
@@ -189,6 +190,49 @@ class GeologicalModel:
         self.tol = 1e-10 * np.max(self.bounding_box[1, :] - self.bounding_box[0, :])
         self._dtm = None
 
+    def to_dict(self):
+        """
+        Convert the geological model to a json string
+
+        Returns
+        -------
+        json : str
+            json string of the geological model
+        """
+        json = {}
+        json["model"] = {}
+        json["model"]["features"] = [f.name for f in self.features]
+        json["model"]["data"] = self.data.to_json()
+        json["model"]["origin"] = self.origin.tolist()
+        json["model"]["maximum"] = self.maximum.tolist()
+        json["model"]["nsteps"] = self.nsteps
+        json["model"]["stratigraphic_column"] = self.stratigraphic_column
+        json["features"] = [f.to_json() for f in self.features]
+        return json
+
+    # @classmethod
+    # def from_json(cls,json):
+    #     """
+    #     Create a geological model from a json string
+
+    #     Parameters
+    #     ----------
+    #     json : str
+    #         json string of the geological model
+
+    #     Returns
+    #     -------
+    #     model : GeologicalModel
+    #         a geological model
+    #     """
+    #     model = cls(json["model"]["origin"],json["model"]["maximum"],data=None)
+    #     model.stratigraphic_column = json["model"]["stratigraphic_column"]
+    #     model.nsteps = json["model"]["nsteps"]
+    #     model.data = pd.read_json(json["model"]["data"])
+    #     model.features = []
+    #     for feature in json["features"]:
+    #         model.features.append(GeologicalFeature.from_json(feature,model))
+    #     return model
     def __str__(self):
         lengths = self.maximum - self.origin
         _str = "GeologicalModel - {} x {} x {}\n".format(*lengths)
@@ -817,7 +861,6 @@ class GeologicalModel:
             )
             return P2Interpolator(mesh)
         if interpolatortype == "FDI":
-
             # find the volume of one element
             if element_volume is None:
                 element_volume = box_vol / nelements
@@ -1101,11 +1144,11 @@ class GeologicalModel:
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-        gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+        # gy_fold_interpolator = self.get_interpolator(**kwargs)#self.get_interpolator("DFI", fold=fold, **kwargs)
         frame_interpolator = self.get_interpolator(**kwargs)
         interpolators = [
             fold_interpolator,
-            gy_fold_interpolator,
+            frame_interpolator,
             frame_interpolator.copy(),
         ]
         fold_frame_builder = StructuralFrameBuilder(
@@ -1648,7 +1691,6 @@ class GeologicalModel:
             points=kwargs.get("points", False),
         )
         if "force_mesh_geometry" not in kwargs:
-
             fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
         if "splay" in kwargs and "splayregion" in kwargs:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])

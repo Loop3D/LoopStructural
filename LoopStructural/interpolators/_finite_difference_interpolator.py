@@ -95,7 +95,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 self.assemble_inner(o[0], o[1])
         # otherwise just use defaults
         if "operators" not in kwargs:
-
             operator = Operator.Dxy_mask
             weight = (
                 self.interpolation_weights["dxy"] / 4
@@ -478,6 +477,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         self.assemble_inner(operator)
         # self.assemble_borders()
+
+    # def assemble_borders(self, operator, w):
 
     def assemble_inner(self, operator, w):
         """
