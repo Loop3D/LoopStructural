@@ -303,6 +303,14 @@ class BaseModelPlotter:
         xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         val = geological_feature.evaluate_value(points)
+
+        # Check if there is sufficient values to anchor the feature in the model
+        # if not skip this feature
+        if len(np.unique(val)) == 1:
+            logger.warning(
+                f"No value information for {geological_feature.name}, skipping"
+            )
+            return return_container
         mean_val = np.nanmean(val)  # geological_feature.mean()
         max_val = np.nanmax(val)  # geological_feature.max()
         min_val = np.nanmin(val)  # geological_feature.min()
