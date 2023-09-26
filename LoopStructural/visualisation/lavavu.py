@@ -1,4 +1,3 @@
-from pyrsistent import v
 from .model_plotter import BaseModelPlotter
 from ..utils import getLogger
 from ..utils import LoopImportError

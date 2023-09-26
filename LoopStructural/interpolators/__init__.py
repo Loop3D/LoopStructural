@@ -77,3 +77,4 @@ except ImportError:
 logger.warning("Using experimental interpolators: P1Interpolator and P2Interpolator")
 from ._p1interpolator import P1Interpolator
 from ._p2interpolator import P2Interpolator
+from ._builders import get_interpolator
