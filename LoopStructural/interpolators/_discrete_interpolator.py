@@ -45,7 +45,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # self.col = []
         # self.row = []  # sparse matrix storage
         # self.w = []
-        self.solver = None
+        self.solver = "cg"
 
         self.eq_const_C = []
         self.eq_const_row = []
@@ -802,6 +802,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         logging.info(
             f"Solving interpolation: {self.propertyname} took: {time()-starttime}"
         )
+        self.up_to_date = True
 
     def update(self):
         """
@@ -815,6 +816,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         bool
 
         """
+
         if self.solver is None:
             logging.debug("Cannot rerun interpolator")
             return False
@@ -835,6 +837,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         np.ndarray
             value of the interpolator
         """
+        self.update()
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
         mask = np.any(evaluation_points == np.nan, axis=1)
@@ -857,6 +860,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
+        self.update()
         if evaluation_points.shape[0] > 0:
             return self.support.evaluate_gradient(evaluation_points, self.c)
         return np.zeros((0, 3))
