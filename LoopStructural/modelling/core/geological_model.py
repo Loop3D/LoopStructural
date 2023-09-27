@@ -693,6 +693,7 @@ class GeologicalModel:
 
         self.stratigraphic_column = stratigraphic_column
 
+    ## TODO CREATE SEPARATE API FOR THIS
     def get_interpolator(
         self,
         interpolatortype="FDI",
@@ -817,7 +818,6 @@ class GeologicalModel:
             )
             return P2Interpolator(mesh)
         if interpolatortype == "FDI":
-
             # find the volume of one element
             if element_volume is None:
                 element_volume = box_vol / nelements
@@ -1648,7 +1648,6 @@ class GeologicalModel:
             points=kwargs.get("points", False),
         )
         if "force_mesh_geometry" not in kwargs:
-
             fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
         if "splay" in kwargs and "splayregion" in kwargs:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])
@@ -1669,6 +1668,7 @@ class GeologicalModel:
 
         return fault
 
+    # TODO move rescale to bounding box/transformer
     def rescale(self, points: np.ndarray, inplace: bool = True) -> np.ndarray:
         """
         Convert from model scale to real world scale - in the future this
@@ -1691,6 +1691,7 @@ class GeologicalModel:
         points += self.origin
         return points
 
+    # TODO move scale to bounding box/transformer
     def scale(self, points: np.ndarray, inplace: bool = True) -> np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space

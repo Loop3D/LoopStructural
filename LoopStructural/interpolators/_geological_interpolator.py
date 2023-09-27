@@ -141,7 +141,6 @@ class GeologicalInterpolator:
         self.up_to_date = False
 
     def set_interface_constraints(self, points: np.ndarray):
-
         self.data["interface"] = points
         self.up_to_date = False
 
@@ -208,6 +207,12 @@ class GeologicalInterpolator:
 
     def get_inequality_constraints(self):
         return self.data["inequality"]
+
+    def setup(self, **kwargs):
+        """
+        Runs all of the required setting up stuff
+        """
+        self._setup_interpolator(**kwargs)
 
     def setup_interpolator(self, **kwargs):
         """
