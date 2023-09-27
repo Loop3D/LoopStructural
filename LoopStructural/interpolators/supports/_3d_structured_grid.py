@@ -471,7 +471,7 @@ class StructuredGrid(BaseStructuredSupport):
         # vertices = vertices.reshape((vertices.shape[1], 8, 3))
         elements, inside = self.position_to_cell_corners(pos)
         a = self.position_to_dof_coefs(pos)
-        return vertices, a.T, elements, inside
+        return vertices, a, elements, inside
 
     def get_elements(self):
         return
