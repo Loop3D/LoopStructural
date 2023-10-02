@@ -1,3 +1,4 @@
+from LoopStructural.utils.exceptions import LoopException
 import numpy as np
 from typing import Optional, Union
 from LoopStructural.interpolators import (
@@ -18,12 +19,12 @@ logger = getLogger(__name__)
 def get_interpolator(
     bounding_box: BoundingBox,
     interpolatortype: str,
-    dimensions: int,
     nelements: int,
     element_volume: Optional[float] = None,
     buffer: float = 0.2,
+    dimensions: int = 3,
     support=None,
-):
+) -> GeologicalInterpolator:
     # add a buffer to the interpolation domain, this is necessary for
     # faults but also generally a good
     # idea to avoid boundary problems
@@ -97,7 +98,7 @@ def get_interpolator(
             "for modelling using FDI"
         )
         return FiniteDifferenceInterpolator(grid)
-
+    raise LoopException("No interpolator")
     # fi interpolatortype == "DFI" and dfi is True:
     #     if element_volume is None:
     #         nelements /= 5

@@ -26,6 +26,7 @@ from ....utils.helper import (
 )
 from ....utils import RegionEverywhere
 from ....interpolators import DiscreteInterpolator
+from ....interpolators import get_interpolator
 
 logger = getLogger(__name__)
 
@@ -33,7 +34,9 @@ logger = getLogger(__name__)
 class GeologicalFeatureBuilder(BaseBuilder):
     def __init__(
         self,
-        interpolator: GeologicalInterpolator,
+        interpolatortype: str,
+        bounding_box,
+        nelements: int = 1000,
         name="Feature",
         interpolation_region=None,
         **kwargs,
@@ -56,7 +59,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
                     type(interpolator)
                 )
             )
-        self._interpolator = interpolator
+        self._interpolator = get_interpolator(
+            bounding_box=bounding_box,
+            interpolatortype=interpolatortype,
+            nelements=nelements,
+        )
         self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
 
@@ -198,7 +205,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
             # change gradient constraints to normal vector constraints
             mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()]), axis=1)
             if mask.shape[0] > 0:
-
                 data.loc[mask, normal_vec_names()] = data.loc[
                     mask, gradient_vec_names()
                 ].to_numpy(float)
@@ -288,7 +294,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 )
 
     def add_equality_constraints(self, feature, region, scalefactor=1.0):
-
         self._equality_constraints[feature.name] = [feature, region, scalefactor]
         self._up_to_date = False
 

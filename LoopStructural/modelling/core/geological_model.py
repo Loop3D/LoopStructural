@@ -890,7 +890,7 @@ class GeologicalModel:
         raise InterpolatorError("Could not create interpolator")
 
     def create_and_add_foliation(
-        self, series_surface_data, tol=None, faults=None, **kwargs
+        self, series_surface_data:str, interpolatortype:str='FDI',nelements:int=1000, tol=None, faults=None, **kwargs
     ):
         """
         Parameters
@@ -923,9 +923,8 @@ class GeologicalModel:
         if tol is None:
             tol = self.tol
 
-        interpolator = self.get_interpolator(**kwargs)
         series_builder = GeologicalFeatureBuilder(
-            interpolator, name=series_surface_data, **kwargs
+            bounding_box=self.bounding_box, interpolatortype=interpolatortype,nelements=nelements, name=series_surface_data, **kwargs
         )
         # add data
         series_data = self.data[self.data["feature_name"] == series_surface_data]

@@ -230,6 +230,12 @@ class GeologicalInterpolator:
     def update(self):
         return False
 
+    def evaluate_value(self, locations: np.ndarray):
+        raise NotImplementedError("evaluate_value not implemented")
+
+    def evaluate_gradient(self, locations: np.ndarray):
+        raise NotImplementedError("evaluate_gradient not implemented")
+
     def clean(self):
         """
         Removes all of the data from an interpolator

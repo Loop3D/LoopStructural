@@ -4,6 +4,7 @@ import pandas as pd
 
 from typing import Optional
 from LoopStructural.interpolators import (
+    GeologicalInterpolator,
     get_interpolator,
 )
 from LoopStructural.utils import BoundingBox
@@ -39,7 +40,9 @@ class LoopInterpolator:
         """
         self.dimensions = dimensions
         self.type = "FDI"
-        self.interpolator = get_interpolator(bounding_box, type, dimensions, nelements)
+        self.interpolator: GeologicalInterpolator = get_interpolator(
+            bounding_box, type, dimensions, nelements
+        )
 
     def fit(
         self,
@@ -48,6 +51,19 @@ class LoopInterpolator:
         normal_vectors: Optional[np.ndarray] = None,
         inequality_constraints: Optional[np.ndarray] = None,
     ):
+        """_summary_
+
+        Parameters
+        ----------
+        values : Optional[np.ndarray], optional
+            Value constraints for implicit function, by default None
+        tangent_vectors : Optional[np.ndarray], optional
+            tangent constraints for implicit function, by default None
+        normal_vectors : Optional[np.ndarray], optional
+            gradient norm constraints for implicit function, by default None
+        inequality_constraints : Optional[np.ndarray], optional
+            _description_, by default None
+        """
         if values is not None:
             self.interpolator.set_value_constraints(values)
         if tangent_vectors is not None:
@@ -59,11 +75,35 @@ class LoopInterpolator:
 
         self.interpolator.setup()
 
-    def evalute_scalar_value(self, locations: np.ndarray):
+    def evalute_scalar_value(self, locations: np.ndarray) -> np.ndarray:
+        """Evaluate the value of the interpolator at locations
+
+        Parameters
+        ----------
+        locations : np.ndarray
+            Nx3 array of locations to evaluate the interpolator at
+
+        Returns
+        -------
+        np.ndarray
+            value of implicit function at locations
+        """
         self.interpolator.update()
         return self.interpolator.evaluate_value(locations)
 
-    def evaluate_gradient(self, locations: np.ndarray):
+    def evaluate_gradient(self, locations: np.ndarray) -> np.ndarray:
+        """Evaluate the gradient of the interpolator at locations
+
+        Parameters
+        ----------
+        locations : np.ndarray
+            Nx3 locations
+
+        Returns
+        -------
+        np.ndarray
+            Nx3 gradient of implicit function
+        """
         self.interpolator.update()
         return self.interpolator.evaluate_gradient(locations)
 
@@ -81,7 +121,7 @@ class LoopInterpolator:
             normal_vectors=normal_vectors,
             inequality_constraints=inequality_constraints,
         )
-
+        locations = self.interpolator.get_data_locations()
         return self.evalute_scalar_value(locations)
 
     def fit_and_evaluate_gradient(
@@ -97,4 +137,5 @@ class LoopInterpolator:
             normal_vectors=normal_vectors,
             inequality_constraints=inequality_constraints,
         )
+        locations = self.interpolator.get_data_locations()
         return self.evaluate_gradient(locations)
