@@ -74,6 +74,10 @@ class BoundingBox:
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
         self.nsteps = nsteps
 
+    @property
+    def step_vector(self):
+        return (self.maximum - self.origin) / self.nsteps
+
     def fit(self, locations: np.ndarray):
         if locations.shape[1] != self.dimensions:
             raise LoopValueError(
