@@ -9,6 +9,7 @@ except ImportError:
 
 from LoopStructural.interpolators import GeologicalInterpolator
 from LoopStructural.utils import BoundingBox
+from LoopStructural.datatypes import Surface
 
 surface_list = dict[str, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]
 
@@ -20,7 +21,7 @@ class LoopIsosurfacer:
 
     def fit(self, values: Union[list, int, float]) -> surface_list:
         surfaces = {}
-        all_values = self.interpolator.evaluate_value(self.bounding_box.regular_grid)
+        all_values = self.interpolator.evaluate_value(self.bounding_box.regular_grid())
         if isinstance(values, list):
             isovalues = values
         elif isinstance(values, float):
@@ -28,9 +29,15 @@ class LoopIsosurfacer:
         elif isinstance(values, int):
             isovalues = np.linspace(np.min(all_values), np.max(all_values), values)
         for isovalue in isovalues:
-            surfaces[isovalue] = marching_cubes(
+            verts, faces, normals, values = marching_cubes(
                 all_values.reshape(self.bounding_box.nsteps, order="C"),
                 isovalue,
                 spacing=self.bounding_box.step_vector,
+            )
+            surfaces[f"surface_{isovalue}"] = Surface(
+                vertices=verts,
+                triangles=faces,
+                normals=normals,
+                name=f"surface_{isovalue}",
             )
         return surfaces
