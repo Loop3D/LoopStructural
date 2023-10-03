@@ -53,17 +53,18 @@ class GeologicalFeatureBuilder(BaseBuilder):
         kwargs - name of the feature, region to interpolate the feature
         """
         BaseBuilder.__init__(self, name)
+        interpolator = get_interpolator(
+            bounding_box=bounding_box,
+            interpolatortype=interpolatortype,
+            nelements=nelements,
+        )
         if issubclass(type(interpolator), GeologicalInterpolator) == False:
             raise TypeError(
                 "interpolator is {} and must be a GeologicalInterpolator".format(
                     type(interpolator)
                 )
             )
-        self._interpolator = get_interpolator(
-            bounding_box=bounding_box,
-            interpolatortype=interpolatortype,
-            nelements=nelements,
-        )
+        self._interpolator = interpolator
         self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
 
