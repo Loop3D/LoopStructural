@@ -509,6 +509,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             elif block == "foot wall":
                 series_values = series_values_temp[faults_values_temp < 0]
 
+            elif block == "hanging and foot wall":
+                series_values = series_values_temp
+
             self.marginal_faults[fault_i]["series_mean"] = np.mean(series_values)
 
             series_std = np.std(series_values)
@@ -906,6 +909,18 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                         )
                     ]
 
+                elif block == "hanging and foot wall":
+                    marginalfault_i_constraints_temp = grid_points[
+                        np.logical_and(
+                        If_sum == 0,
+                        np.logical_and(
+                        series_gridpoints_vals >= contact_min,
+                        series_gridpoints_vals <= contact_max,
+                        ),
+                        ),
+                        ]
+
+
                 region = self.marginal_faults[fault_i].get("region", None)
 
                 if region == None:
@@ -941,8 +956,13 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         if self.intrusion_steps is None:  
             If_sum = np.zeros(len(grid_points_and_inflation_all)).T #mask for region without faults afecting the intrusion
 
-        If = self.indicator_function_faults(delta=100000) #to consider gradients outside area of faults.
-        If_sum = np.sum(If, axis = 1)    
+        if self.marginal_faults is not None:
+            If = self.indicator_function_faults(delta=1) 
+            If_sum = np.sum(If, axis = 1)
+
+        else:
+            If = self.indicator_function_faults(delta=100000) #to consider gradients outside area of faults.
+            If_sum = np.sum(If, axis = 1)    
             
         grid_points_and_inflation = grid_points_and_inflation_all[If_sum == 0] 
         self.frame_c0_gradients = grid_points_and_inflation

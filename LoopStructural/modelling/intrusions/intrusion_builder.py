@@ -320,7 +320,8 @@ class IntrusionBuilder(BaseBuilder):
         grid_points_coord1 = self.evaluation_grid[2]
 
         modelcover, minP, maxP, minL, maxL = self.lateral_extent_model()
-        mean_c0 = self.vertical_extent_model()
+        mean_c0, vertex = self.vertical_extent_model()
+        print(mean_c0, vertex)
 
         if minL == None:
             minL = min(
@@ -365,15 +366,19 @@ class IntrusionBuilder(BaseBuilder):
         else:
             mean_growth = mean_c0
 
-        maxG = self.vertical_contact_data[1]["coord0"].max()
-        coord_PL_for_maxG = (
-            self.vertical_contact_data[1][
+        if vertex == None:
+            maxG = self.vertical_contact_data[1]["coord0"].max()
+            coord_PL_for_maxG = (
+                self.vertical_contact_data[1][
                 self.vertical_contact_data[1].coord0
                 == self.vertical_contact_data[1].coord0.max()
-            ]
-            .loc[:, ["coord1", "coord2"]]
-            .to_numpy()
-        )
+                ]
+                .loc[:, ["coord1", "coord2"]]
+                .to_numpy()
+                )
+            vertex_final = [coord_PL_for_maxG[0][0], coord_PL_for_maxG[0][1], maxG]
+        else:
+            vertex_final = vertex
 
 
         self.conceptual_model_parameters["minP"] = minP
@@ -382,7 +387,7 @@ class IntrusionBuilder(BaseBuilder):
         self.conceptual_model_parameters["maxL"] = maxL
         self.conceptual_model_parameters["model_cover"] = modelcover
         self.conceptual_model_parameters["mean_growth"] = mean_growth
-        self.conceptual_model_parameters["vertex"] =  [coord_PL_for_maxG[0][0], coord_PL_for_maxG[0][1], maxG]
+        self.conceptual_model_parameters["vertex"] =  vertex_final
 
     def set_data_for_lateral_thresholds(self):
         """
