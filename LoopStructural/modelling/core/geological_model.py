@@ -61,6 +61,7 @@ from ...utils.helper import (
     strike_dip_vector,
     get_vectors,
 )
+from ...utils import BoundingBox
 
 from ...modelling.intrusions import IntrusionBuilder
 
@@ -165,16 +166,19 @@ class GeologicalModel:
 
         lengths = self.maximum - self.origin
         self.scale_factor = 1.0
-        self.bounding_box = np.zeros((2, 3))
-        self.bounding_box[1, :] = self.maximum - self.origin
-        self.bounding_box[1, :] = self.maximum - self.origin
-        if rescale:
-            self.scale_factor = float(np.max(lengths))
-            logger.info(
-                "Rescaling model using scale factor {}".format(self.scale_factor)
-            )
 
-        self.bounding_box /= self.scale_factor
+        self.bounding_box = BoundingBox(
+            dimensions=3, origin=np.zeros(3), maximum=self.maximum - self.origin
+        )  # np.zeros((2, 3))
+        # self.bounding_box[1, :] = self.maximum - self.origin
+        # self.bounding_box[1, :] = self.maximum - self.origin
+        # if rescale:
+        #     self.scale_factor = float(np.max(lengths))
+        #     logger.info(
+        #         "Rescaling model using scale factor {}".format(self.scale_factor)
+        #     )
+
+        # self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
         if self.reuse_supports:
@@ -890,7 +894,13 @@ class GeologicalModel:
         raise InterpolatorError("Could not create interpolator")
 
     def create_and_add_foliation(
-        self, series_surface_data:str, interpolatortype:str='FDI',nelements:int=1000, tol=None, faults=None, **kwargs
+        self,
+        series_surface_data: str,
+        interpolatortype: str = "FDI",
+        nelements: int = 1000,
+        tol=None,
+        faults=None,
+        **kwargs,
     ):
         """
         Parameters
@@ -924,7 +934,11 @@ class GeologicalModel:
             tol = self.tol
 
         series_builder = GeologicalFeatureBuilder(
-            bounding_box=self.bounding_box, interpolatortype=interpolatortype,nelements=nelements, name=series_surface_data, **kwargs
+            bounding_box=self.bounding_box,
+            interpolatortype=interpolatortype,
+            nelements=nelements,
+            name=series_surface_data,
+            **kwargs,
         )
         # add data
         series_data = self.data[self.data["feature_name"] == series_surface_data]
@@ -1731,21 +1745,24 @@ class GeologicalModel:
         xyz : np.array((N,3),dtype=float)
             locations of points in regular grid
         """
-        if nsteps is None:
-            nsteps = self.nsteps
-        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], nsteps[0])
-        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], nsteps[1])
-        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
-        locs = np.array(
-            [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
-        ).T
-        if shuffle:
-            logger.info("Shuffling points")
-            np.random.shuffle(locs)
-        if rescale:
-            locs = self.rescale(locs)
-        return locs
+        return self.bounding_box.regular_grid(
+            nsteps=nsteps, shuffle=shuffle, order=order
+        )
+        # if nsteps is None:
+        #     nsteps = self.nsteps
+        # x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], nsteps[0])
+        # y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], nsteps[1])
+        # z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], nsteps[2])
+        # xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
+        # locs = np.array(
+        #     [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
+        # ).T
+        # if shuffle:
+        #     logger.info("Shuffling points")
+        #     np.random.shuffle(locs)
+        # if rescale:
+        #     locs = self.rescale(locs)
+        # return locs
 
     def evaluate_model(self, xyz, scale=True):
         """Evaluate the stratigraphic id at each location

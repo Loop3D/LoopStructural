@@ -62,6 +62,10 @@ class BoundingBox:
     def volume(self):
         return np.product(self.maximum - self.origin)
 
+    @property
+    def bb(self):
+        return np.array([self.origin, self.maximum])
+
     @nelements.setter
     def nelements(self, nelements):
         box_vol = self.volume
