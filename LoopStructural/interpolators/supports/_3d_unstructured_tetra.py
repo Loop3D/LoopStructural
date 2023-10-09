@@ -8,6 +8,7 @@ from scipy.sparse import csr_matrix
 
 from ._3d_base_structured import BaseStructuredSupport
 from LoopStructural.utils import getLogger
+from . import SupportType
 
 logger = getLogger(__name__)
 
@@ -39,6 +40,7 @@ class UnStructuredTetMesh:
         aabb_nsteps : list, optional
             force nsteps for aabb, by default None
         """
+        self.type = SupportType.UnStructuredTetMesh
         self.nodes = np.array(nodes)
         if self.nodes.shape[1] != 3:
             raise ValueError("Nodes must be 3D")
@@ -395,7 +397,6 @@ class UnStructuredTetMesh:
         npts_step = int(1e4)
         # break into blocks of 10k points
         while npts < points.shape[0]:
-
             cell_index = np.array(
                 self.aabb_grid.position_to_cell_index(points[: npts + npts_step, :])
             )

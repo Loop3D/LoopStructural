@@ -1,6 +1,7 @@
 from ._3d_unstructured_tetra import UnStructuredTetMesh
 
 import numpy as np
+from . import SupportType
 
 
 class P2UnstructuredTetMesh(UnStructuredTetMesh):
@@ -12,6 +13,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         aabb_nsteps=None,
     ):
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
+        self.type = SupportType.P2UnstructuredTetMesh
         if self.elements.shape[1] != 10:
             raise ValueError(
                 f"P2 tetrahedron must have 8 nodes, has {self.elements.shape[1]}"

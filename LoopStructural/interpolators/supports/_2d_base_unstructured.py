@@ -5,6 +5,8 @@ import logging
 
 import numpy as np
 
+from . import SupportType
+
 logger = logging.getLogger(__name__)
 
 
@@ -12,6 +14,7 @@ class BaseUnstructured2d:
     """ """
 
     def __init__(self, elements, vertices, neighbours):
+        self.type = SupportType.BaseUnstructured2d
         self.elements = elements
         self.vertices = vertices
         if self.elements.shape[1] == 3:
@@ -23,7 +26,6 @@ class BaseUnstructured2d:
         self.n_nodes = self.nx
         self.neighbours = neighbours
 
-        self.properties = {}
         # build an array of edges and edge relationships
         self.edges = np.zeros((self.nelements * 3, 2), dtype=int)
         self.edge_relationships = np.zeros((self.nelements * 3, 2), dtype=int)
@@ -94,7 +96,7 @@ class BaseUnstructured2d:
         area = np.abs(np.linalg.det(M_t)) * 0.5
         return area
 
-    def evaluate_value(self, pos, prop):
+    def evaluate_value(self, pos, values):
         """
         Evaluate value of interpolant
 
@@ -115,7 +117,7 @@ class BaseUnstructured2d:
         inside = tri >= 0
         # vertices, c, elements, inside = self.get_elements_for_location(pos)
         values[inside] = np.sum(
-            c[inside, :] * self.properties[prop][self.elements[tri[inside], :]], axis=1
+            c[inside, :] * values[self.elements[tri[inside], :]], axis=1
         )
         return values
 

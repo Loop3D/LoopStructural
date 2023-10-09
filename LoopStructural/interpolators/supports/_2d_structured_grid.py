@@ -5,6 +5,7 @@ Cartesian grid for fold interpolator
 import logging
 
 import numpy as np
+from . import SupportType
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class StructuredGrid2D:
         nsteps - 2d list or numpy array of ints
         step_vector - 2d list or numpy array of int
         """
-
+        self.type = SupportType.StructuredGrid2D
         self.nsteps = np.array(nsteps)
         self.step_vector = np.array(step_vector)
         self.origin = np.array(origin)
@@ -73,23 +74,6 @@ class StructuredGrid2D:
         )
         max = self.origin + self.nsteps_cells * self.step_vector
         print("Max extent: %f %f %f" % (max[0], max[1], max[2]))
-
-    def update_property(self, propertyname, values):
-        """[summary]
-
-        [extended_summary]
-
-        Parameters
-        ----------
-        propertyname : [type]
-            [description]
-        values : [type]
-            [description]
-        """
-        if values.shape[0] == self.n_nodes:
-            self.properties[propertyname] = values
-        if values.shape[0] == self.n_elements:
-            self.cell_properties[propertyname] = values
 
     def cell_centres(self, global_index):
         """[summary]
@@ -144,7 +128,6 @@ class StructuredGrid2D:
         return ix.astype(int), iy.astype(int)
 
     def inside(self, pos):
-
         # check whether point is inside box
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(self.dim):
@@ -330,14 +313,12 @@ class StructuredGrid2D:
         return x_index, y_index
 
     def node_indexes_to_position(self, xindex, yindex):
-
         x = self.origin[0] + self.step_vector[0] * xindex
         y = self.origin[1] + self.step_vector[1] * yindex
 
         return x, y
 
     def position_to_cell_corners(self, pos):
-
         inside = self.inside(pos)
         ix, iy = self.position_to_cell_index(pos)
         cornersx, cornersy = self.cell_corner_indexes(ix, iy)

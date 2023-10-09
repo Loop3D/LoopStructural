@@ -8,6 +8,7 @@ import numpy as np
 
 from ._3d_base_structured import BaseStructuredSupport
 
+from . import SupportType
 
 from LoopStructural.utils import getLogger
 
@@ -22,7 +23,7 @@ class StructuredGrid(BaseStructuredSupport):
         origin=np.zeros(3),
         nsteps=np.array([10, 10, 10]),
         step_vector=np.ones(3),
-        name=None,
+        rotation_xy=None,
     ):
         """
 
@@ -32,10 +33,12 @@ class StructuredGrid(BaseStructuredSupport):
         nsteps - 3d list or numpy array of ints
         step_vector - 3d list or numpy array of int
         """
-        BaseStructuredSupport.__init__(self, origin, nsteps, step_vector)
+        BaseStructuredSupport.__init__(
+            self, origin, nsteps, step_vector, rotation_xy=rotation_xy
+        )
+        self.type = SupportType.StructuredGrid
         self.regions = {}
         self.regions["everywhere"] = np.ones(self.n_nodes).astype(bool)
-        self.name = name
 
     @property
     def barycentre(self):
@@ -475,3 +478,9 @@ class StructuredGrid(BaseStructuredSupport):
 
     def get_elements(self):
         return
+
+    def to_dict(self):
+        return {
+            "type": self.type.numerator,
+            **super().to_dict(),
+        }
