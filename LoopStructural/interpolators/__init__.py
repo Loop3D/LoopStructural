@@ -78,3 +78,14 @@ logger.warning("Using experimental interpolators: P1Interpolator and P2Interpola
 from ._p1interpolator import P1Interpolator
 from ._p2interpolator import P2Interpolator
 from ._builders import get_interpolator
+
+interpolator_map = {
+    InterpolatorType.BASE: GeologicalInterpolator,
+    InterpolatorType.BASE_DISCRETE: DiscreteInterpolator,
+    InterpolatorType.FINITE_DIFFERENCE: FiniteDifferenceInterpolator,
+    InterpolatorType.DISCRETE_FOLD: DiscreteFoldInterpolator,
+    InterpolatorType.PIECEWISE_LINEAR: PiecewiseLinearInterpolator,
+    InterpolatorType.PIECEWISE_QUADRATIC: PiecewiseLinearInterpolator,
+    InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
+    # InterpolatorType.SURFE: SurfeRBFInterpolator,
+}
