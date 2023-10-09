@@ -78,7 +78,7 @@ class LoopInterpolator:
 
         self.interpolator.setup()
 
-    def evalute_scalar_value(self, locations: np.ndarray) -> np.ndarray:
+    def evaluate_scalar_value(self, locations: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at locations
 
         Parameters
