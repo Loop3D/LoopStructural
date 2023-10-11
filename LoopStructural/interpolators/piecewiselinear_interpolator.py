@@ -53,7 +53,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
 
-    def _setup_interpolator(self, **kwargs):
+    def setup_interpolator(self, **kwargs):
         """
         Searches through kwargs for any interpolation weights and updates
         the dictionary.
