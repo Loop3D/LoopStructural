@@ -3,9 +3,6 @@ from LoopStructural.interpolators import StructuredGrid, StructuredGrid2D
 import numpy as np
 
 
-
-
-
 ## structured grid 2d tests
 def test_create_structured_grid2d():
     grid = StructuredGrid2D()
@@ -27,16 +24,20 @@ def test_create_structured_grid2d_origin_nsteps():
 
 def test_evaluate_value_2d():
     grid = StructuredGrid2D()
-    grid.update_property("X", grid.nodes[:, 0])
+    # grid.update_property("X", grid.nodes[:, 0])
     assert (
-        np.sum(grid.barycentre[:, 0] - grid.evaluate_value(grid.barycentre, "X")) == 0
+        np.sum(
+            grid.barycentre[:, 0]
+            - grid.evaluate_value(grid.barycentre, grid.nodes[:, 0])
+        )
+        == 0
     )
 
 
 def test_evaluate_gradient_2d():
     grid = StructuredGrid2D()
-    grid.update_property("Y", grid.nodes[:, 1])
-    vector = np.mean(grid.evaluate_gradient(grid.barycentre, "Y"), axis=0)
+    # grid.update_property("Y", )
+    vector = np.mean(grid.evaluate_gradient(grid.barycentre, grid.nodes[:, 1]), axis=0)
     # vector/=np.linalg.norm(vector)
     assert np.sum(vector - np.array([0, grid.step_vector[1]])) == 0
 
