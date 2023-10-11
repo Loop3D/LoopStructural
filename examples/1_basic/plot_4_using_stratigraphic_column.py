@@ -25,12 +25,16 @@ model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
 
 strati2 = model.create_and_add_foliation(
-    "strati2", interpolatortype="PLI", nelements=1e4, solver="pyamg"
+    "strati2",
+    interpolatortype="FDI",
+    nelements=1e4,
 )
 uc = model.add_unconformity(strati2, 1)
 
 strati = model.create_and_add_foliation(
-    "strati", interpolatortype="PLI", nelements=1e4, solver="pyamg"
+    "strati",
+    interpolatortype="FDI",
+    nelements=1e4,
 )
 
 ########################################################################
