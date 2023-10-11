@@ -134,11 +134,11 @@ class BaseStructuredSupport:
 
     @property
     def n_nodes(self):
-        return np.product(self.nsteps)
+        return np.prod(self.nsteps)
 
     @property
     def n_elements(self):
-        return np.product(self.nsteps_cells)
+        return np.prod(self.nsteps_cells)
 
     def __str__(self):
         return (

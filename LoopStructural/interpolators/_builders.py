@@ -7,6 +7,7 @@ from LoopStructural.interpolators import (
     FiniteDifferenceInterpolator,
     GeologicalInterpolator,
     DiscreteInterpolator,
+    DiscreteFoldInterpolator,
     StructuredGrid,
     TetMesh,
 )
@@ -31,7 +32,7 @@ def get_interpolator(
     # buffer = bb[1, :]
     origin = bounding_box.with_buffer(buffer).origin
     maximum = bounding_box.with_buffer(buffer).maximum
-    box_vol = np.product(maximum - origin)
+    box_vol = np.prod(maximum - origin)
     if interpolatortype == "PLI":
         if support is None:
             if element_volume is None:
@@ -98,6 +99,23 @@ def get_interpolator(
             "for modelling using FDI"
         )
         return FiniteDifferenceInterpolator(grid)
+    if interpolatortype == "DFI":
+        if element_volume is None:
+            nelements /= 5
+            element_volume = box_vol / nelements
+        # calculate the step vector of a regular cube
+        step_vector = np.zeros(3)
+        step_vector[:] = element_volume ** (1.0 / 3.0)
+        # number of steps is the length of the box / step vector
+        nsteps = np.ceil((maximum - origin) / step_vector).astype(int)
+        # create a structured grid using the origin and number of steps
+
+        mesh = TetMesh(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        logger.info(
+            f"Creating regular tetrahedron mesh with {mesh.ntetra} elements \n"
+            "for modelling using DFI"
+        )
+        return DiscreteFoldInterpolator(mesh, None)
     raise LoopException("No interpolator")
     # fi interpolatortype == "DFI" and dfi is True:
     #     if element_volume is None:

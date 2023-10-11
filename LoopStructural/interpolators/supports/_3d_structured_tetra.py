@@ -32,7 +32,7 @@ class TetMesh(BaseStructuredSupport):
 
     @property
     def ntetra(self) -> int:
-        return np.product(self.nsteps_cells) * 5
+        return np.prod(self.nsteps_cells) * 5
 
     @property
     def n_elements(self) -> int:
@@ -40,7 +40,7 @@ class TetMesh(BaseStructuredSupport):
 
     @property
     def n_cells(self) -> int:
-        return np.product(self.nsteps_cells)
+        return np.prod(self.nsteps_cells)
 
     @property
     def barycentre(self) -> np.ndarray:

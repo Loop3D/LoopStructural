@@ -60,7 +60,7 @@ class UnStructuredTetMesh:
         self.minimum -= length * 0.1
         self.maximum += length * 0.1
         if aabb_nsteps == None:
-            box_vol = np.product(self.maximum - self.minimum)
+            box_vol = np.prod(self.maximum - self.minimum)
             element_volume = box_vol / (len(self.elements) / 20)
             # calculate the step vector of a regular cube
             step_vector = np.zeros(3)
