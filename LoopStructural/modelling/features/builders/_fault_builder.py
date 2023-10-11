@@ -1,7 +1,8 @@
+from typing import Union
 from ._structural_frame_builder import StructuralFrameBuilder
 
 import numpy as np
-from ....utils import getLogger
+from ....utils import getLogger, BoundingBox
 
 logger = getLogger(__name__)
 
@@ -9,8 +10,9 @@ logger = getLogger(__name__)
 class FaultBuilder(StructuralFrameBuilder):
     def __init__(
         self,
-        interpolator=None,
-        interpolators=None,
+        interpolatortype: Union[str, list],
+        bounding_box: BoundingBox,
+        nelements: Union[int, list] = 1000,
         model=None,
         fault_bounding_box_buffer=0.2,
         **kwargs,
@@ -34,7 +36,12 @@ class FaultBuilder(StructuralFrameBuilder):
         )  # defer import until needed
 
         StructuralFrameBuilder.__init__(
-            self, interpolator, interpolators, frame=FaultSegment, **kwargs
+            self,
+            interpolatortype,
+            bounding_box,
+            nelements,
+            frame=FaultSegment,
+            **kwargs,
         )
         self.frame.model = model
         self.model = model
@@ -86,7 +93,6 @@ class FaultBuilder(StructuralFrameBuilder):
         w=1.0,
         points=False,
     ):
-
         """Generate the required data for building a fault frame for a fault with the
         specified parameters
 
@@ -277,7 +283,6 @@ class FaultBuilder(StructuralFrameBuilder):
                 ]
                 strike_vector /= major_axis
             if intermediate_axis is not None:
-
                 fault_depth[0, :] = fault_center[:3] + slip_vector * intermediate_axis
                 fault_depth[1, :] = fault_center[:3] - slip_vector * intermediate_axis
                 data.loc[

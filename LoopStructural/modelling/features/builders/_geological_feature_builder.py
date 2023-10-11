@@ -65,7 +65,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 )
             )
         self._interpolator = interpolator
-        self._interpolator.set_property_name(self._name)
+        # self._interpolator.set_property_name(self._name)
         # everywhere region is just a lambda that returns true for all locations
 
         header = (
