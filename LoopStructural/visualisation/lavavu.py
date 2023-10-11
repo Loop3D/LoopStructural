@@ -41,7 +41,7 @@ class LavaVuModelViewer(BaseModelPlotter):
         self.bounding_box = bounding_box
         self.nsteps = nsteps
         if model is not None:
-            self.bounding_box = model.bounding_box
+            self.bounding_box = model.bounding_box.bb
             self.nsteps = model.nsteps
             logger.debug("Using bounding box from model")
         if self.bounding_box is None or self.nsteps is None:
@@ -255,7 +255,6 @@ class LavaVuModelViewer(BaseModelPlotter):
         self.lv.image(fname, **kwargs)
 
     def export_to_webgl(self, fname, **kwargs):
-
         self.lv.webgl(fname, **kwargs)
 
     def display(self, fname=None, **kwargs):

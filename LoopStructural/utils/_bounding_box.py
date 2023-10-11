@@ -35,6 +35,10 @@ class BoundingBox:
         }
 
     @property
+    def valid(self):
+        return self._origin is not None and self._maximum is not None
+
+    @property
     def origin(self) -> np.ndarray:
         if self._origin is None:
             raise LoopValueError("Origin is not set")
@@ -87,6 +91,7 @@ class BoundingBox:
             raise LoopValueError(
                 f"locations array is {locations.shape[1]}D but bounding box is {self.dimensions}"
             )
+        print("fitting")
         self.origin = locations.min(axis=0)
         self.maximum = locations.max(axis=0)
         return self
