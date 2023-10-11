@@ -327,7 +327,7 @@ class StructuredGrid2D:
         globalidx[~inside] = -1
         return globalidx, inside
 
-    def evaluate_value(self, evaluation_points, property_name):
+    def evaluate_value(self, evaluation_points, property):
         """
         Evaluate the value of of the property at the locations.
         Trilinear interpolation dot corner values
@@ -346,18 +346,18 @@ class StructuredGrid2D:
         v[:, :] = np.nan
 
         v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :]).T
-        v[inside, :] *= self.properties[property_name][idc[inside, :]]
+        v[inside, :] *= property[idc[inside, :]]
         return np.sum(v, axis=1)
 
-    def evaluate_gradient(self, evaluation_points, property_name):
+    def evaluate_gradient(self, evaluation_points, property):
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 2, 4))
         T[inside, :, :] = self.calcul_T(evaluation_points[inside, :])
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
-        T[inside, 0, :] *= self.properties[property_name][idc[inside, :]]
-        T[inside, 1, :] *= self.properties[property_name][idc[inside, :]]
+        T[inside, 0, :] *= property[idc[inside, :]]
+        T[inside, 1, :] *= property[idc[inside, :]]
         # T[inside, 2, :] *= self.properties[property_name][idc[inside, :]]
         return np.array([np.sum(T[:, 0, :], axis=1), np.sum(T[:, 1, :], axis=1)]).T
 
