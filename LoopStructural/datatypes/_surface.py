@@ -15,4 +15,13 @@ class Surface:
     def pyvista(self):
         import pyvista as pv
 
-        return pv.pv.PolyData.from_regular_faces(self.vertices, self.triangles)
+        return pv.PolyData.from_regular_faces(self.vertices, self.triangles)
+
+    def to_dict(self):
+        return {
+            "vertices": self.vertices,
+            "triangles": self.triangles,
+            "normals": self.normals,
+            "name": self.name,
+            "values": self.values,
+        }
