@@ -3,7 +3,7 @@ from LoopStructural.interpolators import (
     PiecewiseLinearInterpolator as PLI,
 )
 from LoopStructural.interpolators import StructuredGrid, TetMesh
-
+from LoopStructural.utils import BoundingBox
 import pytest
 import numpy as np
 
@@ -27,10 +27,20 @@ def interpolator(request):
         raise ValueError(f"Invalid interpolator: {interpolator}")
 
 
+@pytest.fixture(params=["PLI", "FDI"])
+def interpolatortype(request):
+    return request.param
+
+
 @pytest.fixture(params=[1e3, 1e4, 4e4])
 def nelements(request):
     nelements = request.param
     return nelements
+
+
+@pytest.fixture()
+def bounding_box():
+    return BoundingBox(np.array([0, 0, 0]), np.array([1, 1, 1]))
 
 
 @pytest.fixture(params=["PLI", "FDI"])
