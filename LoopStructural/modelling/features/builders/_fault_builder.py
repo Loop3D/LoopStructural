@@ -51,16 +51,11 @@ class FaultBuilder(StructuralFrameBuilder):
         )  # self.model.bounding_box[1, :]
         # define a maximum area to mesh adding buffer to model
         # buffer = .2
-        self.minimum_origin = self.model.bounding_box[
-            0, :
-        ] - fault_bounding_box_buffer * (
-            self.model.bounding_box[1, :] - self.model.bounding_box[0, :]
-        )
-        self.maximum_maximum = self.model.bounding_box[
-            1, :
-        ] + fault_bounding_box_buffer * (
-            self.model.bounding_box[1, :] - self.model.bounding_box[0, :]
-        )
+        self.minimum_origin = bounding_box.with_buffer(fault_bounding_box_buffer).origin
+        self.maximum_maximum = bounding_box.with_buffer(
+            fault_bounding_box_buffer
+        ).maximum
+
         self.fault_normal_vector = None
         self.fault_slip_vector = None
         self.fault_strike_vector = None
@@ -338,6 +333,7 @@ class FaultBuilder(StructuralFrameBuilder):
             percentage of length to add to edges
         """
         length = np.max(self.maximum - self.origin)
+        print(self.origin, length * buffer, self.maximum)
         # for builder in self.builders:
         # all three coordinates share the same support
         self.builders[0].set_interpolation_geometry(
