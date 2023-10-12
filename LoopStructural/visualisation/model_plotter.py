@@ -291,7 +291,6 @@ class BaseModelPlotter:
         # update the feature to make sure its current
 
         # do isosurfacing of support using marching tetras/cubes
-        print(self.bounding_box)
         x = np.linspace(
             self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0]
         )

@@ -1093,7 +1093,13 @@ class GeologicalModel:
         return series_feature
 
     def create_and_add_folded_fold_frame(
-        self, fold_frame_data, fold_frame=None, tol=None, **kwargs
+        self,
+        fold_frame_data,
+        interpolatortype="FDI",
+        nelements=10000,
+        fold_frame=None,
+        tol=None,
+        **kwargs,
     ):
         """
 
@@ -1137,16 +1143,18 @@ class GeologicalModel:
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
-        fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-        gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-        frame_interpolator = self.get_interpolator(**kwargs)
-        interpolators = [
-            fold_interpolator,
-            gy_fold_interpolator,
-            frame_interpolator.copy(),
+        # fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+        # gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
+        # frame_interpolator = self.get_interpolator(**kwargs)
+        interpolatortypes = [
+            "DFI",
+            "FDI",
+            interpolatortype,
         ]
         fold_frame_builder = StructuralFrameBuilder(
-            interpolators=interpolators,
+            interpolatortype=interpolatortypes,
+            bounding_box=self.bounding_box.with_buffer(kwargs.get("buffer", 0.1)),
+            nelements=[nelements, nelements, nelements],
             name=fold_frame_data,
             fold=fold,
             frame=FoldFrame,

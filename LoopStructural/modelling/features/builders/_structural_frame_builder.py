@@ -49,7 +49,7 @@ class StructuralFrameBuilder:
             self.name = kwargs["name"]
             kwargs.pop("name")
         self.data = [[], [], []]
-        self.fold = kwargs.get("fold", None)
+        self.fold = kwargs.pop("fold", None)
         # list of interpolators
         # self.interpolators = []
         # Create the interpolation objects by copying the template
@@ -66,10 +66,16 @@ class StructuralFrameBuilder:
                 f"nelements is {type(nelements)} and must be either a int or a list of ints"
             )
         # self.builders
-        if "fold" in kwargs:
-            raise LoopException("fold is deprecated please use frame")
+        if self.fold:
             self.builders.append(
-                FoldedFeatureBuilder(interpolators[0], name=f"{self.name}__0", **kwargs)
+                FoldedFeatureBuilder(
+                    interpolatortype[0],
+                    bounding_box,
+                    self.fold,
+                    nelements=nelements[0],
+                    name=f"{self.name}__0",
+                    **kwargs,
+                )
             )
         else:
             self.builders.append(
@@ -107,7 +113,7 @@ class StructuralFrameBuilder:
                 self.builders[1].feature,
                 self.builders[2].feature,
             ],
-            fold=kwargs.get("fold", None),
+            fold=self.fold,
         )
         self._frame.builder = self
 
