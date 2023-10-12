@@ -1,3 +1,4 @@
+from LoopStructural.utils.exceptions import LoopException
 import numpy as np
 from LoopStructural.utils import getLogger
 from . import SupportType
@@ -31,6 +32,10 @@ class BaseStructuredSupport:
         self.type = SupportType.BaseStructured
         if np.any(step_vector == 0):
             logger.warning(f"Step vector {step_vector} has zero values")
+        if np.any(nsteps == 0):
+            raise LoopException("nsteps cannot be zero")
+        if np.any(nsteps < 0):
+            raise LoopException("nsteps cannot be negative")
         self._nsteps = np.array(nsteps, dtype=int) + 1
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
