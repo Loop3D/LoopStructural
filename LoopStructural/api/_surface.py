@@ -1,6 +1,8 @@
 from typing import Optional, Union
 import numpy as np
+from LoopStructural.utils import getLogger
 
+logger = getLogger(__name__)
 try:
     from skimage.measure import marching_cubes
 except ImportError:
