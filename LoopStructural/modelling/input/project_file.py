@@ -29,12 +29,6 @@ class LoopProjectfileProcessor(ProcessInputData):
         contacts.rename(columns=column_map, inplace=True)
         fault_locations.rename(columns=column_map, inplace=True)
         fault_orientations.rename(columns=column_map, inplace=True)
-        # fault_locations["fault_name"] = [
-        #     f"Fault_{eventid}" for eventid in fault_locations["eventId"]
-        # ]
-        # fault_orientations["fault_name"] = [
-        #     f"Fault_{eventid}" for eventid in fault_orientations["eventId"]
-        # ]
         thicknesses = dict(
             zip(
                 projectfile["stratigraphicLog"].name,
@@ -48,14 +42,13 @@ class LoopProjectfileProcessor(ProcessInputData):
                 "influenceDistance": "minor_axis",
                 "verticalRadius": "intermediate_axis",
                 "horizontalRadius": "major_axis",
-                # "name": "fault_name",
+                "name": "fault_name",
             },
             inplace=True,
         )
-        fault_locations = fault_properties.reset_index()[["name", "eventId"]].merge(fault_locations, on="eventId")
-        fault_locations["fault_name"] = fault_locations["name"]
-        fault_orientations = fault_properties.reset_index()[["name", "eventId"]].merge(fault_orientations, on="eventId")
-        fault_orientations["fault_name"] = fault_orientations["name"]
+        fault_locations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(fault_locations, on="eventId")
+        fault_orientations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(fault_orientations, on="eventId")
+        fault_properties.set_index("fault_name",inplace=True)
         colours = dict(
             zip(
                 self.projectfile.stratigraphicLog.name,
