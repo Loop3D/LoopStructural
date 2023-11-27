@@ -28,6 +28,7 @@ RUN conda install -c conda-forge\
     # geopandas\
     libstdcxx-ng\
     meshio\
+    python=3.10\
     -y
 RUN pip install git+https://github.com/geopandas/geopandas.git@v0.10.2
 RUN pip install lavavu-osmesa 
