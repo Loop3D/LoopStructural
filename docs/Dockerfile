@@ -11,7 +11,8 @@ RUN apt-get update -qq && \
     make\
     libgl1\
     libtinfo5\
-    libtiff5
+    libtiff5\
+    libgl1-mesa-glx
 RUN conda install -c conda-forge\
     # python"<=3.8"\
     cython\
