@@ -8,7 +8,10 @@ RUN apt-get update -qq && \
     gcc \
     g++ \
     libc-dev \
-    make
+    make\
+    libgl1\
+    libtinfo5\
+    libtiff5
 RUN conda install -c conda-forge\
     # python"<=3.8"\
     cython\
