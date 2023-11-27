@@ -48,6 +48,7 @@ def get_interpolator(
                 axis_labels = ["x", "y", "z"]
                 for i in range(3):
                     if nsteps[i] < 3:
+                        nsteps[i] = 3
                         logger.error(
                             f"Number of steps in direction {axis_labels[i]} is too small, try increasing nelements"
                         )
@@ -87,13 +88,14 @@ def get_interpolator(
             axis_labels = ["x", "y", "z"]
             for i in range(3):
                 if nsteps[i] < 3:
-                    logger.error(
-                        f"Number of steps in direction {axis_labels[i]} is too small, try increasing nelements"
-                    )
-            raise ValueError("Number of steps too small cannot create interpolator")
+                    nsteps[i] = 3
+            #         logger.error(
+            #             f"Number of steps in direction {axis_labels[i]} is too small, try increasing nelements"
+            #         )
+            # raise ValueError("Number of steps too small cannot create interpolator")
         # create a structured grid using the origin and number of steps
-        else:
-            grid = StructuredGrid(origin=origin, nsteps=nsteps, step_vector=step_vector)
+
+        grid = StructuredGrid(origin=origin, nsteps=nsteps, step_vector=step_vector)
         logger.info(
             f"Creating regular grid with {grid.n_elements} elements \n"
             "for modelling using FDI"
