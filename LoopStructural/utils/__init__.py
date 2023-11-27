@@ -17,7 +17,7 @@ from .helper import (
     get_data_bounding_box,
     get_data_bounding_box_map,
 )
-from ._bounding_box import BoundingBox
+from ..datatypes._bounding_box import BoundingBox
 from .helper import get_dip_vector, get_strike_vector, get_vectors, strike_dip_vector
 from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion
 
