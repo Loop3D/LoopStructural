@@ -101,7 +101,6 @@ class GeologicalModel:
         origin: np.ndarray,
         maximum: np.ndarray,
         data=None,
-        rescale=False,
         nsteps=(50, 50, 25),
         reuse_supports=False,
         logfile=None,

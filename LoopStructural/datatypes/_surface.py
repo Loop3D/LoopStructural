@@ -10,7 +10,7 @@ class Surface:
     normals: np.ndarray
     name: str
     values: Optional[np.ndarray] = None
-
+    
     @property
     def pyvista(self):
         import pyvista as pv
