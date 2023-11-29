@@ -66,9 +66,29 @@ from ...modelling.intrusions import IntrusionBuilder
 
 from ...modelling.intrusions import IntrusionFrameBuilder
 
+<<<<<<< Updated upstream
 
 logger = getLogger(__name__)
+=======
+from LoopStructural.interpolators.structured_grid import StructuredGrid
+from LoopStructural.interpolators.structured_tetra import TetMesh
+from LoopStructural.modelling.fault.fault_segment import FaultSegment
+from LoopStructural.modelling.fault import FaultBuilder
+from LoopStructural.modelling.features import (GeologicalFeatureInterpolator,
+                                               RegionFeature,
+                                               StructuralFrameBuilder,
+                                               UnconformityFeature)
+from LoopStructural.modelling.fold import FoldRotationAngle
+from LoopStructural.modelling.fold.fold import FoldEvent
+from LoopStructural.modelling.fold.foldframe import FoldFrame
+from LoopStructural.utils.exceptions import LoopBaseException
+from LoopStructural.utils.helper import (all_heading, gradient_vec_names,
+                                         strike_dip_vector)
 
+from LoopStructural.utils import getLogger, log_to_file
+>>>>>>> Stashed changes
+
+logger = getLogger(__name__)
 
 class GeologicalModel:
     """
@@ -95,6 +115,7 @@ class GeologicalModel:
 
     """
 
+<<<<<<< Updated upstream
     def __init__(
         self,
         origin: np.ndarray,
@@ -106,6 +127,10 @@ class GeologicalModel:
         logfile=None,
         loglevel="info",
     ):
+=======
+    def __init__(self, origin, maximum, rescale=True, nsteps=(40, 40, 40),
+                 reuse_supports=False, logfile=None, loglevel='info'):
+>>>>>>> Stashed changes
         """
         Parameters
         ----------
@@ -143,9 +168,15 @@ class GeologicalModel:
         # print('tet')
         if logfile:
             self.logfile = logfile
+<<<<<<< Updated upstream
             log_to_file(logfile, level=loglevel)
 
         logger.info("Initialising geological model")
+=======
+            log_to_file(logfile, loglevel)
+
+        logger.info('Initialising geological model')
+>>>>>>> Stashed changes
         self.features = []
         self.feature_name_index = {}
         self._data = None
@@ -155,6 +186,7 @@ class GeologicalModel:
         # we want to rescale the model area so that the maximum length is
         # 1
         self.origin = np.array(origin).astype(float)
+<<<<<<< Updated upstream
         originstr = f"Model origin: {self.origin[0]} {self.origin[1]} {self.origin[2]}"
         logger.info(originstr)
         self.maximum = np.array(maximum).astype(float)
@@ -162,6 +194,15 @@ class GeologicalModel:
             self.maximum[0], self.maximum[1], self.maximum[2]
         )
         logger.info(maximumstr)
+=======
+        originstr = 'Model origin: {} {} {}'.format(self.origin[0], self.origin[1], self.origin[2])
+        logger.info(originstr)
+        self._str += originstr + '\n'
+        self.maximum = np.array(maximum).astype(float)
+        maximumstr = 'Model maximum: {} {} {}'.format(self.maximum[0], self.maximum[1], self.maximum[2])
+        logger.info(maximumstr)
+        self._str += maximumstr + '\n'
+>>>>>>> Stashed changes
 
         lengths = self.maximum - self.origin
         self.scale_factor = 1.0
@@ -170,14 +211,24 @@ class GeologicalModel:
         self.bounding_box[1, :] = self.maximum - self.origin
         if rescale:
             self.scale_factor = float(np.max(lengths))
+<<<<<<< Updated upstream
             logger.info(
                 "Rescaling model using scale factor {}".format(self.scale_factor)
             )
 
+=======
+            logger.info('Rescaling model using scale factor {}'.format(self.scale_factor))
+        self._str += 'Model rescale factor: {} \n'.format(self.scale_factor)
+        self._str += 'The model contains {} GeologicalFeatures \n'.format(len(self.features))
+        self._str += ''
+        self._str += '------------------------------------------ \n'
+        self._str += ''
+>>>>>>> Stashed changes
         self.bounding_box /= self.scale_factor
         self.support = {}
         self.reuse_supports = reuse_supports
         if self.reuse_supports:
+<<<<<<< Updated upstream
             logger.warning(
                 "Supports are shared between geological features \n"
                 "this may cause unexpected behaviour and should only\n"
@@ -188,6 +239,17 @@ class GeologicalModel:
 
         self.tol = 1e-10 * np.max(self.bounding_box[1, :] - self.bounding_box[0, :])
         self._dtm = None
+=======
+            logger.warning("Supports are shared between geological features \n"
+                           "this may cause unexpected behaviour and should only\n"
+                           "be use by advanced users")
+        logger.info('Reusing interpolation supports: {}'.format(self.reuse_supports))
+        self.stratigraphic_column = None
+        self.parameters = {'features': [], 'model': {'bounding_box': self.origin.tolist() + self.maximum.tolist(),
+                                                     'rescale': rescale,
+                                                     'nsteps': nsteps,
+                                                     'reuse_supports': reuse_supports}}
+>>>>>>> Stashed changes
 
     def __str__(self):
         lengths = self.maximum - self.origin
@@ -214,6 +276,7 @@ class GeologicalModel:
         return self.feature_name_index.keys()
 
     @classmethod
+<<<<<<< Updated upstream
     def from_map2loop_directory(
         cls,
         m2l_directory,
@@ -224,6 +287,9 @@ class GeologicalModel:
         gradient=False,
         **kwargs,
     ):
+=======
+    def from_map2loop_directory(cls, m2l_directory, **kwargs):
+>>>>>>> Stashed changes
         """Alternate constructor for a geological model using m2l output
 
         Uses the information saved in the map2loop files to build a geological model.
@@ -246,6 +312,7 @@ class GeologicalModel:
         For additional information see :class:`LoopStructural.modelling.input.Map2LoopProcessor`
         and :meth:`LoopStructural.GeologicalModel.from_processor`
         """
+<<<<<<< Updated upstream
         from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
 
         log_to_file(f"{m2l_directory}/loopstructural_log.txt")
@@ -363,6 +430,13 @@ class GeologicalModel:
                     model.add_unconformity(f, 0)
         model.stratigraphic_column = processor.stratigraphic_column
         return model
+=======
+        from LoopStructural.utils import build_model, process_map2loop
+        logger.info('LoopStructural model initialised from m2l directory: {}'.format(m2l_directory))
+        m2lflags = kwargs.pop('m2lflags', {})
+        m2l_data = process_map2loop(m2l_directory, m2lflags)
+        return build_model(m2l_data, **kwargs), m2l_data
+>>>>>>> Stashed changes
 
     @classmethod
     def from_file(cls, file):
@@ -383,7 +457,11 @@ class GeologicalModel:
         except ImportError:
             logger.error("Cannot import from file, dill not installed")
             return None
+<<<<<<< Updated upstream
         model = pickle.load(open(file, "rb"))
+=======
+        model = pickle.load(open(file, 'rb'))
+>>>>>>> Stashed changes
         if type(model) == GeologicalModel:
             logger.info("GeologicalModel initialised from file")
             return model
@@ -401,6 +479,7 @@ class GeologicalModel:
         """
         return self.get_feature_by_name(feature_name)
 
+<<<<<<< Updated upstream
     def __contains__(self, feature_name):
         return feature_name in self.feature_name_index
 
@@ -467,6 +546,8 @@ class GeologicalModel:
             displacements.append(f.displacement)
         return np.array(displacements)
 
+=======
+>>>>>>> Stashed changes
     def feature_names(self):
         return self.feature_name_index.keys()
 
@@ -484,8 +565,11 @@ class GeologicalModel:
         if self.data is None:
             logger.error("Data not associated with GeologicalModel. Run set_data")
             return False
+<<<<<<< Updated upstream
         if self.data.shape[0] > 0:
             return True
+=======
+>>>>>>> Stashed changes
 
     def to_file(self, file):
         """Save a model to a pickle file requires dill
@@ -498,6 +582,7 @@ class GeologicalModel:
         try:
             import dill as pickle
         except ImportError:
+<<<<<<< Updated upstream
             logger.error(
                 "Cannot write to file, dill not installed \n" "pip install dill"
             )
@@ -505,6 +590,14 @@ class GeologicalModel:
         try:
             logger.info(f"Writing GeologicalModel to: {file}")
             pickle.dump(self, open(file, "wb"))
+=======
+            logger.error("Cannot write to file, dill not installed \n"
+                         "pip install dill")
+            return
+        try:
+            logger.info('Writing GeologicalModel to: {}'.format(file))
+            pickle.dump(self, open(file, 'wb'))
+>>>>>>> Stashed changes
         except pickle.PicklingError:
             logger.error("Error saving file")
 
@@ -525,12 +618,17 @@ class GeologicalModel:
             )
             self.features[self.feature_name_index[feature.name]] = feature
         else:
+<<<<<<< Updated upstream
+=======
+            self._str += 'GeologicalFeature: {} of type - {} \n'.format(feature.name, feature.type)
+>>>>>>> Stashed changes
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
             logger.info(
                 f"Adding {feature.name} to model at location {len(self.features)}"
             )
         self._add_domain_fault_above(feature)
+<<<<<<< Updated upstream
         if feature.type == FeatureType.INTERPOLATED:
             self._add_unconformity_above(feature)
         feature.model = self
@@ -556,6 +654,15 @@ class GeologicalModel:
 
     @data.setter
     def data(self, data: pd.DataFrame):
+=======
+        self._add_unconformity_above(feature)
+        feature.set_model(self)
+
+    def data_for_feature(self, feature_name):
+        return self.data.loc[self.data['feature_name'] == feature_name, :]
+
+    def set_model_data(self, data):
+>>>>>>> Stashed changes
         """
         Set the data array for the model
 
@@ -584,6 +691,7 @@ class GeologicalModel:
                 data = pd.read_csv(data)
             except:
                 logger.error("Could not load pandas data frame from data")
+<<<<<<< Updated upstream
                 raise BaseException("Cannot load data")
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
@@ -627,6 +735,39 @@ class GeologicalModel:
             "deprecated method. Model data can now be set using the data attribute"
         )
         self.data = data
+=======
+        logger.info('Adding data to GeologicalModel with {} data points'.format(len(data)))
+        self.data = data.copy()
+        self.data['X'] -= self.origin[0]
+        self.data['Y'] -= self.origin[1]
+        self.data['Z'] -= self.origin[2]
+        self.data['X'] /= self.scale_factor
+        self.data['Y'] /= self.scale_factor
+        self.data['Z'] /= self.scale_factor
+        if 'type' in self.data:
+            logger.warning("'type' is depreciated replace with 'feature_name' \n")
+            self.data.rename(columns={'type': 'feature_name'}, inplace=True)
+        for h in all_heading():
+            if h not in self.data:
+                self.data[h] = np.nan
+                if h == 'w':
+                    self.data[h] = 1.
+                if h == 'coord':
+                    self.data[h] = 0
+
+        if 'strike' in self.data and 'dip' in self.data:
+            logger.info('Converting strike and dip to vectors')
+            mask = np.all(~np.isnan(self.data.loc[:, ['strike', 'dip']]),
+                          axis=1)
+            self.data.loc[mask, gradient_vec_names()] = strike_dip_vector(
+                self.data.loc[mask, 'strike'], self.data.loc[mask, 'dip'])
+            self.data.drop(['strike', 'dip'], axis=1, inplace=True)
+        #     self.data.loc
+        # if 'nx' in self.data and 'ny' in self.data and 'nz' in self.data:
+        #     mask = np.all(~np.isnan(self.data.loc[:, ['nx', 'ny','nz']]),
+        #                   axis=1)
+        #     self.data.loc[mask,['nx', 'ny','nz']] /= self.scale_factor
+>>>>>>> Stashed changes
 
     def extend_model_data(self, newdata):
         """
@@ -649,7 +790,11 @@ class GeologicalModel:
         data_temp["Z"] /= self.scale_factor
         self.data.concat([self.data, data_temp], sort=True)
 
+<<<<<<< Updated upstream
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
+=======
+    def set_stratigraphic_column(self, stratigraphic_column, cmap='tab20'):
+>>>>>>> Stashed changes
         """
         Adds a stratigraphic column to the model
 
@@ -683,12 +828,16 @@ class GeologicalModel:
                 n_units += 1
         if random_colour:
             import matplotlib.cm as cm
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
             cmap = cm.get_cmap(cmap, n_units)
             cmap_colours = cmap.colors
             ci = 0
             for g in stratigraphic_column.keys():
                 for u in stratigraphic_column[g].keys():
+<<<<<<< Updated upstream
                     stratigraphic_column[g][u]["colour"] = cmap_colours[ci, :]
 
         self.stratigraphic_column = stratigraphic_column
@@ -701,6 +850,38 @@ class GeologicalModel:
         element_volume=None,
         **kwargs,
     ):
+=======
+                    stratigraphic_column[g][u]['colour'] = cmap_colours[ci, :]
+
+        self.stratigraphic_column = stratigraphic_column
+
+    def create_from_feature_list(self, features):
+        """Initialises a model from a dictionary containing the features
+
+        Parameters
+        ----------
+        features : [type]
+            [description]
+
+        Raises
+        ------
+        LoopBaseException
+            [description]
+        """
+        for f in features:
+            featuretype = f.pop('featuretype', None)
+            if featuretype is None:
+                raise LoopBaseException
+            if featuretype == 'strati':
+                self.create_and_add_foliation(f)
+            # if featuretype == 'fault':
+            #     self.create_and_add_fault(f)
+            if featuretype == 'folded_strati':
+                self.create_and_add_folded_foliation(f)
+
+    def get_interpolator(self, interpolatortype='PLI', nelements=1e5,
+                         buffer=0.2, element_volume=None, **kwargs):
+>>>>>>> Stashed changes
         """
         Returns an interpolator given the arguments, also constructs a
         support for a discrete interpolator
@@ -750,11 +931,19 @@ class GeologicalModel:
         # faults but also generally a good
         # idea to avoid boundary problems
         # buffer = bb[1, :]
+<<<<<<< Updated upstream
         buffer = (np.min(bb[1, :] - bb[0, :])) * buffer
         bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
         bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
         box_vol = (bb[1, 0] - bb[0, 0]) * (bb[1, 1] - bb[0, 1]) * (bb[1, 2] - bb[0, 2])
         if interpolatortype == "PLI" and pli:
+=======
+        buffer = (bb[1, :] - bb[0, :]) * buffer
+        bb[0, :] -= buffer  # *(bb[1,:]-bb[0,:])
+        bb[1, :] += buffer  # *(bb[1,:]-bb[0,:])
+        box_vol = (bb[1, 0] - bb[0, 0]) * (bb[1, 1] - bb[0, 1]) * (bb[1, 2] - bb[0, 2])
+        if interpolatortype == "PLI":
+>>>>>>> Stashed changes
             if element_volume is None:
                 # nelements /= 5
                 element_volume = box_vol / nelements
@@ -837,6 +1026,7 @@ class GeologicalModel:
                 raise ValueError("Number of steps too small cannot create interpolator")
             # create a structured grid using the origin and number of steps
             if self.reuse_supports:
+<<<<<<< Updated upstream
                 grid_id = "grid_{}".format(nelements)
                 grid = self.support.get(
                     grid_id,
@@ -854,6 +1044,18 @@ class GeologicalModel:
                 f"Creating regular grid with {grid.n_elements} elements \n"
                 "for modelling using FDI"
             )
+=======
+                grid_id = 'grid_{}'.format(nelements)
+                grid = self.support.get(grid_id, StructuredGrid(origin=bb[0, :],
+                                                                nsteps=nsteps,
+                                                                step_vector=step_vector))
+                if grid_id not in self.support:
+                    self.support[grid_id] = grid
+            else:
+                grid = StructuredGrid(origin=bb[0, :], nsteps=nsteps, step_vector=step_vector)
+            logger.info("Creating regular grid with %i elements \n"
+                        "for modelling using FDI" % grid.n_elements)
+>>>>>>> Stashed changes
             return FDI(grid)
 
         if interpolatortype == "DFI" and dfi is True:
@@ -944,7 +1146,49 @@ class GeologicalModel:
         self._add_feature(series_feature)
         return series_feature
 
+<<<<<<< Updated upstream
     def create_and_add_fold_frame(self, foldframe_data, tol=None, **kwargs):
+=======
+    def create_and_add_dtm(self, series_surface_data, **kwargs):
+        """
+        Parameters
+        ----------
+        series_surface_data : string
+            corresponding to the feature_name in the data
+        kwargs
+
+        Returns
+        -------
+        feature : GeologicalFeature
+            the created geological feature
+        """
+        if self.check_inialisation() == False:
+            return False
+        self.parameters['features'].append({'feature_type': 'foliation', 'feature_name': series_surface_data, **kwargs})
+        interpolator = self.get_interpolator(**kwargs)
+        series_builder = GeologicalFeatureInterpolator(interpolator,
+                                                       name=series_surface_data,
+                                                       **kwargs)
+        # add data
+        series_data = self.data[self.data['feature_name'] == series_surface_data]
+        if series_data.shape[0] == 0:
+            logger.warning("No data for %s, skipping" % series_surface_data)
+            return
+        series_builder.add_data_from_data_frame(series_data)
+        # self._add_faults(series_builder)
+
+        # build feature
+        # series_feature = series_builder.build(**kwargs)
+        series_feature = series_builder.feature
+        series_builder.build_arguments = kwargs
+        series_feature.type = 'dtm'
+        # see if any unconformities are above this feature if so add region
+        # self._add_unconformity_above(series_feature)self._add_feature(series_feature)
+        self._add_feature(series_feature)
+        return series_feature
+
+    def create_and_add_fold_frame(self, foldframe_data, **kwargs):
+>>>>>>> Stashed changes
         """
         Parameters
         ----------
@@ -1024,7 +1268,11 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
+<<<<<<< Updated upstream
         fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}")
+=======
+        fold = FoldEvent(fold_frame, name='Fold_{}'.format(foliation_data))
+>>>>>>> Stashed changes
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         if "fold_weights" not in kwargs:
             kwargs["fold_weights"] = {}
@@ -1038,8 +1286,46 @@ class GeologicalModel:
         )
 
         series_builder.add_data_from_data_frame(
+<<<<<<< Updated upstream
             self.data[self.data["feature_name"] == foliation_data]
         )
+=======
+            self.data[self.data['feature_name'] == foliation_data])
+        self._add_faults(series_builder)
+
+        series_builder.add_data_to_interpolator(True)
+        if "fold_axis" in kwargs:
+            fold.fold_axis = kwargs['fold_axis']
+        if "av_fold_axis" in kwargs:
+            _calculate_average_intersection(series_builder, fold_frame, fold)
+        if fold.fold_axis is None:
+            far, fad = fold_frame.calculate_fold_axis_rotation(
+                series_builder)
+            fold_axis_rotation = FoldRotationAngle(far, fad)
+            a_wl = kwargs.get("axis_wl", None)
+            if 'axis_function' in kwargs:
+                # allow predefined function to be used
+                fold_axis_rotation.set_function(kwargs['axis_function'])
+            else:
+                fold_axis_rotation.fit_fourier_series(wl=a_wl)
+            fold.fold_axis_rotation = fold_axis_rotation
+        # give option of passing own fold limb rotation function
+        flr, fld = fold_frame.calculate_fold_limb_rotation(
+            series_builder)
+        fold_limb_rotation = FoldRotationAngle(flr, fld)
+        l_wl = kwargs.get("limb_wl", None)
+        if 'limb_function' in kwargs:
+            # allow for predefined functions to be used
+            fold_limb_rotation.set_function(kwargs['limb_function'])
+        else:
+            fold_limb_rotation.fit_fourier_series(wl=l_wl, **kwargs)
+        fold.fold_limb_rotation = fold_limb_rotation
+        # fold_limb_fitter = kwargs.get("fold_limb_function",
+        # _interpolate_fold_limb_rotation_angle)
+        # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
+        kwargs['fold_weights'] = kwargs.get('fold_weights', {})
+
+>>>>>>> Stashed changes
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
         # build feature
@@ -1099,7 +1385,11 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
+<<<<<<< Updated upstream
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
+=======
+        fold = FoldEvent(fold_frame, name='Fold_{}'.format(fold_frame_data))
+>>>>>>> Stashed changes
         fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
         frame_interpolator = self.get_interpolator(**kwargs)
@@ -1116,8 +1406,52 @@ class GeologicalModel:
             **kwargs,
         )
         fold_frame_builder.add_data_from_data_frame(
+<<<<<<< Updated upstream
             self.data[self.data["feature_name"] == fold_frame_data]
         )
+=======
+            self.data[self.data['feature_name'] == fold_frame_data])
+
+        ## add the data to the interpolator for the main foliation
+        fold_frame_builder[0].add_data_to_interpolator(True)
+
+        if "fold_axis" in kwargs:
+            logger.info("Using cylindrical fold axis")
+            fold.fold_axis = kwargs['fold_axis']
+        if "av_fold_axis" in kwargs:
+            logger.info("Using average intersection lineation for \n"
+                        "fold axis")
+            _calculate_average_intersection(fold_frame_builder[0], fold_frame,
+                                            fold)
+
+        if fold.fold_axis is None:
+            logger.info("Fitting fold axis rotation angle")
+            far, fad = fold_frame.calculate_fold_axis_rotation(
+                fold_frame_builder[0])
+            fold_axis_rotation = FoldRotationAngle(far, fad)
+            a_wl = kwargs.get("axis_wl", None)
+            if 'axis_function' in kwargs:
+                # allow predefined function to be used
+                fold_axis_rotation.set_function(kwargs['axis_function'])
+            else:
+                fold_axis_rotation.fit_fourier_series(wl=a_wl)
+            fold.fold_axis_rotation = fold_axis_rotation
+        # give option of passing own fold limb rotation function
+        flr, fld = fold_frame.calculate_fold_limb_rotation(
+            fold_frame_builder[0])
+        fold_limb_rotation = FoldRotationAngle(flr, fld)
+        l_wl = kwargs.get("limb_wl", None)
+        if 'limb_function' in kwargs:
+            # allow for predefined functions to be used
+            fold_limb_rotation.set_function(kwargs['limb_function'])
+        else:
+            fold_limb_rotation.fit_fourier_series(wl=l_wl)
+        fold.fold_limb_rotation = fold_limb_rotation
+        # fold_limb_fitter = kwargs.get("fold_limb_function",
+        # _interpolate_fold_limb_rotation_angle)
+        # fold_limb_fitter(series_builder, fold_frame, fold, result, **kwargs)
+        kwargs['fold_weights'] = kwargs.get('fold_weights', {})
+>>>>>>> Stashed changes
 
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
@@ -1129,7 +1463,11 @@ class GeologicalModel:
         folded_fold_frame = fold_frame_builder.frame
         folded_fold_frame.builder = fold_frame_builder
 
+<<<<<<< Updated upstream
         folded_fold_frame.type = "structuralframe"
+=======
+        self._add_feature(fold_frame)
+>>>>>>> Stashed changes
 
         self._add_feature(folded_fold_frame)
 
@@ -1383,6 +1721,10 @@ class GeologicalModel:
                 f.add_region(uc_feature)
         # now add the unconformity to the feature list
         self._add_feature(uc_feature)
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
         return uc_feature
 
     def add_onlap_unconformity(
@@ -1455,6 +1797,7 @@ class GeologicalModel:
         self._add_domain_fault_below(domain_fault)
 
         domain_fault_uc = UnconformityFeature(domain_fault, 0)
+<<<<<<< Updated upstream
         # iterate over existing features and add the unconformity as a region
         # so the feature is only evaluated where the unconformity is positive
         return domain_fault_uc
@@ -1473,6 +1816,23 @@ class GeologicalModel:
         faults=[],
         **kwargs,
     ):
+=======
+        # iterate over existing features and add the unconformity as a
+        # region so the feature is only
+        # evaluated where the unconformity is positive
+        return domain_fault_uc
+
+    def create_and_add_fault(self,
+                             fault_surface_data,
+                             displacement,
+                             fault_slip_vector=None,
+                             fault_center=None,
+                             fault_extent=None,
+                             fault_influence=None,
+                             fault_vectical_radius=None,
+                             faultfunction=None,
+                             **kwargs):
+>>>>>>> Stashed changes
         """
         Parameters
         ----------
@@ -1536,6 +1896,7 @@ class GeologicalModel:
         displacement_scaled = displacement / self.scale_factor
         # create fault frame
         interpolator = self.get_interpolator(**kwargs)
+<<<<<<< Updated upstream
         # faults arent supported for surfe
         if not isinstance(interpolator, DiscreteInterpolator):
             logger.error(
@@ -1602,6 +1963,52 @@ class GeologicalModel:
             strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
             fault_slip_vector = dip_vector[:, 0]
             logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
+=======
+        fault_frame_builder = FaultBuilder(interpolator,
+                                           name=fault_surface_data,
+                                           **kwargs)
+        # add data
+        fault_frame_data = self.data[self.data['feature_name'] == fault_surface_data].copy()
+        mask = np.logical_and(fault_frame_data['coord'] == 0, ~np.isnan(fault_frame_data['gz']))
+        fault_normal_vector = fault_frame_data.loc[mask, ['gx', 'gy', 'gz']].mean(axis=0).to_numpy()
+        mask = np.logical_and(fault_frame_data['coord'] == 1, ~np.isnan(fault_frame_data['gz']))
+        if fault_slip_vector is None:
+            fault_slip_vector = fault_frame_data.loc[mask, ['gx', 'gy', 'gz']].mean(axis=0).to_numpy()
+        if fault_center is not None:
+            fault_center = self.scale(fault_center, inplace=False)
+        if fault_center is None:
+            # if we haven't defined a fault centre take the center of mass for lines assocaited with
+            # the fault trace
+            mask = np.logical_and(fault_frame_data['coord'] == 0, fault_frame_data['val'] == 0)
+            fault_center = fault_frame_data.loc[mask, ['X', 'Y', 'Z']].mean(axis=0).to_numpy()
+        if fault_influence:
+            fault_influence = fault_influence / self.scale_factor
+        if fault_extent:
+            fault_extent = fault_extent / self.scale_factor
+        if fault_vectical_radius:
+            fault_vectical_radius = fault_vectical_radius / self.scale_factor
+        fault_frame_builder.create_data_from_geometry(fault_frame_data,
+                                                      fault_center,
+                                                      fault_normal_vector,
+                                                      fault_slip_vector,
+                                                      influence_distance=fault_influence,
+                                                      horizontal_radius=fault_extent,
+                                                      vertical_radius=fault_vectical_radius
+                                                      )
+        if fault_influence == None or fault_extent == None or fault_vectical_radius == None:
+            fault_frame_builder.origin = self.origin
+            fault_frame_builder.maximum = self.maximum
+        fault_frame_builder.set_mesh_geometry(kwargs.get('fault_buffer', 0.1))
+        # fault_frame_builder.add_data_from_data_frame(fault_frame_data)
+        # check if this fault overprint any existing faults exist in the stack
+        overprinted = kwargs.get('overprinted', [])
+        overprinted_faults = []
+        for o in overprinted:
+            overprinted_faults.append(self.features[self.feature_name_index[o]])
+        self._add_faults(fault_frame_builder[0], overprinted_faults)
+        self._add_faults(fault_frame_builder[1], overprinted_faults)
+        self._add_faults(fault_frame_builder[2], overprinted_faults)
+>>>>>>> Stashed changes
 
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
@@ -1659,6 +2066,12 @@ class GeologicalModel:
         fault.displacement = displacement_scaled
         fault.faultfunction = faultfunction
 
+<<<<<<< Updated upstream
+=======
+        fault = FaultSegment(fault_frame, displacement=displacement_scaled,
+                             **kwargs)
+        fault.builder = fault_frame_builder
+>>>>>>> Stashed changes
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
                 fault.add_region(f)
@@ -1706,8 +2119,12 @@ class GeologicalModel:
         points : np.array((N,3),dtype=double)
 
         """
+<<<<<<< Updated upstream
         points = np.array(points).astype(float)
         if not inplace:
+=======
+        if inplace == False:
+>>>>>>> Stashed changes
             points = points.copy()
         # if len(points.shape) == 1:
         #     points = points[None,:]
@@ -1717,7 +2134,11 @@ class GeologicalModel:
         points /= self.scale_factor
         return points
 
+<<<<<<< Updated upstream
     def regular_grid(self, nsteps=None, shuffle=True, rescale=False, order="C"):
+=======
+    def regular_grid(self, nsteps=(50, 50, 25), shuffle=True, rescale=False):
+>>>>>>> Stashed changes
         """
         Return a regular grid within the model bounding box
 
@@ -1809,12 +2230,17 @@ class GeologicalModel:
                 feature = self.features[feature_id]
                 vals = feature.evaluate_value(xyz)
                 for series in self.stratigraphic_column[group].values():
+<<<<<<< Updated upstream
                     strat_id[
                         np.logical_and(
                             vals < series.get("max", feature.max()),
                             vals > series.get("min", feature.min()),
                         )
                     ] = series["id"]
+=======
+                    strat_id[np.logical_and(vals < series.get('max', feature.max()),
+                                            vals > series.get('min', feature.min()))] = series['id']
+>>>>>>> Stashed changes
             if feature_id == -1:
                 logger.error(f"Model does not contain {group}")
         return strat_id
@@ -1842,9 +2268,13 @@ class GeologicalModel:
             if f.type == FeatureType.FAULT:
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
+<<<<<<< Updated upstream
         return (
             vals * -self.scale_factor
         )  # convert from restoration magnutude to displacement
+=======
+        return vals * -self.scale_factor  # convert from restoration magnutude to displacement
+>>>>>>> Stashed changes
 
     def get_feature_by_name(self, feature_name):
         """Returns a feature from the mode given a name
@@ -1946,6 +2376,7 @@ class GeologicalModel:
         total_dof = 0
         nfeatures = 0
         for f in self.features:
+<<<<<<< Updated upstream
             if f.type == FeatureType.FAULT:
                 nfeatures += 3
                 total_dof += f[0].interpolator.nx * 3
@@ -1977,3 +2408,45 @@ class GeologicalModel:
 
         if verbose:
             print(f"Model update took: {time.time()-start} seconds")
+=======
+            if f.type == 'fault':
+                nfeatures += 3
+                total_dof += f[0].interpolator.nx * 3
+            if f.type == 'series':
+                nfeatures += 1
+                total_dof += f.interpolator.nx
+        if verbose == True:
+            print('Updating geological model. There are: \n'
+                  '{} geological features that need to be interpolated\n'.format(nfeatures)
+                  )
+
+        if progressbar:
+
+            from tqdm import tqdm
+            import time
+            start = time.time()
+            sizecounter = 0
+
+            # Load tqdm with size counter instead of file counter
+            with tqdm(total=total_dof) as pbar:
+                buf = 1
+                for f in self.features:
+                    pbar.set_description('Interpolating {}'.format(f.name))
+                    if f.type == 'fault':
+                        for i in range(3):
+                            f[i].builder.update()
+                            buf += f[i].interpolator.nx
+                    if f.type == 'series':
+                        f.builder.update()
+                        buf += f.interpolator.nx
+                    pbar.update(buf)
+
+            if verbose:
+                print("Model update took: {} seconds".format(time.time() - start))
+
+        if not progressbar:
+
+            for f in self.features:
+                # f.set_description(f"Interpolating {f.name}")
+                f.builder.up_to_date()
+>>>>>>> Stashed changes
