@@ -1,4 +1,3 @@
-from pyrsistent import v
 from .model_plotter import BaseModelPlotter
 from ..utils import getLogger
 from ..utils import LoopImportError
@@ -42,7 +41,7 @@ class LavaVuModelViewer(BaseModelPlotter):
         self.bounding_box = bounding_box
         self.nsteps = nsteps
         if model is not None:
-            self.bounding_box = model.bounding_box
+            self.bounding_box = model.bounding_box.bb
             self.nsteps = model.nsteps
             logger.debug("Using bounding box from model")
         if self.bounding_box is None or self.nsteps is None:
@@ -105,7 +104,6 @@ class LavaVuModelViewer(BaseModelPlotter):
                 surfaceval[:] = paint_with.evaluate_value(
                     self.model.scale(vertices, inplace=False)
                 )
-                print(surfaceval)
                 surf.values(surfaceval, "paint_with")
             if callable(paint_with):
                 # paint with a callable function e.g. (xyz)->value
@@ -256,7 +254,6 @@ class LavaVuModelViewer(BaseModelPlotter):
         self.lv.image(fname, **kwargs)
 
     def export_to_webgl(self, fname, **kwargs):
-
         self.lv.webgl(fname, **kwargs)
 
     def display(self, fname=None, **kwargs):

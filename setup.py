@@ -32,7 +32,7 @@ version = version["__version__"]
 setup(
     name="LoopStructural",
     install_requires=[
-        "numpy>=1.18",  # need to fix numpy to 1.18 because we build against it
+        "numpy>=1.18",
         "pandas",
         "scipy",
         "scikit-image",

@@ -144,9 +144,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             np.random.shuffle(element_idx)
 
-            logger.info(
-                f"Adding fold orientation constraint to {self.propertyname} w = {fold_orientation}"
-            )
+            logger.info(f"Adding fold orientation constraint to w = {fold_orientation}")
             A = np.einsum(
                 "ij,ijk->ik",
                 deformed_orientation[element_idx[::step], :],
@@ -165,9 +163,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             np.random.shuffle(element_idx)
 
-            logger.info(
-                f"Adding fold axis constraint to {self.propertyname} w = {fold_axis_w}"
-            )
+            logger.info(f"Adding fold axis constraint to  w = {fold_axis_w}")
             A = np.einsum(
                 "ij,ijk->ik",
                 fold_axis[element_idx[::step], :],
@@ -188,7 +184,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             np.random.shuffle(element_idx)
 
             logger.info(
-                f"Adding fold normalisation constraint to {self.propertyname} w = {fold_normalisation}"
+                f"Adding fold normalisation constraint to  w = {fold_normalisation}"
             )
             A = np.einsum(
                 "ij,ijk->ik", dgz[element_idx[::step], :], eg[element_idx[::step], :, :]
@@ -212,7 +208,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             fold constant gradient
             """
             logger.info(
-                f"Adding fold regularisation constraint to {self.propertyname} w = {fold_regularisation[0]} {fold_regularisation[1]} {fold_regularisation[2]}"
+                f"Adding fold regularisation constraint to  w = {fold_regularisation[0]} {fold_regularisation[1]} {fold_regularisation[2]}"
             )
 
             idc, c, ncons = fold_cg(

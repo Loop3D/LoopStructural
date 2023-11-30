@@ -55,7 +55,6 @@ strati = model.create_and_add_foliation(
     interpolatortype="FDI",  # try changing this to 'PLI'
     nelements=1e4,  # try changing between 1e3 and 5e4
     buffer=0.3,
-    solver="pyamg",
     damp=True,
 )
 viewer = LavaVuModelViewer(model, background="white")
@@ -112,7 +111,6 @@ strati = model.create_and_add_foliation(
     interpolatortype="FDI",  # try changing this to 'PLI'
     nelements=1e4,  # try changing between 1e3 and 5e4
     buffer=0.3,
-    solver="pyamg",
     damp=True,
 )
 viewer = LavaVuModelViewer(model, background="white")

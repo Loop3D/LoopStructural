@@ -1,12 +1,14 @@
 """
 structural frame builder
 """
+from typing import Union
 
 import logging
+from LoopStructural.utils.exceptions import LoopException
 
 import numpy as np
 
-from ....utils import getLogger
+from ....utils import getLogger, BoundingBox
 
 logger = getLogger(__name__)
 
@@ -18,7 +20,12 @@ from ....modelling.features import StructuralFrame
 
 class StructuralFrameBuilder:
     def __init__(
-        self, interpolator=None, interpolators=None, frame=StructuralFrame, **kwargs
+        self,
+        interpolatortype: Union[str, list],
+        bounding_box: BoundingBox,
+        nelements: Union[int, list] = 1000,
+        frame=StructuralFrame,
+        **kwargs,
     ):
         """
         Class for building a structural frame - has functions to set up the
@@ -32,6 +39,7 @@ class StructuralFrameBuilder:
         interpolator - a template interpolator for the frame
         kwargs
         """
+
         self.support = None
         self.fault_event = None
         self.name = "Undefined"
@@ -41,34 +49,61 @@ class StructuralFrameBuilder:
             self.name = kwargs["name"]
             kwargs.pop("name")
         self.data = [[], [], []]
-        self.fold = kwargs.get("fold", None)
+        self.fold = kwargs.pop("fold", None)
         # list of interpolators
         # self.interpolators = []
         # Create the interpolation objects by copying the template
-        if interpolators is None:
-            if interpolator is not None:
-                interpolators = []
-                interpolators.append(interpolator)
-                interpolators.append(interpolator.copy())
-                interpolators.append(interpolator.copy())
-            else:
-                raise BaseException("Missing interpolator")
+        if isinstance(interpolatortype, str):
+            interpolatortype = [interpolatortype, interpolatortype, interpolatortype]
+        if not isinstance(interpolatortype, list):
+            raise LoopException(
+                f"interpolatortype is {type(interpolatortype)} and must be either a string or a list of strings"
+            )
+        if isinstance(nelements, (int, float)):
+            nelements = [nelements, nelements, nelements]
+        if not isinstance(nelements, list):
+            raise LoopException(
+                f"nelements is {type(nelements)} and must be either a int or a list of ints"
+            )
         # self.builders
-        if "fold" in kwargs:
+        if self.fold:
             self.builders.append(
-                FoldedFeatureBuilder(interpolators[0], name=f"{self.name}__0", **kwargs)
+                FoldedFeatureBuilder(
+                    interpolatortype[0],
+                    bounding_box,
+                    self.fold,
+                    nelements=nelements[0],
+                    name=f"{self.name}__0",
+                    **kwargs,
+                )
             )
         else:
             self.builders.append(
                 GeologicalFeatureBuilder(
-                    interpolators[0], name=f"{self.name}__0", **kwargs
+                    interpolatortype[0],
+                    bounding_box,
+                    nelements[0],
+                    name=f"{self.name}__0",
+                    **kwargs,
                 )
             )  # ,region=self.region))
         self.builders.append(
-            GeologicalFeatureBuilder(interpolators[1], name=f"{self.name}__1", **kwargs)
+            GeologicalFeatureBuilder(
+                interpolatortype[1],
+                bounding_box,
+                nelements[1],
+                name=f"{self.name}__1",
+                **kwargs,
+            )
         )  # ,region=self.region))
         self.builders.append(
-            GeologicalFeatureBuilder(interpolators[2], name=f"{self.name}__2", **kwargs)
+            GeologicalFeatureBuilder(
+                interpolatortype[2],
+                bounding_box,
+                nelements[2],
+                name=f"{self.name}__2",
+                **kwargs,
+            )
         )  # ,region=self.region))
 
         self._frame = frame(
@@ -78,7 +113,7 @@ class StructuralFrameBuilder:
                 self.builders[1].feature,
                 self.builders[2].feature,
             ],
-            fold=kwargs.get("fold", None),
+            fold=self.fold,
         )
         self._frame.builder = self
 

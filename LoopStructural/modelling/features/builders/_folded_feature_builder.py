@@ -1,8 +1,9 @@
+from typing import Union
 from ....modelling.features.builders import GeologicalFeatureBuilder
 from ....modelling.features.fold import FoldRotationAngle
 import numpy as np
 
-from ....utils import getLogger, InterpolatorError
+from ....utils import getLogger, InterpolatorError, BoundingBox
 
 logger = getLogger(__name__)
 
@@ -10,8 +11,10 @@ logger = getLogger(__name__)
 class FoldedFeatureBuilder(GeologicalFeatureBuilder):
     def __init__(
         self,
-        interpolator,
+        interpolatortype: str,
+        bounding_box: BoundingBox,
         fold,
+        nelements: int = 1000,
         fold_weights={},
         name="Feature",
         region=None,
@@ -34,7 +37,13 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             _description_, by default None
         """
         GeologicalFeatureBuilder.__init__(
-            self, interpolator, name=name, region=region, **kwargs
+            self,
+            interpolatortype=interpolatortype,
+            bounding_box=bounding_box,
+            nelements=nelements,
+            name=name,
+            region=region,
+            **kwargs
         )
         self.fold = fold
         self.fold_weights = fold_weights
@@ -79,7 +88,6 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             # allow for predefined functions to be used
             fold_limb_rotation.set_function(kwargs["limb_function"])
         else:
-
             fold_limb_rotation.fit_fourier_series(wl=l_wl, **kwargs)
         self.fold.fold_limb_rotation = fold_limb_rotation
 

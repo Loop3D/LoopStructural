@@ -53,7 +53,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
     def copy(self):
         return PiecewiseLinearInterpolator(self.support)
 
-    def _setup_interpolator(self, **kwargs):
+    def setup_interpolator(self, **kwargs):
         """
         Searches through kwargs for any interpolation weights and updates
         the dictionary.
@@ -70,7 +70,6 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         """
         # can't reset here, clears fold constraints
         # self.reset()
-        logger.info("Setting up PLI interpolator for %s" % self.propertyname)
         for key in kwargs:
             if "regularisation" in kwargs:
                 self.interpolation_weights["cgw"] = 0.1 * kwargs["regularisation"]
@@ -90,7 +89,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         logger.info(
             "Added %i gradient constraints, %i normal constraints,"
             "%i tangent constraints and %i value constraints"
-            "to %s" % (self.n_g, self.n_n, self.n_t, self.n_i, self.propertyname)
+            % (self.n_g, self.n_n, self.n_t, self.n_i)
         )
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_norm_constraints(self.interpolation_weights["npw"])
@@ -125,7 +124,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if direction_vector is not None:
             logger.info("Running constant gradient")
             elements_gradients = self.support.get_element_gradients(
-                np.arange(self.ntetra)
+                np.arange(self.support.ntetra)
             )
             if elements_gradients.shape[0] != direction_vector.shape[0]:
                 logger.error(
@@ -141,18 +140,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                 direction_vector,
                 neighbours.astype("int64"),
                 elements.astype("int64"),
-                self.nodes,
+                self.support.nodes,
             )
 
             idc = np.array(idc[:ncons, :])
             A = np.array(c[:ncons, :])
-            B = np.zeros(c.shape[0])
+            B = np.zeros(c[:ncons, :].shape[0])
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
-
             # w/=A.shape[0]
             self.add_constraints_to_least_squares(
                 A[outside, :],

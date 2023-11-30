@@ -36,10 +36,14 @@ def test_intrusion_frame_builder():
     }
 
     weights = [0, 0, 0]
-    interpolator = model.get_interpolator(interpolatortype="PLI")
+    # interpolator = model.get_interpolator(interpolatortype="PLI")
 
     intrusion_frame_builder = IntrusionFrameBuilder(
-        interpolator, name="tabular_intrusion_frame", model=model
+        interpolatortype="PLI",
+        bounding_box=model.bounding_box,
+        nelements=1000,
+        name="tabular_intrusion_frame",
+        model=model,
     )
 
     intrusion_frame_builder.set_intrusion_frame_parameters(
@@ -80,10 +84,13 @@ def test_intrusion_builder():
     }
 
     weights = [0, 0, 0]
-    interpolator = model.get_interpolator(interpolatortype="PLI")
 
     intrusion_frame_builder = IntrusionFrameBuilder(
-        interpolator, name="tabular_intrusion_frame", model=model
+        interpolatortype="PLI",
+        bounding_box=model.bounding_box,
+        nelements=1000,
+        name="tabular_intrusion_frame",
+        model=model,
     )
 
     intrusion_frame_builder.set_intrusion_frame_parameters(
@@ -109,7 +116,6 @@ def test_intrusion_builder():
     intrusion_builder = IntrusionBuilder(
         intrusion_frame,
         model=model,
-        interpolator=interpolator,
         lateral_extent_model=ellipse_function,
         vertical_extent_model=constant_function,
         name="tabular_intrusion",

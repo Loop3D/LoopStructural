@@ -5,6 +5,7 @@ import logging
 
 import numpy as np
 from ._2d_base_unstructured import BaseUnstructured2d
+from . import SupportType
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ class P1Unstructured2d(BaseUnstructured2d):
 
     def __init__(self, elements, vertices, neighbours):
         BaseUnstructured2d.__init__(self, elements, vertices, neighbours)
+        self.type = SupportType.P1Unstructured2d
 
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
