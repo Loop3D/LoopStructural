@@ -124,7 +124,7 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
         if direction_vector is not None:
             logger.info("Running constant gradient")
             elements_gradients = self.support.get_element_gradients(
-                np.arange(self.ntetra)
+                np.arange(self.support.ntetra)
             )
             if elements_gradients.shape[0] != direction_vector.shape[0]:
                 logger.error(
@@ -140,18 +140,17 @@ class PiecewiseLinearInterpolator(DiscreteInterpolator):
                 direction_vector,
                 neighbours.astype("int64"),
                 elements.astype("int64"),
-                self.nodes,
+                self.support.nodes,
             )
 
             idc = np.array(idc[:ncons, :])
             A = np.array(c[:ncons, :])
-            B = np.zeros(c.shape[0])
+            B = np.zeros(c[:ncons, :].shape[0])
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
             idc = gi[idc]
             outside = ~np.any(idc == -1, axis=1)
-
             # w/=A.shape[0]
             self.add_constraints_to_least_squares(
                 A[outside, :],
