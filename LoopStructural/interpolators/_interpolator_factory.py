@@ -26,13 +26,14 @@ class InterpolatorFactory:
         if type(interpolatortype) == str:
             interpolatortype = InterpolatorType._member_map_[interpolatortype].numerator
         if support is None:
-            supporttype = support_interpolator_map[interpolatortype]
-            support = SupportFactory.create_support_from_bbox(
-                supporttype,
-                bounding_box=boundingbox,
-                nelements=nelements,
-                element_volume=element_volume,
-            )
+            raise Exception("Support must be specified")
+            # supporttype = support_interpolator_map[interpolatortype]
+            # support = SupportFactory.create_support_from_bbox(
+            #     supporttype,
+            #     bounding_box=boundingbox,
+            #     nelements=nelements,
+            #     element_volume=element_volume,
+            # )
         return interpolator_map[interpolatortype](support)
 
     @staticmethod
