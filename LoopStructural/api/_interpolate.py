@@ -5,7 +5,7 @@ import pandas as pd
 from typing import Optional
 from LoopStructural.interpolators import (
     GeologicalInterpolator,
-    get_interpolator,
+    InterpolatorFactory,
 )
 from LoopStructural.utils import BoundingBox
 from LoopStructural.utils import getLogger
@@ -40,11 +40,12 @@ class LoopInterpolator:
         """
         self.dimensions = dimensions
         self.type = "FDI"
-        self.interpolator: GeologicalInterpolator = get_interpolator(
-            bounding_box=bounding_box,
-            interpolatortype=type,
-            dimensions=dimensions,
-            nelements=nelements,
+        self.interpolator: GeologicalInterpolator = (
+            InterpolatorFactory.create_interpolator(
+                type,
+                bounding_box,
+                nelements,
+            )
         )
 
     def fit(
