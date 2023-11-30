@@ -104,7 +104,6 @@ class LavaVuModelViewer(BaseModelPlotter):
                 surfaceval[:] = paint_with.evaluate_value(
                     self.model.scale(vertices, inplace=False)
                 )
-                print(surfaceval)
                 surf.values(surfaceval, "paint_with")
             if callable(paint_with):
                 # paint with a callable function e.g. (xyz)->value
