@@ -68,10 +68,11 @@ class InterpolatorFactory:
         if type(interpolatortype) == str:
             interpolatortype = InterpolatorType._member_map_[interpolatortype].numerator
         if support is None:
-            supporttype = support_interpolator_map[interpolatortype]
-            support = SupportFactory.create_support(
-                supporttype, boundingbox, nelements, element_volume
-            )
+            raise Exception("Support must be specified")
+            # supporttype = support_interpolator_map[interpolatortype]
+            # support = SupportFactory.create_support(
+            #     supporttype, boundingbox, nelements, element_volume
+            # )
         interpolator = interpolator_map[interpolatortype](support)
         if value_constraints is not None:
             interpolator.add_value_constraints(value_constraints)
