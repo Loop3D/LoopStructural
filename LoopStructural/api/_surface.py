@@ -36,10 +36,12 @@ class LoopIsosurfacer:
                 isovalue,
                 spacing=self.bounding_box.step_vector,
             )
+            values = np.zeros(verts.shape[0]) + isovalue
             surfaces[f"surface_{isovalue}"] = Surface(
                 vertices=verts,
                 triangles=faces,
                 normals=normals,
                 name=f"surface_{isovalue}",
+                values=values,
             )
         return surfaces

@@ -10,12 +10,15 @@ class Surface:
     normals: np.ndarray
     name: str
     values: Optional[np.ndarray] = None
-    
+
     @property
     def pyvista(self):
         import pyvista as pv
 
-        return pv.PolyData.from_regular_faces(self.vertices, self.triangles)
+        surface = pv.PolyData.from_regular_faces(self.vertices, self.triangles)
+        if self.values is not None:
+            surface["values"] = self.values
+        return surface
 
     def to_dict(self):
         return {
