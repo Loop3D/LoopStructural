@@ -2,6 +2,7 @@
 Piecewise linear interpolator
 """
 import logging
+from typing import Optional
 
 import numpy as np
 
@@ -169,7 +170,7 @@ class P2Interpolator(DiscreteInterpolator):
             )
 
     def minimise_grad_steepness(
-        self, w: float = 0.1, maskall: bool = False, wtfunc: callable = None
+        self, w: float = 0.1, maskall: bool = False, wtfunc: Optional[callable] = None
     ):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions

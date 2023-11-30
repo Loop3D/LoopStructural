@@ -89,3 +89,4 @@ interpolator_map = {
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
     # InterpolatorType.SURFE: SurfeRBFInterpolator,
 }
+from ._interpolator_factory import InterpolatorFactory

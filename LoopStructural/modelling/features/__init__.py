@@ -20,6 +20,7 @@ class FeatureType(IntEnum):
     UNCONFORMITY = 7
     INTRUSION = 8
     FAULT = 9
+    DOMAINFAULT = 10
 
 
 from ._base_geological_feature import BaseFeature

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from . import interpolator_map, InterpolatorType, support_interpolator_map
+from . import interpolator_map, InterpolatorType  # , support_interpolator_map
 from LoopStructural.utils import BoundingBox
 from typing import Optional
 import numpy as np
@@ -32,9 +32,9 @@ class InterpolatorFactory:
                 bounding_box=boundingbox,
                 nelements=nelements,
                 element_volume=element_volume,
-            )   
+            )
         return interpolator_map[interpolatortype](support)
- 
+
     @staticmethod
     def from_dict(d):
         d = d.copy()
