@@ -1,5 +1,16 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
+import numpy as np
+
+
+def model_fit(model, data):
+    diff = (
+        model.evaluate_feature_value(
+            "strati", data.loc[data["val"].notna(), ["X", "Y", "Z"]]
+        )
+        - data.loc[data["val"].notna(), "val"]
+    )
+    assert np.std(diff) < 30
 
 
 def test_create_model():
@@ -18,8 +29,10 @@ def test_create_stratigraphy_FDI_cg():
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="FDI", nelements=1000, solver="cg", damp=False
+        "strati", interpolatortype="FDI", nelements=1000, solver="cg", damp=False
     )
+    model.update()
+    model_fit(model, data)
 
 
 def test_remove_constraints_PLI():
@@ -27,8 +40,10 @@ def test_remove_constraints_PLI():
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="FDI", nelements=1000, solver="cg", damp=False
+        "strati", interpolatortype="FDI", nelements=1000, solver="cg", damp=False
     )
+    model.update()
+    model_fit(model, data)
 
 
 def test_create_stratigraphy_FDI_lu():
@@ -36,8 +51,10 @@ def test_create_stratigraphy_FDI_lu():
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="FDI", nelements=1000, solver="lu", damp=True
+        "strati", interpolatortype="FDI", nelements=1000, solver="lu", damp=True
     )
+    model.update()
+    model_fit(model, data)
 
 
 def test_create_stratigraphy_FDI_pyamg():
@@ -45,8 +62,10 @@ def test_create_stratigraphy_FDI_pyamg():
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="FDI", nelements=1000, solver="pyamg", damp=True
+        "strati", interpolatortype="FDI", nelements=1000, solver="pyamg", damp=True
     )
+    model.update()
+    model_fit(model, data)
 
 
 def test_create_stratigraphy_PLI_cg():
@@ -54,8 +73,10 @@ def test_create_stratigraphy_PLI_cg():
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="PLI", nelements=1000, solver="cg", damp=False
+        "strati", interpolatortype="PLI", nelements=1000, solver="cg", damp=False
     )
+    model.update()
+    model_fit(model, data)
 
 
 def test_create_stratigraphy_PLI_lu():
@@ -63,8 +84,10 @@ def test_create_stratigraphy_PLI_lu():
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="PLI", nelements=1000, solver="lu", damp=True
+        "strati", interpolatortype="PLI", nelements=1000, solver="lu", damp=True
     )
+    model.update()
+    model_fit(model, data)
 
 
 def test_create_stratigraphy_PLI_pyamg():
@@ -72,9 +95,25 @@ def test_create_stratigraphy_PLI_pyamg():
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
     s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="PLI", nelements=1000, solver="pyamg", damp=True
+        "strati", interpolatortype="PLI", nelements=1000, solver="pyamg", damp=True
     )
+    model.update()
+    model_fit(model, data)
 
 
 def test_model_with_data_outside_of_bounding_box():
     pass
+
+
+if __name__ == "__main__":
+    test_create_model()
+    test_add_data()
+    test_create_stratigraphy_FDI_cg()
+    test_remove_constraints_PLI()
+    test_create_stratigraphy_FDI_lu()
+    test_create_stratigraphy_FDI_pyamg()
+    test_create_stratigraphy_PLI_cg()
+    test_create_stratigraphy_PLI_lu()
+    test_create_stratigraphy_PLI_pyamg()
+    test_model_with_data_outside_of_bounding_box()
+    print("ok")

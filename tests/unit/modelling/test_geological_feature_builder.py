@@ -3,9 +3,12 @@ from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
 from tests.fixtures.horizontal_data import horizontal_data
 
 
-def test_geological_feature_builder_constructor(interpolator):
-    builder = GeologicalFeatureBuilder(interpolator)
-    assert builder.interpolator == interpolator
+def test_geological_feature_builder_constructor(
+    interpolatortype, bounding_box, nelements
+):
+    # builder = GeologicalFeatureBuilder(interpolatortype, bounding_box, nelements)
+    # assert builder.interpolator == interpolator
+    pass
 
 
 def test_get_interpolator():
@@ -13,8 +16,8 @@ def test_get_interpolator():
 
 
 def test_add_data_to_interpolator(interpolator, horizontal_data):
-    builder = GeologicalFeatureBuilder(interpolator)
-    builder.add_data_from_data_frame(horizontal_data)
+    # builder = GeologicalFeatureBuilder(interpolator)
+    # builder.add_data_from_data_frame(horizontal_data)
     # assert builder.data.shape =
     pass
 

@@ -2,6 +2,7 @@
 Piecewise linear interpolator
 """
 import logging
+from typing import Optional
 
 import numpy as np
 
@@ -58,7 +59,6 @@ class P2Interpolator(DiscreteInterpolator):
         """
         # can't reset here, clears fold constraints
         # self.reset()
-        logger.info("Setting up PLI interpolator for %s" % self.propertyname)
         for key in kwargs:
             if "regularisation" in kwargs:
                 self.interpolation_weights["cgw"] = 0.1 * kwargs["regularisation"]
@@ -82,7 +82,7 @@ class P2Interpolator(DiscreteInterpolator):
         logger.info(
             "Added %i gradient constraints, %i normal constraints,"
             "%i tangent constraints and %i value constraints"
-            "to %s" % (self.n_g, self.n_n, self.n_t, self.n_i, self.propertyname)
+            % (self.n_g, self.n_n, self.n_t, self.n_i)
         )
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_norm_constraints(self.interpolation_weights["npw"])
@@ -170,7 +170,7 @@ class P2Interpolator(DiscreteInterpolator):
             )
 
     def minimise_grad_steepness(
-        self, w: float = 0.1, maskall: bool = False, wtfunc: callable = None
+        self, w: float = 0.1, maskall: bool = False, wtfunc: Optional[callable] = None
     ):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions
@@ -268,6 +268,6 @@ class P2Interpolator(DiscreteInterpolator):
 
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.support.evaluate_d2(
-                evaluation_points[~mask], self.propertyname
+                evaluation_points[~mask], self.c
             )
         return evaluated

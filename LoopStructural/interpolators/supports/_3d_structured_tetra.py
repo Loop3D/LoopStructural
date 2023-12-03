@@ -5,6 +5,7 @@ import logging
 
 import numpy as np
 from ._3d_base_structured import BaseStructuredSupport
+from . import SupportType
 
 from LoopStructural.utils import getLogger
 
@@ -18,7 +19,7 @@ class TetMesh(BaseStructuredSupport):
         self, origin=np.zeros(3), nsteps=np.ones(3) * 10, step_vector=np.ones(3)
     ):
         BaseStructuredSupport.__init__(self, origin, nsteps, step_vector)
-
+        self.type = SupportType.TetMesh
         self.tetra_mask_even = np.array(
             [[7, 1, 2, 4], [6, 2, 4, 7], [5, 1, 4, 7], [0, 1, 2, 4], [3, 1, 2, 7]]
         )
@@ -31,7 +32,7 @@ class TetMesh(BaseStructuredSupport):
 
     @property
     def ntetra(self) -> int:
-        return np.product(self.nsteps_cells) * 5
+        return np.prod(self.nsteps_cells) * 5
 
     @property
     def n_elements(self) -> int:
@@ -39,7 +40,7 @@ class TetMesh(BaseStructuredSupport):
 
     @property
     def n_cells(self) -> int:
-        return np.product(self.nsteps_cells)
+        return np.prod(self.nsteps_cells)
 
     @property
     def barycentre(self) -> np.ndarray:
@@ -115,7 +116,6 @@ class TetMesh(BaseStructuredSupport):
         return values
 
     def inside(self, pos: np.ndarray):
-
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(3):
             inside *= pos[:, i] > self.origin[None, i]

@@ -1,6 +1,8 @@
 """
 Base geological interpolator
 """
+from abc import ABC, ABCMeta, abstractmethod
+from LoopStructural.utils.exceptions import LoopTypeError
 from ..interpolators import InterpolatorType
 import numpy as np
 
@@ -9,7 +11,7 @@ from ..utils import getLogger
 logger = getLogger(__name__)
 
 
-class GeologicalInterpolator:
+class GeologicalInterpolator(metaclass=ABCMeta):
     """
     Attributes
     ----------
@@ -17,14 +19,16 @@ class GeologicalInterpolator:
         a dictionary with np.arrays for gradient, value, normal, tangent data
     """
 
-    def __init__(self):
+    @abstractmethod
+    def __init__(self, data={}, up_to_date=False):
         """
         This class is the base class for a geological interpolator and contains
         all of the main interface functions. Any class that is inheriting from
         this should be callable by using any of these functions. This will
         enable interpolators to be interchanged.
         """
-        self.data = {}  # None
+        self._data = {}
+        self.data = data  # None
         self.clean()  # init data structure
 
         self.n_g = 0
@@ -33,11 +37,21 @@ class GeologicalInterpolator:
         self.n_t = 0
 
         self.type = InterpolatorType.BASE
-        self.up_to_date = False
+        self.up_to_date = up_to_date
         self.constraints = []
-        self.propertyname = "defaultproperty"
         self.__str = "Base Geological Interpolator"
         self.valid = False
+
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        if data is None:
+            data = {}
+        for k, v in data.items():
+            self._data[k] = np.array(v)
 
     def __str__(self):
         name = f"{self.type} \n"
@@ -48,22 +62,15 @@ class GeologicalInterpolator:
         name += f"{self.n_g + self.n_i + self.n_n + self.n_t} total points\n"
         return name
 
+    def check_array(self, array: np.ndarray):
+        try:
+            return np.array(array)
+        except Exception as e:
+            raise LoopTypeError(str(e))
+
+    @abstractmethod
     def set_region(self, **kwargs):
         pass
-
-    def set_property_name(self, name):
-        """
-        Set the name of the interpolated property
-        Parameters
-        ----------
-        name : string
-            name of the property to be saved on a mesh
-
-        Returns
-        -------
-
-        """
-        self.propertyname = name
 
     def set_value_constraints(self, points: np.ndarray):
         """
@@ -78,6 +85,7 @@ class GeologicalInterpolator:
         -------
 
         """
+        points = self.check_array(points)
         if points.shape[1] < 4:
             raise ValueError("Value points must at least have X,Y,Z,val")
         self.data["value"] = points
@@ -141,7 +149,6 @@ class GeologicalInterpolator:
         self.up_to_date = False
 
     def set_interface_constraints(self, points: np.ndarray):
-
         self.data["interface"] = points
         self.up_to_date = False
 
@@ -209,12 +216,21 @@ class GeologicalInterpolator:
     def get_inequality_constraints(self):
         return self.data["inequality"]
 
+    # @abstractmethod
+    def setup(self, **kwargs):
+        """
+        Runs all of the required setting up stuff
+        """
+        self.setup_interpolator(**kwargs)
+
+    @abstractmethod
     def setup_interpolator(self, **kwargs):
         """
         Runs all of the required setting up stuff
         """
-        self._setup_interpolator(**kwargs)
+        self.setup_interpolator(**kwargs)
 
+    @abstractmethod
     def solve_system(self, **kwargs):
         """
         Solves the interpolation equations
@@ -222,8 +238,25 @@ class GeologicalInterpolator:
         self._solve(**kwargs)
         self.up_to_date = True
 
+    @abstractmethod
     def update(self):
         return False
+
+    @abstractmethod
+    def evaluate_value(self, locations: np.ndarray):
+        raise NotImplementedError("evaluate_value not implemented")
+
+    @abstractmethod
+    def evaluate_gradient(self, locations: np.ndarray):
+        raise NotImplementedError("evaluate_gradient not implemented")
+
+    def to_dict(self):
+        return {
+            "type": self.type,
+            "data": self.data,
+            "up_to_date": self.up_to_date,
+            "valid": self.valid,
+        }
 
     def clean(self):
         """

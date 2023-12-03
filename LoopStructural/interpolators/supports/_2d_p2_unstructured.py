@@ -2,9 +2,11 @@
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 import logging
+from re import S
 
 import numpy as np
 from ._2d_base_unstructured import BaseUnstructured2d
+from . import SupportType
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +16,7 @@ class P2Unstructured2d(BaseUnstructured2d):
 
     def __init__(self, elements, vertices, neighbours):
         BaseUnstructured2d.__init__(self, elements, vertices, neighbours)
+        self.type = SupportType.P2Unstructured2d
         # hessian of shape functions
         self.H = np.array(
             [
@@ -271,7 +274,6 @@ class P2Unstructured2d(BaseUnstructured2d):
 
     def get_quadrature_points(self, npts=2):
         if npts == 2:
-
             v1 = self.nodes[self.edges][:, 0, :]
             v2 = self.nodes[self.edges][:, 1, :]
             cp = np.zeros((v1.shape[0], self.ncps, 2))

@@ -21,7 +21,7 @@ from ._geological_interpolator import GeologicalInterpolator
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
 
-    def __init__(self, support):
+    def __init__(self, support, data={}, c=None, up_to_date=False):
         """
         Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
         any interpolator that solves the system using least squares approximation
@@ -31,9 +31,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         support
             A discrete mesh with, nodes, elements, etc
         """
-        GeologicalInterpolator.__init__(self)
+        GeologicalInterpolator.__init__(self, data=data, up_to_date=up_to_date)
         self.B = []
         self.support = support
+        self.c = (
+            np.array(c)
+            if c is not None and np.array(c).shape[0] == self.support.n_nodes
+            else np.zeros(self.support.n_nodes)
+        )
         self.region_function = lambda xyz: np.ones(xyz.shape[0], dtype=bool)
         # self.region_map[self.region] = np.array(range(0,
         # len(self.region_map[self.region])))
@@ -45,7 +50,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # self.col = []
         # self.row = []  # sparse matrix storage
         # self.w = []
-        self.solver = None
+        self.solver = "cg"
 
         self.eq_const_C = []
         self.eq_const_row = []
@@ -94,21 +99,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         region_map = np.zeros(self.support.n_nodes).astype(int)
         region_map[self.region] = np.array(range(0, len(region_map[self.region])))
         return region_map
-
-    def set_property_name(self, propertyname):
-        """
-        Set the property name attribute, this is usually used to
-        save the property on the support
-
-        Parameters
-        ----------
-        propertyname
-
-        Returns
-        -------
-
-        """
-        self.propertyname = propertyname
 
     def set_region(self, region=None):
         """
@@ -724,7 +714,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         logger.info("Solving using pyamg: tol {}".format(tol))
         return pyamg.solve(A, B, tol=tol, x0=x0, verb=verb)[: self.nx]
 
-    def _solve(self, solver="cg", **kwargs):
+    def solve_system(self, solver="cg", **kwargs):
         """
         Main entry point to run the solver and update the node value
         attribute for the
@@ -784,7 +774,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 P, A, q, l, u, mkl=kwargs.get("mkl", False)
             )  # , **kwargs)
         # check solution is not nan
-        # self.support.properties[self.propertyname] = self.c
         if np.all(self.c == np.nan):
             self.valid = False
             logger.warning("Solver not run, no scalar field")
@@ -792,16 +781,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # if solution is all 0, probably didn't work
         if np.all(self.c[self.region] == 0):
             self.valid = False
-            logger.warning(
-                "No solution, {} scalar field 0. Add more data.".format(
-                    self.propertyname
-                )
-            )
+            logger.warning("No solution, scalar field 0. Add more data.")
+
             return
         self.valid = True
-        logging.info(
-            f"Solving interpolation: {self.propertyname} took: {time()-starttime}"
-        )
+        logging.info(f"Solving interpolation took: {time()-starttime}")
+        self.up_to_date = True
 
     def update(self):
         """
@@ -815,12 +800,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         bool
 
         """
+
         if self.solver is None:
             logging.debug("Cannot rerun interpolator")
             return False
         if not self.up_to_date:
             self.setup_interpolator()
-            return self._solve(self.solver)
+            return self.solve_system(self.solver)
 
     def evaluate_value(self, evaluation_points: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at location
@@ -835,6 +821,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         np.ndarray
             value of the interpolator
         """
+        self.update()
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
         mask = np.any(evaluation_points == np.nan, axis=1)
@@ -857,6 +844,16 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
+        self.update()
         if evaluation_points.shape[0] > 0:
             return self.support.evaluate_gradient(evaluation_points, self.c)
         return np.zeros((0, 3))
+
+    def to_dict(self):
+        return {
+            "type": self.type.name,
+            "support": self.support.to_dict(),
+            "c": self.c,
+            **super().to_dict(),
+            # 'region_function':self.region_function,
+        }

@@ -7,7 +7,9 @@ from ...modelling.intrusions.intrusion_support_functions import (
     array_from_coords,
     find_inout_points,
 )
-from ...utils import getLogger
+from ...utils import getLogger, BoundingBox
+
+from typing import Union
 
 
 logger = getLogger(__name__)
@@ -18,7 +20,14 @@ from sklearn.cluster import KMeans
 
 
 class IntrusionFrameBuilder(StructuralFrameBuilder):
-    def __init__(self, interpolator=None, interpolators=None, model=None, **kwargs):
+    def __init__(
+        self,
+        interpolatortype: Union[str, list],
+        bounding_box: BoundingBox,
+        nelements: Union[int, list] = 1000,
+        model=None,
+        **kwargs,
+    ):
         """IntrusionBuilder set up the intrusion frame to build an intrusion
             The intrusion frame is curvilinear coordinate system of the intrusion, which is then used to compute the lateral and vertical exten of the intrusion.
             The object is constrained with the host rock geometry and other field measurements such as propagation and inflation vectors.
@@ -33,7 +42,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             reference to the model containing the fault
         """
 
-        StructuralFrameBuilder.__init__(self, interpolator, interpolators, **kwargs)
+        StructuralFrameBuilder.__init__(
+            self, interpolatortype, bounding_box, nelements, **kwargs
+        )
 
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array([np.nan, np.nan, np.nan])
@@ -522,7 +533,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
     def set_intrusion_frame_parameters(
         self, intrusion_data: pd.DataFrame, intrusion_frame_parameters: dict, **kwargs
     ):
-
         """
         Set variables to create intrusion network.
 
@@ -560,7 +570,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         marginal_faults = intrusion_frame_parameters.get("marginal_faults", None)
 
         if intrusion_steps is not None:
-
             self.intrusion_steps = intrusion_steps
 
             self.delta_contacts = intrusion_frame_parameters.get(
@@ -580,7 +589,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             self.add_faults_anisotropies(fault_anisotropies)
 
         if marginal_faults is not None:
-
             self.marginal_faults = marginal_faults
 
             self.delta_contacts = intrusion_frame_parameters.get(
@@ -703,7 +711,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         return If
 
     def create_constraints_for_c0(self, **kwargs):
-
         """
         Creates a numpy array containing (x,y,z) coordinates of synthetic points located
         in the intrusion reference contact.
@@ -727,7 +734,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         # --- more constraints if steps or marginal fault is present:
         if self.intrusion_steps is not None:
-
             If = self.indicator_function_faults(delta=self.delta_faults)
 
             if len(np.where(If == 1)[0]) == 0:
@@ -843,7 +849,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             # --- more constraints if steps or marginal fault is present:
         if self.marginal_faults is not None:
-
             If = self.indicator_function_faults(delta=self.delta_faults)
 
             if len(np.where(If == 1)[0]) == 0:
@@ -961,7 +966,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         If_points = []
 
         for j in range(len(IF[0])):
-
             IF_temp = IF[:, j]
             If_points_temp = grid_points[IF_temp == 1]
             If_points.append(If_points_temp)
@@ -971,7 +975,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
     def set_intrusion_frame_data(
         self, intrusion_frame_data
     ):  # , intrusion_network_points):
-
         """Adds the intrusion network points as coordinate 0 data for the intrusion frame
 
         Parameters

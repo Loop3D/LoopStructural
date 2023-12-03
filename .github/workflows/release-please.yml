@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest",  "windows-latest"] #"macos-latest",
-        python-version: ["3.7","3.8","3.9","3.10"]
+        python-version: ["3.8","3.9","3.10"]
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
@@ -87,7 +87,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest",  "windows-latest"]
-        python-version: ["3.10","3.9","3.8","3.7"]
+        python-version: ["3.10","3.9","3.8"]
     steps:
       - uses: conda-incubator/setup-miniconda@v2
         with:

@@ -1,5 +1,7 @@
+from LoopStructural.utils.exceptions import LoopException
 import numpy as np
 from LoopStructural.utils import getLogger
+from . import SupportType
 
 logger = getLogger(__name__)
 
@@ -27,8 +29,13 @@ class BaseStructuredSupport:
         # we use property decorators to update these when different parts of
         # the geometry need to change
         # inisialise the private attributes
+        self.type = SupportType.BaseStructured
         if np.any(step_vector == 0):
             logger.warning(f"Step vector {step_vector} has zero values")
+        if np.any(nsteps == 0):
+            raise LoopException("nsteps cannot be zero")
+        if np.any(nsteps < 0):
+            raise LoopException("nsteps cannot be negative")
         self._nsteps = np.array(nsteps, dtype=int) + 1
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
@@ -38,6 +45,14 @@ class BaseStructuredSupport:
         self._rotation_xy[1, 1] = 1
         self._rotation_xy[2, 2] = 1
         self.rotation_xy = rotation_xy
+
+    def to_dict(self):
+        return {
+            "origin": self.origin,
+            "nsteps": self.nsteps,
+            "step_vector": self.step_vector,
+            "rotation_xy": self.rotation_xy,
+        }
 
     @property
     def nsteps(self):
@@ -60,13 +75,30 @@ class BaseStructuredSupport:
 
     @rotation_xy.setter
     def rotation_xy(self, rotation_xy):
-        if rotation_xy is not None:
-            self._rotation_xy[:, :] = 0
-            self._rotation_xy[0, 0] = np.cos(np.deg2rad(rotation_xy))
-            self._rotation_xy[0, 1] = -np.sin(np.deg2rad(rotation_xy))
-            self._rotation_xy[1, 0] = np.sin(np.deg2rad(rotation_xy))
-            self._rotation_xy[1, 1] = np.cos(np.deg2rad(rotation_xy))
-            self._rotation_xy[2, 2] = 1.0  # make sure rotation around z vector
+        if rotation_xy is None:
+            return
+        if isinstance(rotation_xy, (float, int)):
+            rotation_xy = np.array(
+                [
+                    [
+                        np.cos(np.deg2rad(rotation_xy)),
+                        -np.sin(np.deg2rad(rotation_xy)),
+                        0,
+                    ],
+                    [
+                        np.sin(np.deg2rad(rotation_xy)),
+                        np.cos(np.deg2rad(rotation_xy)),
+                        0,
+                    ],
+                    [0, 0, 1],
+                ]
+            )
+        rotation_xy = np.array(rotation_xy)
+        if rotation_xy.shape != (3, 3):
+            raise ValueError(
+                "Rotation matrix should be 3x3, not {}".format(rotation_xy.shape)
+            )
+        self._rotation_xy = rotation_xy
 
     @property
     def step_vector(self):
@@ -107,11 +139,11 @@ class BaseStructuredSupport:
 
     @property
     def n_nodes(self):
-        return np.product(self.nsteps)
+        return np.prod(self.nsteps)
 
     @property
     def n_elements(self):
-        return np.product(self.nsteps_cells)
+        return np.prod(self.nsteps_cells)
 
     def __str__(self):
         return (
@@ -304,7 +336,6 @@ class BaseStructuredSupport:
         return corner_indexes
 
     def position_to_cell_corners(self, pos):
-
         inside = self.inside(pos)
 
         cell_indexes = self.position_to_cell_index(pos)

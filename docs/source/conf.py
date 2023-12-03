@@ -15,7 +15,7 @@ import sys
 
 # import m2r
 sys.path.insert(0, os.path.abspath("../.."))
-
+import LoopStructural
 
 # -- Project information -----------------------------------------------------
 
@@ -24,7 +24,7 @@ copyright = "2020, Lachlan Grose"
 author = "Lachlan Grose"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1"
+release = LoopStructural.__version__
 
 
 # -- General configuration ---------------------------------------------------

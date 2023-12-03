@@ -17,7 +17,7 @@ logger = getLogger(__name__)
 
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
-    def __init__(self, grid):
+    def __init__(self, grid, data={}):
         """
         Finite difference interpolation on a regular cartesian grid
 
@@ -26,7 +26,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         grid : StructuredGrid
         """
         self.shape = "rectangular"
-        DiscreteInterpolator.__init__(self, grid)
+        DiscreteInterpolator.__init__(self, grid, data=data)
         # default weights for the interpolation matrix are 1 in x,y,z and
         # 1/
         self.set_interpolation_weights(
@@ -52,7 +52,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # grid.step_vector[2]
         self.type = InterpolatorType.FINITE_DIFFERENCE
 
-    def _setup_interpolator(self, **kwargs):
+    def setup_interpolator(self, **kwargs):
         """
 
         Parameters
@@ -95,7 +95,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 self.assemble_inner(o[0], o[1])
         # otherwise just use defaults
         if "operators" not in kwargs:
-
             operator = Operator.Dxy_mask
             weight = (
                 self.interpolation_weights["dxy"] / 4
@@ -179,7 +178,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} \
+                    f"{np.sum(~inside)} \
                         value constraints not added: outside of model bounding box"
                 )
 
@@ -218,7 +217,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} \
+                    f"{np.sum(~inside)} \
                         value constraints not added: outside of model bounding box"
                 )
 
@@ -335,7 +334,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} \
+                    f" {np.sum(~inside)} \
                         norm constraints not added: outside of model bounding box"
                 )
 
@@ -400,7 +399,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} \
+                    f"{np.sum(~inside)} \
                         norm constraints not added: outside of model bounding box"
                 )
             self.up_to_date = False
@@ -459,7 +458,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             if np.sum(inside) <= 0:
                 logger.warning(
-                    f"{self.propertyname}: {np.sum(~inside)} \
+                    f"{np.sum(~inside)} \
                         gradient constraints not added: outside of model bounding box"
                 )
             self.up_to_date = False

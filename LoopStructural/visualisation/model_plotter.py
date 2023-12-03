@@ -41,7 +41,7 @@ class BaseModelPlotter:
     @model.setter
     def model(self, model):
         if model is not None:
-            self.bounding_box = np.array(model.bounding_box)
+            self.bounding_box = np.array(model.bounding_box.bb)
             self.nsteps = np.array(model.nsteps)
             self._model = model
             self._nelements = self.nsteps[0] * self.nsteps[1] * self.nsteps[2]
@@ -652,7 +652,6 @@ class BaseModelPlotter:
                 n_faults += 1
 
         if self.model.stratigraphic_column and cmap is None:
-
             colours = []
             boundaries = []
             data = []
@@ -675,7 +674,6 @@ class BaseModelPlotter:
         if faults:
             n_surfaces += n_faults
         with tqdm(total=n_surfaces) as pbar:
-
             if strati and self.model.stratigraphic_column:
                 for g in self.model.stratigraphic_column.keys():
                     if g in self.model.feature_name_index:
@@ -826,7 +824,6 @@ class BaseModelPlotter:
         else:
             features = [feature]
         for feature in features:
-
             grad = feature.builder.get_gradient_constraints()
             norm = feature.builder.get_norm_constraints()
             value = feature.builder.get_value_constraints()
