@@ -131,3 +131,4 @@ docs/source/test/*
 examples/*.png
 dev/scalar_field
 dev/unconf
+docs/source/sg_execution_times.rst
