@@ -12,8 +12,8 @@ class BoundingBox:
         maximum: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
     ):
-        self._origin = origin
-        self._maximum = maximum
+        self._origin = np.array(origin)
+        self._maximum = np.array(maximum)
         self.dimensions = dimensions
         if nsteps is None:
             self.nsteps = np.array([50, 50, 25])
@@ -122,7 +122,13 @@ class BoundingBox:
         return self.get_value(name)
 
     def is_inside(self, xyz):
-        inside = np.zeros(xyz.shape[0], dtype=bool)
+        if len(xyz.shape) == 1:
+            xyz = xyz.reshape((1, -1))
+        if xyz.shape[1] != 3:
+            raise LoopValueError(
+                f"locations array is {xyz.shape[1]}D but bounding box is {self.dimensions}"
+            )
+        inside = np.ones(xyz.shape[0], dtype=bool)
         inside = np.logical_and(inside, xyz[:, 0] > self.origin[0])
         inside = np.logical_and(inside, xyz[:, 0] < self.maximum[0])
         inside = np.logical_and(inside, xyz[:, 1] > self.origin[1])
