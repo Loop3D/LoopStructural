@@ -23,7 +23,7 @@
 
 .. GENERATED FROM PYTHON SOURCE LINES 7-35
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -68,7 +68,7 @@ Modelling S2
 
 .. GENERATED FROM PYTHON SOURCE LINES 39-53
 
-.. code-block:: default
+.. code-block:: Python
 
 
     model = GeologicalModel(bb[0, :], bb[1, :])
@@ -93,19 +93,6 @@ Modelling S2
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    [-3.96070387 -3.79150399 -3.62230411 ...  4.34785626  4.34724127
-      4.34663168]
-
 
 
 
@@ -117,11 +104,11 @@ Modelling S1
 
 .. GENERATED FROM PYTHON SOURCE LINES 57-68
 
-.. code-block:: default
+.. code-block:: Python
 
 
     s1 = model.create_and_add_folded_fold_frame(
-        "s1", limb_wl=4, av_fold_axis=True, nelements=50000, buffer=0.3, solver="lu"
+        "s1", av_fold_axis=True, nelements=50000, buffer=0.3, solver="lu"
     )
 
 
@@ -139,19 +126,6 @@ Modelling S1
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    [ 1580.18346035  1657.24332768  1727.69356658 ... -4467.03023796
-     -4595.09347708 -4725.34573466]
-
 
 
 
@@ -163,7 +137,7 @@ S2/S1 S-Plots
 
 .. GENERATED FROM PYTHON SOURCE LINES 72-82
 
-.. code-block:: default
+.. code-block:: Python
 
     s2_s1_splot = RotationAnglePlotter(s1)
     s2_s1_splot.add_fold_limb_data()
@@ -188,10 +162,8 @@ S2/S1 S-Plots
 
  .. code-block:: none
 
-    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
-      norm[i] /= length
 
-    [<matplotlib.lines.Line2D object at 0x7faaacd726b0>]
+    [<matplotlib.lines.Line2D object at 0x7f5e967ae470>]
 
 
 
@@ -201,14 +173,13 @@ Modelling S0
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-102
+.. GENERATED FROM PYTHON SOURCE LINES 86-101
 
-.. code-block:: default
+.. code-block:: Python
 
 
     s0 = model.create_and_add_folded_foliation(
         "s0",
-        limb_wl=1.0,
         av_fold_axis=True,
         nelements=50000,
         buffer=0.2,
@@ -230,27 +201,18 @@ Modelling S0
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
-    [-300.92375602 -235.37687645 -172.11500204 ... -548.86242024 -588.0330036
-     -626.01421049]
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 103-106
+.. GENERATED FROM PYTHON SOURCE LINES 102-105
 
 S1/S0 S-Plots
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-122
+.. GENERATED FROM PYTHON SOURCE LINES 105-121
 
-.. code-block:: default
+.. code-block:: Python
 
     s1_s0_splot = RotationAnglePlotter(s0)
     s1_s0_splot.add_fold_limb_data()
@@ -288,7 +250,7 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  32.365 seconds)
+   **Total running time of the script:** (0 minutes 55.237 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_refolded_folds.py:
@@ -297,16 +259,13 @@ S1/S0 S-Plots
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_refolded_folds.ipynb <plot_refolded_folds.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_refolded_folds.py <plot_refolded_folds.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_refolded_folds.ipynb <plot_refolded_folds.ipynb>`
 
 
 .. only:: html

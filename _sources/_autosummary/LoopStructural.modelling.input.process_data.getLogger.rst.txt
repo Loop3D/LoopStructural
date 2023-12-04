@@ -1,6 +1,0 @@
-LoopStructural.modelling.input.process\_data.getLogger
-======================================================
-
-.. currentmodule:: LoopStructural.modelling.input.process_data
-
-.. autofunction:: getLogger

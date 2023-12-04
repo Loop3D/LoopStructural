@@ -1,6 +1,0 @@
-LoopStructural.interpolators.piecewiselinear\_interpolator.cg
-=============================================================
-
-.. currentmodule:: LoopStructural.interpolators.piecewiselinear_interpolator
-
-.. autofunction:: cg

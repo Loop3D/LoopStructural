@@ -1,6 +1,0 @@
-LoopStructural.utils.utils.write\_property\_to\_gocad\_voxet
-============================================================
-
-.. currentmodule:: LoopStructural.utils.utils
-
-.. autofunction:: write_property_to_gocad_voxet

@@ -23,7 +23,7 @@
 
 .. GENERATED FROM PYTHON SOURCE LINES 6-17
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -63,7 +63,7 @@ representative of modelling an intrusion.
 
 .. GENERATED FROM PYTHON SOURCE LINES 33-46
 
-.. code-block:: default
+.. code-block:: Python
 
 
     intrusion = lambda x, y: (x * 2) ** 2 + (y ** 2)
@@ -92,7 +92,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7faaa24af3a0>
+    <matplotlib.contour.QuadContourSet object at 0x7f5e84b3ad10>
 
 
 
@@ -108,7 +108,7 @@ fault frame and an expected displacement model.
 
 .. GENERATED FROM PYTHON SOURCE LINES 54-102
 
-.. code-block:: default
+.. code-block:: Python
 
 
     model = GeologicalModel(bb[0, :], bb[1, :])
@@ -183,39 +183,17 @@ fault frame and an expected displacement model.
 
  .. code-block:: none
 
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    /LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:245: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame
-
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      data.loc[
-    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+    [-2.27373675e-13  3.76447345e+03  2.43168000e+03] 1200.0 [6000.         7235.52654615 6000.        ]
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
       norm[i] /= length
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    /LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:245: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame
-
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      data.loc[
-    Cannot use region
-    Cannot use region
-      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+    [-2.27373675e-13  3.76447345e+03  2.43168000e+03] 1200.0 [6000.         7235.52654615 6000.        ]
+      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
       norm[i] /= length
-    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+    Interpolating fault:  25%|██▌       | 1/4 [00:00<00:00,  3.61it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
       norm[i] /= length
-    Interpolating fault:  50%|#####     | 2/4 [00:00<00:00,  8.19it/s]    Interpolating strati:  75%|#######5  | 3/4 [00:00<00:00,  8.19it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+    Interpolating fault:  50%|█████     | 2/4 [00:02<00:02,  1.36s/it]    Interpolating strati:  75%|███████▌  | 3/4 [00:02<00:01,  1.36s/it]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
       norm[i] /= length
-    Interpolating strati: : 7it [00:29,  4.63s/it]                         Interpolating strati: : 7it [00:29,  4.24s/it]
+    Interpolating strati: : 7it [00:28,  4.41s/it]                         Interpolating strati: : 7it [00:28,  4.01s/it]
 
 
 
@@ -223,7 +201,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  36.324 seconds)
+   **Total running time of the script:** (0 minutes 32.078 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_faulted_intrusion.py:
@@ -232,16 +210,13 @@ fault frame and an expected displacement model.
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_faulted_intrusion.ipynb <plot_faulted_intrusion.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_faulted_intrusion.py <plot_faulted_intrusion.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_faulted_intrusion.ipynb <plot_faulted_intrusion.ipynb>`
 
 
 .. only:: html

@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.coord\_name
-=======================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: coord_name

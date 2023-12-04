@@ -1,15 +1,14 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Getting Started &#8212; LoopStructural 0.1 documentation</title>
+    <title>Getting Started &#8212; LoopStructural 1.5.11 documentation</title>
   
   
   
@@ -19,29 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/documentation_options.js?v=cad83edb"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,6 +57,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -97,9 +106,11 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -108,18 +119,19 @@
   
   
   
-    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
   
 </a></div>
     
   </div>
   
-  
   <div class="col-lg-9 navbar-header-items">
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -172,23 +184,27 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -204,8 +220,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -216,8 +232,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
       
@@ -227,18 +243,21 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -258,7 +277,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -311,12 +331,13 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -332,8 +353,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -344,8 +365,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
         
@@ -354,7 +375,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
@@ -394,8 +416,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
@@ -420,7 +442,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="getting-started">
-<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h1>
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
@@ -476,125 +498,129 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id1">1.5.10 (2023-03-14)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id1">1.5.11 (2023-12-03)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#bug-fixes">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id2">1.5.9 (2023-03-06)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id2">1.5.10 (2023-03-14)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id3">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id4">1.5.9 (2023-03-06)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id5">Bug Fixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#documentation">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id4">1.5.8 (2023-01-24)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id5">Bug Fixes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id6">1.5.7 (2023-01-23)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id6">1.5.8 (2023-01-24)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id7">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id8">1.5.6 (2023-01-19)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id8">1.5.7 (2023-01-23)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id9">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id10">1.5.5 (2023-01-17)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id10">1.5.6 (2023-01-19)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id11">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id12">1.5.4 (2023-01-12)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id12">1.5.5 (2023-01-17)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id13">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id14">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id15">1.5.3 (2022-11-02)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id16">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id17">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id14">1.5.4 (2023-01-12)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id15">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id16">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id18">1.5.2 (2022-10-11)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id19">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id20">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id17">1.5.3 (2022-11-02)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id18">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id19">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id21">1.5.1 (2022-09-15)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id22">Bug Fixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id20">1.5.2 (2022-10-11)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id21">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id22">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id23">1.5.0 (2022-09-14)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id23">1.5.1 (2022-09-15)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id24">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id25">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id26">1.4.13 (2022-08-29)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id27">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id28">1.4.12 (2022-08-27)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id25">1.5.0 (2022-09-14)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id26">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id27">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id28">1.4.13 (2022-08-29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id29">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id30">1.4.11 (2022-08-10)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id30">1.4.12 (2022-08-27)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id31">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id32">1.4.10 (2022-07-20)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id32">1.4.11 (2022-08-10)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id33">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id34">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id35">1.4.9 (2022-05-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id34">1.4.10 (2022-07-20)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id35">Bug Fixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id36">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id37">1.4.8 (2022-05-05)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id38">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id39">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id40">1.4.7 (2022-05-04)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id41">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id42">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id43">1.4.6 (2022-04-26)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id44">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id45">1.4.5 (2022-04-14)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id37">1.4.9 (2022-05-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id38">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id39">1.4.8 (2022-05-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id40">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id41">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id42">1.4.7 (2022-05-04)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id43">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id44">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id45">1.4.6 (2022-04-26)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id46">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id47">1.4.4 (2022-03-21)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id47">1.4.5 (2022-04-14)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id48">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#performance-improvements">Performance Improvements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id49">1.4.3 (2022-02-21)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id49">1.4.4 (2022-03-21)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id50">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id51">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id52">1.4.2 (2022-02-07)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id53">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id54">1.4.1 (2021-12-06)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#performance-improvements">Performance Improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id51">1.4.3 (2022-02-21)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id52">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id53">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id54">1.4.2 (2022-02-07)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id55">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id56">1.4.1 (2021-12-06)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id57">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id56">1.4.0 (2021-12-06)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id57">Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id58">1.3.12 (2021-12-05)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id59">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id60">1.3.11 (2021-11-29)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id58">1.4.0 (2021-12-06)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id59">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id60">1.3.12 (2021-12-05)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id61">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id62">1.3.10 (2021-11-10)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id62">1.3.11 (2021-11-29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id63">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id64">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id65">1.3.9 (2021-11-10)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id66">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id67">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id68">1.3.8 (2021-11-08)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id69">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id70">Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id71">1.3.7 (2021-10-13)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id72">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id73">1.3.6 (2021-10-12)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id64">1.3.10 (2021-11-10)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id65">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id66">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id67">1.3.9 (2021-11-10)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id68">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id69">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id70">1.3.8 (2021-11-08)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id71">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id72">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id73">1.3.7 (2021-10-13)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id74">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id75">1.3.5 (2021-10-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id75">1.3.6 (2021-10-12)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id76">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id77">1.3.4 (2021-10-05)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id77">1.3.5 (2021-10-11)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id78">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id79">1.3.3 (2021-09-29)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id79">1.3.4 (2021-10-05)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id80">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id81">1.3.2 (2021-09-28)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id81">1.3.3 (2021-09-29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id82">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id83">1.3.1 (2021-09-28)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id83">1.3.2 (2021-09-28)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id84">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id85">1.3.1 (2021-09-28)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id86">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id85">1.3.0 (2021-09-27)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id86">Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id87">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id88">1.2.4 (2021-09-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CHANGELOG.html#id87">1.3.0 (2021-09-27)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id88">Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id89">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id90">1.2.3 (2021-09-07)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id90">1.2.4 (2021-09-07)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id91">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id92">1.2.3 (2021-09-07)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CHANGELOG.html#id93">Bug Fixes</a></li>
 </ul>
 </li>
 </ul>
@@ -608,8 +634,10 @@ document.write(`
               
               
               
-                <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="../index.html"
@@ -639,6 +667,7 @@ document.write(`
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="tocsection sourcelink">
     <a href="../_sources/getting_started/index.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
@@ -651,7 +680,7 @@ document.write(`
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -659,8 +688,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

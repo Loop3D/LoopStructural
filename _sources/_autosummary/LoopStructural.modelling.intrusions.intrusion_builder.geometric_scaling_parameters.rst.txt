@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_builder.geometric\_scaling\_parameters
-=====================================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_builder
-
-.. autofunction:: geometric_scaling_parameters

@@ -25,7 +25,7 @@ Also using geopandas to read a shapefile, pandas, matplotlib and numpy.
 
 .. GENERATED FROM PYTHON SOURCE LINES 6-19
 
-.. code-block:: default
+.. code-block:: Python
 
 
     import LoopStructural
@@ -49,7 +49,7 @@ Read the shapefile and create a point for each node of the line
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-43
 
-.. code-block:: default
+.. code-block:: Python
 
     fault_trace = load_fault_trace()
     faults = []
@@ -80,7 +80,7 @@ We can generate vertical dip data at the centre of the fault.
 
 .. GENERATED FROM PYTHON SOURCE LINES 47-61
 
-.. code-block:: default
+.. code-block:: Python
 
 
     ori = []
@@ -105,7 +105,7 @@ Model extent
 
 .. GENERATED FROM PYTHON SOURCE LINES 65-71
 
-.. code-block:: default
+.. code-block:: Python
 
 
     z = np.max([df["X"].max(), df["Y"].max()]) - np.min([df["X"].min(), df["Y"].min()])
@@ -138,7 +138,7 @@ In this example we specify the angle between the faults as :math:`10^\circ`.
 
 .. GENERATED FROM PYTHON SOURCE LINES 90-109
 
-.. code-block:: default
+.. code-block:: Python
 
 
     processor = ProcessInputData(
@@ -169,7 +169,7 @@ the fault relationship to be abutting rather than splay.
 
 .. GENERATED FROM PYTHON SOURCE LINES 114-133
 
-.. code-block:: default
+.. code-block:: Python
 
 
     processor = ProcessInputData(
@@ -192,27 +192,19 @@ the fault relationship to be abutting rather than splay.
     view.display()
 
 
-.. rst-class:: sphx-glr-timing
-
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
-
-
 .. _sphx_glr_download__auto_examples_3_fault_fault_network.py:
 
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: fault_network.ipynb <fault_network.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: fault_network.py <fault_network.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: fault_network.ipynb <fault_network.ipynb>`
 
 
 .. only:: html

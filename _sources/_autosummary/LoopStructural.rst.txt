@@ -30,18 +30,3 @@
 
 
 
-.. rubric:: Modules
-
-.. autosummary::
-   :toctree:
-   :template: custom-module-template.rst                 
-   :recursive:
-
-   LoopStructural.analysis
-   LoopStructural.datasets
-   LoopStructural.interpolators
-   LoopStructural.modelling
-   LoopStructural.utils
-   LoopStructural.version
-   LoopStructural.visualisation
-

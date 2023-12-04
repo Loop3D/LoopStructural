@@ -1,6 +1,0 @@
-LoopStructural.datasets.load\_fault\_trace
-==========================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: load_fault_trace

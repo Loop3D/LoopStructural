@@ -38,7 +38,7 @@ Imports
 
 .. GENERATED FROM PYTHON SOURCE LINES 21-35
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -122,7 +122,7 @@ Modelling folded surfaces using loop structural
 
 .. GENERATED FROM PYTHON SOURCE LINES 97-103
 
-.. code-block:: default
+.. code-block:: Python
 
 
     # load the sample data
@@ -250,7 +250,7 @@ data).
 
 .. GENERATED FROM PYTHON SOURCE LINES 114-121
 
-.. code-block:: default
+.. code-block:: Python
 
 
     data = data.sort_values(
@@ -394,7 +394,7 @@ field box.
 
 .. GENERATED FROM PYTHON SOURCE LINES 147-166
 
-.. code-block:: default
+.. code-block:: Python
 
     npoints = 20
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
@@ -428,9 +428,7 @@ field box.
 
  .. code-block:: none
 
-    Cannot use region
-    Cannot use region
-    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
       norm[i] /= length
 
 
@@ -479,7 +477,7 @@ shown in B and C.
 
 .. GENERATED FROM PYTHON SOURCE LINES 205-240
 
-.. code-block:: default
+.. code-block:: Python
 
     mdata = pd.concat([data[:npoints], data[data["feature_name"] == "s1"]])
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
@@ -529,15 +527,7 @@ shown in B and C.
 
  .. code-block:: none
 
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    Cannot use region
-    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+    /LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
       norm[i] /= length
 
 
@@ -550,7 +540,7 @@ Plotting the fold rotation angles
 
 .. GENERATED FROM PYTHON SOURCE LINES 243-249
 
-.. code-block:: default
+.. code-block:: Python
 
     rotation_plots = RotationAnglePlotter(stratigraphy)
     rotation_plots.add_fold_limb_data()
@@ -573,7 +563,7 @@ Plotting the fold rotation angles
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  17.733 seconds)
+   **Total running time of the script:** (0 minutes 7.352 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_adding_folds_to_surfaces.py:
@@ -582,16 +572,13 @@ Plotting the fold rotation angles
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_adding_folds_to_surfaces.ipynb <plot_adding_folds_to_surfaces.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_adding_folds_to_surfaces.py <plot_adding_folds_to_surfaces.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_adding_folds_to_surfaces.ipynb <plot_adding_folds_to_surfaces.ipynb>`
 
 
 .. only:: html

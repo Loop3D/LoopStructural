@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.interface\_name
-===========================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: interface_name

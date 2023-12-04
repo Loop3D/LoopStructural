@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_builder.thickness\_from\_geometric\_scaling
-==========================================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_builder
-
-.. autofunction:: thickness_from_geometric_scaling

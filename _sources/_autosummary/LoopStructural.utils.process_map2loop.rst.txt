@@ -1,6 +1,0 @@
-LoopStructural.utils.process\_map2loop
-======================================
-
-.. currentmodule:: LoopStructural.utils
-
-.. autofunction:: process_map2loop

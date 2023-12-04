@@ -24,27 +24,19 @@
 This is an advanced tutorial to demonstrate how to get acces to the least squares matrices and add additional constraints into the system.
 
 
-.. rst-class:: sphx-glr-timing
-
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
-
-
 .. _sphx_glr_download__auto_examples_1_basic_least_squares.py:
 
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: least_squares.ipynb <least_squares.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: least_squares.py <least_squares.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: least_squares.ipynb <least_squares.ipynb>`
 
 
 .. only:: html

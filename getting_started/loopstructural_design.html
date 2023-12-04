@@ -1,15 +1,14 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural design &#8212; LoopStructural 0.1 documentation</title>
+    <title>LoopStructural design &#8212; LoopStructural 1.5.11 documentation</title>
   
   
   
@@ -19,29 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/documentation_options.js?v=cad83edb"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/loopstructural_design';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,6 +57,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -97,9 +106,11 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -108,18 +119,19 @@
   
   
   
-    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
   
 </a></div>
     
   </div>
   
-  
   <div class="col-lg-9 navbar-header-items">
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -172,23 +184,27 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -204,8 +220,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -216,8 +232,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
       
@@ -227,18 +243,21 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -258,7 +277,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -311,12 +331,13 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -332,8 +353,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -344,8 +365,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
         
@@ -354,7 +375,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
@@ -394,8 +416,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
@@ -405,7 +427,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Getting Started</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">LoopStructural design</li>
+    <li class="breadcrumb-item active" aria-current="page">LoopStructur...</li>
   </ul>
 </nav>
 </div>
@@ -423,19 +445,19 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="loopstructural-design">
-<h1>LoopStructural design<a class="headerlink" href="#loopstructural-design" title="Permalink to this heading">#</a></h1>
+<h1>LoopStructural design<a class="headerlink" href="#loopstructural-design" title="Link to this heading">#</a></h1>
 <p><strong>Authors:</strong> Lachlan Grose, Laurent Ailleres, Gautier Laurent, Mark Jessell, Roy Thomson</p>
 <p><strong>Last updated:</strong> 1/11/2021</p>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>LoopStructural is a modular 3D geological modelling library with a flexible API for building 3D geological models. It provides access to implicit interpolators as well as geological feature/events.</p>
 </section>
 <section id="context">
-<h2>Context<a class="headerlink" href="#context" title="Permalink to this heading">#</a></h2>
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">#</a></h2>
 <p>The objective of geological modelling is to predict the geometry and distribution of geological objects in the subsurface. Different geological objects are represented by approximating an implicit function where isovalues/level sets of the implicit function define the geometry of geological features. The interaction between different geological objects is defined by the geological feature type (fault, fold, unconformity).</p>
 </section>
 <section id="goals-and-non-goals">
-<h2>Goals and Non-Goals<a class="headerlink" href="#goals-and-non-goals" title="Permalink to this heading">#</a></h2>
+<h2>Goals and Non-Goals<a class="headerlink" href="#goals-and-non-goals" title="Link to this heading">#</a></h2>
 <p>The aim of LoopStructural are:</p>
 <ul class="simple">
 <li><p>to provide an easy to use python API for building 3D geological models from data.</p></li>
@@ -444,7 +466,7 @@ document.write(`
 </ul>
 </section>
 <section id="existing-solutions">
-<h2>Existing Solutions<a class="headerlink" href="#existing-solutions" title="Permalink to this heading">#</a></h2>
+<h2>Existing Solutions<a class="headerlink" href="#existing-solutions" title="Link to this heading">#</a></h2>
 <p>There are a number of commercial and open source 3D modelling packages available.</p>
 <ul class="simple">
 <li><p>Gocad/Skua provides a 3D modelling environment and an implicit interpolation algorithm</p></li>
@@ -456,7 +478,7 @@ document.write(`
 </ul>
 </section>
 <section id="technical-architecture">
-<h2>Technical Architecture<a class="headerlink" href="#technical-architecture" title="Permalink to this heading">#</a></h2>
+<h2>Technical Architecture<a class="headerlink" href="#technical-architecture" title="Link to this heading">#</a></h2>
 <p><strong>Module design</strong> LoopStructural is divided into submodules which contain specific independent elements of the code.
 The submodules separate clear differences in the functionality of the code.
 The main modules for the library are:</p>
@@ -486,7 +508,7 @@ When the new release is merged the library will be deployed to pypi, loop3d cond
 The documentation is automatically built when a new release is created and will be uploaded.
 The entire CI/CD workflow is run using github actions.</p>
 <section id="interpolators">
-<h3>1. interpolators<a class="headerlink" href="#interpolators" title="Permalink to this heading">#</a></h3>
+<h3>1. interpolators<a class="headerlink" href="#interpolators" title="Link to this heading">#</a></h3>
 <p>The interpolation module contains different interpolators and associated supports used by LoopStructural.
 The purpose of the interpolator is to build a 2D/3D scalar field from constraints (e.g. orientation, contact, fold).
 The base of the interpolation module is the <strong>GeologicalInterpolator</strong> class.
@@ -496,7 +518,7 @@ This module should include all interpolators and associated classes (e.g. mesh, 
 Future update: there should be a separate API so that the interpolators can be used without a GeologicalModel.</p>
 </section>
 <section id="modelling">
-<h3>2. modelling<a class="headerlink" href="#modelling" title="Permalink to this heading">#</a></h3>
+<h3>2. modelling<a class="headerlink" href="#modelling" title="Link to this heading">#</a></h3>
 <p>The modelling is the main entry point to LoopStructural and includes the <strong>GeologicalModel</strong> class.
 A <strong>GeologicalModel</strong> consists of <strong>GeologicalFeatures</strong> which define a particular geological phenomenon.
 For example, a <strong>GeologicalFeature</strong> can be a stratigraphic sequence, a fault, a foliation, an unconformity, an intrusion.
@@ -507,10 +529,10 @@ The builder is in charge of keeping track of whether the interpolator has been r
 The builder could also be used to build a <strong>GeologicalFeature</strong> without an interpolator.</p>
 </section>
 <section id="visualisation">
-<h3>3. visualisation<a class="headerlink" href="#visualisation" title="Permalink to this heading">#</a></h3>
+<h3>3. visualisation<a class="headerlink" href="#visualisation" title="Link to this heading">#</a></h3>
 <p>The visualisation module is in charge of creating 2D/3D visualisations for the GeolgicalModel and GeologicalFeatures.</p>
 <section id="d-visualisation">
-<h4>3D visualisation<a class="headerlink" href="#d-visualisation" title="Permalink to this heading">#</a></h4>
+<h4>3D visualisation<a class="headerlink" href="#d-visualisation" title="Link to this heading">#</a></h4>
 <p>The 3D visualisation module for LoopStructural has been written using an abstract base class.
 <strong>BaseModelPlotter</strong> contains all of the methods for plotting the various different attributes for a GeologicalModel.
 A visualisation module can be implemented by simply subclassing the <strong>BaseModelPlotter</strong> and implementing the following methods:</p>
@@ -522,12 +544,12 @@ A visualisation module can be implemented by simply subclassing the <strong>Base
 </section>
 </section>
 <section id="utils">
-<h3>4. utils<a class="headerlink" href="#utils" title="Permalink to this heading">#</a></h3>
+<h3>4. utils<a class="headerlink" href="#utils" title="Link to this heading">#</a></h3>
 <p>The utils module is a container for utility functions that are used throughout the library.</p>
 </section>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h2>
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h2>
 <p>LoopStructural uses a combination of unit tests, integration tests and end to end tests.
 Any new modules/functions should be accompanied by a unit test.
 A unit test is the small independent test that ensures the basic functionality of the block of code is working.
@@ -553,8 +575,10 @@ End to end tests should be used sparingly as identifying the true cause of a fai
               
               
               
-                <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="contributors_guide.html"
@@ -584,6 +608,7 @@ End to end tests should be used sparingly as identifying the true cause of a fai
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
@@ -608,6 +633,7 @@ End to end tests should be used sparingly as identifying the true cause of a fai
   </nav></div>
 
   <div class="sidebar-secondary-item">
+
   <div class="tocsection sourcelink">
     <a href="../_sources/getting_started/loopstructural_design.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
@@ -620,7 +646,7 @@ End to end tests should be used sparingly as identifying the true cause of a fai
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -628,8 +654,8 @@ End to end tests should be used sparingly as identifying the true cause of a fai
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

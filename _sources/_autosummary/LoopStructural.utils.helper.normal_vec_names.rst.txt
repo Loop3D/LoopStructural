@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.normal\_vec\_names
-==============================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: normal_vec_names

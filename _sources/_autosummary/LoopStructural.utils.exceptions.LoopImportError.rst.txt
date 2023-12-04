@@ -1,6 +1,0 @@
-LoopStructural.utils.exceptions.LoopImportError
-===============================================
-
-.. currentmodule:: LoopStructural.utils.exceptions
-
-.. autoexception:: LoopImportError

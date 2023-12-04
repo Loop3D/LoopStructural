@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.create\_box
-=======================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: create_box

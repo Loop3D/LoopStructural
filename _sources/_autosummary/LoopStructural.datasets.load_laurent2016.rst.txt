@@ -1,6 +1,0 @@
-LoopStructural.datasets.load\_laurent2016
-=========================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: load_laurent2016

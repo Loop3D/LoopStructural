@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_frame\_builder.find\_inout\_points
-=================================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_frame_builder
-
-.. autofunction:: find_inout_points

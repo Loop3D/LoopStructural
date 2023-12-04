@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_feature.getLogger
-================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_feature
-
-.. autofunction:: getLogger

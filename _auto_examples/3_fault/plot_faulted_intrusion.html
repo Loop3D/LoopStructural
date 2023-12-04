@@ -1,15 +1,14 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>3a. Modelling faults using structural frames &#8212; LoopStructural 0.1 documentation</title>
+    <title>3a. Modelling faults using structural frames &#8212; LoopStructural 1.5.11 documentation</title>
   
   
   
@@ -19,29 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/documentation_options.js?v=cad83edb"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_auto_examples/3_fault/plot_faulted_intrusion';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -57,6 +57,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -97,9 +106,11 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -108,18 +119,19 @@
   
   
   
-    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
   
 </a></div>
     
   </div>
   
-  
   <div class="col-lg-9 navbar-header-items">
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -172,23 +184,27 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -204,8 +220,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -216,8 +232,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
       
@@ -227,18 +243,21 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -258,7 +277,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -311,12 +331,13 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -332,8 +353,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -344,8 +365,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
         
@@ -354,7 +375,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -411,8 +433,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../index.html" class="nav-link" aria-label="Home">
@@ -425,7 +447,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">3. Modelling Faults</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">3a. Modelling faults using structural frames</li>
+    <li class="breadcrumb-item active" aria-current="page">3a....</li>
   </ul>
 </nav>
 </div>
@@ -448,19 +470,19 @@ document.write(`
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="a-modelling-faults-using-structural-frames">
-<span id="sphx-glr-auto-examples-3-fault-plot-faulted-intrusion-py"></span><h1>3a. Modelling faults using structural frames<a class="headerlink" href="#a-modelling-faults-using-structural-frames" title="Permalink to this heading">#</a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
-<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a>
-<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.datasets.load_intrusion.html#LoopStructural.datasets.load_intrusion" title="LoopStructural.datasets.load_intrusion" class="sphx-glr-backref-module-LoopStructural-datasets sphx-glr-backref-type-py-function"><span class="n">load_intrusion</span></a>
+<span id="sphx-glr-auto-examples-3-fault-plot-faulted-intrusion-py"></span><h1>3a. Modelling faults using structural frames<a class="headerlink" href="#a-modelling-faults-using-structural-frames" title="Link to this heading">#</a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_intrusion</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.datasets.load_intrusion.html#LoopStructural.datasets.load_intrusion" title="LoopStructural.datasets.load_intrusion" class="sphx-glr-backref-module-LoopStructural-datasets sphx-glr-backref-type-py-function"><span class="n">load_intrusion</span></a><span class="p">()</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_intrusion</span><span class="p">()</span>
 </pre></div>
 </div>
 <section id="modelling-faults-using-structural-frames">
-<h2>Modelling faults using structural frames<a class="headerlink" href="#modelling-faults-using-structural-frames" title="Permalink to this heading">#</a></h2>
+<h2>Modelling faults using structural frames<a class="headerlink" href="#modelling-faults-using-structural-frames" title="Link to this heading">#</a></h2>
 <p>Standard implicit modelling techniques either treat faults as domain
 boundaries or use a step function in the implicit function to capture
 the displacement in the faulted surface.</p>
@@ -471,19 +493,19 @@ scalar field on the hanging wall of the fault. In the example below a
 2-D ellipsoidal function is combined with a step function to show how
 the resulting geometry results in a shrinking shape. This would be
 representative of modelling an intrusion.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">intrusion</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">intrusion</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a><span class="p">[</span><span class="n">yy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>
-<span class="n">val</span> <span class="o">=</span> <span class="n">intrusion</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span> <span class="o">+</span> <a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a>
+<span class="n">fault</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">fault</span><span class="p">[</span><span class="n">yy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">intrusion</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span> <span class="o">+</span> <span class="n">fault</span>
 
 
 <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_faulted_intrusion_001.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_001.png" alt="plot faulted intrusion" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.contour.QuadContourSet object at 0x7faaa24af3a0&gt;
+<img src="../../_images/sphx_glr_plot_faulted_intrusion_001.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_001.png" alt="plot faulted intrusion" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.contour.QuadContourSet object at 0x7f5e84b3ad10&gt;
 </pre></div>
 </div>
 <p>LoopStructural applies structural frames to the fault geometry to
@@ -492,107 +514,86 @@ consisting of the fault surface, fault slip direction and fault extent
 are built from observations. The geometry of the deformed surface is
 then interpolated by first restoring the observations by combining the
 fault frame and an expected displacement model.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
-<a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_fault" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_fault" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span></a><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">fault</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_fault" title="LoopStructural.GeologicalModel.create_and_add_fault" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span></a><span class="p">(</span>
     <span class="s2">&quot;fault&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;PLI&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mf">0.3</span>
 <span class="p">)</span>
 
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">viewer</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" title="LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span></a><span class="p">(</span>
-    <a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a><span class="p">,</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span>
+    <span class="n">fault</span><span class="p">,</span>
     <span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span>
     <span class="c1">#                       slices=[0,1]#nslices=10</span>
 <span class="p">)</span>
-<span class="n">xyz</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s2">&quot;feature_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;strati&quot;</span><span class="p">][[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-<span class="n">xyz</span> <span class="o">=</span> <span class="n">xyz</span><span class="p">[</span><a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment.evaluate" title="LoopStructural.modelling.features.fault.FaultSegment.evaluate" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-method"><span class="n">fault</span><span class="o">.</span><span class="n">evaluate</span></a><span class="p">(</span><span class="n">xyz</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">),</span> <span class="p">:]</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_vector_field" title="LoopStructural.visualisation.LavaVuModelViewer.add_vector_field" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_field</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a><span class="p">,</span> <span class="n">locations</span><span class="o">=</span><span class="n">xyz</span><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_points" title="LoopStructural.visualisation.LavaVuModelViewer.add_points" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span></a><span class="p">(</span>
-    <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s2">&quot;feature_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;strati&quot;</span><span class="p">][[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prefault&quot;</span>
+<span class="n">xyz</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data" title="LoopStructural.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data" title="LoopStructural.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s2">&quot;feature_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;strati&quot;</span><span class="p">][[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">xyz</span> <span class="o">=</span> <span class="n">xyz</span><span class="p">[</span><span class="n">fault</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">),</span> <span class="p">:]</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_vector_field</span><span class="p">(</span><span class="n">fault</span><span class="p">,</span> <span class="n">locations</span><span class="o">=</span><span class="n">xyz</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span>
+    <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data" title="LoopStructural.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data" title="LoopStructural.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s2">&quot;feature_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;strati&quot;</span><span class="p">][[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prefault&quot;</span>
 <span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.rotation" title="LoopStructural.visualisation.LavaVuModelViewer.rotation" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-property"><span class="n">viewer</span><span class="o">.</span><span class="n">rotation</span></a> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">73.24819946289062</span><span class="p">,</span> <span class="o">-</span><span class="mf">86.82220458984375</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.912878036499023</span><span class="p">]</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.display" title="LoopStructural.visualisation.LavaVuModelViewer.display" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">display</span></a><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">rotation</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">73.24819946289062</span><span class="p">,</span> <span class="o">-</span><span class="mf">86.82220458984375</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.912878036499023</span><span class="p">]</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 
 
 <span class="n">displacement</span> <span class="o">=</span> <span class="mi">400</span>  <span class="c1"># INSERT YOUR DISPLACEMENT NUMBER HERE BEFORE #</span>
 
-<a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
-<a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_fault" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_fault" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span></a><span class="p">(</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">fault</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_fault" title="LoopStructural.GeologicalModel.create_and_add_fault" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fault</span></a><span class="p">(</span>
     <span class="s2">&quot;fault&quot;</span><span class="p">,</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">nelements</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;PLI&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">2</span>
 <span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature" class="sphx-glr-backref-module-LoopStructural-modelling-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">strati</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" title="LoopStructural.modelling.core.geological_model.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span>
+<span class="n">strati</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_foliation" title="LoopStructural.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span>
     <span class="s2">&quot;strati&quot;</span><span class="p">,</span> <span class="n">nelements</span><span class="o">=</span><span class="mi">30000</span><span class="p">,</span> <span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;PLI&quot;</span><span class="p">,</span> <span class="n">cgw</span><span class="o">=</span><span class="mf">0.03</span>
 <span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">viewer</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel" title="LoopStructural.modelling.core.geological_model.GeologicalModel" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" title="LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature" class="sphx-glr-backref-module-LoopStructural-modelling-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">strati</span></a><span class="p">,</span> <span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">strati</span><span class="p">,</span> <span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="c1"># viewer.add_data(model.features[0][0])</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_data" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.features.GeologicalFeature.html#LoopStructural.modelling.features.GeologicalFeature" title="LoopStructural.modelling.features.GeologicalFeature" class="sphx-glr-backref-module-LoopStructural-modelling-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">strati</span></a><span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" title="LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span></a><span class="p">(</span>
-    <a href="../../_autosummary/LoopStructural.modelling.features.fault.FaultSegment.html#LoopStructural.modelling.features.fault.FaultSegment" title="LoopStructural.modelling.features.fault.FaultSegment" class="sphx-glr-backref-module-LoopStructural-modelling-features-fault sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault</span></a><span class="p">,</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">strati</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span>
+    <span class="n">fault</span><span class="p">,</span>
     <span class="n">isovalue</span><span class="o">=</span><span class="mi">0</span>
     <span class="c1">#                       slices=[0,1]#nslices=10</span>
 <span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_points" title="LoopStructural.visualisation.LavaVuModelViewer.add_points" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span></a><span class="p">(</span>
-    <a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><a href="../../_autosummary/LoopStructural.modelling.core.geological_model.GeologicalModel.html#LoopStructural.modelling.core.geological_model.GeologicalModel.data" title="LoopStructural.modelling.core.geological_model.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural-modelling-core-geological_model sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s2">&quot;feature_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;strati&quot;</span><span class="p">][[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prefault&quot;</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span>
+    <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data" title="LoopStructural.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data" title="LoopStructural.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-attribute"><span class="n">model</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s2">&quot;feature_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;strati&quot;</span><span class="p">][[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prefault&quot;</span>
 <span class="p">)</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.rotation" title="LoopStructural.visualisation.LavaVuModelViewer.rotation" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-property"><span class="n">viewer</span><span class="o">.</span><span class="n">rotation</span></a> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">73.24819946289062</span><span class="p">,</span> <span class="o">-</span><span class="mf">86.82220458984375</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.912878036499023</span><span class="p">]</span>
-<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.display" title="LoopStructural.visualisation.LavaVuModelViewer.display" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">display</span></a><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">rotation</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">73.24819946289062</span><span class="p">,</span> <span class="o">-</span><span class="mf">86.82220458984375</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.912878036499023</span><span class="p">]</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
 <li><img src="../../_images/sphx_glr_plot_faulted_intrusion_002.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_002.png" alt="plot faulted intrusion" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_plot_faulted_intrusion_003.png" srcset="../../_images/sphx_glr_plot_faulted_intrusion_003.png" alt="plot faulted intrusion" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Cannot use region
-Cannot use region
-Cannot use region
-Cannot use region
-Cannot use region
-Cannot use region
-/LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:245: SettingWithCopyWarning:
-A value is trying to be set on a copy of a slice from a DataFrame
-
-See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  data.loc[
-/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[-2.27373675e-13  3.76447345e+03  2.43168000e+03] 1200.0 [6000.         7235.52654615 6000.        ]
+/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
   norm[i] /= length
-Cannot use region
-Cannot use region
-Cannot use region
-Cannot use region
-Cannot use region
-Cannot use region
-/LoopStructural/LoopStructural/modelling/features/builders/_fault_builder.py:245: SettingWithCopyWarning:
-A value is trying to be set on a copy of a slice from a DataFrame
-
-See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  data.loc[
-Cannot use region
-Cannot use region
+[-2.27373675e-13  3.76447345e+03  2.43168000e+03] 1200.0 [6000.         7235.52654615 6000.        ]
 
   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Interpolating fault:   0%|          | 0/4 [00:00&lt;?, ?it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
-  norm[i] /= length
-/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+Interpolating fault:   0%|          | 0/4 [00:00&lt;?, ?it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
   norm[i] /= length
 
-Interpolating fault:  50%|#####     | 2/4 [00:00&lt;00:00,  8.19it/s]
-Interpolating strati:  75%|#######5  | 3/4 [00:00&lt;00:00,  8.19it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in double_scalars
+Interpolating fault:  25%|██▌       | 1/4 [00:00&lt;00:00,  3.61it/s]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
   norm[i] /= length
 
-Interpolating strati: : 7it [00:29,  4.63s/it]
-Interpolating strati: : 7it [00:29,  4.24s/it]
+Interpolating fault:  50%|█████     | 2/4 [00:02&lt;00:02,  1.36s/it]
+Interpolating strati:  75%|███████▌  | 3/4 [00:02&lt;00:01,  1.36s/it]/LoopStructural/LoopStructural/interpolators/_python/dsi_helper.py:85: RuntimeWarning: invalid value encountered in scalar divide
+  norm[i] /= length
+
+Interpolating strati: : 7it [00:28,  4.41s/it]
+Interpolating strati: : 7it [00:28,  4.01s/it]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  36.324 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 32.078 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-3-fault-plot-faulted-intrusion-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/04532e9070b5c0b939ac0b7eacbbf993/plot_faulted_intrusion.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_faulted_intrusion.py</span></code></a></p>
-</div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/149399c7cdca2062321113a6cba80091/plot_faulted_intrusion.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_faulted_intrusion.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/04532e9070b5c0b939ac0b7eacbbf993/plot_faulted_intrusion.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_faulted_intrusion.py</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -604,8 +605,10 @@ Interpolating strati: : 7it [00:29,  4.24s/it]
               
               
               
-                <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="index.html"
@@ -635,6 +638,7 @@ Interpolating strati: : 7it [00:29,  4.24s/it]
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
@@ -645,6 +649,7 @@ Interpolating strati: : 7it [00:29,  4.24s/it]
   </nav></div>
 
   <div class="sidebar-secondary-item">
+
   <div class="tocsection sourcelink">
     <a href="../../_sources/_auto_examples/3_fault/plot_faulted_intrusion.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
@@ -657,7 +662,7 @@ Interpolating strati: : 7it [00:29,  4.24s/it]
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -665,8 +670,8 @@ Interpolating strati: : 7it [00:29,  4.24s/it]
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

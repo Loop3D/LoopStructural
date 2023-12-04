@@ -1,6 +1,0 @@
-LoopStructural.datasets.load\_noddy\_single\_fold
-=================================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: load_noddy_single_fold

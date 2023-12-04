@@ -26,7 +26,7 @@ field and the geometry that is modelled.
 
 .. GENERATED FROM PYTHON SOURCE LINES 9-17
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -51,7 +51,7 @@ is decreased, as the function changes value at a faster rate.
 
 .. GENERATED FROM PYTHON SOURCE LINES 27-67
 
-.. code-block:: default
+.. code-block:: Python
 
 
     images = {}
@@ -107,7 +107,7 @@ the value of 1 at the coordinates 1,1,1
 
 .. GENERATED FROM PYTHON SOURCE LINES 76-120
 
-.. code-block:: default
+.. code-block:: Python
 
 
     images = {}
@@ -194,7 +194,7 @@ same.
 
 .. GENERATED FROM PYTHON SOURCE LINES 156-200
 
-.. code-block:: default
+.. code-block:: Python
 
 
     images = {}
@@ -256,7 +256,7 @@ values
 
 .. GENERATED FROM PYTHON SOURCE LINES 211-262
 
-.. code-block:: default
+.. code-block:: Python
 
 
     images = {}
@@ -318,7 +318,7 @@ Setting magnitude of norm to be 1
 
 .. GENERATED FROM PYTHON SOURCE LINES 266-317
 
-.. code-block:: default
+.. code-block:: Python
 
 
     images = {}
@@ -383,7 +383,7 @@ solution is the same for all values.
 
 .. GENERATED FROM PYTHON SOURCE LINES 324-373
 
-.. code-block:: default
+.. code-block:: Python
 
 
     images = {}
@@ -436,27 +436,19 @@ solution is the same for all values.
     ax[2].set_title(f"C. Value range 9.0 ")
 
 
-.. rst-class:: sphx-glr-timing
-
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
-
-
 .. _sphx_glr_download__auto_examples_1_basic_scalar_field.py:
 
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: scalar_field.ipynb <scalar_field.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: scalar_field.py <scalar_field.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: scalar_field.ipynb <scalar_field.ipynb>`
 
 
 .. only:: html

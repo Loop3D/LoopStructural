@@ -76,7 +76,7 @@ add some noise to make it interesting!
 
 .. GENERATED FROM PYTHON SOURCE LINES 58-76
 
-.. code-block:: default
+.. code-block:: Python
 
     import numpy as np
 
@@ -122,7 +122,7 @@ for the interpolator to be able to find a solution.
 
 .. GENERATED FROM PYTHON SOURCE LINES 91-98
 
-.. code-block:: default
+.. code-block:: Python
 
 
     import pandas as pd
@@ -169,7 +169,7 @@ for the interpolator to be able to find a solution.
           <th>0</th>
           <td>0.000000</td>
           <td>0.0</td>
-          <td>1.783010</td>
+          <td>1.569505</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -177,7 +177,7 @@ for the interpolator to be able to find a solution.
           <th>1</th>
           <td>1.111111</td>
           <td>0.0</td>
-          <td>1.358587</td>
+          <td>1.005355</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -185,7 +185,7 @@ for the interpolator to be able to find a solution.
           <th>2</th>
           <td>2.222222</td>
           <td>0.0</td>
-          <td>1.858859</td>
+          <td>1.283061</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -193,7 +193,7 @@ for the interpolator to be able to find a solution.
           <th>3</th>
           <td>3.333333</td>
           <td>0.0</td>
-          <td>1.728489</td>
+          <td>1.118755</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -201,7 +201,7 @@ for the interpolator to be able to find a solution.
           <th>4</th>
           <td>4.444444</td>
           <td>0.0</td>
-          <td>1.677114</td>
+          <td>1.198745</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -224,7 +224,7 @@ The pandas dataframe that contains the model data need to be linked to the geolo
 
 .. GENERATED FROM PYTHON SOURCE LINES 106-112
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -248,7 +248,7 @@ This returns a To build a scalar field representing the
 
 .. GENERATED FROM PYTHON SOURCE LINES 117-120
 
-.. code-block:: default
+.. code-block:: Python
 
 
     conformable_feature = model.create_and_add_foliation("conformable")
@@ -256,13 +256,6 @@ This returns a To build a scalar field representing the
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
 
 
 
@@ -285,7 +278,7 @@ next tutorial will show how to use the lavavu visualisation model.
 
 .. GENERATED FROM PYTHON SOURCE LINES 134-168
 
-.. code-block:: default
+.. code-block:: Python
 
 
 
@@ -336,7 +329,7 @@ next tutorial will show how to use the lavavu visualisation model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.234 seconds)
+   **Total running time of the script:** (0 minutes 0.237 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_1_data_prepration.py:
@@ -345,16 +338,13 @@ next tutorial will show how to use the lavavu visualisation model.
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_1_data_prepration.ipynb <plot_1_data_prepration.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_1_data_prepration.py <plot_1_data_prepration.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_1_data_prepration.ipynb <plot_1_data_prepration.ipynb>`
 
 
 .. only:: html

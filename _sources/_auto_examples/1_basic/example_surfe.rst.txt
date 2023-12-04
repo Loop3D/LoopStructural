@@ -33,7 +33,7 @@ to windows :code:`SURFE`
 
 .. GENERATED FROM PYTHON SOURCE LINES 16-66
 
-.. code-block:: default
+.. code-block:: Python
 
     from LoopStructural import GeologicalModel
     from LoopStructural.visualisation import LavaVuModelViewer
@@ -87,27 +87,19 @@ to windows :code:`SURFE`
     viewer.interactive()  # to add an interactive display
 
 
-.. rst-class:: sphx-glr-timing
-
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
-
-
 .. _sphx_glr_download__auto_examples_1_basic_example_surfe.py:
 
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: example_surfe.ipynb <example_surfe.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: example_surfe.py <example_surfe.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: example_surfe.ipynb <example_surfe.ipynb>`
 
 
 .. only:: html

@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_frame\_builder.shortest\_path
-============================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_frame_builder
-
-.. autofunction:: shortest_path

@@ -56,7 +56,7 @@ viewer.display()
 #
 
 s1 = model.create_and_add_folded_fold_frame(
-    "s1", limb_wl=4, av_fold_axis=True, nelements=50000, buffer=0.3, solver="lu"
+    "s1", av_fold_axis=True, nelements=50000, buffer=0.3, solver="lu"
 )
 
 
@@ -86,7 +86,6 @@ s2_s1_splot.add_fold_limb_curve()
 
 s0 = model.create_and_add_folded_foliation(
     "s0",
-    limb_wl=1.0,
     av_fold_axis=True,
     nelements=50000,
     buffer=0.2,

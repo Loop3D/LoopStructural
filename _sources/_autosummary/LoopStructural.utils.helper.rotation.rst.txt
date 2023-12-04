@@ -1,6 +1,0 @@
-LoopStructural.utils.helper.rotation
-====================================
-
-.. currentmodule:: LoopStructural.utils.helper
-
-.. autofunction:: rotation

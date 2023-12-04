@@ -1,6 +1,0 @@
-LoopStructural.visualisation.lavavu.v
-=====================================
-
-.. currentmodule:: LoopStructural.visualisation.lavavu
-
-.. autofunction:: v

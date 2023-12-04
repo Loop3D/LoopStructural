@@ -1,6 +1,0 @@
-LoopStructural.datasets.value\_headers
-======================================
-
-.. currentmodule:: LoopStructural.datasets
-
-.. autofunction:: value_headers

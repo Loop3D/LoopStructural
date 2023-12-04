@@ -1,6 +1,0 @@
-LoopStructural.interpolators.piecewiselinear\_interpolator.fold\_cg
-===================================================================
-
-.. currentmodule:: LoopStructural.interpolators.piecewiselinear_interpolator
-
-.. autofunction:: fold_cg

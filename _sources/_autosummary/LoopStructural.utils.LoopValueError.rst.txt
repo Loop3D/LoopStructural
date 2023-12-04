@@ -1,6 +1,0 @@
-LoopStructural.utils.LoopValueError
-===================================
-
-.. currentmodule:: LoopStructural.utils
-
-.. autoexception:: LoopValueError

@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.geometric\_scaling\_functions.getLogger
-===========================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.geometric_scaling_functions
-
-.. autofunction:: getLogger

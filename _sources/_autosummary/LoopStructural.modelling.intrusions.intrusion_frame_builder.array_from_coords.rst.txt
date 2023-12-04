@@ -1,6 +1,0 @@
-LoopStructural.modelling.intrusions.intrusion\_frame\_builder.array\_from\_coords
-=================================================================================
-
-.. currentmodule:: LoopStructural.modelling.intrusions.intrusion_frame_builder
-
-.. autofunction:: array_from_coords

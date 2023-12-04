@@ -1,6 +1,0 @@
-LoopStructural.modelling.core.geological\_model.strike\_dip\_vector
-===================================================================
-
-.. currentmodule:: LoopStructural.modelling.core.geological_model
-
-.. autofunction:: strike_dip_vector

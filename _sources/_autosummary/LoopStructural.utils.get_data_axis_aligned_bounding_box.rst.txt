@@ -1,6 +1,0 @@
-LoopStructural.utils.get\_data\_axis\_aligned\_bounding\_box
-============================================================
-
-.. currentmodule:: LoopStructural.utils
-
-.. autofunction:: get_data_axis_aligned_bounding_box

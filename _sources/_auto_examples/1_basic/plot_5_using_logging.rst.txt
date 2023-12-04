@@ -41,7 +41,7 @@ Lets have a look at the logging from the Claudius model.
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-31
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -65,7 +65,7 @@ Specify a log file
 
 .. GENERATED FROM PYTHON SOURCE LINES 34-37
 
-.. code-block:: default
+.. code-block:: Python
 
 
     log_to_file("logging_demo_log.log")
@@ -82,9 +82,9 @@ Specify a log file
 Create model
 ~~~~~~~~~~~~~~~~~~~~
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-65
+.. GENERATED FROM PYTHON SOURCE LINES 40-64
 
-.. code-block:: default
+.. code-block:: Python
 
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
@@ -104,7 +104,6 @@ Create model
         interpolatortype="FDI",  # try changing this to 'PLI'
         nelements=1e4,  # try changing between 1e3 and 5e4
         buffer=0.3,
-        solver="pyamg",
         damp=True,
     )
     viewer = LavaVuModelViewer(model, background="white")
@@ -124,15 +123,13 @@ Create model
 
  .. code-block:: none
 
-    Cannot use region
-    Cannot use region
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.40s/it]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.40s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 61.11it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:45<00:00, 45.41s/it]    Interpolating strati: 100%|██████████| 1/1 [00:45<00:00, 45.41s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 67.28it/s]
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-71
+.. GENERATED FROM PYTHON SOURCE LINES 65-70
 
 Looking at the log file
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -140,9 +137,9 @@ Here are the first 10 lines of the log file.
 Most operations in loopstructural are recorded and this will allow you to identify whether
 an operation is not occuring as you would expect.
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-79
+.. GENERATED FROM PYTHON SOURCE LINES 70-78
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from itertools import islice
@@ -159,15 +156,15 @@ an operation is not occuring as you would expect.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-83
+.. GENERATED FROM PYTHON SOURCE LINES 79-82
 
 Logging to console
 ~~~~~~~~~~~~~~~~~~
 It is also possible to change the logging level for the console log.
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-122
+.. GENERATED FROM PYTHON SOURCE LINES 82-120
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import log_to_console
@@ -201,7 +198,6 @@ It is also possible to change the logging level for the console log.
         interpolatortype="FDI",  # try changing this to 'PLI'
         nelements=1e4,  # try changing between 1e3 and 5e4
         buffer=0.3,
-        solver="pyamg",
         damp=True,
     )
     viewer = LavaVuModelViewer(model, background="white")
@@ -221,10 +217,8 @@ It is also possible to change the logging level for the console log.
 
  .. code-block:: none
 
-    Cannot use region
-    Cannot use region
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.47s/it]    Interpolating strati: 100%|##########| 1/1 [00:02<00:00,  2.47s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|##########| 4/4 [00:00<00:00, 59.81it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:45<00:00, 45.40s/it]    Interpolating strati: 100%|██████████| 1/1 [00:45<00:00, 45.40s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 63.77it/s]
 
 
 
@@ -232,7 +226,7 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.818 seconds)
+   **Total running time of the script:** (1 minutes 32.044 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_5_using_logging.py:
@@ -241,16 +235,13 @@ It is also possible to change the logging level for the console log.
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_5_using_logging.ipynb <plot_5_using_logging.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_5_using_logging.py <plot_5_using_logging.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_5_using_logging.ipynb <plot_5_using_logging.ipynb>`
 
 
 .. only:: html

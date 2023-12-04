@@ -36,7 +36,7 @@ model building
 
 .. GENERATED FROM PYTHON SOURCE LINES 19-28
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -61,7 +61,7 @@ Build the model
 
 .. GENERATED FROM PYTHON SOURCE LINES 31-45
 
-.. code-block:: default
+.. code-block:: Python
 
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
@@ -80,13 +80,6 @@ Build the model
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
 
 
 
@@ -184,7 +177,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
 .. GENERATED FROM PYTHON SOURCE LINES 134-157
 
-.. code-block:: default
+.. code-block:: Python
 
 
     viewer = LavaVuModelViewer(model, background="white")
@@ -218,22 +211,13 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    [ 353.27132757  353.27868135  353.5014243  ... -148.00219116 -148.58163164
-     -149.39594728]
-    [-129.06223081 -127.44377209 -125.82711411 ... -129.870309   -128.50594674
-     -126.28345774]
-
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.536 seconds)
+   **Total running time of the script:** (0 minutes 1.692 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:
@@ -242,16 +226,13 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_3_model_visualisation.ipynb <plot_3_model_visualisation.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_3_model_visualisation.py <plot_3_model_visualisation.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_3_model_visualisation.ipynb <plot_3_model_visualisation.ipynb>`
 
 
 .. only:: html

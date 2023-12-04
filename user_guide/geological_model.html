@@ -1,15 +1,14 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Geological Model &#8212; LoopStructural 0.1 documentation</title>
+    <title>Geological Model &#8212; LoopStructural 1.5.11 documentation</title>
   
   
   
@@ -19,29 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/documentation_options.js?v=cad83edb"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/geological_model';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,6 +57,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -97,9 +106,11 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -108,18 +119,19 @@
   
   
   
-    <p class="title logo__title">LoopStructural 0.1 documentation</p>
+  
+    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
   
 </a></div>
     
   </div>
   
-  
   <div class="col-lg-9 navbar-header-items">
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -172,23 +184,27 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -204,8 +220,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -216,8 +232,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
       
@@ -227,18 +243,21 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -258,7 +277,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -311,12 +331,13 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -332,8 +353,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -344,8 +365,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
 </ul></div>
         
@@ -354,7 +375,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
@@ -396,8 +418,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
@@ -425,11 +447,11 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="geological-model">
-<h1>Geological Model<a class="headerlink" href="#geological-model" title="Permalink to this heading">#</a></h1>
+<h1>Geological Model<a class="headerlink" href="#geological-model" title="Link to this heading">#</a></h1>
 <p>The GeologicalModel is the main entry point for creating a LoopStructural model.
 GeologicalModel’s define the bounding box of the model, determine how the different scalar fields interact and apply the time aware modelling.</p>
 <section id="creating-a-model-manually">
-<h2>Creating a model manually<a class="headerlink" href="#creating-a-model-manually" title="Permalink to this heading">#</a></h2>
+<h2>Creating a model manually<a class="headerlink" href="#creating-a-model-manually" title="Link to this heading">#</a></h2>
 <p>A GeologicalModel can be created using the default constructor.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span><span class="n">maximum</span><span class="p">)</span>
 </pre></div>
@@ -437,7 +459,7 @@ GeologicalModel’s define the bounding box of the model, determine how the diff
 <p>Additional arguments that can be provided are:</p>
 <blockquote>
 <div><table class="table" id="id1">
-<caption><span class="caption-text">Finite Difference Interpolator (FDI)</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+<caption><span class="caption-text">Finite Difference Interpolator (FDI)</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -474,14 +496,14 @@ The model creates a copy of the dataframe meaning that the original data frame i
 </pre></div>
 </div>
 <section id="adding-a-geological-feature">
-<h3>Adding a geological feature<a class="headerlink" href="#adding-a-geological-feature" title="Permalink to this heading">#</a></h3>
+<h3>Adding a geological feature<a class="headerlink" href="#adding-a-geological-feature" title="Link to this heading">#</a></h3>
 <p>Once the model has been initialised and the data has been linked to the model,
 we can add a geological feature to the model.
 There are a number of different methods that can be used to add a geological feature
 to the model.</p>
 </section>
 <section id="adding-a-foliation">
-<h3>Adding a foliation<a class="headerlink" href="#adding-a-foliation" title="Permalink to this heading">#</a></h3>
+<h3>Adding a foliation<a class="headerlink" href="#adding-a-foliation" title="Link to this heading">#</a></h3>
 <p>We can add a foliation to the model using the <em>create_and_add_foliation</em> method for a GeologicalModel object.
 The only required argument is the feature_name, which is the identifier to the datasets.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="n">feature_name</span><span class="p">,</span>
@@ -496,7 +518,7 @@ The only required argument is the feature_name, which is the identifier to the d
 Different interpolation schemes can be used, see <a class="reference internal" href="interpolation_options.html"><span class="doc">Implicit Interpolators</span></a> for more information.</p>
 </section>
 <section id="adding-a-fault">
-<h3>Adding a fault<a class="headerlink" href="#adding-a-fault" title="Permalink to this heading">#</a></h3>
+<h3>Adding a fault<a class="headerlink" href="#adding-a-fault" title="Link to this heading">#</a></h3>
 <p>Faults are modelled by building a structural frame to define the fault geometry.
 The structural frame has three coordinates:</p>
 <ul class="simple">
@@ -522,7 +544,7 @@ the fault frame coordinates scaled by the maximum displacement.</p>
 </div>
 </section>
 <section id="adding-an-uncomformity">
-<h3>Adding an uncomformity<a class="headerlink" href="#adding-an-uncomformity" title="Permalink to this heading">#</a></h3>
+<h3>Adding an uncomformity<a class="headerlink" href="#adding-an-uncomformity" title="Link to this heading">#</a></h3>
 <p>There are two ways an unconformity can be added into the model.
 The first approach creates an unconformity as a new geological feature assigning the unconformity surface to the 0 isovalue.
 Using this approach does not ensure that the unconformity is conformable to a stratigraphic series.</p>
@@ -542,7 +564,7 @@ Using this approach does not ensure that the unconformity is conformable to a st
 </section>
 </section>
 <section id="setting-a-stratigraphic-column">
-<h2>Setting a stratigraphic column<a class="headerlink" href="#setting-a-stratigraphic-column" title="Permalink to this heading">#</a></h2>
+<h2>Setting a stratigraphic column<a class="headerlink" href="#setting-a-stratigraphic-column" title="Link to this heading">#</a></h2>
 <p>The GeologicalModel can have a stratigraphic column assigned to it.
 The stratigraphic column performs a map between the GeologicalFeatures representing stratigraphy and a unique identification for each stratigraphic unit.
 The stratigraphic column can also be used to specify colouring for faults.</p>
@@ -559,7 +581,7 @@ The stratigraphic column can also be used to specify colouring for faults.</p>
 If it is a fault, this scalar field is not used for evaluating the stratigraphy.</p>
 </section>
 <section id="using-the-geologicalmodel">
-<h2>Using the GeologicalModel<a class="headerlink" href="#using-the-geologicalmodel" title="Permalink to this heading">#</a></h2>
+<h2>Using the GeologicalModel<a class="headerlink" href="#using-the-geologicalmodel" title="Link to this heading">#</a></h2>
 <p>The GeologicalModel has a number of helper functions allowing you to easily access different
 aspects of the model.</p>
 <p>A regular grid inside the model bounding box can be retrieved:</p>
@@ -579,7 +601,7 @@ in model coordinates by default.</p>
 </pre></div>
 </div>
 <section id="solving-updating-a-geological-model">
-<h3>Solving/Updating a geological model<a class="headerlink" href="#solving-updating-a-geological-model" title="Permalink to this heading">#</a></h3>
+<h3>Solving/Updating a geological model<a class="headerlink" href="#solving-updating-a-geological-model" title="Link to this heading">#</a></h3>
 <p>In version 1.1+ the implicit function representing a geological feature does not have to be solved to generate the model object.
 The scalar field is solved on demand when the geological features are evaluated.
 This means that parts of the geological model can be modified and only the older (features lower in the feature list) are updated.
@@ -591,7 +613,7 @@ All features in the model can be updated:</p>
 The verbose flag provides additional information useful for debugging including the number of degrees of freedom in the system and the time taken to solve.</p>
 </section>
 <section id="evaluating-a-scalar-field">
-<h3>Evaluating a scalar field<a class="headerlink" href="#evaluating-a-scalar-field" title="Permalink to this heading">#</a></h3>
+<h3>Evaluating a scalar field<a class="headerlink" href="#evaluating-a-scalar-field" title="Link to this heading">#</a></h3>
 <p>The scalar field for a GeologicalFeature can be evaluated using the evaluate_feature_value method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">rescale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">sf</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_feature_value</span><span class="p">(</span><span class="s1">&#39;myfeature&#39;</span><span class="p">,</span><span class="n">regular_grid</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -604,7 +626,7 @@ A numpy array of N dimensions will be returned where N is the number of points.
 If the value cannot be evaulated it will be np.nan.</p>
 </section>
 <section id="evaluating-scalar-field-gradient">
-<h3>Evaluating scalar field gradient<a class="headerlink" href="#evaluating-scalar-field-gradient" title="Permalink to this heading">#</a></h3>
+<h3>Evaluating scalar field gradient<a class="headerlink" href="#evaluating-scalar-field-gradient" title="Link to this heading">#</a></h3>
 <p>The gradient scalar field for a GeologicalFeature can be evaluated using the evaluate_feature_gradient method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">vf</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_feature_gradient</span><span class="p">(</span><span class="s1">&#39;myfeature&#39;</span><span class="p">,</span><span class="n">regular_grid</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -612,7 +634,7 @@ If the value cannot be evaulated it will be np.nan.</p>
 </div>
 </section>
 <section id="evaluating-fault-displacement-magnitude">
-<h3>Evaluating fault displacement magnitude<a class="headerlink" href="#evaluating-fault-displacement-magnitude" title="Permalink to this heading">#</a></h3>
+<h3>Evaluating fault displacement magnitude<a class="headerlink" href="#evaluating-fault-displacement-magnitude" title="Link to this heading">#</a></h3>
 <p>The fault displacement magnitude can be evaulated on a pointset.
 This will evaluate the fault function for every fault in the model and can be used
 for analysing models.</p>
@@ -622,7 +644,7 @@ for analysing models.</p>
 </div>
 </section>
 <section id="evaluating-lithology-id">
-<h3>Evaluating lithology id<a class="headerlink" href="#evaluating-lithology-id" title="Permalink to this heading">#</a></h3>
+<h3>Evaluating lithology id<a class="headerlink" href="#evaluating-lithology-id" title="Link to this heading">#</a></h3>
 <p>The model can be evaluated for the lithology id defined in the stratigraphic column.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">litho</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="s1">&#39;myfeature&#39;</span><span class="p">,</span><span class="n">regular_grid</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -637,8 +659,10 @@ for analysing models.</p>
               
               
               
-                <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="input_data.html"
@@ -668,6 +692,7 @@ for analysing models.</p>
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
@@ -693,6 +718,7 @@ for analysing models.</p>
   </nav></div>
 
   <div class="sidebar-secondary-item">
+
   <div class="tocsection sourcelink">
     <a href="../_sources/user_guide/geological_model.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
@@ -705,7 +731,7 @@ for analysing models.</p>
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -713,8 +739,8 @@ for analysing models.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

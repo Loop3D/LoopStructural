@@ -28,7 +28,7 @@ it is also possible to vary these weights per datapoint.
 
 .. GENERATED FROM PYTHON SOURCE LINES 11-16
 
-.. code-block:: default
+.. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
@@ -50,7 +50,7 @@ Use Cladius case study
 
 .. GENERATED FROM PYTHON SOURCE LINES 20-22
 
-.. code-block:: default
+.. code-block:: Python
 
     data, bb = load_claudius()
     data.head()
@@ -167,7 +167,7 @@ Build model with weight 1.0 for the control points (cpw) and gradient normal con
 
 .. GENERATED FROM PYTHON SOURCE LINES 26-33
 
-.. code-block:: default
+.. code-block:: Python
 
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.data = data
@@ -185,13 +185,6 @@ Build model with weight 1.0 for the control points (cpw) and gradient normal con
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
-
 
 
 
@@ -201,7 +194,7 @@ Change weights to
 
 .. GENERATED FROM PYTHON SOURCE LINES 35-44
 
-.. code-block:: default
+.. code-block:: Python
 
 
     model = GeologicalModel(bb[0, :], bb[1, :])
@@ -221,13 +214,6 @@ Change weights to
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
-
 
 
 
@@ -240,7 +226,7 @@ in the North of the model.
 
 .. GENERATED FROM PYTHON SOURCE LINES 49-60
 
-.. code-block:: default
+.. code-block:: Python
 
     data, bb = load_claudius()
     data["w"] = 1.0
@@ -262,20 +248,13 @@ in the North of the model.
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Cannot use region
-    Cannot use region
-
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.544 seconds)
+   **Total running time of the script:** (0 minutes 4.143 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_7_local_weights.py:
@@ -284,16 +263,13 @@ in the North of the model.
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_7_local_weights.ipynb <plot_7_local_weights.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_7_local_weights.py <plot_7_local_weights.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_7_local_weights.ipynb <plot_7_local_weights.ipynb>`
 
 
 .. only:: html

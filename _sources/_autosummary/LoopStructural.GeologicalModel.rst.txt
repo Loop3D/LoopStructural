@@ -39,7 +39,6 @@ LoopStructural.GeologicalModel
       ~GeologicalModel.from_map2loop_directory
       ~GeologicalModel.from_processor
       ~GeologicalModel.get_feature_by_name
-      ~GeologicalModel.get_interpolator
       ~GeologicalModel.regular_grid
       ~GeologicalModel.rescale
       ~GeologicalModel.scale

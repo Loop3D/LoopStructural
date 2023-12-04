@@ -1,6 +1,0 @@
-LoopStructural.visualisation.vtk\_exporter.LoopImportError
-==========================================================
-
-.. currentmodule:: LoopStructural.visualisation.vtk_exporter
-
-.. autoexception:: LoopImportError
