@@ -5,7 +5,7 @@ import logging
 
 import numpy as np
 
-from ..utils.helper import get_vectors
+from ..utils import get_vectors
 from ._discrete_interpolator import DiscreteInterpolator
 from ..interpolators import InterpolatorType
 

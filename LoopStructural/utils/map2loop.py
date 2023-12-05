@@ -139,14 +139,14 @@ def process_map2loop(m2l_directory, flags={}):
         vector_scale = max_thickness
 
     if gradient:
-        from LoopStructural.utils.helper import strike_dip_vector
+        from LoopStructural.utils import strikedip2vector
 
         contact_orientations["strike"] = contact_orientations["azimuth"] - 90
         contact_orientations["gx"] = np.nan
         contact_orientations["gy"] = np.nan
         contact_orientations["gz"] = np.nan
         contact_orientations[["gx", "gy", "gz"]] = (
-            strike_dip_vector(
+            strikedip2vector(
                 contact_orientations["strike"], contact_orientations["dip"]
             )
             * max_thickness
@@ -158,14 +158,14 @@ def process_map2loop(m2l_directory, flags={}):
         # contact_orientations['polarity']+=1
         contact_orientations.loc[contact_orientations["polarity"] == 0] = -1
     if not gradient:
-        from LoopStructural.utils.helper import strike_dip_vector
+        from LoopStructural.utils.helper import strikedip2vector
 
         contact_orientations["strike"] = contact_orientations["azimuth"] - 90
         contact_orientations["nx"] = np.nan
         contact_orientations["ny"] = np.nan
         contact_orientations["nz"] = np.nan
         contact_orientations[["nx", "ny", "nz"]] = (
-            strike_dip_vector(
+            strikedip2vector(
                 contact_orientations["strike"], contact_orientations["dip"]
             )
             * vector_scale
@@ -342,7 +342,7 @@ def process_map2loop(m2l_directory, flags={}):
         fault_tips[1, :] = fault_centers[:3] - strike_vector * fault_centers[5]
 
     fault_orientations["strike"] = fault_orientations["DipDirection"] - 90
-    fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
+    fault_orientations[["gx", "gy", "gz"]] = strikedip2vector(
         fault_orientations["strike"], fault_orientations["dip"]
     )
     for g in groups["group"].unique():

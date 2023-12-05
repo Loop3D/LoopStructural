@@ -19,7 +19,7 @@ from ..modelling.features import (
     BaseFeature,
     StructuralFrame,
 )
-from ..utils.helper import create_surface, get_vectors, create_box
+from ..utils import create_surface, create_box
 
 
 class BaseModelPlotter:

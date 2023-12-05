@@ -14,7 +14,7 @@ except:
 from ..interpolators import DiscreteInterpolator
 from ..interpolators import InterpolatorType
 
-from ..utils.helper import get_vectors
+from ..utils import get_vectors
 
 
 class PiecewiseLinearInterpolator(DiscreteInterpolator):

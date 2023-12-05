@@ -58,9 +58,8 @@ from ...utils.exceptions import InterpolatorError
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
-    strike_dip_vector,
-    get_vectors,
 )
+from ...utils import strikedip2vector, get_vectors
 from ...utils import BoundingBox
 
 from ...modelling.intrusions import IntrusionBuilder
@@ -618,7 +617,7 @@ class GeologicalModel:
             logger.info("Converting strike and dip to vectors")
             mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
             self._data.loc[mask, gradient_vec_names()] = (
-                strike_dip_vector(
+                strikedip2vector(
                     self._data.loc[mask, "strike"], self._data.loc[mask, "dip"]
                 )
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
