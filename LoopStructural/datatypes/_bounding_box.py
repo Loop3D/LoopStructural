@@ -83,6 +83,29 @@ class BoundingBox:
         self.nsteps = nsteps
 
     @property
+    def corners(self):
+        """Returns the corners of the bounding box
+
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        return np.array(
+            [
+                self.origin.tolist(),
+                [self.maximum[0], self.origin[1], self.origin[2]],
+                [self.maximum[0], self.maximum[1], self.origin[2]],
+                [self.origin[0], self.maximum[1], self.origin[2]],
+                [self.origin[0], self.origin[1], self.maximum[2]],
+                [self.maximum[0], self.origin[1], self.maximum[2]],
+                self.maximum.tolist(),
+                [self.origin[0], self.maximum[1], self.maximum[2]],
+            ]
+        )
+
+    @property
     def step_vector(self):
         return (self.maximum - self.origin) / self.nsteps
 
