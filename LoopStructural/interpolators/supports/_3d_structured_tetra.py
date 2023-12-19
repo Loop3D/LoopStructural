@@ -2,11 +2,12 @@
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 import logging
+from typing import Self
 
 import numpy as np
 from ._3d_base_structured import BaseStructuredSupport
 from . import SupportType
-
+from scipy.sparse import coo_matrix, tril
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
@@ -27,8 +28,18 @@ class TetMesh(BaseStructuredSupport):
         self.tetra_mask = np.array(
             [[0, 6, 5, 3], [7, 3, 5, 6], [4, 0, 5, 6], [2, 0, 3, 6], [1, 0, 3, 5]]
         )
-
+        self.shared_element_relationships = np.zeros(
+            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
+        )
+        self.shared_elements = np.zeros(
+            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 3), dtype=int
+        )
         self.cg = None
+        self._init_face_table()
+
+    @property
+    def neighbours(self):
+        return self.get_neighbours()
 
     @property
     def ntetra(self) -> int:
@@ -41,6 +52,26 @@ class TetMesh(BaseStructuredSupport):
     @property
     def n_cells(self) -> int:
         return np.prod(self.nsteps_cells)
+
+    @property
+    def elements(self):
+        return self.get_elements()
+
+    @property
+    def element_size(self):
+        """Calculate the volume of a tetrahedron using the 4 corners
+        volume = abs(det(A))/6 where A is the jacobian of the corners
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        vecs = (
+            self.nodes[self.elements[:, :4], :][:, 1:, :]
+            - self.nodes[self.elements[:, :4], :][:, 0, None, :]
+        )
+        return np.abs(np.linalg.det(vecs)) / 6
 
     @property
     def barycentre(self) -> np.ndarray:
@@ -57,6 +88,85 @@ class TetMesh(BaseStructuredSupport):
         tetra = self.get_elements()
         barycentre = np.sum(self.nodes[tetra][:, :, :], axis=1) / 4.0
         return barycentre
+
+    def _init_face_table(self):
+        """
+        Fill table containing elements that share a face, and another
+        table that contains the nodes for a face.
+        """
+        # need to identify the shared nodes for pairs of elements
+        # we do this by creating a sparse matrix that has N rows (number of elements)
+        # and M columns (number of nodes).
+        # We then fill the location where a node is in an element with true
+        # Then we create a table for the pairs of elements in the mesh
+        # we have the neighbour relationships, which are the 4 neighbours for each element
+        # create a new table that shows the element index repeated four times
+        # flatten both of these arrays so we effectively have a table with pairs of neighbours
+        # disgard the negative neighbours because these are border neighbours
+        rows = np.tile(np.arange(self.n_elements)[:, None], (1, 4))
+        elements = self.get_elements()
+        neighbours = self.get_neighbours()
+        # add array of bool to the location where there are elements for each node
+
+        # use this to determine shared faces
+
+        element_nodes = coo_matrix(
+            (np.ones(elements.shape[0] * 4), (rows.ravel(), elements.ravel())),
+            shape=(self.n_elements, self.n_nodes),
+            dtype=bool,
+        ).tocsr()
+        n1 = np.tile(np.arange(neighbours.shape[0], dtype=int)[:, None], (1, 4))
+        n1 = n1.flatten()
+        n2 = neighbours.flatten()
+        n1 = n1[n2 >= 0]
+        n2 = n2[n2 >= 0]
+        el_rel = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
+        el_rel[:] = -1
+        el_rel[np.arange(n1.shape[0]), 0] = n1
+        el_rel[np.arange(n1.shape[0]), 1] = n2
+        el_rel = el_rel[el_rel[:, 0] >= 0, :]
+
+        el_rel2 = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
+        el_rel2[:] = -1
+        el_pairs = coo_matrix(
+            (np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))
+        ).tocsr()
+        i, j = tril(el_pairs).nonzero()
+        el_rel2[: len(i), 0] = i
+        el_rel2[: len(i), 1] = j
+        el_rel2 = el_rel2[el_rel2[:, 0] >= 0, :]
+
+        faces = element_nodes[el_rel2[:, 0], :].multiply(
+            element_nodes[el_rel2[:, 1], :]
+        )
+        shared_faces = faces[np.array(np.sum(faces, axis=1) == 3).flatten(), :]
+        row, col = shared_faces.nonzero()
+        row = row[row.argsort()]
+        col = col[row.argsort()]
+        shared_face_index = np.zeros((shared_faces.shape[0], 3), dtype=int)
+        shared_face_index[:] = -1
+        shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)
+        self.shared_element_relationships = el_rel2  # [np.arange(n1.shape[0]), 0] = n1
+        # self.shared_element_relationships[np.arange(n1.shape[0]), 1] = n2
+        # self.shared_elements[np.arange(el_rel2.shape[0]), :] = shared_face_index
+
+    @property
+    def shared_element_norm(self):
+        """
+        Get the normal to all of the shared elements
+        """
+        elements = self.shared_elements
+        v1 = self.nodes[elements[:, 1], :] - self.nodes[elements[:, 0], :]
+        v2 = self.nodes[elements[:, 2], :] - self.nodes[elements[:, 0], :]
+        return np.cross(v1, v2, axisa=1, axisb=1)
+
+    @property
+    def shared_element_size(self):
+        """
+        Get the area of the share triangle
+        """
+        norm = self.shared_element_norm
+        return 0.5 * np.linalg.norm(norm, axis=1)
 
     def evaluate_value(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
         """
@@ -208,10 +318,24 @@ class TetMesh(BaseStructuredSupport):
         c_return = np.zeros((pos.shape[0], 4))
         c_return[:] = np.nan
         c_return[inside] = c[mask]
-        tetra_return = np.zeros((pos.shape[0], 4)).astype(int)
+        tetra_return = np.zeros((pos.shape[0])).astype(int)
         tetra_return[:] = -1
-        tetra_return[inside, :] = tetras[mask, :]
+        print(inside.shape, gi.shape, c.shape, mask.shape)
+        local_tetra_index = np.tile(np.arange(0, 5)[None, :], (mask.shape[0], 1))
+        local_tetra_index = local_tetra_index[mask]
+        tetra_global_index = self.tetra_global_index(cell_indexes, local_tetra_index)
+        print(local_tetra_index)
+        tetra_return[inside] = tetra_global_index[inside]
         return vertices_return, c_return, tetra_return, inside
+
+    def evaluate_shape(self, locations):
+        """
+        Convenience function returning barycentric coords
+
+        """
+        locations = np.array(locations)
+        verts, c, elements, inside = self.get_element_for_location(locations)
+        return c, elements, inside
 
     def get_elements(self):
         """
@@ -237,6 +361,27 @@ class TetMesh(BaseStructuredSupport):
         tetras[~even_mask, :, :] = gi[~even_mask, :][:, self.tetra_mask]
 
         return tetras.reshape((tetras.shape[0] * tetras.shape[1], tetras.shape[2]))
+
+    def tetra_global_index(self, indices, tetra_index):
+        """
+        Get the global index of a tetra from the cell index and the local tetra index
+
+        Parameters
+        ----------
+        indices
+        tetra_index
+
+        Returns
+        -------
+
+        """
+        print("idc", indices.shape)
+        return (
+            tetra_index
+            + indices[:, 0] * 5
+            + self.nsteps_cells[0] * indices[:, 1] * 5
+            + self.nsteps_cells[0] * self.nsteps_cells[1] * indices[:, 2] * 5
+        )
 
     def get_element_gradients(self, elements=None):
         """
@@ -309,6 +454,20 @@ class TetMesh(BaseStructuredSupport):
         element_gradients = element_gradients @ I
 
         return element_gradients[elements, :, :]
+
+    def evaluate_shape_derivatives(self, pos, elements=None):
+        inside = None
+        if elements is not None:
+            inside = np.ones(elements.shape[0], dtype=bool)
+        if elements is None:
+            verts, c, elements, inside = self.get_element_for_location(pos)
+            # np.arange(0, self.n_elements, dtype=int)
+        print(pos.shape, inside.shape, elements.shape)
+        return (
+            self.get_element_gradients(elements),
+            elements,
+            inside,
+        )
 
     def get_element_gradient_for_location(self, pos: np.ndarray):
         """
@@ -571,12 +730,29 @@ class TetMesh(BaseStructuredSupport):
             global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
             global_neighbour_idx = (
-                neigh_cell[:, :, 0]
-                + neigh_cell[:, :, 1] * self.nsteps_cells[0]
-                + neigh_cell[:, :, 2] * self.nsteps_cells[0] * self.nsteps_cells[1]
-            ) * 5 + mask[:, 3]
+                mask[:, 3]
+                + neigh_cell[:, :, 0] * 5
+                + neigh_cell[:, :, 1] * self.nsteps_cells[0] * 5
+                + neigh_cell[:, :, 2] * self.nsteps_cells[0] * self.nsteps_cells[1] * 5
+            )
 
             global_neighbour_idx[~inside] = -1
             neighbours[logic, 1:] = global_neighbour_idx
 
         return neighbours
+
+    @property
+    def vtk(self):
+        try:
+            import pyvista as pv
+        except ImportError:
+            raise ImportError("pyvista is required for vtk support")
+
+        from pyvista import CellType
+
+        celltype = np.full(self.elements.shape[0], CellType.TETRA, dtype=np.uint8)
+        elements = np.hstack(
+            [np.zeros(self.elements.shape[0], dtype=int)[:, None] + 4, self.elements]
+        )
+        elements = elements.flatten()
+        return pv.UnstructuredGrid(elements, celltype, self.nodes)
