@@ -11,7 +11,6 @@ from .exceptions import (
     LoopValueError,
 )
 from ._transformation import EuclideanTransformation
-from .map2loop import process_map2loop, build_model
 from .helper import (
     get_data_bounding_box,
     get_data_bounding_box_map,
@@ -24,6 +23,7 @@ from .maths import (
     strikedip2vector,
     azimuthplunge2vector,
 )
+from .helper import create_surface, create_box
 from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion
 
 from .json_encoder import LoopJSONEncoder

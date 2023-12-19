@@ -974,7 +974,7 @@ class GeologicalModel:
         folded_fold_frame = fold_frame_builder.frame
         folded_fold_frame.builder = fold_frame_builder
 
-        folded_fold_frame.type = "structuralframe"
+        folded_fold_frame.type = FeatureType.STRUCTURALFRAME
 
         self._add_feature(folded_fold_frame)
 
@@ -987,9 +987,7 @@ class GeologicalModel:
         intrusion_frame_parameters={},
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        # parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
-        # faults=None,  # LG seems unused?
         **kwargs,
     ):
         """
@@ -1516,7 +1514,7 @@ class GeologicalModel:
                 fault.add_region(f)
                 break
         if displacement == 0:
-            fault.type = "fault_inactive"
+            fault.type = FeatureType.INACTIVEFAULT
         self._add_feature(fault)
 
         return fault
