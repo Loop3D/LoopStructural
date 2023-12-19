@@ -18,7 +18,7 @@ class GeologicalFeature(BaseFeature):
     model. For example foliations, fault planes, fold rotation angles etc.
 
     Attributes
-    ---------- 
+    ----------
     name : string
         should be a unique name for the geological feature
     support : a ScalarField
@@ -94,6 +94,7 @@ class GeologicalFeature(BaseFeature):
         # TODO need to add a generic type checker for all methods
         # if evaluation_points is not a numpy array try and convert
         # otherwise error
+        evaluation_points = np.asarray(evaluation_points)
         self.builder.up_to_date()
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
