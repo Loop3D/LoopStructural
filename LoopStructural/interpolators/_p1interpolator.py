@@ -47,7 +47,7 @@ class P1Interpolator(DiscreteInterpolator):
             grad, elements, inside = self.support.evaluate_shape_derivatives(
                 points[:, :3]
             )
-            size = self.support.element_size[inside]
+            size = self.support.element_size[elements[inside]]
             wt = np.ones(size.shape[0])
             wt *= w * size
             # print(grad[inside,:,:].shape)
@@ -55,12 +55,13 @@ class P1Interpolator(DiscreteInterpolator):
             elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
 
             elements = elements.swapaxes(0, 1)
-            # elements = elements.swapaxes(0,2)
-            grad = grad.swapaxes(1, 2)
+            # elements = elements.swapaxes(0, 2)
+            # grad = grad.swapaxes(1, 2)
+            # elements = elements.swapaxes(1, 2)
 
             self.add_constraints_to_least_squares(
                 grad[inside, :, :] * wt[:, None, None],
-                points[inside, 3:5] * wt[:, None],
+                points[inside, 3:6] * wt[:, None],
                 elements,
                 name="norm",
             )
@@ -81,7 +82,7 @@ class P1Interpolator(DiscreteInterpolator):
                 name="value",
             )
 
-    def minimize_edge_jumps(
+    def minimise_edge_jumps(
         self, w=0.1, vector_func=None
     ):  # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
@@ -97,13 +98,12 @@ class P1Interpolator(DiscreteInterpolator):
         if vector_func:
             norm = vector_func((v1 + v2) / 2)
         # evaluate the shape function for the edges for each neighbouring triangle
-        Dt, tri1 = self.support.evaluate_shape_derivatives(
+        Dt, tri1, inside = self.support.evaluate_shape_derivatives(
             bc_t1, elements=self.support.shared_element_relationships[:, 0]
         )
-        Dn, tri2 = self.support.evaluate_shape_derivatives(
+        Dn, tri2, inside = self.support.evaluate_shape_derivatives(
             bc_t2, elements=self.support.shared_element_relationships[:, 1]
         )
-
         # constraint for each cp is triangle - neighbour create a Nx12 matrix
         const_t = np.einsum("ij,ijk->ik", norm, Dt)
         const_n = -np.einsum("ij,ijk->ik", norm, Dn)
@@ -123,3 +123,51 @@ class P1Interpolator(DiscreteInterpolator):
             name="edge jump",
         )
         # p2.add_constraints_to_least_squares(const_cp2*e_len[:,None]*w,np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
+
+    def setup_interpolator(self, **kwargs):
+        """
+        Searches through kwargs for any interpolation weights and updates
+        the dictionary.
+        Then adds the constraints to the linear system using the
+        interpolation weights values
+        Parameters
+        ----------
+        kwargs -
+            interpolation weights
+
+        Returns
+        -------
+
+        """
+        # can't reset here, clears fold constraints
+        # self.reset()
+        for key in kwargs:
+            if "regularisation" in kwargs:
+                self.interpolation_weights["cgw"] = 0.1 * kwargs["regularisation"]
+            self.up_to_date = False
+            self.interpolation_weights[key] = kwargs[key]
+        if self.interpolation_weights["cgw"] > 0.0:
+            self.up_to_date = False
+            self.minimise_edge_jumps(self.interpolation_weights["cgw"])
+            #     direction_feature=kwargs.get("direction_feature", None),
+            #     direction_vector=kwargs.get("direction_vector", None),
+            # )
+            # self.minimise_grad_steepness(
+            #     w=self.interpolation_weights.get("steepness_weight", 0.01),
+            #     wtfunc=self.interpolation_weights.get("steepness_wtfunc", None),
+            # )
+            logger.info(
+                "Using constant gradient regularisation w = %f"
+                % self.interpolation_weights["cgw"]
+            )
+
+        logger.info(
+            "Added %i gradient constraints, %i normal constraints,"
+            "%i tangent constraints and %i value constraints"
+            % (self.n_g, self.n_n, self.n_t, self.n_i)
+        )
+        self.add_gradient_ctr_pts(self.interpolation_weights["gpw"])
+        self.add_norm_ctr_pts(self.interpolation_weights["npw"])
+        self.add_ctr_pts(self.interpolation_weights["cpw"])
+        self.add_tangent_constraints(self.interpolation_weights["tpw"])
+        # self.add_interface_constraints(self.interpolation_weights["ipw"])
