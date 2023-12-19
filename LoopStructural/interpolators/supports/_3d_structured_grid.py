@@ -395,7 +395,7 @@ class StructuredGrid(BaseStructuredSupport):
             ]
         ).T
 
-    def get_element_gradient_for_location(self, pos):
+    def get_element_gradient_for_location(self, pos: np.ndarray):
         """
         Get the gradient of the element at the locations.
 
@@ -420,6 +420,7 @@ class StructuredGrid(BaseStructuredSupport):
         # xindex, yindex, zindex = self.position_to_cell_index(pos)
         # cellx, celly, cellz = self.cell_corner_indexes(xindex, yindex,zindex)
         # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
+        pos = np.asarray(pos)
         T = np.zeros((pos.shape[0], 3, 8))
         local_coords = self.position_to_local_coordinates(pos)
         vertices, inside = self.position_to_cell_vertices(pos)
@@ -454,7 +455,7 @@ class StructuredGrid(BaseStructuredSupport):
 
         return vertices, T, elements, inside
 
-    def get_element_for_location(self, pos):
+    def get_element_for_location(self, pos: np.ndarray):
         """Calculate the shape function of elements
         for a location
 

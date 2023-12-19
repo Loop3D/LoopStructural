@@ -453,3 +453,7 @@ class BaseStructuredSupport:
 
         """
         return self._global_indicies(indexes, self.nsteps_cells)
+
+    def pyvista(self):
+        
+        pass
