@@ -1,5 +1,6 @@
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
+from LoopStructural.utils.typing import NumericInput
 
 # from LoopStructural import GeologicalModel
 import numpy as np
@@ -39,6 +40,8 @@ class BaseFeature:
         self._model = model
         self.builder = builder
         self.faults_enabled = True
+        self._min = None
+        self._max = None
 
     def __str__(self):
         _str = "-----------------------------------------------------\n"
@@ -125,6 +128,17 @@ class BaseFeature:
         """
         raise NotImplementedError
 
+    def evaluate_normalised_value(self, pos: NumericInput):
+        """Evaluate the feature value scaling between 0 and 1
+
+        Parameters
+        ----------
+        pos : NumericInput
+            An array or arraylike object with locations
+        """
+        value = self.evaluate_value(pos)
+        return (value - self.min()) / (self.max() - self.min())
+
     def _calculate_mask(self, evaluation_points: np.ndarray) -> np.ndarray:
         """Calculate the mask for which evaluation points need to be calculated
 
@@ -183,6 +197,7 @@ class BaseFeature:
         """
         if self.model is None:
             return 0
+
         return np.nanmin(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
 
     def max(self):
