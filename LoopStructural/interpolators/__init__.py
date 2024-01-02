@@ -56,6 +56,7 @@ from ..interpolators.supports import (
     P2Unstructured2d,
     StructuredGrid2D,
     P2UnstructuredTetMesh,
+    SupportType,
 )
 
 
@@ -89,4 +90,13 @@ interpolator_map = {
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
     # InterpolatorType.SURFE: SurfeRBFInterpolator,
 }
+
+support_interpolator_map = {
+    InterpolatorType.FINITE_DIFFERENCE: SupportType.StructuredGrid,
+    InterpolatorType.DISCRETE_FOLD: SupportType.TetMesh,
+    InterpolatorType.PIECEWISE_LINEAR: SupportType.TetMesh,
+    InterpolatorType.PIECEWISE_QUADRATIC: SupportType.TetMesh,
+}
+
+
 from ._interpolator_factory import InterpolatorFactory
