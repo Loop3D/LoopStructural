@@ -1,6 +1,6 @@
 from typing import Optional
-
-from . import interpolator_map, InterpolatorType  # , support_interpolator_map
+from .supports import support_map, SupportFactory
+from . import interpolator_map, InterpolatorType, support_interpolator_map
 from LoopStructural.utils import BoundingBox
 from typing import Optional
 import numpy as np
@@ -26,14 +26,14 @@ class InterpolatorFactory:
         if type(interpolatortype) == str:
             interpolatortype = InterpolatorType._member_map_[interpolatortype].numerator
         if support is None:
-            raise Exception("Support must be specified")
-            # supporttype = support_interpolator_map[interpolatortype]
-            # support = SupportFactory.create_support_from_bbox(
-            #     supporttype,
-            #     bounding_box=boundingbox,
-            #     nelements=nelements,
-            #     element_volume=element_volume,
-            # )
+            # raise Exception("Support must be specified")
+            supporttype = support_interpolator_map[interpolatortype]
+            support = SupportFactory.create_support_from_bbox(
+                supporttype,
+                bounding_box=boundingbox,
+                nelements=nelements,
+                element_volume=element_volume,
+            )
         return interpolator_map[interpolatortype](support)
 
     @staticmethod
