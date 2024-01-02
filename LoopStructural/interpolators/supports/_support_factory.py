@@ -1,3 +1,4 @@
+from tkinter.tix import ButtonBox
 from LoopStructural.interpolators.supports import support_map, SupportType
 
 
@@ -17,6 +18,19 @@ class SupportFactory:
         if support_type is None:
             raise ValueError("No support type specified")
         return SupportFactory.create_support(support_type, **d)
+
+    @staticmethod
+    def create_support_from_bbox(
+        support_type, bounding_box, nelements, element_volume=None
+    ):
+        if type(support_type) == str:
+            support_type = SupportType._member_map_[support_type].numerator
+        bbox = bounding_box.with_buffer(0.2)
+        bbox.nelements = nelements
+
+        return support_map[support_type](
+            origin=bbox.origin, step_vector=bbox.step_vector, nsteps=bbox.nsteps
+        )
 
     # @staticmethod
     # def create_3d_structured_grid(origin, maximum, step_vector, nsteps)
