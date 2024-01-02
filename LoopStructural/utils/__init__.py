@@ -22,6 +22,7 @@ from .maths import (
     get_vectors,
     strikedip2vector,
     azimuthplunge2vector,
+    normal_vector_to_strike_and_dip,
 )
 from .helper import create_surface, create_box
 from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion
