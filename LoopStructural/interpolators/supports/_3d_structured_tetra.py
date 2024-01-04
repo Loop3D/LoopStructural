@@ -1,8 +1,6 @@
 """
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
-import logging
-from typing import Self
 
 import numpy as np
 from ._3d_base_structured import BaseStructuredSupport
