@@ -144,6 +144,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Reset the interpolation constraints
 
         """
+        self.constraints = {}
         logger.debug("Resetting interpolation constraints")
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):
