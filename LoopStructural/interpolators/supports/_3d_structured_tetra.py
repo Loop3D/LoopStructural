@@ -126,18 +126,21 @@ class TetMesh(BaseStructuredSupport):
         el_rel[np.arange(n1.shape[0]), 1] = n2
         el_rel = el_rel[el_rel[:, 0] >= 0, :]
 
-        el_rel2 = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
-        el_rel2[:] = -1
+        # el_rel2 = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
+        self.shared_element_relationships[:] = -1
         el_pairs = coo_matrix(
             (np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))
         ).tocsr()
         i, j = tril(el_pairs).nonzero()
-        el_rel2[: len(i), 0] = i
-        el_rel2[: len(i), 1] = j
-        el_rel2 = el_rel2[el_rel2[:, 0] >= 0, :]
+        self.shared_element_relationships[: len(i), 0] = i
+        self.shared_element_relationships[: len(i), 1] = j
 
-        faces = element_nodes[el_rel2[:, 0], :].multiply(
-            element_nodes[el_rel2[:, 1], :]
+        self.shared_element_relationships = self.shared_element_relationships[
+            self.shared_element_relationships[:, 0] >= 0, :
+        ]
+
+        faces = element_nodes[self.shared_element_relationships[:, 0], :].multiply(
+            element_nodes[self.shared_element_relationships[:, 1], :]
         )
         shared_faces = faces[np.array(np.sum(faces, axis=1) == 3).flatten(), :]
         row, col = shared_faces.nonzero()
@@ -146,9 +149,14 @@ class TetMesh(BaseStructuredSupport):
         shared_face_index = np.zeros((shared_faces.shape[0], 3), dtype=int)
         shared_face_index[:] = -1
         shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)
-        self.shared_element_relationships = el_rel2  # [np.arange(n1.shape[0]), 0] = n1
-        # self.shared_element_relationships[np.arange(n1.shape[0]), 1] = n2
-        # self.shared_elements[np.arange(el_rel2.shape[0]), :] = shared_face_index
+
+        self.shared_elements[
+            np.arange(self.shared_element_relationships.shape[0]), :
+        ] = shared_face_index
+        # resize
+        self.shared_elements = self.shared_elements[
+            : len(self.shared_element_relationships), :
+        ]
 
     @property
     def shared_element_norm(self):
@@ -187,7 +195,7 @@ class TetMesh(BaseStructuredSupport):
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(
-            c[inside, :] * property_array[tetras[inside, :]], axis=1
+            c[inside, :] * property_array[self.elements[tetras[inside]]], axis=1
         )
         return values
 
@@ -219,7 +227,8 @@ class TetMesh(BaseStructuredSupport):
         ) = self.get_element_gradient_for_location(pos)
         # grads = np.zeros(tetras.shape)
         values[inside, :] = (
-            element_gradients[inside, :, :] * property_array[tetras[inside, None, :]]
+            element_gradients[inside, :, :]
+            * property_array[self.elements[tetras[inside]][:, None, :]]
         ).sum(2)
         length = np.sum(values[inside, :], axis=1)
         # values[inside,:] /= length[:,None]
@@ -320,12 +329,12 @@ class TetMesh(BaseStructuredSupport):
         c_return[inside] = c[mask]
         tetra_return = np.zeros((pos.shape[0])).astype(int)
         tetra_return[:] = -1
-        print(inside.shape, gi.shape, c.shape, mask.shape)
         local_tetra_index = np.tile(np.arange(0, 5)[None, :], (mask.shape[0], 1))
         local_tetra_index = local_tetra_index[mask]
-        tetra_global_index = self.tetra_global_index(cell_indexes, local_tetra_index)
-        print(local_tetra_index)
-        tetra_return[inside] = tetra_global_index[inside]
+        tetra_global_index = self.tetra_global_index(
+            cell_indexes[inside, :], local_tetra_index
+        )
+        tetra_return[inside] = tetra_global_index
         return vertices_return, c_return, tetra_return, inside
 
     def evaluate_shape(self, locations):
@@ -350,8 +359,9 @@ class TetMesh(BaseStructuredSupport):
         x = np.arange(0, self.nsteps_cells[0])
         y = np.arange(0, self.nsteps_cells[1])
         z = np.arange(0, self.nsteps_cells[2])
-
-        cell_indexes = np.array(np.meshgrid(x, y, z, indexing="ij")).reshape(3, -1).T
+        ## reverse x and z so that indexing is
+        zz, yy, xx = np.meshgrid(z, y, x, indexing="ij")
+        cell_indexes = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         # get cell corners
         cell_corners = self.cell_corner_indexes(cell_indexes)
         even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
@@ -375,7 +385,6 @@ class TetMesh(BaseStructuredSupport):
         -------
 
         """
-        print("idc", indices.shape)
         return (
             tetra_index
             + indices[:, 0] * 5
@@ -462,7 +471,7 @@ class TetMesh(BaseStructuredSupport):
         if elements is None:
             verts, c, elements, inside = self.get_element_for_location(pos)
             # np.arange(0, self.n_elements, dtype=int)
-        print(pos.shape, inside.shape, elements.shape)
+
         return (
             self.get_element_gradients(elements),
             elements,
@@ -657,57 +666,57 @@ class TetMesh(BaseStructuredSupport):
         odd_mask = (
             np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=0) % 2 == 1
         )
-        odd_mask = ~odd_mask.astype(bool)
+        odd_mask = odd_mask.astype(bool)
 
         # apply masks to
         masks = []
         masks.append(
             [
                 np.logical_and(one_mask, odd_mask),
-                np.array([[-1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 3]]),
+                np.array([[1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 4]]),
             ]
         )
         masks.append(
             [
                 np.logical_and(two_mask, odd_mask),
-                np.array([[1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 4]]),
+                np.array([[-1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 3]]),
             ]
         )
         masks.append(
             [
                 np.logical_and(three_mask, odd_mask),
-                np.array([[-1, 0, 0, 4], [0, -1, 0, 3], [0, 0, -1, 2]]),
+                np.array([[-1, 0, 0, 4], [0, 1, 0, 3], [0, 0, -1, 1]]),
             ]
         )
         masks.append(
             [
                 np.logical_and(four_mask, odd_mask),
-                np.array([[1, 0, 0, 3], [0, 1, 0, 4], [0, 0, -1, 1]]),
+                np.array([[1, 0, 0, 3], [0, -1, 0, 4], [0, 0, -1, 2]]),
             ]
         )
 
         masks.append(
             [
                 np.logical_and(one_mask, ~odd_mask),
-                np.array([[1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 4]]),
+                np.array([[-1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 3]]),
             ]
         )
         masks.append(
             [
                 np.logical_and(two_mask, ~odd_mask),
-                np.array([[-1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 3]]),
+                np.array([[1, 0, 0, 2], [0, -1, 0, 1], [0, 0, 1, 4]]),
             ]
         )
         masks.append(
             [
                 np.logical_and(three_mask, ~odd_mask),
-                np.array([[-1, 0, 0, 4], [0, 1, 0, 3], [0, 0, -1, 1]]),
+                np.array([[-1, 0, 0, 4], [0, -1, 0, 3], [0, 0, -1, 2]]),
             ]
         )
         masks.append(
             [
                 np.logical_and(four_mask, ~odd_mask),
-                np.array([[1, 0, 0, 3], [0, -1, 0, 4], [0, 0, -1, 2]]),
+                np.array([[1, 0, 0, 3], [0, 1, 0, 4], [0, 0, -1, 1]]),
             ]
         )
 
@@ -730,12 +739,10 @@ class TetMesh(BaseStructuredSupport):
             global_neighbour_idx = np.zeros((c_xi.shape[0], 4)).astype(int)
             global_neighbour_idx[:] = -1
             global_neighbour_idx = (
-                mask[:, 3]
-                + neigh_cell[:, :, 0] * 5
-                + neigh_cell[:, :, 1] * self.nsteps_cells[0] * 5
-                + neigh_cell[:, :, 2] * self.nsteps_cells[0] * self.nsteps_cells[1] * 5
-            )
-
+                neigh_cell[:, :, 0]
+                + neigh_cell[:, :, 1] * self.nsteps_cells[0]
+                + neigh_cell[:, :, 2] * self.nsteps_cells[0] * self.nsteps_cells[1]
+            ) * 5 + mask[:, 3]
             global_neighbour_idx[~inside] = -1
             neighbours[logic, 1:] = global_neighbour_idx
 

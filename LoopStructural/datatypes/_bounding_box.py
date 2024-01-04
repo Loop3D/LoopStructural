@@ -114,7 +114,6 @@ class BoundingBox:
             raise LoopValueError(
                 f"locations array is {locations.shape[1]}D but bounding box is {self.dimensions}"
             )
-        print("fitting")
         self.origin = locations.min(axis=0)
         self.maximum = locations.max(axis=0)
         return self

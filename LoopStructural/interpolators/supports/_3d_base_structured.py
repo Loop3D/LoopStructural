@@ -275,34 +275,8 @@ class BaseStructuredSupport:
             + nsteps[None, 0] * nsteps[None, 1] * indexes[:, 2]
         )
         return gi.reshape(original_shape[:-1])
-        # if len(indexes.shape) == 2:
-        #     if indexes.shape[1] != 3 and indexes.shape[0] == 3:
-        #         indexes = indexes.swapaxes(0, 1)
-        #     if indexes.shape[1] != 3:
-        #         logger.error("Indexes shape {}".format(indexes.shape))
-        #         raise ValueError("Cell indexes needs to be Nx3")
-        #     return (
-        #         indexes[:, 0]
-        #         + nsteps[None, 0] * indexes[:, 1]
-        #         + nsteps[None, 0] * nsteps[None, 1] * indexes[:, 2]
-        #     )
-        # if len(indexes.shape) == 3:
-        #     # if indexes.shape[2] != 3 and indexes.shape[1] == 3:
-        #     #     indexes = indexes.swapaxes(1, 2)
-        #     # if indexes.shape[2] != 3 and indexes.shape[0] == 3:
-        #     #     indexes = indexes.swapaxes(0, 2)
-        #     if indexes.shape[2] != 3:
-        #         logger.error("Indexes shape {}".format(indexes.shape))
-        #         raise ValueError("Cell indexes needs to be NxNx3")
-        #     return (
-        #         indexes[:, :, 0]
-        #         + nsteps[None, None, 0] * indexes[:, :, 1]
-        #         + nsteps[None, None, 0] * nsteps[None, None, 1] * indexes[:, :, 2]
-        #     )
-        # else:
-        #     raise ValueError("Cell indexes need to be a 2 or 3d numpy array")
 
-    def cell_corner_indexes(self, cell_indexes):
+    def cell_corner_indexes(self, cell_indexes: np.ndarray) -> np.ndarray:
         """
         Returns the indexes of the corners of a cell given its location xi,
         yi, zi
@@ -455,5 +429,4 @@ class BaseStructuredSupport:
         return self._global_indicies(indexes, self.nsteps_cells)
 
     def pyvista(self):
-        
         pass

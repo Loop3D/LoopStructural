@@ -63,8 +63,8 @@ from ..interpolators.supports import (
 from ..interpolators._finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
-from ..interpolators.piecewiselinear_interpolator import (
-    PiecewiseLinearInterpolator,
+from ..interpolators._p1interpolator import (
+    P1Interpolator as PiecewiseLinearInterpolator,
 )
 from ..interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
