@@ -50,8 +50,6 @@ class P1Interpolator(DiscreteInterpolator):
             size = self.support.element_size[elements[inside]]
             wt = np.ones(size.shape[0])
             wt *= w * size
-            # print(grad[inside,:,:].shape)
-            # print(self.support.elements[elements[inside]].shape)
             elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
 
             elements = elements.swapaxes(0, 1)
