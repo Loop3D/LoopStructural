@@ -40,6 +40,9 @@ class StructuredGrid(BaseStructuredSupport):
         self.regions = {}
         self.regions["everywhere"] = np.ones(self.n_nodes).astype(bool)
 
+    def onGeometryChange(self):
+        pass
+
     @property
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))

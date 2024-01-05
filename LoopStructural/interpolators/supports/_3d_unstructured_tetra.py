@@ -7,7 +7,7 @@ import logging
 import numpy as np
 from scipy.sparse import csr_matrix, coo_matrix, tril
 
-from ._3d_base_structured import BaseStructuredSupport
+from . import StructuredGrid
 from LoopStructural.utils import getLogger
 from . import SupportType
 
@@ -74,7 +74,7 @@ class UnStructuredTetMesh:
             aabb_nsteps[aabb_nsteps < 2] = 2
         aabb_nsteps = np.array(aabb_nsteps, dtype=int)
         step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
-        self.aabb_grid = BaseStructuredSupport(
+        self.aabb_grid = StructuredGrid(
             self.minimum, nsteps=aabb_nsteps, step_vector=step_vector
         )
         # make a big table to store which tetra are in which element.

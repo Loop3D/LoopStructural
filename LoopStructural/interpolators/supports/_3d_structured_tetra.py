@@ -37,6 +37,12 @@ class TetMesh(BaseStructuredSupport):
 
         self._init_face_table()
 
+    def onGeometryChange(self):
+        self._elements = None
+        self._init_face_table()
+        if self.interpolator is not None:
+            self.interpolator.reset()
+
     @property
     def neighbours(self):
         return self.get_neighbours()
@@ -108,6 +114,7 @@ class TetMesh(BaseStructuredSupport):
         rows = np.tile(np.arange(self.n_elements)[:, None], (1, 4))
         elements = self.elements
         neighbours = self.get_neighbours()
+        print(rows.ravel().shape, elements.ravel().shape, elements.shape[0] * 4)
         # add array of bool to the location where there are elements for each node
 
         # use this to determine shared faces
@@ -159,6 +166,7 @@ class TetMesh(BaseStructuredSupport):
         self.shared_elements = self.shared_elements[
             : len(self.shared_element_relationships), :
         ]
+        print(np.max(self.shared_elements), self.n_nodes)
 
     @property
     def shared_element_norm(self):
@@ -412,7 +420,8 @@ class TetMesh(BaseStructuredSupport):
         y = np.arange(0, self.nsteps_cells[1])
         z = np.arange(0, self.nsteps_cells[2])
 
-        cell_indexes = np.array(np.meshgrid(x, y, z, indexing="ij")).reshape(3, -1).T
+        zz, yy, xx = np.meshgrid(z, y, x, indexing="ij")
+        cell_indexes = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         # c_xi = c_xi.flatten(order="F")
         # c_yi = c_yi.flatten(order="F")
         # c_zi = c_zi.flatten(order="F")
