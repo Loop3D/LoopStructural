@@ -33,6 +33,8 @@ class TetMesh(BaseStructuredSupport):
             (self.neighbours[self.neighbours >= 0].flatten().shape[0], 3), dtype=int
         )
         self.cg = None
+        self._elements = None
+
         self._init_face_table()
 
     @property
@@ -53,7 +55,9 @@ class TetMesh(BaseStructuredSupport):
 
     @property
     def elements(self):
-        return self.get_elements()
+        if self._elements is None:
+            self._elements = self.get_elements()
+        return self._elements
 
     @property
     def element_size(self):
@@ -83,7 +87,7 @@ class TetMesh(BaseStructuredSupport):
             barycentres of all tetrahedrons
         """
 
-        tetra = self.get_elements()
+        tetra = self.elements
         barycentre = np.sum(self.nodes[tetra][:, :, :], axis=1) / 4.0
         return barycentre
 
@@ -102,7 +106,7 @@ class TetMesh(BaseStructuredSupport):
         # flatten both of these arrays so we effectively have a table with pairs of neighbours
         # disgard the negative neighbours because these are border neighbours
         rows = np.tile(np.arange(self.n_elements)[:, None], (1, 4))
-        elements = self.get_elements()
+        elements = self.elements
         neighbours = self.get_neighbours()
         # add array of bool to the location where there are elements for each node
 
