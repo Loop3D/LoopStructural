@@ -169,3 +169,49 @@ class P1Interpolator(DiscreteInterpolator):
         self.add_ctr_pts(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         # self.add_interface_constraints(self.interpolation_weights["ipw"])
+
+    def add_gradient_orthogonal_constraints(
+        self, points: np.ndarray, vector: np.ndarray, w: float = 1.0, B: float = 0
+    ):
+        """
+        constraints scalar field to be orthogonal to a given vector
+
+        Parameters
+        ----------
+        points : np.darray
+            location to add gradient orthogonal constraint
+        vector : np.darray
+            vector to be orthogonal to, should be the same shape as points
+        w : double
+        B : np.array
+
+        Returns
+        -------
+
+        """
+        if points.shape[0] > 0:
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, :3]
+            )
+            size = self.support.element_size[elements[inside]]
+            wt = np.ones(size.shape[0])
+            wt *= w * size
+            elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
+
+            elements = elements.swapaxes(0, 1)
+            # elements = elements.swapaxes(0, 2)
+            # grad = grad.swapaxes(1, 2)
+            # elements = elements.swapaxes(1, 2)
+            norm = np.linalg.norm(vector, axis=1)
+            vector[norm > 0, :] /= norm[norm > 0, None]
+            A = np.einsum("ij,ijk->ik", vector[inside, :3], grad[inside, :, :])
+            B = np.zeros(points[inside, :].shape[0]) + B
+            self.add_constraints_to_least_squares(
+                A, B, elements, w=wt, name="gradient orthogonal"
+            )
+            if np.sum(inside) <= 0:
+                logger.warning(
+                    f"{np.sum(~inside)} \
+                        gradient constraints not added: outside of model bounding box"
+                )
+            self.up_to_date = False
