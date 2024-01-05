@@ -2,6 +2,7 @@
 Base geological interpolator
 """
 from abc import ABC, ABCMeta, abstractmethod
+from cgitb import reset
 from LoopStructural.utils.exceptions import LoopTypeError
 from ..interpolators import InterpolatorType
 import numpy as np
@@ -249,6 +250,10 @@ class GeologicalInterpolator(metaclass=ABCMeta):
     @abstractmethod
     def evaluate_gradient(self, locations: np.ndarray):
         raise NotImplementedError("evaluate_gradient not implemented")
+
+    @abstractmethod
+    def reset(self):
+        pass
 
     def to_dict(self):
         return {

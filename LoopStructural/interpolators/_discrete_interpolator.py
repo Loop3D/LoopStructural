@@ -145,6 +145,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         self.constraints = {}
+        self.c_ = 0
         logger.debug("Resetting interpolation constraints")
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):
@@ -427,7 +428,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         b = []
         rows = []
         cols = []
-        for c in self.constraints.values():
+        for name, c in self.constraints.items():
             if len(c["w"]) == 0:
                 continue
             aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
