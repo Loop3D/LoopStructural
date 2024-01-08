@@ -188,7 +188,7 @@ class GeologicalModel:
         logger.info("Reusing interpolation supports: {}".format(self.reuse_supports))
         self.stratigraphic_column = None
 
-        self.tol = 1e-10 * np.max(self.bounding_box[1, :] - self.bounding_box[0, :])
+        self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
 
     def __str__(self):
