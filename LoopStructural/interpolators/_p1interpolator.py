@@ -81,7 +81,7 @@ class P1Interpolator(DiscreteInterpolator):
             )
 
     def minimise_edge_jumps(
-        self, w=0.1, vector_func=None
+        self, w=0.1, vector_func=None, vector=None, name="edge jump"
     ):  # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
         # flag inidicate which triangles have had all their relationships added
@@ -95,6 +95,9 @@ class P1Interpolator(DiscreteInterpolator):
         # evaluate normal if using vector func for cp2
         if vector_func:
             norm = vector_func((v1 + v2) / 2)
+        if vector is not None:
+            if bc_t1.shape[0] == vector.shape[0]:
+                norm = vector
         # evaluate the shape function for the edges for each neighbouring triangle
         Dt, tri1, inside = self.support.evaluate_shape_derivatives(
             bc_t1, elements=self.support.shared_element_relationships[:, 0]
@@ -118,7 +121,7 @@ class P1Interpolator(DiscreteInterpolator):
             const * shared_element_size[:, None] * w,
             np.zeros(const.shape[0]),
             tri_cp1,
-            name="edge jump",
+            name=name,
         )
         # p2.add_constraints_to_least_squares(const_cp2*e_len[:,None]*w,np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
 
