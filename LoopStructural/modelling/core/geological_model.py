@@ -6,36 +6,8 @@ from ...utils import getLogger, log_to_file
 import numpy as np
 import pandas as pd
 
-try:
-    from ...interpolators import DiscreteFoldInterpolator as DFI
 
-    dfi = True
-except ImportError:
-    dfi = False
-from ...interpolators import FiniteDifferenceInterpolator as FDI
-
-try:
-    from ...interpolators import PiecewiseLinearInterpolator as PLI
-
-    pli = True
-except ImportError:
-    pli = False
-
-# if LoopStructural.experimental:
-from ...interpolators import P2Interpolator
-
-try:
-    from ...interpolators import SurfeRBFInterpolator as Surfe
-
-    surfe = True
-
-except ImportError:
-    surfe = False
-
-from ...interpolators import StructuredGrid
-from ...interpolators import TetMesh
 from ...modelling.features.fault import FaultSegment
-from ...interpolators import DiscreteInterpolator
 
 from ...modelling.features.builders import (
     FaultBuilder,
@@ -54,7 +26,6 @@ from ...modelling.features.fold import (
     FoldFrame,
 )
 
-from ...utils.exceptions import InterpolatorError
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
@@ -793,6 +764,7 @@ class GeologicalModel:
             bounding_box=self.bounding_box.with_buffer(buffer),
             name=foldframe_data,
             frame=FoldFrame,
+            nelements=nelements,
             **kwargs,
         )
         # add data
@@ -1602,7 +1574,7 @@ class GeologicalModel:
         #     locs = self.rescale(locs)
         # return locs
 
-    def evaluate_model(self, xyz, scale=True):
+    def evaluate_model(self, xyz: np.ndarray, scale: bool = True) -> np.ndarray:
         """Evaluate the stratigraphic id at each location
 
         Parameters
