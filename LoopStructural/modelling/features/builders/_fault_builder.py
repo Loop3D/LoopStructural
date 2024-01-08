@@ -251,8 +251,8 @@ class FaultBuilder(StructuralFrameBuilder):
             )
         if fault_center is not None:
             if minor_axis is not None:
-                fault_edges[0, :] = fault_center[:3] + normal_vector * minor_axis
-                fault_edges[1, :] = fault_center[:3] - normal_vector * minor_axis
+                fault_edges[0, :] = fault_center[:3] + fault_normal_vector * minor_axis
+                fault_edges[1, :] = fault_center[:3] - fault_normal_vector * minor_axis
                 self.update_geometry(fault_edges)
 
                 # choose whether to add points -1,1 to constrain fault frame or a scaled
@@ -367,8 +367,12 @@ class FaultBuilder(StructuralFrameBuilder):
                 ]
                 strike_vector /= major_axis
             if intermediate_axis is not None:
-                fault_depth[0, :] = fault_center[:3] + slip_vector * intermediate_axis
-                fault_depth[1, :] = fault_center[:3] - slip_vector * intermediate_axis
+                fault_depth[0, :] = (
+                    fault_center[:3] + fault_slip_vector * intermediate_axis
+                )
+                fault_depth[1, :] = (
+                    fault_center[:3] - fault_slip_vector * intermediate_axis
+                )
                 fault_frame_data.loc[
                     len(fault_frame_data),
                     ["X", "Y", "Z", "feature_name", "val", "coord", "w"],
@@ -384,7 +388,7 @@ class FaultBuilder(StructuralFrameBuilder):
 
                 self.update_geometry(fault_depth)
                 # TODO need to add data here
-                slip_vector /= intermediate_axis
+                fault_slip_vector /= intermediate_axis
                 fault_frame_data.loc[
                     len(fault_frame_data),
                     [
@@ -404,9 +408,9 @@ class FaultBuilder(StructuralFrameBuilder):
                     fault_center[1],
                     fault_center[2],
                     self.name,
-                    slip_vector[0],
-                    slip_vector[1],
-                    slip_vector[2],
+                    fault_slip_vector[0],
+                    fault_slip_vector[1],
+                    fault_slip_vector[2],
                     0,
                     1,
                     w,
