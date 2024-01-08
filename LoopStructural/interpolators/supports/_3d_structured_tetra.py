@@ -114,7 +114,6 @@ class TetMesh(BaseStructuredSupport):
         rows = np.tile(np.arange(self.n_elements)[:, None], (1, 4))
         elements = self.elements
         neighbours = self.get_neighbours()
-        print(rows.ravel().shape, elements.ravel().shape, elements.shape[0] * 4)
         # add array of bool to the location where there are elements for each node
 
         # use this to determine shared faces
@@ -166,7 +165,6 @@ class TetMesh(BaseStructuredSupport):
         self.shared_elements = self.shared_elements[
             : len(self.shared_element_relationships), :
         ]
-        print(np.max(self.shared_elements), self.n_nodes)
 
     @property
     def shared_element_norm(self):
@@ -575,26 +573,6 @@ class TetMesh(BaseStructuredSupport):
             * self.nsteps_cells[None, None, 1]
             * indexes[:, :, 2]
         )
-
-    # def position_to_cell_corners(self, pos: np.ndarray) -> np.ndarray:
-    #     """
-    #     Find the nodes that belong to a cell which contains a point
-
-    #     Parameters
-    #     ----------
-    #     pos
-
-    #     Returns
-    #     -------
-
-    #     """
-    #     inside = self.inside(pos)
-    #     ix, iy, iz = self.position_to_cell_index(pos)
-    #     cornersx, cornersy, cornersz = self.cell_corner_indexes(ix, iy, iz)
-    #     globalidx = self.global_cell_indicies(
-    #         np.dstack([cornersx, cornersy, cornersz]).T
-    #     )
-    #     return globalidx, inside
 
     def global_index_to_node_index(self, global_index: np.ndarray):
         """
