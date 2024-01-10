@@ -3,6 +3,6 @@ import numbers
 import numpy
 
 T = TypeVar("T")
-Array = Union[List[T], numpy.ndarray[T]]
+Array = Union[List[T]]
 
 NumericInput = Union[numbers.Number, Array[numbers.Number]]
