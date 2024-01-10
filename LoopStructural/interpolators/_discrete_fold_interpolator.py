@@ -82,6 +82,13 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         )
         self.fold = fold
 
+    def setup_interpolator(self, **kwargs):
+        fold_weights = kwargs.get("fold_weights", {})
+        super().setup_interpolator(**kwargs)
+        self.add_fold_constraints(**fold_weights)
+
+        return
+
     def add_fold_constraints(
         self,
         fold_orientation=10.0,

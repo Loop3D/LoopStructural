@@ -151,7 +151,6 @@ class FaultBuilder(StructuralFrameBuilder):
         logger.info(f"Fault normal vector: {fault_normal_vector}")
 
         # estimate the fault slip vector
-
         if fault_slip_vector is None:
             slip_mask = np.logical_and(
                 fault_frame_data["coord"] == 1, ~np.isnan(fault_frame_data["gz"])
@@ -165,8 +164,8 @@ class FaultBuilder(StructuralFrameBuilder):
                 strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
                 fault_slip_vector = dip_vector[:, 0]
                 logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
-
-            fault_slip_vector = fault_slip_data.mean(axis=0).to_numpy()
+            else:
+                fault_slip_vector = fault_slip_data.mean(axis=0).to_numpy()
         if fault_center is None:
             trace_mask = np.logical_and(
                 fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
@@ -176,8 +175,6 @@ class FaultBuilder(StructuralFrameBuilder):
                 .mean(axis=0)
                 .to_numpy()
             )
-        if np.any(np.isnan(fault_slip_vector)):
-            logger.info("Fault slip vector is nan, estimating from fault normal")
 
         self.fault_normal_vector = fault_normal_vector
         self.fault_slip_vector = fault_slip_vector
@@ -223,7 +220,6 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_slip_vector /= np.linalg.norm(fault_slip_vector)
         # check if slip vector is inside fault plane, if not project onto fault plane
         # if not np.isclose(normal_vector @ slip_vector, 0):
-
         strike_vector = np.cross(fault_normal_vector, fault_slip_vector)
         self.fault_strike_vector = strike_vector
 

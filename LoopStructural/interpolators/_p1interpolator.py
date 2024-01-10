@@ -63,7 +63,7 @@ class P1Interpolator(DiscreteInterpolator):
                 elements,
                 name="norm",
             )
-
+            self.up_to_date = False
         pass
 
     def add_ctr_pts(self, w=1.0):
@@ -79,10 +79,12 @@ class P1Interpolator(DiscreteInterpolator):
                 self.support.elements[elements[inside], :],
                 name="value",
             )
+            self.up_to_date = False
 
     def minimise_edge_jumps(
         self, w=0.1, vector_func=None, vector=None, name="edge jump"
-    ):  # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
+    ):
+        # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
         # flag inidicate which triangles have had all their relationships added
         v1 = self.support.nodes[self.support.shared_elements][:, 0, :]
@@ -123,6 +125,7 @@ class P1Interpolator(DiscreteInterpolator):
             tri_cp1,
             name=name,
         )
+        self.up_to_date = False
         # p2.add_constraints_to_least_squares(const_cp2*e_len[:,None]*w,np.zeros(const_cp1.shape[0]),tri_cp2, name='edge jump cp2')
 
     def setup_interpolator(self, **kwargs):
@@ -141,7 +144,7 @@ class P1Interpolator(DiscreteInterpolator):
 
         """
         # can't reset here, clears fold constraints
-        # self.reset()
+        self.reset()
         for key in kwargs:
             if "regularisation" in kwargs:
                 self.interpolation_weights["cgw"] = 0.1 * kwargs["regularisation"]

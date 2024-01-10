@@ -802,7 +802,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         bool
 
         """
-
         if self.solver is None:
             logging.debug("Cannot rerun interpolator")
             return False

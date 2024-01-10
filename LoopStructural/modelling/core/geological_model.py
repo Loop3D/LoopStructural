@@ -1341,8 +1341,10 @@ class GeologicalModel:
         logger.info(f"Major axis: {major_axis}")
         logger.info(f"Minor axis: {minor_axis}")
         logger.info(f"Intermediate axis: {intermediate_axis}")
-        fault_slip_vector = np.array(fault_slip_vector, dtype="float")
-        fault_center = np.array(fault_center, dtype="float")
+        if fault_slip_vector is not None:
+            fault_slip_vector = np.array(fault_slip_vector, dtype="float")
+        if fault_center is not None:
+            fault_center = np.array(fault_center, dtype="float")
 
         for k, v in kwargs.items():
             logger.info(f"{k}: {v}")
