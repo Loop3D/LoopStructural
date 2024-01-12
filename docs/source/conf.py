@@ -67,14 +67,19 @@ exclude_patterns = []
 html_theme_options = {
     "icon_links": [
         {
+            "name": "Twitter",
+            "url": "https://twitter.com/loop3d",
+            "icon": "fab fa-twitter-square",
+        },
+        {
             "name": "GitHub",
             "url": "https://github.com/loop3d/LoopStructural",
             "icon": "fab fa-github-square",
         },
         {
-            "name": "Twitter",
-            "url": "https://twitter.com/loop3d",
-            "icon": "fab fa-twitter-square",
+            "name": "PyPI",
+            "url": "https://pypi.org/project/LoopStructural",
+            "icon": "fa-custom fa-pypi",
         },
     ],
     #     "navbar_start": ["navbar-logo", "navbar-version"],
@@ -94,6 +99,10 @@ html_theme = "pydata_sphinx_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_js_files = ["custom-icon.js"]
+todo_include_todos = True
+
 autosummary_mock_imports = [
     "LoopStructural.interpolators._cython",
 ]
