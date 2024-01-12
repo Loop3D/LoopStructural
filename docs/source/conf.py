@@ -92,8 +92,8 @@ html_theme_options = {
     "header_links_before_dropdown": 4,
     "logo": {
         "text": "LoopStructural - {}".format(release),
-        "image_light": "images/infinity-loop-icon.svg",
-        "image_dark": "images/infinity-loop-icon.svg",
+        "image_light": "_static/infinity_loop_icon.svg",
+        "image_dark": "_static/infinity_loop_icon.svg",
     },
 }
 # -- Options for HTML output -------------------------------------------------
