@@ -69,12 +69,12 @@ html_theme_options = {
         {
             "name": "Twitter",
             "url": "https://twitter.com/loop3d",
-            "icon": "fab fa-twitter-square",
+            "icon": "fab fa-twitter",
         },
         {
             "name": "GitHub",
             "url": "https://github.com/loop3d/LoopStructural",
-            "icon": "fab fa-github-square",
+            "icon": "fab fa-github",
         },
         {
             "name": "PyPI",
