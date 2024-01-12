@@ -26,6 +26,10 @@ author = "Lachlan Grose"
 # The full version, including alpha/beta/rc tags
 release = LoopStructural.__version__
 
+# -- Internationalization ----------------------------------------------------
+
+# specifying the natural language populates some key tags
+language = "en"
 
 # -- General configuration ---------------------------------------------------
 autoclass_content = "both"  # include both class docstring and __init__
@@ -82,11 +86,15 @@ html_theme_options = {
             "icon": "fa-custom fa-pypi",
         },
     ],
-    #     "navbar_start": ["navbar-logo", "navbar-version"],
-    #     "use_edit_page_button": True,
     "external_links": [
         {"name": "Loop3d", "url": "https://www.loop3d.org"},
     ],
+    "header_links_before_dropdown": 4,
+    "logo": {
+        "text": "LoopStructural - {}".format(release),
+        "image_light": "images/infinity-loop-icon.svg",
+        "image_dark": "images/infinity-loop-icon.svg",
+    },
 }
 # -- Options for HTML output -------------------------------------------------
 
@@ -94,6 +102,8 @@ html_theme_options = {
 # a list of builtin themes.
 #
 html_theme = "pydata_sphinx_theme"
+html_sourcelink_suffix = ""
+html_last_updated_fmt = ""  # to reveal the build date in the pages meta
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
