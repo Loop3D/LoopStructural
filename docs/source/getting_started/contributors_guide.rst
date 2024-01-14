@@ -28,7 +28,27 @@ Contributing new code
 Any contributions to the documentation and code for LoopStructural are welcome.
 
 If you would like to contribute code to LoopStructural please open an `issue <https://github.com/Loop3D/LoopStructural/issues/new/choose>`_ either 
-a bug report or a feature request and then submit a pull request and link it to this issue. 
+a bug report or a feature request and then submit a pull request and link it to this issue.
+
+Getting setup
+~~~~~~~~~~~
+To get started, fork and clone the repository. It's then best to get started with conda::
+
+    conda activate
+	pip install -r requirements.txt
+	conda list
+
+N.B. On Linux, the LavaVu package requires the installation of extra tools::
+
+    sudo apt install build-essential libgl1-mesa-dev libx11-dev zlib1g-dev
+
+For changes to ``./docs``::
+
+    pip install -r docs/requirements.txt
+    make -C ./docs html
+
+Building the docs the first time takes a little while. After this, you will see a build directory. From here you can preview the generated HTML 
+in your browser. 
 
 Commit messages
 ---------------
