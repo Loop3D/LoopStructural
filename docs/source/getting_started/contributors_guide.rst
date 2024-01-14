@@ -35,8 +35,8 @@ Getting setup
 To get started, fork and clone the repository. It's then best to get started with conda::
 
     conda activate
-	pip install -r requirements.txt
-	conda list
+    pip install -r requirements.txt
+    conda list
 
 N.B. On Linux, the LavaVu package requires the installation of extra tools::
 
