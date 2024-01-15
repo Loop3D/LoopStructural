@@ -80,11 +80,11 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         """
         json = {}
         json["type"] = self.type
-        json["name"] = self.propertyname
+        # json["name"] = self.propertyname
         json["constraints"] = self.constraints
         json["data"] = self.data
         json["type"] = self.type
-        json["dof"] = self.nx
+        # json["dof"] = self.nx
         json["up_to_date"] = self.up_to_date
         return json
 
