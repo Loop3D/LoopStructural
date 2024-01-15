@@ -69,6 +69,25 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         except Exception as e:
             raise LoopTypeError(str(e))
 
+    def to_json(self):
+        """
+        Returns a json representation of the geological interpolator
+
+        Returns
+        -------
+        json : dict
+            json representation of the geological interpolator
+        """
+        json = {}
+        json["type"] = self.type
+        json["name"] = self.propertyname
+        json["constraints"] = self.constraints
+        json["data"] = self.data
+        json["type"] = self.type
+        json["dof"] = self.nx
+        json["up_to_date"] = self.up_to_date
+        return json
+
     @abstractmethod
     def set_region(self, **kwargs):
         pass

@@ -61,6 +61,20 @@ class GeologicalFeature(BaseFeature):
         self.builder = builder
         self.type = FeatureType.INTERPOLATED
 
+    def to_json(self):
+        """
+        Returns a json representation of the geological feature
+
+        Returns
+        -------
+        json : dict
+            json representation of the geological feature
+        """
+        json = super().to_json()
+        print(self.name, json)
+        json["interpolator"] = self.interpolator.to_json()
+        return json
+
     def is_valid(self):
         return self.interpolator.valid
 

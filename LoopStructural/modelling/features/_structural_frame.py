@@ -26,6 +26,21 @@ class StructuralFrame(BaseFeature):
         self.fold = fold
         self.type = FeatureType.STRUCTURALFRAME
 
+    def to_json(self):
+        """
+        Return a json representation of the structural frame
+
+        Returns
+        -------
+        json : dict
+            json representation of the structural frame
+        """
+        json = {}
+        json["name"] = self.name
+        json["features"] = [f.name for f in self.features]
+        json["type"] = self.type
+        return json
+
     def __getitem__(self, key):
         """
 

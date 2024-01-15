@@ -69,6 +69,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             "Creating discrete interpolator with {} degrees of freedom".format(self.nx)
         )
         self.type = InterpolatorType.BASE_DISCRETE
+        self.c = np.zeros(self.support.n_nodes)
 
     @property
     def nx(self) -> int:

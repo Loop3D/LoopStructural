@@ -4,6 +4,7 @@ from LoopStructural.utils.typing import NumericInput
 
 # from LoopStructural import GeologicalModel
 import numpy as np
+from uuid import uuid4
 
 logger = getLogger(__name__)
 
@@ -42,6 +43,22 @@ class BaseFeature:
         self.faults_enabled = True
         self._min = None
         self._max = None
+
+    def to_json(self):
+        """
+        Returns a json representation of the geological feature
+
+        Returns
+        -------
+        json : dict
+            json representation of the geological feature
+        """
+        json = {}
+        json["name"] = self.name
+        json["regions"] = [r.to_json() for r in self.regions]
+        json["faults"] = [f.name for f in self.faults]
+        json["type"] = self.type
+        return json
 
     def __str__(self):
         _str = "-----------------------------------------------------\n"

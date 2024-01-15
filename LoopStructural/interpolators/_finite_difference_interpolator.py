@@ -479,6 +479,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.assemble_inner(operator)
         # self.assemble_borders()
 
+    # def assemble_borders(self, operator, w):
+
     def assemble_inner(self, operator, w):
         """
 
