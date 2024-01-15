@@ -18,7 +18,7 @@ class GeologicalFeature(BaseFeature):
     model. For example foliations, fault planes, fold rotation angles etc.
 
     Attributes
-    ---------- 
+    ----------
     name : string
         should be a unique name for the geological feature
     support : a ScalarField
@@ -61,6 +61,20 @@ class GeologicalFeature(BaseFeature):
         self.builder = builder
         self.type = FeatureType.INTERPOLATED
 
+    def to_json(self):
+        """
+        Returns a json representation of the geological feature
+
+        Returns
+        -------
+        json : dict
+            json representation of the geological feature
+        """
+        json = super().to_json()
+        print(self.name, json)
+        json["interpolator"] = self.interpolator.to_json()
+        return json
+
     def is_valid(self):
         return self.interpolator.valid
 
@@ -94,6 +108,7 @@ class GeologicalFeature(BaseFeature):
         # TODO need to add a generic type checker for all methods
         # if evaluation_points is not a numpy array try and convert
         # otherwise error
+        evaluation_points = np.asarray(evaluation_points)
         self.builder.up_to_date()
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])

@@ -89,6 +89,10 @@ html_theme_options = {
             "icon": "fa-custom fa-pypi",
         },
     ],
+
+    #     "navbar_start": ["navbar-logo", "navbar-version"],
+    #     "use_edit_page_button": True,
+    "collapse_navigation": True,
     "external_links": [
         {"name": "Loop3d", "url": "https://www.loop3d.org"},
     ],

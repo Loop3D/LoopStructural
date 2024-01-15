@@ -11,14 +11,20 @@ from .exceptions import (
     LoopValueError,
 )
 from ._transformation import EuclideanTransformation
-from .map2loop import process_map2loop, build_model
 from .helper import (
-    get_data_axis_aligned_bounding_box,
     get_data_bounding_box,
     get_data_bounding_box_map,
 )
 from ..datatypes._bounding_box import BoundingBox
-from .helper import get_dip_vector, get_strike_vector, get_vectors, strike_dip_vector
+from .maths import (
+    get_dip_vector,
+    get_strike_vector,
+    get_vectors,
+    strikedip2vector,
+    azimuthplunge2vector,
+    normal_vector_to_strike_and_dip,
+)
+from .helper import create_surface, create_box
 from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion
 
 from .json_encoder import LoopJSONEncoder

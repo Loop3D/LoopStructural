@@ -1,5 +1,7 @@
 API
 ---
+
+
 .. autosummary::
    :caption: API
    :toctree: _autosummary
@@ -7,8 +9,8 @@ API
    :recursive:
 
    LoopStructural
-   LoopStructural.utils
    LoopStructural.modelling
    LoopStructural.interpolators
-   LoopStructural.visualisation
    LoopStructural.api
+   LoopStructural.visualisation
+   LoopStructural.datatypes

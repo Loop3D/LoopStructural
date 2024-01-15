@@ -119,9 +119,10 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         logger.info("Adding fold to {}".format(self.name))
         self.interpolator.fold = self.fold
         # if we have fold weights use those, otherwise just use default
-        self.interpolator.add_fold_constraints(**self.fold_weights)
+        # self.interpolator.add_fold_constraints(**self.fold_weights)
+        kwargs["fold_weights"] = self.fold_weights
         if "cgw" not in kwargs:
             # try adding very small cg
             kwargs["cgw"] = 0.0
         # now the fold is set up run the standard interpolation
-        GeologicalFeatureBuilder.build(self, data_region=data_region, **kwargs)
+        super().build(self, data_region=data_region, **kwargs)

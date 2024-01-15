@@ -1,6 +1,6 @@
 """
-LoopStructural API
-=======================
+LoopStructural
+==============
 
 """
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from .fault_network import FaultNetwork
-from ...utils import strike_dip_vector
+from ...utils import strikedip2vector
 from ...utils import getLogger
 
 logger = getLogger(__name__)
@@ -151,7 +151,6 @@ class ProcessInputData:
 
     @colours.setter
     def colours(self, colours):
-
         if colours is None:
             self._colours = {}
             for s in self.stratigraphic_name:
@@ -559,7 +558,7 @@ class ProcessInputData:
                 contact_orientations["nx"] = np.nan
                 contact_orientations["ny"] = np.nan
                 contact_orientations["nz"] = np.nan
-                contact_orientations[["nx", "ny", "nz"]] = strike_dip_vector(
+                contact_orientations[["nx", "ny", "nz"]] = strikedip2vector(
                     contact_orientations["strike"], contact_orientations["dip"]
                 )
             if (
@@ -616,7 +615,7 @@ class ProcessInputData:
             fault_orientations["gx"] = np.nan
             fault_orientations["gy"] = np.nan
             fault_orientations["gz"] = np.nan
-            fault_orientations[["gx", "gy", "gz"]] = strike_dip_vector(
+            fault_orientations[["gx", "gy", "gz"]] = strikedip2vector(
                 fault_orientations["strike"], fault_orientations["dip"]
             )
         if (

@@ -35,6 +35,20 @@ class AnalyticalGeologicalFeature(BaseFeature):
         self.origin = np.array(origin, dtype=float)
         self.type = FeatureType.ANALYTICAL
 
+    def to_json(self):
+        """
+        Returns a json representation of the geological feature
+
+        Returns
+        -------
+        json : dict
+            json representation of the geological feature
+        """
+        json = super().to_json()
+        json["vector"] = self.vector.tolist()
+        json["origin"] = self.origin.tolist()
+        return json
+
     def evaluate_value(self, xyz):
         xyz = np.array(xyz)
         if len(xyz.shape) == 1:

@@ -38,7 +38,7 @@ class LoopIsosurfacer:
             )
             values = np.zeros(verts.shape[0]) + isovalue
             surfaces[f"surface_{isovalue}"] = Surface(
-                vertices=verts,
+                vertices=verts + self.bounding_box.origin,
                 triangles=faces,
                 normals=normals,
                 name=f"surface_{isovalue}",
