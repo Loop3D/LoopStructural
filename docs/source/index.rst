@@ -37,12 +37,6 @@ and a wrapper for the generalised radial basis functions provided by Surfe :cite
    :caption: LoopStructural API
    :hidden:
 
-.. autosummary::
-   :caption: API
-   :toctree: _autosummary
-   :template: custom-module-template.rst
-   :recursive:
-
-   LoopStructural
+   API
 
 
