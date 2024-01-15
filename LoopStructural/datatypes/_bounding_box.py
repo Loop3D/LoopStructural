@@ -109,6 +109,10 @@ class BoundingBox:
     def step_vector(self):
         return (self.maximum - self.origin) / self.nsteps
 
+    @property
+    def length(self):
+        return self.maximum - self.origin
+
     def fit(self, locations: np.ndarray):
         if locations.shape[1] != self.dimensions:
             raise LoopValueError(
