@@ -19,12 +19,14 @@ LoopStructural is the forward geological modelling engine for the loop and conta
 elements in a 3D geological model. Including stratigraphy, unconformities, fault and folds. LoopStructural contains
 three native interpolation algorithms:
 
-1. Piecewise-linear interpolation :cite:`Frank2007`
-2. Discrete Fold Interpolator :cite:`Laurent2016,Grose2017,Grose2018,Grose2019`
-3. Finite Difference Interpolation :cite:`Irakarama2020`
+1. Piecewise-linear interpolation :cite:p:`Frank2007`
+2. Discrete Fold Interpolator :cite:p:`Laurent2016,Grose2017,Grose2018,Grose2019`
+3. Finite Difference Interpolation :cite:p:`Irakarama2020`
 
 and a wrapper for the generalised radial basis functions provided by Surfe :cite:`Hillier2014`. 
 
+.. bibliography::
+   
 .. toctree::
    :hidden:
 

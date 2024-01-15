@@ -58,7 +58,10 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     # citations
     "myst_parser",
+    "sphinxcontrib.bibtex",
 ]
+bibtex_bibfiles = ["docs_references.bib"]
+bibtex_default_style = "plain"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
