@@ -438,10 +438,7 @@ class GeologicalModel:
 
         """
         if not callable(dtm):
-            raise BaseException(
-                "DTM must be a callable function \n"
-                "use LoopStructural.utils.dtm_creator to build one"
-            )
+            raise BaseException("DTM must be a callable function \n")
         else:
             self._dtm = dtm
 
@@ -961,13 +958,11 @@ class GeologicalModel:
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
-        fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-        gy_fold_interpolator = self.get_interpolator("DFI", fold=fold, **kwargs)
-        frame_interpolator = self.get_interpolator(**kwargs)
-        interpolators = [
-            fold_interpolator,
-            gy_fold_interpolator,
-            frame_interpolator.copy(),
+
+        interpolatortypes = [
+            "DFI",
+            "DFI",
+            "FDI",
         ]
         fold_frame_builder = StructuralFrameBuilder(
             interpolatortype=interpolatortypes,
