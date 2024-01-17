@@ -159,6 +159,13 @@ class BaseStructuredSupport(metaclass=ABCMeta):
     def n_elements(self):
         return np.prod(self.nsteps_cells)
 
+    @property
+    def elements(self):
+        global_index = np.arange(self.n_elements)
+        cell_indexes = self.global_index_to_cell_index(global_index)
+
+        return self.global_node_indices(self.cell_corner_indexes(cell_indexes))
+
     def __str__(self):
         return (
             "LoopStructural interpolation support:  {} \n"
@@ -443,4 +450,16 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         return self._global_indicies(indexes, self.nsteps_cells)
 
     def pyvista(self):
-        pass
+        try:
+            import pyvista as pv
+        except ImportError:
+            raise ImportError("pyvista is required for vtk support")
+
+        from pyvista import CellType
+
+        celltype = np.full(self.n_elements, CellType.VOXEL, dtype=np.uint8)
+        elements = np.hstack(
+            [np.zeros(self.elements.shape[0], dtype=int)[:, None] + 8, self.elements]
+        )
+        elements = elements.flatten()
+        return pv.UnstructuredGrid(elements, celltype, self.nodes)
