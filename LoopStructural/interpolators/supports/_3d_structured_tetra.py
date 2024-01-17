@@ -39,6 +39,12 @@ class TetMesh(BaseStructuredSupport):
 
     def onGeometryChange(self):
         self._elements = None
+        self.shared_element_relationships = np.zeros(
+            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
+        )
+        self.shared_elements = np.zeros(
+            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 3), dtype=int
+        )
         self._init_face_table()
         if self.interpolator is not None:
             self.interpolator.reset()
@@ -140,6 +146,7 @@ class TetMesh(BaseStructuredSupport):
             (np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))
         ).tocsr()
         i, j = tril(el_pairs).nonzero()
+
         self.shared_element_relationships[: len(i), 0] = i
         self.shared_element_relationships[: len(i), 1] = j
 
