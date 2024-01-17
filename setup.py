@@ -7,11 +7,7 @@ except:
     raise RuntimeError("Cannot import setuptools \n" "python -m pip install setuptools")
     sys.exit(1)
 
-try:
-    from Cython.Build import cythonize
-except:
-    raise RuntimeError("Cannot import cython \n" "python -m pip install cython")
-    sys.exit(1)
+
 try:
     import numpy
 except:
@@ -61,10 +57,6 @@ setup(
     ],
     version=version,
     packages=find_packages(),
-    ext_modules=cythonize(
-        "LoopStructural/interpolators/_cython/*.pyx",
-        compiler_directives={"language_level": "3"},
-    ),
     include_dirs=[numpy.get_include()],
     include_package_data=True,
     package_data={
