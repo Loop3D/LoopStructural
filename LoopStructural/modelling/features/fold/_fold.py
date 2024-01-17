@@ -16,6 +16,7 @@ class FoldEvent:
         fold_axis_rotation=None,
         fold_limb_rotation=None,
         fold_axis=None,
+        invert_norm = False,
         name="Fold",
     ):
         """
@@ -33,6 +34,7 @@ class FoldEvent:
         self.fold_axis_rotation = fold_axis_rotation
         self.fold_limb_rotation = fold_limb_rotation
         self.fold_axis = fold_axis
+        self.invert_norm = invert_norm
         self.name = name
 
     def get_fold_axis_orientation(self, points):
@@ -99,7 +101,14 @@ class FoldEvent:
         dgz = np.zeros_like(dgx)
         dgz[:] = np.nan
         dgz[mask, :] = np.cross(dgx[mask, :], fold_axis[mask, :], axisa=1, axisb=1)
-        # dgz = self.foldframe.features[2].evaluate_gradient(points)
+
+        if self.invert_norm == True:
+            dgz = self.foldframe.features[2].evaluate_gradient(points)
+        elif self.invert_norm == False:
+            pass
+        else:
+            logger.warning("invert fold frame param not valid. Defaulting to false.")
+        
         dgz[mask, :] /= np.linalg.norm(dgz[mask, :], axis=1)[:, None]
 
         R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))

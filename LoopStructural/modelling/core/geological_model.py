@@ -821,6 +821,7 @@ class GeologicalModel:
         fold_frame=None,
         svario=True,
         tol=None,
+        invert_fold_norm = False,
         **kwargs,
     ):
         """
@@ -859,7 +860,9 @@ class GeologicalModel:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
-        fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}")
+
+        fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}", invert_norm=invert_fold_norm)
+        
         if "fold_weights" not in kwargs:
             kwargs["fold_weights"] = {}
         if interpolatortype != "DFI":
