@@ -8,8 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest",  "windows-latest"] #"macos-latest",
-        python-version: ["3.8","3.9","3.10"]
+        os: ["ubuntu-latest",  "windows-latest","macos-latest"]
+        python-version:  ${{ vars.PYTHON_VERSIONS }}
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
