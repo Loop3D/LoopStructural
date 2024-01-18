@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest",  "windows-latest","macos-latest"]
-        python-version:  ${{ vars.PYTHON_VERSIONS }}
+        python-version:  ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
