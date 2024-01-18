@@ -141,7 +141,7 @@ jobs:
   upload_to_pypi:
     needs: ["release-please", "make_sdist", "conda-deploy"]
     runs-on: ubuntu-latest
-    #if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - uses: actions/download-artifact@v3
         with:
