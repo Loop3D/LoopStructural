@@ -108,7 +108,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client -y
-          conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda --numpy 1.21
+          conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda 
           conda install anaconda-client -y
       - name: upload artifacts
         uses: actions/upload-artifact@v3
