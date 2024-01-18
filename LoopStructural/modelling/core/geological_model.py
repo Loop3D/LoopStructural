@@ -1760,17 +1760,23 @@ class GeologicalModel:
                 f"Updating geological model. There are: \n {nfeatures} \
                     geological features that need to be interpolated\n"
             )
-
-        from tqdm.auto import tqdm
         import time
 
         start = time.time()
+        try:
+            from tqdm.auto import tqdm
+        except ImportError:
+            progressbar = False
+            logger.warning("Failed to import tqdm, disabling progress bar")
 
-        # Load tqdm with size counter instead of file counter
-        with tqdm(total=nfeatures) as pbar:
+        if progressbar:
+            # Load tqdm with size counter instead of file counter
+            with tqdm(total=nfeatures) as pbar:
+                for f in self.features:
+                    pbar.set_description(f"Interpolating {f.name}")
+                    f.builder.up_to_date(callback=pbar.update)
+        else:
             for f in self.features:
-                pbar.set_description(f"Interpolating {f.name}")
-                f.builder.up_to_date(callback=pbar.update)
-
+                f.builder.up_to_date()
         if verbose:
             print(f"Model update took: {time.time()-start} seconds")
