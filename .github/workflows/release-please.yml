@@ -3,18 +3,18 @@ on:
 name: release-please
 jobs:
   continuous-integration:
-    name: Continuous integration ${{ matrix.os }} python ${{ matrix.python-version }} 
+    name: Continuous integration ${{ matrix.os }} python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: ${{ fromJSON(vars.BUILD_OS)}}
-        python-version:  ${{ fromJSON(vars.PYTHON_VERSIONS)}}
+        python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: ${{ matrix.python }} 
+          python-version: ${{ matrix.python }}
       - name: Installing dependencies
         shell: bash -l {0}
         run: |
@@ -22,11 +22,11 @@ jobs:
       - name: Checking formatting of code
         shell: bash -l {0}
         run: |
-            # stop the build if there are Python syntax errors or undefined names
-            flake8 LoopStructural --count --select=E9,F63,F7,F82 --show-source --statistics
-            # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-            flake8 LoopStructural --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Building and install 
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 LoopStructural --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 LoopStructural --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Building and install
         shell: bash -l {0}
         run: |
           python setup.py install build_ext --inplace
@@ -78,7 +78,7 @@ jobs:
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: docs/build/html # The folder the action should deploy.
-          
+
   conda-deploy:
     name: Uploading to Loop3d for python ${{ matrix.os }})
     needs: ["documentation-test", "continuous-integration"]
@@ -93,94 +93,75 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-    
+
       - uses: actions/checkout@v2
       - name: update submodules
-#       shell: bash -l {0}
+        #       shell: bash -l {0}
         run: |
-            git submodule update --init --recursive
+          git submodule update --init --recursive
       - name: Add msbuild to PATH
         if: matrix.os == 'windows-latest'
-        uses: microsoft/setup-msbuild@v1.0.2  
+        uses: microsoft/setup-msbuild@v1.0.2
       - name: Conda build'
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
         shell: bash -l {0}
         run: |
-           conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client -y
-           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda --numpy 1.21
-           conda install anaconda-client -y
+          conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client -y
+          conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda --numpy 1.21
+          conda install anaconda-client -y
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: conda
           path: conda
-     
 
   make_sdist:
     needs: ["documentation-test", "continuous-integration"]
     name: Make SDist
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      
-    - name: Build SDist
-      run: |
-        pip install numpy cython
-        python setup.py sdist
+      - uses: actions/checkout@v3
 
-    - uses: actions/upload-artifact@v3
-      with:
-        name: dist
-        path: dist/*.tar.gz
-        
-  build_wheels:
-    needs: ["documentation-test", "continuous-integration"]
-    name: Build wheels
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@v2
+      - name: Build SDist
+        run: |
+          pip install numpy
+          python setup.py sdist
+          pip wheel -w wheelhouse .
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.0
-        env:
-          CIBW_ARCHS_MACOS: x86_64 universal2
-          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310*"
-          CIBW_BEFORE_BUILD: "pip install numpy cython" #make sure numpy is the same version as required by LS
       - uses: actions/upload-artifact@v3
         with:
           name: dist
-          path: ./wheelhouse/*.whl
-          
+          path: dist/*.tar.gz
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: wheelhouse/*.whl
+
   upload_to_pypi:
-    needs: ["release-please","build_wheels","make_sdist","conda-deploy"]
+    needs: ["release-please", "build_wheels", "make_sdist", "conda-deploy"]
     runs-on: ubuntu-latest
     #if: ${{ needs.release-please.outputs.release_created }}
     steps:
-    - uses: actions/download-artifact@v3
-      with:
+      - uses: actions/download-artifact@v3
+        with:
           name: dist
           path: dist
-    - uses: actions/download-artifact@v3
-      with:
+      - uses: actions/download-artifact@v3
+        with:
           name: conda
           path: conda
-    - uses: pypa/gh-action-pypi-publish@v1.6.4
-      with:
-        skip_existing: true
-        verbose: true
-        user: ${{ secrets.PYPI_USERNAME }}
-        password: ${{ secrets.PYPI_PASSWORD }}
-    - uses: conda-incubator/setup-miniconda@v2
-    - name: upload all files to conda-forge
-      shell: bash -l {0}
-      env:
-        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-      run: |
-           conda install -c anaconda anaconda-client -y
-           anaconda upload --label main conda/*/*.tar.bz2 
-    
+      - uses: pypa/gh-action-pypi-publish@v1.6.4
+        with:
+          skip_existing: true
+          verbose: true
+          user: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
+      - uses: conda-incubator/setup-miniconda@v2
+      - name: upload all files to conda-forge
+        shell: bash -l {0}
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
+        run: |
+          conda install -c anaconda anaconda-client -y
+          anaconda upload --label main conda/*/*.tar.bz2
