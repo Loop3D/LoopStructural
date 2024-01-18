@@ -961,7 +961,7 @@ class GeologicalModel:
 
         interpolatortypes = [
             "DFI",
-            "DFI",
+            "FDI",
             "FDI",
         ]
         fold_frame_builder = StructuralFrameBuilder(

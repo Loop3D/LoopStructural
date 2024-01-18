@@ -2,7 +2,6 @@
 Base geological interpolator
 """
 from abc import ABC, ABCMeta, abstractmethod
-from cgitb import reset
 from LoopStructural.utils.exceptions import LoopTypeError
 from ..interpolators import InterpolatorType
 import numpy as np
