@@ -102,22 +102,21 @@ class FoldEvent:
         dgz[:] = np.nan
         dgz[mask, :] = np.cross(dgx[mask, :], fold_axis[mask, :], axisa=1, axisb=1)
 
-        if self.invert_norm == True:
-            dgz = self.foldframe.features[2].evaluate_gradient(points)
-        elif self.invert_norm == False:
-            pass
-        else:
-            logger.warning("invert fold frame param not valid. Defaulting to false.")
-        
+        # dgz = self.foldframe.features[2].evaluate_gradient(points)
         dgz[mask, :] /= np.linalg.norm(dgz[mask, :], axis=1)[:, None]
-
         R2 = self.rot_mat(fold_axis, self.fold_limb_rotation(gx))
         fold_direction = np.einsum("ijk,ki->kj", R2, dgx)
         fold_direction /= np.sum(fold_direction, axis=1)[:, None]
         # calculate dot product between fold_direction and axis
         # if its less than 0 then inverse dgz
         d = np.einsum("ij,ik->i", fold_direction, fold_axis)
-        dgz[mask][d[mask] < 0] = -dgz[mask][d[mask] < 0]
+        
+        if self.invert_norm == True:
+            dgz[mask][d[mask] < 0] = -dgz[mask][d[mask] < 0]
+        elif self.invert_norm == False:
+            pass
+        else:
+            logger.warning("invert fold frame param not valid. Defaulting to false.")
         return fold_direction, fold_axis, dgz
 
     # def get_regularisation_direction(self, points):
