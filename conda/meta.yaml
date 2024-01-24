@@ -13,8 +13,6 @@ build:
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
-    - Cython 
     - numpy
   host:
     - pip
