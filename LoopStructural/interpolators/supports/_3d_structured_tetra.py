@@ -320,7 +320,13 @@ class TetMesh(BaseStructuredSupport):
         c[:, :, 3] = vd / v
 
         # if all coords are +ve then point is inside cell
-        mask = np.all(c > 0, axis=2)
+        mask = np.all(c >= 0, axis=2)
+        i, j = np.where(mask)
+        ## find any cases where the point belongs to two cells
+        ## just use the second cell
+        pairs = {ii: jj for ii, jj in zip(i, j)}
+        mask[:] = False
+        mask[list(pairs.keys()), list(pairs.values())] = True
 
         inside = np.logical_and(inside, np.any(mask, axis=1))
         # get cell corners
