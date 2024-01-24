@@ -1,4 +1,3 @@
-from tkinter.tix import ButtonBox
 from LoopStructural.interpolators.supports import support_map, SupportType
 
 
@@ -21,11 +20,11 @@ class SupportFactory:
 
     @staticmethod
     def create_support_from_bbox(
-        support_type, bounding_box, nelements, element_volume=None
+        support_type, bounding_box, nelements, element_volume=None, buffer: float = 0.2
     ):
         if type(support_type) == str:
             support_type = SupportType._member_map_[support_type].numerator
-        bbox = bounding_box.with_buffer(0.2)
+        bbox = bounding_box.with_buffer(buffer=buffer)
         bbox.nelements = nelements
 
         return support_map[support_type](

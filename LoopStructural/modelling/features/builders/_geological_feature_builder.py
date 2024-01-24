@@ -26,7 +26,7 @@ from ....utils.helper import (
 )
 from ....utils import RegionEverywhere
 from ....interpolators import DiscreteInterpolator
-from ....interpolators import get_interpolator
+from ....interpolators import InterpolatorFactory
 
 logger = getLogger(__name__)
 
@@ -39,7 +39,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         nelements: int = 1000,
         name="Feature",
         interpolation_region=None,
-        **kwargs,
+        **kwarg,
     ):
         """
         Constructor for a GeologicalFeatureBuilder
@@ -53,11 +53,12 @@ class GeologicalFeatureBuilder(BaseBuilder):
         kwargs - name of the feature, region to interpolate the feature
         """
         BaseBuilder.__init__(self, name)
-        interpolator = get_interpolator(
-            bounding_box=bounding_box,
+        interpolator = InterpolatorFactory.create_interpolator(
             interpolatortype=interpolatortype,
+            boundingbox=bounding_box,
             nelements=nelements,
         )
+
         if issubclass(type(interpolator), GeologicalInterpolator) == False:
             raise TypeError(
                 "interpolator is {} and must be a GeologicalInterpolator".format(
@@ -65,8 +66,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 )
             )
         self._interpolator = interpolator
-        # self._interpolator.set_property_name(self._name)
-        # everywhere region is just a lambda that returns true for all locations
 
         header = (
             xyz_names()

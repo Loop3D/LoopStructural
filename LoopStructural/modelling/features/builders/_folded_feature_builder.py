@@ -45,6 +45,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             region=region,
             **kwargs
         )
+        self.interpolator.fold = fold
         self.fold = fold
         self.fold_weights = fold_weights
         self.kwargs = kwargs

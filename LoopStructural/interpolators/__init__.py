@@ -23,7 +23,6 @@ __all__ = [
 from enum import IntEnum
 
 from ..utils import getLogger
-import LoopStructural
 
 logger = getLogger(__name__)
 
@@ -46,6 +45,13 @@ class InterpolatorType(IntEnum):
     SURFE = 11
 
 
+interpolator_string_map = {
+    "FDI": InterpolatorType.FINITE_DIFFERENCE,
+    "PLI": InterpolatorType.PIECEWISE_LINEAR,
+    "P2": InterpolatorType.PIECEWISE_QUADRATIC,
+    "P1": InterpolatorType.PIECEWISE_LINEAR,
+    "DFI": InterpolatorType.DISCRETE_FOLD,
+}
 from ..interpolators._geological_interpolator import GeologicalInterpolator
 from ..interpolators._discrete_interpolator import DiscreteInterpolator
 from ..interpolators.supports import (
@@ -77,7 +83,6 @@ except ImportError:
 
 from ._p1interpolator import P1Interpolator
 from ._p2interpolator import P2Interpolator
-from ._builders import get_interpolator
 
 interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,
@@ -94,7 +99,7 @@ support_interpolator_map = {
     InterpolatorType.FINITE_DIFFERENCE: SupportType.StructuredGrid,
     InterpolatorType.DISCRETE_FOLD: SupportType.TetMesh,
     InterpolatorType.PIECEWISE_LINEAR: SupportType.TetMesh,
-    InterpolatorType.PIECEWISE_QUADRATIC: SupportType.TetMesh,
+    InterpolatorType.PIECEWISE_QUADRATIC: SupportType.P2UnstructuredTetMesh,
 }
 
 

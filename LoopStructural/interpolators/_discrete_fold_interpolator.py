@@ -2,11 +2,12 @@
 Piecewise linear interpolator using folds
 """
 import logging
+from typing import Optional
 
 import numpy as np
 
 from ..interpolators import PiecewiseLinearInterpolator, InterpolatorType
-
+from ..modelling.features.fold import FoldEvent
 from ..utils import getLogger
 
 logger = getLogger(__name__)
@@ -15,7 +16,7 @@ logger = getLogger(__name__)
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
     """ """
 
-    def __init__(self, support, fold):
+    def __init__(self, support, fold: Optional[FoldEvent] = None):
         """
         A piecewise linear interpolator that can also use fold constraints defined in Laurent et al., 2016
 
@@ -30,40 +31,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         PiecewiseLinearInterpolator.__init__(self, support)
         self.type = InterpolatorType.DISCRETE_FOLD
         self.fold = fold
-
-    @classmethod
-    def from_piecewise_linear_and_fold(cls, pli, fold):
-        """
-        Constructor from an existing piecewise linear interpolation object and a fold object
-        copies data from the PLI to the DFI
-
-        Parameters
-        ----------
-        pli : PiecewiseLinearInterpolator
-            existing interpolator
-        fold : FoldEvent
-            a fold event with a valid
-
-        Returns
-        -------
-        DiscreteFoldInterpolator
-
-        """
-        # create a blank fold interpolator
-        interpolator = cls(pli.support, fold)
-
-        # copy the data and stuff from the existing interpolator
-        interpolator.region = pli.region
-        interpolator.shape = pli.shape
-        interpolator.region_map = pli.region_map
-        interpolator.p_i = pli.p_i
-        interpolator.p_g = pli.p_g
-        interpolator.p_t = pli.p_t
-        interpolator.n_i = pli.n_i
-        interpolator.n_g = pli.n_g
-        interpolator.n_t = pli.n_t
-        interpolator.propertyname = pli.propertyname
-        return interpolator
 
     def update_fold(self, fold):
         """
@@ -83,6 +50,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         self.fold = fold
 
     def setup_interpolator(self, **kwargs):
+        if self.fold is None:
+            raise Exception("No fold event specified")
         fold_weights = kwargs.get("fold_weights", {})
         super().setup_interpolator(**kwargs)
         self.add_fold_constraints(**fold_weights)
