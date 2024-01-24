@@ -39,7 +39,7 @@ class InterpolatorFactory:
                 bounding_box=boundingbox,
                 nelements=nelements,
                 element_volume=element_volume,
-                buffer: float = 0.2,
+                buffer=buffer,
             )
         return interpolator_map[interpolatortype](support)
 
