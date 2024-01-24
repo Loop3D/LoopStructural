@@ -12,6 +12,20 @@ class BoundingBox:
         maximum: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
     ):
+        """A bounding box for a model, defined by the
+        origin, maximum and number of steps in each direction
+
+        Parameters
+        ----------
+        dimensions : int, optional
+            _description_, by default 3
+        origin : Optional[np.ndarray], optional
+            _description_, by default None
+        maximum : Optional[np.ndarray], optional
+            _description_, by default None
+        nsteps : Optional[np.ndarray], optional
+            _description_, by default None
+        """
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         self.dimensions = dimensions
@@ -148,6 +162,7 @@ class BoundingBox:
         return self.get_value(name)
 
     def is_inside(self, xyz):
+        xyz = np.array(xyz)
         if len(xyz.shape) == 1:
             xyz = xyz.reshape((1, -1))
         if xyz.shape[1] != 3:
