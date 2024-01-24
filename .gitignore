@@ -132,3 +132,7 @@ examples/*.png
 dev/scalar_field
 dev/unconf
 docs/source/sg_execution_times.rst
+conda/index.html
+conda/channeldata.json
+conda/noarch
+conda/win-64
