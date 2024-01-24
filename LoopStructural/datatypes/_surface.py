@@ -12,7 +12,7 @@ class Surface:
     values: Optional[np.ndarray] = None
 
     @property
-    def pyvista(self):
+    def vtk(self):
         import pyvista as pv
 
         surface = pv.PolyData.from_regular_faces(self.vertices, self.triangles)
