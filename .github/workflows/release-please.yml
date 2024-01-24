@@ -83,11 +83,11 @@ jobs:
     name: Uploading to Loop3d for python ${{ matrix.os }})
     needs: ["documentation-test", "continuous-integration"]
     runs-on: ${{matrix.os}}
-      strategy:
-        fail-fast: false
-        matrix:
-          os: ['ubuntu-latest']
-          python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
       - uses: conda-incubator/setup-miniconda@v2
         with:
