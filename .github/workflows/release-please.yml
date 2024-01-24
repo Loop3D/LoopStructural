@@ -82,7 +82,7 @@ jobs:
   conda-deploy:
     name: Uploading to Loop3d for python ${{ matrix.os }})
     needs: ["documentation-test", "continuous-integration"]
-    runs-on: ubuntu-latest
+    runs-on: 'ubuntu-latest'
       strategy:
         fail-fast: false
         matrix:
