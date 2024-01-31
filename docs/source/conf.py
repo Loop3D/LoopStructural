@@ -26,6 +26,10 @@ author = "Lachlan Grose"
 # The full version, including alpha/beta/rc tags
 release = LoopStructural.__version__
 
+# -- Internationalization ----------------------------------------------------
+
+# specifying the natural language populates some key tags
+language = "en"
 
 # -- General configuration ---------------------------------------------------
 autoclass_content = "both"  # include both class docstring and __init__
@@ -54,7 +58,10 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     # citations
     "myst_parser",
+    "sphinxcontrib.bibtex",
 ]
+bibtex_bibfiles = ["docs_references.bib"]
+bibtex_default_style = "plain"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -67,21 +74,34 @@ exclude_patterns = []
 html_theme_options = {
     "icon_links": [
         {
-            "name": "GitHub",
-            "url": "https://github.com/loop3d/LoopStructural",
-            "icon": "fab fa-github-square",
-        },
-        {
             "name": "Twitter",
             "url": "https://twitter.com/loop3d",
-            "icon": "fab fa-twitter-square",
+            "icon": "fab fa-twitter",
+        },
+        {
+            "name": "GitHub",
+            "url": "https://github.com/loop3d/LoopStructural",
+            "icon": "fab fa-github",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/LoopStructural",
+            "icon": "fa-custom fa-pypi",
         },
     ],
+
     #     "navbar_start": ["navbar-logo", "navbar-version"],
     #     "use_edit_page_button": True,
+    "collapse_navigation": True,
     "external_links": [
         {"name": "Loop3d", "url": "https://www.loop3d.org"},
     ],
+    "header_links_before_dropdown": 4,
+    "logo": {
+        "text": "LoopStructural - {}".format(release),
+        "image_light": "_static/infinity_loop_icon.svg",
+        "image_dark": "_static/infinity_loop_icon.svg",
+    },
 }
 # -- Options for HTML output -------------------------------------------------
 
@@ -89,11 +109,17 @@ html_theme_options = {
 # a list of builtin themes.
 #
 html_theme = "pydata_sphinx_theme"
+html_sourcelink_suffix = ""
+html_last_updated_fmt = ""  # to reveal the build date in the pages meta
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_js_files = ["custom-icon.js"]
+todo_include_todos = True
+
 autosummary_mock_imports = [
     "LoopStructural.interpolators._cython",
 ]

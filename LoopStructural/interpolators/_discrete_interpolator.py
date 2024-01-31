@@ -69,6 +69,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             "Creating discrete interpolator with {} degrees of freedom".format(self.nx)
         )
         self.type = InterpolatorType.BASE_DISCRETE
+        self.c = np.zeros(self.support.n_nodes)
 
     @property
     def nx(self) -> int:
@@ -144,6 +145,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Reset the interpolation constraints
 
         """
+        self.constraints = {}
+        self.c_ = 0
         logger.debug("Resetting interpolation constraints")
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):
@@ -426,7 +429,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         b = []
         rows = []
         cols = []
-        for c in self.constraints.values():
+        for name, c in self.constraints.items():
             if len(c["w"]) == 0:
                 continue
             aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
@@ -800,7 +803,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         bool
 
         """
-
         if self.solver is None:
             logging.debug("Cannot rerun interpolator")
             return False
@@ -808,7 +810,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.setup_interpolator()
             return self.solve_system(self.solver)
 
-    def evaluate_value(self, evaluation_points: np.ndarray) -> np.ndarray:
+    def evaluate_value(self, locations: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at location
 
         Parameters
@@ -822,7 +824,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             value of the interpolator
         """
         self.update()
-        evaluation_points = np.array(evaluation_points)
+        evaluation_points = np.array(locations)
         evaluated = np.zeros(evaluation_points.shape[0])
         mask = np.any(evaluation_points == np.nan, axis=1)
 
@@ -832,7 +834,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
         return evaluated
 
-    def evaluate_gradient(self, evaluation_points: np.ndarray) -> np.ndarray:
+    def evaluate_gradient(self, locations: np.ndarray) -> np.ndarray:
         """
         Evaluate the gradient of the scalar field at the evaluation points
         Parameters
@@ -845,8 +847,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         self.update()
-        if evaluation_points.shape[0] > 0:
-            return self.support.evaluate_gradient(evaluation_points, self.c)
+        if locations.shape[0] > 0:
+            return self.support.evaluate_gradient(locations, self.c)
         return np.zeros((0, 3))
 
     def to_dict(self):

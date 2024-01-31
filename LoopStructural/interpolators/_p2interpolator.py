@@ -7,7 +7,7 @@ from typing import Optional
 import numpy as np
 
 from ..interpolators import DiscreteInterpolator
-from ..utils.helper import get_vectors
+from ..utils import get_vectors
 
 logger = logging.getLogger(__name__)
 

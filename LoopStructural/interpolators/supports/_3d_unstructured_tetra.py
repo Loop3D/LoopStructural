@@ -1,12 +1,13 @@
 """
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
+from ast import Tuple
 import logging
 
 import numpy as np
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, coo_matrix, tril
 
-from ._3d_base_structured import BaseStructuredSupport
+from . import StructuredGrid
 from LoopStructural.utils import getLogger
 from . import SupportType
 
@@ -73,7 +74,7 @@ class UnStructuredTetMesh:
             aabb_nsteps[aabb_nsteps < 2] = 2
         aabb_nsteps = np.array(aabb_nsteps, dtype=int)
         step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
-        self.aabb_grid = BaseStructuredSupport(
+        self.aabb_grid = StructuredGrid(
             self.minimum, nsteps=aabb_nsteps, step_vector=step_vector
         )
         # make a big table to store which tetra are in which element.
@@ -83,9 +84,11 @@ class UnStructuredTetMesh:
             (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
         )
         self.shared_element_relationships = np.zeros(
-            (self.elements.shape[0] * 3, 2), dtype=int
+            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
         )
-        self.shared_elements = np.zeros((self.elements.shape[0] * 3, 3), dtype=int)
+        self.shared_elements = np.zeros(
+            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 3), dtype=int
+        )
         self._init_face_table()
         self._initialise_aabb()
 
@@ -94,28 +97,91 @@ class UnStructuredTetMesh:
         Fill table containing elements that share a face, and another
         table that contains the nodes for a face.
         """
-        flag = np.zeros(self.elements.shape[0])
-        face_index = 0
-        for i, t in enumerate(self.elements):
-            flag[i] = True
-            for n in self.neighbours[i]:
-                if n < 0:
-                    continue
-                if flag[n]:
-                    continue
-                face_node_index = 0
-                self.shared_element_relationships[face_index, 0] = i
-                self.shared_element_relationships[face_index, 1] = n
-                for v in t:
-                    if v in self.elements[n, :4]:
-                        self.shared_elements[face_index, face_node_index] = v
-                        face_node_index += 1
+        # need to identify the shared nodes for pairs of elements
+        # we do this by creating a sparse matrix that has N rows (number of elements)
+        # and M columns (number of nodes).
+        # We then fill the location where a node is in an element with true
+        # Then we create a table for the pairs of elements in the mesh
+        # we have the neighbour relationships, which are the 4 neighbours for each element
+        # create a new table that shows the element index repeated four times
+        # flatten both of these arrays so we effectively have a table with pairs of neighbours
+        # disgard the negative neighbours because these are border neighbours
+        rows = np.tile(np.arange(self.n_elements)[:, None], (1, 4))
+        elements = self.get_elements()
+        neighbours = self.get_neighbours()
+        # add array of bool to the location where there are elements for each node
 
-                face_index += 1
-        self.shared_elements = self.shared_elements[:face_index, :]
+        # use this to determine shared faces
+
+        element_nodes = coo_matrix(
+            (np.ones(elements.shape[0] * 4), (rows.ravel(), elements.ravel())),
+            shape=(self.n_elements, self.n_nodes),
+            dtype=bool,
+        ).tocsr()
+        n1 = np.tile(np.arange(neighbours.shape[0], dtype=int)[:, None], (1, 4))
+        n1 = n1.flatten()
+        n2 = neighbours.flatten()
+        n1 = n1[n2 >= 0]
+        n2 = n2[n2 >= 0]
+        el_rel = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
+        el_rel[:] = -1
+        el_rel[np.arange(n1.shape[0]), 0] = n1
+        el_rel[np.arange(n1.shape[0]), 1] = n2
+        el_rel = el_rel[el_rel[:, 0] >= 0, :]
+
+        # el_rel2 = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
+        self.shared_element_relationships[:] = -1
+        el_pairs = coo_matrix(
+            (np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))
+        ).tocsr()
+        i, j = tril(el_pairs).nonzero()
+        self.shared_element_relationships[: len(i), 0] = i
+        self.shared_element_relationships[: len(i), 1] = j
+
         self.shared_element_relationships = self.shared_element_relationships[
-            :face_index, :
+            self.shared_element_relationships[:, 0] >= 0, :
         ]
+
+        faces = element_nodes[self.shared_element_relationships[:, 0], :].multiply(
+            element_nodes[self.shared_element_relationships[:, 1], :]
+        )
+        shared_faces = faces[np.array(np.sum(faces, axis=1) == 3).flatten(), :]
+        row, col = shared_faces.nonzero()
+        row = row[row.argsort()]
+        col = col[row.argsort()]
+        shared_face_index = np.zeros((shared_faces.shape[0], 3), dtype=int)
+        shared_face_index[:] = -1
+        shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)
+
+        self.shared_elements[
+            np.arange(self.shared_element_relationships.shape[0]), :
+        ] = shared_face_index
+        # resize
+        self.shared_elements = self.shared_elements[
+            : len(self.shared_element_relationships), :
+        ]
+        # flag = np.zeros(self.elements.shape[0])
+        # face_index = 0
+        # for i, t in enumerate(self.elements):
+        #     flag[i] = True
+        #     for n in self.neighbours[i]:
+        #         if n < 0:
+        #             continue
+        #         if flag[n]:
+        #             continue
+        #         face_node_index = 0
+        #         self.shared_element_relationships[face_index, 0] = i
+        #         self.shared_element_relationships[face_index, 1] = n
+        #         for v in t:
+        #             if v in self.elements[n, :4]:
+        #                 self.shared_elements[face_index, face_node_index] = v
+        #                 face_node_index += 1
+
+        #         face_index += 1
+        # self.shared_elements = self.shared_elements[:face_index, :]
+        # self.shared_element_relationships = self.shared_element_relationships[
+        #     :face_index, :
+        # ]
 
     def _initialise_aabb(self):
         """assigns the tetras to the grid cells where the bounding box
@@ -249,19 +315,14 @@ class UnStructuredTetMesh:
         -------
 
         """
-        # points = np.zeros((5, 4, self.n_cells, 3))
-        # points[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
-        # points[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
-
-        # # changing order to points, tetra, nodes, coord
-        # points = points.swapaxes(0, 2)
-        # points = points.swapaxes(1, 2)
+        inside = None
+        if elements is not None:
+            inside = np.zeros(self.n_elements, dtype=bool)
+            inside[elements] = True
         if elements is None:
-            elements = np.arange(0, self.n_elements, dtype=int)
-        ps = self.nodes[
-            self.elements, :
-        ]  # points.reshape(points.shape[0] * points.shape[1], points.shape[2], points.shape[3])
-        # vertices = self.nodes[self.elements[col,:]]
+            verts, c, elements, inside = self.get_element_for_location(locations)
+            # elements = np.arange(0, self.n_elements, dtype=int)
+        ps = self.nodes[self.elements, :]
         m = np.array(
             [
                 [
@@ -290,7 +351,7 @@ class UnStructuredTetMesh:
         element_gradients = element_gradients.swapaxes(1, 2)
         element_gradients = element_gradients @ I
 
-        return element_gradients[elements, :, :], elements
+        return element_gradients[elements, :, :], elements, inside
 
     def evaluate_shape(self, locations):
         """
@@ -320,7 +381,7 @@ class UnStructuredTetMesh:
         values[:] = np.nan
         vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(
-            c[inside, :] * property_array[self.elements[tetras][inside, :]], axis=1
+            c[inside, :] * property_array[self.elements[tetras[inside], :]], axis=1
         )
         return values
 
@@ -375,7 +436,7 @@ class UnStructuredTetMesh:
     def get_elements(self):
         return self.elements
 
-    def get_element_for_location(self, points):
+    def get_element_for_location(self, points: np.ndarray) -> Tuple:
         """
         Determine the tetrahedron from a numpy array of points
 
@@ -444,7 +505,11 @@ class UnStructuredTetMesh:
             tetras[: npts + npts_step][row[mask]] = col[mask]
             inside[: npts + npts_step][row[mask]] = True
             npts += npts_step
-        return verts, bc, tetras, inside
+        tetra_return = np.zeros((points.shape[0])).astype(int)
+        tetra_return[:] = -1
+
+        tetra_return[inside] = tetras[inside]
+        return verts, bc, tetra_return, inside
 
     def get_element_gradients(self, elements=None):
         """
@@ -554,3 +619,19 @@ class UnStructuredTetMesh:
 
         """
         return self.neighbours
+
+    @property
+    def vtk(self):
+        try:
+            import pyvista as pv
+        except ImportError:
+            raise ImportError("pyvista is required for vtk support")
+
+        from pyvista import CellType
+
+        celltype = np.full(self.elements.shape[0], CellType.TETRA, dtype=np.uint8)
+        elements = np.hstack(
+            [np.zeros(self.elements.shape[0], dtype=int)[:, None] + 4, self.elements]
+        )
+        elements = elements.flatten()
+        return pv.UnstructuredGrid(elements, celltype, self.nodes)

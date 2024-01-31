@@ -31,6 +31,13 @@ class UnconformityFeature(GeologicalFeature):
         self.sign = sign
         self.parent = feature
 
+    def to_json(self):
+        json = super().to_json()
+        json["value"] = self.value
+        json["sign"] = self.sign
+        json["parent"] = self.parent.name
+        return json
+
     def inverse(self):
         """Returns an unconformity feature with the sign flipped
         The feature is a shallow copy with the parent being set to

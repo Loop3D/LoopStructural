@@ -1,4 +1,5 @@
 from LoopStructural.utils.exceptions import LoopException
+from abc import ABCMeta, abstractmethod
 import numpy as np
 from LoopStructural.utils import getLogger
 from . import SupportType
@@ -6,7 +7,7 @@ from . import SupportType
 logger = getLogger(__name__)
 
 
-class BaseStructuredSupport:
+class BaseStructuredSupport(metaclass=ABCMeta):
     """ """
 
     def __init__(
@@ -45,6 +46,7 @@ class BaseStructuredSupport:
         self._rotation_xy[1, 1] = 1
         self._rotation_xy[2, 2] = 1
         self.rotation_xy = rotation_xy
+        self.interpolator = None
 
     def to_dict(self):
         return {
@@ -53,6 +55,14 @@ class BaseStructuredSupport:
             "step_vector": self.step_vector,
             "rotation_xy": self.rotation_xy,
         }
+
+    @abstractmethod
+    def onGeometryChange(self):
+        """Function to be called when the geometry of the support changes"""
+        pass
+
+    def associateInterpolator(self, interpolator):
+        self.interpolator = interpolator
 
     @property
     def nsteps(self):
@@ -64,6 +74,7 @@ class BaseStructuredSupport:
         change_factor = nsteps / self.nsteps
         self._step_vector /= change_factor
         self._nsteps = nsteps
+        self.onGeometryChange()
 
     @property
     def nsteps_cells(self):
@@ -110,6 +121,7 @@ class BaseStructuredSupport:
         newsteps = self._nsteps / change_factor
         self._nsteps = np.ceil(newsteps).astype(int)
         self._step_vector = step_vector
+        self.onGeometryChange()
 
     @property
     def origin(self):
@@ -122,6 +134,7 @@ class BaseStructuredSupport:
         length /= self.step_vector
         self._nsteps = np.ceil(length).astype(int)
         self._origin = origin
+        self.onGeometryChange()
 
     @property
     def maximum(self):
@@ -136,6 +149,7 @@ class BaseStructuredSupport:
         length = maximum - self.origin
         length /= self.step_vector
         self._nsteps = np.ceil(length).astype(int) + 1
+        self.onGeometryChange()
 
     @property
     def n_nodes(self):
@@ -144,6 +158,13 @@ class BaseStructuredSupport:
     @property
     def n_elements(self):
         return np.prod(self.nsteps_cells)
+
+    @property
+    def elements(self):
+        global_index = np.arange(self.n_elements)
+        cell_indexes = self.global_index_to_cell_index(global_index)
+
+        return self.global_node_indices(self.cell_corner_indexes(cell_indexes))
 
     def __str__(self):
         return (
@@ -275,34 +296,8 @@ class BaseStructuredSupport:
             + nsteps[None, 0] * nsteps[None, 1] * indexes[:, 2]
         )
         return gi.reshape(original_shape[:-1])
-        # if len(indexes.shape) == 2:
-        #     if indexes.shape[1] != 3 and indexes.shape[0] == 3:
-        #         indexes = indexes.swapaxes(0, 1)
-        #     if indexes.shape[1] != 3:
-        #         logger.error("Indexes shape {}".format(indexes.shape))
-        #         raise ValueError("Cell indexes needs to be Nx3")
-        #     return (
-        #         indexes[:, 0]
-        #         + nsteps[None, 0] * indexes[:, 1]
-        #         + nsteps[None, 0] * nsteps[None, 1] * indexes[:, 2]
-        #     )
-        # if len(indexes.shape) == 3:
-        #     # if indexes.shape[2] != 3 and indexes.shape[1] == 3:
-        #     #     indexes = indexes.swapaxes(1, 2)
-        #     # if indexes.shape[2] != 3 and indexes.shape[0] == 3:
-        #     #     indexes = indexes.swapaxes(0, 2)
-        #     if indexes.shape[2] != 3:
-        #         logger.error("Indexes shape {}".format(indexes.shape))
-        #         raise ValueError("Cell indexes needs to be NxNx3")
-        #     return (
-        #         indexes[:, :, 0]
-        #         + nsteps[None, None, 0] * indexes[:, :, 1]
-        #         + nsteps[None, None, 0] * nsteps[None, None, 1] * indexes[:, :, 2]
-        #     )
-        # else:
-        #     raise ValueError("Cell indexes need to be a 2 or 3d numpy array")
 
-    def cell_corner_indexes(self, cell_indexes):
+    def cell_corner_indexes(self, cell_indexes: np.ndarray) -> np.ndarray:
         """
         Returns the indexes of the corners of a cell given its location xi,
         yi, zi
@@ -453,3 +448,18 @@ class BaseStructuredSupport:
 
         """
         return self._global_indicies(indexes, self.nsteps_cells)
+
+    def pyvista(self):
+        try:
+            import pyvista as pv
+        except ImportError:
+            raise ImportError("pyvista is required for vtk support")
+
+        from pyvista import CellType
+
+        celltype = np.full(self.n_elements, CellType.VOXEL, dtype=np.uint8)
+        elements = np.hstack(
+            [np.zeros(self.elements.shape[0], dtype=int)[:, None] + 8, self.elements]
+        )
+        elements = elements.flatten()
+        return pv.UnstructuredGrid(elements, celltype, self.nodes)

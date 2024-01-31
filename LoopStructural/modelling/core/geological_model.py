@@ -6,36 +6,8 @@ from ...utils import getLogger, log_to_file
 import numpy as np
 import pandas as pd
 
-try:
-    from ...interpolators import DiscreteFoldInterpolator as DFI
 
-    dfi = True
-except ImportError:
-    dfi = False
-from ...interpolators import FiniteDifferenceInterpolator as FDI
-
-try:
-    from ...interpolators import PiecewiseLinearInterpolator as PLI
-
-    pli = True
-except ImportError:
-    pli = False
-
-# if LoopStructural.experimental:
-from ...interpolators import P2Interpolator
-
-try:
-    from ...interpolators import SurfeRBFInterpolator as Surfe
-
-    surfe = True
-
-except ImportError:
-    surfe = False
-
-from ...interpolators import StructuredGrid
-from ...interpolators import TetMesh
 from ...modelling.features.fault import FaultSegment
-from ...interpolators import DiscreteInterpolator
 
 from ...modelling.features.builders import (
     FaultBuilder,
@@ -54,13 +26,11 @@ from ...modelling.features.fold import (
     FoldFrame,
 )
 
-from ...utils.exceptions import InterpolatorError
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
-    strike_dip_vector,
-    get_vectors,
 )
+from ...utils import strikedip2vector, get_vectors
 from ...utils import BoundingBox
 
 from ...modelling.intrusions import IntrusionBuilder
@@ -148,8 +118,9 @@ class GeologicalModel:
         logger.info("Initialising geological model")
         self.features = []
         self.feature_name_index = {}
-        self._data = None
-        self.data = data
+        self._data = pd.DataFrame()  # None
+        if data is not None:
+            self.data = data
         self.nsteps = nsteps
 
         # we want to rescale the model area so that the maximum length is
@@ -189,9 +160,52 @@ class GeologicalModel:
         logger.info("Reusing interpolation supports: {}".format(self.reuse_supports))
         self.stratigraphic_column = None
 
-        self.tol = 1e-10 * np.max(self.bounding_box[1, :] - self.bounding_box[0, :])
+        self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
 
+    def to_dict(self):
+        """
+        Convert the geological model to a json string
+
+        Returns
+        -------
+        json : str
+            json string of the geological model
+        """
+        json = {}
+        json["model"] = {}
+        json["model"]["features"] = [f.name for f in self.features]
+        json["model"]["data"] = self.data.to_json()
+        json["model"]["origin"] = self.origin.tolist()
+        json["model"]["maximum"] = self.maximum.tolist()
+        json["model"]["nsteps"] = self.nsteps
+        json["model"]["stratigraphic_column"] = self.stratigraphic_column
+        json["features"] = [f.to_json() for f in self.features]
+        return json
+
+    # @classmethod
+    # def from_json(cls,json):
+    #     """
+    #     Create a geological model from a json string
+
+    #     Parameters
+    #     ----------
+    #     json : str
+    #         json string of the geological model
+
+    #     Returns
+    #     -------
+    #     model : GeologicalModel
+    #         a geological model
+    #     """
+    #     model = cls(json["model"]["origin"],json["model"]["maximum"],data=None)
+    #     model.stratigraphic_column = json["model"]["stratigraphic_column"]
+    #     model.nsteps = json["model"]["nsteps"]
+    #     model.data = pd.read_json(json["model"]["data"])
+    #     model.features = []
+    #     for feature in json["features"]:
+    #         model.features.append(GeologicalFeature.from_json(feature,model))
+    #     return model
     def __str__(self):
         lengths = self.maximum - self.origin
         _str = "GeologicalModel - {} x {} x {}\n".format(*lengths)
@@ -424,10 +438,7 @@ class GeologicalModel:
 
         """
         if not callable(dtm):
-            raise BaseException(
-                "DTM must be a callable function \n"
-                "use LoopStructural.utils.dtm_creator to build one"
-            )
+            raise BaseException("DTM must be a callable function \n")
         else:
             self._dtm = dtm
 
@@ -618,7 +629,7 @@ class GeologicalModel:
             logger.info("Converting strike and dip to vectors")
             mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
             self._data.loc[mask, gradient_vec_names()] = (
-                strike_dip_vector(
+                strikedip2vector(
                     self._data.loc[mask, "strike"], self._data.loc[mask, "dip"]
                 )
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
@@ -794,6 +805,7 @@ class GeologicalModel:
             bounding_box=self.bounding_box.with_buffer(buffer),
             name=foldframe_data,
             frame=FoldFrame,
+            nelements=nelements,
             **kwargs,
         )
         # add data
@@ -953,7 +965,7 @@ class GeologicalModel:
         interpolatortypes = [
             "DFI",
             "FDI",
-            interpolatortype,
+            "FDI",
         ]
         fold_frame_builder = StructuralFrameBuilder(
             interpolatortype=interpolatortypes,
@@ -978,7 +990,7 @@ class GeologicalModel:
         folded_fold_frame = fold_frame_builder.frame
         folded_fold_frame.builder = fold_frame_builder
 
-        folded_fold_frame.type = "structuralframe"
+        folded_fold_frame.type = FeatureType.STRUCTURALFRAME
 
         self._add_feature(folded_fold_frame)
 
@@ -991,9 +1003,7 @@ class GeologicalModel:
         intrusion_frame_parameters={},
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        # parameters_for_extent_sgs={},
         geometric_scaling_parameters={},
-        # faults=None,  # LG seems unused?
         **kwargs,
     ):
         """
@@ -1322,12 +1332,16 @@ class GeologicalModel:
         interpolatortype="FDI",
         tol=None,
         fault_slip_vector=None,
+        fault_normal_vector=None,
         fault_center=None,
         major_axis=None,
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
         faults=[],
+        force_mesh_geometry: bool = False,
+        points: bool = False,
+        fault_buffer=0.2,
         **kwargs,
     ):
         """
@@ -1371,8 +1385,10 @@ class GeologicalModel:
         logger.info(f"Major axis: {major_axis}")
         logger.info(f"Minor axis: {minor_axis}")
         logger.info(f"Intermediate axis: {intermediate_axis}")
-        fault_slip_vector = np.array(fault_slip_vector, dtype="float")
-        fault_center = np.array(fault_center, dtype="float")
+        if fault_slip_vector is not None:
+            fault_slip_vector = np.array(fault_slip_vector, dtype="float")
+        if fault_center is not None:
+            fault_center = np.array(fault_center, dtype="float")
 
         for k, v in kwargs.items():
             logger.info(f"{k}: {v}")
@@ -1391,10 +1407,6 @@ class GeologicalModel:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
         displacement_scaled = displacement / self.scale_factor
-        # create fault frame
-        # interpolator = self.get_interpolator(**kwargs)
-        # faults arent supported for surfe
-
         fault_frame_builder = FaultBuilder(
             interpolatortype,
             bounding_box=self.bounding_box,
@@ -1403,91 +1415,17 @@ class GeologicalModel:
             model=self,
             **kwargs,
         )
+        fault_frame_data = self.data.loc[
+            self.data["feature_name"] == fault_surface_data
+        ].copy()
         self._add_faults(fault_frame_builder, features=faults)
         # add data
         fault_frame_data = self.data.loc[
             self.data["feature_name"] == fault_surface_data
         ].copy()
-        trace_mask = np.logical_and(
-            fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
-        )
-        logger.info(f"There are {np.sum(trace_mask)} points on the fault trace")
-        if np.sum(trace_mask) == 0:
-            logger.error(
-                "You cannot model a fault without defining the location of the fault"
-            )
-            raise ValueError(f"There are no points on the fault trace")
-
-        mask = np.logical_and(
-            fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
-        )
-        vector_data = fault_frame_data.loc[mask, ["gx", "gy", "gz"]].to_numpy()
-        mask2 = np.logical_and(
-            fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["nz"])
-        )
-        vector_data = np.vstack(
-            [vector_data, fault_frame_data.loc[mask2, ["nx", "ny", "nz"]].to_numpy()]
-        )
-        fault_normal_vector = np.mean(vector_data, axis=0)
-        logger.info(f"Fault normal vector: {fault_normal_vector}")
-
-        mask = np.logical_and(
-            fault_frame_data["coord"] == 1, ~np.isnan(fault_frame_data["gz"])
-        )
-        if fault_slip_vector is None:
-            if (
-                "avgSlipDirEasting" in kwargs
-                and "avgSlipDirNorthing" in kwargs
-                and "avgSlipDirAltitude" in kwargs
-            ):
-                fault_slip_vector = np.array(
-                    [
-                        kwargs["avgSlipDirEasting"],
-                        kwargs["avgSlipDirNorthing"],
-                        kwargs["avgSlipDirAltitude"],
-                    ],
-                    dtype=float,
-                )
-            else:
-                fault_slip_vector = (
-                    fault_frame_data.loc[mask, ["gx", "gy", "gz"]]
-                    .mean(axis=0)
-                    .to_numpy()
-                )
-        if np.any(np.isnan(fault_slip_vector)):
-            logger.info("Fault slip vector is nan, estimating from fault normal")
-            strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
-            fault_slip_vector = dip_vector[:, 0]
-            logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
 
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
-        else:
-            # if we haven't defined a fault centre take the
-            #  center of mass for lines assocaited with the fault trace
-            if (
-                ~np.isnan(kwargs.get("centreEasting", np.nan))
-                and ~np.isnan(kwargs.get("centreNorthing", np.nan))
-                and ~np.isnan(kwargs.get("centreAltitude", np.nan))
-            ):
-                fault_center = self.scale(
-                    np.array(
-                        [
-                            kwargs["centreEasting"],
-                            kwargs["centreNorthing"],
-                            kwargs["centreAltitude"],
-                        ],
-                        dtype=float,
-                    ),
-                    inplace=False,
-                )
-            else:
-                mask = np.logical_and(
-                    fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
-                )
-                fault_center = (
-                    fault_frame_data.loc[mask, ["X", "Y", "Z"]].mean(axis=0).to_numpy()
-                )
         if minor_axis:
             minor_axis = minor_axis / self.scale_factor
         if major_axis:
@@ -1495,14 +1433,16 @@ class GeologicalModel:
         if intermediate_axis:
             intermediate_axis = intermediate_axis / self.scale_factor
         fault_frame_builder.create_data_from_geometry(
-            fault_frame_data,
-            fault_center,
-            fault_normal_vector,
-            fault_slip_vector,
+            fault_frame_data=fault_frame_data,
+            fault_center=fault_center,
+            fault_normal_vector=fault_normal_vector,
+            fault_slip_vector=fault_slip_vector,
             minor_axis=minor_axis,
             major_axis=major_axis,
             intermediate_axis=intermediate_axis,
-            points=kwargs.get("points", False),
+            points=points,
+            force_mesh_geometry=force_mesh_geometry,
+            fault_buffer=fault_buffer,
         )
         if "force_mesh_geometry" not in kwargs:
             fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
@@ -1520,7 +1460,7 @@ class GeologicalModel:
                 fault.add_region(f)
                 break
         if displacement == 0:
-            fault.type = "fault_inactive"
+            fault.type = FeatureType.INACTIVEFAULT
         self._add_feature(fault)
 
         return fault
@@ -1608,7 +1548,7 @@ class GeologicalModel:
         #     locs = self.rescale(locs)
         # return locs
 
-    def evaluate_model(self, xyz, scale=True):
+    def evaluate_model(self, xyz: np.ndarray, scale: bool = True) -> np.ndarray:
         """Evaluate the stratigraphic id at each location
 
         Parameters
@@ -1823,17 +1763,23 @@ class GeologicalModel:
                 f"Updating geological model. There are: \n {nfeatures} \
                     geological features that need to be interpolated\n"
             )
-
-        from tqdm.auto import tqdm
         import time
 
         start = time.time()
+        try:
+            from tqdm.auto import tqdm
+        except ImportError:
+            progressbar = False
+            logger.warning("Failed to import tqdm, disabling progress bar")
 
-        # Load tqdm with size counter instead of file counter
-        with tqdm(total=nfeatures) as pbar:
+        if progressbar:
+            # Load tqdm with size counter instead of file counter
+            with tqdm(total=nfeatures) as pbar:
+                for f in self.features:
+                    pbar.set_description(f"Interpolating {f.name}")
+                    f.builder.up_to_date(callback=pbar.update)
+        else:
             for f in self.features:
-                pbar.set_description(f"Interpolating {f.name}")
-                f.builder.up_to_date(callback=pbar.update)
-
+                f.builder.up_to_date()
         if verbose:
             print(f"Model update took: {time.time()-start} seconds")

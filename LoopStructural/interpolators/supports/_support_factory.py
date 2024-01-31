@@ -18,5 +18,18 @@ class SupportFactory:
             raise ValueError("No support type specified")
         return SupportFactory.create_support(support_type, **d)
 
+    @staticmethod
+    def create_support_from_bbox(
+        support_type, bounding_box, nelements, element_volume=None, buffer: float = 0.2
+    ):
+        if type(support_type) == str:
+            support_type = SupportType._member_map_[support_type].numerator
+        bbox = bounding_box.with_buffer(buffer=buffer)
+        bbox.nelements = nelements
+
+        return support_map[support_type](
+            origin=bbox.origin, step_vector=bbox.step_vector, nsteps=bbox.nsteps
+        )
+
     # @staticmethod
     # def create_3d_structured_grid(origin, maximum, step_vector, nsteps)

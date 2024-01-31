@@ -5,7 +5,7 @@ import logging
 
 import numpy as np
 
-from ..utils.helper import get_vectors
+from ..utils import get_vectors
 from ._discrete_interpolator import DiscreteInterpolator
 from ..interpolators import InterpolatorType
 
@@ -79,6 +79,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         -------
 
         """
+        self.reset()
         for key in kwargs:
             self.up_to_date = False
             if "regularisation" in kwargs:
@@ -477,6 +478,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         self.assemble_inner(operator)
         # self.assemble_borders()
+
+    # def assemble_borders(self, operator, w):
 
     def assemble_inner(self, operator, w):
         """

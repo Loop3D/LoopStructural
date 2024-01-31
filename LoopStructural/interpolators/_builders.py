@@ -3,6 +3,7 @@ import numpy as np
 from typing import Optional, Union
 from LoopStructural.interpolators import (
     PiecewiseLinearInterpolator,
+    P1Interpolator,
     P2Interpolator,
     FiniteDifferenceInterpolator,
     GeologicalInterpolator,
@@ -61,7 +62,7 @@ def get_interpolator(
             "for modelling using PLI" % (support.ntetra)
         )
 
-        return PiecewiseLinearInterpolator(support)
+        return P1Interpolator(support)
     if interpolatortype == "P2":
         if support is not None:
             logger.info(

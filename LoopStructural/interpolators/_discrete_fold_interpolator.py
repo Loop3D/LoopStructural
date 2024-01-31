@@ -2,26 +2,21 @@
 Piecewise linear interpolator using folds
 """
 import logging
+from typing import Optional
 
 import numpy as np
 
 from ..interpolators import PiecewiseLinearInterpolator, InterpolatorType
-
+from ..modelling.features.fold import FoldEvent
 from ..utils import getLogger
 
 logger = getLogger(__name__)
-try:
-    from ._cython.dsi_helper import fold_cg
-except:
-    from ._python.dsi_helper import fold_cg
-
-    logger.warning("Cython compiled code not found, using python version")
 
 
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
     """ """
 
-    def __init__(self, support, fold):
+    def __init__(self, support, fold: Optional[FoldEvent] = None):
         """
         A piecewise linear interpolator that can also use fold constraints defined in Laurent et al., 2016
 
@@ -36,40 +31,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         PiecewiseLinearInterpolator.__init__(self, support)
         self.type = InterpolatorType.DISCRETE_FOLD
         self.fold = fold
-
-    @classmethod
-    def from_piecewise_linear_and_fold(cls, pli, fold):
-        """
-        Constructor from an existing piecewise linear interpolation object and a fold object
-        copies data from the PLI to the DFI
-
-        Parameters
-        ----------
-        pli : PiecewiseLinearInterpolator
-            existing interpolator
-        fold : FoldEvent
-            a fold event with a valid
-
-        Returns
-        -------
-        DiscreteFoldInterpolator
-
-        """
-        # create a blank fold interpolator
-        interpolator = cls(pli.support, fold)
-
-        # copy the data and stuff from the existing interpolator
-        interpolator.region = pli.region
-        interpolator.shape = pli.shape
-        interpolator.region_map = pli.region_map
-        interpolator.p_i = pli.p_i
-        interpolator.p_g = pli.p_g
-        interpolator.p_t = pli.p_t
-        interpolator.n_i = pli.n_i
-        interpolator.n_g = pli.n_g
-        interpolator.n_t = pli.n_t
-        interpolator.propertyname = pli.propertyname
-        return interpolator
 
     def update_fold(self, fold):
         """
@@ -87,6 +48,15 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             "updating fold, this should be done by accessing the fold attribute"
         )
         self.fold = fold
+
+    def setup_interpolator(self, **kwargs):
+        if self.fold is None:
+            raise Exception("No fold event specified")
+        fold_weights = kwargs.get("fold_weights", {})
+        super().setup_interpolator(**kwargs)
+        self.add_fold_constraints(**fold_weights)
+
+        return
 
     def add_fold_constraints(
         self,
@@ -210,45 +180,14 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             logger.info(
                 f"Adding fold regularisation constraint to  w = {fold_regularisation[0]} {fold_regularisation[1]} {fold_regularisation[2]}"
             )
-
-            idc, c, ncons = fold_cg(
-                eg,
-                dgz,
-                self.support.get_neighbours(),
-                self.support.get_elements(),
-                self.support.nodes,
+            self.minimise_edge_jumps(
+                w=fold_regularisation[0], vector=dgz, name="fold regularisation 1"
             )
-            A = np.array(c[:ncons, :])
-            B = np.zeros(A.shape[0])
-            idc = np.array(idc[:ncons, :])
-            self.add_constraints_to_least_squares(
-                A, B, idc, fold_regularisation[0], name="fold regularisation 1"
+            self.minimise_edge_jumps(
+                w=fold_regularisation[1],
+                vector=deformed_orientation,
+                name="fold regularisation 2",
             )
-
-            idc, c, ncons = fold_cg(
-                eg,
-                deformed_orientation,
-                self.support.get_neighbours(),
-                self.support.get_elements(),
-                self.support.nodes,
-            )
-            A = np.array(c[:ncons, :])
-            B = np.zeros(A.shape[0])
-            idc = np.array(idc[:ncons, :])
-            self.add_constraints_to_least_squares(
-                A, B, idc, fold_regularisation[1], name="fold regularisation 2"
-            )
-
-            idc, c, ncons = fold_cg(
-                eg,
-                fold_axis,
-                self.support.get_neighbours(),
-                self.support.get_elements(),
-                self.support.nodes,
-            )
-            A = np.array(c[:ncons, :])
-            B = np.zeros(A.shape[0])
-            idc = np.array(idc[:ncons, :])
-            self.add_constraints_to_least_squares(
-                A, B, idc, fold_regularisation[2], name="fold regularisation 3"
+            self.minimise_edge_jumps(
+                w=fold_regularisation[2], vector=fold_axis, name="fold regularisation 3"
             )

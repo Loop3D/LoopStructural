@@ -12,6 +12,20 @@ class BoundingBox:
         maximum: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
     ):
+        """A bounding box for a model, defined by the
+        origin, maximum and number of steps in each direction
+
+        Parameters
+        ----------
+        dimensions : int, optional
+            _description_, by default 3
+        origin : Optional[np.ndarray], optional
+            _description_, by default None
+        maximum : Optional[np.ndarray], optional
+            _description_, by default None
+        nsteps : Optional[np.ndarray], optional
+            _description_, by default None
+        """
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         self.dimensions = dimensions
@@ -83,15 +97,41 @@ class BoundingBox:
         self.nsteps = nsteps
 
     @property
+    def corners(self):
+        """Returns the corners of the bounding box
+
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        return np.array(
+            [
+                self.origin.tolist(),
+                [self.maximum[0], self.origin[1], self.origin[2]],
+                [self.maximum[0], self.maximum[1], self.origin[2]],
+                [self.origin[0], self.maximum[1], self.origin[2]],
+                [self.origin[0], self.origin[1], self.maximum[2]],
+                [self.maximum[0], self.origin[1], self.maximum[2]],
+                self.maximum.tolist(),
+                [self.origin[0], self.maximum[1], self.maximum[2]],
+            ]
+        )
+
+    @property
     def step_vector(self):
         return (self.maximum - self.origin) / self.nsteps
+
+    @property
+    def length(self):
+        return self.maximum - self.origin
 
     def fit(self, locations: np.ndarray):
         if locations.shape[1] != self.dimensions:
             raise LoopValueError(
                 f"locations array is {locations.shape[1]}D but bounding box is {self.dimensions}"
             )
-        print("fitting")
         self.origin = locations.min(axis=0)
         self.maximum = locations.max(axis=0)
         return self
@@ -122,6 +162,7 @@ class BoundingBox:
         return self.get_value(name)
 
     def is_inside(self, xyz):
+        xyz = np.array(xyz)
         if len(xyz.shape) == 1:
             xyz = xyz.reshape((1, -1))
         if xyz.shape[1] != 3:

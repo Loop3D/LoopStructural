@@ -3,9 +3,11 @@ from LoopStructural.modelling.features import (
     GeologicalFeature,
 )
 from LoopStructural.modelling.features.builders import StructuralFrameBuilder
+from LoopStructural.datatypes import BoundingBox
 
 from LoopStructural import GeologicalModel
 import numpy as np
+import pandas as pd
 
 
 def test_structural_frame():
@@ -48,3 +50,38 @@ def get_item():
 
 def test_structural_frame_cross_product():
     pass
+
+
+def test_create_structural_frame_pli():
+    data = pd.DataFrame(
+        [
+            [5.1, 5.1, 5, 0, 0, 1, 0, 0],
+            [5, 5.1, 5, 0, 1, 0, 1, 0],
+            [5.1, 5, 5, 1, 0, 0, 2, 0],
+        ],
+        columns=["X", "Y", "Z", "nx", "ny", "nz", "coord", "val"],
+    )
+    data["feature_name"] = "fault"
+
+    bb = BoundingBox(3, origin=np.zeros(3), maximum=np.ones(3) * 10)
+    model = GeologicalModel(bb.origin, bb.maximum)
+
+    model.data = data
+
+    fault = model.create_and_add_fault(
+        "fault", 10, nelements=2000, steps=4, interpolatortype="PLI", buffer=2
+    )
+    model.update()
+    assert np.all(
+        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1])
+    )
+    assert np.all(
+        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0])
+    )
+    assert np.all(
+        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0])
+    )
+
+
+if __name__ == "__main__":
+    test_create_structural_frame_pli()

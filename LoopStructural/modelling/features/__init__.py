@@ -21,6 +21,7 @@ class FeatureType(IntEnum):
     INTRUSION = 8
     FAULT = 9
     DOMAINFAULT = 10
+    INACTIVEFAULT = 11
 
 
 from ._base_geological_feature import BaseFeature

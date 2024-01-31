@@ -6,6 +6,7 @@ from typing import Optional
 from LoopStructural.interpolators import (
     GeologicalInterpolator,
     InterpolatorFactory,
+    InterpolatorType,
 )
 from LoopStructural.utils import BoundingBox
 from LoopStructural.utils import getLogger
@@ -18,7 +19,7 @@ class LoopInterpolator:
         self,
         bounding_box: BoundingBox,
         dimensions: int = 3,
-        type: str = "FDI",
+        type=InterpolatorType.FINITE_DIFFERENCE,
         nelements: int = 1000,
     ):
         """Scikitlearn like interface for LoopStructural interpolators

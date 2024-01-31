@@ -1,6 +1,11 @@
-from typing import Optional
-
-from . import interpolator_map, InterpolatorType  # , support_interpolator_map
+from typing import Optional, Union
+from .supports import support_map, SupportFactory
+from . import (
+    interpolator_map,
+    InterpolatorType,
+    support_interpolator_map,
+    interpolator_string_map,
+)
 from LoopStructural.utils import BoundingBox
 from typing import Optional
 import numpy as np
@@ -11,11 +16,12 @@ from ..interpolators.supports import SupportFactory
 class InterpolatorFactory:
     @staticmethod
     def create_interpolator(
-        interpolatortype: str,
-        boundingbox: BoundingBox,
-        nelements: int,
+        interpolatortype: Union[str, InterpolatorType] = None,
+        boundingbox: Optional[BoundingBox] = None,
+        nelements: Optional[int] = None,
         element_volume: Optional[float] = None,
         support=None,
+        buffer: float = 0.2,
     ):
         if interpolatortype == None:
             raise ValueError("No interpolator type specified")
@@ -23,17 +29,18 @@ class InterpolatorFactory:
             raise ValueError("No bounding box specified")
         if nelements == None:
             raise ValueError("No number of elements specified")
-        if type(interpolatortype) == str:
-            interpolatortype = InterpolatorType._member_map_[interpolatortype].numerator
+        if isinstance(interpolatortype, str):
+            interpolatortype = interpolator_string_map[interpolatortype]
         if support is None:
-            raise Exception("Support must be specified")
-            # supporttype = support_interpolator_map[interpolatortype]
-            # support = SupportFactory.create_support_from_bbox(
-            #     supporttype,
-            #     bounding_box=boundingbox,
-            #     nelements=nelements,
-            #     element_volume=element_volume,
-            # )
+            # raise Exception("Support must be specified")
+            supporttype = support_interpolator_map[interpolatortype]
+            support = SupportFactory.create_support_from_bbox(
+                supporttype,
+                bounding_box=boundingbox,
+                nelements=nelements,
+                element_volume=element_volume,
+                buffer=buffer,
+            )
         return interpolator_map[interpolatortype](support)
 
     @staticmethod
