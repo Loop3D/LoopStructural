@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.12](https://github.com/Loop3D/LoopStructural/compare/v1.5.11...v1.5.12) (2024-01-31)
+
+
+### Bug Fixes
+
+* Removing cython  dependency ([#168](https://github.com/Loop3D/LoopStructural/issues/168)) ([21e5572](https://github.com/Loop3D/LoopStructural/commit/21e5572a02329b8a8a18a328bd76a8cfb449344b))
+
 ## [1.5.11](https://github.com/Loop3D/LoopStructural/compare/v1.5.10...v1.5.11) (2023-12-03)
 
 
