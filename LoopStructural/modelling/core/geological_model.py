@@ -192,6 +192,14 @@ class GeologicalModel:
         self.tol = 1e-10 * np.max(self.bounding_box[1, :] - self.bounding_box[0, :])
         self._dtm = None
 
+    def to_dict(self):
+        return {
+            "origin": self.origin.tolist(),
+            "maximum": self.maximum.tolist(),
+            "nsteps": self.nsteps,
+            "scale_factor": self.scale_factor,
+            "features": [{"name": feature.name} for feature in self.features],
+        }
     def __str__(self):
         lengths = self.maximum - self.origin
         _str = "GeologicalModel - {} x {} x {}\n".format(*lengths)
