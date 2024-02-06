@@ -1,6 +1,7 @@
 """
 Main entry point for creating a geological model
 """
+
 from ...utils import getLogger, log_to_file
 
 import numpy as np
@@ -134,7 +135,6 @@ class GeologicalModel:
         )
         logger.info(maximumstr)
 
-        lengths = self.maximum - self.origin
         self.scale_factor = 1.0
 
         self.bounding_box = BoundingBox(
@@ -310,7 +310,6 @@ class GeologicalModel:
         model.data = processor.data
         if processor.fault_properties is not None:
             for i in processor.fault_network.faults:
-                logger.info(f"Adding fault {i}")
                 model.create_and_add_fault(
                     i,
                     **processor.fault_properties.to_dict("index")[i],
@@ -642,27 +641,6 @@ class GeologicalModel:
         )
         self.data = data
 
-    def extend_model_data(self, newdata):
-        """
-        Extends the data frame
-
-        Parameters
-        ----------
-        newdata : pandas data frame
-            data to add to the existing dataframe
-        Returns
-        -------
-        """
-        logger.warning("Extend data is untested and may have unexpected consequences")
-        data_temp = newdata.copy()
-        data_temp["X"] -= self.origin[0]
-        data_temp["Y"] -= self.origin[1]
-        data_temp["Z"] -= self.origin[2]
-        data_temp["X"] /= self.scale_factor
-        data_temp["Y"] /= self.scale_factor
-        data_temp["Z"] /= self.scale_factor
-        self.data.concat([self.data, data_temp], sort=True)
-
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
         """
         Adds a stratigraphic column to the model
@@ -833,7 +811,7 @@ class GeologicalModel:
         fold_frame=None,
         svario=True,
         tol=None,
-        invert_fold_norm = False,
+        invert_fold_norm=False,
         **kwargs,
     ):
         """
@@ -873,8 +851,10 @@ class GeologicalModel:
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
 
-        fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}", invert_norm=invert_fold_norm)
-        
+        fold = FoldEvent(
+            fold_frame, name=f"Fold_{foliation_data}", invert_norm=invert_fold_norm
+        )
+
         if "fold_weights" not in kwargs:
             kwargs["fold_weights"] = {}
         if interpolatortype != "DFI":
@@ -1342,6 +1322,9 @@ class GeologicalModel:
         force_mesh_geometry: bool = False,
         points: bool = False,
         fault_buffer=0.2,
+        fault_trace_anisotropy=1.0,
+        fault_dip=90,
+        fault_dip_anisotropy=1.0,
         **kwargs,
     ):
         """
@@ -1443,6 +1426,9 @@ class GeologicalModel:
             points=points,
             force_mesh_geometry=force_mesh_geometry,
             fault_buffer=fault_buffer,
+            fault_trace_anisotropy=fault_trace_anisotropy,
+            fault_dip=fault_dip,
+            fault_dip_anisotropy=fault_dip_anisotropy,
         )
         if "force_mesh_geometry" not in kwargs:
             fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)

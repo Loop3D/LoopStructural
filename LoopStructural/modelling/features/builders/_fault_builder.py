@@ -1,5 +1,6 @@
 from typing import Union
 from ._structural_frame_builder import StructuralFrameBuilder
+from .. import AnalyticalGeologicalFeature
 from LoopStructural.utils import get_vectors
 import numpy as np
 import pandas as pd
@@ -90,6 +91,9 @@ class FaultBuilder(StructuralFrameBuilder):
         points=False,
         force_mesh_geometry=False,
         fault_buffer=0.2,
+        fault_trace_anisotropy=1.0,
+        fault_dip=90,
+        fault_dip_anisotropy=1.0,
     ):
         """Generate the required data for building a fault frame for a fault with the
         specified parameters
@@ -140,12 +144,34 @@ class FaultBuilder(StructuralFrameBuilder):
                     fault_frame_data.loc[normal_mask, ["nx", "ny", "nz"]].to_numpy(),
                 ]
             )
+
             if len(vector_data) == 0:
                 logger.error(
                     "You cannot model a fault without defining the orientation of the fault\n\
-                    Either add orientation data or define the fault normal vector argument"
+                    Defaulting to a vertical fault"
                 )
-                raise ValueError(f"There are no points on the fault trace")
+                coefficients = np.polyfit(
+                    fault_frame_data.loc[trace_mask, "X"],
+                    fault_frame_data.loc[trace_mask, "Y"],
+                    1,
+                )
+                slope, intercept = coefficients
+
+                # Create a direction vector using the slope
+                direction_vector = np.array([1, slope])
+                direction_vector /= np.linalg.norm(direction_vector)
+                print(f"Fault dip: {fault_dip}")
+                vector_data = np.array(
+                    [
+                        [
+                            direction_vector[1],
+                            -direction_vector[0],
+                            np.sin(np.deg2rad(fault_dip)),
+                        ]
+                    ]
+                )
+                vector_data /= np.linalg.norm(vector_data, axis=1)[:, None]
+
             fault_normal_vector = np.mean(vector_data, axis=0)
 
         logger.info(f"Fault normal vector: {fault_normal_vector}")
@@ -283,9 +309,9 @@ class FaultBuilder(StructuralFrameBuilder):
                         fault_frame_data["coord"] == 0,
                         ~np.isnan(fault_frame_data["nx"]),
                     )
-                    fault_frame_data.loc[
-                        mask, ["gx", "gy", "gz"]
-                    ] = fault_frame_data.loc[mask, ["nx", "ny", "nz"]]
+                    fault_frame_data.loc[mask, ["gx", "gy", "gz"]] = (
+                        fault_frame_data.loc[mask, ["nx", "ny", "nz"]]
+                    )
 
                     fault_frame_data.loc[mask, ["nx", "ny", "nz"]] = np.nan
                     mask = np.logical_and(
@@ -411,7 +437,37 @@ class FaultBuilder(StructuralFrameBuilder):
                     1,
                     w,
                 ]
+                fault_frame_data.loc[
+                    len(fault_frame_data),
+                    [
+                        "X",
+                        "Y",
+                        "Z",
+                        "feature_name",
+                        "nx",
+                        "ny",
+                        "nz",
+                        "val",
+                        "coord",
+                        "w",
+                    ],
+                ] = [
+                    fault_center[0],
+                    fault_center[1],
+                    fault_center[2],
+                    self.name,
+                    fault_normal_vector[0],
+                    fault_normal_vector[1],
+                    fault_normal_vector[2],
+                    np.nan,
+                    0,
+                    w,
+                ]
         self.add_data_from_data_frame(fault_frame_data)
+        if fault_trace_anisotropy > 0:
+            self.add_fault_trace_anisotropy(fault_trace_anisotropy)
+        if fault_dip_anisotropy > 0:
+            self.add_fault_dip_anisotropy(fault_dip_anisotropy)
         if force_mesh_geometry:
             self.set_mesh_geometry(fault_buffer, None)
         self.update_geometry(fault_frame_data[["X", "Y", "Z"]].to_numpy())
@@ -425,7 +481,6 @@ class FaultBuilder(StructuralFrameBuilder):
             percentage of length to add to edges
         """
         length = np.max(self.maximum - self.origin)
-        print(self.origin, length * buffer, self.maximum)
         # for builder in self.builders:
         # all three coordinates share the same support
         self.builders[0].set_interpolation_geometry(
@@ -463,6 +518,50 @@ class FaultBuilder(StructuralFrameBuilder):
         scalefactor = splay.fault_major_axis / self.fault_major_axis
         self.builders[0].add_equality_constraints(splay, splayregion, scalefactor)
         return splayregion
+
+    def add_fault_trace_anisotropy(self, w=1.0):
+        trace_data = self.builders[0].data.loc[self.builders[0].data["val"] == 0, :]
+        coefficients = np.polyfit(
+            trace_data["X"],
+            trace_data["Y"],
+            1,
+        )
+        slope, intercept = coefficients
+
+        # Create a direction vector using the slope
+        direction_vector = np.array([1, slope])
+        direction_vector /= np.linalg.norm(direction_vector)
+        vector_data = np.array([[direction_vector[1], -direction_vector[0], 0]])
+        anisotropy_feature = AnalyticalGeologicalFeature(
+            vector=vector_data, origin=[0, 0, 0], name="fault_trace_anisotropy"
+        )
+        self.builders[0].add_orthogonal_feature(
+            anisotropy_feature, w=w, region=None, step=1, B=0
+        )
+
+    def add_fault_dip_anisotropy(self, dip, w=1.0):
+        trace_data = self.builders[0].data.loc[self.builders[0].data["val"] == 0, :]
+        coefficients = np.polyfit(
+            trace_data["X"],
+            trace_data["Y"],
+            1,
+        )
+        slope, intercept = coefficients
+
+        # Create a direction vector using the slope
+        direction_vector = np.array([1, slope])
+        direction_vector /= np.linalg.norm(direction_vector)
+        vector_data = np.array([[direction_vector[0], direction_vector[1], 0]])
+
+        vector_data = np.array(
+            [[direction_vector[1], -direction_vector[0], np.sin(np.deg2rad(dip))]]
+        )
+        anisotropy_feature = AnalyticalGeologicalFeature(
+            vector=vector_data, origin=[0, 0, 0], name="fault_dip_anisotropy"
+        )
+        self.builders[0].add_orthogonal_feature(
+            anisotropy_feature, w=w, region=None, step=1, B=0
+        )
 
     def update(self):
         for i in range(3):
