@@ -1,6 +1,7 @@
 """
 Piecewise linear interpolator
 """
+
 import logging
 from typing import Optional
 
@@ -42,7 +43,7 @@ class P2Interpolator(DiscreteInterpolator):
             "ipw": 1.0,
         }
 
-    def _setup_interpolator(self, **kwargs):
+    def setup_interpolator(self, **kwargs):
         """
         Searches through kwargs for any interpolation weights and updates
         the dictionary.
@@ -205,7 +206,7 @@ class P2Interpolator(DiscreteInterpolator):
                 np.zeros(d2.shape[0]),
                 idc[:, :],
                 w=wt,
-                name=f"grad_steepness_{i}",
+                name=f"gradsteepness_{i}",
             )
 
     def minimise_edge_jumps(
