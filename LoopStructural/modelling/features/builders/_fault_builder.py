@@ -345,7 +345,33 @@ class FaultBuilder(StructuralFrameBuilder):
                     fault_frame_data.loc[mask, ["nx", "ny", "nz"]] /= minor_axis * 0.5
                     # self.builders[0].add_orthogonal_feature(self,
                     #  feature, w=1.0, region=None, step=1, B=0):
-
+                    if np.sum(mask) == 0:
+                        fault_frame_data.loc[
+                            len(fault_frame_data),
+                            [
+                                "X",
+                                "Y",
+                                "Z",
+                                "feature_name",
+                                "nx",
+                                "ny",
+                                "nz",
+                                "val",
+                                "coord",
+                                "w",
+                            ],
+                        ] = [
+                            fault_center[0],
+                            fault_center[1],
+                            fault_center[2],
+                            self.name,
+                            fault_normal_vector[0] / minor_axis * 0.5,
+                            fault_normal_vector[1] / minor_axis * 0.5,
+                            fault_normal_vector[2] / minor_axis * 0.5,
+                            np.nan,
+                            0,
+                            w,
+                        ]
             if major_axis is not None:
                 fault_tips[0, :] = fault_center[:3] + strike_vector * 0.5 * major_axis
                 fault_tips[1, :] = fault_center[:3] - strike_vector * 0.5 * major_axis
@@ -437,32 +463,7 @@ class FaultBuilder(StructuralFrameBuilder):
                     1,
                     w,
                 ]
-                fault_frame_data.loc[
-                    len(fault_frame_data),
-                    [
-                        "X",
-                        "Y",
-                        "Z",
-                        "feature_name",
-                        "nx",
-                        "ny",
-                        "nz",
-                        "val",
-                        "coord",
-                        "w",
-                    ],
-                ] = [
-                    fault_center[0],
-                    fault_center[1],
-                    fault_center[2],
-                    self.name,
-                    fault_normal_vector[0],
-                    fault_normal_vector[1],
-                    fault_normal_vector[2],
-                    np.nan,
-                    0,
-                    w,
-                ]
+
         self.add_data_from_data_frame(fault_frame_data)
         if fault_trace_anisotropy > 0:
             self.add_fault_trace_anisotropy(fault_trace_anisotropy)
@@ -519,7 +520,14 @@ class FaultBuilder(StructuralFrameBuilder):
         self.builders[0].add_equality_constraints(splay, splayregion, scalefactor)
         return splayregion
 
-    def add_fault_trace_anisotropy(self, w=1.0):
+    def add_fault_trace_anisotropy(self, w: float = 1.0):
+        """_summary_
+
+        Parameters
+        ----------
+        w : float, optional
+            _description_, by default 1.0
+        """
         trace_data = self.builders[0].data.loc[self.builders[0].data["val"] == 0, :]
         coefficients = np.polyfit(
             trace_data["X"],
@@ -539,7 +547,16 @@ class FaultBuilder(StructuralFrameBuilder):
             anisotropy_feature, w=w, region=None, step=1, B=0
         )
 
-    def add_fault_dip_anisotropy(self, dip, w=1.0):
+    def add_fault_dip_anisotropy(self, dip: np.ndarray, w: float = 1.0):
+        """_summary_
+
+        Parameters
+        ----------
+        dip : np.ndarray
+            _description_
+        w : float, optional
+            _description_, by default 1.0
+        """
         trace_data = self.builders[0].data.loc[self.builders[0].data["val"] == 0, :]
         coefficients = np.polyfit(
             trace_data["X"],
