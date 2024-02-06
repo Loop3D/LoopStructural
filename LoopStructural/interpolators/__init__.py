@@ -2,6 +2,7 @@
 Interpolators and interpolation supports
 
 """
+
 __all__ = [
     "InterpolatorType",
     "GeologicalInterpolator",
@@ -75,6 +76,7 @@ from ..interpolators._p1interpolator import (
 from ..interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
+from ..interpolators._p2interpolator import P2Interpolator
 
 try:
     from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
@@ -89,8 +91,8 @@ interpolator_map = {
     InterpolatorType.BASE_DISCRETE: DiscreteInterpolator,
     InterpolatorType.FINITE_DIFFERENCE: FiniteDifferenceInterpolator,
     InterpolatorType.DISCRETE_FOLD: DiscreteFoldInterpolator,
-    InterpolatorType.PIECEWISE_LINEAR: PiecewiseLinearInterpolator,
-    InterpolatorType.PIECEWISE_QUADRATIC: PiecewiseLinearInterpolator,
+    InterpolatorType.PIECEWISE_LINEAR: P1Interpolator,
+    InterpolatorType.PIECEWISE_QUADRATIC: P2Interpolator,
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
     # InterpolatorType.SURFE: SurfeRBFInterpolator,
 }
