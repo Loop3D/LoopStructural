@@ -1,6 +1,7 @@
 """
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
+
 from ast import Tuple
 import logging
 
@@ -114,7 +115,7 @@ class UnStructuredTetMesh:
         # use this to determine shared faces
 
         element_nodes = coo_matrix(
-            (np.ones(elements.shape[0] * 4), (rows.ravel(), elements.ravel())),
+            (np.ones(elements.shape[0] * 4), (rows.ravel(), elements[:, :4].ravel())),
             shape=(self.n_elements, self.n_nodes),
             dtype=bool,
         ).tocsr()
