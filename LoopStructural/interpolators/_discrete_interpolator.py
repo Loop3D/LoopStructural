@@ -1,6 +1,7 @@
 """
 Discrete interpolator base for least squares
 """
+
 import logging
 
 from time import time
@@ -303,9 +304,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             "row": np.arange(self.eq_const_c, self.eq_const_c + idc[outside].shape[0]),
         }
         self.eq_const_c += idc[outside].shape[0]
-
-    def add_non_linear_constraints(self, nonlinear_constraint):
-        self.non_linear_constraints.append(nonlinear_constraint)
 
     def add_inequality_constraints_to_matrix(self, A, l, u, idc, name="undefined"):
         """Adds constraints for a matrix where the linear function
@@ -785,7 +783,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if np.all(self.c[self.region] == 0):
             self.valid = False
             logger.warning("No solution, scalar field 0. Add more data.")
-
+            self.up_to_date = True
             return
         self.valid = True
         logging.info(f"Solving interpolation took: {time()-starttime}")
