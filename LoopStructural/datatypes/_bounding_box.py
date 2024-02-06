@@ -7,10 +7,11 @@ import numpy as np
 class BoundingBox:
     def __init__(
         self,
-        dimensions: int = 3,
         origin: Optional[np.ndarray] = None,
         maximum: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
+        step_vector: Optional[np.ndarray] = None,
+        dimensions: int = 3,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
@@ -26,6 +27,14 @@ class BoundingBox:
         nsteps : Optional[np.ndarray], optional
             _description_, by default None
         """
+        if origin is None:
+            raise LoopValueError("Origin is not set")
+        if maximum is None and nsteps is not None and step_vector is not None:
+            maximum = origin + nsteps * step_vector
+        if maximum is None:
+            raise LoopValueError(
+                "Maximum is not set, either specify nsteps and step vector or maximum"
+            )
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         self.dimensions = dimensions
