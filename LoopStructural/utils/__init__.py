@@ -2,6 +2,7 @@
 Utils
 =====
 """
+
 from .logging import getLogger, log_to_file, log_to_console
 from .exceptions import (
     LoopException,
@@ -23,6 +24,7 @@ from .maths import (
     strikedip2vector,
     azimuthplunge2vector,
     normal_vector_to_strike_and_dip,
+    rotate,
 )
 from .helper import create_surface, create_box
 from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion

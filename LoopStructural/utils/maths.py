@@ -103,14 +103,14 @@ def normal_vector_to_strike_and_dip(
     return np.array([strike, dip]).T
 
 
-def rotation(axis: NumericInput, angle: float) -> np.ndarray:
+def rotation(axis: NumericInput, angle: NumericInput) -> np.ndarray:
     """Create a rotation matrix for an axis and angle
 
     Parameters
     ----------
     axis : Union[np.ndarray, list]
         vector defining the axis of rotation
-    angle : float
+    angle : Union[np.ndarray, list]
         angle to rotate in degrees
 
     Returns
@@ -121,9 +121,9 @@ def rotation(axis: NumericInput, angle: float) -> np.ndarray:
     c = np.cos(np.deg2rad(angle))
     s = np.sin((np.deg2rad(angle)))
     C = 1.0 - c
-    x = axis[0]
-    y = axis[1]
-    z = axis[2]
+    x = axis[:, 0]
+    y = axis[:, 1]
+    z = axis[:, 2]
     xs = x * s
     ys = y * s
     zs = z * s
@@ -133,19 +133,49 @@ def rotation(axis: NumericInput, angle: float) -> np.ndarray:
     xyC = x * yC
     yzC = y * zC
     zxC = z * xC
-    rotation_mat = np.zeros((3, 3))
-    rotation_mat[0][0] = x * xC + c
-    rotation_mat[0][1] = xyC - zs
-    rotation_mat[0][2] = zxC + ys
+    rotation_mat = np.zeros((axis.shape[0], 3, 3))
+    rotation_mat[:, 0, 0] = x * xC + c
+    rotation_mat[:, 0, 1] = xyC - zs
+    rotation_mat[:, 0, 2] = zxC + ys
 
-    rotation_mat[1][0] = xyC + zs
-    rotation_mat[1][1] = y * yC + c
-    rotation_mat[1][2] = yzC - xs
+    rotation_mat[:, 1, 0] = xyC + zs
+    rotation_mat[:, 1, 1] = y * yC + c
+    rotation_mat[:, 1, 2] = yzC - xs
 
-    rotation_mat[2][0] = zxC - ys
-    rotation_mat[2][1] = yzC + xs
-    rotation_mat[2][2] = z * zC + c
+    rotation_mat[:, 2, 0] = zxC - ys
+    rotation_mat[:, 2, 1] = yzC + xs
+    rotation_mat[:, 2, 2] = z * zC + c
     return rotation_mat
+
+
+def rotate(vector: NumericInput, axis: NumericInput, angle: NumericInput) -> np.ndarray:
+    """Rotate a vector about an axis
+
+    Parameters
+    ----------
+    vector : Union[np.ndarray, list]
+        vector to rotate
+    alpha : Union[np.ndarray, list]
+        axis to rotate about
+    beta : Union[np.ndarray, list]
+        angle to rotate in degrees
+
+    Returns
+    -------
+    np.ndarray
+        rotated vector
+    """
+    return np.einsum("ijk,ik->ij", rotation(axis, angle), vector)
+    # rotation_mat = rotation(
+    #     np.tile(np.array([0, 0, 1])[None, :], (yaw.shape[0], 1)), yaw
+    # )
+    # vector = np.einsum("ijk,ik->ij", rotation_mat, vector)
+    # rotation_mat = rotation(
+    #     np.tile(np.array([0, 1, 0])[None, :], (pitch.shape[0], 1)), pitch
+    # )
+    # vector = np.einsum("ijk,ik->ij", rotation_mat, vector)
+
+    # return vector
 
 
 def get_vectors(normal: NumericInput) -> tuple[np.ndarray, np.ndarray]:
