@@ -27,9 +27,7 @@ class AnalyticalGeologicalFeature(BaseFeature):
         list of FaultSegments that affect this feature
     """
 
-    def __init__(
-        self, name, vector, origin, regions=[], faults=[], model=None, builder=None
-    ):
+    def __init__(self, name, vector, origin, regions=[], faults=[], model=None, builder=None):
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.vector = np.array(vector, dtype=float)
         self.origin = np.array(origin, dtype=float)
@@ -63,9 +61,7 @@ class AnalyticalGeologicalFeature(BaseFeature):
             xyz2[:] = self.model.rescale(xyz2, inplace=False)
         xyz2[:] = xyz2 - self.origin
         normal = self.vector / np.linalg.norm(self.vector)
-        distance = (
-            normal[0] * xyz2[:, 0] + normal[1] * xyz2[:, 1] + normal[2] * xyz2[:, 2]
-        )
+        distance = normal[0] * xyz2[:, 0] + normal[1] * xyz2[:, 1] + normal[2] * xyz2[:, 2]
         return distance / np.linalg.norm(self.vector)
 
     def evaluate_gradient(self, xyz):

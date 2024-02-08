@@ -106,9 +106,7 @@ class BaseStructuredSupport(metaclass=ABCMeta):
             )
         rotation_xy = np.array(rotation_xy)
         if rotation_xy.shape != (3, 3):
-            raise ValueError(
-                "Rotation matrix should be 3x3, not {}".format(rotation_xy.shape)
-            )
+            raise ValueError("Rotation matrix should be 3x3, not {}".format(rotation_xy.shape))
         self._rotation_xy = rotation_xy
 
     @property
@@ -203,9 +201,7 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         y = np.linspace(self.origin[1], max[1], self.nsteps[1])
         z = np.linspace(self.origin[2], max[2], self.nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
-        return np.array(
-            [xx.flatten(order="F"), yy.flatten(order="F"), zz.flatten(order="F")]
-        ).T
+        return np.array([xx.flatten(order="F"), yy.flatten(order="F"), zz.flatten(order="F")]).T
 
     def rotate(self, pos):
         """ """
@@ -386,9 +382,7 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         # remained when dividing modulus of nx by ny is j
         cell_indexes = np.zeros((global_index.shape[0], 3), dtype=int)
         cell_indexes[:, 0] = global_index % self.nsteps_cells[0, None]
-        cell_indexes[:, 1] = (
-            global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
-        )
+        cell_indexes[:, 1] = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
         cell_indexes[:, 2] = (
             global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         )
@@ -413,12 +407,8 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         global_index = global_index.reshape((-1))
         local_indexes = np.zeros((global_index.shape[0], 3), dtype=int)
         local_indexes[:, 0] = global_index % self.nsteps[0, None]
-        local_indexes[:, 1] = (
-            global_index // self.nsteps[0, None] % self.nsteps[1, None]
-        )
-        local_indexes[:, 2] = (
-            global_index // self.nsteps[0, None] // self.nsteps[1, None]
-        )
+        local_indexes[:, 1] = global_index // self.nsteps[0, None] % self.nsteps[1, None]
+        local_indexes[:, 2] = global_index // self.nsteps[0, None] // self.nsteps[1, None]
         return local_indexes.reshape(*original_shape, 3)
 
     def global_node_indices(self, indexes) -> np.ndarray:

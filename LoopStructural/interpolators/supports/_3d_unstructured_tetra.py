@@ -53,9 +53,7 @@ class UnStructuredTetMesh:
         self.elements = np.array(elements, dtype=np.int64)
         if self.elements.shape[0] != self.neighbours.shape[0]:
             raise ValueError("Number of elements and neighbours do not match")
-        self.barycentre = (
-            np.sum(self.nodes[self.elements[:, :4]][:, :, :], axis=1) / 4.0
-        )
+        self.barycentre = np.sum(self.nodes[self.elements[:, :4]][:, :, :], axis=1) / 4.0
         self.minimum = np.min(self.nodes, axis=0)
         self.maximum = np.max(self.nodes, axis=0)
         length = self.maximum - self.minimum
@@ -68,22 +66,16 @@ class UnStructuredTetMesh:
             step_vector = np.zeros(3)
             step_vector[:] = element_volume ** (1.0 / 3.0)
             # number of steps is the length of the box / step vector
-            aabb_nsteps = np.ceil((self.maximum - self.minimum) / step_vector).astype(
-                int
-            )
+            aabb_nsteps = np.ceil((self.maximum - self.minimum) / step_vector).astype(int)
             # make sure there is at least one cell in every dimension
             aabb_nsteps[aabb_nsteps < 2] = 2
         aabb_nsteps = np.array(aabb_nsteps, dtype=int)
         step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
-        self.aabb_grid = StructuredGrid(
-            self.minimum, nsteps=aabb_nsteps, step_vector=step_vector
-        )
+        self.aabb_grid = StructuredGrid(self.minimum, nsteps=aabb_nsteps, step_vector=step_vector)
         # make a big table to store which tetra are in which element.
         # if this takes up too much memory it could be simplified by using sparse matrices or dict but
         # at the expense of speed
-        self.aabb_table = csr_matrix(
-            (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
-        )
+        self.aabb_table = csr_matrix((self.aabb_grid.n_elements, len(self.elements)), dtype=bool)
         self.shared_element_relationships = np.zeros(
             (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
         )
@@ -132,9 +124,7 @@ class UnStructuredTetMesh:
 
         # el_rel2 = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
         self.shared_element_relationships[:] = -1
-        el_pairs = coo_matrix(
-            (np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))
-        ).tocsr()
+        el_pairs = coo_matrix((np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))).tocsr()
         i, j = tril(el_pairs).nonzero()
         self.shared_element_relationships[: len(i), 0] = i
         self.shared_element_relationships[: len(i), 1] = j
@@ -158,9 +148,7 @@ class UnStructuredTetMesh:
             np.arange(self.shared_element_relationships.shape[0]), :
         ] = shared_face_index
         # resize
-        self.shared_elements = self.shared_elements[
-            : len(self.shared_element_relationships), :
-        ]
+        self.shared_elements = self.shared_elements[: len(self.shared_element_relationships), :]
         # flag = np.zeros(self.elements.shape[0])
         # face_index = 0
         # for i, t in enumerate(self.elements):
@@ -343,9 +331,7 @@ class UnStructuredTetMesh:
                 ],
             ]
         )
-        I = np.array(
-            [[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]]
-        )
+        I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
         m = np.swapaxes(m, 0, 2)
         element_gradients = np.linalg.inv(m)
 
@@ -412,8 +398,7 @@ class UnStructuredTetMesh:
         ) = self.get_element_gradient_for_location(pos)
         # grads = np.zeros(tetras.shape)
         values[inside, :] = (
-            element_gradients[inside, :, :]
-            * property_array[self.elements[tetras][inside, None, :]]
+            element_gradients[inside, :, :] * property_array[self.elements[tetras][inside, None, :]]
         ).sum(2)
         length = np.sum(values[inside, :], axis=1)
         # values[inside,:] /= length[:,None]
@@ -429,8 +414,7 @@ class UnStructuredTetMesh:
             inside *= pos[:, i] > self.origin[None, i]
             inside *= (
                 pos[:, i]
-                < self.origin[None, i]
-                + self.step_vector[None, i] * self.nsteps_cells[None, i]
+                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
             )
         return inside
 
@@ -556,9 +540,7 @@ class UnStructuredTetMesh:
                 ],
             ]
         )
-        I = np.array(
-            [[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]]
-        )
+        I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
         m = np.swapaxes(m, 0, 2)
         element_gradients = np.linalg.inv(m)
 
@@ -600,9 +582,7 @@ class UnStructuredTetMesh:
                 ],
             ]
         )
-        I = np.array(
-            [[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]]
-        )
+        I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
         m = np.swapaxes(m, 0, 2)
         element_gradients = np.linalg.inv(m)
 

@@ -12,9 +12,7 @@ from ..modelling.features import FeatureType
 class MapView:
     """ """
 
-    def __init__(
-        self, model=None, bounding_box=np.zeros((2, 2)), nsteps=None, ax=None, **kwargs
-    ):
+    def __init__(self, model=None, bounding_box=np.zeros((2, 2)), nsteps=None, ax=None, **kwargs):
         """
 
         Parameters
@@ -127,12 +125,8 @@ class MapView:
         """
         if self.nsteps is None or self.bounding_box is None:
             return
-        x = np.linspace(
-            self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0]
-        )
-        y = np.linspace(
-            self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1]
-        )
+        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
+        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
         self.xx, self.yy = np.meshgrid(x, y, indexing="ij")
         self.xx = self.xx.flatten()
         self.yy = self.yy.flatten()
@@ -196,12 +190,8 @@ class MapView:
             symb_colour = kwargs.pop("symb_colour", "black")
             symb_scale = kwargs.pop("symb_scale", 1.0)
             gradient_data = np.hstack(ori_data)
-            gradient_data[:, :3] = self.model.rescale(
-                gradient_data[:, :3], inplace=False
-            )
-            gradient_data[:, 3:5] /= np.linalg.norm(gradient_data[:, 3:5], axis=1)[
-                :, None
-            ]
+            gradient_data[:, :3] = self.model.rescale(gradient_data[:, :3], inplace=False)
+            gradient_data[:, 3:5] /= np.linalg.norm(gradient_data[:, 3:5], axis=1)[:, None]
             t = gradient_data[:, [4, 3]] * np.array([1, -1]).T
             n = gradient_data[:, 3:5]
             t *= symb_scale
@@ -216,9 +206,7 @@ class MapView:
             if dip:
                 dip_v = np.rad2deg(np.arccos(gradient_data[:, 5])).astype(int)
                 for d, xy, v in zip(dip_v, gradient_data[:, :2], gradient_data[:, 3:6]):
-                    self.ax.annotate(
-                        d, xy, xytext=xy + v[:2] * symb_scale * 0.1, fontsize="small"
-                    )
+                    self.ax.annotate(d, xy, xytext=xy + v[:2] * symb_scale * 0.1, fontsize="small")
 
     def add_fault_ellipse(self, faults=None, **kwargs):
         from matplotlib.patches import Ellipse
@@ -268,7 +256,7 @@ class MapView:
             vmin=feature.min(),
             vmax=feature.max(),
             origin="lower",
-            **kwargs
+            **kwargs,
         )
 
     def add_contour(self, feature, values, z=0, mask=None, **kwargs):
@@ -289,9 +277,7 @@ class MapView:
             self.model.scale(np.array([self.xx, self.yy, zz]).T, inplace=False)
         )
         if mask:
-            maskv = mask(
-                self.model.scale(np.array([self.xx, self.yy, zz]).T, inplace=False)
-            )
+            maskv = mask(self.model.scale(np.array([self.xx, self.yy, zz]).T, inplace=False))
             v[~maskv] = np.nan
         return self.ax.contour(
             v.reshape(self.nsteps).T,
@@ -303,7 +289,7 @@ class MapView:
             ],
             origin="lower",
             levels=values,
-            **kwargs
+            **kwargs,
         )
 
     def add_model(self, z=0, cmap=None):

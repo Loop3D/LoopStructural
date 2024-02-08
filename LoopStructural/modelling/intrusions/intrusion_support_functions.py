@@ -184,9 +184,7 @@ def shortest_path(inlet, outlet, time_map):
         neighbors = element_neighbour(
             temp_inlet, time_map, inet
         )  # identify neighbours elements of temporary outlet
-        direction = index_min(
-            neighbors
-        )  # obtain the location (index min) of minimun difference
+        direction = index_min(neighbors)  # obtain the location (index min) of minimun difference
 
         if direction == 10:
             break

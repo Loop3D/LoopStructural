@@ -36,18 +36,14 @@ bb[0, 2] -= 200
 model = GeologicalModel(bb[0, :], bb[1, :])
 data["random"] = np.random.random(data.shape[0])
 model.set_model_data(data[data["random"] < 0.01])  # [np.isnan(data['val'])])
-strati = model.create_and_add_foliation(
-    "strati", interpolatortype="surfe", method="single_surface"
-)
+strati = model.create_and_add_foliation("strati", interpolatortype="surfe", method="single_surface")
 print(strati.evaluate_value(model.regular_grid((10, 10, 10))))
 viewer = LavaVuModelViewer(model, background="white")
 
 # determine the number of unique surfaces in the model from
 # the input data and then calculate isosurfaces for this
 unique = np.unique(strati.interpolator.get_value_constraints()[:, 3])
-viewer.add_isosurface(
-    model.features[0], slices=unique, cmap="prism", paint_with=model.features[0]
-)
+viewer.add_isosurface(model.features[0], slices=unique, cmap="prism", paint_with=model.features[0])
 #
 # # viewer.add_section(model.features[0],
 # #                    axis='x',

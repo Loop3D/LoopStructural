@@ -286,9 +286,7 @@ class IntrusionFeature(BaseFeature):
                 c0_maxside_threshold[evaluation_points_in_fault >= 0] * weight
             )
 
-        mid_point = c0_minside_threshold + (
-            (c0_maxside_threshold - c0_minside_threshold) / 2
-        )
+        mid_point = c0_minside_threshold + ((c0_maxside_threshold - c0_minside_threshold) / 2)
 
         a = intrusion_coord2_pts >= c2_maxside_threshold
         b = intrusion_coord2_pts <= c2_minside_threshold
@@ -379,9 +377,7 @@ class IntrusionFeature(BaseFeature):
         c0_minside_threshold = thresholds[1]
         c0_maxside_threshold = thresholds[0]
 
-        mid_point = c0_minside_threshold + (
-            (c0_maxside_threshold - c0_minside_threshold) / 2
-        )
+        mid_point = c0_minside_threshold + ((c0_maxside_threshold - c0_minside_threshold) / 2)
 
         mod_intrusion_coord0_pts = intrusion_coord0_pts - mid_point
         mod_c0_minside_threshold = c0_minside_threshold - mid_point

@@ -17,9 +17,7 @@ def data(request):
         value = True
         gradient = True
     if value:
-        xy = np.array(
-            np.meshgrid(np.linspace(0, 1, 50), np.linspace(0, 1, 50))
-        ).T.reshape(-1, 2)
+        xy = np.array(np.meshgrid(np.linspace(0, 1, 50), np.linspace(0, 1, 50))).T.reshape(-1, 2)
         xyz = np.hstack([xy, np.zeros((xy.shape[0], 1))])
         data = pd.DataFrame(xyz, columns=["X", "Y", "Z"])
         data["val"] = np.sin(data["X"])

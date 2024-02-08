@@ -14,9 +14,7 @@ logger = getLogger(__name__)
 class TetMesh(BaseStructuredSupport):
     """ """
 
-    def __init__(
-        self, origin=np.zeros(3), nsteps=np.ones(3) * 10, step_vector=np.ones(3)
-    ):
+    def __init__(self, origin=np.zeros(3), nsteps=np.ones(3) * 10, step_vector=np.ones(3)):
         BaseStructuredSupport.__init__(self, origin, nsteps, step_vector)
         self.type = SupportType.TetMesh
         self.tetra_mask_even = np.array(
@@ -142,9 +140,7 @@ class TetMesh(BaseStructuredSupport):
 
         # el_rel2 = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
         self.shared_element_relationships[:] = -1
-        el_pairs = coo_matrix(
-            (np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))
-        ).tocsr()
+        el_pairs = coo_matrix((np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))).tocsr()
         i, j = tril(el_pairs).nonzero()
 
         self.shared_element_relationships[: len(i), 0] = i
@@ -169,9 +165,7 @@ class TetMesh(BaseStructuredSupport):
             np.arange(self.shared_element_relationships.shape[0]), :
         ] = shared_face_index
         # resize
-        self.shared_elements = self.shared_elements[
-            : len(self.shared_element_relationships), :
-        ]
+        self.shared_elements = self.shared_elements[: len(self.shared_element_relationships), :]
 
     @property
     def shared_element_norm(self):
@@ -214,9 +208,7 @@ class TetMesh(BaseStructuredSupport):
         )
         return values
 
-    def evaluate_gradient(
-        self, pos: np.ndarray, property_array: np.ndarray
-    ) -> np.ndarray:
+    def evaluate_gradient(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
         """
         Evaluate the gradient of an interpolant at the locations
 
@@ -255,8 +247,7 @@ class TetMesh(BaseStructuredSupport):
             inside *= pos[:, i] > self.origin[None, i]
             inside *= (
                 pos[:, i]
-                < self.origin[None, i]
-                + self.step_vector[None, i] * self.nsteps_cells[None, i]
+                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
             )
         return inside
 
@@ -284,15 +275,11 @@ class TetMesh(BaseStructuredSupport):
         # determine if using +ve or -ve mask
         even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
         # get cell corners
-        corner_indexes = self.cell_corner_indexes(
-            cell_indexes
-        )  # global_index_to_node_index(gi)
+        corner_indexes = self.cell_corner_indexes(cell_indexes)  # global_index_to_node_index(gi)
         # convert to node locations
         nodes = self.node_indexes_to_position(corner_indexes)
 
-        vertices[even_mask, :, :, :] = nodes[even_mask, :, :][
-            :, self.tetra_mask_even, :
-        ]
+        vertices[even_mask, :, :, :] = nodes[even_mask, :, :][:, self.tetra_mask_even, :]
         vertices[~even_mask, :, :, :] = nodes[~even_mask, :, :][:, self.tetra_mask, :]
         # changing order to points, tetra, nodes, coord
         # vertices = vertices.swapaxes(0, 2)
@@ -352,9 +339,7 @@ class TetMesh(BaseStructuredSupport):
         tetra_return[:] = -1
         local_tetra_index = np.tile(np.arange(0, 5)[None, :], (mask.shape[0], 1))
         local_tetra_index = local_tetra_index[mask]
-        tetra_global_index = self.tetra_global_index(
-            cell_indexes[inside, :], local_tetra_index
-        )
+        tetra_global_index = self.tetra_global_index(cell_indexes[inside, :], local_tetra_index)
         tetra_return[inside] = tetra_global_index
         return vertices_return, c_return, tetra_return, inside
 
@@ -438,9 +423,7 @@ class TetMesh(BaseStructuredSupport):
         # c_zi = c_zi.flatten(order="F")
         even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
         # get cell corners
-        corner_indexes = self.cell_corner_indexes(
-            cell_indexes
-        )  # global_index_to_node_index(gi)
+        corner_indexes = self.cell_corner_indexes(cell_indexes)  # global_index_to_node_index(gi)
         # convert to node locations
         nodes = self.node_indexes_to_position(corner_indexes)
 
@@ -452,9 +435,7 @@ class TetMesh(BaseStructuredSupport):
         # points = points.swapaxes(0, 2)
         # points = points.swapaxes(1, 2)
 
-        ps = points.reshape(
-            points.shape[0] * points.shape[1], points.shape[2], points.shape[3]
-        )
+        ps = points.reshape(points.shape[0] * points.shape[1], points.shape[2], points.shape[3])
 
         m = np.array(
             [
@@ -475,9 +456,7 @@ class TetMesh(BaseStructuredSupport):
                 ],
             ]
         )
-        I = np.array(
-            [[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]]
-        )
+        I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
         m = np.swapaxes(m, 0, 2)
         element_gradients = np.linalg.inv(m)
 
@@ -534,9 +513,7 @@ class TetMesh(BaseStructuredSupport):
             ]
         )
         # m[~inside,:,:] = np.nan
-        I = np.array(
-            [[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]]
-        )
+        I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
         m = np.swapaxes(m, 0, 2)
         element_gradients = np.zeros_like(m)
         element_gradients[:] = np.nan
@@ -582,9 +559,7 @@ class TetMesh(BaseStructuredSupport):
         return (
             indexes[:, :, 0]
             + self.nsteps_cells[None, None, 0] * indexes[:, :, 1]
-            + self.nsteps_cells[None, None, 0]
-            * self.nsteps_cells[None, None, 1]
-            * indexes[:, :, 2]
+            + self.nsteps_cells[None, None, 0] * self.nsteps_cells[None, None, 1] * indexes[:, :, 2]
         )
 
     def global_index_to_node_index(self, global_index: np.ndarray):
@@ -624,12 +599,8 @@ class TetMesh(BaseStructuredSupport):
         # remained when dividing modulus of nx by ny is j
 
         x_index = global_index % self.nsteps_cells[0, None]
-        y_index = (
-            global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
-        )
-        z_index = (
-            global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
-        )
+        y_index = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
+        z_index = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         return x_index, y_index, z_index
 
     def get_neighbours(self) -> np.ndarray:
@@ -665,9 +636,7 @@ class TetMesh(BaseStructuredSupport):
         four_mask = tetra_index % 5 == 4
 
         # create masks for whether cell is odd or even
-        odd_mask = (
-            np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=0) % 2 == 1
-        )
+        odd_mask = np.sum(self.global_index_to_cell_index(tetra_index // 5), axis=0) % 2 == 1
         odd_mask = odd_mask.astype(bool)
 
         # apply masks to

@@ -46,9 +46,13 @@ class LoopProjectfileProcessor(ProcessInputData):
             },
             inplace=True,
         )
-        fault_locations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(fault_locations, on="eventId")
-        fault_orientations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(fault_orientations, on="eventId")
-        fault_properties.set_index("fault_name",inplace=True)
+        fault_locations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
+            fault_locations, on="eventId"
+        )
+        fault_orientations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
+            fault_orientations, on="eventId"
+        )
+        fault_properties.set_index("fault_name", inplace=True)
         colours = dict(
             zip(
                 self.projectfile.stratigraphicLog.name,

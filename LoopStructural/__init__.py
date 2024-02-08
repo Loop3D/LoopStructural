@@ -14,9 +14,7 @@ from .version import __version__
 
 experimental = False
 ch = logging.StreamHandler()
-formatter = logging.Formatter(
-    "%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d -- %(message)s"
-)
+formatter = logging.Formatter("%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d -- %(message)s")
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}

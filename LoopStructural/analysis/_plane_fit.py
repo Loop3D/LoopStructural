@@ -17,9 +17,7 @@ def plane_fit(points):
     xyz = points.loc[val_mask, ["X", "Y", "Z"]].to_numpy()
     A[: len(points[val_mask]), :3] = xyz[:, :3]
     A[: len(points[val_mask]), 3] = 1.0
-    B[: len(points[val_mask])] = points.loc[
-        val_mask, "val"
-    ].to_numpy()  # v#np.zeros(A.shape[0])
+    B[: len(points[val_mask])] = points.loc[val_mask, "val"].to_numpy()  # v#np.zeros(A.shape[0])
     c = len(points[val_mask])
     A[c : len(points[vec_mask]) + c, 0] = 1
     B[c : len(points[vec_mask]) + c] = points.loc[vec_mask, "nx"].to_numpy()

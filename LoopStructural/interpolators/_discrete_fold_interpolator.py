@@ -44,9 +44,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         -------
 
         """
-        logger.error(
-            "updating fold, this should be done by accessing the fold attribute"
-        )
+        logger.error("updating fold, this should be done by accessing the fold attribute")
         self.fold = fold
 
     def setup_interpolator(self, **kwargs):
@@ -96,9 +94,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         # get the gradient of all of the elements of the mesh
         eg = self.support.get_element_gradients(np.arange(self.support.n_elements))
         # get array of all nodes for all elements N,4,3
-        nodes = self.support.nodes[
-            self.support.get_elements()[np.arange(self.support.n_elements)]
-        ]
+        nodes = self.support.nodes[self.support.get_elements()[np.arange(self.support.n_elements)]]
         # calculate the fold geometry for the elements barycentre
         deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(
             self.support.barycentre
@@ -143,9 +139,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0]).tolist()
             idc = self.support.get_elements()[element_idx[::step], :]
 
-            self.add_constraints_to_least_squares(
-                A, B, idc, w=fold_axis_w, name="fold axis"
-            )
+            self.add_constraints_to_least_squares(A, B, idc, w=fold_axis_w, name="fold axis")
 
         if fold_normalisation is not None:
             """
@@ -153,12 +147,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             np.random.shuffle(element_idx)
 
-            logger.info(
-                f"Adding fold normalisation constraint to  w = {fold_normalisation}"
-            )
-            A = np.einsum(
-                "ij,ijk->ik", dgz[element_idx[::step], :], eg[element_idx[::step], :, :]
-            )
+            logger.info(f"Adding fold normalisation constraint to  w = {fold_normalisation}")
+            A = np.einsum("ij,ijk->ik", dgz[element_idx[::step], :], eg[element_idx[::step], :, :])
             A *= vol[element_idx[::step], None]
 
             B = np.ones(A.shape[0])

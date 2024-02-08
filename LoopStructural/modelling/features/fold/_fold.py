@@ -16,7 +16,7 @@ class FoldEvent:
         fold_axis_rotation=None,
         fold_limb_rotation=None,
         fold_axis=None,
-        invert_norm = False,
+        invert_norm=False,
         name="Fold",
     ):
         """
@@ -112,9 +112,9 @@ class FoldEvent:
         d = np.einsum("ij,ik->i", fold_direction, fold_axis)
 
         if self.invert_norm == True:
-            new_dgz = -dgz[mask][d[mask] <0]
+            new_dgz = -dgz[mask][d[mask] < 0]
             return fold_direction, fold_axis, new_dgz
-        
+
         elif self.invert_norm == False:
             return fold_direction, fold_axis, dgz
         else:

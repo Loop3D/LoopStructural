@@ -69,8 +69,7 @@ class StructuredGrid2D:
     def print_geometry(self):
         print("Origin: %f %f %f" % (self.origin[0], self.origin[1], self.origin[2]))
         print(
-            "Cell size: %f %f %f"
-            % (self.step_vector[0], self.step_vector[1], self.step_vector[2])
+            "Cell size: %f %f %f" % (self.step_vector[0], self.step_vector[1], self.step_vector[2])
         )
         max = self.origin + self.nsteps_cells * self.step_vector
         print("Max extent: %f %f %f" % (max[0], max[1], max[2]))
@@ -91,16 +90,8 @@ class StructuredGrid2D:
             [description]
         """
         ix, iy = self.global_index_to_cell_index(global_index)
-        x = (
-            self.origin[None, 0]
-            + self.step_vector[None, 0] * 0.5
-            + self.step_vector[None, 0] * ix
-        )
-        y = (
-            self.origin[None, 1]
-            + self.step_vector[None, 1] * 0.5
-            + self.step_vector[None, 1] * iy
-        )
+        x = self.origin[None, 0] + self.step_vector[None, 0] * 0.5 + self.step_vector[None, 0] * ix
+        y = self.origin[None, 1] + self.step_vector[None, 1] * 0.5 + self.step_vector[None, 1] * iy
         return np.array([x, y]).T
 
     def position_to_cell_index(self, pos):
@@ -134,8 +125,7 @@ class StructuredGrid2D:
             inside *= pos[:, i] > self.origin[None, i]
             inside *= (
                 pos[:, i]
-                < self.origin[None, i]
-                + self.step_vector[None, i] * self.nsteps_cells[None, i]
+                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
             )
         return inside
 
@@ -261,13 +251,11 @@ class StructuredGrid2D:
             return
         # determine which neighbours to return default is diagonals included.
         if mask is None:
-            mask = np.array(
-                [[-1, 0, 1, -1, 0, 1, -1, 0, 1], [1, 1, 1, 0, 0, 0, -1, -1, -1]]
-            )
+            mask = np.array([[-1, 0, 1, -1, 0, 1, -1, 0, 1], [1, 1, 1, 0, 0, 0, -1, -1, -1]])
         neighbours = indexes[:, None, :] + mask[:, :, None]
-        return (
-            neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1, :, :]
-        ).astype(np.int64)
+        return (neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1, :, :]).astype(
+            np.int64
+        )
 
     def cell_corner_indexes(self, x_cell_index, y_cell_index):
         """
@@ -307,9 +295,7 @@ class StructuredGrid2D:
         # remained when dividing modulus of nx by ny is j
 
         x_index = global_index % self.nsteps_cells[0, None]
-        y_index = (
-            global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
-        )
+        y_index = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
         return x_index, y_index
 
     def node_indexes_to_position(self, xindex, yindex):

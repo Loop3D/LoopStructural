@@ -6,9 +6,7 @@ import pytest
 @pytest.fixture()
 def horizontal_data():
 
-    xy = np.array(np.meshgrid(np.linspace(0, 1, 50), np.linspace(0, 1, 50))).T.reshape(
-        -1, 2
-    )
+    xy = np.array(np.meshgrid(np.linspace(0, 1, 50), np.linspace(0, 1, 50))).T.reshape(-1, 2)
     df1 = pd.DataFrame(xy, columns=["X", "Y"])
     df2 = pd.DataFrame(xy, columns=["X", "Y"])
     df1["Z"] = 0.25

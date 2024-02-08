@@ -66,9 +66,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.non_linear_constraints = []
         self.constraints = {}
         self.interpolation_weights = {}
-        logger.info(
-            "Creating discrete interpolator with {} degrees of freedom".format(self.nx)
-        )
+        logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
         self.type = InterpolatorType.BASE_DISCRETE
         self.c = np.zeros(self.support.n_nodes)
 
@@ -177,9 +175,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
         # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
-            logger.error(
-                f"Cannot add constraints: A and indexes have different shape : {name}"
-            )
+            logger.error(f"Cannot add constraints: A and indexes have different shape : {name}")
             return
 
         if len(A.shape) > 2:
@@ -208,9 +204,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # else:
             raise BaseException("Weight array does not match number of constraints")
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
-            logger.warning(
-                "Constraints contain nan not adding constraints: {}".format(name)
-            )
+            logger.warning("Constraints contain nan not adding constraints: {}".format(name))
             # return
         rows = np.arange(0, nr).astype(int)
         rows += self.c_
@@ -246,16 +240,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
         residuals = {}
         for constraint_name, constraint in self.constraints:
             residuals[constraint_name] = (
-                np.einsum(
-                    "ij,ij->i", constraint["A"], self.c[constraint["idc"].astype(int)]
-                )
+                np.einsum("ij,ij->i", constraint["A"], self.c[constraint["idc"].astype(int)])
                 - constraint["B"].flatten()
             )
         return residuals
 
-    def remove_constraints_from_least_squares(
-        self, name="undefined", constraint_ids=None
-    ):
+    def remove_constraints_from_least_squares(self, name="undefined", constraint_ids=None):
         """
         Remove constraints from the least squares system using the constraint ids
         which corresponds to the rows in the interpolation matrix.
@@ -574,9 +564,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
         except ValueError:
             if mkl:
-                logger.error(
-                    "MKL solver library path not correct. Please add to LD_LIBRARY_PATH"
-                )
+                logger.error("MKL solver library path not correct. Please add to LD_LIBRARY_PATH")
                 raise LoopImportError("Cannot import MKL pardiso")
         res = prob.solve()
         return res.x
@@ -827,9 +815,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         mask = np.any(evaluation_points == np.nan, axis=1)
 
         if evaluation_points[~mask, :].shape[0] > 0:
-            evaluated[~mask] = self.support.evaluate_value(
-                evaluation_points[~mask], self.c
-            )
+            evaluated[~mask] = self.support.evaluate_value(evaluation_points[~mask], self.c)
         return evaluated
 
     def evaluate_gradient(self, locations: np.ndarray) -> np.ndarray:

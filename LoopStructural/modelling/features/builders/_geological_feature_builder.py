@@ -180,7 +180,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
         data = self.data.copy()
         # convert data locations to numpy array and then update
         for f in self.faults:
-            data.loc[:, xyz_names()] = f.apply_to_points(data.loc[:, xyz_names()])
+            data.loc[:, xyz_names()], axis, angle = f.apply_to_points(
+                data.loc[:, xyz_names()]
+            )
         # self.check_interpolation_geometry(data.loc[:,xyz_names()].to_numpy())
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve

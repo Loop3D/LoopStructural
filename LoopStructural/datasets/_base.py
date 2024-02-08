@@ -236,13 +236,9 @@ def load_geological_map_data():
     )
     """
     module_path = dirname(__file__)
-    contacts = pd.read_csv(
-        join(module_path, Path("data/geological_map_data/contacts.csv"))
-    )
+    contacts = pd.read_csv(join(module_path, Path("data/geological_map_data/contacts.csv")))
     stratigraphic_orientations = pd.read_csv(
-        join(
-            module_path, Path("data/geological_map_data/stratigraphic_orientations.csv")
-        )
+        join(module_path, Path("data/geological_map_data/stratigraphic_orientations.csv"))
     )
     stratigraphic_thickness = pd.read_csv(
         join(module_path, Path("data/geological_map_data/stratigraphic_thickness.csv")),
@@ -265,9 +261,7 @@ def load_geological_map_data():
         index_col=0,
     )
     fault_edges = []
-    with open(
-        join(module_path, Path("data/geological_map_data/fault_edges.txt")), "r"
-    ) as f:
+    with open(join(module_path, Path("data/geological_map_data/fault_edges.txt")), "r") as f:
         for l in f.read().split("\n"):
             faults = l.split(",")
             if len(faults) == 2:
@@ -303,7 +297,5 @@ def load_fault_trace():
 
     module_path = dirname(__file__)
 
-    fault_trace = geopandas.read_file(
-        join(module_path, Path("data/fault_trace/fault_trace.shp"))
-    )
+    fault_trace = geopandas.read_file(join(module_path, Path("data/fault_trace/fault_trace.shp")))
     return fault_trace

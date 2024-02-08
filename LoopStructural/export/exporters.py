@@ -56,9 +56,7 @@ def write_feat_surfs(
     elif file_format == FileFormat.NUMPY:
         write_fn = None
     else:
-        logger.warning(
-            f"Cannot export to surface file - format {file_format} not supported yet"
-        )
+        logger.warning(f"Cannot export to surface file - format {file_format} not supported yet")
         return False, []
     # Skip if not a requested feature
     if featurename not in model:
@@ -161,9 +159,7 @@ def _write_feat_surfs_evtk(surf, file_name):
     conn += conn_idx
 
     # Make offsets into connection array
-    offs = np.array(
-        list(range(3 + offset_idx, len(conn) + offset_idx, 3)), dtype=np.int64
-    )
+    offs = np.array(list(range(3 + offset_idx, len(conn) + offset_idx, 3)), dtype=np.int64)
 
     # Set VTK datatype as triangles
     ctype = np.zeros(offs.size)
@@ -268,11 +264,7 @@ TFACE
         v_idx = 1
         v_map = {}
         for idx, vert in enumerate(surf.verts):
-            if (
-                not np.isnan(vert[0])
-                and not np.isnan(vert[1])
-                and not np.isnan(vert[2])
-            ):
+            if not np.isnan(vert[0]) and not np.isnan(vert[1]) and not np.isnan(vert[2]):
                 fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]} \n")
                 v_map[idx] = v_idx
                 v_idx += 1
@@ -567,8 +559,6 @@ END\n"""
         with open(data_filename, "wb") as fp:
             export_vals.tofile(fp)
     except IOError as exc:
-        logger.warning(
-            f"Cannot export volume to GOCAD VOXET data file {data_filename}: {exc}"
-        )
+        logger.warning(f"Cannot export volume to GOCAD VOXET data file {data_filename}: {exc}")
         return False
     return True

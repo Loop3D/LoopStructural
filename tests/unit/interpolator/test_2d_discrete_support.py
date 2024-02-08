@@ -26,11 +26,7 @@ def test_evaluate_value_2d():
     grid = StructuredGrid2D()
     # grid.update_property("X", grid.nodes[:, 0])
     assert (
-        np.sum(
-            grid.barycentre[:, 0]
-            - grid.evaluate_value(grid.barycentre, grid.nodes[:, 0])
-        )
-        == 0
+        np.sum(grid.barycentre[:, 0] - grid.evaluate_value(grid.barycentre, grid.nodes[:, 0])) == 0
     )
 
 

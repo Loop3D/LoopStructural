@@ -14,9 +14,7 @@ class BaseFeature:
     Base class for geological features.
     """
 
-    def __init__(
-        self, name: str, model=None, faults: list = [], regions: list = [], builder=None
-    ):
+    def __init__(self, name: str, model=None, faults: list = [], regions: list = [], builder=None):
         """Base geological feature, this is a virtual class and should not be
         used directly. Inheret from this to implement a new type of geological
         feature or use one of the exisitng implementations
@@ -178,7 +176,7 @@ class BaseFeature:
             mask = np.logical_and(mask, r(evaluation_points))
         return mask
 
-    def _apply_faults(self, evaluation_points: np.ndarray) -> np.ndarray:
+    def _apply_faults(self, evaluation_points: np.ndarray, reverse: bool = False) -> np.ndarray:
         """Calculate the restored location of the points given any faults if faults are enabled
 
         Parameters
@@ -191,16 +189,21 @@ class BaseFeature:
         np.ndarray
             faulted value Nx1 ndarray
         """
+        axis = None
+        angle = None
         if self.faults_enabled:
             # check faults
             for f in self.faults:
-                evaluation_points = f.apply_to_points(evaluation_points)
-        return evaluation_points
+                evaluation_points, axis, angle = f.apply_to_points(
+                    evaluation_points, reverse=reverse
+                )
+        return evaluation_points, axis, angle
 
     def evaluate_gradient(self, pos):
         """
         Evaluate the gradient of the feature at a given position.
         """
+
         raise NotImplementedError
 
     def min(self):

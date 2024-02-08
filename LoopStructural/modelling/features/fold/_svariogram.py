@@ -96,9 +96,7 @@ class SVariogram:
 
         if nlag is None and lag is not None:
             nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
-            logger.info(
-                f"Using lag kwarg but calculating nlag as {nstep} for s-variogram"
-            )
+            logger.info(f"Using lag kwarg but calculating nlag as {nstep} for s-variogram")
 
             self.lags = np.arange(step / 2.0, nstep * step, step)
 

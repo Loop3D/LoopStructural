@@ -27,14 +27,14 @@ class BoundingBox:
         nsteps : Optional[np.ndarray], optional
             _description_, by default None
         """
-        if origin is None:
-            raise LoopValueError("Origin is not set")
+        # if origin is None:
+        #     raise LoopValueError("Origin is not set")
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = origin + nsteps * step_vector
-        if maximum is None:
-            raise LoopValueError(
-                "Maximum is not set, either specify nsteps and step vector or maximum"
-            )
+        # if maximum is None:
+        #     raise LoopValueError(
+        #         "Maximum is not set, either specify nsteps and step vector or maximum"
+        #     )
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         self.dimensions = dimensions
@@ -147,9 +147,7 @@ class BoundingBox:
 
     def with_buffer(self, buffer: float = 0.2) -> BoundingBox:
         if self.origin is None or self.maximum is None:
-            raise LoopValueError(
-                "Cannot create bounding box with buffer, no origin or maximum"
-            )
+            raise LoopValueError("Cannot create bounding box with buffer, no origin or maximum")
         origin = self.origin - buffer * (self.maximum - self.origin)
         maximum = self.maximum + buffer * (self.maximum - self.origin)
         return BoundingBox(origin=origin, maximum=maximum)
@@ -161,7 +159,9 @@ class BoundingBox:
         if iy == -1:
             return self.origin[ix]
 
-        return self.bb[ix,]
+        return self.bb[
+            ix,
+        ]
 
     def __getitem__(self, name):
         if isinstance(name, str):

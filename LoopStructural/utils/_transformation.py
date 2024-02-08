@@ -31,9 +31,7 @@ class EuclideanTransformation:
         """
         points = np.array(points)
         if points.shape[1] < self.dimensions:
-            raise ValueError(
-                "Points must have at least {} dimensions".format(self.dimensions)
-            )
+            raise ValueError("Points must have at least {} dimensions".format(self.dimensions))
         # standardise the points so that centre is 0
         self.translation = np.mean(points, axis=0)
         # find main eigenvector and and calculate the angle of this with x

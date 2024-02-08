@@ -116,9 +116,7 @@ class BaseUnstructured2d:
         c, tri = self.evaluate_shape(pos[:, :2])
         inside = tri >= 0
         # vertices, c, elements, inside = self.get_elements_for_location(pos)
-        values[inside] = np.sum(
-            c[inside, :] * values[self.elements[tri[inside], :]], axis=1
-        )
+        values[inside] = np.sum(c[inside, :] * values[self.elements[tri[inside], :]], axis=1)
         return values
 
     def evaluate_gradient(self, pos, prop):

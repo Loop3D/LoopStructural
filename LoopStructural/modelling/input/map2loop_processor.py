@@ -23,16 +23,10 @@ class Map2LoopProcessor(ProcessInputData):
             f"{m2l_directory}/output/formation_summary_thicknesses.csv"
         )
         contacts = pd.read_csv(m2l_directory + "/output/contacts_clean.csv")
-        fault_displacements = pd.read_csv(
-            f"{m2l_directory}/output/fault_displacements3.csv"
-        )
-        fault_orientations = pd.read_csv(
-            f"{m2l_directory}/output/fault_orientations.csv"
-        )
+        fault_displacements = pd.read_csv(f"{m2l_directory}/output/fault_displacements3.csv")
+        fault_orientations = pd.read_csv(f"{m2l_directory}/output/fault_orientations.csv")
         fault_locations = pd.read_csv(m2l_directory + "/output/faults.csv")
-        fault_strat = pd.read_csv(
-            f"{m2l_directory}/output/supergroup-fault-relationships.csv"
-        )
+        fault_strat = pd.read_csv(f"{m2l_directory}/output/supergroup-fault-relationships.csv")
         fault_dimensions = pd.read_csv(
             f"{m2l_directory}/output/fault_dimensions.csv", index_col="Fault"
         )
@@ -68,9 +62,7 @@ class Map2LoopProcessor(ProcessInputData):
         fault_orientations["strike"] = fault_orientations["DipDirection"] + 90
         fault_edge_properties = []
         for e in fault_graph.edges():
-            fault_edge_properties.append(
-                {"angle": fault_graph.get_edge_data(*e)["angle"]}
-            )
+            fault_edge_properties.append({"angle": fault_graph.get_edge_data(*e)["angle"]})
 
         fault_locations.rename(columns={"formation": "fault_name"}, inplace=True)
         contacts.rename(columns={"formation": "name"}, inplace=True)
@@ -121,9 +113,7 @@ class Map2LoopProcessor(ProcessInputData):
 
         fault_stratigraphy = {}
         for strat in fault_strat["supergroup"].unique():
-            mask = (
-                fault_strat.loc[fault_strat["supergroup"] == strat, :] == 1
-            ).to_numpy()
+            mask = (fault_strat.loc[fault_strat["supergroup"] == strat, :] == 1).to_numpy()
             fault_stratigraphy[strat] = fault_strat.columns[mask[0, :]].tolist()
         ip = super().__init__(
             contacts,
@@ -158,9 +148,7 @@ class Map2LoopProcessor(ProcessInputData):
         """
         for fname in fault_properties.index:
             if fault_properties.loc[fname, "downthrow_dir"] == 1.0:
-                logger.info(
-                    f"{fname}: Estimating downthrow direction using fault intersections"
-                )
+                logger.info(f"{fname}: Estimating downthrow direction using fault intersections")
             # fault_intersection_angles[f]
             if (
                 np.abs(

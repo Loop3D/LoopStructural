@@ -214,9 +214,7 @@ class GeologicalModel:
         _str += ""
         _str += "------------------------------------------ \n"
         _str += ""
-        _str += "Model origin: {} {} {}\n".format(
-            self.origin[0], self.origin[1], self.origin[2]
-        )
+        _str += "Model origin: {} {} {}\n".format(self.origin[0], self.origin[1], self.origin[2])
         _str += "Model maximum: {} {} {}\n".format(
             self.maximum[0], self.maximum[1], self.maximum[2]
         )
@@ -320,20 +318,15 @@ class GeologicalModel:
                 properties,
             ) in processor.fault_network.fault_edge_properties.items():
                 if model[edge[1]] is None or model[edge[0]] is None:
-                    logger.warning(
-                        f"Cannot add splay {edge[1]} or {edge[0]} are not in the model"
-                    )
+                    logger.warning(f"Cannot add splay {edge[1]} or {edge[0]} are not in the model")
                     continue
                 splay = False
                 if "angle" in properties:
                     if float(properties["angle"]) < 30 and (
-                        "dip_dir"
-                        not in processor.stratigraphic_column["faults"][edge[0]]
+                        "dip_dir" not in processor.stratigraphic_column["faults"][edge[0]]
                         or np.abs(
                             processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                            - processor.stratigraphic_column["faults"][edge[1]][
-                                "dip_dir"
-                            ]
+                            - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
                         )
                         < 90
                     ):
@@ -344,18 +337,11 @@ class GeologicalModel:
                         splay = True
                 if splay is False:
                     positive = None
-                    if (
-                        "downthrow_dir"
-                        in processor.stratigraphic_column["faults"][edge[0]]
-                    ):
+                    if "downthrow_dir" in processor.stratigraphic_column["faults"][edge[0]]:
                         positive = (
                             np.abs(
-                                processor.stratigraphic_column["faults"][edge[0]][
-                                    "downthrow_dir"
-                                ]
-                                - processor.stratigraphic_column["faults"][edge[1]][
-                                    "downthrow_dir"
-                                ]
+                                processor.stratigraphic_column["faults"][edge[0]]["downthrow_dir"]
+                                - processor.stratigraphic_column["faults"][edge[1]]["downthrow_dir"]
                             )
                             < 90
                         )
@@ -511,9 +497,7 @@ class GeologicalModel:
         try:
             import dill as pickle
         except ImportError:
-            logger.error(
-                "Cannot write to file, dill not installed \n" "pip install dill"
-            )
+            logger.error("Cannot write to file, dill not installed \n" "pip install dill")
             return
         try:
             logger.info(f"Writing GeologicalModel to: {file}")
@@ -540,9 +524,7 @@ class GeologicalModel:
         else:
             self.features.append(feature)
             self.feature_name_index[feature.name] = len(self.features) - 1
-            logger.info(
-                f"Adding {feature.name} to model at location {len(self.features)}"
-            )
+            logger.info(f"Adding {feature.name} to model at location {len(self.features)}")
         self._add_domain_fault_above(feature)
         if feature.type == FeatureType.INTERPOLATED:
             self._add_unconformity_above(feature)
@@ -590,9 +572,7 @@ class GeologicalModel:
         if data is None:
             return
         if type(data) != pd.DataFrame:
-            logger.warning(
-                "Data is not a pandas data frame, trying to read data frame " "from csv"
-            )
+            logger.warning("Data is not a pandas data frame, trying to read data frame " "from csv")
             try:
                 data = pd.read_csv(data)
             except:
@@ -628,17 +608,13 @@ class GeologicalModel:
             logger.info("Converting strike and dip to vectors")
             mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
             self._data.loc[mask, gradient_vec_names()] = (
-                strikedip2vector(
-                    self._data.loc[mask, "strike"], self._data.loc[mask, "dip"]
-                )
+                strikedip2vector(self._data.loc[mask, "strike"], self._data.loc[mask, "dip"])
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
             )
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
 
     def set_model_data(self, data):
-        logger.warning(
-            "deprecated method. Model data can now be set using the data attribute"
-        )
+        logger.warning("deprecated method. Model data can now be set using the data attribute")
         self.data = data
 
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
@@ -851,16 +827,12 @@ class GeologicalModel:
             fold_frame = self.features[-1]
         assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
 
-        fold = FoldEvent(
-            fold_frame, name=f"Fold_{foliation_data}", invert_norm=invert_fold_norm
-        )
+        fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}", invert_norm=invert_fold_norm)
 
         if "fold_weights" not in kwargs:
             kwargs["fold_weights"] = {}
         if interpolatortype != "DFI":
-            logger.warning(
-                "Folded foliation only supports DFI interpolator, changing to DFI"
-            )
+            logger.warning("Folded foliation only supports DFI interpolator, changing to DFI")
             interpolatortype = "DFI"
         series_builder = FoldedFeatureBuilder(
             interpolatortype=interpolatortype,
@@ -1025,9 +997,7 @@ class GeologicalModel:
         #     raise Exception("Libraries not installed")
 
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
-        intrusion_frame_data = self.data[
-            self.data["feature_name"] == intrusion_frame_name
-        ].copy()
+        intrusion_frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
 
         # -- get variables for intrusion frame interpolation
         gxxgz = kwargs.get("gxxgz", 0)
@@ -1183,9 +1153,7 @@ class GeologicalModel:
                 feature.add_region(f)
                 break
 
-    def add_unconformity(
-        self, feature: GeologicalFeature, value: float
-    ) -> UnconformityFeature:
+    def add_unconformity(self, feature: GeologicalFeature, value: float) -> UnconformityFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1225,9 +1193,7 @@ class GeologicalModel:
         self._add_feature(uc_feature)
         return uc_feature
 
-    def add_onlap_unconformity(
-        self, feature: GeologicalFeature, value: float
-    ) -> GeologicalFeature:
+    def add_onlap_unconformity(self, feature: GeologicalFeature, value: float) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1398,14 +1364,10 @@ class GeologicalModel:
             model=self,
             **kwargs,
         )
-        fault_frame_data = self.data.loc[
-            self.data["feature_name"] == fault_surface_data
-        ].copy()
+        fault_frame_data = self.data.loc[self.data["feature_name"] == fault_surface_data].copy()
         self._add_faults(fault_frame_builder, features=faults)
         # add data
-        fault_frame_data = self.data.loc[
-            self.data["feature_name"] == fault_surface_data
-        ].copy()
+        fault_frame_data = self.data.loc[self.data["feature_name"] == fault_surface_data].copy()
 
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
@@ -1515,9 +1477,7 @@ class GeologicalModel:
         xyz : np.array((N,3),dtype=float)
             locations of points in regular grid
         """
-        return self.bounding_box.regular_grid(
-            nsteps=nsteps, shuffle=shuffle, order=order
-        )
+        return self.bounding_box.regular_grid(nsteps=nsteps, shuffle=shuffle, order=order)
         # if nsteps is None:
         #     nsteps = self.nsteps
         # x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], nsteps[0])
@@ -1628,9 +1588,7 @@ class GeologicalModel:
             if f.type == FeatureType.FAULT:
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
-        return (
-            vals * -self.scale_factor
-        )  # convert from restoration magnutude to displacement
+        return vals * -self.scale_factor  # convert from restoration magnutude to displacement
 
     def get_feature_by_name(self, feature_name):
         """Returns a feature from the mode given a name

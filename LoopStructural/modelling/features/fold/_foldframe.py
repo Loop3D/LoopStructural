@@ -66,12 +66,8 @@ class FoldFrame(StructuralFrame):
         # self.features[1].faults_enabled = True
 
         # project s0 onto axis plane B X A X B
-        projected_l1 = np.cross(
-            s1g, np.cross(l1, s1g, axisa=1, axisb=1), axisa=1, axisb=1
-        )
-        projected_s1gyg = np.cross(
-            s1g, np.cross(s1gyg, s1g, axisa=1, axisb=1), axisa=1, axisb=1
-        )
+        projected_l1 = np.cross(s1g, np.cross(l1, s1g, axisa=1, axisb=1), axisa=1, axisb=1)
+        projected_s1gyg = np.cross(s1g, np.cross(s1gyg, s1g, axisa=1, axisb=1), axisa=1, axisb=1)
 
         # einsum dot product
         far = np.einsum("ij,ij->i", projected_l1, projected_s1gyg)
@@ -154,9 +150,7 @@ class FoldFrame(StructuralFrame):
             # and 90
             vv = np.cross(s1g, s0g, axisa=1, axisb=1)
             ds = np.einsum("ij,ij->i", fold_axis, vv)
-            flr = np.rad2deg(
-                np.arcsin(r2)
-            )  # np.where(ds > 0, np.rad2deg(np.arcsin(r2)),
+            flr = np.rad2deg(np.arcsin(r2))  # np.where(ds > 0, np.rad2deg(np.arcsin(r2)),
             # (- )))
             flr[ds < 0] *= -1
 
@@ -191,9 +185,7 @@ class FoldFrame(StructuralFrame):
             points.append(npoints)
         if len(points) == 0:
             logger.error("No points to calculate intersection lineation")
-            raise ValueError(
-                "No data points associated with {}".format(feature_builder.name)
-            )
+            raise ValueError("No data points associated with {}".format(feature_builder.name))
         points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(points[:, :3], axis=1)[:, None]

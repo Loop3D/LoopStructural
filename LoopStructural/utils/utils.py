@@ -43,9 +43,7 @@ def read_voxet(voxetname, propertyfile):
     with open(voxetname, "r") as file:
         for l in file:
             if "AXIS_O " in l:
-                origin = np.array(re.findall(r"[-+]?\d*\.?\d+|[-+]?\d+", l)).astype(
-                    float
-                )
+                origin = np.array(re.findall(r"[-+]?\d*\.?\d+|[-+]?\d+", l)).astype(float)
             if "AXIS_U " in l:
                 U = float(re.findall(r"[\d\.\d]+", l)[0])
             if "AXIS_V " in l:

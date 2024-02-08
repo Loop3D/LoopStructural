@@ -26,9 +26,7 @@ class StratigraphicColumnView:
                 ymax = -model.stratigraphic_column[g][u]["max"]
                 if np.isinf(ymax):
                     ymin = ymax + (ymax - ymin) * (1 + np.random.rand())
-                polygon_points = np.array(
-                    [[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]]
-                )
+                polygon_points = np.array([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
                 patches.append(Polygon(polygon_points))
                 xy = (0, ymin + (ymax - ymin) / 2)
                 if labels:

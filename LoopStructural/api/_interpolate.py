@@ -41,12 +41,10 @@ class LoopInterpolator:
         """
         self.dimensions = dimensions
         self.type = "FDI"
-        self.interpolator: GeologicalInterpolator = (
-            InterpolatorFactory.create_interpolator(
-                type,
-                bounding_box,
-                nelements,
-            )
+        self.interpolator: GeologicalInterpolator = InterpolatorFactory.create_interpolator(
+            type,
+            bounding_box,
+            nelements,
         )
 
     def fit(

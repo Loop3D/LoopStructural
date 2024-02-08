@@ -507,13 +507,11 @@ class ProcessInputData:
             return None
         contact_orientations = self._contact_orientations.copy()
         # scale
-        contact_orientations.loc[
-            ~np.isnan(contact_orientations["nz"]), ["nx", "ny", "nz"]
-        ] *= (self.vector_scale * contact_orientations["polarity"].to_numpy()[:, None])
+        contact_orientations.loc[~np.isnan(contact_orientations["nz"]), ["nx", "ny", "nz"]] *= (
+            self.vector_scale * contact_orientations["polarity"].to_numpy()[:, None]
+        )
         if self._gradient:
-            contact_orientations.rename(
-                columns={"nx": "gx", "ny": "gy", "nz": "gz"}, inplace=True
-            )
+            contact_orientations.rename(columns={"nx": "gx", "ny": "gy", "nz": "gz"}, inplace=True)
         return contact_orientations
 
     @contact_orientations.setter
@@ -551,10 +549,7 @@ class ProcessInputData:
                 and "dipDir" in contact_orientations.columns
             ):
                 contact_orientations["strike"] = contact_orientations["dipDir"] - 90
-            if (
-                "strike" in contact_orientations.columns
-                and "dip" in contact_orientations.columns
-            ):
+            if "strike" in contact_orientations.columns and "dip" in contact_orientations.columns:
                 contact_orientations["nx"] = np.nan
                 contact_orientations["ny"] = np.nan
                 contact_orientations["nz"] = np.nan
@@ -624,9 +619,7 @@ class ProcessInputData:
         ):
             fault_orientations["feature_name"] = fault_orientations["fault_name"]
         if "feature_name" not in fault_orientations.columns:
-            raise ValueError(
-                "Fault orientation data must contain feature_name or fault_name"
-            )
+            raise ValueError("Fault orientation data must contain feature_name or fault_name")
         self._fault_orientations = fault_orientations[
             ["X", "Y", "Z", "gx", "gy", "gz", "coord", "feature_name"]
         ]
@@ -655,9 +648,5 @@ class ProcessInputData:
         ):
             fault_locations["feature_name"] = fault_locations["fault_name"]
         if "feature_name" not in fault_locations.columns:
-            raise ValueError(
-                "Fault location data must contain feature_name or fault_name"
-            )
-        self._fault_locations = fault_locations[
-            ["X", "Y", "Z", "val", "feature_name", "coord"]
-        ]
+            raise ValueError("Fault location data must contain feature_name or fault_name")
+        self._fault_locations = fault_locations[["X", "Y", "Z", "val", "feature_name", "coord"]]

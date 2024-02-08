@@ -87,9 +87,7 @@ def test_equality_FDI_nodes(interpolator, data):
     )
 
     node_idx = np.arange(0, interpolator.nx)[interpolator.support.nodes[:, 2] > 0.9]
-    interpolator.add_equality_constraints(
-        node_idx, np.ones(node_idx.shape[0]), name="top"
-    )
+    interpolator.add_equality_constraints(node_idx, np.ones(node_idx.shape[0]), name="top")
     interpolator._setup_interpolator()
     interpolator.solve_system(solver="cg")
 
