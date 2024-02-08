@@ -2,6 +2,26 @@ on:
   push:
 name: release-please
 jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black ruff
+      - name: Autoformat with black
+        run: |
+          black .
+      - name: Lint with ruff
+        run: |
+          ruff check .
+          ruff fix .
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "style: style fixes by ruff and autoformatting by black"
+
   continuous-integration:
     name: Continuous integration ${{ matrix.os }} python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
@@ -18,17 +38,7 @@ jobs:
       - name: Installing dependencies
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge cython numpy scipy scikit-image scikit-learn pyamg ruff black pytest networkx osqp matplotlib -y
-      - name: Checking formatting of code
-        shell: bash -l {0}
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          ruff check LoopStructural
-          ruff fix LoopStructural
-          black LoopStructural
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "style: style fixes by ruff and autoformatting by black"
+          conda install -c conda-forge cython numpy scipy scikit-image scikit-learn pyamg pytest networkx osqp matplotlib -y
       - name: Building and install
         shell: bash -l {0}
         run: |
