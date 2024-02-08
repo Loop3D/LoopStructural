@@ -2,7 +2,6 @@
 
 from setuptools import setup
 import os
-import codecs
 
 package_root = os.path.abspath(os.path.dirname(__file__))
 

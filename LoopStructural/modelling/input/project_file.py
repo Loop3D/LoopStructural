@@ -1,4 +1,4 @@
-from ...utils import LoopImportError, LoopTypeError, LoopValueError
+from ...utils import LoopImportError, LoopTypeError
 
 try:
     from LoopProjectFile import ProjectFile
@@ -6,8 +6,6 @@ except ImportError:
     raise LoopImportError("LoopProjectFile cannot be imported")
 
 from .process_data import ProcessInputData
-import numpy as np
-import pandas as pd
 from matplotlib.colors import to_hex
 from ...utils import getLogger
 

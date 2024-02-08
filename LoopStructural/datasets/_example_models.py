@@ -1,9 +1,7 @@
-from _base import load_claudius
-from .. import GeologicalModel
 
 vis = True
 try:
-    from LoopStructural.visualisation import LavaVuModelViewer
+    pass
 except:
     print("No visualisation")
     vis = False

@@ -87,7 +87,7 @@ class BoundingBox:
 
     @property
     def volume(self):
-        return np.product(self.maximum - self.origin)
+        return np.prod(self.maximum - self.origin)
 
     @property
     def bb(self):
@@ -159,9 +159,7 @@ class BoundingBox:
         if iy == -1:
             return self.origin[ix]
 
-        return self.bb[
-            ix,
-        ]
+        return self.bb[ix,]
 
     def __getitem__(self, name):
         if isinstance(name, str):
@@ -199,5 +197,5 @@ class BoundingBox:
         ).T
         if shuffle:
             # logger.info("Shuffling points")
-            np.random.shuffle(locs)
+            np.random.Generator.shuffle(locs)
         return locs

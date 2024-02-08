@@ -16,7 +16,6 @@ from ..utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 
-from ._geological_interpolator import GeologicalInterpolator
 
 
 class DiscreteInterpolator(GeologicalInterpolator):

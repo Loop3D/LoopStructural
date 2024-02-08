@@ -1,5 +1,3 @@
-from LoopStructural.modelling.features.fold import FoldEvent
-from LoopStructural.modelling.features import StructuralFrame
 
 
 def test_constructor():

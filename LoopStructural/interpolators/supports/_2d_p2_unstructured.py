@@ -2,7 +2,6 @@
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 import logging
-from re import S
 
 import numpy as np
 from ._2d_base_unstructured import BaseUnstructured2d

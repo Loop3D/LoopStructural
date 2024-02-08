@@ -8,7 +8,6 @@ from typing import Optional
 import numpy as np
 
 from ..interpolators import DiscreteInterpolator
-from ..utils import get_vectors
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,4 @@
 from ..utils import getLogger
-from ..utils import LoopImportError
 
 logger = getLogger(__name__)
 

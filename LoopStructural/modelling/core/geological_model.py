@@ -31,7 +31,7 @@ from ...utils.helper import (
     all_heading,
     gradient_vec_names,
 )
-from ...utils import strikedip2vector, get_vectors
+from ...utils import strikedip2vector
 from ...utils import BoundingBox
 
 from ...modelling.intrusions import IntrusionBuilder
@@ -1172,7 +1172,7 @@ class GeologicalModel:
         """
         logger.debug(f"Adding {feature.name} as unconformity at {value}")
         if feature is None:
-            logger.warning(f"Cannot add unconformtiy, base feature is None")
+            logger.warning("Cannot add unconformtiy, base feature is None")
             return
         # look backwards through features and add the unconformity as a region until
         # we get to an unconformity

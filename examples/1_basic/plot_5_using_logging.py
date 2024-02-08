@@ -25,8 +25,6 @@ from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
 from LoopStructural.datasets import load_claudius  # demo data
 from LoopStructural import log_to_file
-import pandas as pd
-import numpy as np
 
 ##################################################################################################
 # Specify a log file
@@ -68,7 +66,6 @@ viewer.display()
 # Most operations in loopstructural are recorded and this will allow you to identify whether
 # an operation is not occuring as you would expect.
 
-from itertools import islice
 
 # with open('logging_demo_log.log') as inf:
 #     for line in islice(inf, 0, 11):
@@ -89,8 +86,6 @@ from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
 from LoopStructural.datasets import load_claudius  # demo data
 
-import pandas as pd
-import numpy as np
 
 
 data, bb = load_claudius()

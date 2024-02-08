@@ -1,7 +1,6 @@
 """
 Piecewise linear interpolator using folds
 """
-import logging
 from typing import Optional
 
 import numpy as np

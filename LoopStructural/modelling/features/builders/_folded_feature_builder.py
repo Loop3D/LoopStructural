@@ -1,4 +1,3 @@
-from typing import Union
 from ....modelling.features.builders import GeologicalFeatureBuilder
 from ....modelling.features.fold import FoldRotationAngle
 import numpy as np

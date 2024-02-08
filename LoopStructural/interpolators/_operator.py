@@ -1,7 +1,6 @@
 """
 Finite difference masks
 """
-import logging
 
 import numpy as np
 

@@ -84,7 +84,6 @@ except ImportError:
     logger.warning('Can\'t import surfepy - to install "pip install surfe"')
 
 from ._p1interpolator import P1Interpolator
-from ._p2interpolator import P2Interpolator
 
 interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,
@@ -105,4 +104,3 @@ support_interpolator_map = {
 }
 
 
-from ._interpolator_factory import InterpolatorFactory

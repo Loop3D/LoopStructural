@@ -39,7 +39,6 @@ support_map = {
     SupportType.P2UnstructuredTetMesh: P2UnstructuredTetMesh,
 }
 
-from ._support_factory import SupportFactory
 
 __all__ = [
     "BaseUnstructured2d",

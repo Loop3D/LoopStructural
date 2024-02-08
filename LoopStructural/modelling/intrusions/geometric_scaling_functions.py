@@ -1,4 +1,3 @@
-import random as rd
 
 # import scipy as sc
 import scipy.stats as sct

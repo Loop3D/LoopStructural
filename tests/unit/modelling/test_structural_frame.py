@@ -2,7 +2,6 @@ from LoopStructural.modelling.features import (
     StructuralFrame,
     GeologicalFeature,
 )
-from LoopStructural.modelling.features.builders import StructuralFrameBuilder
 from LoopStructural.datatypes import BoundingBox
 
 from LoopStructural import GeologicalModel

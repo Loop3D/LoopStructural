@@ -3,13 +3,8 @@ import pandas as pd
 
 from ...utils import getLogger
 from .intrusion_feature import IntrusionFeature
-from ...interpolators import StructuredGrid2D
 
-from scipy.interpolate import Rbf
 
-from ...modelling.intrusions.intrusion_support_functions import (
-    grid_from_array,
-)
 from ..features.builders import BaseBuilder
 
 from .geometric_scaling_functions import *

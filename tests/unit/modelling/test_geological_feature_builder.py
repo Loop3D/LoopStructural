@@ -1,6 +1,3 @@
-import pytest
-from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
-from tests.fixtures.horizontal_data import horizontal_data
 
 
 def test_geological_feature_builder_constructor(

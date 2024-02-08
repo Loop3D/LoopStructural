@@ -1,7 +1,6 @@
 """
 Routines to export geological model data to file in a variety of formats
 """
-import logging
 import os
 from types import SimpleNamespace
 from pyevtk.hl import unstructuredGridToVTK, pointsToVTK

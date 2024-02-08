@@ -3,7 +3,6 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 
 from ast import Tuple
-import logging
 
 import numpy as np
 from scipy.sparse import csr_matrix, coo_matrix, tril

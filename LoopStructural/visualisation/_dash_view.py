@@ -1,6 +1,5 @@
 from .model_plotter import BaseModelPlotter
 from ..utils import getLogger
-from ..utils import LoopImportError
 from ..modelling.features import GeologicalFeature
 from matplotlib.colors import to_rgb
 

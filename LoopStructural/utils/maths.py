@@ -1,6 +1,5 @@
 from LoopStructural.utils.typing import NumericInput
 import numpy as np
-from typing import Union
 import numbers
 
 

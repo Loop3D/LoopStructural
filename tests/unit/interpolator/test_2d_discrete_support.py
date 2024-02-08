@@ -1,5 +1,4 @@
-from LoopStructural.interpolators import TetMesh
-from LoopStructural.interpolators import StructuredGrid, StructuredGrid2D
+from LoopStructural.interpolators import StructuredGrid2D
 import numpy as np
 
 

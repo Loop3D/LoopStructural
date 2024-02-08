@@ -5,8 +5,6 @@ from LoopStructural.modelling.features import FeatureType
 
 # import logging
 from ...utils import getLogger
-from scipy.interpolate import NearestNDInterpolator
-from scipy.interpolate import interp1d
 from scipy.interpolate import Rbf
 
 logger = getLogger(__name__)

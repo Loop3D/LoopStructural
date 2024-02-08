@@ -16,7 +16,7 @@ except ImportError:
         "Install matplotlib and try again. "
     )
 try:
-    from .sphinx_scraper import _get_loop_visualisation_scraper
+    pass
 except:
     logger.error("Cannot use sphinx scraper, pip install -r docs/requirements.txt")
 try:
@@ -26,7 +26,5 @@ except ImportError:
 
 try:
     from .vtk_exporter import VtkExporter
-except ImportError as e:
+except ImportError:
     logger.warning("Vtk export disabled: pip install meshio")
-from ._scalar_field import ScalarField
-from ._dash_view import DashView

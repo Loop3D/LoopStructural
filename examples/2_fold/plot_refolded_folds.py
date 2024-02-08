@@ -8,12 +8,7 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
 from LoopStructural.datasets import load_laurent2016
-import numpy as np
 import pandas as pd
-import glob
-import os
-import matplotlib.pyplot as plt
-import logging
 
 # logging.getLogger().setLevel(logging.INFO)
 

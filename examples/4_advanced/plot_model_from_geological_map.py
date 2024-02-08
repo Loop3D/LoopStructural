@@ -18,13 +18,11 @@ To use incorporate faults into the geological model. """
 # ~~~~~~~
 
 
-from LoopStructural.modelling import ProcessInputData, Map2LoopProcessor
+from LoopStructural.modelling import ProcessInputData
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
 from LoopStructural.datasets import load_geological_map_data
 
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 
 ##############################

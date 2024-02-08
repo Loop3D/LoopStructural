@@ -1,13 +1,11 @@
 from LoopStructural.utils.exceptions import LoopException
 import numpy as np
-from typing import Optional, Union
+from typing import Optional
 from LoopStructural.interpolators import (
-    PiecewiseLinearInterpolator,
     P1Interpolator,
     P2Interpolator,
     FiniteDifferenceInterpolator,
     GeologicalInterpolator,
-    DiscreteInterpolator,
     DiscreteFoldInterpolator,
     StructuredGrid,
     TetMesh,

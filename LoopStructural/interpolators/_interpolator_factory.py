@@ -1,5 +1,5 @@
 from typing import Optional, Union
-from .supports import support_map, SupportFactory
+from .supports import SupportFactory
 from . import (
     interpolator_map,
     InterpolatorType,
@@ -7,10 +7,8 @@ from . import (
     interpolator_string_map,
 )
 from LoopStructural.utils import BoundingBox
-from typing import Optional
 import numpy as np
 
-from ..interpolators.supports import SupportFactory
 
 
 class InterpolatorFactory:

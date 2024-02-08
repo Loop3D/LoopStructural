@@ -1,9 +1,6 @@
 from LoopStructural.utils import strikedip2vector, azimuthplunge2vector
 import numpy as np
-import pandas as pd
 
-import numpy as np
-from LoopStructural.utils.maths import strikedip2vector
 
 
 def test_strikedip2vector():

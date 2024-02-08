@@ -4,7 +4,6 @@ from LoopStructural.utils.typing import NumericInput
 
 # from LoopStructural import GeologicalModel
 import numpy as np
-from uuid import uuid4
 
 logger = getLogger(__name__)
 

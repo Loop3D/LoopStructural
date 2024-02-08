@@ -1,6 +1,5 @@
 from .model_plotter import BaseModelPlotter
 from ..utils import getLogger
-from ..utils import LoopImportError
 from ..modelling.features import GeologicalFeature
 
 logger = getLogger(__name__)

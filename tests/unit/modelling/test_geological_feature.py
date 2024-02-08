@@ -2,10 +2,6 @@ from LoopStructural.modelling.features import (
     BaseFeature,
     GeologicalFeature,
     AnalyticalGeologicalFeature,
-    LambdaGeologicalFeature,
-    UnconformityFeature,
-    StructuralFrame,
-    CrossProductGeologicalFeature,
     FeatureType,
 )
 import numpy as np

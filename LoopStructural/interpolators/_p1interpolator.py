@@ -6,7 +6,6 @@ import logging
 import numpy as np
 
 from ._discrete_interpolator import DiscreteInterpolator
-from ..utils import get_vectors
 
 logger = logging.getLogger(__name__)
 

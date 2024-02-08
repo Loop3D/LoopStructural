@@ -3,7 +3,6 @@ structural frame builder
 """
 from typing import Union
 
-import logging
 from LoopStructural.utils.exceptions import LoopException
 
 import numpy as np

@@ -1,4 +1,3 @@
-import logging
 from ....modelling.features import BaseFeature, StructuralFrame
 
 from ....utils import getLogger

@@ -1,12 +1,5 @@
 from ...modelling.features.builders import StructuralFrameBuilder
-from ...modelling.features import BaseFeature
 from ...modelling.features.fault import FaultSegment
-from ...modelling.intrusions.intrusion_support_functions import (
-    grid_from_array,
-    shortest_path,
-    array_from_coords,
-    find_inout_points,
-)
 from ...utils import getLogger, BoundingBox
 
 from typing import Union

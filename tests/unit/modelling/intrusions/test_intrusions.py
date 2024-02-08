@@ -1,11 +1,8 @@
-import pytest
-import numpy as np
 
 # Loop library
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
 from LoopStructural.modelling.intrusions import IntrusionBuilder
-from LoopStructural.modelling.intrusions import IntrusionFeature
 from LoopStructural.modelling.features import StructuralFrame
 from LoopStructural.modelling.intrusions import (
     ellipse_function,

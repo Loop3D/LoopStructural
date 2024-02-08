@@ -1,12 +1,10 @@
 """
 Wrapper for using surfepy
 """
-import sys, os
 
 from ..utils.helper import get_vectors
 from ..interpolators import GeologicalInterpolator
 
-import logging
 import numpy as np
 
 from ..utils import getLogger

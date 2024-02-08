@@ -125,7 +125,7 @@ class FaultBuilder(StructuralFrameBuilder):
             logger.error(
                 "You cannot model a fault without defining the location of the fault"
             )
-            raise ValueError(f"There are no points on the fault trace")
+            raise ValueError("There are no points on the fault trace")
 
         # get all of the gradient data associated with the fault trace
         if fault_normal_vector is None:
@@ -255,19 +255,19 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_frame_data.reset_index(inplace=True)
         if not self.fault_major_axis:
             logger.warning(
-                f"Fault major axis is not set and cannot be determined from the fault trace. \
+                "Fault major axis is not set and cannot be determined from the fault trace. \
             This will result in a fault that is represented by a 1 unit major axis. \
             If this is not intended add major_axis to fault parameters."
             )
         if not self.fault_intermediate_axis:
             logger.warning(
-                f"Fault intermediate axis is not set and cannot be determined from the fault trace. \
+                "Fault intermediate axis is not set and cannot be determined from the fault trace. \
             This will result in a fault that is represented by a 1 unit intermediate axis. \
             If this is not intended add intermediate_axis to fault parameters."
             )
         if not self.fault_minor_axis:
             logger.warning(
-                f"Fault minor axis is not set and cannot be determined from the fault trace. \
+                "Fault minor axis is not set and cannot be determined from the fault trace. \
             This will result in a fault that is represented by a 1 unit minor axis. \
             If this is not intended add minor_axis to fault parameters."
             )

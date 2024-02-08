@@ -1,7 +1,4 @@
 import numpy as np
-import pandas as pdB
-from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI
-from LoopStructural.interpolators import StructuredGrid
 import pytest
 
 

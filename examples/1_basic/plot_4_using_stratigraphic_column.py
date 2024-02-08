@@ -8,7 +8,6 @@ from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
 from LoopStructural.visualisation import LavaVuModelViewer
 
-import pandas as pd
 import numpy as np
 
 data, bb = load_claudius()
