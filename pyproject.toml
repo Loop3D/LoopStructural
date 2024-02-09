@@ -14,7 +14,7 @@ keywords = [
     "3-D modelling",
     "structural geology",
     "uncertainty",
-    
+
 ]
 license = { text = 'MIT' }
 classifiers = [
@@ -142,3 +142,5 @@ extend-select = ["B007", "B010", "C4", "F", "NPY", "PGH004", "RSE", "RUF100"]
 
 [tool.ruff.lint.flake8-comprehensions]
 allow-dict-calls-with-keyword-arguments = true
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]

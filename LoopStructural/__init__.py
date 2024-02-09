@@ -5,8 +5,12 @@ LoopStructural
 """
 
 import logging
+from logging.config import dictConfig
 
 __all__ = ["GeologicalModel"]
+import tempfile
+from pathlib import Path
+from .version import __version__
 
 experimental = False
 ch = logging.StreamHandler()
@@ -16,6 +20,7 @@ ch.setLevel(logging.WARNING)
 loggers = {}
 from .modelling.core.geological_model import GeologicalModel
 from .utils import getLogger
+from .utils import log_to_console, log_to_file, getLogger
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")
