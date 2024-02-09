@@ -40,7 +40,6 @@ class DashView(BaseModelPlotter):
         paint_with : GeologicalFeature, optional
             geological feature to evaluate on vertices, by default None
         """
-        point_data = {}
         surfaceval = np.zeros(vertices.shape[0])
         if paint_with_value is not None:
             paint_with = paint_with_value
@@ -53,7 +52,6 @@ class DashView(BaseModelPlotter):
                 surfaceval[:] = paint_with(self.model.scale(vertices))
             if isinstance(paint_with, (float, int)):
                 surfaceval[:] = paint_with
-            point_data = {"surfaceval": surfaceval}
         # write points to paraview, set the point data to the property being painted.
         # TODO allow multiple properties
         faces = np.hstack([np.ones((faces.shape[0], 1), dtype=int) + 2, faces]).flatten()

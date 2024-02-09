@@ -3,7 +3,6 @@ Cartesian grid for fold interpolator
 
 """
 
-
 import numpy as np
 
 from ._3d_base_structured import BaseStructuredSupport
@@ -343,19 +342,19 @@ class StructuredGrid(BaseStructuredSupport):
         # print(idc)
         if np.max(idc[inside, :]) > property_array.shape[0]:
             cix, ciy, ciz = self.position_to_cell_index(evaluation_points)
-            if np.all(cix[inside] < self.nsteps_cells[0]) == False:
+            if not np.all(cix[inside] < self.nsteps_cells[0]):
                 print(
                     evaluation_points[inside, :][cix[inside] < self.nsteps_cells[0], 0],
                     self.origin[0],
                     self.maximum[0],
                 )
-            if np.all(ciy[inside] < self.nsteps_cells[1]) == False:
+            if not np.all(ciy[inside] < self.nsteps_cells[1]):
                 print(
                     evaluation_points[inside, :][ciy[inside] < self.nsteps_cells[1], 1],
                     self.origin[1],
                     self.maximum[1],
                 )
-            if np.all(ciz[inside] < self.nsteps_cells[2]) == False:
+            if not np.all(ciz[inside] < self.nsteps_cells[2]):
                 print(ciz[inside], self.nsteps_cells[2])
                 print(self.step_vector, self.nsteps_cells, self.nsteps)
                 print(

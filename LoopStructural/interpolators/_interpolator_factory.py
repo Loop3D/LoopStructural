@@ -10,7 +10,6 @@ from LoopStructural.utils import BoundingBox
 import numpy as np
 
 
-
 class InterpolatorFactory:
     @staticmethod
     def create_interpolator(
@@ -64,13 +63,13 @@ class InterpolatorFactory:
         gradient_norm_constraints: Optional[np.ndarray] = None,
         gradient_constraints: Optional[np.ndarray] = None,
     ):
-        if interpolatortype == None:
+        if interpolatortype is None:
             raise ValueError("No interpolator type specified")
-        if boundingbox == None:
+        if boundingbox is None:
             raise ValueError("No bounding box specified")
-        if nelements == None:
+        if nelements is None:
             raise ValueError("No number of elements specified")
-        if type(interpolatortype) == str:
+        if isinstance(interpolatortype, str):
             interpolatortype = InterpolatorType._member_map_[interpolatortype].numerator
         if support is None:
             raise Exception("Support must be specified")

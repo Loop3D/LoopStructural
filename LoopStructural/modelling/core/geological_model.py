@@ -1005,7 +1005,7 @@ class GeologicalModel:
         gyxgz = kwargs.get("gyxgz", 0)
 
         interpolatortype = kwargs.get("interpolatortype", "PLI")
-        buffer = kwargs.get("buffer", 0.1)
+        # buffer = kwargs.get("buffer", 0.1)
         nelements = kwargs.get("nelements", 1e2)
 
         weights = [gxxgz, gxxgy, gyxgz]
@@ -1449,7 +1449,7 @@ class GeologicalModel:
             whether to copy the points array or update the passed array
         Returns
         -------
-        points : np.array((N,3),dtype=double)
+        points : np.a::rray((N,3),dtype=double)
 
         """
         points = np.array(points).astype(float)
@@ -1702,7 +1702,7 @@ class GeologicalModel:
                 nfeatures += 1
                 total_dof += f.interpolator.nx
                 continue
-        if verbose == True:
+        if verbose:
             print(
                 f"Updating geological model. There are: \n {nfeatures} \
                     geological features that need to be interpolated\n"

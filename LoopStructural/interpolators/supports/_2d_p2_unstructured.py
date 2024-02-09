@@ -1,6 +1,7 @@
 """
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
+
 import logging
 
 import numpy as np
@@ -189,7 +190,7 @@ class P2Unstructured2d(BaseUnstructured2d):
         jac[:, 0, 1] = vertices[:, 1, 1] - vertices[:, 0, 1]
         jac[:, 1, 0] = vertices[:, 2, 0] - vertices[:, 0, 0]
         jac[:, 1, 1] = vertices[:, 2, 1] - vertices[:, 0, 1]
-        N = np.zeros((tri.shape[0], 6))
+        # N = np.zeros((tri.shape[0], 6))
 
         # dN containts the derivatives of the shape functions
         dN = np.zeros((tri.shape[0], 2, 6))

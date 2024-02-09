@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -210,7 +209,7 @@ class MapView:
     def add_fault_ellipse(self, faults=None, **kwargs):
         from matplotlib.patches import Ellipse
 
-        for k, f in self.model.stratigraphic_column["faults"].items():
+        for f in self.model.stratigraphic_column["faults"].values():
             center = self.model.rescale(f["FaultCenter"])
             e = Ellipse(
                 (center[0], center[1]),
@@ -310,7 +309,7 @@ class MapView:
             for g in self.model.stratigraphic_column.keys():
                 if g == "faults":
                     continue
-                for u, v in self.model.stratigraphic_column[g].items():
+                for v in self.model.stratigraphic_column[g].values():
                     data.append((v["id"], v["colour"]))
                     colours.append(v["colour"])
                     boundaries.append(v["id"])  # print(u,v)

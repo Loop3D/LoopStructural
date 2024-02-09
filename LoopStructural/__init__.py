@@ -19,7 +19,6 @@ ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
 from .modelling.core.geological_model import GeologicalModel
-from .utils import getLogger
 from .utils import log_to_console, log_to_file, getLogger
 
 logger = getLogger(__name__)

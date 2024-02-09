@@ -58,7 +58,7 @@ class UnStructuredTetMesh:
         length = self.maximum - self.minimum
         self.minimum -= length * 0.1
         self.maximum += length * 0.1
-        if aabb_nsteps == None:
+        if aabb_nsteps is None:
             box_vol = np.prod(self.maximum - self.minimum)
             element_volume = box_vol / (len(self.elements) / 20)
             # calculate the step vector of a regular cube
@@ -143,9 +143,9 @@ class UnStructuredTetMesh:
         shared_face_index[:] = -1
         shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)
 
-        self.shared_elements[
-            np.arange(self.shared_element_relationships.shape[0]), :
-        ] = shared_face_index
+        self.shared_elements[np.arange(self.shared_element_relationships.shape[0]), :] = (
+            shared_face_index
+        )
         # resize
         self.shared_elements = self.shared_elements[: len(self.shared_element_relationships), :]
         # flag = np.zeros(self.elements.shape[0])
@@ -179,7 +179,7 @@ class UnStructuredTetMesh:
         """
         # calculate the bounding box for all tetraherdon in the mesh
         # find the min/max extents for xyz
-        tetra_bb = np.zeros((self.elements.shape[0], 19, 3))
+        # tetra_bb = np.zeros((self.elements.shape[0], 19, 3))
         minx = np.min(self.nodes[self.elements[:, :4], 0], axis=1)
         maxx = np.max(self.nodes[self.elements[:, :4], 0], axis=1)
         miny = np.min(self.nodes[self.elements[:, :4], 1], axis=1)
@@ -399,7 +399,7 @@ class UnStructuredTetMesh:
         values[inside, :] = (
             element_gradients[inside, :, :] * property_array[self.elements[tetras][inside, None, :]]
         ).sum(2)
-        length = np.sum(values[inside, :], axis=1)
+        # length = np.sum(values[inside, :], axis=1)
         # values[inside,:] /= length[:,None]
         return values
 

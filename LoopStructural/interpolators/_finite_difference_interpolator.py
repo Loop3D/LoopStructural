@@ -91,7 +91,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.interpolation_weights[key] = kwargs[key]
         # if we want to define the operators manually
         if "operators" in kwargs:
-            for n, o in kwargs["operators"].items():
+            for o in kwargs["operators"].values():
                 self.assemble_inner(o[0], o[1])
         # otherwise just use defaults
         if "operators" not in kwargs:

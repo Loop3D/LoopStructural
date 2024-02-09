@@ -17,7 +17,6 @@ from ..utils.exceptions import LoopImportError
 logger = getLogger(__name__)
 
 
-
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
 
@@ -194,7 +193,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A[length > 0, :] /= length[length > 0, None]
         if isinstance(w, (float, int)):
             w = np.ones(A.shape[0]) * w
-        if isinstance(w, np.ndarray) == False:
+        if not isinstance(w, np.ndarray):
             raise BaseException("w must be a numpy array")
 
         if w.shape[0] != A.shape[0]:
@@ -350,7 +349,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         mask = np.logical_and(mask, ~np.isnan(value))
         if lower:
             l[mask] = value[mask]
-        if lower == False:
+        if not lower:
             u[mask] = value[mask]
 
         self.add_inequality_constraints_to_matrix(
@@ -416,7 +415,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         b = []
         rows = []
         cols = []
-        for name, c in self.constraints.items():
+        for c in self.constraints.values():
             if len(c["w"]) == 0:
                 continue
             aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
@@ -451,7 +450,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # and d are the equality constraints
             # c are the node values and y are the
             # lagrange multipliers#
-            nc = 0
             a = []
             rows = []
             cols = []
@@ -475,9 +473,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             ATB = np.hstack([ATB, d])
 
         if isinstance(damp, bool):
-            if damp == True:
+            if damp:
                 damp = np.finfo("float").eps
-            if damp == False:
+            if not damp:
                 damp = 0.0
         if isinstance(damp, float):
             logger.info("Adding eps to matrix diagonal")

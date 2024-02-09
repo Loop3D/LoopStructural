@@ -42,13 +42,13 @@ def test_create_with_buffer():
 
 def test_is_inside():
     bbox = BoundingBox(origin=[0, 0, 0], maximum=[1, 1, 1])
-    assert bbox.is_inside(np.array([0.5, 0.5, 0.5])) is True
-    assert bbox.is_inside(np.array([0.5, 0.5, 1.5])) is False
-    assert bbox.is_inside(np.array([0.5, 0.5, -0.5])) is False
-    assert bbox.is_inside(np.array([0.5, 1.5, 0.5])) is False
-    assert bbox.is_inside(np.array([0.5, -0.5, 0.5])) is False
-    assert bbox.is_inside(np.array([1.5, 0.5, 0.5])) is False
-    assert bbox.is_inside(np.array([-0.5, 0.5, 0.5])) is False
+    assert np.all(bbox.is_inside(np.array([0.5, 0.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, 0.5, 1.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, 0.5, -0.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, 1.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, -0.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([1.5, 0.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([-0.5, 0.5, 0.5])))
 
 
 if __name__ == "__main__":

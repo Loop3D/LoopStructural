@@ -1,6 +1,7 @@
 """
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
+
 import logging
 
 import numpy as np
@@ -139,16 +140,11 @@ class BaseUnstructured2d:
         values[:] = np.nan
         element_gradients, tri = self.evaluate_shape_derivatives(pos[:, :2])
         inside = tri >= 0
-        # ?vertices, element_gradients, elements, inside = self.get_element_gradient_for_location(pos[:,:2])
-        # vertex_vals = self.properties[prop][elements]
-        # grads = np.zeros(tetras.shape)
-        # v = (element_gradients[inside,:,:]*tmesh.properties['defaultproperty'][tmesh.elements[tri[inside],:,None]]).sum(1)
+
         values[inside, :] = (
             element_gradients[inside, :, :]
             * self.properties[prop][self.elements[tri[inside], :, None]]
         ).sum(1)
-        length = np.sum(values[inside, :], axis=1)
-        # values[inside,:] /= length[:,None]
         return values
 
     def get_element_for_location(self, pos):
@@ -172,7 +168,7 @@ class BaseUnstructured2d:
         minv = np.linalg.inv(M)
         c = np.einsum("kij,li->lkj", minv, points_)
         isinside = np.all(c >= 0, axis=2)
-        ix, iy = np.where(isinside == True)
+        ix, iy = np.where(isinside)
         element_idx = np.zeros(pos.shape[0], dtype=int)
         element_idx[:] = -1
         element_idx[ix] = iy

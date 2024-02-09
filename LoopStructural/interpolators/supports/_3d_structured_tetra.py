@@ -161,9 +161,9 @@ class TetMesh(BaseStructuredSupport):
         shared_face_index[:] = -1
         shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)
 
-        self.shared_elements[
-            np.arange(self.shared_element_relationships.shape[0]), :
-        ] = shared_face_index
+        self.shared_elements[np.arange(self.shared_element_relationships.shape[0]), :] = (
+            shared_face_index
+        )
         # resize
         self.shared_elements = self.shared_elements[: len(self.shared_element_relationships), :]
 
@@ -237,7 +237,7 @@ class TetMesh(BaseStructuredSupport):
             element_gradients[inside, :, :]
             * property_array[self.elements[tetras[inside]][:, None, :]]
         ).sum(2)
-        length = np.sum(values[inside, :], axis=1)
+        # length = np.sum(values[inside, :], axis=1)
         # values[inside,:] /= length[:,None]
         return values
 
@@ -311,7 +311,7 @@ class TetMesh(BaseStructuredSupport):
         i, j = np.where(mask)
         ## find any cases where the point belongs to two cells
         ## just use the second cell
-        pairs = {ii: jj for ii, jj in zip(i, j)}
+        pairs = dict(zip(i, j))
         mask[:] = False
         mask[list(pairs.keys()), list(pairs.values())] = True
 

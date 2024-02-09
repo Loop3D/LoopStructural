@@ -185,7 +185,7 @@ class P2Interpolator(DiscreteInterpolator):
         """
         elements = np.arange(0, len(self.support.elements))
         mask = np.ones(self.support.neighbours.shape[0], dtype=bool)
-        if maskall == False:
+        if not maskall:
             mask[:] = np.all(self.support.neighbours > 3, axis=1)
 
         d2 = self.support.evaluate_shape_d2(elements[mask])
@@ -225,7 +225,6 @@ class P2Interpolator(DiscreteInterpolator):
         cp, weight = self.support.get_quadrature_points(3)
 
         norm = self.support.shared_element_norm
-        shared_element_size = self.support.shared_element_size
 
         # evaluate normal if using vector func for cp1
         for i in range(cp.shape[1]):

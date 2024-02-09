@@ -30,3 +30,6 @@ from .helper import create_surface, create_box
 from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion
 
 from .json_encoder import LoopJSONEncoder
+import numpy as np
+
+rng = np.random.default_rng()

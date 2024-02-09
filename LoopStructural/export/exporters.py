@@ -1,6 +1,7 @@
 """
 Routines to export geological model data to file in a variety of formats
 """
+
 import os
 from types import SimpleNamespace
 from pyevtk.hl import unstructuredGridToVTK, pointsToVTK
@@ -259,7 +260,6 @@ unit: m
 TFACE
 """
         )
-        nan_list = []
         v_idx = 1
         v_map = {}
         for idx, vert in enumerate(surf.verts):

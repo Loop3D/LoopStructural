@@ -188,7 +188,7 @@ class BaseModelPlotter:
             zz[:] = value
         if geological_feature == "model" and self.model is not None:
             name = kwargs.get("name", "model_section")
-            if paint_with == None:
+            if paint_with is None:
                 paint_with = lambda xyz: self.model.evaluate_model(xyz, scale=False)
         elif geological_feature is not None and isinstance(geological_feature, BaseFeature):
             name = kwargs.get("name", geological_feature.name)
@@ -304,10 +304,7 @@ class BaseModelPlotter:
             kwargs["vmax"] = np.nanmax(paint_val)  # geological_feature.max()
         # set default parameters
         slices_ = [mean_val]
-        painter = None
-        voxet = None
-        tris = None
-        nodes = None
+
         # parse kwargs for parameters
         if isovalue is not None:
             slices_ = [isovalue]
@@ -488,7 +485,7 @@ class BaseModelPlotter:
             for g in self.model.stratigraphic_column.keys():
                 if g == "faults":
                     continue
-                for u, v in self.model.stratigraphic_column[g].items():
+                for v in self.model.stratigraphic_column[g].values():
                     data.append((v["id"], v["colour"]))
                     colours.append(v["colour"])
                     boundaries.append(v["id"])  # print(u,v)
@@ -615,8 +612,7 @@ class BaseModelPlotter:
         if strati and self.model.stratigraphic_column:
             for g in self.model.stratigraphic_column.keys():
                 if g in self.model.feature_name_index:
-                    for u in self.model.stratigraphic_column[g].keys():
-                        n_units += 1
+                    n_units += len(self.model.stratigraphic_column[g])
         n_faults = 0
         for f in self.model.features:
             if f.type == FeatureType.FAULT:
@@ -630,7 +626,7 @@ class BaseModelPlotter:
                 if g == "faults":
                     # skip anything saved in faults here
                     continue
-                for u, v in self.model.stratigraphic_column[g].items():
+                for v in self.model.stratigraphic_column[g].values():
                     data.append((v["id"], v["colour"]))
                     colours.append(v["colour"])
                     boundaries.append(v["id"])
@@ -698,7 +694,7 @@ class BaseModelPlotter:
                                 lambda xyz: np.zeros(xyz.shape[0]) + f.displacement
                             )
                             #  = feature
-                        region = kwargs.pop("region", None)
+                        # region = kwargs.pop("region", None)
                         return_container.update(
                             self.add_isosurface(
                                 f,
@@ -877,9 +873,9 @@ class BaseModelPlotter:
         self._add_points(points, name, **kwargs)
 
     def add_dtm(self, name="dtm", colour="brown", paint_with=None, **kwargs):
-        if self.model == None:
+        if self.model is None:
             raise BaseException("No model cannot add dtm")
-        if self.model.dtm == None:
+        if self.model.dtm is None:
             raise BaseException("No dtm for model add one")
 
         # generate a triangular mesh
