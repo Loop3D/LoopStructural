@@ -141,7 +141,6 @@ class GeologicalFeature(BaseFeature):
         v = np.zeros(pos.shape)
         v[:] = np.nan
         mask = self._calculate_mask(pos)
-        original_pos = pos.copy()
         pos, axis, angle = self._apply_faults(pos)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")

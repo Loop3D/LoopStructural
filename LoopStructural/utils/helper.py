@@ -31,9 +31,6 @@ def get_data_bounding_box_map(xyz, buffer):
     minz = np.min(xyz[:, 2])
     maxz = np.max(xyz[:, 2])
 
-    xlen = maxx - minx
-    ylen = maxy - miny
-    zlen = maxz - minz
     # length = np.max([xlen, ylen, zlen])
     minx -= buffer
     maxx += buffer

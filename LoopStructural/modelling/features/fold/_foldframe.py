@@ -72,7 +72,7 @@ class FoldFrame(StructuralFrame):
         far = np.einsum("ij,ij->i", projected_l1, projected_s1gyg)
         far = np.rad2deg(np.arccos(far))
         # scalar triple product
-        stp = np.einsum("ij,ij->i", np.cross(l1, s1gyg, axisa=1, axisb=1), s1g)
+        #np.einsum("ij,ij->i", np.cross(l1, s1gyg, axisa=1, axisb=1), s1g)
         # check bounds
         far -= 90
         # far[stp < 0] = 360.- far[stp < 0]

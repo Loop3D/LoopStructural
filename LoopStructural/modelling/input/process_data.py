@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from .fault_network import FaultNetwork
-from ...utils import strikedip2vector
-from ...utils import getLogger
+from ...utils import getLogger, rng, strikedip2vector
 
 logger = getLogger(__name__)
 
@@ -134,13 +133,13 @@ class ProcessInputData:
         if stratigraphic_order is None:
             logger.warning("No stratigraphic order provided")
             return
-        if isinstance(stratigraphic_order[0][1], list) == False:
+        if not isinstance(stratigraphic_order[0][1], list):
             raise TypeError(
                 "Stratigraphic_order must of the format [[('group_name',['unit1','unit2']),('group_name2',['unit3','unit4'])]]"
             )
-        if isinstance(stratigraphic_order, list) == False:
+        if not isinstance(stratigraphic_order, list):
             raise TypeError("Stratigraphic_order must be a list")
-        if isinstance(stratigraphic_order[0][1][0], str) == False:
+        if not isinstance(stratigraphic_order[0][1][0], str):
             raise TypeError("Stratigraphic_order elements must be strings")
         self.stratigraphy = True
         self._stratigraphic_order = stratigraphic_order
@@ -154,7 +153,7 @@ class ProcessInputData:
         if colours is None:
             self._colours = {}
             for s in self.stratigraphic_name:
-                self._colours[s] = np.random.random(3)
+                self._colours[s] = rng.random(3)
         else:
             self._colours = colours
 
@@ -222,7 +221,7 @@ class ProcessInputData:
             supergroup not in stratigraphic column
         """
         try:
-            from matplotlib import cm
+            # from matplotlib import cm
             from matplotlib import colors
         except ImportError:
             logger.error("matplotlib is needed for creating a custom colourmap")
@@ -232,10 +231,9 @@ class ProcessInputData:
             raise ValueError(f"supergroup {supergroup} not in stratigraphic column")
         colours = []
         boundaries = []
-        data = []
         vmax = -99999.0
         vmin = 99999.0
-        for u, v in self.stratigraphic_column[supergroup].items():
+        for v in self.stratigraphic_column[supergroup].values():
             colours.append(v["colour"])
             boundaries.append(v["min"])
             vmax = np.max([vmax, v["max"]])
@@ -261,7 +259,7 @@ class ProcessInputData:
 
     @foliation_properties.setter
     def foliation_properties(self, foliation_properties):
-        if self.stratigraphic_order == None:
+        if self.stratigraphic_order is None:
             return
         if foliation_properties is None:
             for k in self.stratigraphic_column.keys():
@@ -292,9 +290,9 @@ class ProcessInputData:
             pts = self.fault_locations.loc[
                 self.fault_locations["feature_name"] == fname, ["X", "Y", "Z"]
             ]
-            fault_properties.loc[
-                fname, ["centreEasting", "centreNorthing", "centreAltitude"]
-            ] = np.nanmean(pts, axis=0)
+            fault_properties.loc[fname, ["centreEasting", "centreNorthing", "centreAltitude"]] = (
+                np.nanmean(pts, axis=0)
+            )
         if (
             "avgNormalEasting" not in fault_properties.columns
             or "avgNormalNorthing" not in fault_properties.columns
@@ -423,7 +421,7 @@ class ProcessInputData:
         names = []
         if self.stratigraphic_order is None:
             return names
-        for name, sg in self.stratigraphic_order:
+        for _name, sg in self.stratigraphic_order:
             for g in sg:
                 names.append(g)
         return names
@@ -438,7 +436,7 @@ class ProcessInputData:
             keys are unit name, value is cumulative thickness/implicit function value
         """
         stratigraphic_value = {}
-        for name, sg in self.stratigraphic_order:
+        for _name, sg in self.stratigraphic_order:
             value = 0.0  # reset for each supergroup
             for g in reversed(sg):
                 if g not in self.thicknesses:

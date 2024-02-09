@@ -26,7 +26,6 @@ class IntrusionFeature(BaseFeature):
         name="UnnamedIntrusion",
         model=None,
     ):
-
         """
         Parameters
         ----------
@@ -146,14 +145,13 @@ class IntrusionFeature(BaseFeature):
         minG_inputdata_coord0 = inputsimdata_minG.coord0.to_numpy()
         minG_inputdata_coord1 = inputsimdata_minG.coord1.to_numpy()
         minG_inputdata_coord2 = inputsimdata_minG.coord2.to_numpy()
-        minG_inputdata_residual = inputsimdata_minG.coord0.to_numpy()
-        minG_inputdata_conceptual = 0
+        # inputsimdata_minG.coord0.to_numpy()
 
-        maxG_inputdata_coord0 = inputsimdata_maxG.coord0.to_numpy()
+        # inputsimdata_maxG.coord0.to_numpy()
         maxG_inputdata_coord1 = inputsimdata_maxG.coord1.to_numpy()
         maxG_inputdata_coord2 = inputsimdata_maxG.coord2.to_numpy()
         maxG_inputdata_residual = inputsimdata_maxG.g_residual.to_numpy()
-        maxG_inputdata_conceptual = inputsimdata_maxG.g_conceptual.to_numpy()
+        # inputsimdata_maxG.g_conceptual.to_numpy()
 
         # min,max P and L should be the same as in conceptual models
         minP = self.builder.conceptual_model_parameters.get("minP")
@@ -187,26 +185,26 @@ class IntrusionFeature(BaseFeature):
             vertex=vertex,
         )[:, 1]
 
-        maxG_minP = np.min(maxG_inputdata_coord1)
-        maxG_minP_value = maxG_residual_interpolator(
-            maxG_minP,
-            maxG_inputdata_coord2[np.where(maxG_inputdata_coord1 == maxG_minP)][0],
-        )
-        maxG_maxP = np.max(maxG_inputdata_coord1)
-        maxG_maxP_value = maxG_residual_interpolator(
-            maxG_maxP,
-            maxG_inputdata_coord2[np.where(maxG_inputdata_coord1 == maxG_maxP)][0],
-        )
-        maxG_minL = np.min(maxG_inputdata_coord2)
-        maxG_minL_value = maxG_residual_interpolator(
-            maxG_inputdata_coord1[np.where(maxG_inputdata_coord2 == maxG_minL)][0],
-            maxG_minL,
-        )
-        maxG_maxL = np.max(maxG_inputdata_coord2)
-        maxG_maxL_value = maxG_residual_interpolator(
-            maxG_inputdata_coord1[np.where(maxG_inputdata_coord2 == maxG_maxL)][0],
-            maxG_maxL,
-        )
+        # maxG_minP = np.min(maxG_inputdata_coord1)
+        # maxG_residual_interpolator(
+        #     maxG_minP,
+        #     maxG_inputdata_coord2[np.where(maxG_inputdata_coord1 == maxG_minP)][0],
+        # )
+        # maxG_maxP = np.max(maxG_inputdata_coord1)
+        # maxG_residual_interpolator(
+        #     maxG_maxP,
+        #     maxG_inputdata_coord2[np.where(maxG_inputdata_coord1 == maxG_maxP)][0],
+        # )
+        # maxG_minL = np.min(maxG_inputdata_coord2)
+        # maxG_residual_interpolator(
+        #     maxG_inputdata_coord1[np.where(maxG_inputdata_coord2 == maxG_minL)][0],
+        #     maxG_minL,
+        # )
+        # maxG_maxL = np.max(maxG_inputdata_coord2)
+        # maxG_residual_interpolator(
+        #     maxG_inputdata_coord1[np.where(maxG_inputdata_coord2 == maxG_maxL)][0],
+        #     maxG_maxL,
+        # )
 
         residuals = maxG_residual_interpolator(points_coord1, points_coord2)
         thresholds = maxG_conceptual_model - residuals
@@ -231,7 +229,6 @@ class IntrusionFeature(BaseFeature):
         return threshold_values, residual_values, conceptual_values
 
     def evaluate_value(self, points):
-
         """
         Computes a distance scalar field to the intrusion contact (isovalue = 0).
 
@@ -330,7 +327,6 @@ class IntrusionFeature(BaseFeature):
         return intrusion_sf
 
     def evaluate_value_test(self, points):
-
         """
         Computes a distance scalar field to the intrusion contact (isovalue = 0).
 

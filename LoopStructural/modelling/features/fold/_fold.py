@@ -1,4 +1,3 @@
-
 import numpy as np
 
 from ....utils import getLogger
@@ -110,11 +109,11 @@ class FoldEvent:
         # if its less than 0 then inverse dgz
         d = np.einsum("ij,ik->i", fold_direction, fold_axis)
 
-        if self.invert_norm == True:
+        if self.invert_norm:
             new_dgz = -dgz[mask][d[mask] < 0]
             return fold_direction, fold_axis, new_dgz
 
-        elif self.invert_norm == False:
+        elif not self.invert_norm:
             return fold_direction, fold_axis, dgz
         else:
             logger.warning("invert fold frame param not valid. Defaulting to false.")

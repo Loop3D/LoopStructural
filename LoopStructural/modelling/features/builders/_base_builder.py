@@ -44,9 +44,7 @@ class BaseBuilder:
         self.build(**self.build_arguments)
 
     def build(self, **kwargs):
-        raise NotImplementedError(
-            "BaseBuilder should be inherited and build method overwritten"
-        )
+        raise NotImplementedError("BaseBuilder should be inherited and build method overwritten")
 
     @property
     def name(self):
@@ -66,13 +64,13 @@ class BaseBuilder:
         for f in self.faults:
             f.builder.up_to_date(callback=callback)
         # has anything changed in the builder since we built the feature? if so update
-        if self._up_to_date == False:
+        if not self._up_to_date:
             self.update()
             if callable(callback):
                 callback(1)
             return
         # check if the interpolator is up to date, if not solve
-        if self._interpolator.up_to_date == False:
+        if not self._interpolator.up_to_date:
             self.update()
             if callable(callback):
                 callback(1)

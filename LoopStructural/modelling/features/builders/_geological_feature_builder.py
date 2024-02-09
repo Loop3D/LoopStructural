@@ -24,7 +24,7 @@ from ....modelling.features.builders import BaseBuilder
 from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from ....utils import RegionEverywhere
+from ....utils import RegionEverywhere, rng
 from ....interpolators import DiscreteInterpolator
 from ....interpolators import InterpolatorFactory
 
@@ -59,11 +59,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
             nelements=nelements,
         )
 
-        if issubclass(type(interpolator), GeologicalInterpolator) == False:
+        if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
-                "interpolator is {} and must be a GeologicalInterpolator".format(
-                    type(interpolator)
-                )
+                "interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator))
             )
         self._interpolator = interpolator
 
@@ -157,9 +155,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._orthogonal_features[feature.name] = [feature, w, region, step, B]
         self._up_to_date = False
 
-    def add_data_to_interpolator(
-        self, constrained=False, force_constrained=False, **kwargs
-    ):
+    def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
         """
         Iterates through the list of data and applies any faults active on the
         data in the order they are added
@@ -180,9 +176,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         data = self.data.copy()
         # convert data locations to numpy array and then update
         for f in self.faults:
-            data.loc[:, xyz_names()], axis, angle = f.apply_to_points(
-                data.loc[:, xyz_names()]
-            )
+            data.loc[:, xyz_names()], axis, angle = f.apply_to_points(data.loc[:, xyz_names()])
         # self.check_interpolation_geometry(data.loc[:,xyz_names()].to_numpy())
         # Now check whether there are enough constraints for the
         # interpolator to be able to solve
@@ -193,9 +187,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
             # Change normals to gradients
             mask = np.all(~np.isnan(data.loc[:, normal_vec_names()]), axis=1)
             if mask.shape[0] > 0:
-                data.loc[mask, gradient_vec_names()] = data.loc[
-                    mask, normal_vec_names()
-                ].to_numpy(float)
+                data.loc[mask, gradient_vec_names()] = data.loc[mask, normal_vec_names()].to_numpy(
+                    float
+                )
                 data.loc[mask, normal_vec_names()] = np.nan
         if self.get_norm_constraints().shape[0] > 0:
             constrained = True
@@ -207,15 +201,13 @@ class GeologicalFeatureBuilder(BaseBuilder):
             # change gradient constraints to normal vector constraints
             mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()]), axis=1)
             if mask.shape[0] > 0:
-                data.loc[mask, normal_vec_names()] = data.loc[
-                    mask, gradient_vec_names()
-                ].to_numpy(float)
+                data.loc[mask, normal_vec_names()] = data.loc[mask, gradient_vec_names()].to_numpy(
+                    float
+                )
                 data.loc[mask, gradient_vec_names()] = np.nan
                 logger.info("Setting gradient points to norm constraints")
                 constrained = True
-                mask = np.all(
-                    ~np.isnan(data.loc[:, normal_vec_names()].to_numpy(float)), axis=1
-                )
+                mask = np.all(~np.isnan(data.loc[:, normal_vec_names()].to_numpy(float)), axis=1)
 
         if not constrained:
             logger.error("Not enough constraints for scalar field add more")
@@ -223,15 +215,13 @@ class GeologicalFeatureBuilder(BaseBuilder):
         mask = ~np.isnan(data.loc[:, val_name()].to_numpy(float))
         # add value constraints
         if mask.shape[0] > 0:
-            value_data = data.loc[
-                mask[:, 0], xyz_names() + val_name() + weight_name()
-            ].to_numpy(float)
+            value_data = data.loc[mask[:, 0], xyz_names() + val_name() + weight_name()].to_numpy(
+                float
+            )
             self.interpolator.set_value_constraints(value_data)
 
         # add gradient constraints
-        mask = np.all(
-            ~np.isnan(data.loc[:, gradient_vec_names()].to_numpy(float)), axis=1
-        )
+        mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
             gradient_data = data.loc[
                 mask, xyz_names() + gradient_vec_names() + weight_name()
@@ -239,19 +229,15 @@ class GeologicalFeatureBuilder(BaseBuilder):
             self.interpolator.set_gradient_constraints(gradient_data)
 
         # add normal vector data
-        mask = np.all(
-            ~np.isnan(data.loc[:, normal_vec_names()].to_numpy(float)), axis=1
-        )
+        mask = np.all(~np.isnan(data.loc[:, normal_vec_names()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
-            normal_data = data.loc[
-                mask, xyz_names() + normal_vec_names() + weight_name()
-            ].to_numpy(float)
+            normal_data = data.loc[mask, xyz_names() + normal_vec_names() + weight_name()].to_numpy(
+                float
+            )
             self.interpolator.set_normal_constraints(normal_data)
 
         # add tangent data
-        mask = np.all(
-            ~np.isnan(data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1
-        )
+        mask = np.all(~np.isnan(data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
             tangent_data = data.loc[
                 mask, xyz_names() + tangent_vec_names() + weight_name()
@@ -268,9 +254,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         # add inequality constraints
         mask = np.all(~np.isnan(data.loc[:, inequality_name()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
-            inequality_data = data.loc[mask, xyz_names() + inequality_name()].to_numpy(
-                float
-            )
+            inequality_data = data.loc[mask, xyz_names() + inequality_name()].to_numpy(float)
             self.interpolator.set_inequality_constraints(inequality_data)
 
         self.data_added = True
@@ -287,7 +271,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
                 vector[norm > 0] /= norm[norm > 0, None]
                 element_idx = np.arange(self.interpolator.support.n_elements)
-                np.random.shuffle(element_idx)
+                rng.shuffle(element_idx)
                 self.interpolator.add_gradient_orthogonal_constraints(
                     self.interpolator.support.barycentre[element_idx[::step], :],
                     vector[element_idx[::step], :],
@@ -335,13 +319,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
         -------
         numpy array
         """
-        mask = np.all(
-            ~np.isnan(self.data.loc[:, gradient_vec_names()].to_numpy(float)), axis=1
-        )
+        mask = np.all(~np.isnan(self.data.loc[:, gradient_vec_names()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
-            return self.data.loc[
-                mask, xyz_names() + gradient_vec_names() + weight_name()
-            ].to_numpy(float)
+            return self.data.loc[mask, xyz_names() + gradient_vec_names() + weight_name()].to_numpy(
+                float
+            )
         else:
             return np.zeros((0, 7))
 
@@ -352,13 +334,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
         -------
         numpy array
         """
-        mask = np.all(
-            ~np.isnan(self.data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1
-        )
+        mask = np.all(~np.isnan(self.data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
-            return self.data.loc[
-                mask, xyz_names() + tangent_vec_names() + weight_name()
-            ].to_numpy(float)
+            return self.data.loc[mask, xyz_names() + tangent_vec_names() + weight_name()].to_numpy(
+                float
+            )
         else:
             return np.zeros((0, 7))
 
@@ -370,13 +350,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
         -------
         numpy array
         """
-        mask = np.all(
-            ~np.isnan(self.data.loc[:, normal_vec_names()].to_numpy(float)), axis=1
-        )
+        mask = np.all(~np.isnan(self.data.loc[:, normal_vec_names()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
-            return self.data.loc[
-                mask, xyz_names() + normal_vec_names() + weight_name()
-            ].to_numpy(float)
+            return self.data.loc[mask, xyz_names() + normal_vec_names() + weight_name()].to_numpy(
+                float
+            )
         else:
             return np.zeros((0, 7))
 
@@ -393,13 +371,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
         return np.vstack([gradient_constraints, normal_constraints])
 
     def get_interface_constraints(self):
-        mask = np.all(
-            ~np.isnan(self.data.loc[:, interface_name()].to_numpy(float)), axis=1
-        )
+        mask = np.all(~np.isnan(self.data.loc[:, interface_name()].to_numpy(float)), axis=1)
         if mask.shape[0] > 0:
-            return self.data.loc[
-                mask, xyz_names() + interface_name() + weight_name()
-            ].to_numpy(float)
+            return self.data.loc[mask, xyz_names() + interface_name() + weight_name()].to_numpy(
+                float
+            )
         else:
             return np.zeros((0, 5))
 
@@ -439,9 +415,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._up_to_date = False
 
         while self.interpolator.nx < 100:
-            self.interpolator.support.step_vector = (
-                self.interpolator.support.step_vector * 0.9
-            )
+            self.interpolator.support.step_vector = self.interpolator.support.step_vector * 0.9
 
     def check_interpolation_geometry(self, data):
         """Check the interpolation support geometry
@@ -449,9 +423,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         origin = self.interpolator.support.origin
         maximum = self.interpolator.support.maximum
         print(origin, maximum)
-        origin[origin < np.min(data, axis=0)] = np.min(data, axis=0)[
-            origin < np.min(data, axis=0)
-        ]
+        origin[origin < np.min(data, axis=0)] = np.min(data, axis=0)[origin < np.min(data, axis=0)]
         maximum[maximum < np.max(data, axis=0)] = np.max(data, axis=0)[
             maximum < np.max(data, axis=0)
         ]

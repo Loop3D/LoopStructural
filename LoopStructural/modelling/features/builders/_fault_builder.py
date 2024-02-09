@@ -48,15 +48,11 @@ class FaultBuilder(StructuralFrameBuilder):
         self.frame.model = model
         self.model = model
         self.origin = np.array([np.nan, np.nan, np.nan])
-        self.maximum = np.array(
-            [np.nan, np.nan, np.nan]
-        )  # self.model.bounding_box[1, :]
+        self.maximum = np.array([np.nan, np.nan, np.nan])  # self.model.bounding_box[1, :]
         # define a maximum area to mesh adding buffer to model
         # buffer = .2
         self.minimum_origin = bounding_box.with_buffer(fault_bounding_box_buffer).origin
-        self.maximum_maximum = bounding_box.with_buffer(
-            fault_bounding_box_buffer
-        ).maximum
+        self.maximum_maximum = bounding_box.with_buffer(fault_bounding_box_buffer).maximum
 
         self.fault_normal_vector = None
         self.fault_slip_vector = None
@@ -68,9 +64,7 @@ class FaultBuilder(StructuralFrameBuilder):
 
     def update_geometry(self, points):
         self.origin = np.nanmin(np.array([np.min(points, axis=0), self.origin]), axis=0)
-        self.maximum = np.nanmax(
-            np.array([np.max(points, axis=0), self.maximum]), axis=0
-        )
+        self.maximum = np.nanmax(np.array([np.max(points, axis=0), self.maximum]), axis=0)
         self.origin[self.origin < self.minimum_origin] = self.minimum_origin[
             self.origin < self.minimum_origin
         ]
@@ -117,14 +111,10 @@ class FaultBuilder(StructuralFrameBuilder):
         intermediate_axis : double
             fault volume radius in the slip direction
         """
-        trace_mask = np.logical_and(
-            fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
-        )
+        trace_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0)
         logger.info(f"There are {np.sum(trace_mask)} points on the fault trace")
         if np.sum(trace_mask) == 0:
-            logger.error(
-                "You cannot model a fault without defining the location of the fault"
-            )
+            logger.error("You cannot model a fault without defining the location of the fault")
             raise ValueError("There are no points on the fault trace")
 
         # get all of the gradient data associated with the fault trace
@@ -132,9 +122,7 @@ class FaultBuilder(StructuralFrameBuilder):
             gradient_mask = np.logical_and(
                 fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["gz"])
             )
-            vector_data = fault_frame_data.loc[
-                gradient_mask, ["gx", "gy", "gz"]
-            ].to_numpy()
+            vector_data = fault_frame_data.loc[gradient_mask, ["gx", "gy", "gz"]].to_numpy()
             normal_mask = np.logical_and(
                 fault_frame_data["coord"] == 0, ~np.isnan(fault_frame_data["nz"])
             )
@@ -196,11 +184,7 @@ class FaultBuilder(StructuralFrameBuilder):
             trace_mask = np.logical_and(
                 fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
             )
-            fault_center = (
-                fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]]
-                .mean(axis=0)
-                .to_numpy()
-            )
+            fault_center = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].mean(axis=0).to_numpy()
 
         self.fault_normal_vector = fault_normal_vector
         self.fault_slip_vector = fault_slip_vector
@@ -208,14 +192,10 @@ class FaultBuilder(StructuralFrameBuilder):
         self.fault_centre = fault_center
         if major_axis is None:
             fault_trace = fault_frame_data.loc[
-                np.logical_and(
-                    fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
-                ),
+                np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0),
                 ["X", "Y"],
             ].to_numpy()
-            distance = np.linalg.norm(
-                fault_trace[:, None, :] - fault_trace[None, :, :], axis=2
-            )
+            distance = np.linalg.norm(fault_trace[:, None, :] - fault_trace[None, :, :], axis=2)
             if len(distance) == 0 or np.sum(distance) == 0:
                 logger.warning("There is no fault trace for {}".format(self.name))
                 # this can mean there is only a single data point for
@@ -230,15 +210,11 @@ class FaultBuilder(StructuralFrameBuilder):
             logger.warning(f"Fault major axis using map length: {major_axis}")
 
         if minor_axis is None:
-            logger.info(
-                f"Fault minor axis not set, using half major axis: {major_axis/2}"
-            )
+            logger.info(f"Fault minor axis not set, using half major axis: {major_axis/2}")
             minor_axis = major_axis / 2.0
         if intermediate_axis is None:
             intermediate_axis = major_axis
-            logger.info(
-                f"Fault intermediate axis not set, using major axis: {intermediate_axis}"
-            )
+            logger.info(f"Fault intermediate axis not set, using major axis: {intermediate_axis}")
         self.fault_minor_axis = minor_axis
         self.fault_major_axis = major_axis
         self.fault_intermediate_axis = intermediate_axis
@@ -309,9 +285,9 @@ class FaultBuilder(StructuralFrameBuilder):
                         fault_frame_data["coord"] == 0,
                         ~np.isnan(fault_frame_data["nx"]),
                     )
-                    fault_frame_data.loc[mask, ["gx", "gy", "gz"]] = (
-                        fault_frame_data.loc[mask, ["nx", "ny", "nz"]]
-                    )
+                    fault_frame_data.loc[mask, ["gx", "gy", "gz"]] = fault_frame_data.loc[
+                        mask, ["nx", "ny", "nz"]
+                    ]
 
                     fault_frame_data.loc[mask, ["nx", "ny", "nz"]] = np.nan
                     mask = np.logical_and(
@@ -319,10 +295,8 @@ class FaultBuilder(StructuralFrameBuilder):
                         ~np.isnan(fault_frame_data["gx"]),
                     )
                     fault_frame_data.loc[mask, ["gx", "gy", "gz"]] /= minor_axis * 0.5
-                if points == False:
-                    logger.info(
-                        "Rescaling fault norm constraint length for fault frame"
-                    )
+                if not points:
+                    logger.info("Rescaling fault norm constraint length for fault frame")
                     mask = np.logical_and(
                         fault_frame_data["coord"] == 0,
                         ~np.isnan(fault_frame_data["gx"]),
@@ -415,12 +389,8 @@ class FaultBuilder(StructuralFrameBuilder):
                 ]
                 strike_vector /= major_axis
             if intermediate_axis is not None:
-                fault_depth[0, :] = (
-                    fault_center[:3] + fault_slip_vector * intermediate_axis
-                )
-                fault_depth[1, :] = (
-                    fault_center[:3] - fault_slip_vector * intermediate_axis
-                )
+                fault_depth[0, :] = fault_center[:3] + fault_slip_vector * intermediate_axis
+                fault_depth[1, :] = fault_center[:3] - fault_slip_vector * intermediate_axis
                 fault_frame_data.loc[
                     len(fault_frame_data),
                     ["X", "Y", "Z", "feature_name", "val", "coord", "w"],
@@ -543,9 +513,7 @@ class FaultBuilder(StructuralFrameBuilder):
         anisotropy_feature = AnalyticalGeologicalFeature(
             vector=vector_data, origin=[0, 0, 0], name="fault_trace_anisotropy"
         )
-        self.builders[0].add_orthogonal_feature(
-            anisotropy_feature, w=w, region=None, step=1, B=0
-        )
+        self.builders[0].add_orthogonal_feature(anisotropy_feature, w=w, region=None, step=1, B=0)
 
     def add_fault_dip_anisotropy(self, dip: np.ndarray, w: float = 1.0):
         """_summary_
@@ -576,9 +544,7 @@ class FaultBuilder(StructuralFrameBuilder):
         anisotropy_feature = AnalyticalGeologicalFeature(
             vector=vector_data, origin=[0, 0, 0], name="fault_dip_anisotropy"
         )
-        self.builders[0].add_orthogonal_feature(
-            anisotropy_feature, w=w, region=None, step=1, B=0
-        )
+        self.builders[0].add_orthogonal_feature(anisotropy_feature, w=w, region=None, step=1, B=0)
 
     def update(self):
         for i in range(3):

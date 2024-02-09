@@ -360,7 +360,7 @@ class FaultSegment(StructuralFrame):
             # multiply displacement vector by the displacement magnitude for
             # step
             g *= (1.0 / steps) * d[:, None]
-            prev_p = newp[mask, :].copy()
+            #newp[mask, :].copy()
             # apply displacement
             newp[mask, :] += g
             # axis[mask, i, :] = np.cross(prev_p, newp[mask, :], axisa=1, axisb=1)

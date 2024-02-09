@@ -1,11 +1,10 @@
-
 # import scipy as sc
 import scipy.stats as sct
 
 import numpy as np
 import pandas as pd
 
-from ...utils import getLogger
+from ...utils import getLogger, rng
 
 logger = getLogger(__name__)
 
@@ -83,8 +82,8 @@ def thickness_from_geometric_scaling(length: float, intrusion_type: str) -> floa
 
     n_realizations = 10000
     maxT = 0
-    a = sct.norm.ppf(np.random.rand(n_realizations), loc=a_avg, scale=a_stdv)
-    b = sct.norm.ppf(np.random.rand(n_realizations), loc=b_avg, scale=b_stdv)
+    a = sct.norm.ppf(rng.random(n_realizations), loc=a_avg, scale=a_stdv)
+    b = sct.norm.ppf(rng.random(n_realizations), loc=b_avg, scale=b_stdv)
     maxT = b * np.power(length, a)
     maxT[maxT < 0] = None
     mean_t = np.nanmean(maxT)

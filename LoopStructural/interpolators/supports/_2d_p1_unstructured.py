@@ -31,7 +31,7 @@ class P1Unstructured2d(BaseUnstructured2d):
             M[:, :, 1:] = self.vertices[self.elements[elements], :][:, :3, :]
             points_ = np.ones((locations.shape[0], 3))
             points_[:, 1:] = locations
-            minv = np.linalg.inv(M)
+            # minv = np.linalg.inv(M)
             # c = np.einsum("lij,li->lj", minv, points_)
 
         vertices = self.nodes[self.elements[tri][:, :3]]

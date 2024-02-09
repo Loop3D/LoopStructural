@@ -20,11 +20,11 @@ class InterpolatorFactory:
         support=None,
         buffer: float = 0.2,
     ):
-        if interpolatortype == None:
+        if interpolatortype is None:
             raise ValueError("No interpolator type specified")
-        if boundingbox == None:
+        if boundingbox is None:
             raise ValueError("No bounding box specified")
-        if nelements == None:
+        if nelements is None:
             raise ValueError("No number of elements specified")
         if isinstance(interpolatortype, str):
             interpolatortype = interpolator_string_map[interpolatortype]

@@ -23,13 +23,13 @@ def ellipse_function(
 
     else:
 
-        if minP == None:
+        if minP is None:
             minP = lateral_contact_data["coord1"].min()
-        if maxP == None:
+        if maxP is None:
             maxP = lateral_contact_data["coord1"].max()
-        if minS == None:
+        if minS is None:
             minS = lateral_contact_data["coord2"].abs().min()
-        if maxS == None:
+        if maxS is None:
             maxS = lateral_contact_data["coord2"].max()
 
         a = (maxP - minP) / 2
@@ -72,7 +72,7 @@ def constant_function(
     if othercontact_data.empty:
         return mean_growth
 
-    if mean_growth == None:
+    if mean_growth is None:
         mean_growth = othercontact_data.loc[:, 'coord1'].mean()
 
     data_ps = np.array([othercontact_data.loc[:, 'coord1'], othercontact_data.loc[:, 'coord2']]).T

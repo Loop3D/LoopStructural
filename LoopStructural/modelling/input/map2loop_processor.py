@@ -67,7 +67,6 @@ class Map2LoopProcessor(ProcessInputData):
         fault_locations.rename(columns={"formation": "fault_name"}, inplace=True)
         contacts.rename(columns={"formation": "name"}, inplace=True)
         orientations.rename(columns={"formation": "name"}, inplace=True)
-        intrusions = None
         fault_stratigraphy = None
         # make sure supergroups are in the groups dataframe
 
@@ -115,7 +114,7 @@ class Map2LoopProcessor(ProcessInputData):
         for strat in fault_strat["supergroup"].unique():
             mask = (fault_strat.loc[fault_strat["supergroup"] == strat, :] == 1).to_numpy()
             fault_stratigraphy[strat] = fault_strat.columns[mask[0, :]].tolist()
-        ip = super().__init__(
+        super().__init__(
             contacts,
             orientations,
             stratigraphic_order,

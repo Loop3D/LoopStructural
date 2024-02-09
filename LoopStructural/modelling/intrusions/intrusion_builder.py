@@ -6,7 +6,7 @@ from .intrusion_feature import IntrusionFeature
 
 
 from ..features.builders import BaseBuilder
-
+from ...utils import rng
 from .geometric_scaling_functions import *
 
 logger = getLogger(__name__)
@@ -80,7 +80,7 @@ class IntrusionBuilder(BaseBuilder):
         -------
         """
 
-        if spacing == None:
+        if spacing is None:
             spacing = self.model.nsteps
 
         grid_points = self.model.regular_grid(spacing, shuffle=False)
@@ -118,26 +118,20 @@ class IntrusionBuilder(BaseBuilder):
         self, geometric_scaling_parameters, reference_contact_data
     ):
 
-        intrusion_type = geometric_scaling_parameters.get("intrusion_type", None)
+        geometric_scaling_parameters.get("intrusion_type", None)
         intrusion_length = geometric_scaling_parameters.get("intrusion_length", None)
-        inflation_vector = geometric_scaling_parameters.get(
-            "inflation_vector", np.array([[0, 0, 1]])
-        )
+        geometric_scaling_parameters.get("inflation_vector", np.array([[0, 0, 1]]))
         thickness = geometric_scaling_parameters.get("thickness", None)
 
         if (
             self.intrusion_frame.builder.intrusion_network_contact == "floor"
             or self.intrusion_frame.builder.intrusion_network_contact == "base"
         ):
-            inflation_vector = geometric_scaling_parameters.get(
-                "inflation_vector", np.array([[0, 0, 1]])
-            )
+            geometric_scaling_parameters.get("inflation_vector", np.array([[0, 0, 1]]))
         else:
-            inflation_vector = geometric_scaling_parameters.get(
-                "inflation_vector", np.array([[0, 0, -1]])
-            )
+            geometric_scaling_parameters.get("inflation_vector", np.array([[0, 0, -1]]))
 
-        if intrusion_length == None and thickness == None:
+        if intrusion_length is None and thickness is None:
             raise ValueError(
                 "No {} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary".format(
                     self.intrusion_frame.builder.intrusion_other_contact
@@ -146,24 +140,26 @@ class IntrusionBuilder(BaseBuilder):
 
         else:  # -- create synthetic data to constrain interpolation using geometric scaling
             estimated_thickness = thickness
-            if estimated_thickness == None:
-                estimated_thickness = thickness_from_geometric_scaling(
-                    intrusion_length, intrusion_type
-                )
+            if estimated_thickness is None:
+                raise Exception('Not implemented')
+                # estimated_thickness = thickness_from_geometric_scaling(
+                #     intrusion_length, intrusion_type
+                # )
 
             print(
                 "Building tabular intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
                     round(estimated_thickness)
                 )
             )
-            (
-                other_contact_data_temp,
-                other_contact_data_xyz_temp,
-            ) = contact_pts_using_geometric_scaling(
-                estimated_thickness, reference_contact_data, inflation_vector
-            )
+            raise Exception('Not implemented')
+            # (
+            #     other_contact_data_temp,
+            #     other_contact_data_xyz_temp,
+            # ) = contact_pts_using_geometric_scaling(
+            #     estimated_thickness, reference_contact_data, inflation_vector
+            # )
 
-            return other_contact_data_temp
+            # return other_contact_data_temp
 
     def prepare_data(self, geometric_scaling_parameters):
         """Prepare the data to compute distance thresholds along the frame coordinates.
@@ -182,25 +178,19 @@ class IntrusionBuilder(BaseBuilder):
         intrusion_data = self.data.copy()
 
         data_xyz = intrusion_data.loc[:, ["X", "Y", "Z"]].to_numpy()
-        intrusion_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(
-            data_xyz
-        )
-        intrusion_data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(
-            data_xyz
-        )
-        intrusion_data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(
-            data_xyz
-        )
+        intrusion_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(data_xyz)
+        intrusion_data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(data_xyz)
+        intrusion_data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(data_xyz)
 
         # -- separate data between both sides of the intrusion, using intrusion axis (i.e., coord2 = 0)
 
         data_minside = intrusion_data[
-            (intrusion_data["intrusion_side"] == True) & (intrusion_data["coord2"] <= 0)
+            (intrusion_data["intrusion_side"]) & (intrusion_data["coord2"] <= 0)
         ].copy()
         data_minside.reset_index(inplace=True, drop=True)
 
         data_maxside = intrusion_data[
-            (intrusion_data["intrusion_side"] == True) & (intrusion_data["coord2"] > 0)
+            (intrusion_data["intrusion_side"]) & (intrusion_data["coord2"] > 0)
         ].copy()
         data_maxside.reset_index(inplace=True, drop=True)
 
@@ -223,25 +213,21 @@ class IntrusionBuilder(BaseBuilder):
 
         # -- separate data between roof and floor data
 
-        intrusion_network_data_xyz = (
-            self.intrusion_frame.builder.intrusion_network_data.loc[
-                :, ["X", "Y", "Z"]
-            ].to_numpy()
+        intrusion_network_data_xyz = self.intrusion_frame.builder.intrusion_network_data.loc[
+            :, ["X", "Y", "Z"]
+        ].to_numpy()
+        intrusion_network_data = self.intrusion_frame.builder.intrusion_network_data.loc[
+            :, ["X", "Y", "Z"]
+        ].copy()
+        intrusion_network_data.loc[:, "coord0"] = self.intrusion_frame[0].evaluate_value(
+            intrusion_network_data_xyz
         )
-        intrusion_network_data = (
-            self.intrusion_frame.builder.intrusion_network_data.loc[
-                :, ["X", "Y", "Z"]
-            ].copy()
+        intrusion_network_data.loc[:, "coord1"] = self.intrusion_frame[1].evaluate_value(
+            intrusion_network_data_xyz
         )
-        intrusion_network_data.loc[:, "coord0"] = self.intrusion_frame[
-            0
-        ].evaluate_value(intrusion_network_data_xyz)
-        intrusion_network_data.loc[:, "coord1"] = self.intrusion_frame[
-            1
-        ].evaluate_value(intrusion_network_data_xyz)
-        intrusion_network_data.loc[:, "coord2"] = self.intrusion_frame[
-            2
-        ].evaluate_value(intrusion_network_data_xyz)
+        intrusion_network_data.loc[:, "coord2"] = self.intrusion_frame[2].evaluate_value(
+            intrusion_network_data_xyz
+        )
         intrusion_network_data.reset_index(inplace=True)
 
         # -- if no data points for roof or floor, use geometric scaling to create points for SGS
@@ -253,28 +239,20 @@ class IntrusionBuilder(BaseBuilder):
                 other_contact_data = intrusion_network_data
 
             else:
-                other_contact_data_temp1 = (
-                    self.intrusion_frame.builder.other_contact_data
-                )
+                other_contact_data_temp1 = self.intrusion_frame.builder.other_contact_data
                 other_contact_data_temp2 = self.create_geometry_using_geometric_scaling(
                     geometric_scaling_parameters, intrusion_network_data
                 )
 
-                other_contact_data = pd.concat(
-                    [other_contact_data_temp1, other_contact_data_temp2]
-                )
+                other_contact_data = pd.concat([other_contact_data_temp1, other_contact_data_temp2])
 
-                other_contact_data_xyz = other_contact_data.loc[
-                    :, ["X", "Y", "Z"]
-                ].to_numpy()
+                other_contact_data_xyz = other_contact_data.loc[:, ["X", "Y", "Z"]].to_numpy()
 
         else:
             self.thickness_data = True
-            other_contact_data_xyz = (
-                self.intrusion_frame.builder.other_contact_data.loc[
-                    :, ["X", "Y", "Z"]
-                ].to_numpy()
-            )
+            other_contact_data_xyz = self.intrusion_frame.builder.other_contact_data.loc[
+                :, ["X", "Y", "Z"]
+            ].to_numpy()
             other_contact_data = self.intrusion_frame.builder.other_contact_data.loc[
                 :, ["X", "Y", "Z"]
             ].copy()
@@ -299,27 +277,22 @@ class IntrusionBuilder(BaseBuilder):
         representing the conceptual models of the intrusion geometry.
 
         """
-        if (
-            callable(self.lateral_extent_model) == False
-            or callable(self.vertical_extent_model) == False
-        ):
-            raise ValueError(
-                "lateral_extent_model and vertical_extent_model must be functions"
-            )
+        if not callable(self.lateral_extent_model) or not callable(self.vertical_extent_model):
+            raise ValueError("lateral_extent_model and vertical_extent_model must be functions")
 
         grid_points_coord1 = self.evaluation_grid[2]
 
         modelcover, minP, maxP, minL, maxL = self.lateral_extent_model()
         mean_c0 = self.vertical_extent_model()
 
-        if minL == None:
+        if minL is None:
             minL = min(
                 self.vertical_contact_data[0]["coord2"].min(),
                 self.vertical_contact_data[1]["coord2"].min(),
                 self.lateral_contact_data[0]["coord2"].min(),
             )
 
-        if maxL == None:
+        if maxL is None:
             maxL = max(
                 self.vertical_contact_data[0]["coord2"].max(),
                 self.vertical_contact_data[1]["coord2"].max(),
@@ -332,17 +305,17 @@ class IntrusionBuilder(BaseBuilder):
         if minL > 0 and maxL > 0:
             minL = maxL * -1
 
-        if modelcover == True:
+        if modelcover is True:
             minP = np.nanmin(grid_points_coord1)
             maxP = np.nanmax(grid_points_coord1)
         else:
-            if minP == None:
+            if minP is None:
                 minP = min(
                     self.vertical_contact_data[0]["coord1"].min(),
                     self.vertical_contact_data[1]["coord1"].min(),
                     self.lateral_contact_data[0]["coord1"].min(),
                 )
-            if maxP == None:
+            if maxP is None:
                 maxP = max(
                     self.vertical_contact_data[0]["coord1"].max(),
                     self.vertical_contact_data[1]["coord1"].max(),
@@ -350,7 +323,7 @@ class IntrusionBuilder(BaseBuilder):
                 )
 
         # extra parameters for growth
-        if mean_c0 == None:
+        if mean_c0 is None:
             mean_growth = self.vertical_contact_data[1].loc[:, "coord0"].mean()
         else:
             mean_growth = mean_c0
@@ -358,13 +331,11 @@ class IntrusionBuilder(BaseBuilder):
         maxG = self.vertical_contact_data[1]["coord0"].max()
         coord_PL_for_maxG = (
             self.vertical_contact_data[1][
-                self.vertical_contact_data[1].coord0
-                == self.vertical_contact_data[1].coord0.max()
+                self.vertical_contact_data[1].coord0 == self.vertical_contact_data[1].coord0.max()
             ]
             .loc[:, ["coord1", "coord2"]]
             .to_numpy()
         )
-
 
         self.conceptual_model_parameters["minP"] = minP
         self.conceptual_model_parameters["maxP"] = maxP
@@ -372,7 +343,11 @@ class IntrusionBuilder(BaseBuilder):
         self.conceptual_model_parameters["maxL"] = maxL
         self.conceptual_model_parameters["model_cover"] = modelcover
         self.conceptual_model_parameters["mean_growth"] = mean_growth
-        self.conceptual_model_parameters["vertex"] =  [coord_PL_for_maxG[0][0], coord_PL_for_maxG[0][1], maxG]
+        self.conceptual_model_parameters["vertex"] = [
+            coord_PL_for_maxG[0][0],
+            coord_PL_for_maxG[0][1],
+            maxG,
+        ]
 
     def set_data_for_lateral_thresholds(self):
         """
@@ -395,14 +370,12 @@ class IntrusionBuilder(BaseBuilder):
         minL = self.conceptual_model_parameters.get("minL")
         maxL = self.conceptual_model_parameters.get("maxL")
 
-        if self.width_data[0] == False:  # i.e., no lateral data for side L<0
+        if self.width_data[0] is False:  # i.e., no lateral data for side L<0
             print(
                 "Not enought lateral data to constrain side L<0. Conceptual model will be used to constrain lateral extent"
             )
 
-            random_p = pd.DataFrame(
-                np.random.uniform(minP, maxP, 10), columns=["coord1"]
-            )
+            random_p = pd.DataFrame(rng.uniform(minP, maxP, 10), columns=["coord1"])
             conceptual_l = self.lateral_extent_model(
                 lateral_contact_data=random_p,
                 minP=minP,
@@ -452,22 +425,18 @@ class IntrusionBuilder(BaseBuilder):
             data_residual_minL = (
                 data_conceptual_minL[:, 1] - data_minL.loc[:, "coord2"]
             ).to_numpy()
-            data_for_min_L = data_minL.loc[
-                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-            ].copy()
+            data_for_min_L = data_minL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
             data_for_min_L.loc[:, "l_residual"] = data_residual_minL
             data_for_min_L.loc[:, "l_conceptual"] = data_conceptual_minL[:, 1]
             data_for_min_L.reset_index(inplace=True)
             # data_for_min_L.loc[:, "ref_coord"] = 0
 
-        if self.width_data[1] == False:  # i.e., no lateral data for side L>0
+        if not self.width_data[1]:  # i.e., no lateral data for side L>0
             print(
                 "Not enought lateral data to constrain side L>0. Conceptual model will be used to constrain lateral extent"
             )
 
-            random_p = pd.DataFrame(
-                np.random.uniform(minP, maxP, 10), columns=["coord1"]
-            )
+            random_p = pd.DataFrame(rng.uniform(minP, maxP, 10), columns=["coord1"])
             conceptual_l = self.lateral_extent_model(
                 lateral_contact_data=random_p,
                 minP=minP,
@@ -516,9 +485,7 @@ class IntrusionBuilder(BaseBuilder):
             data_residual_maxL = (
                 data_conceptual_maxL[:, 0] - data_maxL.loc[:, "coord2"]
             ).to_numpy()
-            data_for_max_L = data_maxL.loc[
-                :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-            ].copy()
+            data_for_max_L = data_maxL.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
             data_for_max_L.loc[:, "l_residual"] = data_residual_maxL
             data_for_max_L.loc[:, "l_conceptual"] = data_conceptual_maxL[:, 0]
             data_for_max_L.reset_index(inplace=True)
@@ -527,34 +494,27 @@ class IntrusionBuilder(BaseBuilder):
         # check if roof or floor data outside of conceptual model.
         # if so, add as constraints to conceptual model.
 
-        vertical_data = pd.concat(
-            [self.vertical_contact_data[0], self.vertical_contact_data[1]]
-        )
-        vertical_data.loc[
-            :, ["conceptual_maxside", "conceptual_minside"]
-        ] = self.lateral_extent_model(
-            lateral_contact_data=vertical_data,
-            minP=minP,
-            maxP=maxP,
-            minS=minL,
-            maxS=maxL,
+        vertical_data = pd.concat([self.vertical_contact_data[0], self.vertical_contact_data[1]])
+        vertical_data.loc[:, ["conceptual_maxside", "conceptual_minside"]] = (
+            self.lateral_extent_model(
+                lateral_contact_data=vertical_data,
+                minP=minP,
+                maxP=maxP,
+                minS=minL,
+                maxS=maxL,
+            )
         )
 
         data_minL_temp = vertical_data[vertical_data["coord2"] < 0].copy()
         data_for_min_L_ = (
-            data_minL_temp[
-                data_minL_temp["coord2"] < data_minL_temp["conceptual_minside"]
-            ]
+            data_minL_temp[data_minL_temp["coord2"] < data_minL_temp["conceptual_minside"]]
             .loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2", "conceptual_minside"]]
             .copy()
         )
         data_for_min_L_.loc[:, "l_residual"] = (
-            data_for_min_L_.loc[:, "conceptual_minside"]
-            - data_for_min_L_.loc[:, "coord2"]
+            data_for_min_L_.loc[:, "conceptual_minside"] - data_for_min_L_.loc[:, "coord2"]
         )
-        data_for_min_L_.rename(
-            columns={"conceptual_minside": "l_conceptual"}, inplace=True
-        )
+        data_for_min_L_.rename(columns={"conceptual_minside": "l_conceptual"}, inplace=True)
         data_for_min_L_.reset_index(inplace=True)
         data_for_min_L_.drop_duplicates(
             subset=[
@@ -570,28 +530,20 @@ class IntrusionBuilder(BaseBuilder):
             inplace=True,
         )
 
-        if (
-            len(data_for_min_L_) > 0
-            and self.constrain_sides_with_rooffloor_data == True
-        ):
+        if len(data_for_min_L_) > 0 and self.constrain_sides_with_rooffloor_data:
             print("adding data from roof/floor to constrain L<0")
             data_for_min_L = pd.concat([data_for_min_L, data_for_min_L_])
 
         data_maxL_temp = vertical_data[vertical_data["coord2"] >= 0].copy()
         data_for_max_L_ = (
-            data_maxL_temp[
-                data_maxL_temp["coord2"] > data_maxL_temp["conceptual_maxside"]
-            ]
+            data_maxL_temp[data_maxL_temp["coord2"] > data_maxL_temp["conceptual_maxside"]]
             .loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2", "conceptual_maxside"]]
             .copy()
         )
         data_for_max_L_.loc[:, "l_residual"] = (
-            data_for_max_L_.loc[:, "conceptual_maxside"]
-            - data_for_max_L_.loc[:, "coord2"]
+            data_for_max_L_.loc[:, "conceptual_maxside"] - data_for_max_L_.loc[:, "coord2"]
         )
-        data_for_max_L_.rename(
-            columns={"conceptual_maxside": "l_conceptual"}, inplace=True
-        )
+        data_for_max_L_.rename(columns={"conceptual_maxside": "l_conceptual"}, inplace=True)
         data_for_max_L_.reset_index(inplace=True)
         data_for_max_L_.drop_duplicates(
             subset=[
@@ -607,10 +559,7 @@ class IntrusionBuilder(BaseBuilder):
             inplace=True,
         )
 
-        if (
-            len(data_for_max_L_) > 0
-            and self.constrain_sides_with_rooffloor_data == True
-        ):
+        if len(data_for_max_L_) > 0 and self.constrain_sides_with_rooffloor_data:
             print("adding data from roof/floor to constrain L>0")
             data_for_max_L = pd.concat([data_for_max_L, data_for_max_L_])
 
@@ -656,16 +605,14 @@ class IntrusionBuilder(BaseBuilder):
             maxS=maxL,
             vertex=vertex,
         )
-        data_residual_G = (
-            data_conceptual_G[:, 1] - other_contact_data.loc[:, "coord0"]
-        ).to_numpy()
+        data_residual_G = (data_conceptual_G[:, 1] - other_contact_data.loc[:, "coord0"]).to_numpy()
         inputsimdata_maxG = other_contact_data.loc[
             :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
         ].copy()
         inputsimdata_maxG.loc[:, "g_residual"] = data_residual_G
         inputsimdata_maxG.loc[:, "g_conceptual"] = data_conceptual_G[:, 1]
 
-        if self.thickness_data == False:
+        if not self.thickness_data:
             inputsimdata_maxG.loc[:, "g_residual"] = 0
 
             p = np.linspace(minP, maxP, 10)
@@ -673,7 +620,7 @@ class IntrusionBuilder(BaseBuilder):
 
             pp, ll = np.meshgrid(p, l)
             pl = np.array([pp.flatten(), ll.flatten()]).T
-            np.random.shuffle(pl)
+            rng.shuffle(pl)
 
             inputsimdata_maxG_ = pd.DataFrame(pl[:30, :], columns=["coord1", "coord2"])
             data_conceptual_G_ = self.vertical_extent_model(
@@ -689,17 +636,13 @@ class IntrusionBuilder(BaseBuilder):
             inputsimdata_maxG_.loc[:, "g_conceptual"] = data_conceptual_G_[:, 1]
             inputsimdata_maxG_.loc[:, "g_residual"] = 0
 
-            inputsimdata_maxG_complete = pd.concat(
-                [inputsimdata_maxG, inputsimdata_maxG_]
-            )
+            inputsimdata_maxG_complete = pd.concat([inputsimdata_maxG, inputsimdata_maxG_])
 
         else:
             inputsimdata_maxG_complete = inputsimdata_maxG
 
         # --- growth simulation input data for intrusion network conditioning
-        inputsimdata_inetG = inet_data.loc[
-            :, ["X", "Y", "Z", "coord0", "coord1", "coord2"]
-        ].copy()
+        inputsimdata_inetG = inet_data.loc[:, ["X", "Y", "Z", "coord0", "coord1", "coord2"]].copy()
 
         self.data_for_vertical_extent_calculation = [
             inputsimdata_maxG_complete,
@@ -726,6 +669,5 @@ class IntrusionBuilder(BaseBuilder):
         self.prepare_data(geometric_scaling_parameters)
         self.create_grid_for_evaluation()
 
-        
         self.set_data_for_lateral_thresholds()
         self.set_data_for_vertical_thresholds()

@@ -171,14 +171,9 @@ def shortest_path(inlet, outlet, time_map):
     inet[temp_inlet[0], temp_inlet[1]] = 0
     i = 0
 
-    n_rows = len(time_map)
-    n_cols = len(time_map[0])
-
     while True:
         i = i + 1
-        time_temp_inlet = time_map[
-            temp_inlet[0], temp_inlet[1]
-        ]  # obtain time value of temporary outlet
+
         neighbors = element_neighbour(
             temp_inlet, time_map, inet
         )  # identify neighbours elements of temporary outlet
@@ -340,7 +335,6 @@ def index_min(array):
     for i in range(
         8
     ):  # create a dictionary assining positions from 0 to 7 to the values in the array
-        a = i
         if array[i] >= 0:
             index_array.update({i: array[i]})
 
@@ -391,7 +385,6 @@ def new_inlet(inlet, direction):
 
 
 def grid_from_array(array, fixed_coord, lower_extent, upper_extent):
-
     """
     Create an numpy matrix of [i,j,x,y,z,values in array], given an array of 2 dimensions (any combination between x, y an z)
 
