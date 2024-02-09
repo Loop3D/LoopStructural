@@ -16,8 +16,7 @@ jobs:
           black .
       - name: Lint with ruff
         run: |
-          ruff check .
-          ruff fix .
+          ruff check LoopStructural --fix
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "style: style fixes by ruff and autoformatting by black"
