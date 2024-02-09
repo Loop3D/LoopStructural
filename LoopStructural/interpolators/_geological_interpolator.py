@@ -1,6 +1,7 @@
 """
 Base geological interpolator
 """
+
 from abc import ABCMeta, abstractmethod
 from LoopStructural.utils.exceptions import LoopTypeError
 from ..interpolators import InterpolatorType
