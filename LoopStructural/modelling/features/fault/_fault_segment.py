@@ -308,13 +308,8 @@ class FaultSegment(StructuralFrame):
         d *= self.displacement
         if reverse:
             d *= -1.0
-        # calculate the anglee and vector to rotate the points
-        axis = np.zeros((points.shape[0], steps, 3))
-        axis[:] = np.nan
-        angle = np.zeros((points.shape[0], steps))
-        angle[:] = np.nan
         # calculate the fault frame for the evaluation points
-        for i in range(steps):
+        for _i in range(steps):
             gx = None
             gy = None
             gz = None
@@ -360,18 +355,11 @@ class FaultSegment(StructuralFrame):
             # multiply displacement vector by the displacement magnitude for
             # step
             g *= (1.0 / steps) * d[:, None]
-            #newp[mask, :].copy()
+            # newp[mask, :].copy()
             # apply displacement
             newp[mask, :] += g
-            # axis[mask, i, :] = np.cross(prev_p, newp[mask, :], axisa=1, axisb=1)
-            # angle[mask, i] = 2 * np.arctan(
-            #     0.5 * (np.linalg.norm(prev_p - newp[mask, :], axis=1))
-            # )
-            # calculate the angle between the previous and new points
-            # and the axis of rotation
-            # g /= np.linalg.norm(g, axis=1)[:, None]
-            axis[mask, i, :] /= np.linalg.norm(axis[mask, i, :], axis=1)[:, None]
-        return newp, axis, angle
+
+        return newp
 
     def add_abutting_fault(self, abutting_fault_feature, positive=None):
 
