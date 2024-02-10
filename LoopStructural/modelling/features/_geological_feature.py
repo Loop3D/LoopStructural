@@ -5,7 +5,7 @@ Geological features
 from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
-from ...interpolators import GeologicalInterpolator
+from ...interpolators import GeologicalInterpolator, DiscreteInterpolator
 import numpy as np
 
 from ...utils import LoopValueError, rotate
@@ -115,7 +115,7 @@ class GeologicalFeature(BaseFeature):
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
         mask = self._calculate_mask(evaluation_points)
-        evaluation_points, axis, angle = self._apply_faults(evaluation_points)
+        evaluation_points = self._apply_faults(evaluation_points)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate value for {self.name}")
         else:
@@ -141,17 +141,24 @@ class GeologicalFeature(BaseFeature):
         v = np.zeros(pos.shape)
         v[:] = np.nan
         mask = self._calculate_mask(pos)
-        pos, axis, angle = self._apply_faults(pos)
+        # evaluate the faults on the nodes of the faulted feature support
+        # then evaluate the gradient at these points
+        if len(self.faults) > 0:
+
+            if issubclass(type(self.interpolator), DiscreteInterpolator):
+                points = self.interpolator.support.nodes
+            else:
+                raise NotImplementedError(
+                    "Faulted feature gradients are only supported by DiscreteInterpolator at the moment."
+                )
+            points_faulted = self._apply_faults(points)
+            values = self.interpolator.evaluate_value(points_faulted)
+            return self.interpolator.support.evaluate_gradient(pos, values)
+        pos = self._apply_faults(pos)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")
         else:
             v[mask, :] = self.interpolator.evaluate_gradient(pos[mask, :])
-            v_norm = np.linalg.norm(v[mask, :], axis=1)
-            v[mask, :] /= v_norm[:, None]
-            if axis is not None:
-                for i in reversed(range(axis.shape[1])):
-                    v[mask, :] = rotate(v[mask, :], axis[:, i, :], angle[:, i])
-            v[mask, :] *= v_norm[:, None]
         return v
 
     def evaluate_gradient_misfit(self):
