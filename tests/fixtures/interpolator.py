@@ -3,7 +3,7 @@ from LoopStructural.interpolators import (
     PiecewiseLinearInterpolator as PLI,
 )
 from LoopStructural.interpolators import StructuredGrid, TetMesh
-from LoopStructural.utils import BoundingBox
+from LoopStructural.datatypes import BoundingBox
 import pytest
 import numpy as np
 
