@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from LoopStructural.utils.exceptions import LoopValueError
+from LoopStructural.utils import rng
 import numpy as np
 
 
@@ -197,5 +198,5 @@ class BoundingBox:
         ).T
         if shuffle:
             # logger.info("Shuffling points")
-            np.random.Generator.shuffle(locs)
+            rng.shuffle(locs)
         return locs
