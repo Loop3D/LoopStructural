@@ -1,13 +1,15 @@
 """
 structural frame builder
 """
+
 from typing import Union
 
 from LoopStructural.utils.exceptions import LoopException
 
 import numpy as np
 
-from ....utils import getLogger, BoundingBox
+from ....utils import getLogger
+from ....datatypes import BoundingBox
 
 logger = getLogger(__name__)
 
@@ -152,9 +154,7 @@ class StructuralFrameBuilder:
 
         """
         for i in range(3):
-            self.builders[i].add_data_from_data_frame(
-                data_frame.loc[data_frame["coord"] == i, :]
-            )
+            self.builders[i].add_data_from_data_frame(data_frame.loc[data_frame["coord"] == i, :])
 
     def setup(self, w1=1.0, w2=1.0, w3=1.0, **kwargs):
         """
@@ -201,22 +201,16 @@ class StructuralFrameBuilder:
         if len(self.builders[2].data) > 0:
             logger.info(f"Building {self.name} coordinate 2")
             if w2 > 0:
-                self.builders[2].add_orthogonal_feature(
-                    self.builders[0].feature, w2, step=step
-                )
+                self.builders[2].add_orthogonal_feature(self.builders[0].feature, w2, step=step)
             kwargs["regularisation"] = regularisation[2]
             self.builders[2].build_arguments = kwargs
 
         if len(self.builders[1].data) > 0:
             logger.info(f"Building {self.name} coordinate 1")
             if w1 > 0:
-                self.builders[1].add_orthogonal_feature(
-                    self.builders[0].feature, w1, step=step
-                )
+                self.builders[1].add_orthogonal_feature(self.builders[0].feature, w1, step=step)
             if w3 > 0 and len(self.builders[2].data) > 0:
-                self.builders[1].add_orthogonal_feature(
-                    self.builders[2].feature, w2, step=step
-                )
+                self.builders[1].add_orthogonal_feature(self.builders[2].feature, w2, step=step)
             kwargs["regularisation"] = regularisation[1]
             self.builders[1].build_arguments = kwargs
 
@@ -226,9 +220,7 @@ class StructuralFrameBuilder:
             )
 
             logger.debug("Creating analytical structural frame coordinate 2")
-            c3 = CrossProductGeologicalFeature(
-                self.name + "__2", self._frame[0], self._frame[1]
-            )
+            c3 = CrossProductGeologicalFeature(self.name + "__2", self._frame[0], self._frame[1])
             self._frame[2] = c3
 
         # use the frame argument to build a structural frame
