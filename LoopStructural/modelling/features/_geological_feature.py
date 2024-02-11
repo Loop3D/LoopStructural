@@ -8,7 +8,7 @@ from ...modelling.features import FeatureType
 from ...interpolators import GeologicalInterpolator, DiscreteInterpolator
 import numpy as np
 
-from ...utils import LoopValueError, rotate
+from ...utils import LoopValueError
 
 logger = getLogger(__name__)
 
