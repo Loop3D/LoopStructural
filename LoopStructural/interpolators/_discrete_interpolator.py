@@ -6,7 +6,7 @@ import logging
 
 from time import time
 import numpy as np
-from scipy.sparse import coo_matrix, bmat, eye
+from scipy import sparse  # import sparse.coo_matrix, sparse.bmat, sparse.eye
 from scipy.sparse import linalg as sla
 from ..interpolators import InterpolatorType
 
@@ -169,7 +169,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A = np.array(A)
         B = np.array(B)
         idc = np.array(idc)
-        nr = A.shape[0]
+        n_rows = A.shape[0]
         # logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
         # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
@@ -177,7 +177,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return
 
         if len(A.shape) > 2:
-            nr = A.shape[0] * A.shape[1]
+            n_rows = A.shape[0] * A.shape[1]
             if isinstance(w, np.ndarray):
                 w = np.tile(w, (A.shape[1]))
             A = A.reshape((A.shape[0] * A.shape[1], A.shape[2]))
@@ -204,8 +204,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
             logger.warning("Constraints contain nan not adding constraints: {}".format(name))
             # return
-        rows = np.arange(0, nr).astype(int)
-        rows += self.c_
+        rows = np.arange(0, n_rows).astype(int)
         constraint_ids = rows.copy()
         base_name = name
         while name in self.constraints:
@@ -216,15 +215,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         rows = np.tile(rows, (A.shape[-1], 1)).T
         self.constraints[name] = {
-            "node_indexes": constraint_ids,
-            "A": A,
-            "B": B.flatten(),
-            "col": idc,
-            "w": w,
-            "row": rows,
+            'matrix': sparse.coo_matrix(
+                (A.flatten(), (rows.flatten(), idc.flatten())), shape=(n_rows, self.nx)
+            ).tocsc(),
+            'b': B.flatten(),
+            'w': w,
         }
-
-        self.c_ += nr
+        # self.constraints[name] = {
+        #     "node_indexes": constraint_ids,
+        #     "A": A,
+        #     "B": B.flatten(),
+        #     "col": idc,
+        #     "w": w,
+        #     "row": rows,
+        # }
 
     def calculate_residual_for_constraints(self):
         """Calculates Ax-B for all constraints added to the interpolator
@@ -405,31 +409,35 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # I am not sure how to integrate regularisation into this framework as my gut feeling is the regularisation
         # should be weighted by the area of the element face and not element volume, but this means the weight decreases with model scale
         # which is not ideal.
-        max_weight = 0
+        # max_weight = 0
+        # for c in self.constraints.values():
+        #     if len(c["w"]) == 0:
+        #         continue
+        #     if c["w"].max() > max_weight:
+        #         max_weight = c["w"].max()
+        # a = []
+        # b = []
+        # rows = []
+        # cols = []
+        # for c in self.constraints.values():
+        #     if len(c["w"]) == 0:
+        #         continue
+        #     aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
+        #     b.extend((c["B"] * c["w"] / max_weight).tolist())
+        #     mask = aa == 0
+        #     a.extend(aa[~mask].tolist())
+        #     rows.extend(c["row"].flatten()[~mask].tolist())
+        #     cols.extend(c["col"].flatten()[~mask].tolist())
+        mats = []
+        bs = []
         for c in self.constraints.values():
             if len(c["w"]) == 0:
                 continue
-            if c["w"].max() > max_weight:
-                max_weight = c["w"].max()
-        a = []
-        b = []
-        rows = []
-        cols = []
-        for c in self.constraints.values():
-            if len(c["w"]) == 0:
-                continue
-            aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
-            b.extend((c["B"] * c["w"] / max_weight).tolist())
-            mask = aa == 0
-            a.extend(aa[~mask].tolist())
-            rows.extend(c["row"].flatten()[~mask].tolist())
-            cols.extend(c["col"].flatten()[~mask].tolist())
+            mats.append(c['matrix'].multiply(c['w'][:, None]))
+            bs.append(c['b'] * c['w'])
+        A = sparse.vstack(mats)
+        B = np.hstack(bs)
 
-        A = coo_matrix(
-            (np.array(a), (np.array(rows), cols)), shape=(self.c_, self.nx), dtype=float
-        ).tocsc()  # .tocsr()
-
-        B = np.array(b)
         if not square:
             logger.info("Using rectangular matrix, equality constraints are not used")
             return A, B
@@ -462,14 +470,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
 
-            C = coo_matrix(
+            C = sparse.coo_matrix(
                 (np.array(a), (np.array(rows), cols)),
                 shape=(self.eq_const_c, self.nx),
                 dtype=float,
             ).tocsr()
 
             d = np.array(b)
-            ATA = bmat([[ATA, C.T], [C, None]])
+            ATA = sparse.bmat([[ATA, C.T], [C, None]])
             ATB = np.hstack([ATB, d])
 
         if isinstance(damp, bool):
@@ -479,7 +487,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 damp = 0.0
         if isinstance(damp, float):
             logger.info("Adding eps to matrix diagonal")
-            ATA += eye(ATA.shape[0]) * damp
+            ATA += sparse.eye(ATA.shape[0]) * damp
         if len(self.ineq_constraints) > 0 and ie:
             print("using inequality constraints")
             a = []
@@ -496,7 +504,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 a.extend(aa[~mask].tolist())
                 rows.extend(c["row"].flatten()[~mask].tolist())
                 cols.extend(c["col"].flatten()[~mask].tolist())
-            Aie = coo_matrix(
+            Aie = sparse.coo_matrix(
                 (np.array(a), (np.array(rows), cols)),
                 shape=(self.ineq_const_c, self.nx),
                 dtype=float,
