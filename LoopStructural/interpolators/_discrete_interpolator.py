@@ -205,7 +205,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.warning("Constraints contain nan not adding constraints: {}".format(name))
             # return
         rows = np.arange(0, n_rows).astype(int)
-        constraint_ids = rows.copy()
         base_name = name
         while name in self.constraints:
             count = 0
@@ -221,14 +220,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             'b': B.flatten(),
             'w': w,
         }
-        # self.constraints[name] = {
-        #     "node_indexes": constraint_ids,
-        #     "A": A,
-        #     "B": B.flatten(),
-        #     "col": idc,
-        #     "w": w,
-        #     "row": rows,
-        # }
 
     def calculate_residual_for_constraints(self):
         """Calculates Ax-B for all constraints added to the interpolator
