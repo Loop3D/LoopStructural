@@ -439,7 +439,8 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         """
         return self._global_indicies(indexes, self.nsteps_cells)
 
-    def pyvista(self):
+    @property
+    def vtk(self):
         try:
             import pyvista as pv
         except ImportError:
