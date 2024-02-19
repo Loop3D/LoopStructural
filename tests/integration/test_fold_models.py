@@ -16,7 +16,7 @@ def test_average_fold_axis():
         "s0",
         fold_frame,
         nelements=10000,
-        av_fold_axis=True
+        av_fold_axis=True,
         # fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
         # limb_wl=1
     )

@@ -1,4 +1,4 @@
-from LoopStructural.utils import BoundingBox
+from LoopStructural.datatypes import BoundingBox
 import numpy as np
 
 

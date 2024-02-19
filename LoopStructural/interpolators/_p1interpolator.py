@@ -1,6 +1,7 @@
 """
 Piecewise linear interpolator
 """
+
 import logging
 
 import numpy as np

@@ -16,7 +16,8 @@ from .helper import (
     get_data_bounding_box,
     get_data_bounding_box_map,
 )
-from ..datatypes._bounding_box import BoundingBox
+
+# from ..datatypes._bounding_box import BoundingBox
 from .maths import (
     get_dip_vector,
     get_strike_vector,

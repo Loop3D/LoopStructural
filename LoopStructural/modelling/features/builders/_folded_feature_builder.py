@@ -2,7 +2,8 @@ from ....modelling.features.builders import GeologicalFeatureBuilder
 from ....modelling.features.fold import FoldRotationAngle
 import numpy as np
 
-from ....utils import getLogger, InterpolatorError, BoundingBox
+from ....utils import getLogger, InterpolatorError
+from ....datatypes import BoundingBox
 
 logger = getLogger(__name__)
 
@@ -18,7 +19,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         name="Feature",
         region=None,
         svario=True,
-        **kwargs
+        **kwargs,
     ):
         """Builder for creating a geological feature using fold constraints
 
@@ -42,7 +43,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             nelements=nelements,
             name=name,
             region=region,
-            **kwargs
+            **kwargs,
         )
         self.interpolator.fold = fold
         self.fold = fold
