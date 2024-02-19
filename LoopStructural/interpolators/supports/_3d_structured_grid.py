@@ -405,6 +405,8 @@ class StructuredGrid(BaseStructuredSupport):
         local_coords = self.position_to_local_coordinates(pos)
         vertices, inside = self.position_to_cell_vertices(pos)
         elements, inside = self.position_to_cell_index(pos)
+        elements = self.global_cell_indices(elements)
+
         T[:, 0, 0] = (1 - local_coords[:, 2]) * (local_coords[:, 1] - 1)  # v000
         T[:, 0, 1] = (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
         T[:, 0, 2] = -local_coords[:, 1] * (1 - local_coords[:, 2])
@@ -455,6 +457,7 @@ class StructuredGrid(BaseStructuredSupport):
         # vertices = vertices.reshape((vertices.shape[1], 8, 3))
         elements, inside = self.position_to_cell_corners(pos)
         elements, inside = self.position_to_cell_index(pos)
+        elements = self.global_cell_indices(elements)
         a = self.position_to_dof_coefs(pos)
         return vertices, a, elements, inside
 
