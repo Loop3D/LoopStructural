@@ -1,6 +1,7 @@
 """
 Discrete interpolator base for least squares
 """
+
 import logging
 
 from time import time
@@ -14,8 +15,6 @@ from ..utils import getLogger
 from ..utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
-
-from ._geological_interpolator import GeologicalInterpolator
 
 
 class DiscreteInterpolator(GeologicalInterpolator):
@@ -65,9 +64,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.non_linear_constraints = []
         self.constraints = {}
         self.interpolation_weights = {}
-        logger.info(
-            "Creating discrete interpolator with {} degrees of freedom".format(self.nx)
-        )
+        logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
         self.type = InterpolatorType.BASE_DISCRETE
         self.c = np.zeros(self.support.n_nodes)
 
@@ -176,9 +173,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # logger.debug('Adding constraints to interpolator: {} {} {}'.format(A.shape[0]))
         # print(A.shape,B.shape,idc.shape)
         if A.shape != idc.shape:
-            logger.error(
-                f"Cannot add constraints: A and indexes have different shape : {name}"
-            )
+            logger.error(f"Cannot add constraints: A and indexes have different shape : {name}")
             return
 
         if len(A.shape) > 2:
@@ -198,7 +193,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A[length > 0, :] /= length[length > 0, None]
         if isinstance(w, (float, int)):
             w = np.ones(A.shape[0]) * w
-        if isinstance(w, np.ndarray) == False:
+        if not isinstance(w, np.ndarray):
             raise BaseException("w must be a numpy array")
 
         if w.shape[0] != A.shape[0]:
@@ -207,9 +202,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # else:
             raise BaseException("Weight array does not match number of constraints")
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
-            logger.warning(
-                "Constraints contain nan not adding constraints: {}".format(name)
-            )
+            logger.warning("Constraints contain nan not adding constraints: {}".format(name))
             # return
         rows = np.arange(0, nr).astype(int)
         rows += self.c_
@@ -245,16 +238,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
         residuals = {}
         for constraint_name, constraint in self.constraints:
             residuals[constraint_name] = (
-                np.einsum(
-                    "ij,ij->i", constraint["A"], self.c[constraint["idc"].astype(int)]
-                )
+                np.einsum("ij,ij->i", constraint["A"], self.c[constraint["idc"].astype(int)])
                 - constraint["B"].flatten()
             )
         return residuals
 
-    def remove_constraints_from_least_squares(
-        self, name="undefined", constraint_ids=None
-    ):
+    def remove_constraints_from_least_squares(self, name="undefined", constraint_ids=None):
         """
         Remove constraints from the least squares system using the constraint ids
         which corresponds to the rows in the interpolation matrix.
@@ -303,9 +292,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             "row": np.arange(self.eq_const_c, self.eq_const_c + idc[outside].shape[0]),
         }
         self.eq_const_c += idc[outside].shape[0]
-
-    def add_non_linear_constraints(self, nonlinear_constraint):
-        self.non_linear_constraints.append(nonlinear_constraint)
 
     def add_inequality_constraints_to_matrix(self, A, l, u, idc, name="undefined"):
         """Adds constraints for a matrix where the linear function
@@ -363,7 +349,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         mask = np.logical_and(mask, ~np.isnan(value))
         if lower:
             l[mask] = value[mask]
-        if lower == False:
+        if not lower:
             u[mask] = value[mask]
 
         self.add_inequality_constraints_to_matrix(
@@ -464,7 +450,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # and d are the equality constraints
             # c are the node values and y are the
             # lagrange multipliers#
-            nc = 0
             a = []
             rows = []
             cols = []
@@ -488,9 +473,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             ATB = np.hstack([ATB, d])
 
         if isinstance(damp, bool):
-            if damp == True:
+            if damp:
                 damp = np.finfo("float").eps
-            if damp == False:
+            if not damp:
                 damp = 0.0
         if isinstance(damp, float):
             logger.info("Adding eps to matrix diagonal")
@@ -576,9 +561,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
         except ValueError:
             if mkl:
-                logger.error(
-                    "MKL solver library path not correct. Please add to LD_LIBRARY_PATH"
-                )
+                logger.error("MKL solver library path not correct. Please add to LD_LIBRARY_PATH")
                 raise LoopImportError("Cannot import MKL pardiso")
         res = prob.solve()
         return res.x
@@ -785,7 +768,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if np.all(self.c[self.region] == 0):
             self.valid = False
             logger.warning("No solution, scalar field 0. Add more data.")
-
+            self.up_to_date = True
             return
         self.valid = True
         logging.info(f"Solving interpolation took: {time()-starttime}")
@@ -829,9 +812,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         mask = np.any(evaluation_points == np.nan, axis=1)
 
         if evaluation_points[~mask, :].shape[0] > 0:
-            evaluated[~mask] = self.support.evaluate_value(
-                evaluation_points[~mask], self.c
-            )
+            evaluated[~mask] = self.support.evaluate_value(evaluation_points[~mask], self.c)
         return evaluated
 
     def evaluate_gradient(self, locations: np.ndarray) -> np.ndarray:

@@ -2,10 +2,6 @@ from LoopStructural.modelling.features import (
     BaseFeature,
     GeologicalFeature,
     AnalyticalGeologicalFeature,
-    LambdaGeologicalFeature,
-    UnconformityFeature,
-    StructuralFrame,
-    CrossProductGeologicalFeature,
     FeatureType,
 )
 import numpy as np
@@ -19,9 +15,7 @@ def test_constructors():
     feature = GeologicalFeature("test", None, [], [], None)
     assert feature.type == FeatureType.INTERPOLATED
     assert feature.name == "test"
-    feature = AnalyticalGeologicalFeature(
-        "test", [0, 0, 1], [0, 0, 0], [], [], None, None
-    )
+    feature = AnalyticalGeologicalFeature("test", [0, 0, 1], [0, 0, 0], [], [], None, None)
     # for analytical feature check that the evaluated value is correct.
     # this should be the distance from origin to the point in the direction
     # of the direction vector

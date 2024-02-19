@@ -18,13 +18,11 @@ To use incorporate faults into the geological model. """
 # ~~~~~~~
 
 
-from LoopStructural.modelling import ProcessInputData, Map2LoopProcessor
+from LoopStructural.modelling import ProcessInputData
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
 from LoopStructural.datasets import load_geological_map_data
 
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 
 ##############################
@@ -58,9 +56,7 @@ thicknesses = dict(
 contacts
 
 fig, ax = plt.subplots(1)
-ax.scatter(
-    contacts["X"], contacts["Y"], c=contacts["name"].astype("category").cat.codes
-)
+ax.scatter(contacts["X"], contacts["Y"], c=contacts["name"].astype("category").cat.codes)
 ax.set_title("Contact data")
 
 ##############################
@@ -115,9 +111,7 @@ order = [("supergroup_0", list(stratigraphic_order["unit name"]))]
 
 processor = ProcessInputData(
     contacts=contacts,
-    contact_orientations=stratigraphic_orientations.rename(
-        {"formation": "name"}, axis=1
-    ),
+    contact_orientations=stratigraphic_orientations.rename({"formation": "name"}, axis=1),
     thicknesses=thicknesses,
     stratigraphic_order=order,
     origin=origin,
@@ -163,9 +157,7 @@ fault_properties
 
 processor = ProcessInputData(
     contacts=contacts,
-    contact_orientations=stratigraphic_orientations.rename(
-        {"formation": "name"}, axis=1
-    ),
+    contact_orientations=stratigraphic_orientations.rename({"formation": "name"}, axis=1),
     thicknesses=thicknesses,
     stratigraphic_order=order,
     origin=origin,

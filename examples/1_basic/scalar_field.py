@@ -60,7 +60,7 @@ ax[0].axis("off")
 ax[1].axis("off")
 ax[2].axis("off")
 ax[0].set_title(f"A. Magnitude of gradient norm {1.0} ")
-ax[1].set_title(f"B. Magnitude of gradient norm 5.0 ")
+ax[1].set_title("B. Magnitude of gradient norm 5.0 ")
 ax[2].set_title(f"C. Magnitude of gradient norm {1/5.} ")
 
 
@@ -113,7 +113,7 @@ ax[0].axis("off")
 ax[1].axis("off")
 ax[2].axis("off")
 ax[0].set_title(f"A. Magnitude of gradient norm {1.0} ")
-ax[1].set_title(f"B. Magnitude of gradient norm 5.0 ")
+ax[1].set_title("B. Magnitude of gradient norm 5.0 ")
 ax[2].set_title(f"C. Magnitude of gradient norm {1/5.} ")
 
 
@@ -193,7 +193,7 @@ ax[0].axis("off")
 ax[1].axis("off")
 ax[2].axis("off")
 ax[0].set_title(f"A. Magnitude of vector {1.0} ")
-ax[1].set_title(f"B. Magnitude of vector 5.0 ")
+ax[1].set_title("B. Magnitude of vector 5.0 ")
 ax[2].set_title(f"C. Magnitude of vector {1/5.} ")
 
 
@@ -255,8 +255,8 @@ ax[0].axis("off")
 ax[1].axis("off")
 ax[2].axis("off")
 ax[0].set_title(f"A. Value range {1.0} ")
-ax[1].set_title(f"B. Value range 5.0 ")
-ax[2].set_title(f"C. Value range 9.0 ")
+ax[1].set_title("B. Value range 5.0 ")
+ax[2].set_title("C. Value range 9.0 ")
 
 
 ######################################################################
@@ -310,8 +310,8 @@ ax[0].axis("off")
 ax[1].axis("off")
 ax[2].axis("off")
 ax[0].set_title(f"A. Value range {1.0} ")
-ax[1].set_title(f"B. Value range 5.0 ")
-ax[2].set_title(f"C. Value range 9.0 ")
+ax[1].set_title("B. Value range 5.0 ")
+ax[2].set_title("C. Value range 9.0 ")
 
 
 ######################################################################
@@ -368,5 +368,5 @@ ax[0].axis("off")
 ax[1].axis("off")
 ax[2].axis("off")
 ax[0].set_title(f"A. Value range {1.0} ")
-ax[1].set_title(f"B. Value range 5.0 ")
-ax[2].set_title(f"C. Value range 9.0 ")
+ax[1].set_title("B. Value range 5.0 ")
+ax[2].set_title("C. Value range 9.0 ")

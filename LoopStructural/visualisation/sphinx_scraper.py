@@ -25,10 +25,10 @@ class Scraper:
             from sphinx_gallery.scrapers import figure_rst
         except ImportError:
             raise ImportError("You must install `sphinx_gallery`")
-        image_names = list()
+        image_names = []
         image_path_iterator = block_vars["image_path_iterator"]
         figures = model_visualisation._OPEN_VIEWERS
-        for address, plotter in figures.items():
+        for plotter in figures.values():
             plotter.lv["background"] = "white"
             fname = next(image_path_iterator)
             plotter.save(fname)

@@ -6,7 +6,7 @@ class SupportFactory:
     def create_support(support_type, **kwargs):
         if support_type is None:
             raise ValueError("No support type specified")
-        if type(support_type) == str:
+        if isinstance(support_type, str):
             support_type = SupportType._member_map_[support_type].numerator
         return support_map[support_type](**kwargs)
 
@@ -22,7 +22,7 @@ class SupportFactory:
     def create_support_from_bbox(
         support_type, bounding_box, nelements, element_volume=None, buffer: float = 0.2
     ):
-        if type(support_type) == str:
+        if isinstance(support_type, str):
             support_type = SupportType._member_map_[support_type].numerator
         bbox = bounding_box.with_buffer(buffer=buffer)
         bbox.nelements = nelements

@@ -11,7 +11,7 @@ def test_create_bounding_box():
     assert bbox.maximum[1] == 1
     assert bbox.maximum[2] == 1
     assert np.all(bbox.bb == np.array([[0, 0, 0], [1, 1, 1]]))
-    assert bbox.valid == True
+    assert bbox.valid is True
 
 
 def test_create_bounding_box_from_points():
@@ -24,7 +24,7 @@ def test_create_bounding_box_from_points():
     assert bbox.maximum[1] == 1
     assert bbox.maximum[2] == 1
     assert np.all(bbox.bb == np.array([[0, 0, 0], [1, 1, 1]]))
-    assert bbox.valid == True
+    assert bbox.valid is True
 
 
 def test_create_with_buffer():
@@ -37,18 +37,18 @@ def test_create_with_buffer():
     assert bbox.maximum[1] == 1.2
     assert bbox.maximum[2] == 1.2
     assert np.all(bbox.bb == np.array([[-0.2, -0.2, -0.2], [1.2, 1.2, 1.2]]))
-    assert bbox.valid == True
+    assert bbox.valid is True
 
 
 def test_is_inside():
     bbox = BoundingBox(origin=[0, 0, 0], maximum=[1, 1, 1])
-    assert bbox.is_inside(np.array([0.5, 0.5, 0.5])) == True
-    assert bbox.is_inside(np.array([0.5, 0.5, 1.5])) == False
-    assert bbox.is_inside(np.array([0.5, 0.5, -0.5])) == False
-    assert bbox.is_inside(np.array([0.5, 1.5, 0.5])) == False
-    assert bbox.is_inside(np.array([0.5, -0.5, 0.5])) == False
-    assert bbox.is_inside(np.array([1.5, 0.5, 0.5])) == False
-    assert bbox.is_inside(np.array([-0.5, 0.5, 0.5])) == False
+    assert np.all(bbox.is_inside(np.array([0.5, 0.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, 0.5, 1.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, 0.5, -0.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, 1.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([0.5, -0.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([1.5, 0.5, 0.5])))
+    assert not np.all(bbox.is_inside(np.array([-0.5, 0.5, 0.5])))
 
 
 if __name__ == "__main__":

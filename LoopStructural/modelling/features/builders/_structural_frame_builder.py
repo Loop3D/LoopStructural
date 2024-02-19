@@ -3,7 +3,6 @@ structural frame builder
 """
 from typing import Union
 
-import logging
 from LoopStructural.utils.exceptions import LoopException
 
 import numpy as np
@@ -196,7 +195,7 @@ class StructuralFrameBuilder:
             logger.info(f"Building {self.name} coordinate 0")
             kwargs["regularisation"] = regularisation[0]
             self.builders[0].build_arguments = kwargs
-            fold = kwargs.pop("fold", None)
+            kwargs.pop("fold", None)
 
         # make sure that all of the coordinates are using the same region
         if len(self.builders[2].data) > 0:

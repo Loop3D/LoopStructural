@@ -1,4 +1,4 @@
-from ...utils import LoopImportError, LoopTypeError, LoopValueError
+from ...utils import LoopImportError, LoopTypeError
 
 try:
     from LoopProjectFile import ProjectFile
@@ -6,8 +6,6 @@ except ImportError:
     raise LoopImportError("LoopProjectFile cannot be imported")
 
 from .process_data import ProcessInputData
-import numpy as np
-import pandas as pd
 from matplotlib.colors import to_hex
 from ...utils import getLogger
 
@@ -16,7 +14,7 @@ logger = getLogger(__name__)
 
 class LoopProjectfileProcessor(ProcessInputData):
     def __init__(self, projectfile, use_thickness=None):
-        if isinstance(projectfile, ProjectFile) == False:
+        if not isinstance(projectfile, ProjectFile):
             raise LoopTypeError("projectife must be of type ProjectFile")
         column_map = {"easting": "X", "northing": "Y", "altitude": "Z"}
         self.projectfile = projectfile
@@ -46,9 +44,13 @@ class LoopProjectfileProcessor(ProcessInputData):
             },
             inplace=True,
         )
-        fault_locations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(fault_locations, on="eventId")
-        fault_orientations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(fault_orientations, on="eventId")
-        fault_properties.set_index("fault_name",inplace=True)
+        fault_locations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
+            fault_locations, on="eventId"
+        )
+        fault_orientations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
+            fault_orientations, on="eventId"
+        )
+        fault_properties.set_index("fault_name", inplace=True)
         colours = dict(
             zip(
                 self.projectfile.stratigraphicLog.name,
@@ -77,6 +79,6 @@ class LoopProjectfileProcessor(ProcessInputData):
             intrusions=None,
             use_thickness=use_thickness,
             origin=self.projectfile.origin,
-            maximum=self.projectfile.maximum
+            maximum=self.projectfile.maximum,
             #                     fault_edge_properties=fault_edge_properties
         )

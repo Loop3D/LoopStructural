@@ -5,9 +5,7 @@ import numpy as np
 
 def model_fit(model, data):
     diff = (
-        model.evaluate_feature_value(
-            "strati", data.loc[data["val"].notna(), ["X", "Y", "Z"]]
-        )
+        model.evaluate_feature_value("strati", data.loc[data["val"].notna(), ["X", "Y", "Z"]])
         - data.loc[data["val"].notna(), "val"]
     )
     assert np.std(diff) < 30
@@ -110,13 +108,19 @@ def test_horizontal_layers(interpolatortype, nelements):
     model = GeologicalModel(bb[0, :], bb[1, :])
 
     model.data = data
-    model.create_and_add_foliation(
-        "strati", interpolatortype=interpolatortype, nelements=1e4
-    )
+    model.create_and_add_foliation("strati", interpolatortype=interpolatortype, nelements=1e4)
 
-    assert np.all(
-        np.isclose(model["strati"].evaluate_value(data[["X", "Y", "Z"]]), data["val"])
-    )
+    assert np.all(np.isclose(model["strati"].evaluate_value(data[["X", "Y", "Z"]]), data["val"]))
+
+
+def test_horizontal_layers(interpolatortype, nelements):
+    data, bb = load_horizontal()
+    model = GeologicalModel(bb[0, :], bb[1, :])
+
+    model.data = data
+    model.create_and_add_foliation("strati", interpolatortype=interpolatortype, nelements=1e4)
+
+    assert np.all(np.isclose(model["strati"].evaluate_value(data[["X", "Y", "Z"]]), data["val"]))
 
 
 if __name__ == "__main__":
@@ -130,6 +134,8 @@ if __name__ == "__main__":
     test_create_stratigraphy_PLI_lu()
     test_create_stratigraphy_PLI_pyamg()
     test_model_with_data_outside_of_bounding_box()
+    test_horizontal_layers("FDI", 1000)
+    test_horizontal_layers("PLI", 1000)
     test_horizontal_layers("FDI", 1000)
     test_horizontal_layers("PLI", 1000)
     print("ok")

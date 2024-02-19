@@ -1,5 +1,4 @@
-from LoopStructural.interpolators import TetMesh
-from LoopStructural.interpolators import StructuredGrid, StructuredGrid2D
+from LoopStructural.interpolators import StructuredGrid
 import numpy as np
 
 ## structured grid tests
@@ -88,12 +87,8 @@ def test_evaluate_gradient2(support_class):
         # define random vector
         n = np.random.random(3)
         n /= np.linalg.norm(n)
-        distance = (
-            n[0] * grid.nodes[:, 0] + n[1] * grid.nodes[:, 1] + n[2] * grid.nodes[:, 2]
-        )
-        vector = grid.evaluate_gradient(
-            np.random.uniform(1, 8, size=(100, 3)), distance
-        )
+        distance = n[0] * grid.nodes[:, 0] + n[1] * grid.nodes[:, 1] + n[2] * grid.nodes[:, 2]
+        vector = grid.evaluate_gradient(np.random.uniform(1, 8, size=(100, 3)), distance)
         assert np.all(np.isclose(np.sum(vector - n[None, :], axis=1), 0)) == True
     assert i == 9
 
@@ -124,11 +119,7 @@ def test_get_element_outside(support):
 
 def test_node_index_to_position(support):
     assert (
-        np.sum(
-            support.node_indexes_to_position(np.array([[0, 0, 0]]))
-            - np.array([0, 0, 0])
-        )
-        == 0
+        np.sum(support.node_indexes_to_position(np.array([[0, 0, 0]])) - np.array([0, 0, 0])) == 0
     )
     for i in range(10):
         for j in range(10):
@@ -140,19 +131,11 @@ def test_node_index_to_position(support):
                     )
                     == 0
                 )
-    assert (
-        np.sum(
-            support.node_indexes_to_position(np.array([0, 0, 0])) - np.array([0, 0, 0])
-        )
-        == 0
-    )
+    assert np.sum(support.node_indexes_to_position(np.array([0, 0, 0])) - np.array([0, 0, 0])) == 0
 
 
 def test_global_index_to_cell_index(support):
-    assert (
-        np.sum(support.global_index_to_cell_index(np.array([0])) - np.array([0, 0, 0]))
-        == 0
-    )
+    assert np.sum(support.global_index_to_cell_index(np.array([0])) - np.array([0, 0, 0])) == 0
 
 
 # def test_get_elements(support):

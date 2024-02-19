@@ -1,5 +1,3 @@
-import logging
-
 import numpy as np
 from scipy.optimize import curve_fit
 
@@ -49,7 +47,7 @@ class FoldRotationAngle:
         """
         if self.svario is None:
             self.svario = SVariogram(self.fold_frame_coordinate, self.rotation_angle)
-        if skip_variogram == False:
+        if not skip_variogram:
             self.svario.calc_semivariogram(lags=lags, nlag=nlag, lag=lag)
         if wl is None:
             wl = self.svario.find_wavelengths(lags=lags, nlag=nlag, lag=lag)
@@ -59,18 +57,14 @@ class FoldRotationAngle:
         guess[3] = wl  # np.max(limb_wl)
         logger.info(f"Guess: {guess[0]} {guess[1]} {guess[2]} {guess[3]}")
         # mask nans
-        mask = np.logical_or(
-            ~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle)
-        )
+        mask = np.logical_or(~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle))
         logger.info(
             f"There are {np.sum(~mask)} nans for the fold limb rotation angle and { np.sum(mask)} observations"
         )
 
         if np.sum(mask) < len(guess):
             logger.error(
-                "Not enough data points to fit Fourier series setting "
-                "fold rotation angle"
-                "to 0"
+                "Not enough data points to fit Fourier series setting " "fold rotation angle" "to 0"
             )
             self.fold_rotation_function = lambda x: np.zeros(x.shape)
         else:

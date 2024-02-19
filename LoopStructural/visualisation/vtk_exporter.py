@@ -1,6 +1,5 @@
 from .model_plotter import BaseModelPlotter
 from ..utils import getLogger
-from ..utils import LoopImportError
 from ..modelling.features import GeologicalFeature
 
 logger = getLogger(__name__)
@@ -29,14 +28,7 @@ class VtkExporter(BaseModelPlotter):
         self.file_name = file_name
 
     def _add_surface(
-        self,
-        vertices,
-        faces,
-        name,
-        colour="red",
-        paint_with=None,
-        paint_with_value=None,
-        **kwargs
+        self, vertices, faces, name, colour="red", paint_with=None, paint_with_value=None, **kwargs
     ):
         """Virtual function to be overwritten by subclasses for adding surfaces to the viewer
 
@@ -61,9 +53,7 @@ class VtkExporter(BaseModelPlotter):
             # calculate the mode value, just to get the most common value
             surfaceval = np.zeros(vertices.shape[0])
             if isinstance(paint_with, GeologicalFeature):
-                surfaceval[:] = paint_with.evaluate_value(
-                    self.model.scale(vertices, inplace=False)
-                )
+                surfaceval[:] = paint_with.evaluate_value(self.model.scale(vertices, inplace=False))
             if callable(paint_with):
                 surfaceval[:] = paint_with(self.model.scale(vertices))
             if isinstance(paint_with, (float, int)):

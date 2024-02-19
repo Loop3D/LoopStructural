@@ -8,12 +8,7 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
 from LoopStructural.datasets import load_laurent2016
-import numpy as np
 import pandas as pd
-import glob
-import os
-import matplotlib.pyplot as plt
-import logging
 
 # logging.getLogger().setLevel(logging.INFO)
 
@@ -39,9 +34,7 @@ rotation = [-69.11979675292969, 15.704944610595703, 6.00014591217041]
 
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
-s2 = model.create_and_add_fold_frame(
-    "s2", nelements=10000, buffer=0.5, solver="lu", damp=True
-)
+s2 = model.create_and_add_fold_frame("s2", nelements=10000, buffer=0.5, solver="lu", damp=True)
 viewer = LavaVuModelViewer(model)
 viewer.add_scalar_field(s2[0], cmap="prism")
 viewer.add_isosurface(s2[0], slices=[0, 1])

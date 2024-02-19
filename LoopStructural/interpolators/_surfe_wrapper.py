@@ -1,12 +1,10 @@
 """
 Wrapper for using surfepy
 """
-import sys, os
 
 from ..utils.helper import get_vectors
 from ..interpolators import GeologicalInterpolator
 
-import logging
 import numpy as np
 
 from ..utils import getLogger
@@ -108,8 +106,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
 
         if greedy[0] > 0 or greedy[1] > 0:
             logger.info(
-                "Using greedy algorithm: inferface %f and angular %f"
-                % (greedy[0], greedy[1])
+                "Using greedy algorithm: inferface %f and angular %f" % (greedy[0], greedy[1])
             )
             self.surfe.SetGreedyAlgorithm(True, greedy[0], greedy[1])
         poly_order = kwargs.get("poly_order", None)
@@ -146,9 +143,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         mask = np.any(evaluation_points == np.nan, axis=1)
 
         if evaluation_points[~mask, :].shape[0] > 0:
-            evaluated[~mask] = self.surfe.EvaluateInterpolantAtPoints(
-                evaluation_points[~mask]
-            )
+            evaluated[~mask] = self.surfe.EvaluateInterpolantAtPoints(evaluation_points[~mask])
         return evaluated
 
     def evaluate_gradient(self, evaluation_points):

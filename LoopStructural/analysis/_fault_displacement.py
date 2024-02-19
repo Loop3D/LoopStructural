@@ -49,13 +49,9 @@ def displacement_missfit(
         view.add_isosurface(model[fname], value=0)
     value_data = data2.loc[mask, "val"].to_numpy()
     # gx = model[fname][0].evaluate_value(data2.loc[np.logical_and(~np.isnan(data2['val']),mask),['X','Y','Z']].to_numpy(),inplace=False))
-    normals = data2.loc[
-        np.logical_and(np.isnan(data2["val"]), mask), ["nx", "ny", "nz"]
-    ].to_numpy()
+    normals = data2.loc[np.logical_and(np.isnan(data2["val"]), mask), ["nx", "ny", "nz"]].to_numpy()
     if view is not None:
-        view.add_vector_field(
-            model[fname], locations=data2.loc[mask, ["X", "Y", "Z"]].to_numpy()
-        )
+        view.add_vector_field(model[fname], locations=data2.loc[mask, ["X", "Y", "Z"]].to_numpy())
         view.add_value_data(
             model.rescale(data2.loc[mask, ["X", "Y", "Z"]].to_numpy(), inplace=False),
             data2.loc[mask, ["val"]].to_numpy(),
@@ -66,9 +62,7 @@ def displacement_missfit(
         )
         view.add_orientation_disks(
             model.rescale(
-                data2.loc[
-                    np.logical_and(np.isnan(data2["val"]), mask), ["X", "Y", "Z"]
-                ].to_numpy(),
+                data2.loc[np.logical_and(np.isnan(data2["val"]), mask), ["X", "Y", "Z"]].to_numpy(),
                 inplace=False,
             ),
             normals,
@@ -79,18 +73,12 @@ def displacement_missfit(
     )
     tmp_pts = data2.loc[mask, ["X", "Y", "Z", "val", "nx", "ny", "nz"]]
     #     tmp_pts = tmp_pts.loc[~np.isnan(tmp_pts['val']),:]
-    tmp_pts.loc[:, ["X", "Y", "Z"]] = model.rescale(
-        tmp_pts.loc[:, ["X", "Y", "Z"]], inplace=False
-    )
-    fault_plane_feature = PlaneFitFeature(
-        tmp_pts, "Plane_Fit_{}".format(fname), model=model
-    )
+    tmp_pts.loc[:, ["X", "Y", "Z"]] = model.rescale(tmp_pts.loc[:, ["X", "Y", "Z"]], inplace=False)
+    fault_plane_feature = PlaneFitFeature(tmp_pts, "Plane_Fit_{}".format(fname), model=model)
 
     dv = data2.loc[np.logical_and(~np.isnan(data2["val"]), mask), "val"].to_numpy()
     estimated_normal = fault_plane_feature.evaluate_gradient(
-        data2.loc[
-            np.logical_and(np.isnan(data2["val"]), mask), ["X", "Y", "Z"]
-        ].to_numpy()
+        data2.loc[np.logical_and(np.isnan(data2["val"]), mask), ["X", "Y", "Z"]].to_numpy()
     )
     if view is not None:
         view.add_value_data(
@@ -108,9 +96,7 @@ def displacement_missfit(
         )
         view.add_orientation_disks(
             model.rescale(
-                data2.loc[
-                    np.logical_and(np.isnan(data2["val"]), mask), ["X", "Y", "Z"]
-                ].to_numpy(),
+                data2.loc[np.logical_and(np.isnan(data2["val"]), mask), ["X", "Y", "Z"]].to_numpy(),
                 inplace=False,
             ),
             estimated_normal,
@@ -125,8 +111,6 @@ def displacement_missfit(
             cmap="rainbow",
         )
     fv = fault_plane_feature.evaluate_value(
-        data2.loc[
-            np.logical_and(~np.isnan(data2["val"]), mask), ["X", "Y", "Z"]
-        ].to_numpy()
+        data2.loc[np.logical_and(~np.isnan(data2["val"]), mask), ["X", "Y", "Z"]].to_numpy()
     )
     return fv, dv, fault_plane_feature, estimated_normal, normals

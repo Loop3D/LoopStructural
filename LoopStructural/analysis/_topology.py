@@ -22,7 +22,7 @@ def calculate_fault_topology_matrix(model, xyz=None, threshold=0.001, scale=True
     topology_matrix : np.array
         matrix containing nan (outside), 0 (footwall), 1 (hangingwall)
     """
-    if xyz is not None and scale == True:
+    if xyz is not None and scale:
         logger.warning("Scaling XYZ to model coordinate system")
         xyz = model.scale(xyz, inplace=False)
     if xyz is None:

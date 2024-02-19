@@ -1,11 +1,8 @@
-import pytest
-import numpy as np
 
 # Loop library
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
 from LoopStructural.modelling.intrusions import IntrusionBuilder
-from LoopStructural.modelling.intrusions import IntrusionFeature
 from LoopStructural.modelling.features import StructuralFrame
 from LoopStructural.modelling.intrusions import (
     ellipse_function,
@@ -24,9 +21,7 @@ def test_intrusion_frame_builder():
     model.nsteps = [10, 10, 10]
 
     intrusion_data = data[data["feature_name"] == "tabular_intrusion"]
-    intrusion_frame_data = model.data[
-        model.data["feature_name"] == "tabular_intrusion_frame"
-    ]
+    intrusion_frame_data = model.data[model.data["feature_name"] == "tabular_intrusion_frame"]
 
     conformable_feature = model.create_and_add_foliation("stratigraphy")
 
@@ -72,9 +67,7 @@ def test_intrusion_builder():
     model.nsteps = [10, 10, 10]
 
     intrusion_data = data[data["feature_name"] == "tabular_intrusion"]
-    intrusion_frame_data = model.data[
-        model.data["feature_name"] == "tabular_intrusion_frame"
-    ]
+    intrusion_frame_data = model.data[model.data["feature_name"] == "tabular_intrusion_frame"]
 
     conformable_feature = model.create_and_add_foliation("stratigraphy")
 

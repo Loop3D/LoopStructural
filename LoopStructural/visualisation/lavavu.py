@@ -45,9 +45,7 @@ class LavaVuModelViewer(BaseModelPlotter):
             self.nsteps = model.nsteps
             logger.debug("Using bounding box from model")
         if self.bounding_box is None or self.nsteps is None:
-            logger.warning(
-                "Limited functionality for plot, bounding box is not defined."
-            )
+            logger.warning("Limited functionality for plot, bounding box is not defined.")
         self.bounding_box = np.array(self.bounding_box)
 
     def _parse_kwargs(self, kwargs):
@@ -64,7 +62,7 @@ class LavaVuModelViewer(BaseModelPlotter):
         colour="red",
         paint_with=None,
         paint_with_value=None,
-        **kwargs
+        **kwargs,
     ):
         """Virtual function to be overwritten by subclasses for adding surfaces to the viewer
 
@@ -101,9 +99,7 @@ class LavaVuModelViewer(BaseModelPlotter):
                 # class, currently structuralframes and
                 # faults don't work here..
                 # or just change to using __call__
-                surfaceval[:] = paint_with.evaluate_value(
-                    self.model.scale(vertices, inplace=False)
-                )
+                surfaceval[:] = paint_with.evaluate_value(self.model.scale(vertices, inplace=False))
                 surf.values(surfaceval, "paint_with")
             if callable(paint_with):
                 # paint with a callable function e.g. (xyz)->value
@@ -152,12 +148,7 @@ class LavaVuModelViewer(BaseModelPlotter):
             p.colourmap(cmap, range=(vmin, vmax))
 
     def _add_vector_marker(
-        self,
-        location: np.ndarray,
-        vector: np.ndarray,
-        name: str,
-        symbol_type="arrow",
-        **kwargs
+        self, location: np.ndarray, vector: np.ndarray, name: str, symbol_type="arrow", **kwargs
     ):
         """Virtual function to be overwritten by subclasses for adding vectors to the viewer
 
@@ -188,9 +179,7 @@ class LavaVuModelViewer(BaseModelPlotter):
                 "scaleshapes", np.max(self.model.maximum - self.model.origin) * 0.014
             )
             vector /= np.linalg.norm(vector, axis=1)[:, None]
-            vectorfield = self.lv.shapes(
-                name, scaleshapes=scaleshapes, shapelength=0, **kwargs
-            )
+            vectorfield = self.lv.shapes(name, scaleshapes=scaleshapes, shapelength=0, **kwargs)
             vectorfield.vertices(location)
             vectorfield.vectors(vector)
 

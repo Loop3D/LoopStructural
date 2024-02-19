@@ -15,9 +15,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
         self.type = SupportType.P2UnstructuredTetMesh
         if self.elements.shape[1] != 10:
-            raise ValueError(
-                f"P2 tetrahedron must have 8 nodes, has {self.elements.shape[1]}"
-            )
+            raise ValueError(f"P2 tetrahedron must have 8 nodes, has {self.elements.shape[1]}")
         self.hessian = np.array(
             [
                 [
@@ -59,20 +57,17 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
             reference_points = np.array([[1 / 6, 2 / 3, 1 / 6], [1 / 6, 1 / 6, 2 / 3]])
 
             cp[:, 0, :] = (
-                vertices[:, 0, :]
-                * (1 - reference_points[0, 0] - reference_points[1, 0])
+                vertices[:, 0, :] * (1 - reference_points[0, 0] - reference_points[1, 0])
                 + vertices[:, 1, :] * (reference_points[0, 0])
                 + vertices[:, 2, :] * (reference_points[1, 0])
             )
             cp[:, 1, :] = (
-                vertices[:, 0, :]
-                * (1 - reference_points[0, 1] - reference_points[1, 1])
+                vertices[:, 0, :] * (1 - reference_points[0, 1] - reference_points[1, 1])
                 + vertices[:, 1, :] * (reference_points[0, 1])
                 + vertices[:, 2, :] * (reference_points[1, 1])
             )
             cp[:, 2, :] = (
-                vertices[:, 0, :]
-                * (1 - reference_points[0, 2] - reference_points[1, 2])
+                vertices[:, 0, :] * (1 - reference_points[0, 2] - reference_points[1, 2])
                 + vertices[:, 1, :] * (reference_points[0, 2])
                 + vertices[:, 2, :] * (reference_points[1, 2])
             )
@@ -85,8 +80,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
             reference_points = np.array([[1 / 3], [1 / 3]])
 
             cp[:, 0, :] = (
-                vertices[:, 0, :]
-                * (1 - reference_points[0, 0] - reference_points[1, 0])
+                vertices[:, 0, :] * (1 - reference_points[0, 0] - reference_points[1, 0])
                 + vertices[:, 1, :] * (reference_points[0, 0])
                 + vertices[:, 2, :] * (reference_points[1, 0])
             )
@@ -140,9 +134,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 for k in range(3):
                     for l in range(3):
                         d2[:, ii, :] += (
-                            jac[:, i, k, None]
-                            * jac[:, j, l, None]
-                            * self.hessian[None, k, l, :]
+                            jac[:, i, k, None] * jac[:, j, l, None] * self.hessian[None, k, l, :]
                         )
                 ii += 1
         return d2
@@ -253,9 +245,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         locations = np.array(locations)
         verts, c, elements, inside = self.get_element_for_location(locations)
         # order of bary coord is (1-s-t,s,t)
-        N = np.zeros(
-            (c.shape[0], 10)
-        )  # evaluate shape functions at barycentric coordinates
+        N = np.zeros((c.shape[0], 10))  # evaluate shape functions at barycentric coordinates
 
         for i in range(c.shape[1]):
             N[:, i] = (2 * c[:, i] - 1) * c[:, i]
@@ -314,9 +304,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
 
         """
         if len(pos.shape) != 2 or pos.shape[1] != 3:
-            raise ValueError(
-                f"pos must be a numpy array of shape (n,3), shape is {pos.shape}"
-            )
+            raise ValueError(f"pos must be a numpy array of shape (n,3), shape is {pos.shape}")
         if property_array.shape[0] != self.n_nodes:
             raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape[0])
@@ -327,13 +315,9 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         )
         return values
 
-    def evaluate_gradient(
-        self, pos: np.ndarray, property_array: np.ndarray
-    ) -> np.ndarray:
+    def evaluate_gradient(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
         if len(pos.shape) != 2 or pos.shape[1] != 3:
-            raise ValueError(
-                f"pos must be a numpy array of shape (n,3), shape is {pos.shape}"
-            )
+            raise ValueError(f"pos must be a numpy array of shape (n,3), shape is {pos.shape}")
         if property_array.shape[0] != self.n_nodes:
             raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape)
@@ -341,8 +325,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         element_gradients, tetra = self.evaluate_shape_derivatives(pos[:, :3])
         inside = tetra >= 0
         values[inside, :] = (
-            element_gradients[:, :, :]
-            * property_array[self.elements[tetra[inside], None, :]]
+            element_gradients[:, :, :] * property_array[self.elements[tetra[inside], None, :]]
         ).sum(2)
 
         return values

@@ -22,14 +22,7 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
 from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
-from LoopStructural.utils import (
-    strikedip2vector,
-    azimuthplunge2vector,
-)
 import pandas as pd
-import numpy as np
-from scipy.interpolate import Rbf
-import matplotlib.pyplot as plt
 
 
 ######################################################################

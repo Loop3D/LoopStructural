@@ -1,7 +1,6 @@
 """
 FiniteDifference interpolator
 """
-import logging
 
 import numpy as np
 
@@ -92,7 +91,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.interpolation_weights[key] = kwargs[key]
         # if we want to define the operators manually
         if "operators" in kwargs:
-            for n, o in kwargs["operators"].items():
+            for o in kwargs["operators"].values():
                 self.assemble_inner(o[0], o[1])
         # otherwise just use defaults
         if "operators" not in kwargs:
@@ -112,19 +111,13 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )  # (4*self.support.step_vector[0]*self.support.step_vector[2])
             self.assemble_inner(operator, weight)
             operator = Operator.Dxx_mask
-            weight = (
-                self.interpolation_weights["dxx"] / 1
-            )  # self.support.step_vector[0]**2
+            weight = self.interpolation_weights["dxx"] / 1  # self.support.step_vector[0]**2
             self.assemble_inner(operator, weight)
             operator = Operator.Dyy_mask
-            weight = (
-                self.interpolation_weights["dyy"] / 1
-            )  # self.support.step_vector[1]**2
+            weight = self.interpolation_weights["dyy"] / 1  # self.support.step_vector[1]**2
             self.assemble_inner(operator, weight)
             operator = Operator.Dzz_mask
-            weight = (
-                self.interpolation_weights["dzz"] / 1
-            )  # self.support.step_vector[2]**2
+            weight = self.interpolation_weights["dzz"] / 1  # self.support.step_vector[2]**2
             self.assemble_inner(operator, weight)
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
@@ -240,9 +233,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # get elements for points
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
-            vertices, c, tetras, inside = self.support.get_element_for_location(
-                points[:, :3]
-            )
+            vertices, c, tetras, inside = self.support.get_element_for_location(points[:, :3])
             # calculate volume of tetras
             # vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
             # vol = np.abs(np.linalg.det(vecs)) / 6
@@ -250,9 +241,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # A *= vol[:,None]
             idc = tetras[inside, :]
 
-            for unique_id in np.unique(
-                points[np.logical_and(~np.isnan(points[:, 3]), inside), 3]
-            ):
+            for unique_id in np.unique(points[np.logical_and(~np.isnan(points[:, 3]), inside), 3]):
                 mask = points[inside, 3] == unique_id
                 ij = np.array(
                     np.meshgrid(
@@ -260,12 +249,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                         np.arange(0, A[mask, :].shape[0]),
                     )
                 ).T.reshape(-1, 2)
-                interface_A = np.hstack(
-                    [A[mask, :][ij[:, 0], :], -A[mask, :][ij[:, 1], :]]
-                )
-                interface_idc = np.hstack(
-                    [idc[mask, :][ij[:, 0], :], idc[mask, :][ij[:, 1], :]]
-                )
+                interface_A = np.hstack([A[mask, :][ij[:, 0], :], -A[mask, :][ij[:, 1], :]])
+                interface_idc = np.hstack([idc[mask, :][ij[:, 0], :], idc[mask, :][ij[:, 1], :]])
 
                 # now map the index from global to region create array size of mesh
                 # initialise as np.nan, then map points inside region to 0->nx

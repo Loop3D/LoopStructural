@@ -1,8 +1,8 @@
 """
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
+
 import logging
-from re import S
 
 import numpy as np
 from ._2d_base_unstructured import BaseUnstructured2d
@@ -190,7 +190,7 @@ class P2Unstructured2d(BaseUnstructured2d):
         jac[:, 0, 1] = vertices[:, 1, 1] - vertices[:, 0, 1]
         jac[:, 1, 0] = vertices[:, 2, 0] - vertices[:, 0, 0]
         jac[:, 1, 1] = vertices[:, 2, 1] - vertices[:, 0, 1]
-        N = np.zeros((tri.shape[0], 6))
+        # N = np.zeros((tri.shape[0], 6))
 
         # dN containts the derivatives of the shape functions
         dN = np.zeros((tri.shape[0], 2, 6))
@@ -223,9 +223,7 @@ class P2Unstructured2d(BaseUnstructured2d):
         c, tri = self.get_element_for_location(locations)
         # c = np.dot(np.array([1,x,y]),np.linalg.inv(M)) # convert to barycentric coordinates
         # order of bary coord is (1-s-t,s,t)
-        N = np.zeros(
-            (c.shape[0], 6)
-        )  # evaluate shape functions at barycentric coordinates
+        N = np.zeros((c.shape[0], 6))  # evaluate shape functions at barycentric coordinates
         N[:, 0] = c[:, 0] * (2 * c[:, 0] - 1)  # (1-s-t)(1-2s-2t)
         N[:, 1] = c[:, 1] * (2 * c[:, 1] - 1)  # s(2s-1)
         N[:, 2] = c[:, 2] * (2 * c[:, 2] - 1)  # t(2t-1)

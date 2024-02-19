@@ -1,7 +1,6 @@
 """
 Finite difference masks
 """
-import logging
 
 import numpy as np
 
@@ -25,9 +24,7 @@ class Operator(object):
     Dyy_mask = Dxx_mask.swapaxes(1, 2)
     Dzz_mask = Dxx_mask.swapaxes(0, 2)
 
-    Dxy_mask = np.array(
-        [z, [[-0.25, 0, 0.25], [0, 0, 0], [0.25, 0, -0.25]], z]
-    ) / np.sqrt(2)
+    Dxy_mask = np.array([z, [[-0.25, 0, 0.25], [0, 0, 0], [0.25, 0, -0.25]], z]) / np.sqrt(2)
     Dxz_mask = Dxy_mask.swapaxes(0, 1)
     Dyz_mask = Dxy_mask.swapaxes(0, 2)
 

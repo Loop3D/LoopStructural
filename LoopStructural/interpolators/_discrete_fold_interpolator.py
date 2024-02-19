@@ -1,14 +1,14 @@
 """
 Piecewise linear interpolator using folds
 """
-import logging
+
 from typing import Optional
 
 import numpy as np
 
 from ..interpolators import PiecewiseLinearInterpolator, InterpolatorType
 from ..modelling.features.fold import FoldEvent
-from ..utils import getLogger
+from ..utils import getLogger, rng
 
 logger = getLogger(__name__)
 
@@ -44,9 +44,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         -------
 
         """
-        logger.error(
-            "updating fold, this should be done by accessing the fold attribute"
-        )
+        logger.error("updating fold, this should be done by accessing the fold attribute")
         self.fold = fold
 
     def setup_interpolator(self, **kwargs):
@@ -96,15 +94,13 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         # get the gradient of all of the elements of the mesh
         eg = self.support.get_element_gradients(np.arange(self.support.n_elements))
         # get array of all nodes for all elements N,4,3
-        nodes = self.support.nodes[
-            self.support.get_elements()[np.arange(self.support.n_elements)]
-        ]
+        nodes = self.support.nodes[self.support.get_elements()[np.arange(self.support.n_elements)]]
         # calculate the fold geometry for the elements barycentre
         deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(
             self.support.barycentre
         )
         element_idx = np.arange(self.support.n_elements)
-        np.random.shuffle(element_idx)
+        rng.shuffle(element_idx)
         # calculate element volume for weighting
         vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
         vol = np.abs(np.linalg.det(vecs)) / 6
@@ -112,7 +108,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between vector in deformed ori plane = 0
             """
-            np.random.shuffle(element_idx)
+            rng.shuffle(element_idx)
 
             logger.info(f"Adding fold orientation constraint to w = {fold_orientation}")
             A = np.einsum(
@@ -131,7 +127,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between axis and gradient should be 0
             """
-            np.random.shuffle(element_idx)
+            rng.shuffle(element_idx)
 
             logger.info(f"Adding fold axis constraint to  w = {fold_axis_w}")
             A = np.einsum(
@@ -143,22 +139,16 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0]).tolist()
             idc = self.support.get_elements()[element_idx[::step], :]
 
-            self.add_constraints_to_least_squares(
-                A, B, idc, w=fold_axis_w, name="fold axis"
-            )
+            self.add_constraints_to_least_squares(A, B, idc, w=fold_axis_w, name="fold axis")
 
         if fold_normalisation is not None:
             """
             specify scalar norm in X direction
             """
-            np.random.shuffle(element_idx)
+            rng.shuffle(element_idx)
 
-            logger.info(
-                f"Adding fold normalisation constraint to  w = {fold_normalisation}"
-            )
-            A = np.einsum(
-                "ij,ijk->ik", dgz[element_idx[::step], :], eg[element_idx[::step], :, :]
-            )
+            logger.info(f"Adding fold normalisation constraint to  w = {fold_normalisation}")
+            A = np.einsum("ij,ijk->ik", dgz[element_idx[::step], :], eg[element_idx[::step], :, :])
             A *= vol[element_idx[::step], None]
 
             B = np.ones(A.shape[0])

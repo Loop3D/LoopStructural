@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
+from ..utils import rng
 
 
 class StratigraphicColumnView:
@@ -12,6 +13,7 @@ class StratigraphicColumnView:
         ymin = 0
         ymax = 1
         xmax = 1
+        fig = None
         if ax is None:
             fig, ax = plt.subplots(figsize=(2, 10))
         patches = []
@@ -25,10 +27,8 @@ class StratigraphicColumnView:
                     ymin = 0
                 ymax = -model.stratigraphic_column[g][u]["max"]
                 if np.isinf(ymax):
-                    ymin = ymax + (ymax - ymin) * (1 + np.random.rand())
-                polygon_points = np.array(
-                    [[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]]
-                )
+                    ymin = ymax + (ymax - ymin) * (1 + rng.random())
+                polygon_points = np.array([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
                 patches.append(Polygon(polygon_points))
                 xy = (0, ymin + (ymax - ymin) / 2)
                 if labels:
@@ -44,14 +44,13 @@ class StratigraphicColumnView:
             for g in model.stratigraphic_column.keys():
                 if g == "faults":
                     continue
-                for u, v in model.stratigraphic_column[g].items():
+                for v in model.stratigraphic_column[g].values():
                     data.append((v["id"], v["colour"]))
                     colours.append(v["colour"])
                     boundaries.append(v["id"])  # print(u,v)
             cmap = colors.ListedColormap(colours)
         else:
             cmap = cm.get_cmap(cmap, n_units - 1)
-        ci = 0
         p = PatchCollection(patches, cmap=cmap)
 
         colors = np.arange(len(patches))
@@ -61,3 +60,5 @@ class StratigraphicColumnView:
 
         ax.set_ylim(ymax + (ymax - ymin) * -2, 0)  # ax.set_ylim(0,ymax)
         ax.axis("off")
+
+        return fig

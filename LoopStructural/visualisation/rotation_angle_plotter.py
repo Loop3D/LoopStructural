@@ -1,4 +1,3 @@
-import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -62,25 +61,19 @@ class RotationAnglePlotter:
             self.feature.fold.foldframe[0].max(),
             100,
         )
-        return self.plot(
-            x, self.feature.builder.fold.fold_limb_rotation(x), 0, 1, symb, **kwargs
-        )
+        return self.plot(x, self.feature.builder.fold.fold_limb_rotation(x), 0, 1, symb, **kwargs)
 
     def add_axis_svariogram(self, symb="bo", **kwargs):
         svariogram = self.feature.builder.fold.fold_axis_rotation.svario
         if svariogram:
             svariogram.calc_semivariogram()
-            return self.plot(
-                svariogram.lags, svariogram.variogram, 1, 0, symb, **kwargs
-            )
+            return self.plot(svariogram.lags, svariogram.variogram, 1, 0, symb, **kwargs)
 
     def add_limb_svariogram(self, symb="bo", **kwargs):
         svariogram = self.feature.builder.fold.fold_limb_rotation.svario
         if svariogram:
             svariogram.calc_semivariogram()
-            return self.plot(
-                svariogram.lags, svariogram.variogram, 1, 1, symb, **kwargs
-            )
+            return self.plot(svariogram.lags, svariogram.variogram, 1, 1, symb, **kwargs)
 
     def add_fold_axis_data(self, symb="bo", **kwargs):
         fold_frame = self.feature.builder.fold.fold_axis_rotation.fold_frame_coordinate
@@ -93,6 +86,4 @@ class RotationAnglePlotter:
             self.feature.builder.fold.foldframe[1].max(),
             100,
         )
-        return self.plot(
-            x, self.feature.builder.fold.fold_axis_rotation(x), 0, 0, symb, **kwargs
-        )
+        return self.plot(x, self.feature.builder.fold.fold_axis_rotation(x), 0, 0, symb, **kwargs)

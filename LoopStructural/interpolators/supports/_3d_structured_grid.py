@@ -2,7 +2,6 @@
 Cartesian grid for fold interpolator
 
 """
-import logging
 
 import numpy as np
 
@@ -33,9 +32,7 @@ class StructuredGrid(BaseStructuredSupport):
         nsteps - 3d list or numpy array of ints
         step_vector - 3d list or numpy array of int
         """
-        BaseStructuredSupport.__init__(
-            self, origin, nsteps, step_vector, rotation_xy=rotation_xy
-        )
+        BaseStructuredSupport.__init__(self, origin, nsteps, step_vector, rotation_xy=rotation_xy)
         self.type = SupportType.StructuredGrid
         self.regions = {}
         self.regions["everywhere"] = np.ones(self.n_nodes).astype(bool)
@@ -92,28 +89,14 @@ class StructuredGrid(BaseStructuredSupport):
         # interpolant[:,6] = local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
         # interpolant[:,7] =  local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
         interpolant[:, 0] = (
-            (1 - local_coords[:, 0])
-            * (1 - local_coords[:, 1])
-            * (1 - local_coords[:, 2])
+            (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
         )
-        interpolant[:, 1] = (
-            local_coords[:, 0] * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
-        )
-        interpolant[:, 2] = (
-            (1 - local_coords[:, 0]) * local_coords[:, 1] * (1 - local_coords[:, 2])
-        )
-        interpolant[:, 4] = (
-            (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * local_coords[:, 2]
-        )
-        interpolant[:, 5] = (
-            local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
-        )
-        interpolant[:, 6] = (
-            (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
-        )
-        interpolant[:, 3] = (
-            local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
-        )
+        interpolant[:, 1] = local_coords[:, 0] * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
+        interpolant[:, 2] = (1 - local_coords[:, 0]) * local_coords[:, 1] * (1 - local_coords[:, 2])
+        interpolant[:, 4] = (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        interpolant[:, 5] = local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        interpolant[:, 6] = (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
+        interpolant[:, 3] = local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
         interpolant[:, 7] = local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
         return interpolant
 
@@ -282,9 +265,7 @@ class StructuredGrid(BaseStructuredSupport):
         return (
             neighbours[0, :, :]
             + self.nsteps[0, None, None] * neighbours[1, :, :]
-            + self.nsteps[0, None, None]
-            * self.nsteps[1, None, None]
-            * neighbours[2, :, :]
+            + self.nsteps[0, None, None] * self.nsteps[1, None, None] * neighbours[2, :, :]
         ).astype(np.int64)
 
     def evaluate_value(self, evaluation_points, property_array):
@@ -355,33 +336,29 @@ class StructuredGrid(BaseStructuredSupport):
 
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 3, 8))
-        T[inside, :, :] = self.get_element_gradient_for_location(
-            evaluation_points[inside, :]
-        )[1]
+        T[inside, :, :] = self.get_element_gradient_for_location(evaluation_points[inside, :])[1]
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
         if np.max(idc[inside, :]) > property_array.shape[0]:
             cix, ciy, ciz = self.position_to_cell_index(evaluation_points)
-            if np.all(cix[inside] < self.nsteps_cells[0]) == False:
+            if not np.all(cix[inside] < self.nsteps_cells[0]):
                 print(
                     evaluation_points[inside, :][cix[inside] < self.nsteps_cells[0], 0],
                     self.origin[0],
                     self.maximum[0],
                 )
-            if np.all(ciy[inside] < self.nsteps_cells[1]) == False:
+            if not np.all(ciy[inside] < self.nsteps_cells[1]):
                 print(
                     evaluation_points[inside, :][ciy[inside] < self.nsteps_cells[1], 1],
                     self.origin[1],
                     self.maximum[1],
                 )
-            if np.all(ciz[inside] < self.nsteps_cells[2]) == False:
+            if not np.all(ciz[inside] < self.nsteps_cells[2]):
                 print(ciz[inside], self.nsteps_cells[2])
                 print(self.step_vector, self.nsteps_cells, self.nsteps)
                 print(
-                    evaluation_points[inside, :][
-                        ~(ciz[inside] < self.nsteps_cells[2]), 2
-                    ],
+                    evaluation_points[inside, :][~(ciz[inside] < self.nsteps_cells[2]), 2],
                     self.origin[2],
                     self.maximum[2],
                 )

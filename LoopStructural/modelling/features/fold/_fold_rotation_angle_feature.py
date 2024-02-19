@@ -1,4 +1,3 @@
-import logging
 
 import numpy as np
 from ....modelling.features import BaseFeature
@@ -28,9 +27,7 @@ class FoldRotationAngleFeature(BaseFeature):
         fold_frame
         rotation
         """
-        BaseFeature.__init__(
-            self, f"{name}_displacement", model, faults, regions, builder
-        )
+        BaseFeature.__init__(self, f"{name}_displacement", model, faults, regions, builder)
         self.fold_frame = fold_frame
         self.rotation = rotation
 

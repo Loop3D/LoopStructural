@@ -19,9 +19,7 @@ class FaultSegment(StructuralFrame):
     Class for representing a slip event of a fault
     """
 
-    def __init__(
-        self, features, name, faultfunction=None, steps=3, displacement=1.0, fold=None
-    ):
+    def __init__(self, features, name, faultfunction=None, steps=10, displacement=1.0, fold=None):
         """
         A slip event of a fault
 
@@ -263,7 +261,7 @@ class FaultSegment(StructuralFrame):
             d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
         return d * self.displacement
 
-    def apply_to_points(self, points):
+    def apply_to_points(self, points, reverse=False):
         """
         Unfault the array of points
 
@@ -308,6 +306,13 @@ class FaultSegment(StructuralFrame):
         mask = np.abs(d) > 0.0
 
         d *= self.displacement
+        if reverse:
+            d *= -1.0
+        # calculate the anglee and vector to rotate the points
+        axis = np.zeros((points.shape[0], steps, 3))
+        axis[:] = np.nan
+        angle = np.zeros((points.shape[0], steps))
+        angle[:] = np.nan
         # calculate the fault frame for the evaluation points
         for i in range(steps):
             gx = None
@@ -318,18 +323,10 @@ class FaultSegment(StructuralFrame):
                 with ThreadPoolExecutor(max_workers=8) as executor:
                     # all of these operations should be
                     # independent so just run as different threads
-                    gx_future = executor.submit(
-                        self.__getitem__(0).evaluate_value, newp[mask, :]
-                    )
-                    g_future = executor.submit(
-                        self.__getitem__(1).evaluate_gradient, newp[mask, :]
-                    )
-                    gy_future = executor.submit(
-                        self.__getitem__(1).evaluate_value, newp[mask, :]
-                    )
-                    gz_future = executor.submit(
-                        self.__getitem__(2).evaluate_value, newp[mask, :]
-                    )
+                    gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp[mask, :])
+                    g_future = executor.submit(self.__getitem__(1).evaluate_gradient, newp[mask, :])
+                    gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp[mask, :])
+                    gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp[mask, :])
                     gx = gx_future.result()
                     g = g_future.result()
                     gy = gy_future.result()
@@ -363,10 +360,18 @@ class FaultSegment(StructuralFrame):
             # multiply displacement vector by the displacement magnitude for
             # step
             g *= (1.0 / steps) * d[:, None]
-
+            #newp[mask, :].copy()
             # apply displacement
             newp[mask, :] += g
-        return newp
+            # axis[mask, i, :] = np.cross(prev_p, newp[mask, :], axisa=1, axisb=1)
+            # angle[mask, i] = 2 * np.arctan(
+            #     0.5 * (np.linalg.norm(prev_p - newp[mask, :], axis=1))
+            # )
+            # calculate the angle between the previous and new points
+            # and the axis of rotation
+            # g /= np.linalg.norm(g, axis=1)[:, None]
+            axis[mask, i, :] /= np.linalg.norm(axis[mask, i, :], axis=1)[:, None]
+        return newp, axis, angle
 
     def add_abutting_fault(self, abutting_fault_feature, positive=None):
 

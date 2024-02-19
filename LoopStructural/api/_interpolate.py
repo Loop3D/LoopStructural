@@ -1,6 +1,4 @@
-from ast import LShift
 import numpy as np
-import pandas as pd
 
 from typing import Optional
 from LoopStructural.interpolators import (
@@ -41,12 +39,10 @@ class LoopInterpolator:
         """
         self.dimensions = dimensions
         self.type = "FDI"
-        self.interpolator: GeologicalInterpolator = (
-            InterpolatorFactory.create_interpolator(
-                type,
-                bounding_box,
-                nelements,
-            )
+        self.interpolator: GeologicalInterpolator = InterpolatorFactory.create_interpolator(
+            type,
+            bounding_box,
+            nelements,
         )
 
     def fit(

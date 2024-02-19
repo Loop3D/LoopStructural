@@ -1,16 +1,18 @@
 from __future__ import annotations
 from typing import Optional
 from LoopStructural.utils.exceptions import LoopValueError
+from LoopStructural.utils import rng
 import numpy as np
 
 
 class BoundingBox:
     def __init__(
         self,
-        dimensions: int = 3,
         origin: Optional[np.ndarray] = None,
         maximum: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
+        step_vector: Optional[np.ndarray] = None,
+        dimensions: int = 3,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
@@ -26,6 +28,8 @@ class BoundingBox:
         nsteps : Optional[np.ndarray], optional
             _description_, by default None
         """
+        if maximum is None and nsteps is not None and step_vector is not None:
+            maximum = origin + nsteps * step_vector
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         self.dimensions = dimensions
@@ -78,7 +82,7 @@ class BoundingBox:
 
     @property
     def volume(self):
-        return np.product(self.maximum - self.origin)
+        return np.prod(self.maximum - self.origin)
 
     @property
     def bb(self):
@@ -91,7 +95,6 @@ class BoundingBox:
         # calculate the step vector of a regular cube
         step_vector = np.zeros(3)
         step_vector[:] = ele_vol ** (1.0 / 3.0)
-        # step_vector /= np.array([1,1,2])
         # number of steps is the length of the box / step vector
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
         self.nsteps = nsteps
@@ -138,9 +141,7 @@ class BoundingBox:
 
     def with_buffer(self, buffer: float = 0.2) -> BoundingBox:
         if self.origin is None or self.maximum is None:
-            raise LoopValueError(
-                "Cannot create bounding box with buffer, no origin or maximum"
-            )
+            raise LoopValueError("Cannot create bounding box with buffer, no origin or maximum")
         origin = self.origin - buffer * (self.maximum - self.origin)
         maximum = self.maximum + buffer * (self.maximum - self.origin)
         return BoundingBox(origin=origin, maximum=maximum)
@@ -189,6 +190,5 @@ class BoundingBox:
             [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
         ).T
         if shuffle:
-            # logger.info("Shuffling points")
-            np.random.shuffle(locs)
+            rng.shuffle(locs)
         return locs

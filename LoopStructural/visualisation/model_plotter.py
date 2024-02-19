@@ -1,5 +1,4 @@
 from ..utils import getLogger
-from ..utils import LoopImportError
 
 logger = getLogger(__name__)
 
@@ -79,15 +78,11 @@ class BaseModelPlotter:
         step_vector[:] = ele_vol ** (1.0 / 3.0)
         # step_vector /= np.array([1,1,2])
         # number of steps is the length of the box / step vector
-        nsteps = np.ceil(
-            (self.bounding_box[1, :] - self.bounding_box[0, :]) / step_vector
-        ).astype(int)
-        self.nsteps = nsteps
-        logger.info(
-            "Using grid with dimensions {} {} {}".format(
-                nsteps[0], nsteps[1], nsteps[2]
-            )
+        nsteps = np.ceil((self.bounding_box[1, :] - self.bounding_box[0, :]) / step_vector).astype(
+            int
         )
+        self.nsteps = nsteps
+        logger.info("Using grid with dimensions {} {} {}".format(nsteps[0], nsteps[1], nsteps[2]))
 
     @property
     def nsteps(self) -> np.ndarray:
@@ -97,9 +92,7 @@ class BaseModelPlotter:
     def nsteps(self, nsteps: np.ndarray):
         self._nsteps = np.array(nsteps)
 
-    def _add_surface(
-        self, tri, vertices, name, colour="red", paint_with=None, **kwargs
-    ):
+    def _add_surface(self, tri, vertices, name, colour="red", paint_with=None, **kwargs):
         """Virtual function to be overwritten by subclasses for adding surfaces to the viewer
 
         Parameters
@@ -176,17 +169,13 @@ class BaseModelPlotter:
 
         """
         if axis == "x":
-            tri, yy, zz = create_surface(
-                self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]]
-            )
+            tri, yy, zz = create_surface(self.bounding_box[:, [1, 2]], self.nsteps[[1, 2]])
             xx = np.zeros(zz.shape)
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 0])
             xx[:] = value
         if axis == "y":
-            tri, xx, zz = create_surface(
-                self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]]
-            )
+            tri, xx, zz = create_surface(self.bounding_box[:, [0, 2]], self.nsteps[[0, 2]])
             yy = np.zeros(xx.shape)
             if value is None:
                 value = np.nanmean(self.bounding_box[:, 1])
@@ -199,11 +188,9 @@ class BaseModelPlotter:
             zz[:] = value
         if geological_feature == "model" and self.model is not None:
             name = kwargs.get("name", "model_section")
-            if paint_with == None:
+            if paint_with is None:
                 paint_with = lambda xyz: self.model.evaluate_model(xyz, scale=False)
-        elif geological_feature is not None and isinstance(
-            geological_feature, BaseFeature
-        ):
+        elif geological_feature is not None and isinstance(geological_feature, BaseFeature):
             name = kwargs.get("name", geological_feature.name)
             paint_with = geological_feature
         elif callable(geological_feature):
@@ -291,15 +278,9 @@ class BaseModelPlotter:
         # update the feature to make sure its current
 
         # do isosurfacing of support using marching tetras/cubes
-        x = np.linspace(
-            self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0]
-        )
-        y = np.linspace(
-            self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1]
-        )
-        z = np.linspace(
-            self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2]
-        )
+        x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
+        y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
+        z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
         points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         val = geological_feature.evaluate_value(points)
@@ -307,9 +288,7 @@ class BaseModelPlotter:
         # Check if there is sufficient values to anchor the feature in the model
         # if not skip this feature
         if len(np.unique(val)) == 1:
-            logger.warning(
-                f"No value information for {geological_feature.name}, skipping"
-            )
+            logger.warning(f"No value information for {geological_feature.name}, skipping")
             return return_container
         mean_val = np.nanmean(val)  # geological_feature.mean()
         max_val = np.nanmax(val)  # geological_feature.max()
@@ -325,10 +304,7 @@ class BaseModelPlotter:
             kwargs["vmax"] = np.nanmax(paint_val)  # geological_feature.max()
         # set default parameters
         slices_ = [mean_val]
-        painter = None
-        voxet = None
-        tris = None
-        nodes = None
+
         # parse kwargs for parameters
         if isovalue is not None:
             slices_ = [isovalue]
@@ -344,9 +320,7 @@ class BaseModelPlotter:
 
         region = kwargs.get("region", None)
         if region is not None:
-            val[
-                ~region(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)
-            ] = np.nan
+            val[~region(np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T)] = np.nan
         if self.model.dtm is not None:
             xyz = self.model.rescale(
                 np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T, inplace=False
@@ -355,9 +329,7 @@ class BaseModelPlotter:
             val[xyz[:, 2] > dtmv] = np.nan
         step_vector = np.array([x[1] - x[0], y[1] - y[0], z[1] - z[0]])
         for i, isovalue in enumerate(slices_):
-            logger.info(
-                "Creating isosurface of %s at %f" % (geological_feature.name, isovalue)
-            )
+            logger.info("Creating isosurface of %s at %f" % (geological_feature.name, isovalue))
 
             if isovalue > np.nanmax(val) or isovalue < np.nanmin(val):
                 logger.warning(
@@ -380,9 +352,7 @@ class BaseModelPlotter:
             except (ValueError, RuntimeError) as e:
                 print(e)
                 logger.warning(
-                    "Cannot isosurface {} at {}, skipping".format(
-                        geological_feature.name, isovalue
-                    )
+                    "Cannot isosurface {} at {}, skipping".format(geological_feature.name, isovalue)
                 )
                 continue
 
@@ -507,9 +477,7 @@ class BaseModelPlotter:
             try:
                 import matplotlib.colors as colors
             except ImportError:
-                logger.warning(
-                    "Cannot use predefined colours as I can't import matplotlib"
-                )
+                logger.warning("Cannot use predefined colours as I can't import matplotlib")
                 cmap = "tab20"
             colours = []
             boundaries = []
@@ -517,7 +485,7 @@ class BaseModelPlotter:
             for g in self.model.stratigraphic_column.keys():
                 if g == "faults":
                     continue
-                for u, v in self.model.stratigraphic_column[g].items():
+                for v in self.model.stratigraphic_column[g].values():
                     data.append((v["id"], v["colour"]))
                     colours.append(v["colour"])
                     boundaries.append(v["id"])  # print(u,v)
@@ -644,8 +612,7 @@ class BaseModelPlotter:
         if strati and self.model.stratigraphic_column:
             for g in self.model.stratigraphic_column.keys():
                 if g in self.model.feature_name_index:
-                    for u in self.model.stratigraphic_column[g].keys():
-                        n_units += 1
+                    n_units += len(self.model.stratigraphic_column[g])
         n_faults = 0
         for f in self.model.features:
             if f.type == FeatureType.FAULT:
@@ -659,7 +626,7 @@ class BaseModelPlotter:
                 if g == "faults":
                     # skip anything saved in faults here
                     continue
-                for u, v in self.model.stratigraphic_column[g].items():
+                for v in self.model.stratigraphic_column[g].values():
                     data.append((v["id"], v["colour"]))
                     colours.append(v["colour"])
                     boundaries.append(v["id"])
@@ -714,24 +681,20 @@ class BaseModelPlotter:
                             self.model.stratigraphic_column
                             and f.name in self.model.stratigraphic_column["faults"]
                         ):
-                            fault_colour = self.model.stratigraphic_column["faults"][
-                                f.name
-                            ].get("colour", ["red"])
+                            fault_colour = self.model.stratigraphic_column["faults"][f.name].get(
+                                "colour", ["red"]
+                            )
                         pbar.set_description("Isosurfacing {}".format(f.name))
                         if displacement_cmap is not None:
                             fault_colour = [None]
                             kwargs["cmap"] = displacement_cmap
-                            kwargs["vmin"] = np.min(
-                                self.model.faults_displacement_magnitude
-                            )
-                            kwargs["vmax"] = np.max(
-                                self.model.faults_displacement_magnitude
-                            )
+                            kwargs["vmin"] = np.min(self.model.faults_displacement_magnitude)
+                            kwargs["vmax"] = np.max(self.model.faults_displacement_magnitude)
                             kwargs["paint_with"] = LambdaGeologicalFeature(
                                 lambda xyz: np.zeros(xyz.shape[0]) + f.displacement
                             )
                             #  = feature
-                        region = kwargs.pop("region", None)
+                        # region = kwargs.pop("region", None)
                         return_container.update(
                             self.add_isosurface(
                                 f,
@@ -767,15 +730,9 @@ class BaseModelPlotter:
         locations = kwargs.get("locations", None)
         name = kwargs.get("name", geological_feature.name)
         if locations is None:
-            x = np.linspace(
-                self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0]
-            )
-            y = np.linspace(
-                self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1]
-            )
-            z = np.linspace(
-                self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2]
-            )
+            x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
+            y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
+            z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2])
             xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
             locations = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         vector = geological_feature.evaluate_gradient(locations)
@@ -880,10 +837,8 @@ class BaseModelPlotter:
             if "name" in kwargs:
                 name = kwargs["name"]
                 del kwargs["name"]
-            intersection = (
-                feature.builder.fold.foldframe.calculate_intersection_lineation(
-                    feature.builder
-                )
+            intersection = feature.builder.fold.foldframe.calculate_intersection_lineation(
+                feature.builder
             )
             gpoints = feature.builder.interpolator.get_gradient_constraints()[:, :6]
             npoints = feature.builder.interpolator.get_norm_constraints()[:, :6]
@@ -918,9 +873,9 @@ class BaseModelPlotter:
         self._add_points(points, name, **kwargs)
 
     def add_dtm(self, name="dtm", colour="brown", paint_with=None, **kwargs):
-        if self.model == None:
+        if self.model is None:
             raise BaseException("No model cannot add dtm")
-        if self.model.dtm == None:
+        if self.model.dtm is None:
             raise BaseException("No dtm for model add one")
 
         # generate a triangular mesh
@@ -946,24 +901,16 @@ class BaseModelPlotter:
         triangles[even_mask, :, :] = gi[even_mask, :][:, tri_mask_even]
         triangles[~even_mask, :, :] = gi[~even_mask, :][:, tri_mask_odd]
 
-        triangles = triangles.reshape(
-            (triangles.shape[0] * triangles.shape[1], triangles.shape[2])
-        )
+        triangles = triangles.reshape((triangles.shape[0] * triangles.shape[1], triangles.shape[2]))
         points = np.array(
             np.meshgrid(
-                np.linspace(
-                    self.model.origin[0], self.model.maximum[0], self.model.nsteps[0]
-                ),
-                np.linspace(
-                    self.model.origin[1], self.model.maximum[1], self.model.nsteps[1]
-                ),
+                np.linspace(self.model.origin[0], self.model.maximum[0], self.model.nsteps[0]),
+                np.linspace(self.model.origin[1], self.model.maximum[1], self.model.nsteps[1]),
             )
         ).T.reshape(-1, 2)
         points = np.hstack([points, np.zeros((points.shape[0], 1))])
         points[:, 2] = self.model.dtm(points[:, :2])
-        self._add_surface(
-            points, triangles, name, colour=colour, paint_with=paint_with, **kwargs
-        )
+        self._add_surface(points, triangles, name, colour=colour, paint_with=paint_with, **kwargs)
 
     def add_vector_data(
         self, location, vector, name, normalise=True, symbol_type="arrow", **kwargs
@@ -989,9 +936,7 @@ class BaseModelPlotter:
         if location.shape[0] > 0:
             if normalise:
                 vector /= np.linalg.norm(vector, axis=1)[:, None]
-            self._add_vector_marker(
-                location, vector, name, symbol_type=symbol_type, **kwargs
-            )
+            self._add_vector_marker(location, vector, name, symbol_type=symbol_type, **kwargs)
             return
 
     def add_value_data(self, position, value, name, **kwargs):
@@ -1032,15 +977,9 @@ class BaseModelPlotter:
         """
         locations = kwargs.get("locations", None)
         if locations is None:
-            x = np.linspace(
-                self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0]
-            )
-            y = np.linspace(
-                self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1]
-            )
-            z = np.linspace(
-                self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2]
-            )
+            x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], self.nsteps[0])
+            y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], self.nsteps[1])
+            z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], self.nsteps[2])
             xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
             locations = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
         r2r, fold_axis, dgz = fold.get_deformed_orientation(locations)

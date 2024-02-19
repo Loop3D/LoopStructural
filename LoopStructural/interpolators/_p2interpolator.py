@@ -1,13 +1,13 @@
 """
 Piecewise linear interpolator
 """
+
 import logging
 from typing import Optional
 
 import numpy as np
 
 from ..interpolators import DiscreteInterpolator
-from ..utils import get_vectors
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class P2Interpolator(DiscreteInterpolator):
             "ipw": 1.0,
         }
 
-    def _setup_interpolator(self, **kwargs):
+    def setup_interpolator(self, **kwargs):
         """
         Searches through kwargs for any interpolation weights and updates
         the dictionary.
@@ -75,8 +75,7 @@ class P2Interpolator(DiscreteInterpolator):
                 wtfunc=self.interpolation_weights.get("steepness_wtfunc", None),
             )
             logger.info(
-                "Using constant gradient regularisation w = %f"
-                % self.interpolation_weights["cgw"]
+                "Using constant gradient regularisation w = %f" % self.interpolation_weights["cgw"]
             )
 
         logger.info(
@@ -104,9 +103,7 @@ class P2Interpolator(DiscreteInterpolator):
             A = np.einsum("ikj,ij->ik", grad[inside, :], points[inside, 3:6])
             B = np.zeros(A.shape[0])
             elements = self.support[elements[inside]]
-            self.add_constraints_to_least_squares(
-                A * wt[:, None], B, elements, name="gradient"
-            )
+            self.add_constraints_to_least_squares(A * wt[:, None], B, elements, name="gradient")
 
     def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
         """
@@ -188,7 +185,7 @@ class P2Interpolator(DiscreteInterpolator):
         """
         elements = np.arange(0, len(self.support.elements))
         mask = np.ones(self.support.neighbours.shape[0], dtype=bool)
-        if maskall == False:
+        if not maskall:
             mask[:] = np.all(self.support.neighbours > 3, axis=1)
 
         d2 = self.support.evaluate_shape_d2(elements[mask])
@@ -205,7 +202,7 @@ class P2Interpolator(DiscreteInterpolator):
                 np.zeros(d2.shape[0]),
                 idc[:, :],
                 w=wt,
-                name=f"grad_steepness_{i}",
+                name=f"gradsteepness_{i}",
             )
 
     def minimise_edge_jumps(
@@ -228,7 +225,6 @@ class P2Interpolator(DiscreteInterpolator):
         cp, weight = self.support.get_quadrature_points(3)
 
         norm = self.support.shared_element_norm
-        shared_element_size = self.support.shared_element_size
 
         # evaluate normal if using vector func for cp1
         for i in range(cp.shape[1]):
@@ -246,9 +242,7 @@ class P2Interpolator(DiscreteInterpolator):
             const_n_cp = -np.einsum("ij,ijk->ik", norm, cp_Dn)
 
             const_cp = np.hstack([const_t_cp, const_n_cp])
-            tri_cp = np.hstack(
-                [self.support.elements[cp_tri1], self.support.elements[cp_tri2]]
-            )
+            tri_cp = np.hstack([self.support.elements[cp_tri1], self.support.elements[cp_tri2]])
             wt = np.zeros(tri_cp.shape[0])
             wt[:] = w
             if wtfunc:
@@ -267,7 +261,5 @@ class P2Interpolator(DiscreteInterpolator):
         mask = np.any(evaluation_points == np.nan, axis=1)
 
         if evaluation_points[~mask, :].shape[0] > 0:
-            evaluated[~mask] = self.support.evaluate_d2(
-                evaluation_points[~mask], self.c
-            )
+            evaluated[~mask] = self.support.evaluate_d2(evaluation_points[~mask], self.c)
         return evaluated

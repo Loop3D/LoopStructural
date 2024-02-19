@@ -36,9 +36,7 @@ def calculate_fault_intersections(model, threshold=0.001):
     for name in fault_names:
         xyz = model.regular_grid(shuffle=False)
         vals = model[name].evaluate_value(xyz)
-        model.step_vector = (
-            model.bounding_box[1, :] - model.bounding_box[0, :]
-        ) / model.nsteps
+        model.step_vector = (model.bounding_box[1, :] - model.bounding_box[0, :]) / model.nsteps
         try:
 
             verts, faces, normals, values = marching_cubes(
@@ -54,9 +52,7 @@ def calculate_fault_intersections(model, threshold=0.001):
                 continue
             val = model[name2].evaluate_value(model.scale(verts, inplace=False))
 
-            mask = model[name2].inside_volume(
-                model.scale(verts, inplace=False), threshold
-            )
+            mask = model[name2].inside_volume(model.scale(verts, inplace=False), threshold)
             val[~mask] = np.nan
             if np.all(np.isnan(val)):
                 continue

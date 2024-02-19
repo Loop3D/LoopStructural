@@ -1,6 +1,5 @@
 from .model_plotter import BaseModelPlotter
 from ..utils import getLogger
-from ..utils import LoopImportError
 from ..modelling.features import GeologicalFeature
 from matplotlib.colors import to_rgb
 
@@ -24,14 +23,7 @@ class DashView(BaseModelPlotter):
         self.bounding_box = np.array(self.bounding_box)
 
     def _add_surface(
-        self,
-        vertices,
-        faces,
-        name,
-        colour="red",
-        paint_with=None,
-        paint_with_value=None,
-        **kwargs
+        self, vertices, faces, name, colour="red", paint_with=None, paint_with_value=None, **kwargs
     ):
         """Virtual function to be overwritten by subclasses for adding surfaces to the viewer
 
@@ -48,7 +40,6 @@ class DashView(BaseModelPlotter):
         paint_with : GeologicalFeature, optional
             geological feature to evaluate on vertices, by default None
         """
-        point_data = {}
         surfaceval = np.zeros(vertices.shape[0])
         if paint_with_value is not None:
             paint_with = paint_with_value
@@ -56,19 +47,14 @@ class DashView(BaseModelPlotter):
             # add a property to the surface nodes for visualisation
             # calculate the mode value, just to get the most common value
             if isinstance(paint_with, GeologicalFeature):
-                surfaceval[:] = paint_with.evaluate_value(
-                    self.model.scale(vertices, inplace=False)
-                )
+                surfaceval[:] = paint_with.evaluate_value(self.model.scale(vertices, inplace=False))
             if callable(paint_with):
                 surfaceval[:] = paint_with(self.model.scale(vertices))
             if isinstance(paint_with, (float, int)):
                 surfaceval[:] = paint_with
-            point_data = {"surfaceval": surfaceval}
         # write points to paraview, set the point data to the property being painted.
         # TODO allow multiple properties
-        faces = np.hstack(
-            [np.ones((faces.shape[0], 1), dtype=int) + 2, faces]
-        ).flatten()
+        faces = np.hstack([np.ones((faces.shape[0], 1), dtype=int) + 2, faces]).flatten()
         vertices -= self.model.origin
         return {
             "vertices": vertices.flatten(),

@@ -1,7 +1,7 @@
 """
 Base geological interpolator
 """
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod
 from LoopStructural.utils.exceptions import LoopTypeError
 from ..interpolators import InterpolatorType
 import numpy as np
@@ -323,30 +323,17 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         if (
             len(
                 np.unique(
-                    self.get_value_constraints()[
-                        mask(self.get_value_constraints()[:, :3]), 3
-                    ]
+                    self.get_value_constraints()[mask(self.get_value_constraints()[:, :3]), 3]
                 )
             )
             == 1
         ):
             error_code += 1
-            error_string += (
-                "There is only one unique value in the model interpolation support \n"
-            )
+            error_string += "There is only one unique value in the model interpolation support \n"
             error_string += "Try increasing the model bounding box \n"
-        if (
-            len(
-                self.get_norm_constraints()[mask(self.get_norm_constraints()[:, :3]), :]
-            )
-            == 0
-        ):
+        if len(self.get_norm_constraints()[mask(self.get_norm_constraints()[:, :3]), :]) == 0:
             error_code += 1
-            error_string += (
-                "There are no norm constraints in the model interpolation support \n"
-            )
-            error_string += (
-                "Try increasing the model bounding box or adding more data\n"
-            )
+            error_string += "There are no norm constraints in the model interpolation support \n"
+            error_string += "Try increasing the model bounding box or adding more data\n"
         if error_code > 1:
             print(error_string)

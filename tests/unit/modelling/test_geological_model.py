@@ -1,7 +1,5 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
-from LoopStructural.interpolators import PiecewiseLinearInterpolator
-from LoopStructural.interpolators import FiniteDifferenceInterpolator
 import numpy as np
 
 

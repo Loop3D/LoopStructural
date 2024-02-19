@@ -6,7 +6,6 @@ import logging
 import numpy as np
 
 from ._discrete_interpolator import DiscreteInterpolator
-from ..utils import get_vectors
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +43,7 @@ class P1Interpolator(DiscreteInterpolator):
     def add_norm_ctr_pts(self, w=1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
-            grad, elements, inside = self.support.evaluate_shape_derivatives(
-                points[:, :3]
-            )
+            grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
             size = self.support.element_size[elements[inside]]
             wt = np.ones(size.shape[0])
             wt *= w * size
@@ -81,9 +78,7 @@ class P1Interpolator(DiscreteInterpolator):
             )
             self.up_to_date = False
 
-    def minimise_edge_jumps(
-        self, w=0.1, vector_func=None, vector=None, name="edge jump"
-    ):
+    def minimise_edge_jumps(self, w=0.1, vector_func=None, vector=None, name="edge jump"):
         # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
         # flag inidicate which triangles have had all their relationships added
@@ -161,8 +156,7 @@ class P1Interpolator(DiscreteInterpolator):
             #     wtfunc=self.interpolation_weights.get("steepness_wtfunc", None),
             # )
             logger.info(
-                "Using constant gradient regularisation w = %f"
-                % self.interpolation_weights["cgw"]
+                "Using constant gradient regularisation w = %f" % self.interpolation_weights["cgw"]
             )
 
         logger.info(
@@ -196,9 +190,7 @@ class P1Interpolator(DiscreteInterpolator):
 
         """
         if points.shape[0] > 0:
-            grad, elements, inside = self.support.evaluate_shape_derivatives(
-                points[:, :3]
-            )
+            grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
             size = self.support.element_size[elements[inside]]
             wt = np.ones(size.shape[0])
             wt *= w * size
@@ -213,9 +205,7 @@ class P1Interpolator(DiscreteInterpolator):
             vector[norm > 0, :] /= norm[norm > 0, None]
             A = np.einsum("ij,ijk->ik", vector[inside, :3], grad[inside, :, :])
             B = np.zeros(points[inside, :].shape[0]) + B
-            self.add_constraints_to_least_squares(
-                A, B, elements, w=wt, name="gradient orthogonal"
-            )
+            self.add_constraints_to_least_squares(A, B, elements, w=wt, name="gradient orthogonal")
             if np.sum(inside) <= 0:
                 logger.warning(
                     f"{np.sum(~inside)} \
