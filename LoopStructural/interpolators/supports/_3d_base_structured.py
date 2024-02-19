@@ -222,7 +222,7 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         np.ndarray
             N,3 i,j,k indexes of the cell that the point is in
         """
-
+        inside = self.inside(pos)
         pos = self.check_position(pos)
         cell_indexes = np.zeros((pos.shape[0], 3), dtype=int)
 
@@ -232,7 +232,7 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         cell_indexes[:, 0] = x // self.step_vector[None, 0]
         cell_indexes[:, 1] = y // self.step_vector[None, 1]
         cell_indexes[:, 2] = z // self.step_vector[None, 2]
-        return cell_indexes
+        return cell_indexes, inside
 
     def position_to_cell_global_index(self, pos):
         ix, iy, iz = self.position_to_cell_index(pos)
@@ -327,9 +327,8 @@ class BaseStructuredSupport(metaclass=ABCMeta):
         return corner_indexes
 
     def position_to_cell_corners(self, pos):
-        inside = self.inside(pos)
 
-        cell_indexes = self.position_to_cell_index(pos)
+        cell_indexes, inside = self.position_to_cell_index(pos)
         corner_indexes = self.cell_corner_indexes(cell_indexes)
 
         globalidx = self.global_node_indices(corner_indexes)

@@ -271,7 +271,7 @@ class TetMesh(BaseStructuredSupport):
         vertices = np.zeros((pos.shape[0], 5, 4, 3))
         vertices[:] = np.nan
         # get cell indexes
-        cell_indexes = self.position_to_cell_index(pos)
+        cell_indexes, inside = self.position_to_cell_index(pos)
         # determine if using +ve or -ve mask
         even_mask = np.sum(cell_indexes, axis=1) % 2 == 0
         # get cell corners
