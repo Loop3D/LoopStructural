@@ -2,9 +2,7 @@ from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
 from LoopStructural.utils.typing import NumericInput
 
-# from LoopStructural import GeologicalModel
 import numpy as np
-from uuid import uuid4
 
 logger = getLogger(__name__)
 

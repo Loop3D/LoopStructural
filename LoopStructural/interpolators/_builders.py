@@ -3,7 +3,6 @@ import numpy as np
 from typing import Optional
 from LoopStructural.interpolators import (
     P1Interpolator,
-    P1Interpolator,
     P2Interpolator,
     FiniteDifferenceInterpolator,
     GeologicalInterpolator,

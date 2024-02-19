@@ -415,7 +415,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         b = []
         rows = []
         cols = []
-        for name, c in self.constraints.items():
+        for c in self.constraints.values():
             if len(c["w"]) == 0:
                 continue
             aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
