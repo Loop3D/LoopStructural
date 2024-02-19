@@ -190,5 +190,6 @@ class BoundingBox:
             [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
         ).T
         if shuffle:
+            # logger.info("Shuffling points")
             rng.shuffle(locs)
         return locs

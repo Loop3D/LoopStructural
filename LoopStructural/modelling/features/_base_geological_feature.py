@@ -187,15 +187,12 @@ class BaseFeature:
         np.ndarray
             faulted value Nx1 ndarray
         """
-        axis = None
-        angle = None
+
         if self.faults_enabled:
             # check faults
             for f in self.faults:
-                evaluation_points, axis, angle = f.apply_to_points(
-                    evaluation_points, reverse=reverse
-                )
-        return evaluation_points, axis, angle
+                evaluation_points = f.apply_to_points(evaluation_points, reverse=reverse)
+        return evaluation_points
 
     def evaluate_gradient(self, pos):
         """

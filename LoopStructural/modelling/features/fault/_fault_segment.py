@@ -308,13 +308,8 @@ class FaultSegment(StructuralFrame):
         d *= self.displacement
         if reverse:
             d *= -1.0
-        # calculate the anglee and vector to rotate the points
-        axis = np.zeros((points.shape[0], steps, 3))
-        axis[:] = np.nan
-        angle = np.zeros((points.shape[0], steps))
-        angle[:] = np.nan
         # calculate the fault frame for the evaluation points
-        for i in range(steps):
+        for _i in range(steps):
             gx = None
             gy = None
             gz = None
@@ -363,15 +358,73 @@ class FaultSegment(StructuralFrame):
             # newp[mask, :].copy()
             # apply displacement
             newp[mask, :] += g
-            # axis[mask, i, :] = np.cross(prev_p, newp[mask, :], axisa=1, axisb=1)
-            # angle[mask, i] = 2 * np.arctan(
-            #     0.5 * (np.linalg.norm(prev_p - newp[mask, :], axis=1))
-            # )
-            # calculate the angle between the previous and new points
-            # and the axis of rotation
-            # g /= np.linalg.norm(g, axis=1)[:, None]
-            axis[mask, i, :] /= np.linalg.norm(axis[mask, i, :], axis=1)[:, None]
-        return newp, axis, angle
+
+        return newp
+
+    def apply_to_vectors(self, vector: np.ndarray, scale_parameter: float = 1.0) -> np.ndarray:
+        """Rotates the vector through the fault displacement field
+
+        Parameters
+        ----------
+        vector : np.ndarray
+            Nx6 array of vectors x,y,z,vx,vy,vz
+        """
+
+        # define a regular tetrahedron as a mask to apply to every vector observation.
+        # the regular tetrahedron is located at the location of the vector datapoint
+        # and the corner values of the tetrahedron are defined by setting the barycenter
+        # of the tetrahedron as 0 and then using the vector to calculate the values of the
+        # corner assuming the tetra is a P1 tetra with a linear gradient.
+        # a scaling parameter is used to determine the size of the tetrahedron
+        # the nodes of the tetrahedron are then restored by the fault and then gradient is
+        # recalculated using the updated node positions but the original corner values
+
+        regular_tetrahedron = np.array(
+            [
+                [np.sqrt(8 / 9), 0, -1 / 3],
+                [-np.sqrt(2 / 9), np.sqrt(2 / 3), -1 / 3],
+                [-np.sqrt(2 / 9), -np.sqrt(2 / 3), -1 / 3],
+                [0, 0, 1],
+            ]
+        )
+        regular_tetrahedron *= scale_parameter
+        xyz = vector[:, :3]
+        tetrahedron = np.zeros((xyz.shape[0], 4, 3))
+        tetrahedron[:] = xyz[:, None, :]
+        tetrahedron[:, :, :] += regular_tetrahedron[None, :, :]
+
+        vectors = vector[:, 3:]
+        corners = np.einsum('ikj,ij->ik', tetrahedron - xyz[:, None, :], vectors)
+        tetrahedron = tetrahedron.reshape(-1, 3)
+        tetrahedron = self.apply_to_points(tetrahedron)
+        tetrahedron = tetrahedron.reshape(-1, 4, 3)
+        m = np.array(
+            [
+                [
+                    (tetrahedron[:, 1, 0] - tetrahedron[:, 0, 0]),
+                    (tetrahedron[:, 1, 1] - tetrahedron[:, 0, 1]),
+                    (tetrahedron[:, 1, 2] - tetrahedron[:, 0, 2]),
+                ],
+                [
+                    (tetrahedron[:, 2, 0] - tetrahedron[:, 0, 0]),
+                    (tetrahedron[:, 2, 1] - tetrahedron[:, 0, 1]),
+                    (tetrahedron[:, 2, 2] - tetrahedron[:, 0, 2]),
+                ],
+                [
+                    (tetrahedron[:, 3, 0] - tetrahedron[:, 0, 0]),
+                    (tetrahedron[:, 3, 1] - tetrahedron[:, 0, 1]),
+                    (tetrahedron[:, 3, 2] - tetrahedron[:, 0, 2]),
+                ],
+            ]
+        )
+        I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
+        m = np.swapaxes(m, 0, 2)
+        element_gradients = np.linalg.inv(m)
+
+        element_gradients = element_gradients.swapaxes(1, 2)
+        element_gradients = element_gradients @ I
+        v = np.sum(element_gradients * corners, axis=2)
+        return v
 
     def add_abutting_fault(self, abutting_fault_feature, positive=None):
 
