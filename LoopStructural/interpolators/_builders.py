@@ -10,7 +10,7 @@ from LoopStructural.interpolators import (
     StructuredGrid,
     TetMesh,
 )
-from LoopStructural.utils import BoundingBox
+from LoopStructural.datatypes import BoundingBox
 from LoopStructural.utils.logging import getLogger
 
 logger = getLogger(__name__)
