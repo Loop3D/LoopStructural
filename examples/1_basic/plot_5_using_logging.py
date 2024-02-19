@@ -87,7 +87,6 @@ from LoopStructural.visualisation import LavaVuModelViewer
 from LoopStructural.datasets import load_claudius  # demo data
 
 
-
 data, bb = load_claudius()
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)

@@ -4,6 +4,7 @@
 Creating a model with multiple geological features, dealing with unconformities.
 
 """
+
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
 from LoopStructural.visualisation import LavaVuModelViewer

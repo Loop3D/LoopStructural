@@ -60,7 +60,7 @@ fault = model.create_and_add_fault(
 viewer = LavaVuModelViewer(model)
 viewer.add_isosurface(
     fault,
-    isovalue=0
+    isovalue=0,
     #                       slices=[0,1]#nslices=10
 )
 xyz = model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].to_numpy()
@@ -92,7 +92,7 @@ viewer.add_isosurface(strati, isovalue=0)
 viewer.add_data(strati)
 viewer.add_isosurface(
     fault,
-    isovalue=0
+    isovalue=0,
     #                       slices=[0,1]#nslices=10
 )
 viewer.add_points(

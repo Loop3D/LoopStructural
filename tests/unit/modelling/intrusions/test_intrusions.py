@@ -1,4 +1,3 @@
-
 # Loop library
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
