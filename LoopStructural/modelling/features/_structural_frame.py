@@ -1,6 +1,7 @@
 """
 Structural frames
 """
+
 from ..features import BaseFeature
 import numpy as np
 from ...utils import getLogger

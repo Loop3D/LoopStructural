@@ -4,7 +4,8 @@ from .. import AnalyticalGeologicalFeature
 from LoopStructural.utils import get_vectors
 import numpy as np
 import pandas as pd
-from ....utils import getLogger, BoundingBox
+from ....utils import getLogger
+from ....datatypes import BoundingBox
 
 logger = getLogger(__name__)
 

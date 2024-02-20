@@ -13,6 +13,7 @@ Once you have the correct file for your system you will need to add an environme
 to windows :code:`SURFE`
 
 """
+
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
 

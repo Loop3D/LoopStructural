@@ -1,6 +1,7 @@
 from LoopStructural.interpolators import StructuredGrid
 import numpy as np
 
+
 ## structured grid tests
 def test_create_support(support):
     """
@@ -59,7 +60,7 @@ def test_outside_box(support):
     inside = support.inside(support.barycentre - 5)
     assert np.all(~inside == np.any((support.barycentre - 5) < support.origin, axis=1))
 
-    cell_indexes = support.position_to_cell_index(support.barycentre - 5)
+    cell_indexes, inside = support.position_to_cell_index(support.barycentre - 5)
     assert np.all(cell_indexes[inside, 0] < support.nsteps_cells[0])
     assert np.all(cell_indexes[inside, 1] < support.nsteps_cells[1])
     assert np.all(cell_indexes[inside, 2] < support.nsteps_cells[2])
@@ -136,10 +137,6 @@ def test_node_index_to_position(support):
 
 def test_global_index_to_cell_index(support):
     assert np.sum(support.global_index_to_cell_index(np.array([0])) - np.array([0, 0, 0])) == 0
-
-
-# def test_get_elements(support):
-#     pass
 
 
 def test_global_index(support):

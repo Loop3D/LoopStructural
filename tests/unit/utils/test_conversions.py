@@ -2,7 +2,6 @@ from LoopStructural.utils import strikedip2vector, azimuthplunge2vector
 import numpy as np
 
 
-
 def test_strikedip2vector():
     strike = [0, 45, 90]
     dip = [30, 60, 90]

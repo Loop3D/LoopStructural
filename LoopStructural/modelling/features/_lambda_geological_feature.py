@@ -1,6 +1,7 @@
 """
 Geological features
 """
+
 from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
