@@ -22,9 +22,13 @@ class P1Unstructured2d(BaseUnstructured2d):
         """
         compute dN/ds (1st row), dN/dt(2nd row)
         """
+        inside = None
+        if elements is not None:
+            inside = np.zeros(self.n_elements, dtype=bool)
+            inside[elements] = True
         locations = np.array(locations)
         if elements is None:
-            c, tri = self.get_element_for_location(locations)
+            vertices, c, tri, inside = self.get_element_for_location(locations)
         else:
             tri = elements
             M = np.ones((elements.shape[0], 3, 3))
@@ -53,12 +57,12 @@ class P1Unstructured2d(BaseUnstructured2d):
         d_n = d_n @ dN
         d_n = d_n.swapaxes(2, 1)
         # d_n = np.dot(np.linalg.inv(jac),dN)
-        return d_n, tri
+        return d_n, tri, inside
 
     def evaluate_shape(self, locations):
         locations = np.array(locations)
-        c, tri = self.get_element_for_location(locations)
+        vertices, c, tri, inside = self.get_element_for_location(locations)
         # c = np.dot(np.array([1,x,y]),np.linalg.inv(M)) # convert to barycentric coordinates
         # order of bary coord is (1-s-t,s,t)
         N = c  # np.zeros((c.shape[0],3)) #evaluate shape functions at barycentric coordinates
-        return N, tri
+        return N, tri, inside
