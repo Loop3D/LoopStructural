@@ -65,7 +65,7 @@ jobs:
     needs: documentation-test
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@4
+      - uses: GoogleCloudPlatform/release-please-action@v4
         id: release
         with:
           release-type: python
