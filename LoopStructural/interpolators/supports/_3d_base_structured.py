@@ -1,5 +1,5 @@
 from LoopStructural.utils.exceptions import LoopException
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 import numpy as np
 from LoopStructural.utils import getLogger
 from . import SupportType

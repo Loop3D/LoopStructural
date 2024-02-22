@@ -225,7 +225,7 @@ class BaseUnstructured2d(BaseSupport):
         """
         values = np.zeros(evaluation_points.shape)
         values[:] = np.nan
-        element_gradients, tri, inside = self.evaluate_shape_derivatives(pos[:, :2])
+        element_gradients, tri, inside = self.evaluate_shape_derivatives(evaluation_points[:, :2])
         inside = tri >= 0
 
         values[inside, :] = (

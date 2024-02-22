@@ -162,7 +162,7 @@ class P2Unstructured2d(BaseUnstructured2d):
         jac = jac * jac
 
         d2_prod = np.einsum("lij,ik->lik", jac, self.hN)
-        d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
+        # d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
         xxConst = d2_prod[:, 0, :]
         yyConst = d2_prod[:, 1, :]
 
