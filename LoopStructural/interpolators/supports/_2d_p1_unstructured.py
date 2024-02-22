@@ -55,7 +55,7 @@ class P1Unstructured2d(BaseUnstructured2d):
         d_n = np.linalg.inv(jac)
         #         d_n = d_n.swapaxes(1,2)
         d_n = d_n @ dN
-        d_n = d_n.swapaxes(2, 1)
+        # d_n = d_n.swapaxes(2, 1)
         # d_n = np.dot(np.linalg.inv(jac),dN)
         return d_n, tri, inside
 
