@@ -121,7 +121,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.assemble_inner(operator, weight)
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
-        self.add_vaue_constraints(self.interpolation_weights["cpw"])
+        self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         self.add_interface_constraints(self.interpolation_weights["ipw"])
         self.add_inequality_constraints()
@@ -136,7 +136,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         return FiniteDifferenceInterpolator(self.support)
 
-    def add_vaue_constraints(self, w=1.0):
+    def add_value_constraints(self, w=1.0):
         """
 
         Parameters
