@@ -274,6 +274,26 @@ class GeologicalInterpolator(metaclass=ABCMeta):
     def reset(self):
         pass
 
+    @abstractmethod
+    def add_value_constraints(self, w: float = 1.0):
+        pass
+
+    @abstractmethod
+    def add_gradient_constraints(self, w: float = 1.0):
+        pass
+
+    @abstractmethod
+    def add_norm_constraints(self, w: float = 1.0):
+        pass
+
+    @abstractmethod
+    def add_tangent_constraints(self, w: float = 1.0):
+        pass
+
+    @abstractmethod
+    def add_interface_constraints(self, w: float = 1.0):
+        pass
+
     def to_dict(self):
         return {
             "type": self.type,
