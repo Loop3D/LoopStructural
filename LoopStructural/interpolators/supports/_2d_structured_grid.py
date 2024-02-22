@@ -76,7 +76,7 @@ class StructuredGrid2D(BaseSupport):
     # def barycentre(self):
     #     return self.cell_centres(np.arange(self.n_elements))
     @property
-    def elements(self):
+    def elements(self) -> np.ndarray:
         global_index = np.arange(self.n_elements)
         cell_indexes = self.global_index_to_cell_index(global_index)
 
@@ -90,7 +90,7 @@ class StructuredGrid2D(BaseSupport):
         max = self.origin + self.nsteps_cells * self.step_vector
         print("Max extent: %f %f %f" % (max[0], max[1], max[2]))
 
-    def cell_centres(self, global_index):
+    def cell_centres(self, global_index: np.ndarray) -> np.ndarray:
         """[summary]
 
         [extended_summary]
@@ -120,7 +120,7 @@ class StructuredGrid2D(BaseSupport):
         )
         return cell_centres
 
-    def position_to_cell_index(self, pos):
+    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """[summary]
 
         [extended_summary]
@@ -142,7 +142,7 @@ class StructuredGrid2D(BaseSupport):
         cell_indexes /= self.step_vector[None, :]
         return cell_indexes.astype(int), inside
 
-    def inside(self, pos):
+    def inside(self, pos: np.ndarray) -> np.ndarray:
         # check whether point is inside box
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(self.dim):
@@ -153,7 +153,7 @@ class StructuredGrid2D(BaseSupport):
             )
         return inside
 
-    def check_position(self, pos):
+    def check_position(self, pos: np.ndarray) -> np.ndarray:
         """[summary]
 
         [extended_summary]
@@ -176,7 +176,7 @@ class StructuredGrid2D(BaseSupport):
 
         return pos
 
-    def bilinear(self, local_coords):
+    def bilinear(self, local_coords: np.ndarray) -> np.ndarray:
         """
         returns the bilinear interpolation for the local coordinates
         Parameters
@@ -199,7 +199,7 @@ class StructuredGrid2D(BaseSupport):
             ]
         )
 
-    def position_to_local_coordinates(self, pos):
+    def position_to_local_coordinates(self, pos: np.ndarray) -> np.ndarray:
         """
         Convert from global to local coordinates within a cel
         Parameters
@@ -224,7 +224,7 @@ class StructuredGrid2D(BaseSupport):
 
         return local_coords
 
-    def position_to_dof_coefs(self, pos):
+    def position_to_dof_coefs(self, pos: np.ndarray):
         """
         global posotion to interpolation coefficients
         Parameters
