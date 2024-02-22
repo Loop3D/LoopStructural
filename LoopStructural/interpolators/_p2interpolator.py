@@ -3,7 +3,7 @@ Piecewise linear interpolator
 """
 
 import logging
-from typing import Optional
+from typing import Optional, Callable
 
 import numpy as np
 
@@ -92,7 +92,7 @@ class P2Interpolator(DiscreteInterpolator):
     def copy(self):
         return P2Interpolator(self.support)
 
-    def add_gradient_constraints(self, w=1.0):
+    def add_gradient_constraints(self, w: float = 1.0):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
             grad, elements = self.support.evaluate_shape_derivatives(points[:, :3])
@@ -105,7 +105,9 @@ class P2Interpolator(DiscreteInterpolator):
             elements = self.support[elements[inside]]
             self.add_constraints_to_least_squares(A * wt[:, None], B, elements, name="gradient")
 
-    def add_gradient_orthogonal_constraints(self, points, vector, w=1.0, B=0):
+    def add_gradient_orthogonal_constraints(
+        self, points: np.ndarray, vector: np.ndarray, w=1.0, B=0
+    ):
         """
         constraints scalar field to be orthogonal to a given vector
 
@@ -133,7 +135,7 @@ class P2Interpolator(DiscreteInterpolator):
                 A * wt[:, None], B, elements, name="gradient orthogonal"
             )
 
-    def add_norm_constraints(self, w=1.0):
+    def add_norm_constraints(self, w: float = 1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
             grad, elements = self.support.evaluate_shape_derivatives(points[:, :3])
@@ -150,7 +152,7 @@ class P2Interpolator(DiscreteInterpolator):
                 name="norm",
             )
 
-    def add_value_constraints(self, w=1.0):
+    def add_value_constraints(self, w: float = 1.0):
         points = self.get_value_constraints()
         if points.shape[0] > 1:
             N, elements, mask = self.support.evaluate_shape(points[:, :3])
@@ -167,7 +169,10 @@ class P2Interpolator(DiscreteInterpolator):
             )
 
     def minimise_grad_steepness(
-        self, w: float = 0.1, maskall: bool = False, wtfunc: Optional[callable] = None
+        self,
+        w: float = 0.1,
+        maskall: bool = False,
+        wtfunc: Optional[Callable[[np.ndarray], np.ndarray]] = None,
     ):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions
@@ -206,7 +211,11 @@ class P2Interpolator(DiscreteInterpolator):
             )
 
     def minimise_edge_jumps(
-        self, w: float = 0.1, wtfunc: callable = None, vector_func: callable = None
+        self,
+        w: float = 0.1,
+        wtfunc: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        vector_func: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        quadrature_points: Optional[int] = None,
     ):
         """_summary_
 
@@ -222,7 +231,7 @@ class P2Interpolator(DiscreteInterpolator):
         # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
 
-        cp, weight = self.support.get_quadrature_points(3)
+        cp, weight = self.support.get_quadrature_points()
 
         norm = self.support.shared_element_norm
 
@@ -263,3 +272,6 @@ class P2Interpolator(DiscreteInterpolator):
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.support.evaluate_d2(evaluation_points[~mask], self.c)
         return evaluated
+
+    def add_interface_constraints(self, w: float = 1):
+        raise NotImplementedError
