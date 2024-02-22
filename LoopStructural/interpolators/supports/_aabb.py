@@ -23,8 +23,6 @@ def _initialise_aabb(grid):
     # coordinate. Use these to check whether the tetra is in the cell
     x_boundary = positions[:, [0, 1], 0]
     y_boundary = positions[:, [0, 2], 1]
-    print(x_boundary.shape, minx.shape)
-    print(grid.aabb_grid.nsteps)
     a = np.logical_and(
         minx[None, :] > x_boundary[:, None, 0],
         minx[None, :] < x_boundary[:, None, 1],
