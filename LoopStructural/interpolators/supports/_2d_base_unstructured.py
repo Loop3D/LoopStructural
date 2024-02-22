@@ -10,28 +10,27 @@ from scipy import sparse
 
 from . import SupportType
 from ._2d_structured_grid import StructuredGrid2D
+from ._base_support import BaseSupport
 from ._aabb import _initialise_aabb
 from ._face_table import _init_face_table
 
 logger = logging.getLogger(__name__)
 
 
-class BaseUnstructured2d:
+class BaseUnstructured2d(BaseSupport):
     """ """
 
     dimension = 2
 
     def __init__(self, elements, vertices, neighbours, aabb_nsteps=None):
         self.type = SupportType.BaseUnstructured2d
-        self.elements = elements
+        self._elements = elements
         self.vertices = vertices
         if self.elements.shape[1] == 3:
             self.order = 1
         elif self.elements.shape[1] == 6:
             self.order = 2
-        self.n_elements = self.elements.shape[0]
         self.nx = self.vertices.shape[0]
-        self.n_nodes = self.nx
         self.neighbours = neighbours
         self.minimum = np.min(self.nodes, axis=0)
         self.maximum = np.max(self.nodes, axis=0)
@@ -65,6 +64,32 @@ class BaseUnstructured2d:
 
         _init_face_table(self)
         _initialise_aabb(self)
+
+    @property
+    def elements(self):
+        return self._elements
+
+    def onGeometryChange(self):
+        pass
+
+    @property
+    def n_elements(self):
+        return self.elements.shape[0]
+
+    @property
+    def n_nodes(self):
+        return self.vertices.shape[0]
+
+    def inside(self, pos):
+        if pos.shape[1] > self.dimension:
+            logger.warning(f"Converting {pos.shape[1]} to 3d using first {self.dimension} columns")
+            pos = pos[:, : self.dimension]
+
+        inside = np.ones(pos.shape[0]).astype(bool)
+        for i in range(self.dimension):
+            inside *= pos[:, i] > self.origin[None, i]
+            inside *= pos[:, i] < self.maximum[None, i]
+        return inside
 
     @property
     def ncps(self):
@@ -156,7 +181,7 @@ class BaseUnstructured2d:
         area = np.abs(np.linalg.det(M_t)) * 0.5
         return area
 
-    def evaluate_value(self, pos: np.ndarray, values: np.ndarray):
+    def evaluate_value(self, evaluation_points: np.ndarray, property_array: np.ndarray):
         """
         Evaluate value of interpolant
 
@@ -171,16 +196,18 @@ class BaseUnstructured2d:
         -------
 
         """
-        pos = np.asarray(pos)
+        pos = np.asarray(evaluation_points)
         return_values = np.zeros(pos.shape[0])
         return_values[:] = np.nan
         _verts, c, tri, inside = self.get_element_for_location(pos[:, :2])
         inside = tri >= 0
         # vertices, c, elements, inside = self.get_elements_for_location(pos)
-        return_values[inside] = np.sum(c[inside, :] * values[self.elements[tri[inside], :]], axis=1)
+        return_values[inside] = np.sum(
+            c[inside, :] * property_array[self.elements[tri[inside], :]], axis=1
+        )
         return return_values
 
-    def evaluate_gradient(self, pos, property_array):
+    def evaluate_gradient(self, evaluation_points, property_array):
         """
         Evaluate the gradient of an interpolant at the locations
 
@@ -196,7 +223,7 @@ class BaseUnstructured2d:
         -------
 
         """
-        values = np.zeros(pos.shape)
+        values = np.zeros(evaluation_points.shape)
         values[:] = np.nan
         element_gradients, tri, inside = self.evaluate_shape_derivatives(pos[:, :2])
         inside = tri >= 0
@@ -239,12 +266,11 @@ class BaseUnstructured2d:
             row = tetra_indices.row
             col = tetra_indices.col
             # using returned indexes calculate barycentric coords to determine which tetra the points are in
-            vertices = self.nodes[self.elements[col, :4]]
+            vertices = self.nodes[self.elements[col, : self.dimension + 1]]
             pos = points[row, : self.dimension]
             row = tetra_indices.row
             col = tetra_indices.col
             # using returned indexes calculate barycentric coords to determine which tetra the points are in
-            vertices = self.nodes[self.elements[col, :4]]
             vpa = pos[:, :] - vertices[:, 0, :]
             vba = vertices[:, 1, :] - vertices[:, 0, :]
             vca = vertices[:, 2, :] - vertices[:, 0, :]
@@ -268,6 +294,23 @@ class BaseUnstructured2d:
             npts += npts_step
         tetra_return = np.zeros((points.shape[0])).astype(int)
         tetra_return[:] = -1
-
         tetra_return[inside] = tetras[inside]
         return verts, bc, tetra_return, inside
+
+    def get_element_gradient_for_location(
+        self, pos: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Get the element gradients for a location
+
+        Parameters
+        ----------
+        pos : np.array
+            location to evaluate
+
+        Returns
+        -------
+
+        """
+        verts, c, tri, inside = self.get_element_for_location(pos)
+        return self.evaluate_shape_derivatives(pos, tri)
