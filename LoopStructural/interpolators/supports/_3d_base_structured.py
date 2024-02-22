@@ -6,9 +6,13 @@ from . import SupportType
 
 logger = getLogger(__name__)
 
+from ._base_support import BaseSupport
 
-class BaseStructuredSupport(metaclass=ABCMeta):
+
+class BaseStructuredSupport(BaseSupport):
     """ """
+
+    dimension = 3
 
     def __init__(
         self,

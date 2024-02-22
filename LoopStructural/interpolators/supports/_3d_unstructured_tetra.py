@@ -10,12 +10,15 @@ from scipy.sparse import csr_matrix, coo_matrix, tril
 from . import StructuredGrid
 from LoopStructural.utils import getLogger
 from . import SupportType
+from ._base_support import BaseSupport
 
 logger = getLogger(__name__)
 
 
-class UnStructuredTetMesh:
+class UnStructuredTetMesh(BaseSupport):
     """ """
+
+    dimension = 3
 
     def __init__(
         self,
