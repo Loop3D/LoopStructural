@@ -106,8 +106,8 @@ class GeologicalInterpolator(metaclass=ABCMeta):
 
         """
         points = self.check_array(points)
-        if points.shape[1] < 4:
-            raise ValueError("Value points must at least have X,Y,Z,val")
+        if points.shape[1] < 5:
+            raise ValueError("Value points must at least have X,Y,Z,val,w")
         self.data["value"] = points
         self.n_i = points.shape[0]
         self.up_to_date = False
@@ -172,8 +172,18 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.data["interface"] = points
         self.up_to_date = False
 
-    def set_inequality_constraints(self, points: np.ndarray):
+    def set_value_inequality_constraints(self, points: np.ndarray):
+        if points.shape[1] < 5:
+            raise ValueError("Inequality constraints must at least have X,Y,Z,lower,upper")
         self.data["inequality"] = points
+        self.up_to_date = False
+
+    def set_inequality_pairs_constraints(self, pointsa: np.ndarray, pointsb: np.ndarray):
+        if pointsa.shape[1] < 3:
+            raise ValueError("Inequality pairs constraints must at least have X,Y,Z")
+        if pointsb.shape[1] < 3:
+            raise ValueError("Inequality pairs constraints must at least have X,Y,Z")
+        self.data["inequality_pairs"] = {"a": pointsa, "b": pointsb}
         self.up_to_date = False
 
     def get_value_constraints(self):
