@@ -443,6 +443,10 @@ class BaseStructuredSupport(BaseSupport):
         return self._global_indicies(indexes, self.nsteps_cells)
 
     @property
+    def element_size(self):
+        return np.prod(self.step_vector)
+
+    @property
     def vtk(self):
         try:
             import pyvista as pv

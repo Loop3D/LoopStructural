@@ -69,6 +69,10 @@ class StructuredGrid2D(BaseSupport):
         return self.nsteps_cells[0] * self.nsteps_cells[1]
 
     @property
+    def element_size(self):
+        return np.prod(self.step_vector)
+
+    @property
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))
 
@@ -190,6 +194,7 @@ class StructuredGrid2D(BaseSupport):
         array of interpolation coefficients
 
         """
+
         return np.array(
             [
                 (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]),
@@ -197,7 +202,7 @@ class StructuredGrid2D(BaseSupport):
                 (1 - local_coords[:, 0]) * local_coords[:, 1],
                 local_coords[:, 0] * local_coords[:, 1],
             ]
-        )
+        ).T
 
     def position_to_local_coordinates(self, pos: np.ndarray) -> np.ndarray:
         """
@@ -320,6 +325,12 @@ class StructuredGrid2D(BaseSupport):
         cell_indexes[:, 1] = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
         return cell_indexes
 
+    def global_index_to_node_index(self, global_index):
+        cell_indexes = np.zeros((global_index.shape[0], 2), dtype=np.int64)
+        cell_indexes[:, 0] = global_index % self.nsteps[0, None]
+        cell_indexes[:, 1] = global_index // self.nsteps[0, None] % self.nsteps[1, None]
+        return cell_indexes
+
     def _global_indices(self, indexes: np.ndarray, nsteps: np.ndarray) -> np.ndarray:
         if len(indexes.shape) == 1:
             raise ValueError("Indexes must be a 2D array")
@@ -372,7 +383,7 @@ class StructuredGrid2D(BaseSupport):
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
 
-        v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :]).T
+        v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :])
         v[inside, :] *= property_array[idc[inside, :]]
         return np.sum(v, axis=1)
 
@@ -442,7 +453,8 @@ class StructuredGrid2D(BaseSupport):
             vertices, inside
         """
         gi, inside = self.position_to_cell_corners(pos)
-        node_indexes = self.global_node_indices(gi)
+
+        node_indexes = self.global_index_to_node_index(gi.flatten())
         return self.node_indexes_to_position(node_indexes), inside
 
     def onGeometryChange(self):

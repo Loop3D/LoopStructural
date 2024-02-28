@@ -104,3 +104,11 @@ class BaseSupport(metaclass=ABCMeta):
         Return the number of dimensions
         """
         pass
+
+    @property
+    @abstractmethod
+    def element_size(self):
+        """
+        Return the element size
+        """
+        pass
