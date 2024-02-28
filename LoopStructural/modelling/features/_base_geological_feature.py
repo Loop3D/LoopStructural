@@ -1,13 +1,15 @@
+from abc import ABCMeta, abstractmethod
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
 from LoopStructural.utils.typing import NumericInput
+
 
 import numpy as np
 
 logger = getLogger(__name__)
 
 
-class BaseFeature:
+class BaseFeature(metaclass=ABCMeta):
     """
     Base class for geological features.
     """
@@ -33,12 +35,34 @@ class BaseFeature:
         self.name = name
         self.type = FeatureType.BASE
         self.regions = regions
-        self.faults = faults
+        self._faults = []
+        if faults:
+            self.faults = faults
         self._model = model
         self.builder = builder
         self.faults_enabled = True
         self._min = None
         self._max = None
+
+    @property
+    def faults(self):
+        return self._faults
+
+    @faults.setter
+    def faults(self, faults: list):
+        _faults = []
+        try:
+            for f in faults:
+                if not issubclass(type(f), BaseFeature):
+                    raise TypeError("Faults must be a list of BaseFeature")
+                _faults.append(f)
+        except TypeError:
+            logger.error(
+                f'Faults must be a list of BaseFeature \n Trying to set using {type(faults)}'
+            )
+            raise TypeError("Faults must be a list of BaseFeature")
+
+        self._faults = _faults
 
     def to_json(self):
         """
@@ -135,6 +159,7 @@ class BaseFeature:
         """
         return self.evaluate_value(xyz)
 
+    @abstractmethod
     def evaluate_value(self, pos):
         """
         Evaluate the feature at a given position.
@@ -194,6 +219,7 @@ class BaseFeature:
                 evaluation_points = f.apply_to_points(evaluation_points, reverse=reverse)
         return evaluation_points
 
+    @abstractmethod
     def evaluate_gradient(self, pos):
         """
         Evaluate the gradient of the feature at a given position.
