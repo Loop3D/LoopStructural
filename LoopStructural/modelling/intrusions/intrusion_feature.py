@@ -228,7 +228,11 @@ class IntrusionFeature(BaseFeature):
 
         return threshold_values, residual_values, conceptual_values
 
-    def evaluate_value(self, points):
+    def evaluate_gradient(self, pos):
+        ## LG TODO check whether it can be implemented
+        raise NotImplementedError("Cannot calculate gradient of Intrusion")
+
+    def evaluate_value(self, pos):
         """
         Computes a distance scalar field to the intrusion contact (isovalue = 0).
 
@@ -249,7 +253,7 @@ class IntrusionFeature(BaseFeature):
         intrusion_coord2_pts = self.intrusion_frame[2].evaluate_value(points)
 
         self.evaluated_points = [
-            points,
+            pos,
             intrusion_coord0_pts,
             intrusion_coord1_pts,
             intrusion_coord2_pts,
@@ -276,7 +280,7 @@ class IntrusionFeature(BaseFeature):
         if len(self.assisting_faults) > 0:
             fault = self.assisting_faults.get("structure")
             weight = self.assisting_faults.get("asymmetry_weight", 1)
-            evaluation_points_in_fault = fault[0].evaluate_value(points)
+            evaluation_points_in_fault = fault[0].evaluate_value(pos)
             c0_maxside_threshold[evaluation_points_in_fault >= 0] = (
                 c0_maxside_threshold[evaluation_points_in_fault >= 0] * weight
             )
