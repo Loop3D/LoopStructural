@@ -248,9 +248,9 @@ class IntrusionFeature(BaseFeature):
         self.builder.up_to_date()
 
         # compute coordinates values for each evaluated point
-        intrusion_coord0_pts = self.intrusion_frame[0].evaluate_value(points)
-        intrusion_coord1_pts = self.intrusion_frame[1].evaluate_value(points)
-        intrusion_coord2_pts = self.intrusion_frame[2].evaluate_value(points)
+        intrusion_coord0_pts = self.intrusion_frame[0].evaluate_value(pos)
+        intrusion_coord1_pts = self.intrusion_frame[1].evaluate_value(pos)
+        intrusion_coord2_pts = self.intrusion_frame[2].evaluate_value(pos)
 
         self.evaluated_points = [
             pos,
