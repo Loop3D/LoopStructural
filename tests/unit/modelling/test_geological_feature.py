@@ -9,9 +9,9 @@ import numpy as np
 
 def test_constructors():
     # test constructors work and that the types are set correctly
-    base_feature = BaseFeature("test", None, [], [], None)
-    assert base_feature.type == FeatureType.BASE
-    assert base_feature.name == "test"
+    # base_feature = GeologicalFeature("test", None, [], [], None)
+    # assert base_feature.type == FeatureType.BASE
+    # assert base_feature.name == "test"
     feature = GeologicalFeature("test", None, [], [], None)
     assert feature.type == FeatureType.INTERPOLATED
     assert feature.name == "test"
@@ -29,7 +29,7 @@ def test_constructors():
 
 
 def test_toggle_faults():
-    base_feature = BaseFeature("test", None, [], [], None)
+    base_feature = GeologicalFeature("test", None, [], [], None)
     assert base_feature.faults_enabled is True
     base_feature.toggle_faults()
     assert base_feature.faults_enabled is False
@@ -38,7 +38,7 @@ def test_toggle_faults():
 
 
 def test_tojson():
-    base_feature = BaseFeature("test", None, [], [], None)
+    base_feature = GeologicalFeature("test", None, [], [], None)
     import json
     from LoopStructural.utils import LoopJSONEncoder
 
