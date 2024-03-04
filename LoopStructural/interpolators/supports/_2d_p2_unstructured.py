@@ -41,130 +41,130 @@ class P2Unstructured2d(BaseUnstructured2d):
         )
         jac = np.linalg.inv(jac)
         dxy = (
-            self.H[None, 0, 1, :] * jac[:, 0, 0] * jac[:, 1, 1]
-            + self.H[None, 0, 1, :] * jac[:, 1, 0] * jac[:, 0, 1]
-            + self.H[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 1]
-            + self.H[None, 1, 1, :] * jac[:, 1, 0] * jac[:, 1, 1]
+            self.hessian[None, 0, 1, :] * jac[:, 0, 0] * jac[:, 1, 1]
+            + self.hessian[None, 0, 1, :] * jac[:, 1, 0] * jac[:, 0, 1]
+            + self.hessian[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 1]
+            + self.hessian[None, 1, 1, :] * jac[:, 1, 0] * jac[:, 1, 1]
         )
         dxx = (
-            self.H[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 0]
-            + jac[:, 0, 0] * jac[:, 1, 0] * self.H[None, 0, 1, :]
-            + jac[:, 1, 0] * jac[:, 1, 0] * self.H[None, 1, 1]
+            self.hessian[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 0]
+            + jac[:, 0, 0] * jac[:, 1, 0] * self.hessian[None, 0, 1, :]
+            + jac[:, 1, 0] * jac[:, 1, 0] * self.hessian[None, 1, 1]
         )
         dyy = (
-            self.H[None, 0, 0, :] * jac[:, 1, 0] * jac[:, 1, 0]
-            + jac[:, 1, 0] * jac[:, 1, 1] * self.H[None, 0, 1, :]
-            + jac[:, 1, 1] * jac[:, 1, 1] * self.H[None, 1, 1]
+            self.hessian[None, 0, 0, :] * jac[:, 1, 0] * jac[:, 1, 0]
+            + jac[:, 1, 0] * jac[:, 1, 1] * self.hessian[None, 0, 1, :]
+            + jac[:, 1, 1] * jac[:, 1, 1] * self.hessian[None, 1, 1]
         )
         return dxx, dyy, dxy
 
-    #     vertices = np.zeros((3,2))
-    #     vertices[0,:] = [M[0,1],M[0,2]]
-    #     vertices[1,:] = [M[1,1],M[1,2]]
-    #     vertices[2,:] = [M[2,1],M[2,2]]
-    #     jac  = np.array([[(vertices[1,0]-vertices[0,0]),(vertices[1,1]-vertices[0,1])],
-    #         [vertices[2,0]-vertices[0,0],vertices[2,1]-vertices[0,1]]])
-    #     Nst_coeff = jac[0,0]*jac[1,1]+jac[0,1]*jac[1,0]
+        #     vertices = np.zeros((3,2))
+        #     vertices[0,:] = [M[0,1],M[0,2]]
+        #     vertices[1,:] = [M[1,1],M[1,2]]
+        #     vertices[2,:] = [M[2,1],M[2,2]]
+        #     jac  = np.array([[(vertices[1,0]-vertices[0,0]),(vertices[1,1]-vertices[0,1])],
+        #         [vertices[2,0]-vertices[0,0],vertices[2,1]-vertices[0,1]]])
+        #     Nst_coeff = jac[0,0]*jac[1,1]+jac[0,1]*jac[1,0]
 
-    #     #N_st
-    #     Nst = np.zeros(6)
-    #     Nst[0] = 4
-    #     Nst[1] = 0
-    #     Nst[2] = 0
-    #     Nst[3] = 4
-    #     Nst[4] = -4
-    #     Nst[5] = -4
+        #     #N_st
+        #     Nst = np.zeros(6)
+        #     Nst[0] = 4
+        #     Nst[1] = 0
+        #     Nst[2] = 0
+        #     Nst[3] = 4
+        #     Nst[4] = -4
+        #     Nst[5] = -4
 
-    #     hN = np.zeros((2,6))
+        #     hN = np.zeros((2,6))
 
-    #     #N_ss
-    #     hN[0,0] = 4
-    #     hN[0,1] = 4
-    #     hN[0,2] = 0
-    #     hN[0,3] = 0
-    #     hN[0,4] = 0
-    #     hN[0,5] = -8
+        #     #N_ss
+        #     hN[0,0] = 4
+        #     hN[0,1] = 4
+        #     hN[0,2] = 0
+        #     hN[0,3] = 0
+        #     hN[0,4] = 0
+        #     hN[0,5] = -8
 
-    #     #N_tt
-    #     hN[1,0] = 4
-    #     hN[1,1] = 0
-    #     hN[1,2] = 4
-    #     hN[1,3] = 0
-    #     hN[1,4] = -8
-    #     hN[1,5] = 0
+        #     #N_tt
+        #     hN[1,0] = 4
+        #     hN[1,1] = 0
+        #     hN[1,2] = 4
+        #     hN[1,3] = 0
+        #     hN[1,4] = -8
+        #     hN[1,5] = 0
 
-    #     xyConst = Nst*Nst_coeff + hN[0] * jac[0,0]*jac[1,0] + hN[1] * jac[1,0]*jac[1,1]
-    #     jac = np.linalg.inv(jac)
-    #     jac = jac*jac
+        #     xyConst = Nst*Nst_coeff + hN[0] * jac[0,0]*jac[1,0] + hN[1] * jac[1,0]*jac[1,1]
+        #     jac = np.linalg.inv(jac)
+        #     jac = jac*jac
 
-    #     d2_prod = np.dot(jac,hN)
-    #     d2Const = d2_prod[0] + d2_prod[1]
-    #     xxConst = d2_prod[0]
-    #     yyConst = d2_prod[1]
+        #     d2_prod = np.dot(jac,hN)
+        #     d2Const = d2_prod[0] + d2_prod[1]
+        #     xxConst = d2_prod[0]
+        #     yyConst = d2_prod[1]
 
-    #     return xxConst,yyConst,xyConstz
-    # def evaluate_mixed_derivative(self, indexes):
-    #     """
-    #     evaluate partial of N with respect to st (to set u_xy=0)
-    #     """
+        #     return xxConst,yyConst,xyConstz
+        # def evaluate_mixed_derivative(self, indexes):
+        #     """
+        #     evaluate partial of N with respect to st (to set u_xy=0)
+        #     """
 
-    #     vertices = self.nodes[self.elements[indexes], :]
-    #     jac = np.array(
-    #         [
-    #             [
-    #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
-    #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
-    #             ],
-    #             [
-    #                 vertices[:, 2, 0] - vertices[:, 0, 0],
-    #                 vertices[:, 2, 1] - vertices[:, 0, 1],
-    #             ],
-    #         ]
-    #     ).T
-    #     Nst_coeff = jac[:, 0, 0] * jac[:, 1, 1] + jac[:, 0, 1] * jac[:, 1, 0]
+        #     vertices = self.nodes[self.elements[indexes], :]
+        #     jac = np.array(
+        #         [
+        #             [
+        #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
+        #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
+        #             ],
+        #             [
+        #                 vertices[:, 2, 0] - vertices[:, 0, 0],
+        #                 vertices[:, 2, 1] - vertices[:, 0, 1],
+        #             ],
+        #         ]
+        #     ).T
+        #     Nst_coeff = jac[:, 0, 0] * jac[:, 1, 1] + jac[:, 0, 1] * jac[:, 1, 0]
 
-    #     Nst = self.Nst[None, :] * Nst_coeff[:, None]
-    #     return (
-    #         Nst
-    #         + self.hN[None, 0, :] * (jac[:, 0, 0] * jac[:, 1, 0])[:, None]
-    #         + self.hN[None, 1, :] * (jac[:, 1, 0] * jac[:, 1, 1])[:, None]
-    #     )
+        #     Nst = self.Nst[None, :] * Nst_coeff[:, None]
+        #     return (
+        #         Nst
+        #         + self.hN[None, 0, :] * (jac[:, 0, 0] * jac[:, 1, 0])[:, None]
+        #         + self.hN[None, 1, :] * (jac[:, 1, 0] * jac[:, 1, 1])[:, None]
+        #     )
 
-    # def evaluate_shape_d2(self, indexes):
-    #     """evaluate second derivatives of shape functions in s and t
+        # def evaluate_shape_d2(self, indexes):
+        #     """evaluate second derivatives of shape functions in s and t
 
-    #     Parameters
-    #     ----------
-    #     M : [type]
-    #         [description]
+        #     Parameters
+        #     ----------
+        #     M : [type]
+        #         [description]
 
-    #     Returns
-    #     -------
-    #     [type]
-    #         [description]
-    #     """
+        #     Returns
+        #     -------
+        #     [type]
+        #         [description]
+        #     """
 
-    #     vertices = self.nodes[self.elements[indexes], :]
+        #     vertices = self.nodes[self.elements[indexes], :]
 
-    #     jac = np.array(
-    #         [
-    #             [
-    #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
-    #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
-    #             ],
-    #             [
-    #                 vertices[:, 2, 0] - vertices[:, 0, 0],
-    #                 vertices[:, 2, 1] - vertices[:, 0, 1],
-    #             ],
-    #         ]
-    #     ).T
-    #     jac = np.linalg.inv(jac)
-    #     jac = jac * jac
+        #     jac = np.array(
+        #         [
+        #             [
+        #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
+        #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
+        #             ],
+        #             [
+        #                 vertices[:, 2, 0] - vertices[:, 0, 0],
+        #                 vertices[:, 2, 1] - vertices[:, 0, 1],
+        #             ],
+        #         ]
+        #     ).T
+        #     jac = np.linalg.inv(jac)
+        #     jac = jac * jac
 
-    #     d2_prod = np.einsum("lij,ik->lik", jac, self.hN)
-    #     d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
-    #     xxConst = d2_prod[:, 0, :]
-    #     yyConst = d2_prod[:, 1, :]
+        d2_prod = np.einsum("lij,ik->lik", jac, self.hessian)
+        # d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
+        xxConst = d2_prod[:, 0, :]
+        yyConst = d2_prod[:, 1, :]
 
     #     return xxConst, yyConst
 

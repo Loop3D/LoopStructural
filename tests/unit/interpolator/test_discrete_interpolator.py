@@ -12,7 +12,6 @@ def test_region(interpolator, data, region_func):
     interpolator.setup_interpolator()
     interpolator.set_region(region_func)
     # assert np.all(interpolator.region == region_func(interpolator.support.nodes))
-    print(np.sum(interpolator.region))
     interpolator.solve_system()
 
 

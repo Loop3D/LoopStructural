@@ -244,7 +244,7 @@ class P2Interpolator(DiscreteInterpolator):
             const_cp = np.hstack([const_t_cp, const_n_cp])
             tri_cp = np.hstack([self.support.elements[cp_tri1], self.support.elements[cp_tri2]])
             wt = np.zeros(tri_cp.shape[0])
-            wt[:] = w
+            wt[:] = w * weight[:, i]
             if wtfunc:
                 wt = wtfunc(tri_cp)
             self.add_constraints_to_least_squares(
