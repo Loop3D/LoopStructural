@@ -41,6 +41,7 @@ class BaseBuilder:
                 self._up_to_date = False
 
     def update(self):
+        self._feature.faults = self.faults
         self.build(**self.build_arguments)
 
     def build(self, **kwargs):
