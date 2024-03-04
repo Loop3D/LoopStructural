@@ -18,7 +18,7 @@ class P2Unstructured2d(BaseUnstructured2d):
         BaseUnstructured2d.__init__(self, elements, vertices, neighbours)
         self.type = SupportType.P2Unstructured2d
         # hessian of shape functions
-        self.H = np.array(
+        self.hessian = np.array(
             [
                 [[4, 4, 0, 0, 0, -8], [4, 0, 0, 4, -4, -4]],
                 [[4, 0, 0, 4, -4, -4], [4, 0, 4, 0, -8, 0]],
@@ -130,43 +130,43 @@ class P2Unstructured2d(BaseUnstructured2d):
         #         + self.hN[None, 1, :] * (jac[:, 1, 0] * jac[:, 1, 1])[:, None]
         #     )
 
-        # def evaluate_shape_d2(self, indexes):
-        #     """evaluate second derivatives of shape functions in s and t
+    def evaluate_shape_d2(self, indexes):
+        """evaluate second derivatives of shape functions in s and t
 
-        #     Parameters
-        #     ----------
-        #     M : [type]
-        #         [description]
+        Parameters
+        ----------
+        M : [type]
+            [description]
 
-        #     Returns
-        #     -------
-        #     [type]
-        #         [description]
-        #     """
+        Returns
+        -------
+        [type]
+            [description]
+        """
 
-        #     vertices = self.nodes[self.elements[indexes], :]
+        vertices = self.nodes[self.elements[indexes], :]
 
-        #     jac = np.array(
-        #         [
-        #             [
-        #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
-        #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
-        #             ],
-        #             [
-        #                 vertices[:, 2, 0] - vertices[:, 0, 0],
-        #                 vertices[:, 2, 1] - vertices[:, 0, 1],
-        #             ],
-        #         ]
-        #     ).T
-        #     jac = np.linalg.inv(jac)
-        #     jac = jac * jac
+        jac = np.array(
+            [
+                [
+                    (vertices[:, 1, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 1, 1] - vertices[:, 0, 1]),
+                ],
+                [
+                    vertices[:, 2, 0] - vertices[:, 0, 0],
+                    vertices[:, 2, 1] - vertices[:, 0, 1],
+                ],
+            ]
+        ).T
+        jac = np.linalg.inv(jac)
+        jac = jac * jac
 
-        d2_prod = np.einsum("lij,ik->lik", jac, self.hessian)
+        d2_prod = np.einsum("lij,ik->lik", jac, self.hN)
         # d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
         xxConst = d2_prod[:, 0, :]
         yyConst = d2_prod[:, 1, :]
 
-    #     return xxConst, yyConst
+        return xxConst, yyConst
 
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
@@ -174,7 +174,7 @@ class P2Unstructured2d(BaseUnstructured2d):
         """
         locations = np.array(locations)
         if elements is None:
-            c, tri = self.get_element_for_location(locations)
+            verts, c, tri, inside = self.get_element_for_location(locations)
         else:
             tri = elements
             M = np.ones((elements.shape[0], 3, 3))
@@ -214,13 +214,13 @@ class P2Unstructured2d(BaseUnstructured2d):
         d_n = np.linalg.inv(jac)
         #         d_n = d_n.swapaxes(1,2)
         d_n = d_n @ dN
-        d_n = d_n.swapaxes(2, 1)
+        # d_n = d_n.swapaxes(2, 1)
         # d_n = np.dot(np.linalg.inv(jac),dN)
         return d_n, tri
 
     def evaluate_shape(self, locations):
         locations = np.array(locations)
-        c, tri = self.get_element_for_location(locations)
+        verts, c, tri, inside = self.get_element_for_location(locations)
         # c = np.dot(np.array([1,x,y]),np.linalg.inv(M)) # convert to barycentric coordinates
         # order of bary coord is (1-s-t,s,t)
         N = np.zeros((c.shape[0], 6))  # evaluate shape functions at barycentric coordinates
@@ -231,9 +231,9 @@ class P2Unstructured2d(BaseUnstructured2d):
         N[:, 4] = 4 * c[:, 2] * c[:, 0]  # 4t(1-s-t)
         N[:, 5] = 4 * c[:, 1] * c[:, 0]  # 4s(1-s-t)
 
-        return N, tri
+        return N, tri, inside
 
-    def evaluate_d2(self, pos, prop):
+    def evaluate_d2(self, pos, property_array):
         """
         Evaluate value of interpolant
 
@@ -256,15 +256,15 @@ class P2Unstructured2d(BaseUnstructured2d):
         inside = tri > 0
         # vertices, c, elements, inside = self.get_elements_for_location(pos)
         values[inside] = np.sum(
-            xxConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
+            xxConst[inside, :] * property_array[self.elements[tri[inside], :]],
             axis=1,
         )
         values[inside] += np.sum(
-            yyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
+            yyConst[inside, :] * property_array[self.elements[tri[inside], :]],
             axis=1,
         )
         values[inside] += np.sum(
-            xyConst[inside, :] * self.properties[prop][self.elements[tri[inside], :]],
+            xyConst[inside, :] * property_array[self.elements[tri[inside], :]],
             axis=1,
         )
 
@@ -272,16 +272,16 @@ class P2Unstructured2d(BaseUnstructured2d):
 
     def get_quadrature_points(self, npts=2):
         if npts == 2:
-            v1 = self.nodes[self.edges][:, 0, :]
-            v2 = self.nodes[self.edges][:, 1, :]
+            v1 = self.nodes[self.shared_elements][:, 0, :]
+            v2 = self.nodes[self.shared_elements][:, 1, :]
             cp = np.zeros((v1.shape[0], self.ncps, 2))
             cp[:, 0] = 0.25 * v1 + 0.75 * v2
             cp[:, 1] = 0.75 * v1 + 0.25 * v2
-            return cp
+            return cp, np.ones(cp.shape)
         raise NotImplementedError("Only 2 point quadrature is implemented")
 
     def get_edge_normal(self, e):
-        v = self.nodes[self.edges][:, 0, :] - self.nodes[self.edges][:, 1, :]
+        v = self.nodes[self.shared_elements][:, 0, :] - self.nodes[self.shared_elements][:, 1, :]
         # e_len = np.linalg.norm(v, axis=1)
         normal = np.array([v[:, 1], -v[:, 0]]).T
         normal /= np.linalg.norm(normal, axis=1)[:, None]

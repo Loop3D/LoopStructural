@@ -113,6 +113,16 @@ def test_horizontal_layers(interpolatortype, nelements):
     assert np.all(np.isclose(model["strati"].evaluate_value(data[["X", "Y", "Z"]]), data["val"]))
 
 
+def test_horizontal_layers(interpolatortype, nelements):
+    data, bb = load_horizontal()
+    model = GeologicalModel(bb[0, :], bb[1, :])
+
+    model.data = data
+    model.create_and_add_foliation("strati", interpolatortype=interpolatortype, nelements=1e4)
+
+    assert np.all(np.isclose(model["strati"].evaluate_value(data[["X", "Y", "Z"]]), data["val"]))
+
+
 if __name__ == "__main__":
     test_create_model()
     test_add_data()
@@ -124,6 +134,8 @@ if __name__ == "__main__":
     test_create_stratigraphy_PLI_lu()
     test_create_stratigraphy_PLI_pyamg()
     test_model_with_data_outside_of_bounding_box()
+    test_horizontal_layers("FDI", 1000)
+    test_horizontal_layers("PLI", 1000)
     test_horizontal_layers("FDI", 1000)
     test_horizontal_layers("PLI", 1000)
     print("ok")

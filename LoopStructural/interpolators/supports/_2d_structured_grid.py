@@ -5,14 +5,18 @@ Cartesian grid for fold interpolator
 
 import logging
 
+from typing import Tuple
 import numpy as np
 from . import SupportType
+from ._base_support import BaseSupport
 
 logger = logging.getLogger(__name__)
 
 
-class StructuredGrid2D:
+class StructuredGrid2D(BaseSupport):
     """ """
+
+    dimension = 2
 
     def __init__(
         self,
@@ -34,13 +38,11 @@ class StructuredGrid2D:
         self.origin = np.array(origin)
         self.maximum = origin + self.nsteps * self.step_vector
 
-        self.n_nodes = self.nsteps[0] * self.nsteps[1]
         self.dim = 2
         self.nsteps_cells = self.nsteps - 1
         self.n_cell_x = self.nsteps[0] - 1
         self.n_cell_y = self.nsteps[1] - 1
         self.properties = {}
-        self.n_elements = self.n_cell_x * self.n_cell_y
 
         # calculate the node positions using numpy (this should probably not
         # be stored as it defeats
@@ -60,12 +62,30 @@ class StructuredGrid2D:
         return np.array([xx.flatten(order="F"), yy.flatten(order="F")]).T
 
     @property
+    def n_nodes(self):
+        return self.nsteps[0] * self.nsteps[1]
+
+    @property
+    def n_elements(self):
+        return self.nsteps_cells[0] * self.nsteps_cells[1]
+
+    @property
+    def element_size(self):
+        return np.prod(self.step_vector)
+
+    @property
     def barycentre(self):
         return self.cell_centres(np.arange(self.n_elements))
 
     # @property
     # def barycentre(self):
     #     return self.cell_centres(np.arange(self.n_elements))
+    @property
+    def elements(self) -> np.ndarray:
+        global_index = np.arange(self.n_elements)
+        cell_indexes = self.global_index_to_cell_index(global_index)
+
+        return self.global_node_indices(self.cell_corner_indexes(cell_indexes))
 
     def print_geometry(self):
         print("Origin: %f %f %f" % (self.origin[0], self.origin[1], self.origin[2]))
@@ -75,7 +95,7 @@ class StructuredGrid2D:
         max = self.origin + self.nsteps_cells * self.step_vector
         print("Max extent: %f %f %f" % (max[0], max[1], max[2]))
 
-    def cell_centres(self, global_index):
+    def cell_centres(self, global_index: np.ndarray) -> np.ndarray:
         """[summary]
 
         [extended_summary]
@@ -90,12 +110,22 @@ class StructuredGrid2D:
         [type]
             [description]
         """
-        ix, iy = self.global_index_to_cell_index(global_index)
-        x = self.origin[None, 0] + self.step_vector[None, 0] * 0.5 + self.step_vector[None, 0] * ix
-        y = self.origin[None, 1] + self.step_vector[None, 1] * 0.5 + self.step_vector[None, 1] * iy
-        return np.array([x, y]).T
+        cell_indexes = self.global_index_to_cell_index(global_index)
+        cell_centres = np.zeros((cell_indexes.shape[0], 2))
 
-    def position_to_cell_index(self, pos):
+        cell_centres[:, 0] = (
+            self.origin[None, 0]
+            + self.step_vector[None, 0] * 0.5
+            + self.step_vector[None, 0] * cell_indexes[:, 0]
+        )
+        cell_centres[:, 1] = (
+            self.origin[None, 1]
+            + self.step_vector[None, 1] * 0.5
+            + self.step_vector[None, 1] * cell_indexes[:, 1]
+        )
+        return cell_centres
+
+    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """[summary]
 
         [extended_summary]
@@ -110,16 +140,14 @@ class StructuredGrid2D:
         [type]
             [description]
         """
+        inside = self.inside(pos)
+        cell_indexes = np.zeros((pos.shape[0], 2))
+        cell_indexes[:, 0] = pos[:, 0] - self.origin[None, 0]
+        cell_indexes[:, 1] = pos[:, 1] - self.origin[None, 1]
+        cell_indexes /= self.step_vector[None, :]
+        return cell_indexes.astype(int), inside
 
-        pos = self.check_position(pos)
-
-        ix = pos[:, 0] - self.origin[None, 0]
-        iy = pos[:, 1] - self.origin[None, 1]
-        ix = ix // self.step_vector[None, 0]
-        iy = iy // self.step_vector[None, 1]
-        return ix.astype(int), iy.astype(int)
-
-    def inside(self, pos):
+    def inside(self, pos: np.ndarray) -> np.ndarray:
         # check whether point is inside box
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(self.dim):
@@ -130,7 +158,7 @@ class StructuredGrid2D:
             )
         return inside
 
-    def check_position(self, pos):
+    def check_position(self, pos: np.ndarray) -> np.ndarray:
         """[summary]
 
         [extended_summary]
@@ -149,13 +177,13 @@ class StructuredGrid2D:
         if len(pos.shape) == 1:
             pos = np.array([pos])
         if len(pos.shape) != 2:
-            print("Position array needs to be a list of points or a point")
-            return False
+            raise ValueError("Position array needs to be a list of points or a point")
+
         return pos
 
-    def bilinear(self, x, y):
+    def bilinear(self, local_coords: np.ndarray) -> np.ndarray:
         """
-        returns the trilinear interpolation for the local coordinates
+        returns the bilinear interpolation for the local coordinates
         Parameters
         ----------
         x - double, array of doubles
@@ -167,9 +195,17 @@ class StructuredGrid2D:
         array of interpolation coefficients
 
         """
-        return np.array([(1 - x) * (1 - y), x * (1 - y), (1 - x) * y, x * y])
 
-    def position_to_local_coordinates(self, pos):
+        return np.array(
+            [
+                (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]),
+                local_coords[:, 0] * (1 - local_coords[:, 1]),
+                (1 - local_coords[:, 0]) * local_coords[:, 1],
+                local_coords[:, 0] * local_coords[:, 1],
+            ]
+        ).T
+
+    def position_to_local_coordinates(self, pos: np.ndarray) -> np.ndarray:
         """
         Convert from global to local coordinates within a cel
         Parameters
@@ -184,16 +220,17 @@ class StructuredGrid2D:
         # TODO check if inside mesh
 
         # calculate local coordinates for positions
-        local_x = (
+        local_coords = np.zeros(pos.shape)
+        local_coords[:, 0] = (
             (pos[:, 0] - self.origin[None, 0]) % self.step_vector[None, 0]
         ) / self.step_vector[None, 0]
-        local_y = (
+        local_coords[:, 1] = (
             (pos[:, 1] - self.origin[None, 1]) % self.step_vector[None, 1]
         ) / self.step_vector[None, 1]
 
-        return local_x, local_y
+        return local_coords
 
-    def position_to_dof_coefs(self, pos):
+    def position_to_dof_coefs(self, pos: np.ndarray):
         """
         global posotion to interpolation coefficients
         Parameters
@@ -204,24 +241,9 @@ class StructuredGrid2D:
         -------
 
         """
-        x_local, y_local = self.position_to_local_coordinates(pos)
-        weights = self.bilinear(x_local, y_local)
+        local_coords = self.position_to_local_coordinates(pos)
+        weights = self.bilinear(local_coords)
         return weights
-
-    def global_indicies(self, indexes):
-        """
-        xi, yi, zi to global index
-
-        Parameters
-        ----------
-        indexes
-
-        Returns
-        -------
-
-        """
-        indexes = np.array(indexes).swapaxes(0, 2)
-        return indexes[:, :, 0] + self.nsteps[None, None, 0] * indexes[:, :, 1]
 
     def neighbour_global_indexes(self, mask=None, **kwargs):
         """
@@ -258,7 +280,7 @@ class StructuredGrid2D:
             np.int64
         )
 
-    def cell_corner_indexes(self, x_cell_index, y_cell_index):
+    def cell_corner_indexes(self, cell_indexes: np.ndarray) -> np.ndarray:
         """
         Returns the indexes of the corners of a cell given its location xi,
         yi, zi
@@ -273,11 +295,16 @@ class StructuredGrid2D:
         -------
 
         """
+        corner_indexes = np.zeros((cell_indexes.shape[0], 4, 2), dtype=np.int64)
         xcorner = np.array([0, 1, 0, 1])
         ycorner = np.array([0, 0, 1, 1])
-        xcorners = x_cell_index[:, None] + xcorner[None, :]
-        ycorners = y_cell_index[:, None] + ycorner[None, :]
-        return xcorners, ycorners
+        corner_indexes[:, :, 0] = (
+            cell_indexes[:, None, 0] + corner_indexes[:, :, 0] + xcorner[None, :]
+        )
+        corner_indexes[:, :, 1] = (
+            cell_indexes[:, None, 1] + corner_indexes[:, :, 1] + ycorner[None, :]
+        )
+        return corner_indexes
 
     def global_index_to_cell_index(self, global_index):
         """
@@ -294,27 +321,52 @@ class StructuredGrid2D:
         # determine the ijk indices for the global index.
         # remainder when dividing by nx = i
         # remained when dividing modulus of nx by ny is j
+        cell_indexes = np.zeros((global_index.shape[0], 2), dtype=np.int64)
+        cell_indexes[:, 0] = global_index % self.nsteps_cells[0, None]
+        cell_indexes[:, 1] = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
+        return cell_indexes
 
-        x_index = global_index % self.nsteps_cells[0, None]
-        y_index = global_index // self.nsteps_cells[0, None] % self.nsteps_cells[1, None]
-        return x_index, y_index
+    def global_index_to_node_index(self, global_index):
+        cell_indexes = np.zeros((global_index.shape[0], 2), dtype=np.int64)
+        cell_indexes[:, 0] = global_index % self.nsteps[0, None]
+        cell_indexes[:, 1] = global_index // self.nsteps[0, None] % self.nsteps[1, None]
+        return cell_indexes
 
-    def node_indexes_to_position(self, xindex, yindex):
-        x = self.origin[0] + self.step_vector[0] * xindex
-        y = self.origin[1] + self.step_vector[1] * yindex
+    def _global_indices(self, indexes: np.ndarray, nsteps: np.ndarray) -> np.ndarray:
+        if len(indexes.shape) == 1:
+            raise ValueError("Indexes must be a 2D array")
+        if indexes.shape[-1] != 2:
+            raise ValueError("Last dimension of cell indexing needs to be ijk indexing")
+        original_shape = indexes.shape
+        indexes = indexes.reshape(-1, 2)
+        gi = indexes[:, 0] + nsteps[0] * indexes[:, 1]
+        return gi.reshape(original_shape[:-1])
 
-        return x, y
+    def global_cell_indices(self, indexes: np.ndarray) -> np.ndarray:
+        return self._global_indices(indexes, self.nsteps_cells)
+
+    def global_node_indices(self, indexes: np.ndarray) -> np.ndarray:
+        return self._global_indices(indexes, self.nsteps)
+
+    def node_indexes_to_position(self, node_indexes: np.ndarray) -> np.ndarray:
+
+        original_shape = node_indexes.shape
+        node_indexes = node_indexes.reshape((-1, 2))
+        xy = np.zeros((node_indexes.shape[0], 2), dtype=float)
+        xy[:, 0] = self.origin[0] + self.step_vector[0] * node_indexes[:, 0]
+        xy[:, 1] = self.origin[1] + self.step_vector[1] * node_indexes[:, 1]
+        xy = xy.reshape(original_shape)
+        return xy
 
     def position_to_cell_corners(self, pos):
-        inside = self.inside(pos)
-        ix, iy = self.position_to_cell_index(pos)
-        cornersx, cornersy = self.cell_corner_indexes(ix, iy)
-        globalidx = self.global_indicies(np.dstack([cornersx, cornersy]).T)
+        corner_index, inside = self.position_to_cell_index(pos)
+        corners = self.cell_corner_indexes(corner_index)
+        globalidx = self.global_node_indices(corners)
         # if global index is not inside the support set to -1
         globalidx[~inside] = -1
         return globalidx, inside
 
-    def evaluate_value(self, evaluation_points, property):
+    def evaluate_value(self, evaluation_points: np.ndarray, property_array: np.ndarray):
         """
         Evaluate the value of of the property at the locations.
         Trilinear interpolation dot corner values
@@ -332,55 +384,79 @@ class StructuredGrid2D:
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
 
-        v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :]).T
-        v[inside, :] *= property[idc[inside, :]]
+        v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :])
+        v[inside, :] *= property_array[idc[inside, :]]
         return np.sum(v, axis=1)
 
-    def evaluate_gradient(self, evaluation_points, property):
-        idc, inside = self.position_to_cell_corners(evaluation_points)
-        T = np.zeros((idc.shape[0], 2, 4))
-        T[inside, :, :] = self.calcul_T(evaluation_points[inside, :])
+    def evaluate_gradient(self, evaluation_points, property_array):
+        T = np.zeros((evaluation_points.shape[0], 2, 4))
+        _vertices, T, elements, inside = self.get_element_gradient_for_location(evaluation_points)
         # indices = np.array([self.position_to_cell_index(evaluation_points)])
         # idc = self.global_indicies(indices.swapaxes(0,1))
         # print(idc)
-        T[inside, 0, :] *= property[idc[inside, :]]
-        T[inside, 1, :] *= property[idc[inside, :]]
+        T[inside, 0, :] *= property_array[self.elements[elements[inside]]]
+        T[inside, 1, :] *= property_array[self.elements[elements[inside]]]
         # T[inside, 2, :] *= self.properties[property_name][idc[inside, :]]
         return np.array([np.sum(T[:, 0, :], axis=1), np.sum(T[:, 1, :], axis=1)]).T
 
-    def calcul_T(self, pos):
+    def get_element_gradient_for_location(
+        self, pos
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Calculates the gradient matrix at location pos
         :param pos: numpy array of location Nx3
         :return: Nx3x4 matrix
         """
-        #   6_ _ _ _ 8
-        #   /|    /|
-        # 4 /_|  5/ |
-        # | 2|_ _|_| 7
-        # | /    | /
-        # |/_ _ _|/
-        # 0      1
-        #
-        # xindex, yindex, zindex = self.position_to_cell_index(pos)
-        # cellx, celly, cellz = self.cell_corner_indexes(xindex, yindex,zindex)
-        # x, y, z = self.node_indexes_to_position(cellx, celly, cellz)
+        pos = np.asarray(pos)
         T = np.zeros((pos.shape[0], 2, 4))
-        x, y = self.position_to_local_coordinates(pos)
+        local_coords = self.position_to_local_coordinates(pos)
+        vertices, inside = self.position_to_cell_corners(pos)
+        elements, inside = self.position_to_cell_index(pos)
+        elements = self.global_cell_indices(elements)
 
-        xindex, yindex = self.position_to_cell_index(pos)
-        cellx, celly = self.cell_corner_indexes(xindex, yindex)
-        x, y = self.node_indexes_to_position(cellx, celly)
-        # div = self.step_vector[0] * self.step_vector[1] * self.step_vector[2]
-        div = self.step_vector[0] * self.step_vector[1]
+        T[:, 0, 0] = -(1 - local_coords[:, 1])
+        T[:, 0, 1] = 1 - local_coords[:, 1]
+        T[:, 0, 2] = -local_coords[:, 1]
+        T[:, 0, 3] = local_coords[:, 1]
 
-        T[:, 0, 0] = -(y[:, 2] - pos[:, 1]) / div
-        T[:, 0, 1] = (y[:, 3] - pos[:, 1]) / div
-        T[:, 0, 2] = -(pos[:, 1] - y[:, 0]) / div
-        T[:, 0, 3] = (pos[:, 1] - y[:, 1]) / div
+        T[:, 1, 0] = -(1 - local_coords[:, 0])
+        T[:, 1, 1] = -local_coords[:, 0]
+        T[:, 1, 2] = 1 - local_coords[:, 0]
+        T[:, 1, 3] = local_coords[:, 0]
 
-        T[:, 1, 0] = -(x[:, 1] - pos[:, 0]) / div
-        T[:, 1, 1] = -(pos[:, 0] - x[:, 0]) / div
-        T[:, 1, 2] = (x[:, 3] - pos[:, 0]) / div
-        T[:, 1, 3] = (pos[:, 0] - x[:, 2]) / div
-        return T
+        return vertices, T, elements, inside
+
+    def get_element_for_location(
+        self, pos: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+
+        vertices, inside = self.position_to_cell_vertices(pos)
+        vertices = np.array(vertices)
+        # print("ver", vertices.shape)
+        # vertices = vertices.reshape((vertices.shape[1], 8, 3))
+        elements, inside = self.position_to_cell_corners(pos)
+        elements, inside = self.position_to_cell_index(pos)
+        elements = self.global_cell_indices(elements)
+        a = self.position_to_dof_coefs(pos)
+        return vertices, a, elements, inside
+
+    def position_to_cell_vertices(self, pos):
+        """Get the vertices of the cell a point is in
+
+        Parameters
+        ----------
+        pos : np.array
+            Nx3 array of xyz locations
+
+        Returns
+        -------
+        np.array((N,3),dtype=float), np.array(N,dtype=int)
+            vertices, inside
+        """
+        gi, inside = self.position_to_cell_corners(pos)
+
+        node_indexes = self.global_index_to_node_index(gi.flatten())
+        return self.node_indexes_to_position(node_indexes), inside
+
+    def onGeometryChange(self):
+        pass
