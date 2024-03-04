@@ -139,27 +139,29 @@ class FaultBuilder(StructuralFrameBuilder):
                     "You cannot model a fault without defining the orientation of the fault\n\
                     Defaulting to a vertical fault"
                 )
-                coefficients = np.polyfit(
-                    fault_frame_data.loc[trace_mask, "X"],
-                    fault_frame_data.loc[trace_mask, "Y"],
-                    1,
-                )
-                slope, intercept = coefficients
+                if fault_frame_data.loc[trace_mask, :].shape[0] > 3:
 
-                # Create a direction vector using the slope
-                direction_vector = np.array([1, slope])
-                direction_vector /= np.linalg.norm(direction_vector)
-                print(f"Fault dip: {fault_dip}")
-                vector_data = np.array(
-                    [
+                    coefficients = np.polyfit(
+                        fault_frame_data.loc[trace_mask, "X"],
+                        fault_frame_data.loc[trace_mask, "Y"],
+                        1,
+                    )
+                    slope, intercept = coefficients
+
+                    # Create a direction vector using the slope
+                    direction_vector = np.array([1, slope])
+                    direction_vector /= np.linalg.norm(direction_vector)
+                    print(f"Fault dip: {fault_dip}")
+                    vector_data = np.array(
                         [
-                            direction_vector[1],
-                            -direction_vector[0],
-                            np.sin(np.deg2rad(fault_dip)),
+                            [
+                                direction_vector[1],
+                                -direction_vector[0],
+                                np.sin(np.deg2rad(fault_dip)),
+                            ]
                         ]
-                    ]
-                )
-                vector_data /= np.linalg.norm(vector_data, axis=1)[:, None]
+                    )
+                    vector_data /= np.linalg.norm(vector_data, axis=1)[:, None]
 
             fault_normal_vector = np.mean(vector_data, axis=0)
 
@@ -500,6 +502,11 @@ class FaultBuilder(StructuralFrameBuilder):
             _description_, by default 1.0
         """
         trace_data = self.builders[0].data.loc[self.builders[0].data["val"] == 0, :]
+        if trace_data.shape[0] < 2:
+            logger.warning(
+                f"Only {trace_data.shape[0]} point on fault trace, cannot add fault trace anisotropy. Need at least 3 points"
+            )
+            return
         coefficients = np.polyfit(
             trace_data["X"],
             trace_data["Y"],
@@ -526,7 +533,13 @@ class FaultBuilder(StructuralFrameBuilder):
         w : float, optional
             _description_, by default 1.0
         """
+
         trace_data = self.builders[0].data.loc[self.builders[0].data["val"] == 0, :]
+        if trace_data.shape[0] < 2:
+            logger.warning(
+                f'Only {trace_data.shape[0]} point on fault trace, cannot add fault trace anisotropy. Need at least 3 points'
+            )
+            return
         coefficients = np.polyfit(
             trace_data["X"],
             trace_data["Y"],
