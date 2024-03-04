@@ -224,6 +224,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
     ):
         pass
 
+
     def calculate_residual_for_constraints(self):
         """Calculates Ax-B for all constraints added to the interpolator
         This could be a proxy to identify which constraints are controlling the model
