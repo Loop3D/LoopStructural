@@ -1,14 +1,18 @@
 from LoopStructural.utils.exceptions import LoopException
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 import numpy as np
 from LoopStructural.utils import getLogger
 from . import SupportType
 
 logger = getLogger(__name__)
 
+from ._base_support import BaseSupport
 
-class BaseStructuredSupport(metaclass=ABCMeta):
+
+class BaseStructuredSupport(BaseSupport):
     """ """
+
+    dimension = 3
 
     def __init__(
         self,
@@ -437,6 +441,10 @@ class BaseStructuredSupport(metaclass=ABCMeta):
 
         """
         return self._global_indicies(indexes, self.nsteps_cells)
+
+    @property
+    def element_size(self):
+        return np.prod(self.step_vector)
 
     @property
     def vtk(self):

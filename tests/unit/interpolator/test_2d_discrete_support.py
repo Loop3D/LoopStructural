@@ -48,9 +48,9 @@ def test_get_element_2d():
 def test_global_to_local_coordinates2d():
     grid = StructuredGrid2D()
     point = np.array([[1.2, 1.5, 1.7]])
-    lx, ly = grid.position_to_local_coordinates(point)
-    assert np.isclose(lx[0], 0.2)
-    assert np.isclose(ly[0], 0.5)
+    local_coords = grid.position_to_local_coordinates(point)
+    assert np.isclose(local_coords[0, 0], 0.2)
+    assert np.isclose(local_coords[0, 1], 0.5)
 
 
 def test_get_element_outside2d():

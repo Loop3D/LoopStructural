@@ -2,6 +2,7 @@
 Discrete interpolator base for least squares
 """
 
+from abc import abstractmethod
 import logging
 
 from time import time
@@ -39,16 +40,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
             else np.zeros(self.support.n_nodes)
         )
         self.region_function = lambda xyz: np.ones(xyz.shape[0], dtype=bool)
-        # self.region_map[self.region] = np.array(range(0,
-        # len(self.region_map[self.region])))
+
         self.shape = "rectangular"
         if self.shape == "square":
             self.B = np.zeros(self.nx)
         self.c_ = 0
-        # self.A = []  # sparse matrix storage coo format
-        # self.col = []
-        # self.row = []  # sparse matrix storage
-        # self.w = []
+
         self.solver = "cg"
 
         self.eq_const_C = []
@@ -221,6 +218,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
             'w': w,
         }
 
+    @abstractmethod
+    def add_gradient_orthogonal_constraints(
+        self, points: np.ndarray, vectors: np.ndarray, w: float = 1.0
+    ):
+        pass
+
     def calculate_residual_for_constraints(self):
         """Calculates Ax-B for all constraints added to the interpolator
         This could be a proxy to identify which constraints are controlling the model
@@ -252,7 +255,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         -------
 
         """
-
         pass
 
     def add_equality_constraints(self, node_idx, values, name="undefined"):
@@ -287,72 +289,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             "row": np.arange(self.eq_const_c, self.eq_const_c + idc[outside].shape[0]),
         }
         self.eq_const_c += idc[outside].shape[0]
-
-    def add_inequality_constraints_to_matrix(self, A, l, u, idc, name="undefined"):
-        """Adds constraints for a matrix where the linear function
-        l < Ax > u constrains the objective function
-
-
-        Parameters
-        ----------
-        A : numpy array
-            matrix of coefficients
-        l : numpy array
-            lower bounds
-        u : numpy array
-            upper bounds
-        idc : numpy array
-            index of constraints
-        Returns
-        -------
-
-        """
-        # map from mesh node index to region node index
-        gi = np.zeros(self.support.n_nodes, dtype=int)
-        gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx, dtype=int)
-        idc = gi[idc]
-        rows = np.arange(self.ineq_const_c, self.ineq_const_c + idc.shape[0])
-        rows = np.tile(rows, (A.shape[-1], 1)).T
-        self.ineq_constraints[name] = {"A": A, "l": l, "col": idc, "u": u, "row": rows}
-        self.ineq_const_c += idc.shape[0]
-
-    def add_inequality_feature(self, feature, lower=True, mask=None):
-        """Add an inequality constraint to the interpolator using an existing feature.
-        This will make the interpolator greater than or less than the exising feature.
-        Evaluate the feature at the interpolation nodes.
-        Can provide a boolean mask to restrict to only some parts
-
-        Parameters
-        ----------
-        feature : BaseFeature
-            the feature that will be used to constraint the interpolator
-        lower : bool, optional
-            lower or upper constraint, by default True
-        mask : np.ndarray, optional
-            restrict the nodes to evaluate on, by default None
-        """
-        # add inequality value for the nodes of the mesh
-        # flag lower determines whether the feature is a lower bound or upper bound
-        # mask is just a boolean array determining which nodes to apply it to
-
-        value = feature(self.support.nodes)
-        if mask is None:
-            mask = np.ones(value.shape[0], dtype=bool)
-        l = np.zeros(value.shape[0]) - np.inf
-        u = np.zeros(value.shape[0]) + np.inf
-        mask = np.logical_and(mask, ~np.isnan(value))
-        if lower:
-            l[mask] = value[mask]
-        if not lower:
-            u[mask] = value[mask]
-
-        self.add_inequality_constraints_to_matrix(
-            np.ones((value.shape[0], 1)),
-            l,
-            u,
-            np.arange(0, self.nx, dtype=int),
-        )
 
     def add_tangent_constraints(self, w=1.0):
         """Adds the constraints :math:`f(X)\cdotT=0`

@@ -17,7 +17,7 @@ jobs:
       - name: Lint with ruff
         run: |
           ruff check LoopStructural --fix
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "style: style fixes by ruff and autoformatting by black"
 
@@ -31,7 +31,8 @@ jobs:
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
       - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
+
         with:
           python-version: ${{ matrix.python }}
       - name: Installing dependencies
@@ -100,7 +101,7 @@ jobs:
         os: ["ubuntu-latest"]
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
@@ -120,7 +121,7 @@ jobs:
           conda convert -p all conda/linux-64/*.tar.bz2 -f -o conda
           conda install anaconda-client -y
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: conda-${{ matrix.os }}-${{ matrix.python-version }}
           path: conda
@@ -138,11 +139,11 @@ jobs:
           python setup.py sdist
           pip wheel -w wheelhouse .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/*.tar.gz
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: wheelhouse/*.whl
@@ -152,20 +153,20 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: conda
-      - uses: pypa/gh-action-pypi-publish@v1.6.4
+      - uses: pypa/gh-action-pypi-publish@v1
         with:
           skip_existing: true
           verbose: true
           user: ${{ secrets.PYPI_USERNAME }}
           password: ${{ secrets.PYPI_PASSWORD }}
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
       - name: upload all files to conda-forge
         shell: bash -l {0}
         env:

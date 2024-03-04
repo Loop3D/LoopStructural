@@ -4,18 +4,22 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 
 from ast import Tuple
 
+
 import numpy as np
 from scipy.sparse import csr_matrix, coo_matrix, tril
 
 from . import StructuredGrid
 from LoopStructural.utils import getLogger
 from . import SupportType
+from ._base_support import BaseSupport
 
 logger = getLogger(__name__)
 
 
-class UnStructuredTetMesh:
+class UnStructuredTetMesh(BaseSupport):
     """ """
+
+    dimension = 3
 
     def __init__(
         self,
@@ -42,17 +46,16 @@ class UnStructuredTetMesh:
             force nsteps for aabb, by default None
         """
         self.type = SupportType.UnStructuredTetMesh
-        self.nodes = np.array(nodes)
-        if self.nodes.shape[1] != 3:
+        self._nodes = np.array(nodes)
+        if self._nodes.shape[1] != 3:
             raise ValueError("Nodes must be 3D")
-        self.n_nodes = self.nodes.shape[0]
         self.neighbours = np.array(neighbours, dtype=np.int64)
         if self.neighbours.shape[1] != 4:
             raise ValueError("Neighbours array is too big")
-        self.elements = np.array(elements, dtype=np.int64)
+        self._elements = np.array(elements, dtype=np.int64)
         if self.elements.shape[0] != self.neighbours.shape[0]:
             raise ValueError("Number of elements and neighbours do not match")
-        self.barycentre = np.sum(self.nodes[self.elements[:, :4]][:, :, :], axis=1) / 4.0
+        self._barycentre = np.sum(self.nodes[self.elements[:, :4]][:, :, :], axis=1) / 4.0
         self.minimum = np.min(self.nodes, axis=0)
         self.maximum = np.max(self.nodes, axis=0)
         length = self.maximum - self.minimum
@@ -83,6 +86,25 @@ class UnStructuredTetMesh:
         )
         self._init_face_table()
         self._initialise_aabb()
+
+    @property
+    def nodes(self):
+        return self._nodes
+
+    @property
+    def elements(self):
+        return self._elements
+
+    @property
+    def barycentre(self):
+        return self._barycentre
+
+    @property
+    def n_nodes(self):
+        return self.nodes.shape[0]
+
+    def onGeometryChange(self):
+        pass
 
     def _init_face_table(self):
         """

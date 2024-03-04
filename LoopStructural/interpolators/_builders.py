@@ -10,7 +10,7 @@ from LoopStructural.interpolators import (
     StructuredGrid,
     TetMesh,
 )
-from LoopStructural.utils import BoundingBox
+from LoopStructural.datatypes import BoundingBox
 from LoopStructural.utils.logging import getLogger
 
 logger = getLogger(__name__)
@@ -61,6 +61,7 @@ def get_interpolator(
         )
 
         return P1Interpolator(support)
+        return P1Interpolator(support)
     if interpolatortype == "P2":
         if support is not None:
             logger.info(
@@ -69,9 +70,7 @@ def get_interpolator(
             )
             return P2Interpolator(support)
         else:
-            raise ValueError(
-                "Cannot create P2 interpolator without support, try using PLI"
-            )
+            raise ValueError("Cannot create P2 interpolator without support, try using PLI")
 
     if interpolatortype == "FDI":
         # find the volume of one element
@@ -96,8 +95,7 @@ def get_interpolator(
 
         grid = StructuredGrid(origin=origin, nsteps=nsteps, step_vector=step_vector)
         logger.info(
-            f"Creating regular grid with {grid.n_elements} elements \n"
-            "for modelling using FDI"
+            f"Creating regular grid with {grid.n_elements} elements \n" "for modelling using FDI"
         )
         return FiniteDifferenceInterpolator(grid)
     if interpolatortype == "DFI":

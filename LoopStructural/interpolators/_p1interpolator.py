@@ -38,10 +38,10 @@ class P1Interpolator(DiscreteInterpolator):
             "ipw": 1.0,
         }
 
-    def add_gradient_ctr_pts(self, w=1.0):
+    def add_gradient_constraints(self, w=1.0):
         pass
 
-    def add_norm_ctr_pts(self, w=1.0):
+    def add_norm_constraints(self, w=1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
             grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
@@ -64,7 +64,7 @@ class P1Interpolator(DiscreteInterpolator):
             self.up_to_date = False
         pass
 
-    def add_ctr_pts(self, w=1.0):
+    def add_value_constraints(self, w=1.0):
         points = self.get_value_constraints()
         if points.shape[0] > 1:
             N, elements, inside = self.support.evaluate_shape(points[:, :3])
@@ -165,9 +165,9 @@ class P1Interpolator(DiscreteInterpolator):
             "%i tangent constraints and %i value constraints"
             % (self.n_g, self.n_n, self.n_t, self.n_i)
         )
-        self.add_gradient_ctr_pts(self.interpolation_weights["gpw"])
-        self.add_norm_ctr_pts(self.interpolation_weights["npw"])
-        self.add_ctr_pts(self.interpolation_weights["cpw"])
+        self.add_gradient_constraints(self.interpolation_weights["gpw"])
+        self.add_norm_constraints(self.interpolation_weights["npw"])
+        self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         # self.add_interface_constraints(self.interpolation_weights["ipw"])
 
@@ -213,3 +213,6 @@ class P1Interpolator(DiscreteInterpolator):
                         gradient constraints not added: outside of model bounding box"
                 )
             self.up_to_date = False
+
+    def add_interface_constraints(self, w: float = 1):
+        raise NotImplementedError

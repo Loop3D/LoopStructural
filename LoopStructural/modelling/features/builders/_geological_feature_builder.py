@@ -212,7 +212,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         if constrained:
             # Change normals to gradients
             mask = np.all(~np.isnan(data.loc[:, normal_vec_names()]), axis=1)
-            if mask.shape[0] > 0:
+            if mask.sum() > 0:
                 data.loc[mask, gradient_vec_names()] = data.loc[mask, normal_vec_names()].to_numpy(
                     float
                 )
@@ -226,7 +226,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         if not constrained or force_constrained:
             # change gradient constraints to normal vector constraints
             mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()]), axis=1)
-            if mask.shape[0] > 0:
+            if mask.sum() > 0:
                 data.loc[mask, normal_vec_names()] = data.loc[mask, gradient_vec_names()].to_numpy(
                     float
                 )
@@ -240,7 +240,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         # self.interpolator.reset()
         mask = ~np.isnan(data.loc[:, val_name()].to_numpy(float))
         # add value constraints
-        if mask.shape[0] > 0:
+        if mask.sum() > 0:
             value_data = data.loc[mask[:, 0], xyz_names() + val_name() + weight_name()].to_numpy(
                 float
             )
@@ -248,7 +248,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         # add gradient constraints
         mask = np.all(~np.isnan(data.loc[:, gradient_vec_names()].to_numpy(float)), axis=1)
-        if mask.shape[0] > 0:
+        if mask.sum() > 0:
             gradient_data = data.loc[
                 mask, xyz_names() + gradient_vec_names() + weight_name()
             ].to_numpy(float)
@@ -256,7 +256,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         # add normal vector data
         mask = np.all(~np.isnan(data.loc[:, normal_vec_names()].to_numpy(float)), axis=1)
-        if mask.shape[0] > 0:
+        if mask.sum() > 0:
             normal_data = data.loc[mask, xyz_names() + normal_vec_names() + weight_name()].to_numpy(
                 float
             )
@@ -264,7 +264,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         # add tangent data
         mask = np.all(~np.isnan(data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1)
-        if mask.shape[0] > 0:
+        if mask.sum() > 0:
             tangent_data = data.loc[
                 mask, xyz_names() + tangent_vec_names() + weight_name()
             ].to_numpy(float)
@@ -272,15 +272,16 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         # add interface constraints
         mask = np.all(~np.isnan(data.loc[:, interface_name()].to_numpy(float)), axis=1)
-        if mask.shape[0] > 0:
+        if mask.sum() > 0:
             interface_data = data.loc[
                 mask, xyz_names() + interface_name() + weight_name()
             ].to_numpy(float)
             self.interpolator.set_interface_constraints(interface_data)
         # add inequality constraints
         mask = np.all(~np.isnan(data.loc[:, inequality_name()].to_numpy(float)), axis=1)
-        if mask.shape[0] > 0:
+        if mask.sum() > 0:
             inequality_data = data.loc[mask, xyz_names() + inequality_name()].to_numpy(float)
+            print(inequality_data)
             self.interpolator.set_inequality_constraints(inequality_data)
 
         self.data_added = True
