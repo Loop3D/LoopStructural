@@ -49,6 +49,9 @@ The main modules for the library are:
 2. modelling 
 3. visualisation
 4. utils
+5. datasets
+
+
 
 **Coding paradigm** LoopStructural is written in an object oriented paradigm.
 The four pillars of object oriented coding should be adhered to:
@@ -56,6 +59,9 @@ The four pillars of object oriented coding should be adhered to:
 * **Encapsulation**: Attributes in python are designed to be accessible both within the class and from outside of the class. In LoopStructural, the where an attribute of a class should be private the ``@property`` decorator should be used.
 * **Inheritance**: Classes should inheret attributes and methods from parent classes. 
 * **Polymorphism**: Child classes, where a method is different from a parent class should override methods from parent classes.
+* **Abstraction**: Classes should be designed to be abstract and avoid containing implementation details.
+
+**ABC** LoopStructural uses abstract base classes to define the interface for different classes. 
 
 **Dependency management** The library is written in python and is dependent on numpy, scipy. Care should be taken to avoid incorporating of uncessary dependencies. For dependencies that are not part of the standard scientific python toolkit (numfocus projects) the dependencies should be optional and not be required. 
 
@@ -64,6 +70,8 @@ The four pillars of object oriented coding should be adhered to:
 **Tests** The tests are written using pytest and should be run using the command ``pytest``. 
 There should be unit tests for all classes and methods.
 Integration tests should be included to test the interaction between classes.
+
+**Commits** Commits should be made using the conventional commit style.
 
 **CI/CD** The code is automatically versioned using release-please. 
 When creating a commit use the conventional commit style e.g. ``fix: bug fix``, ``feat: new feature``, ``chore: code change``.
@@ -120,6 +128,7 @@ A visualisation module can be implemented by simply subclassing the **BaseModelP
 ---------
 
 The utils module is a container for utility functions that are used throughout the library.
+Where possible util functions should be stored in separate files that are imported in the `__init__.py` file.
 
 
 
@@ -138,6 +147,7 @@ A fixture is a function that can be called by a test for a range of predefined p
 For example a fixture to generate different discrete interpolators would be
 
 .. code-block::
+
     from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI, \
                                             PiecewiseLinearInterpolator as PLI
     from LoopStructural.interpolators import StructuredGrid, TetMesh
@@ -165,7 +175,7 @@ For example a fixture to generate different discrete interpolators would be
 
 This fixture can then be called by any test in the testing suite:
 
-.. code-block:
+.. code-block::
     
     from LoopStructural.interpolators import GeologicalInterpolator
 
