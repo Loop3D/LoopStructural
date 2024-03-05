@@ -144,6 +144,7 @@ class CubicFunction(FaultProfileFunction):
     def to_dict(self) -> dict:
         """Export the function to a dictionary
 
+
         Returns
         -------
         dict
