@@ -124,12 +124,26 @@ class CubicFunction(FaultProfileFunction):
     def __call__(self, v):
         self.solve()
         eva = self.w[0] * v**3 + self.w[1] * v**2 + self.w[2] * v + self.w[3]
+        eva[v > self.lim[1]] = (
+            self.w[0] * self.lim[1] ** 3
+            + self.w[1] * self.lim[1] ** 2
+            + self.w[2] * self.lim[1]
+            + self.w[3]
+        )
+        eva[v < self.lim[0]] = (
+            self.w[0] * self.lim[0] ** 3
+            + self.w[1] * self.lim[0] ** 2
+            + self.w[2] * self.lim[0]
+            + self.w[3]
+        )
         eva[eva > self.max_v] = self.max_v
         eva[eva < self.min_v] = self.min_v
+
         return eva
 
     def to_dict(self) -> dict:
         """Export the function to a dictionary
+
 
         Returns
         -------

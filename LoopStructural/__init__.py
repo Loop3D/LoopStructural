@@ -21,7 +21,7 @@ loggers = {}
 from .modelling.core.geological_model import GeologicalModel
 from .interpolators._api import LoopInterpolator
 from .datatypes import BoundingBox
-from .utils import log_to_console, log_to_file, getLogger
+from .utils import log_to_console, log_to_file, getLogger, rng
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")
