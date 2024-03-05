@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from abc import abstractmethod, ABCMeta
+from typing import Optional
 import numpy as np
 
 from ....utils import getLogger
@@ -5,108 +9,313 @@ from ....utils import getLogger
 logger = getLogger(__name__)
 
 
-class CubicFunction:
+class FaultProfileFunction(metaclass=ABCMeta):
+    def __init__(self):
+        self.lim = [-1, 1]
+        pass
+
+    @abstractmethod
+    def to_dict(self) -> dict:
+        pass
+
+    @abstractmethod
+    def __call__(self, v: np.ndarray) -> np.ndarray:
+        pass
+
+    def plot(self, ax=None):
+        if ax is None:
+            import matplotlib.pyplot as plt
+
+            fig, ax = plt.subplots()
+        x = np.linspace(-1, 1, 100)
+        ax.plot(x, self(x), label="ones function")
+
+
+class CubicFunction(FaultProfileFunction):
     """ """
 
     def __init__(self):
         """
-        Class to represent a cubic function
+        Class to represent a cubic function.
+        The cubic function is ax**3 + bx**2 + cx + d
+        The coefficients a,b,c,d are calculated from the constraints
+
         """
+        super().__init__()
         self.A = []  # np.zeros((4,4))
         self.B = []  # np.zeros((4))
         self.max_v = 999999
         self.min_v = -99999
-        self.w = None
+        self.w = np.zeros(4)
+        self.up_to_date = False
+        self.value_points = []
+        self.gradient_points = []
 
-    def add_cstr(self, x, y):
+    def add_cstr(self, x: float, y: float):
+        """Add a constraint to the cubic function
+
+        Parameters
+        ----------
+        x : float
+            x value
+        y : float
+            y value for the function
+        """
+        self.up_to_date = False
         self.A.append([x**3, x**2, x, 1.0])
         self.B.append(y)
+        self.value_points.append([x, y])
 
     def add_grad(self, x, g):
+        """Add a gradient constraint to the cubic function
+
+        Parameters
+        ----------
+        x : float
+            x value
+        g : float
+            gradient value
+        """
+        self.up_to_date = False
         self.A.append([3 * x**2, 2 * x, 1.0, 0.0])
         self.B.append(g)
+        self.gradient_points.append([x, g])
 
     def add_max(self, max_v):
+        """Adds a ceiling value to the funciton.
+        This is used to limit the maximum value returned
+        by the function but is not a constraint for the function."""
         self.max_v = max_v
 
     def add_min(self, min_v):
+        """Adds a floor value to the funciton.
+        This is used to limit the minimum value returned
+        by the function but is not a constraint for the function."""
         self.min_v = min_v
 
-    def __call__(self, v):
+    def set_lim(self, min_x: float, max_x: float):
+        """
+
+        Parameters
+        ----------
+        min_x : _type_
+            _description_
+        max_x : _type_
+            _description_
+        """
+        self.lim = [min_x, max_x]
+
+    def check(self):
         if len(self.B) < 3:
             print("underdetermined")
+            raise ValueError("Underdetermined")
+
+    def solve(self):
+        if self.up_to_date:
             return
-        if self.w is None:
-            A = np.array(self.A)
-            B = np.array(self.B)
-            ATA = A.T @ A
-            ATB = A.T @ B
-            self.w = np.linalg.lstsq(ATA, ATB, rcond=None)[0]
+        self.check()
+        A = np.array(self.A)
+        B = np.array(self.B)
+        ATA = A.T @ A
+        ATB = A.T @ B
+        self.w = np.linalg.lstsq(ATA, ATB, rcond=None)[0]
+        self.up_to_date = True
+
+    def __call__(self, v):
+        self.solve()
         eva = self.w[0] * v**3 + self.w[1] * v**2 + self.w[2] * v + self.w[3]
-        eva[v > self.max_v] = (
-            self.w[0] * self.max_v**3
-            + self.w[1] * self.max_v**2
-            + self.w[2] * self.max_v
-            + self.w[3]
-        )
-        eva[v < self.min_v] = (
-            self.w[0] * self.min_v**3
-            + self.w[1] * self.min_v**2
-            + self.w[2] * self.min_v
-            + self.w[3]
-        )
+        eva[eva > self.max_v] = self.max_v
+        eva[eva < self.min_v] = self.min_v
         return eva
 
+    def to_dict(self) -> dict:
+        """Export the function to a dictionary
 
-class Composite:
-    """ """
+        Returns
+        -------
+        dict
+            Keys A, B, max_v, min_v, w, up_to_date used to create a new CubicFunction
+        """
+        return {
+            "A": self.A,
+            "B": self.B,
+            "max_v": self.max_v,
+            "min_v": self.min_v,
+            "w": self.w.tolist(),
+            "value_points": self.value_points,
+            "gradient_points": self.gradient_points,
+            "up_to_date": self.up_to_date,
+        }
 
-    def __init__(self, positive, negative):
+    @classmethod
+    def from_dict(cls, data: dict) -> CubicFunction:
+        """Create a fault profile function from a json dictionary
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing A, B, max_v, min_v, w, up_to_date
+
+        Returns
+        -------
+        CubicFunction
+            An initialised function given the dictionary parameters
+        """
+        instance = cls()
+        instance.A = data.get("A", [])
+        instance.B = data.get("B", [])
+        instance.max_v = data.get("max_v", 999999)
+        instance.min_v = data.get("min_v", 999999)
+        instance.w = np.array(data.get("w", [0, 0, 0, 0]))
+        instance.value_points = data.get("value_points", [])
+        instance.gradient_points = data.get("gradient_points", [])
+        instance.up_to_date = data.get("up_to_date", False)
+        return instance
+
+
+class Composite(FaultProfileFunction):
+    """
+    A combination of two profiles for the positive and negative values for a coordinate.
+    This is used to model the displacement relative to the fault frame coordinate 0
+    """
+
+    def __init__(self, positive: FaultProfileFunction, negative: FaultProfileFunction):
         self.positive = positive
         self.negative = negative
 
-    def __call__(self, v):
+    def __call__(self, v: np.ndarray) -> np.ndarray:
+        """calculate the displacement for the input coordinate
+
+        Parameters
+        ----------
+        v : np.ndarray
+            fault frame coordinate between -1 and 1
+
+        Returns
+        -------
+        np.ndarray
+            the displacement for the input coordinate
+        """
         v = np.array(v)
         r = np.zeros(v.shape)
         r[v > 0] = self.positive(v[v > 0])
         r[v < 0] = self.negative(v[v < 0])
         return r
 
+    def to_dict(self) -> dict:
+        return {
+            "positive": self.positive.to_dict(),
+            "negative": self.negative.to_dict(),
+        }
 
-class Ones:
-    """ """
+    @classmethod
+    def from_dict(cls, data: dict) -> Composite:
+        """Create a fault profile function from a json dictionary
 
-    def __init__(self):
-        pass
+        Parameters
+        ----------
+        data : _type_
+            _description_
 
-    def __call__(self, v):
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        positive = CubicFunction.from_dict(data["positive"])
+        negative = CubicFunction.from_dict(data["negative"])
+        return cls(positive, negative)
+
+
+class Ones(FaultProfileFunction):
+    """
+    Returns a fault displacement value of one for the input coordinate
+    """
+
+    def __call__(self, v: np.ndarray) -> np.ndarray:
+        """calculate the displacement for the input coordinate
+
+        Parameters
+        ----------
+        v : np.ndarray
+            fault frame coordinate between -1 and 1
+
+        Returns
+        -------
+        np.ndarray
+            the displacement for the input coordinate
+        """
         v = np.array(v)
         return np.ones(v.shape)
 
+    def to_dict(self) -> dict:
+        return {}
 
-class Zeros:
-    """ """
+    @classmethod
+    def from_dict(cls, data: dict) -> Ones:
+        return cls()
 
-    def __init__(self):
-        pass
 
-    def __call__(self, v):
+class Zeros(FaultProfileFunction):
+    """
+    Returns a fault displacement value of zero for the input coordinate
+    """
+
+    def __call__(self, v: np.ndarray) -> np.ndarray:
+        """calculate the displacement for the input coordinate
+
+        Parameters
+        ----------
+        v : np.ndarray
+            fault frame coordinate between -1 and 1
+
+        Returns
+        -------
+        np.ndarray
+            the displacement for the input coordinate
+        """
         v = np.array(v)
         return np.zeros(v.shape)
 
+    def to_dict(self) -> dict:
+        return {}
+
+    @classmethod
+    def from_dict(cls, data: dict) -> Zeros:
+        return cls()
+
 
 class FaultDisplacement:
-    """ """
+    def __init__(
+        self,
+        hw: Optional[FaultProfileFunction] = None,
+        fw: Optional[FaultProfileFunction] = None,
+        gx: Optional[FaultProfileFunction] = None,
+        gy: Optional[FaultProfileFunction] = None,
+        gz: Optional[FaultProfileFunction] = None,
+    ):
+        """Function for characterising the displacement of a fault in 3D space
+        given the coordinates of the structural frame
 
-    def __init__(self, hw=None, fw=None, gx=None, gy=None, gz=None, **kwargs):
+        Parameters
+        ----------
+        hw : Optional[FaultProfileFunction], optional
+            hanging wall function, by default None
+        fw : Optional[FaultProfileFunction], optional
+            footwall function, by default None
+        gx : Optional[FaultProfileFunction], optional
+            displacement in direction normal to fault surface, by default None
+        gy : Optional[FaultProfileFunction], optional
+            displacement along fault slip direction, by default None
+        gz : Optional[FaultProfileFunction], optional
+            direction along fault extent direction, by default None
+
+        """
         self.gx = gx
         if hw is not None and fw is not None:
-            self.__gx = Composite(hw, fw)
+            self.gx = Composite(hw, fw)
         self.gy = gy
         self.gz = gz
-        self.gx_bounds = None
-        self.gy_bounds = None
-        self.gz_bounds = None
 
         if self.gx is None:
             print("Gx function none setting to ones")
@@ -117,35 +326,31 @@ class FaultDisplacement:
         if self.gz is None:
             print("Gz function none setting to ones")
             self.gz = Ones()
-        if "gxmax" in kwargs and "gxmin" in kwargs:
-            self.gx_bounds = (kwargs["gxmin"], kwargs["gxmax"])
 
-        if "gymax" in kwargs and "gymin" in kwargs:
-            self.gy_bounds = (kwargs["gymin"], kwargs["gymax"])
-
-        if "gzmax" in kwargs and "gzmin" in kwargs:
-            self.gz_bounds = (kwargs["gzmin"], kwargs["gzmax"])
+        if self.gx is None:
+            raise ValueError("Gx function none can't model fault")
+        if self.gy is None:
+            raise ValueError("Gy function none can't model fault")
+        if self.gz is None:
+            raise ValueError("Gz function none can't model fault")
 
     def __call__(self, gx, gy, gz):
-        if self.gx_bounds is not None:
-            mid = (self.gx_bounds[1] + self.gx_bounds[0]) / 2.0
-            gx = (gx - mid) / (self.gx_bounds[1] - self.gx_bounds[0])
-        if self.gy_bounds is not None:
-            mid = (self.gy_bounds[1] + self.gy_bounds[0]) / 2.0
-            gy = (gy - mid) / (self.gy_bounds[1] - self.gy_bounds[0])
-        if self.gz_bounds is not None:
-            mid = (self.gz_bounds[1] + self.gz_bounds[0]) / 2.0
-            gz = (gz - mid) / (self.gz_bounds[1] - self.gz_bounds[0])
+
         return self.gx(gx) * self.gy(gy) * self.gz(gz)
 
-    def evaluate(self, gy, gz):
-        if self.gy_bounds is not None:
-            mid = (self.gy_bounds[1] + self.gy_bounds[0]) / 2.0
-            gy = (gy - mid) / (self.gy_bounds[1] - self.gy_bounds[0])
-        if self.gz_bounds is not None:
-            mid = (self.gz_bounds[1] + self.gz_bounds[0]) / 2.0
-            gz = (gz - mid) / (self.gz_bounds[1] - self.gz_bounds[0])
-        return self.gy(gy) * self.gz(gz)
+    def to_dict(self) -> dict:
+        return {
+            "gx": self.gx.to_dict(),
+            "gy": self.gy.to_dict(),
+            "gz": self.gz.to_dict(),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> FaultDisplacement:
+        gx = CubicFunction.from_dict(data["gx"])
+        gy = CubicFunction.from_dict(data["gy"])
+        gz = CubicFunction.from_dict(data["gz"])
+        return cls(gx=gx, gy=gy, gz=gz)
 
 
 class BaseFault(object):
@@ -158,13 +363,13 @@ class BaseFault(object):
     # hw.add_cstr(1,1)
 
     hw.add_grad(1, 0)
-    hw.add_max(1)
+    hw.set_lim(0, 1)
     fw = CubicFunction()
     fw.add_cstr(0, -1)
     fw.add_grad(0, 0)
     fw.add_cstr(-1, 0)
     fw.add_grad(-1, 0)
-    fw.add_min(-1)
+    fw.set_lim(-1, 0)
     # gyf = CubicFunction()
     # gyf.add_cstr(-1, 0)
     # gyf.add_cstr(1, 0)
