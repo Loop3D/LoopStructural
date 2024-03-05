@@ -2,12 +2,7 @@ from enum import IntEnum
 
 
 class FeatureType(IntEnum):
-    """
-    Enum for the different interpolator types
-
-    1-9 should cover interpolators with supports
-    9+ are data supported
-    """
+    """ """
 
     BASE = 0
     INTERPOLATED = 1
