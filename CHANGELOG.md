@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.5.12](https://github.com/Loop3D/LoopStructural/compare/v1.5.11...v1.5.12) (2024-03-05)
+
+
+### Bug Fixes
+
+* adding imports back into init file ([b1d2ba9](https://github.com/Loop3D/LoopStructural/commit/b1d2ba97d5e4c7878165dc930d683df25fa61c49))
+* adding pyproject.toml ([474101c](https://github.com/Loop3D/LoopStructural/commit/474101c00c8be510dd8e4e57152ff7b0a95a4cb1))
+* bounding box can be defined from max, origin or nsteps + step vector ([a8d364c](https://github.com/Loop3D/LoopStructural/commit/a8d364ca5735fbd5efbe9fc2f535a5c6698b4d08))
+* change pyvista property to vtk ([8277304](https://github.com/Loop3D/LoopStructural/commit/8277304e932cc2ebe6581a8409a9d0a2375698bc))
+* exposing interpolator api in module import ([59e4f7c](https://github.com/Loop3D/LoopStructural/commit/59e4f7c196c6b803d6a642ea7976e4c733b5581a))
+* if interpolator results in 0, still set up to date ([6f18788](https://github.com/Loop3D/LoopStructural/commit/6f187888a69844a271c16125d75f1c19ce8a2aa3))
+* make rotation work with array of axis and angle ([72f7744](https://github.com/Loop3D/LoopStructural/commit/72f77441760e254a4e14e0a2738b041b2633499f))
+* making code compatible with linter ([716038e](https://github.com/Loop3D/LoopStructural/commit/716038e6c69031f6f6d374e10e0b8964b09cd523))
+* mapping interpolators to cythonless version ([e755c29](https://github.com/Loop3D/LoopStructural/commit/e755c29f851b5c67f74b8bd1dd26f278db349e18))
+* moving interpolator api ([2e1b008](https://github.com/Loop3D/LoopStructural/commit/2e1b0087e12696b359ea8cc8d9643d8b39afff60))
+* pyproject.toml missing modules ([4a4bf92](https://github.com/Loop3D/LoopStructural/commit/4a4bf92452fdb32ee3cf01f2155e11a17e832da5))
+* Removing cython  dependency ([#168](https://github.com/Loop3D/LoopStructural/issues/168)) ([21e5572](https://github.com/Loop3D/LoopStructural/commit/21e5572a02329b8a8a18a328bd76a8cfb449344b))
+* rename grad stepness to remove _ ([e8a7877](https://github.com/Loop3D/LoopStructural/commit/e8a78770d1ce6cc504a21f946363b739e52cff09))
+* return axis and angle for movement of fault points ([48e6261](https://github.com/Loop3D/LoopStructural/commit/48e62616581cda2da89e0d79d323f8332d19a376))
+* scaling fault normal by minor axis ([ac99448](https://github.com/Loop3D/LoopStructural/commit/ac994480b559d1f58c9c8befa54dc7016b4e2cb9))
+* under constrained faults now work ([50a04af](https://github.com/Loop3D/LoopStructural/commit/50a04afee891be9f6b80108d9baf6fab71c8ffba))
+* unstructured tetra only take first 4 elements ([4673bbc](https://github.com/Loop3D/LoopStructural/commit/4673bbc14d2517bf10138a741e72db910c42d2fe))
+
+
+### Documentation
+
+* updating design and contributors guide ([e10c7bc](https://github.com/Loop3D/LoopStructural/commit/e10c7bcb9872a6776a4270dd643b70c14fe49008))
+
 ## [1.5.11](https://github.com/Loop3D/LoopStructural/compare/v1.5.10...v1.5.11) (2023-12-03)
 
 
