@@ -124,7 +124,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         self.add_interface_constraints(self.interpolation_weights["ipw"])
-        self.add_inequality_constraints()
+        self.add_value_inequality_constraints()
+        self.add_inequality_pairs_constraints()
 
     def copy(self):
         """
@@ -171,45 +172,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 idc[inside, :],
                 w=w * points[inside, 4] * self.support.element_size,
                 name="value",
-            )
-            if np.sum(inside) <= 0:
-                logger.warning(
-                    f"{np.sum(~inside)} \
-                        value constraints not added: outside of model bounding box"
-                )
-
-    def add_inequality_constraints(self, w=1.0):
-        """add inequality constraints to the interpolator
-        only works if using osqp solver.
-
-        Parameters
-        ----------
-        w : float, optional
-            weight of constraint in lsqr system, by default 1.0
-        """
-        points = self.get_inequality_constraints()
-        # check that we have added some points
-        if points.shape[0] > 0:
-            node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
-            # print(points[inside,:].shape)
-
-            gi = np.zeros(self.support.n_nodes, dtype=int)
-            gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx, dtype=int)
-            idc = np.zeros(node_idx.shape, dtype=int)
-            idc[:] = -1
-
-            idc[inside, :] = gi[node_idx[inside, :]]
-            inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
-            a = self.support.position_to_dof_coefs(points[inside, :3])
-            # a*=w
-            # a/=np.product(self.support.step_vector)
-            self.add_inequality_constraints_to_matrix(
-                a.T,
-                points[inside, 3],
-                points[inside, 4],
-                idc[inside, :],
-                name="value_inequality",
             )
             if np.sum(inside) <= 0:
                 logger.warning(
