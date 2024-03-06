@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.GeologicalModel &#8212; LoopStructural 1.5.11 documentation</title>
+    <title>LoopStructural.GeologicalModel &#8212; LoopStructural 1.5.12 documentation</title>
   
   
   
@@ -18,36 +18,40 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=cad83edb"></script>
+    <script src="../_static/documentation_options.js?v=3dd05124"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.GeologicalModel';</script>
+    <script src="../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.modelling" href="LoopStructural.modelling.html" />
     <link rel="prev" title="LoopStructural" href="LoopStructural.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Mar 06, 2024"/>
   </head>
   
   
@@ -55,10 +59,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -99,7 +102,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -118,8 +121,16 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../_static/infinity_loop_icon.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
-    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
+  
+    <p class="title logo__title">LoopStructural - 1.5.12</p>
   
 </a></div>
     
@@ -131,12 +142,6 @@
       
         <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -161,18 +166,26 @@
                 
 
                     <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="../API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -219,7 +232,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -231,8 +256,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -262,10 +287,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -278,12 +306,6 @@ document.write(`
         
           <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -308,18 +330,26 @@ document.write(`
                 
 
                     <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="../API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
+                    More
+                </button>
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
         
@@ -352,7 +382,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -364,8 +406,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -378,8 +420,17 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">LoopStructural.GeologicalModel</a></li>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="LoopStructural.html">LoopStructural</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">LoopStructural.GeologicalModel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.api.html">LoopStructural.api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.datatypes.html">LoopStructural.datatypes</a></li>
 </ul>
 </div>
 </nav></div>
@@ -418,6 +469,9 @@ document.write(`
       </a>
     </li>
     
+    <li class="breadcrumb-item"><a href="../API.html" class="nav-link">API</a></li>
+    
+    
     <li class="breadcrumb-item"><a href="LoopStructural.html" class="nav-link">LoopStructural</a></li>
     
     <li class="breadcrumb-item active" aria-current="page">LoopStructur...</li>
@@ -435,7 +489,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="loopstructural-geologicalmodel">
 <h1>LoopStructural.GeologicalModel<a class="headerlink" href="#loopstructural-geologicalmodel" title="Link to this heading">#</a></h1>
@@ -674,41 +728,41 @@ the rescaling of the model between 0 and 1.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.evaluate_model" title="LoopStructural.GeologicalModel.evaluate_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_model</span></code></a>(xyz[, scale])</p></td>
 <td><p>Evaluate the stratigraphic id at each location</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.extend_model_data" title="LoopStructural.GeologicalModel.extend_model_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend_model_data</span></code></a>(newdata)</p></td>
-<td><p>Extends the data frame</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.fault_names" title="LoopStructural.GeologicalModel.fault_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_names</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.fault_names" title="LoopStructural.GeologicalModel.fault_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_names</span></code></a>()</p></td>
 <td><p>Get name of all faults in the model</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">feature_names</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">feature_names</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.from_file" title="LoopStructural.GeologicalModel.from_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_file</span></code></a>(file)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.from_file" title="LoopStructural.GeologicalModel.from_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_file</span></code></a>(file)</p></td>
 <td><p>Load a geological model from file</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.from_map2loop_directory" title="LoopStructural.GeologicalModel.from_map2loop_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_map2loop_directory</span></code></a>(m2l_directory[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.from_map2loop_directory" title="LoopStructural.GeologicalModel.from_map2loop_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_map2loop_directory</span></code></a>(m2l_directory[, ...])</p></td>
 <td><p>Alternate constructor for a geological model using m2l output</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.from_processor" title="LoopStructural.GeologicalModel.from_processor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_processor</span></code></a>(processor)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.from_processor" title="LoopStructural.GeologicalModel.from_processor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_processor</span></code></a>(processor)</p></td>
 <td><p>Builds a model from a <code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.modelling.input.ProcessInputData</span></code> object This object stores the observations and order of the geological features</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.get_feature_by_name" title="LoopStructural.GeologicalModel.get_feature_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_by_name</span></code></a>(feature_name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.get_feature_by_name" title="LoopStructural.GeologicalModel.get_feature_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_by_name</span></code></a>(feature_name)</p></td>
 <td><p>Returns a feature from the mode given a name</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.regular_grid" title="LoopStructural.GeologicalModel.regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regular_grid</span></code></a>([nsteps, shuffle, rescale, order])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.regular_grid" title="LoopStructural.GeologicalModel.regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regular_grid</span></code></a>([nsteps, shuffle, rescale, order])</p></td>
 <td><p>Return a regular grid within the model bounding box</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.rescale" title="LoopStructural.GeologicalModel.rescale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rescale</span></code></a>(points[, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.rescale" title="LoopStructural.GeologicalModel.rescale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rescale</span></code></a>(points[, inplace])</p></td>
 <td><p>Convert from model scale to real world scale - in the future this should also do transformations?</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.scale" title="LoopStructural.GeologicalModel.scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale</span></code></a>(points[, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.scale" title="LoopStructural.GeologicalModel.scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale</span></code></a>(points[, inplace])</p></td>
 <td><p>Take points in UTM coordinates and reproject into scaled model space</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_model_data</span></code>(data)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_model_data</span></code>(data)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.set_stratigraphic_column" title="LoopStructural.GeologicalModel.set_stratigraphic_column"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_stratigraphic_column</span></code></a>(stratigraphic_column)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.set_stratigraphic_column" title="LoopStructural.GeologicalModel.set_stratigraphic_column"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_stratigraphic_column</span></code></a>(stratigraphic_column)</p></td>
 <td><p>Adds a stratigraphic column to the model</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.to_dict" title="LoopStructural.GeologicalModel.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<td><p>Convert the geological model to a json string</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.GeologicalModel.to_file" title="LoopStructural.GeologicalModel.to_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_file</span></code></a>(file)</p></td>
 <td><p>Save a model to a pickle file requires dill</p></td>
@@ -743,12 +797,12 @@ the rescaling of the model between 0 and 1.</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.GeologicalModel.add_onlap_unconformity">
-<span class="sig-name descname"><span class="pre">add_onlap_unconformity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeologicalFeature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeologicalFeature</span></span></span><a class="headerlink" href="#LoopStructural.GeologicalModel.add_onlap_unconformity" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_onlap_unconformity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature" title="LoopStructural.modelling.features._geological_feature.GeologicalFeature"><span class="pre">GeologicalFeature</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature" title="LoopStructural.modelling.features._geological_feature.GeologicalFeature"><span class="pre">GeologicalFeature</span></a></span></span><a class="headerlink" href="#LoopStructural.GeologicalModel.add_onlap_unconformity" title="Link to this definition">#</a></dt>
 <dd><p>Use an existing feature to add an unconformity to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>feature</strong> (<em>GeologicalFeature</em>) – existing geological feature</p></li>
+<li><p><strong>feature</strong> (<a class="reference internal" href="LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature" title="LoopStructural.visualisation.lavavu.GeologicalFeature"><em>GeologicalFeature</em></a>) – existing geological feature</p></li>
 <li><p><strong>value</strong> (<em>float</em>) – scalar value of isosurface that represents</p></li>
 </ul>
 </dd>
@@ -760,12 +814,12 @@ the rescaling of the model between 0 and 1.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.GeologicalModel.add_unconformity">
-<span class="sig-name descname"><span class="pre">add_unconformity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeologicalFeature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UnconformityFeature</span></span></span><a class="headerlink" href="#LoopStructural.GeologicalModel.add_unconformity" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_unconformity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="LoopStructural.visualisation.vtk_exporter.GeologicalFeature.html#LoopStructural.visualisation.vtk_exporter.GeologicalFeature" title="LoopStructural.modelling.features._geological_feature.GeologicalFeature"><span class="pre">GeologicalFeature</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UnconformityFeature</span></span></span><a class="headerlink" href="#LoopStructural.GeologicalModel.add_unconformity" title="Link to this definition">#</a></dt>
 <dd><p>Use an existing feature to add an unconformity to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>feature</strong> (<em>GeologicalFeature</em>) – existing geological feature</p></li>
+<li><p><strong>feature</strong> (<a class="reference internal" href="LoopStructural.visualisation.lavavu.GeologicalFeature.html#LoopStructural.visualisation.lavavu.GeologicalFeature" title="LoopStructural.visualisation.lavavu.GeologicalFeature"><em>GeologicalFeature</em></a>) – existing geological feature</p></li>
 <li><p><strong>value</strong> (<em>float</em>) – scalar value of isosurface that represents</p></li>
 </ul>
 </dd>
@@ -794,7 +848,7 @@ the rescaling of the model between 0 and 1.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.GeologicalModel.create_and_add_fault">
-<span class="sig-name descname"><span class="pre">create_and_add_fault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fault_surface_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolatortype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FDI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_slip_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">major_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intermediate_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faultfunction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BaseFault'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.GeologicalModel.create_and_add_fault" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_and_add_fault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fault_surface_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolatortype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FDI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_slip_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_normal_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">major_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intermediate_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faultfunction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BaseFault'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_mesh_geometry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_trace_anisotropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_dip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_dip_anisotropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.GeologicalModel.create_and_add_fault" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -841,7 +895,7 @@ the rescaling of the model between 0 and 1.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fold_frame_data</strong> (<em>string</em>) – name of the feature to be added</p></li>
-<li><p><strong>fold_frame</strong> (<em>StructuralFrame</em><em>, </em><em>optional</em>) – the fold frame for the fold if not specified uses last feature added</p></li>
+<li><p><strong>fold_frame</strong> (<a class="reference internal" href="LoopStructural.visualisation.model_plotter.StructuralFrame.html#LoopStructural.visualisation.model_plotter.StructuralFrame" title="LoopStructural.visualisation.model_plotter.StructuralFrame"><em>StructuralFrame</em></a><em>, </em><em>optional</em>) – the fold frame for the fold if not specified uses last feature added</p></li>
 <li><p><strong>kwargs</strong> (<em>dict</em>) – parameters passed to child functions</p></li>
 </ul>
 </dd>
@@ -870,7 +924,7 @@ see <code class="xref py py-class docutils literal notranslate"><span class="pre
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.GeologicalModel.create_and_add_folded_foliation">
-<span class="sig-name descname"><span class="pre">create_and_add_folded_foliation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">foliation_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolatortype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DFI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nelements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.GeologicalModel.create_and_add_folded_foliation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_and_add_folded_foliation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">foliation_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolatortype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DFI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nelements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert_fold_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.GeologicalModel.create_and_add_folded_foliation" title="Link to this definition">#</a></dt>
 <dd><p>Create a folded foliation field from data and a fold frame</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1045,7 +1099,7 @@ xyz</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.GeologicalModel.evaluate_model">
-<span class="sig-name descname"><span class="pre">evaluate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.GeologicalModel.evaluate_model" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">evaluate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.GeologicalModel.evaluate_model" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate the stratigraphic id at each location</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1088,17 +1142,6 @@ xyz</p>
 </div>
 <p>Evaluate on points in reference coordinate system
 &gt;&gt;&gt; model.evaluate_model(xyz,scale=True)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.GeologicalModel.extend_model_data">
-<span class="sig-name descname"><span class="pre">extend_model_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newdata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.GeologicalModel.extend_model_data" title="Link to this definition">#</a></dt>
-<dd><p>Extends the data frame</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>newdata</strong> (<em>pandas data frame</em>) – data to add to the existing dataframe</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1165,7 +1208,7 @@ and <a class="reference internal" href="#LoopStructural.GeologicalModel.from_pro
 This object stores the observations and order of the geological features</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>processor</strong> (<em>ProcessInputData</em>) – any type of ProcessInputData</p>
+<dd class="field-odd"><p><strong>processor</strong> (<a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData"><em>ProcessInputData</em></a>) – any type of ProcessInputData</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>GeologicalModel</em> – a model with all of the features, need to call model.update() to run interpolation</p>
@@ -1232,7 +1275,7 @@ into scaled model space</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>points</strong> (<em>np.array((N,3),dtype=double)</em>)</p>
+<dd class="field-even"><p><strong>points</strong> (<em>np.a::rray((N,3),dtype=double)</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1260,6 +1303,17 @@ into scaled model space</p>
 <p>}</p>
 </div></blockquote>
 <p>}</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.GeologicalModel.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.GeologicalModel.to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert the geological model to a json string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>json</strong> (<em>str</em>) – json string of the geological model</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1296,6 +1350,15 @@ into scaled model space</p>
         <p class="prev-next-title">LoopStructural</p>
       </div>
     </a>
+    <a class="right-next"
+       href="LoopStructural.modelling.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural.modelling</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -1305,12 +1368,14 @@ into scaled model space</p>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-  <div class="sidebar-secondary-item">
 
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel"><code class="docutils literal notranslate"><span class="pre">GeologicalModel</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.features"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.features</span></code></a></li>
@@ -1335,7 +1400,6 @@ into scaled model space</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.evaluate_feature_gradient"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.evaluate_feature_gradient()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.evaluate_feature_value"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.evaluate_feature_value()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.evaluate_model"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.evaluate_model()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.extend_model_data"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.extend_model_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.fault_names"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.fault_names()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.faults"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.faults</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.from_file"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.from_file()</span></code></a></li>
@@ -1346,6 +1410,7 @@ into scaled model space</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.rescale"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.rescale()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.scale"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.scale()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.set_stratigraphic_column"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.set_stratigraphic_column()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.to_dict"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.to_dict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.GeologicalModel.to_file"><code class="docutils literal notranslate"><span class="pre">GeologicalModel.to_file()</span></code></a></li>
 </ul>
 </li>
@@ -1355,7 +1420,7 @@ into scaled model space</p>
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../_sources/_autosummary/LoopStructural.GeologicalModel.rst.txt">
+    <a href="../_sources/_autosummary/LoopStructural.GeologicalModel.rst">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
@@ -1374,8 +1439,8 @@ into scaled model space</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

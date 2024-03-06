@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Loop Structural &#8212; LoopStructural 1.5.11 documentation</title>
+    <title>Loop Structural &#8212; LoopStructural 1.5.12 documentation</title>
   
   
   
@@ -18,36 +18,39 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="_static/documentation_options.js?v=cad83edb"></script>
+    <script src="_static/documentation_options.js?v=3dd05124"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script src="_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Getting Started" href="getting_started/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Mar 06, 2024"/>
   </head>
   
   
@@ -55,10 +58,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -99,7 +101,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -118,8 +120,16 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="_static/infinity_loop_icon.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
-    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
+  
+    <p class="title logo__title">LoopStructural - 1.5.12</p>
   
 </a></div>
     
@@ -131,12 +141,6 @@
       
         <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -161,18 +165,26 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="_autosummary/LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -219,7 +231,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -231,8 +255,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -262,10 +286,15 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
       
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
@@ -278,12 +307,6 @@ document.write(`
         
           <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -308,18 +331,26 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="_autosummary/LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
+                    More
+                </button>
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
         
@@ -352,7 +383,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -364,8 +407,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -394,7 +437,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="loop-structural">
 <h1>Loop Structural<a class="headerlink" href="#loop-structural" title="Link to this heading">#</a></h1>
@@ -409,20 +452,41 @@ State and Federal Geological Surveys, the Australian Research Council and the Mi
 elements in a 3D geological model. Including stratigraphy, unconformities, fault and folds. LoopStructural contains
 three native interpolation algorithms:</p>
 <ol class="arabic simple">
-<li><p>Piecewise-linear interpolation <a href="#id1"><span class="problematic" id="id2">:cite:`Frank2007`</span></a></p></li>
-<li><p>Discrete Fold Interpolator <a href="#id3"><span class="problematic" id="id4">:cite:`Laurent2016,Grose2017,Grose2018,Grose2019`</span></a></p></li>
-<li><p>Finite Difference Interpolation <a href="#id5"><span class="problematic" id="id6">:cite:`Irakarama2020`</span></a></p></li>
+<li><p>Piecewise-linear interpolation <span id="id1">[<a class="reference internal" href="#id6" title="Tobias Frank, Anne-Laure Laure Tertois, and Jean-Laurent Laurent Mallet. 3d-reconstruction of complex geological interfaces from irregularly distributed and noisy point data. Computers &amp; Geosciences, 33:932-943, 7 2007. URL: http://linkinghub.elsevier.com/retrieve/pii/S0098300407000581, doi:10.1016/j.cageo.2006.11.014.">1</a>]</span></p></li>
+<li><p>Discrete Fold Interpolator <span id="id2">[<a class="reference internal" href="#id7" title="L. Grose, G. Laurent, L. Aillères, R. Armit, M. Jessell, and T. Cousin-Dechenaud. Inversion of structural geology data for fold geometry. Journal of Geophysical Research: Solid Earth, 123:6318-6333, 2018. URL: http://doi.wiley.com/10.1029/2017JB015177, doi:10.1029/2017JB015177.">2</a>, <a class="reference internal" href="#id8" title="Lachlan Grose, Laurent Ailleres, Gautier Laurent, Robin Armit, and Mark Jessell. Inversion of geological knowledge for fold geometry. Journal of Structural Geology, 119:1-14, 2019. URL: https://doi.org/10.1016/j.jsg.2018.11.010, doi:10.1016/j.jsg.2018.11.010.">3</a>, <a class="reference internal" href="#id10" title="Gautier Laurent, Laurent Ailleres, Lachlan Grose, Guillaume Caumon, Mark Jessell, and Robin Armit. Implicit modeling of folds and overprinting deformation. Earth and Planetary Science Letters, 456:26-38, 2016. URL: http://linkinghub.elsevier.com/retrieve/pii/S0012821X16305209, doi:10.1016/j.epsl.2016.09.040.">6</a>]</span></p></li>
+<li><p>Finite Difference Interpolation <span id="id3">[<a class="reference internal" href="#id11" title="Modeste Irakarama, Gautier Laurent, Julien Renaudeau, and Guillaume Caumon. Finite difference implicit structural modeling of geological structures. Mathematical Geosciences, 2020. URL: https://doi.org/10.1007/s11004-020-09887-w, doi:10.1007/s11004-020-09887-w.">5</a>]</span></p></li>
 </ol>
-<p>and a wrapper for the generalised radial basis functions provided by Surfe <a href="#id7"><span class="problematic" id="id8">:cite:`Hillier2014`</span></a>.</p>
+<p>and a wrapper for the generalised radial basis functions provided by Surfe <span id="id4">[<a class="reference internal" href="#id9" title="Michael J. Hillier, Ernst M. Schetselaar, Eric A. de Kemp, and Gervais Perron. Three-dimensional modelling of geological surfaces using generalized interpolation with radial basis functions. Mathematical Geosciences, 46:931-953, 11 2014. URL: http://link.springer.com/10.1007/s11004-014-9540-3, doi:10.1007/s11004-014-9540-3.">4</a>]</span>.</p>
+<div class="docutils container" id="id5">
+<div role="list" class="citation-list">
+<div class="citation" id="id6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Tobias Frank, Anne-Laure Laure Tertois, and Jean-Laurent Laurent Mallet. 3d-reconstruction of complex geological interfaces from irregularly distributed and noisy point data. <em>Computers &amp; Geosciences</em>, 33:932–943, 7 2007. URL: <a class="reference external" href="http://linkinghub.elsevier.com/retrieve/pii/S0098300407000581">http://linkinghub.elsevier.com/retrieve/pii/S0098300407000581</a>, <a class="reference external" href="https://doi.org/10.1016/j.cageo.2006.11.014">doi:10.1016/j.cageo.2006.11.014</a>.</p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>L. Grose, G. Laurent, L. Aillères, R. Armit, M. Jessell, and T. Cousin-Dechenaud. Inversion of structural geology data for fold geometry. <em>Journal of Geophysical Research: Solid Earth</em>, 123:6318–6333, 2018. URL: <a class="reference external" href="http://doi.wiley.com/10.1029/2017JB015177">http://doi.wiley.com/10.1029/2017JB015177</a>, <a class="reference external" href="https://doi.org/10.1029/2017JB015177">doi:10.1029/2017JB015177</a>.</p>
+</div>
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">3</a><span class="fn-bracket">]</span></span>
+<p>Lachlan Grose, Laurent Ailleres, Gautier Laurent, Robin Armit, and Mark Jessell. Inversion of geological knowledge for fold geometry. <em>Journal of Structural Geology</em>, 119:1–14, 2019. URL: <a class="reference external" href="https://doi.org/10.1016/j.jsg.2018.11.010">https://doi.org/10.1016/j.jsg.2018.11.010</a>, <a class="reference external" href="https://doi.org/10.1016/j.jsg.2018.11.010">doi:10.1016/j.jsg.2018.11.010</a>.</p>
+</div>
+<div class="citation" id="id9" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Michael J. Hillier, Ernst M. Schetselaar, Eric A. de Kemp, and Gervais Perron. Three-dimensional modelling of geological surfaces using generalized interpolation with radial basis functions. <em>Mathematical Geosciences</em>, 46:931–953, 11 2014. URL: <a class="reference external" href="http://link.springer.com/10.1007/s11004-014-9540-3">http://link.springer.com/10.1007/s11004-014-9540-3</a>, <a class="reference external" href="https://doi.org/10.1007/s11004-014-9540-3">doi:10.1007/s11004-014-9540-3</a>.</p>
+</div>
+<div class="citation" id="id11" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">5</a><span class="fn-bracket">]</span></span>
+<p>Modeste Irakarama, Gautier Laurent, Julien Renaudeau, and Guillaume Caumon. Finite difference implicit structural modeling of geological structures. <em>Mathematical Geosciences</em>, 2020. URL: <a class="reference external" href="https://doi.org/10.1007/s11004-020-09887-w">https://doi.org/10.1007/s11004-020-09887-w</a>, <a class="reference external" href="https://doi.org/10.1007/s11004-020-09887-w">doi:10.1007/s11004-020-09887-w</a>.</p>
+</div>
+<div class="citation" id="id10" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">6</a><span class="fn-bracket">]</span></span>
+<p>Gautier Laurent, Laurent Ailleres, Lachlan Grose, Guillaume Caumon, Mark Jessell, and Robin Armit. Implicit modeling of folds and overprinting deformation. <em>Earth and Planetary Science Letters</em>, 456:26–38, 2016. URL: <a class="reference external" href="http://linkinghub.elsevier.com/retrieve/pii/S0012821X16305209">http://linkinghub.elsevier.com/retrieve/pii/S0012821X16305209</a>, <a class="reference external" href="https://doi.org/10.1016/j.epsl.2016.09.040">doi:10.1016/j.epsl.2016.09.040</a>.</p>
+</div>
+</div>
+</div>
 <div class="toctree-wrapper compound">
 </div>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/LoopStructural.html#module-LoopStructural" title="LoopStructural"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoopStructural</span></code></a></p></td>
-<td><p>LoopStructural API</p></td>
-</tr>
-</tbody>
-</table>
 </section>
 
 
@@ -453,10 +517,11 @@ three native interpolation algorithms:</p>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="_sources/index.rst.txt">
+    <a href="_sources/index.rst">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
@@ -475,8 +540,8 @@ three native interpolation algorithms:</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

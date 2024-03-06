@@ -1,0 +1,948 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LoopStructural.interpolators.GeologicalInterpolator &#8212; LoopStructural 1.5.12 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=3dd05124"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.GeologicalInterpolator';</script>
+    <script src="../_static/custom-icon.js?v=40bda21d"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoopStructural.interpolators.DiscreteInterpolator" href="LoopStructural.interpolators.DiscreteInterpolator.html" />
+    <link rel="prev" title="LoopStructural.interpolators.InterpolatorType" href="LoopStructural.interpolators.InterpolatorType.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Mar 06, 2024"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/infinity_loop_icon.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">LoopStructural - 1.5.12</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../API.html">
+                        API
+                      </a>
+                    </li>
+                
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+                <li class="nav-item">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
+                </li>
+                
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../_auto_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../API.html">
+                        API
+                      </a>
+                    </li>
+                
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
+                    More
+                </button>
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
+                    
+                <li class="nav-item">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
+                    Loop3d
+                  </a>
+                </li>
+                
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.html">LoopStructural</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.modelling.html">LoopStructural.modelling</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.InterpolatorType.html">LoopStructural.interpolators.InterpolatorType</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">LoopStructural.interpolators.GeologicalInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.DiscreteInterpolator.html">LoopStructural.interpolators.DiscreteInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html">LoopStructural.interpolators.P1Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P2Interpolator.html">LoopStructural.interpolators.P2Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html">LoopStructural.interpolators.StructuredGrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.UnStructuredTetMesh.html">LoopStructural.interpolators.UnStructuredTetMesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P1Unstructured2d.html">LoopStructural.interpolators.P1Unstructured2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P2Unstructured2d.html">LoopStructural.interpolators.P2Unstructured2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid2D.html">LoopStructural.interpolators.StructuredGrid2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P2UnstructuredTetMesh.html">LoopStructural.interpolators.P2UnstructuredTetMesh</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.api.html">LoopStructural.api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.visualisation.html">LoopStructural.visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LoopStructural.datatypes.html">LoopStructural.datatypes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../API.html" class="nav-link">API</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="LoopStructural.interpolators.html" class="nav-link">LoopStructural.interpolators</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">LoopStructur...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="loopstructural-interpolators-geologicalinterpolator">
+<h1>LoopStructural.interpolators.GeologicalInterpolator<a class="headerlink" href="#loopstructural-interpolators-geologicalinterpolator" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></span><span class="sig-name descname"><span class="pre">GeologicalInterpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_to_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.data" title="Link to this definition">#</a></dt>
+<dd><p>a dictionary with np.arrays for gradient, value, normal, tangent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This class is the base class for a geological interpolator and contains
+all of the main interface functions. Any class that is inheriting from
+this should be callable by using any of these functions. This will
+enable interpolators to be interchanged.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.__init__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_to_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.__init__" title="Link to this definition">#</a></dt>
+<dd><p>This class is the base class for a geological interpolator and contains
+all of the main interface functions. Any class that is inheriting from
+this should be callable by using any of these functions. This will
+enable interpolators to be interchanged.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.__init__" title="LoopStructural.interpolators.GeologicalInterpolator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([data, up_to_date])</p></td>
+<td><p>This class is the base class for a geological interpolator and contains all of the main interface functions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gradient_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_interface_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_norm_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tangent_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_array</span></code>(array)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.clean" title="LoopStructural.interpolators.GeologicalInterpolator.clean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean</span></code></a>()</p></td>
+<td><p>Removes all of the data from an interpolator</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.debug" title="LoopStructural.interpolators.GeologicalInterpolator.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>()</p></td>
+<td><p>Helper function for debugging when the interpolator isn't working</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code>(locations)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code>(locations)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.get_data_locations" title="LoopStructural.interpolators.GeologicalInterpolator.get_data_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_locations</span></code></a>()</p></td>
+<td><p>Get the location of all data points</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.get_gradient_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.get_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gradient_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.get_interface_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
+<td><p>Get the location of interface constraints</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.get_norm_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.get_value_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array containing the value constraints usually 7-8 columns.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_pairs_constraints</span></code>(pointsa, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.set_normal_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.set_normal_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_normal_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array containing the value constraints usually 7-8 columns.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_region</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.set_tangent_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.set_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_tangent_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array containing the value constraints usually 7-8 columns.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.set_value_constraints" title="LoopStructural.interpolators.GeologicalInterpolator.set_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_constraints</span></code></a>(points)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param points<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array containing the value constraints usually 4-5 columns.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_inequality_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.setup" title="LoopStructural.interpolators.GeologicalInterpolator.setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code></a>(**kwargs)</p></td>
+<td><p>Runs all of the required setting up stuff</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.setup_interpolator" title="LoopStructural.interpolators.GeologicalInterpolator.setup_interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_interpolator</span></code></a>(**kwargs)</p></td>
+<td><p>Runs all of the required setting up stuff</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.solve_system" title="LoopStructural.interpolators.GeologicalInterpolator.solve_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_system</span></code></a>(**kwargs)</p></td>
+<td><p>Solves the interpolation equations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.to_json" title="LoopStructural.interpolators.GeologicalInterpolator.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a>()</p></td>
+<td><p>Returns a json representation of the geological interpolator</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.GeologicalInterpolator.data" title="LoopStructural.interpolators.GeologicalInterpolator.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.clean" title="Link to this definition">#</a></dt>
+<dd><p>Removes all of the data from an interpolator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.debug" title="Link to this definition">#</a></dt>
+<dd><p>Helper function for debugging when the interpolator isn’t working</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.get_data_locations">
+<span class="sig-name descname"><span class="pre">get_data_locations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.get_data_locations" title="Link to this definition">#</a></dt>
+<dd><p>Get the location of all data points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em> – Nx3 - X,Y,Z location of all data points</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.get_gradient_constraints">
+<span class="sig-name descname"><span class="pre">get_gradient_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.get_gradient_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.get_interface_constraints">
+<span class="sig-name descname"><span class="pre">get_interface_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.get_interface_constraints" title="Link to this definition">#</a></dt>
+<dd><p>Get the location of interface constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em> – Nx4 - X,Y,Z,id location of all interface constraints</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.get_norm_constraints">
+<span class="sig-name descname"><span class="pre">get_norm_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.get_norm_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.get_tangent_constraints">
+<span class="sig-name descname"><span class="pre">get_tangent_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.get_tangent_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.get_value_constraints">
+<span class="sig-name descname"><span class="pre">get_value_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.get_value_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>numpy array</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.set_gradient_constraints">
+<span class="sig-name descname"><span class="pre">set_gradient_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.set_gradient_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – array containing the value constraints usually 7-8 columns.
+X,Y,Z,gx,gy,gz,weight</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.set_normal_constraints">
+<span class="sig-name descname"><span class="pre">set_normal_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.set_normal_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – array containing the value constraints usually 7-8 columns.
+X,Y,Z,nx,ny,nz,weight</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.set_tangent_constraints">
+<span class="sig-name descname"><span class="pre">set_tangent_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.set_tangent_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – array containing the value constraints usually 7-8 columns.
+X,Y,Z,nx,ny,nz,weight</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.set_value_constraints">
+<span class="sig-name descname"><span class="pre">set_value_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.set_value_constraints" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – array containing the value constraints usually 4-5 columns.
+X,Y,Z,val,weight</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.setup" title="Link to this definition">#</a></dt>
+<dd><p>Runs all of the required setting up stuff</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.setup_interpolator">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_interpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.setup_interpolator" title="Link to this definition">#</a></dt>
+<dd><p>Runs all of the required setting up stuff</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.solve_system">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solve_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.solve_system" title="Link to this definition">#</a></dt>
+<dd><p>Solves the interpolation equations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.GeologicalInterpolator.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.GeologicalInterpolator.to_json" title="Link to this definition">#</a></dt>
+<dd><p>Returns a json representation of the geological interpolator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>json</strong> (<em>dict</em>) – json representation of the geological interpolator</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="LoopStructural.interpolators.InterpolatorType.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">LoopStructural.interpolators.InterpolatorType</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="LoopStructural.interpolators.DiscreteInterpolator.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">LoopStructural.interpolators.DiscreteInterpolator</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.data"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.__init__"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.clean"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.clean()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.debug"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.debug()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.get_data_locations"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.get_data_locations()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.get_gradient_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.get_gradient_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.get_interface_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.get_interface_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.get_norm_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.get_norm_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.get_tangent_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.get_tangent_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.get_value_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.get_value_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.set_gradient_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.set_gradient_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.set_normal_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.set_normal_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.set_tangent_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.set_tangent_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.set_value_constraints"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.set_value_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.setup"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.setup_interpolator"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.setup_interpolator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.solve_system"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.solve_system()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.GeologicalInterpolator.to_json"><code class="docutils literal notranslate"><span class="pre">GeologicalInterpolator.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_autosummary/LoopStructural.interpolators.GeologicalInterpolator.rst">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>

@@ -13,7 +13,6 @@
 
 """
 
-
 ######################################################################
 # Imports
 # -------
@@ -22,14 +21,7 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
 from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
-from LoopStructural.utils.helper import (
-    strike_dip_vector,
-    plunge_and_plunge_dir_to_vector,
-)
 import pandas as pd
-import numpy as np
-from scipy.interpolate import Rbf
-import matplotlib.pyplot as plt
 
 
 ######################################################################

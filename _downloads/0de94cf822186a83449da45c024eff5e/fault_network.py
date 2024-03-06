@@ -23,9 +23,7 @@ import numpy as np
 fault_trace = load_fault_trace()
 faults = []
 for i in range(len(fault_trace)):
-    for x, y in zip(
-        fault_trace.loc[i, :].geometry.xy[0], fault_trace.loc[i, :].geometry.xy[1]
-    ):
+    for x, y in zip(fault_trace.loc[i, :].geometry.xy[0], fault_trace.loc[i, :].geometry.xy[1]):
         faults.append(
             [fault_trace.loc[i, "fault_name"], x, y, np.random.random() * 0.4]
         )  # better results if points aren't from a single plane

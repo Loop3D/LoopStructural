@@ -22,7 +22,6 @@ from LoopStructural.visualisation import LavaVuModelViewer
 
 from LoopStructural.datasets import load_claudius  # demo data
 
-import pandas as pd
 import numpy as np
 
 #####################

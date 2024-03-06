@@ -4,12 +4,11 @@
 Creating a model with multiple geological features, dealing with unconformities.
 
 """
+
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
 from LoopStructural.visualisation import LavaVuModelViewer
 
-import pandas as pd
-import numpy as np
 
 data, bb = load_claudius()
 data = data.reset_index()

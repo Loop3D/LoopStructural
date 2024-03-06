@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural design &#8212; LoopStructural 1.5.11 documentation</title>
+    <title>LoopStructural design &#8212; LoopStructural 1.5.12 documentation</title>
   
   
   
@@ -18,37 +18,40 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=cad83edb"></script>
+    <script src="../_static/documentation_options.js?v=3dd05124"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/loopstructural_design';</script>
+    <script src="../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Changelog" href="CHANGELOG.html" />
     <link rel="prev" title="Contribute" href="contributors_guide.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Mar 06, 2024"/>
   </head>
   
   
@@ -56,10 +59,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -100,7 +102,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -119,8 +121,16 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../_static/infinity_loop_icon.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
-    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
+  
+    <p class="title logo__title">LoopStructural - 1.5.12</p>
   
 </a></div>
     
@@ -132,12 +142,6 @@
       
         <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item current active">
@@ -162,18 +166,26 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../_autosummary/LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="../API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -220,7 +232,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -232,8 +256,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -263,10 +287,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -279,12 +306,6 @@ document.write(`
         
           <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item current active">
@@ -309,18 +330,26 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../_autosummary/LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="../API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
+                    More
+                </button>
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
         
@@ -353,7 +382,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -365,8 +406,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -442,7 +483,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="loopstructural-design">
 <h1>LoopStructural design<a class="headerlink" href="#loopstructural-design" title="Link to this heading">#</a></h1>
@@ -487,6 +528,7 @@ The main modules for the library are:</p>
 <li><p>modelling</p></li>
 <li><p>visualisation</p></li>
 <li><p>utils</p></li>
+<li><p>datasets</p></li>
 </ol>
 <p><strong>Coding paradigm</strong> LoopStructural is written in an object oriented paradigm.
 The four pillars of object oriented coding should be adhered to:</p>
@@ -494,12 +536,15 @@ The four pillars of object oriented coding should be adhered to:</p>
 <li><p><strong>Encapsulation</strong>: Attributes in python are designed to be accessible both within the class and from outside of the class. In LoopStructural, the where an attribute of a class should be private the <code class="docutils literal notranslate"><span class="pre">&#64;property</span></code> decorator should be used.</p></li>
 <li><p><strong>Inheritance</strong>: Classes should inheret attributes and methods from parent classes.</p></li>
 <li><p><strong>Polymorphism</strong>: Child classes, where a method is different from a parent class should override methods from parent classes.</p></li>
+<li><p><strong>Abstraction</strong>: Classes should be designed to be abstract and avoid containing implementation details.</p></li>
 </ul>
+<p><strong>ABC</strong> LoopStructural uses abstract base classes to define the interface for different classes.</p>
 <p><strong>Dependency management</strong> The library is written in python and is dependent on numpy, scipy. Care should be taken to avoid incorporating of uncessary dependencies. For dependencies that are not part of the standard scientific python toolkit (numfocus projects) the dependencies should be optional and not be required.</p>
 <p><strong>Documentation</strong> The documentation is written for sphinx and should be formatted using the numpy style.</p>
 <p><strong>Tests</strong> The tests are written using pytest and should be run using the command <code class="docutils literal notranslate"><span class="pre">pytest</span></code>.
 There should be unit tests for all classes and methods.
 Integration tests should be included to test the interaction between classes.</p>
+<p><strong>Commits</strong> Commits should be made using the conventional commit style.</p>
 <p><strong>CI/CD</strong> The code is automatically versioned using release-please.
 When creating a commit use the conventional commit style e.g. <code class="docutils literal notranslate"><span class="pre">fix:</span> <span class="pre">bug</span> <span class="pre">fix</span></code>, <code class="docutils literal notranslate"><span class="pre">feat:</span> <span class="pre">new</span> <span class="pre">feature</span></code>, <code class="docutils literal notranslate"><span class="pre">chore:</span> <span class="pre">code</span> <span class="pre">change</span></code>.
 A new patch pull request will be created when a bug fix is applied and passes the tests.
@@ -545,7 +590,8 @@ A visualisation module can be implemented by simply subclassing the <strong>Base
 </section>
 <section id="utils">
 <h3>4. utils<a class="headerlink" href="#utils" title="Link to this heading">#</a></h3>
-<p>The utils module is a container for utility functions that are used throughout the library.</p>
+<p>The utils module is a container for utility functions that are used throughout the library.
+Where possible util functions should be stored in separate files that are imported in the <cite>__init__.py</cite> file.</p>
 </section>
 </section>
 <section id="testing">
@@ -560,7 +606,41 @@ Unit tests should be placed in the <cite>testsunit</cite> directory and files co
 Test datasets can be generated using pytest fixtures.
 A fixture is a function that can be called by a test for a range of predefined parameters.
 For example a fixture to generate different discrete interpolators would be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural.interpolators</span> <span class="kn">import</span> <span class="n">FiniteDifferenceInterpolator</span> <span class="k">as</span> <span class="n">FDI</span><span class="p">,</span> \
+                                        <span class="n">PiecewiseLinearInterpolator</span> <span class="k">as</span> <span class="n">PLI</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.interpolators</span> <span class="kn">import</span> <span class="n">StructuredGrid</span><span class="p">,</span> <span class="n">TetMesh</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;FDI&#39;</span><span class="p">,</span><span class="s1">&#39;PLI&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">interpolator</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">interpolator</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span><span class="o">-</span><span class="mf">0.1</span><span class="p">])</span>
+    <span class="n">maximum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">1.1</span><span class="p">])</span>
+    <span class="n">nsteps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">])</span>
+    <span class="n">step_vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">maximum</span><span class="o">-</span><span class="n">origin</span><span class="p">)</span><span class="o">/</span><span class="n">nsteps</span>
+    <span class="k">if</span> <span class="n">interpolator</span> <span class="o">==</span> <span class="s1">&#39;FDI&#39;</span><span class="p">:</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">StructuredGrid</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span><span class="n">nsteps</span><span class="o">=</span><span class="n">nsteps</span><span class="p">,</span><span class="n">step_vector</span><span class="o">=</span><span class="n">step_vector</span><span class="p">)</span>
+        <span class="n">interpolator</span> <span class="o">=</span> <span class="n">FDI</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interpolator</span>
+    <span class="k">elif</span> <span class="n">interpolator</span> <span class="o">==</span> <span class="s1">&#39;PLI&#39;</span><span class="p">:</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">TetMesh</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span><span class="n">nsteps</span><span class="o">=</span><span class="n">nsteps</span><span class="p">,</span><span class="n">step_vector</span><span class="o">=</span><span class="n">step_vector</span><span class="p">)</span>
+        <span class="n">interpolator</span> <span class="o">=</span> <span class="n">PLI</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interpolator</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid interpolator: </span><span class="si">{</span><span class="n">interpolator</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>This fixture can then be called by any test in the testing suite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural.interpolators</span> <span class="kn">import</span> <span class="n">GeologicalInterpolator</span>
+
+<span class="k">def</span> <span class="nf">test_interpolator</span><span class="p">(</span><span class="n">interpolator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether the discrete interpolators are a subclass of GeologicalInterpolator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interpolator</span><span class="p">,</span> <span class="n">GeologicalInterpolator</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Unit tests should be as small as possible and require minimal computation to test whether they are working.
 Ideally the unit test will only be testing a very small portion of code.
 An integration test may be a more substantial test, which will test whether multiple sections of code act as they
@@ -607,12 +687,14 @@ End to end tests should be used sparingly as identifying the true cause of a fai
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-  <div class="sidebar-secondary-item">
 
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#context">Context</a></li>
@@ -635,7 +717,7 @@ End to end tests should be used sparingly as identifying the true cause of a fai
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../_sources/getting_started/loopstructural_design.rst.txt">
+    <a href="../_sources/getting_started/loopstructural_design.rst">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
@@ -654,8 +736,8 @@ End to end tests should be used sparingly as identifying the true cause of a fai
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

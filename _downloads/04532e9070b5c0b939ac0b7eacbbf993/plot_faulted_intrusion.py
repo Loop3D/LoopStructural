@@ -7,7 +7,6 @@
 from LoopStructural import GeologicalModel
 from LoopStructural.visualisation import LavaVuModelViewer
 from LoopStructural.datasets import load_intrusion
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -31,7 +30,7 @@ data, bb = load_intrusion()
 # representative of modelling an intrusion.
 #
 
-intrusion = lambda x, y: (x * 2) ** 2 + (y ** 2)
+intrusion = lambda x, y: (x * 2) ** 2 + (y**2)
 x = np.linspace(-10, 10, 100)
 y = np.linspace(-10, 10, 100)
 xx, yy = np.meshgrid(x, y)
@@ -55,20 +54,24 @@ plt.contourf(val)
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
 fault = model.create_and_add_fault(
-    "fault", 500, nelements=10000, steps=4, interpolatortype="PLI", buffer=0.3
+    "fault", 500, nelements=10000, steps=4, interpolatortype="FDI", buffer=0.3
 )
 
 viewer = LavaVuModelViewer(model)
 viewer.add_isosurface(
     fault,
-    isovalue=0
+    isovalue=0,
     #                       slices=[0,1]#nslices=10
 )
 xyz = model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].to_numpy()
 xyz = xyz[fault.evaluate(xyz).astype(bool), :]
 viewer.add_vector_field(fault, locations=xyz)
 viewer.add_points(
-    model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]], name="prefault"
+    model.rescale(
+        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]],
+        inplace=False,
+    ),
+    name="prefault",
 )
 viewer.rotation = [-73.24819946289062, -86.82220458984375, -13.912878036499023]
 viewer.display()
@@ -81,9 +84,7 @@ model.set_model_data(data)
 fault = model.create_and_add_fault(
     "fault", displacement, nelements=2000, steps=4, interpolatortype="PLI", buffer=2
 )
-strati = model.create_and_add_foliation(
-    "strati", nelements=30000, interpolatortype="PLI", cgw=0.03
-)
+strati = model.create_and_add_foliation("strati", nelements=30000, interpolatortype="PLI", cgw=0.03)
 model.update()
 viewer = LavaVuModelViewer(model)
 viewer.add_isosurface(strati, isovalue=0)
@@ -91,11 +92,15 @@ viewer.add_isosurface(strati, isovalue=0)
 viewer.add_data(strati)
 viewer.add_isosurface(
     fault,
-    isovalue=0
+    isovalue=0,
     #                       slices=[0,1]#nslices=10
 )
 viewer.add_points(
-    model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]], name="prefault"
+    model.rescale(
+        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]],
+        inplace=False,
+    ),
+    name="prefault",
 )
 viewer.rotation = [-73.24819946289062, -86.82220458984375, -13.912878036499023]
 viewer.display()

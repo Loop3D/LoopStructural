@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2b. Refolded folds &#8212; LoopStructural 1.5.11 documentation</title>
+    <title>2b. Refolded folds &#8212; LoopStructural 1.5.12 documentation</title>
   
   
   
@@ -18,37 +18,40 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=cad83edb"></script>
+    <script src="../../_static/documentation_options.js?v=3dd05124"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_auto_examples/2_fold/plot_refolded_folds';</script>
+    <script src="../../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="3. Modelling Faults" href="../3_fault/index.html" />
     <link rel="prev" title="2a. Modelling folds" href="plot_adding_folds_to_surfaces.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Mar 06, 2024"/>
   </head>
   
   
@@ -56,10 +59,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -100,7 +102,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -119,8 +121,16 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../../_static/infinity_loop_icon.svg" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
-    <p class="title logo__title">LoopStructural 1.5.11 documentation</p>
+  
+    <p class="title logo__title">LoopStructural - 1.5.12</p>
   
 </a></div>
     
@@ -132,12 +142,6 @@
       
         <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -162,18 +166,26 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../_autosummary/LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="../../API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -220,7 +232,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -232,8 +256,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -263,10 +287,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -279,12 +306,6 @@ document.write(`
         
           <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -309,18 +330,26 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../_autosummary/LoopStructural.html">
-                        LoopStructural
+                      <a class="nav-link nav-internal" href="../../API.html">
+                        API
                       </a>
                     </li>
                 
-
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
+                    More
+                </button>
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
+                    
                 <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://www.loop3d.org">
+                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
                     Loop3d
                   </a>
                 </li>
                 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
         
@@ -353,7 +382,19 @@ document.write(`
           
           
           
-          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -365,8 +406,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-twitter-square fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Twitter</span></a>
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -380,30 +421,13 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../1_basic/index.html">1. Basics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/least_squares.html">1a. Advanced least squares</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_1_data_prepration.html">1a. Getting started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_2_surface_modelling.html">1b. Implicit surface modelling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_3_multiple_groups.html">1c. Multiple groups</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_3_model_visualisation.html">1c. Visualising models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_4_using_stratigraphic_column.html">1d. Using Stratigraphic Columns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_5_using_logging.html">1e. Using logging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/scalar_field.html">1f. Implicit modelling: signed distance field</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_7_local_weights.html">1f. Local data weighting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/example_surfe.html">1f. Radial Basis Interpolation Using Surfe</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../1_basic/plot_6_unconformities.html">1f. Unconformities</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">2. Modelling Folds</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../1_basic/index.html">1. Basics</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">2. Modelling Folds</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_adding_folds_to_surfaces.html">2a. Modelling folds</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">2b. Refolded folds</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../3_fault/index.html">3. Modelling Faults</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../3_fault/plot_faulted_intrusion.html">3a. Modelling faults using structural frames</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../3_fault/fault_network.html">3b. Modelling a fault network in LoopStructural</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../3_fault/index.html">3. Modelling Faults</a></li>
 </ul>
 </div>
 </nav></div>
@@ -462,7 +486,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -472,14 +496,9 @@ to download the full example code</p>
 <section class="sphx-glr-example-title" id="b-refolded-folds">
 <span id="sphx-glr-auto-examples-2-fold-plot-refolded-folds-py"></span><h1>2b. Refolded folds<a class="headerlink" href="#b-refolded-folds" title="Link to this heading">#</a></h1>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LoopStructural</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
-<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <span class="n">LavaVuModelViewer</span><span class="p">,</span> <span class="n">RotationAnglePlotter</span>
+<span class="kn">from</span> <span class="nn">LoopStructural.visualisation</span> <span class="kn">import</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">,</span> <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">RotationAnglePlotter</span></a>
 <span class="kn">from</span> <span class="nn">LoopStructural.datasets</span> <span class="kn">import</span> <span class="n">load_laurent2016</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="c1"># logging.getLogger().setLevel(logging.INFO)</span>
 
@@ -502,15 +521,13 @@ to download the full example code</p>
 <h2>Modelling S2<a class="headerlink" href="#modelling-s2" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
 <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="n">s2</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_fold_frame" title="LoopStructural.GeologicalModel.create_and_add_fold_frame" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fold_frame</span></a><span class="p">(</span>
-    <span class="s2">&quot;s2&quot;</span><span class="p">,</span> <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lu&quot;</span><span class="p">,</span> <span class="n">damp</span><span class="o">=</span><span class="kc">True</span>
-<span class="p">)</span>
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;prism&quot;</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">slices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">rotation</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+<span class="n">s2</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_fold_frame" title="LoopStructural.GeologicalModel.create_and_add_fold_frame" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_fold_frame</span></a><span class="p">(</span><span class="s2">&quot;s2&quot;</span><span class="p">,</span> <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lu&quot;</span><span class="p">,</span> <span class="n">damp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">viewer</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" title="LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span></a><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;prism&quot;</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" title="LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span></a><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">slices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_data" title="LoopStructural.visualisation.LavaVuModelViewer.add_data" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_data</span></a><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.rotate" title="LoopStructural.visualisation.LavaVuModelViewer.rotate" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span></a><span class="p">(</span><span class="n">rotation</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.display" title="LoopStructural.visualisation.LavaVuModelViewer.display" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">display</span></a><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_plot_refolded_folds_001.png" srcset="../../_images/sphx_glr_plot_refolded_folds_001.png" alt="plot refolded folds" class = "sphx-glr-single-img"/></section>
@@ -521,18 +538,18 @@ to download the full example code</p>
 <span class="p">)</span>
 
 
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;prism&quot;</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">69.11979675292969</span><span class="p">,</span> <span class="mf">15.704944610595703</span><span class="p">,</span> <span class="mf">6.00014591217041</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">viewer</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" title="LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span></a><span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;prism&quot;</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.rotate" title="LoopStructural.visualisation.LavaVuModelViewer.rotate" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span></a><span class="p">([</span><span class="o">-</span><span class="mf">69.11979675292969</span><span class="p">,</span> <span class="mf">15.704944610595703</span><span class="p">,</span> <span class="mf">6.00014591217041</span><span class="p">])</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.display" title="LoopStructural.visualisation.LavaVuModelViewer.display" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">display</span></a><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_plot_refolded_folds_002.png" srcset="../../_images/sphx_glr_plot_refolded_folds_002.png" alt="plot refolded folds" class = "sphx-glr-single-img"/></section>
 <section id="s2-s1-s-plots">
 <h2>S2/S1 S-Plots<a class="headerlink" href="#s2-s1-s-plots" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">s2_s1_splot</span> <span class="o">=</span> <span class="n">RotationAnglePlotter</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
-<span class="n">s2_s1_splot</span><span class="o">.</span><span class="n">add_fold_limb_data</span><span class="p">()</span>
-<span class="n">s2_s1_splot</span><span class="o">.</span><span class="n">add_fold_limb_curve</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s2_s1_splot</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">RotationAnglePlotter</span></a><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s2_s1_splot</span></a><span class="o">.</span><span class="n">add_fold_limb_data</span><span class="p">()</span>
+<a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s2_s1_splot</span></a><span class="o">.</span><span class="n">add_fold_limb_curve</span><span class="p">()</span>
 <span class="c1"># fig, ax = plt.subplots(1,2,figsize=(10,5))</span>
 <span class="c1"># x = np.linspace(s2[0].min(),s2[0].max(),1000)</span>
 <span class="c1"># ax[0].plot(x,s1[&#39;fold&#39;].fold_limb_rotation(x))</span>
@@ -540,7 +557,7 @@ to download the full example code</p>
 <span class="c1"># ax[1].plot(s1[&#39;limb_svariogram&#39;].lags,s1[&#39;limb_svariogram&#39;].variogram,&#39;bo&#39;)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_refolded_folds_003.png" srcset="../../_images/sphx_glr_plot_refolded_folds_003.png" alt="plot refolded folds" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D object at 0x7f5e967ae470&gt;]
+<img src="../../_images/sphx_glr_plot_refolded_folds_003.png" srcset="../../_images/sphx_glr_plot_refolded_folds_003.png" alt="plot refolded folds" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D object at 0x7f43149dbee0&gt;]
 </pre></div>
 </div>
 </section>
@@ -555,18 +572,18 @@ to download the full example code</p>
     <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lu&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">69.11979675292969</span><span class="p">,</span> <span class="mf">15.704944610595703</span><span class="p">,</span> <span class="mf">6.00014591217041</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">viewer</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" title="LoopStructural.visualisation.LavaVuModelViewer.add_scalar_field" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_scalar_field</span></a><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.rotate" title="LoopStructural.visualisation.LavaVuModelViewer.rotate" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span></a><span class="p">([</span><span class="o">-</span><span class="mf">69.11979675292969</span><span class="p">,</span> <span class="mf">15.704944610595703</span><span class="p">,</span> <span class="mf">6.00014591217041</span><span class="p">])</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.display" title="LoopStructural.visualisation.LavaVuModelViewer.display" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">display</span></a><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_plot_refolded_folds_004.png" srcset="../../_images/sphx_glr_plot_refolded_folds_004.png" alt="plot refolded folds" class = "sphx-glr-single-img"/></section>
 <section id="s1-s0-s-plots">
 <h2>S1/S0 S-Plots<a class="headerlink" href="#s1-s0-s-plots" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">s1_s0_splot</span> <span class="o">=</span> <span class="n">RotationAnglePlotter</span><span class="p">(</span><span class="n">s0</span><span class="p">)</span>
-<span class="n">s1_s0_splot</span><span class="o">.</span><span class="n">add_fold_limb_data</span><span class="p">()</span>
-<span class="n">s1_s0_splot</span><span class="o">.</span><span class="n">add_fold_limb_curve</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s1_s0_splot</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">RotationAnglePlotter</span></a><span class="p">(</span><span class="n">s0</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s1_s0_splot</span></a><span class="o">.</span><span class="n">add_fold_limb_data</span><span class="p">()</span>
+<a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s1_s0_splot</span></a><span class="o">.</span><span class="n">add_fold_limb_curve</span><span class="p">()</span>
 
 <span class="c1"># fig, ax = plt.subplots(1,2,figsize=(10,5))</span>
 <span class="c1"># x = np.linspace(s1[0].min(),s1[0].max(),1000)</span>
@@ -574,15 +591,15 @@ to download the full example code</p>
 <span class="c1"># ax[0].plot(s0[&#39;fold&#39;].fold_limb_rotation.fold_frame_coordinate,s0[&#39;fold&#39;].fold_limb_rotation.rotation_angle,&#39;bo&#39;)</span>
 <span class="c1"># ax[1].plot(s0[&#39;limb_svariogram&#39;].lags,s1[&#39;limb_svariogram&#39;].variogram,&#39;bo&#39;)</span>
 
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">LavaVuModelViewer</span><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">nslices</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">paint_with</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">viewer</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer" title="LoopStructural.visualisation.LavaVuModelViewer" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class"><span class="n">LavaVuModelViewer</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" title="LoopStructural.visualisation.LavaVuModelViewer.add_isosurface" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">add_isosurface</span></a><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">nslices</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">paint_with</span><span class="o">=</span><span class="n">s0</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">)</span>
 <span class="c1"># viewer.add_data(s0)</span>
 <span class="c1"># viewer.add_fold(s0[&#39;fold&#39;],locations=s0[&#39;support&#39;].barycentre[::80])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span><span class="p">([</span><span class="o">-</span><span class="mf">69.11979675292969</span><span class="p">,</span> <span class="mf">15.704944610595703</span><span class="p">,</span> <span class="mf">6.00014591217041</span><span class="p">])</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.rotate" title="LoopStructural.visualisation.LavaVuModelViewer.rotate" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">rotate</span></a><span class="p">([</span><span class="o">-</span><span class="mf">69.11979675292969</span><span class="p">,</span> <span class="mf">15.704944610595703</span><span class="p">,</span> <span class="mf">6.00014591217041</span><span class="p">])</span>
+<a href="../../_autosummary/LoopStructural.visualisation.LavaVuModelViewer.html#LoopStructural.visualisation.LavaVuModelViewer.display" title="LoopStructural.visualisation.LavaVuModelViewer.display" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-method"><span class="n">viewer</span><span class="o">.</span><span class="n">display</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_refolded_folds_005.png" srcset="../../_images/sphx_glr_plot_refolded_folds_005.png" alt="plot refolded folds" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_plot_refolded_folds_006.png" srcset="../../_images/sphx_glr_plot_refolded_folds_006.png" alt="plot refolded folds" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 55.237 seconds)</p>
+<img src="../../_images/sphx_glr_plot_refolded_folds_005.png" srcset="../../_images/sphx_glr_plot_refolded_folds_005.png" alt="plot refolded folds" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_plot_refolded_folds_006.png" srcset="../../_images/sphx_glr_plot_refolded_folds_006.png" alt="plot refolded folds" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (3 minutes 36.167 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-2-fold-plot-refolded-folds-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cdbf97ba8ee12ccd3ded6b65d3c5c3c1/plot_refolded_folds.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_refolded_folds.ipynb</span></code></a></p>
@@ -632,12 +649,14 @@ to download the full example code</p>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-  <div class="sidebar-secondary-item">
 
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelling-s2">Modelling S2</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelling-s1">Modelling S1</a></li>
@@ -650,7 +669,7 @@ to download the full example code</p>
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../../_sources/_auto_examples/2_fold/plot_refolded_folds.rst.txt">
+    <a href="../../_sources/_auto_examples/2_fold/plot_refolded_folds.rst">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
@@ -669,8 +688,8 @@ to download the full example code</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {
