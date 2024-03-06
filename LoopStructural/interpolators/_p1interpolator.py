@@ -90,7 +90,7 @@ class P1Interpolator(DiscreteInterpolator):
         bc_t1 = self.support.barycentre[self.support.shared_element_relationships[:, 0]]
         bc_t2 = self.support.barycentre[self.support.shared_element_relationships[:, 1]]
         norm = self.support.shared_element_norm
-        shared_element_scale = self.support.shared_element_scale
+        # shared_element_scale = self.support.shared_element_scale
 
         # evaluate normal if using vector func for cp2
         if vector_func:
