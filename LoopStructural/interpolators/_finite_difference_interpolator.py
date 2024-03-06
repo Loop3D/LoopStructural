@@ -169,7 +169,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 a,
                 points[inside, 3],
                 idc[inside, :],
-                w=w * points[inside, 4] * self.support.element_size,
+                w=w * points[inside, 4],
                 name="value",
             )
             if np.sum(inside) <= 0:
@@ -315,13 +315,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             strike_vector, dip_vector = get_vectors(points[inside, 3:6])
             A = np.einsum("ij,ijk->ik", strike_vector.T, T)
             B = np.zeros(points[inside, :].shape[0])
-            self.add_constraints_to_least_squares(
-                A, B, idc[inside, :], w=w * self.vol, name="gradient"
-            )
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
             A = np.einsum("ij,ijk->ik", dip_vector.T, T)
-            self.add_constraints_to_least_squares(
-                A, B, idc[inside, :], w=w * self.vol, name="gradient"
-            )
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
             if np.sum(inside) <= 0:
                 logger.warning(
                     f" {np.sum(~inside)} \
@@ -370,21 +366,21 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 T[:, 0, :],
                 points[inside, 3],
                 idc[inside, :],
-                w=w * self.vol,
+                w=w,
                 name="norm",
             )
             self.add_constraints_to_least_squares(
                 T[:, 1, :],
                 points[inside, 4],
                 idc[inside, :],
-                w=w * self.vol,
+                w=w,
                 name="norm",
             )
             self.add_constraints_to_least_squares(
                 T[:, 2, :],
                 points[inside, 5],
                 idc[inside, :],
-                w=w * self.vol,
+                w=w,
                 name="norm",
             )
             if np.sum(inside) <= 0:
