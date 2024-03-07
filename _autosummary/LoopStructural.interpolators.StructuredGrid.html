@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.StructuredGrid &#8212; LoopStructural 1.5.12 documentation</title>
+    <title>LoopStructural.interpolators.StructuredGrid &#8212; LoopStructural 1.5.13 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=3dd05124"></script>
+    <script src="../_static/documentation_options.js?v=862cd339"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.StructuredGrid';</script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="LoopStructural.interpolators.TetMesh" href="LoopStructural.interpolators.TetMesh.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Mar 06, 2024"/>
+    <meta name="docbuild:last-update" content="Mar 07, 2024"/>
   </head>
   
   
@@ -130,7 +130,7 @@
     <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">LoopStructural - 1.5.12</p>
+    <p class="title logo__title">LoopStructural - 1.5.13</p>
   
 </a></div>
     
@@ -633,40 +633,43 @@ document.write(`
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimension</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.element_size" title="LoopStructural.interpolators.StructuredGrid.element_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_size</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_scale</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.element_size" title="LoopStructural.interpolators.StructuredGrid.element_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_size</span></code></a></p></td>
 <td><p>Return the element size</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.elements" title="LoopStructural.interpolators.StructuredGrid.elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.elements" title="LoopStructural.interpolators.StructuredGrid.elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements</span></code></a></p></td>
 <td><p>Return the elements</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.n_elements" title="LoopStructural.interpolators.StructuredGrid.n_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.n_elements" title="LoopStructural.interpolators.StructuredGrid.n_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></a></p></td>
 <td><p>Return the number of elements</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.n_nodes" title="LoopStructural.interpolators.StructuredGrid.n_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.n_nodes" title="LoopStructural.interpolators.StructuredGrid.n_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></a></p></td>
 <td><p>Return the number of points</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.nodes" title="LoopStructural.interpolators.StructuredGrid.nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid.nodes" title="LoopStructural.interpolators.StructuredGrid.nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></a></p></td>
 <td><p>Return the nodes</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps_cells</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps_cells</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_xy</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_xy</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_vector</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_vector</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>

@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**02:16.274** total execution time for 11 files **from _auto_examples/1_basic**:
+**00:22.041** total execution time for 11 files **from _auto_examples/1_basic**:
 
 .. container::
 
@@ -33,28 +33,28 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py` (``plot_2_surface_modelling.py``)
-     - 01:18.140
+     - 00:04.347
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py` (``plot_3_multiple_groups.py``)
-     - 00:20.388
+     - 00:04.054
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py` (``plot_4_using_stratigraphic_column.py``)
-     - 00:19.879
+     - 00:03.975
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_5_using_logging.py` (``plot_5_using_logging.py``)
-     - 00:10.952
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_local_weights.py` (``plot_7_local_weights.py``)
-     - 00:03.110
+     - 00:03.598
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_6_unconformities.py` (``plot_6_unconformities.py``)
-     - 00:02.455
+     - 00:02.443
+     - 0.0
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_local_weights.py` (``plot_7_local_weights.py``)
+     - 00:02.388
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py` (``plot_3_model_visualisation.py``)
-     - 00:01.119
+     - 00:01.016
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py` (``plot_1_data_prepration.py``)
-     - 00:00.231
+     - 00:00.221
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_example_surfe.py` (``example_surfe.py``)
      - 00:00.000

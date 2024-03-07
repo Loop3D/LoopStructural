@@ -91,7 +91,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7f430838d4b0>
+    <matplotlib.contour.QuadContourSet object at 0x7f29601b7370>
 
 
 
@@ -188,7 +188,7 @@ fault frame and an expected displacement model.
 
  .. code-block:: none
 
-      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  50%|█████     | 2/4 [00:00<00:00,  4.77it/s]    Interpolating strati:  75%|███████▌  | 3/4 [00:00<00:00,  4.77it/s]    Interpolating strati: : 7it [00:07,  1.12s/it]                         Interpolating strati: : 7it [00:07,  1.04s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  50%|█████     | 2/4 [00:00<00:00,  4.06it/s]    Interpolating strati:  75%|███████▌  | 3/4 [00:00<00:00,  4.06it/s]    Interpolating strati: : 7it [00:36,  5.70s/it]                         Interpolating strati: : 7it [00:36,  5.23s/it]
 
 
 
@@ -196,7 +196,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 13.258 seconds)
+   **Total running time of the script:** (0 minutes 40.482 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_faulted_intrusion.py:

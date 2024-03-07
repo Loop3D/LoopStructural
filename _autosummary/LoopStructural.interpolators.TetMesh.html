@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.TetMesh &#8212; LoopStructural 1.5.12 documentation</title>
+    <title>LoopStructural.interpolators.TetMesh &#8212; LoopStructural 1.5.13 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=3dd05124"></script>
+    <script src="../_static/documentation_options.js?v=862cd339"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.TetMesh';</script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="LoopStructural.interpolators.P2Interpolator" href="LoopStructural.interpolators.P2Interpolator.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Mar 06, 2024"/>
+    <meta name="docbuild:last-update" content="Mar 07, 2024"/>
   </head>
   
   
@@ -130,7 +130,7 @@
     <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">LoopStructural - 1.5.12</p>
+    <p class="title logo__title">LoopStructural - 1.5.13</p>
   
 </a></div>
     
@@ -639,47 +639,53 @@ document.write(`
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimension</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.element_size" title="LoopStructural.interpolators.TetMesh.element_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_size</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_scale</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.element_size" title="LoopStructural.interpolators.TetMesh.element_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">element_size</span></code></a></p></td>
 <td><p>Calculate the volume of a tetrahedron using the 4 corners volume = abs(det(A))/6 where A is the jacobian of the corners</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.elements" title="LoopStructural.interpolators.TetMesh.elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.elements" title="LoopStructural.interpolators.TetMesh.elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements</span></code></a></p></td>
 <td><p>Return the elements</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_cells</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_cells</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.n_elements" title="LoopStructural.interpolators.TetMesh.n_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.n_elements" title="LoopStructural.interpolators.TetMesh.n_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></a></p></td>
 <td><p>Return the number of elements</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.n_nodes" title="LoopStructural.interpolators.TetMesh.n_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.n_nodes" title="LoopStructural.interpolators.TetMesh.n_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></a></p></td>
 <td><p>Return the number of points</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbours</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbours</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.nodes" title="LoopStructural.interpolators.TetMesh.nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.nodes" title="LoopStructural.interpolators.TetMesh.nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></a></p></td>
 <td><p>Return the nodes</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps_cells</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nsteps_cells</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ntetra</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ntetra</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_xy</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_xy</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.shared_element_norm" title="LoopStructural.interpolators.TetMesh.shared_element_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_element_norm</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.shared_element_norm" title="LoopStructural.interpolators.TetMesh.shared_element_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_element_norm</span></code></a></p></td>
 <td><p>Get the normal to all of the shared elements</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_element_scale</span></code></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.TetMesh.shared_element_size" title="LoopStructural.interpolators.TetMesh.shared_element_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_element_size</span></code></a></p></td>
 <td><p>Get the area of the share triangle</p></td>

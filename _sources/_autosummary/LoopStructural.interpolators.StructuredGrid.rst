@@ -54,6 +54,7 @@ LoopStructural.interpolators.StructuredGrid
    
       ~StructuredGrid.barycentre
       ~StructuredGrid.dimension
+      ~StructuredGrid.element_scale
       ~StructuredGrid.element_size
       ~StructuredGrid.elements
       ~StructuredGrid.maximum

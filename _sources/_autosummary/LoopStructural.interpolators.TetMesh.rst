@@ -56,6 +56,7 @@ LoopStructural.interpolators.TetMesh
    
       ~TetMesh.barycentre
       ~TetMesh.dimension
+      ~TetMesh.element_scale
       ~TetMesh.element_size
       ~TetMesh.elements
       ~TetMesh.maximum
@@ -70,6 +71,7 @@ LoopStructural.interpolators.TetMesh
       ~TetMesh.origin
       ~TetMesh.rotation_xy
       ~TetMesh.shared_element_norm
+      ~TetMesh.shared_element_scale
       ~TetMesh.shared_element_size
       ~TetMesh.step_vector
       ~TetMesh.vtk
