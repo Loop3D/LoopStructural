@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.13](https://github.com/Loop3D/LoopStructural/compare/v1.5.12...v1.5.13) (2024-03-07)
+
+
+### Bug Fixes
+
+* issue with 2d supports ([79bf9c0](https://github.com/Loop3D/LoopStructural/commit/79bf9c0ad5cfcde551d00ae76e1462349420f316))
+* pyproject.toml includes submodules ([55c0e0a](https://github.com/Loop3D/LoopStructural/commit/55c0e0abeca8fa320fc44571417b16a4b08742ee))
+* remove element volume scaling. ([4350c0e](https://github.com/Loop3D/LoopStructural/commit/4350c0e821a19871af6a6d4f60e3a6abe32e0d7f))
+* update version of pypi upload action ([#180](https://github.com/Loop3D/LoopStructural/issues/180)) ([852f062](https://github.com/Loop3D/LoopStructural/commit/852f06250baeac190dd2961d3c5a1fece7506abc))
+
 ## [1.5.12](https://github.com/Loop3D/LoopStructural/compare/v1.5.11...v1.5.12) (2024-03-05)
 
 
