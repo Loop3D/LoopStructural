@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**04:40.514** total execution time for 16 files **from all galleries**:
+**05:09.391** total execution time for 16 files **from all galleries**:
 
 .. container::
 
@@ -33,40 +33,40 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr__auto_examples_2_fold_plot_refolded_folds.py` (``../../examples/2_fold/plot_refolded_folds.py``)
-     - 03:24.672
+     - 03:53.898
      - 0.0
    * - :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py` (``../../examples/3_fault/plot_faulted_intrusion.py``)
-     - 00:40.482
+     - 00:40.156
      - 0.0
    * - :ref:`sphx_glr__auto_examples_2_fold_plot_adding_folds_to_surfaces.py` (``../../examples/2_fold/plot_adding_folds_to_surfaces.py``)
-     - 00:06.720
+     - 00:06.685
      - 0.0
    * - :ref:`sphx_glr__auto_examples_3_fault_plot_define_fault_displacement.py` (``../../examples/3_fault/plot_define_fault_displacement.py``)
-     - 00:06.598
+     - 00:06.676
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py` (``../../examples/1_basic/plot_2_surface_modelling.py``)
-     - 00:04.347
+     - 00:04.343
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py` (``../../examples/1_basic/plot_3_multiple_groups.py``)
-     - 00:04.054
+     - 00:04.049
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py` (``../../examples/1_basic/plot_4_using_stratigraphic_column.py``)
-     - 00:03.975
+     - 00:03.911
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_5_using_logging.py` (``../../examples/1_basic/plot_5_using_logging.py``)
-     - 00:03.598
+     - 00:03.588
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_6_unconformities.py` (``../../examples/1_basic/plot_6_unconformities.py``)
-     - 00:02.443
+     - 00:02.460
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_local_weights.py` (``../../examples/1_basic/plot_7_local_weights.py``)
-     - 00:02.388
+     - 00:02.381
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py` (``../../examples/1_basic/plot_3_model_visualisation.py``)
-     - 00:01.016
+     - 00:01.023
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py` (``../../examples/1_basic/plot_1_data_prepration.py``)
-     - 00:00.221
+     - 00:00.219
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_example_surfe.py` (``../../examples/1_basic/example_surfe.py``)
      - 00:00.000
