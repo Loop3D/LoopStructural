@@ -53,6 +53,14 @@ class BoundingBox:
         }
 
     @property
+    def global_origin(self):
+        return self._origin
+
+    @property
+    def global_maximum(self):
+        return self._maximum
+
+    @property
     def valid(self):
         return self._origin is not None and self._maximum is not None
 
@@ -193,3 +201,19 @@ class BoundingBox:
             # logger.info("Shuffling points")
             rng.shuffle(locs)
         return locs
+
+    @property
+    def vtk(self):
+
+        try:
+            import pyvista as pv
+        except ImportError:
+            raise ImportError("pyvista is required for vtk support")
+        x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
+        y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
+        z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
+        return pv.RectilinearGrid(
+            x,
+            y,
+            z,
+        )
