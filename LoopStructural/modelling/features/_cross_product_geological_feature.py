@@ -2,6 +2,7 @@
 """
 
 import numpy as np
+from typing import Optional
 
 from ...modelling.features import BaseFeature
 
@@ -94,3 +95,6 @@ class CrossProductGeologicalFeature(BaseFeature):
         if self.value_feature:
             return self.value_feature.max()
         return 0.0
+
+    def get_data(self, value_map: Optional[dict] = None):
+        return

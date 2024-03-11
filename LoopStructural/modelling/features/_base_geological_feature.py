@@ -318,3 +318,43 @@ class BaseFeature(metaclass=ABCMeta):
         value = self.evaluate_value(points)
         grid[self.name] = value
         return grid
+
+    def vector_field(self, bounding_box=None, tolerance=0.05):
+        """Create a vector field for the feature
+
+        Parameters
+        ----------
+        bounding_box : Optional[BoundingBox], optional
+            bounding box to evaluate the vector field in, by default None
+
+        Returns
+        -------
+        np.ndarray
+            vector field
+        """
+        if bounding_box is None:
+            if self.model is None:
+                raise ValueError("Must specify bounding box")
+            bounding_box = self.model.bounding_box
+        grid = bounding_box.vtk
+        points = grid.points
+        value = self.evaluate_gradient(points)
+        grid[self.name] = value
+        arrows = grid.glyph(scale=self.name, orient=self.name, tolerance=tolerance)
+        return arrows
+
+    @abstractmethod
+    def get_data(self, value_map: Optional[dict] = None):
+        """Get the data for the feature
+
+        Parameters
+        ----------
+        value_map : Optional[dict], optional
+            map a scalar value to a string, by default None
+
+        Returns
+        -------
+        dict
+            dictionary of data
+        """
+        raise NotImplementedError
