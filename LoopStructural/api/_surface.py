@@ -1,4 +1,6 @@
-from typing import Optional, Union, Callable
+from __future__ import annotations
+
+from typing import Optional, Union, Callable, List
 import numpy as np
 import numpy.typing as npt
 from LoopStructural.utils import getLogger
@@ -10,17 +12,17 @@ except ImportError:
     logger.warning("Using deprecated version of scikit-image")
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
-from LoopStructural.interpolators import GeologicalInterpolator
+# from LoopStructural.interpolators import GeologicalInterpolator
 from LoopStructural.datatypes import Surface, BoundingBox
 
-surface_list = dict[str, tuple[npt.ArrayLike, npt.ArrayLike, npt.ArrayLike, npt.ArrayLike]]
+surface_list = dict[str, Surface]
 
 
 class LoopIsosurfacer:
     def __init__(
         self,
         bounding_box: BoundingBox,
-        interpolator: Optional[GeologicalInterpolator] = None,
+        interpolator: Optional['GeologicalInterpolator'] = None,
         callable: Optional[Callable[[npt.ArrayLike], npt.ArrayLike]] = None,
     ):
         """Extract isosurfaces from a geological interpolator or a callable function.
@@ -56,7 +58,9 @@ class LoopIsosurfacer:
         if self.callable is None:
             raise ValueError("Must specify either interpolator or callable")
 
-    def fit(self, values: Union[list, int, float]) -> surface_list:
+    def fit(
+        self, values: Union[list, int, float], name: Optional[Union[List[str], str]] = None
+    ) -> surface_list:
         """Extract isosurfaces from the interpolator
 
         Parameters
@@ -74,7 +78,7 @@ class LoopIsosurfacer:
         """
         if not callable(self.callable):
             raise ValueError("No interpolator of callable function set")
-        surfaces = {}
+        surfaces = []
         all_values = self.callable(self.bounding_box.regular_grid())
         if isinstance(values, list):
             isovalues = values
@@ -93,11 +97,13 @@ class LoopIsosurfacer:
                 spacing=self.bounding_box.step_vector,
             )
             values = np.zeros(verts.shape[0]) + isovalue
-            surfaces[f"surface_{isovalue}"] = Surface(
-                vertices=verts + self.bounding_box.origin,
-                triangles=faces,
-                normals=normals,
-                name=f"surface_{isovalue}",
-                values=values,
+            surfaces.append(
+                Surface(
+                    vertices=verts + self.bounding_box.origin,
+                    triangles=faces,
+                    normals=normals,
+                    name=f"surface_{isovalue}",
+                    values=values,
+                )
             )
         return surfaces
