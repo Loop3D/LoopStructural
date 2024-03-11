@@ -12,7 +12,7 @@ except ImportError:
     logger.warning("Using deprecated version of scikit-image")
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
-# from LoopStructural.interpolators import GeologicalInterpolator
+# from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
 from LoopStructural.datatypes import Surface, BoundingBox
 
 surface_list = dict[str, Surface]
@@ -22,7 +22,7 @@ class LoopIsosurfacer:
     def __init__(
         self,
         bounding_box: BoundingBox,
-        interpolator: Optional['GeologicalInterpolator'] = None,
+        interpolator=None,
         callable: Optional[Callable[[npt.ArrayLike], npt.ArrayLike]] = None,
     ):
         """Extract isosurfaces from a geological interpolator or a callable function.
