@@ -158,4 +158,7 @@ class StructuralFrame(BaseFeature):
         )
 
     def get_data(self, value_map=None):
-        return
+        data = []
+        for f in self.features:
+            data.extend(f.get_data(value_map))
+        return data
