@@ -10,6 +10,7 @@ class BoundingBox:
         self,
         origin: Optional[np.ndarray] = None,
         maximum: Optional[np.ndarray] = None,
+        global_origin: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
         step_vector: Optional[np.ndarray] = None,
         dimensions: int = 3,
@@ -28,13 +29,25 @@ class BoundingBox:
         nsteps : Optional[np.ndarray], optional
             _description_, by default None
         """
+        # reproject relative to the global origin, if origin is not provided.
+        # we want the local coordinates to start at 0
+        # otherwise uses provided origin. This is useful for having multiple bounding boxes rela
+        if global_origin is not None and origin is None:
+            origin = np.zeros(3)
+
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = origin + nsteps * step_vector
+
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
+        if global_origin is None:
+            global_origin = np.zeros(3)
+
+        self._global_origin = global_origin
         self.dimensions = dimensions
-        if nsteps is None:
-            self.nsteps = np.array([50, 50, 25])
+        self.nsteps = np.array([50, 50, 25])
+        if nsteps is not None:
+            self.nsteps = np.array(nsteps)
         self.name_map = {
             "xmin": (0, 0),
             "ymin": (0, 1),
@@ -54,11 +67,15 @@ class BoundingBox:
 
     @property
     def global_origin(self):
-        return self._origin
+        return self._global_origin
+
+    @global_origin.setter
+    def global_origin(self, global_origin):
+        self._global_origin = global_origin
 
     @property
     def global_maximum(self):
-        return self._maximum
+        return self.maximum - self.origin + self._global_origin
 
     @property
     def valid(self):
@@ -108,7 +125,7 @@ class BoundingBox:
         self.nsteps = nsteps
 
     @property
-    def corners(self):
+    def corners(self) -> np.ndarray:
         """Returns the corners of the bounding box
 
 
@@ -131,6 +148,29 @@ class BoundingBox:
         )
 
     @property
+    def corners_global(self) -> np.ndarray:
+        """Returns the corners of the bounding box
+
+
+        Returns
+        -------
+        np.ndarray
+            corners of the bounding box
+        """
+        return np.array(
+            [
+                self.global_origin.tolist(),
+                [self.global_maximum[0], self.global_origin[1], self.global_origin[2]],
+                [self.global_maximum[0], self.global_maximum[1], self.global_origin[2]],
+                [self.global_origin[0], self.global_maximum[1], self.global_origin[2]],
+                [self.global_origin[0], self.global_origin[1], self.global_maximum[2]],
+                [self.global_maximum[0], self.global_origin[1], self.global_maximum[2]],
+                self.global_maximum.tolist(),
+                [self.global_origin[0], self.global_maximum[1], self.global_maximum[2]],
+            ]
+        )
+
+    @property
     def step_vector(self):
         return (self.maximum - self.origin) / self.nsteps
 
@@ -138,21 +178,67 @@ class BoundingBox:
     def length(self):
         return self.maximum - self.origin
 
-    def fit(self, locations: np.ndarray):
+    def fit(self, locations: np.ndarray, local_coordinate: bool = False) -> BoundingBox:
+        """Initialise the bounding box from a set of points.
+
+        Parameters
+        ----------
+        locations : np.ndarray
+            xyz locations of the points to fit the bbox
+        local_coordinate : bool, optional
+            whether to set the origin to [0,0,0], by default False
+
+        Returns
+        -------
+        BoundingBox
+            A reference to the bounding box object, note this is not a new bounding box
+            it updates the current one in place.
+
+        Raises
+        ------
+        LoopValueError
+            _description_
+        """
         if locations.shape[1] != self.dimensions:
             raise LoopValueError(
                 f"locations array is {locations.shape[1]}D but bounding box is {self.dimensions}"
             )
-        self.origin = locations.min(axis=0)
-        self.maximum = locations.max(axis=0)
+        origin = locations.min(axis=0)
+        maximum = locations.max(axis=0)
+        if local_coordinate:
+            self.global_origin = origin
+            self.origin = np.zeros(3)
+            self.maximum = maximum - origin
+        else:
+            self.origin = origin
+            self.maximum = maximum
+            self.global_origin = np.zeros(3)
         return self
 
     def with_buffer(self, buffer: float = 0.2) -> BoundingBox:
+        """Create a new bounding box with a buffer around the existing bounding box
+
+        Parameters
+        ----------
+        buffer : float, optional
+            percentage to expand the dimensions by, by default 0.2
+
+        Returns
+        -------
+        BoundingBox
+            The new bounding box object.
+
+        Raises
+        ------
+        LoopValueError
+            if the current bounding box is invalid
+        """
         if self.origin is None or self.maximum is None:
             raise LoopValueError("Cannot create bounding box with buffer, no origin or maximum")
+        # local coordinates, rescale into the original bounding boxes global coordinates
         origin = self.origin - buffer * (self.maximum - self.origin)
         maximum = self.maximum + buffer * (self.maximum - self.origin)
-        return BoundingBox(origin=origin, maximum=maximum)
+        return BoundingBox(origin=origin, maximum=maximum, global_origin=self.global_origin)
 
     def get_value(self, name):
         ix, iy = self.name_map.get(name, (-1, -1))
@@ -187,12 +273,16 @@ class BoundingBox:
         inside = np.logical_and(inside, xyz[:, 2] < self.maximum[2])
         return inside
 
-    def regular_grid(self, nsteps=None, shuffle=False, order="C"):
+    def regular_grid(self, nsteps=None, shuffle=False, order="C", local=True):
         if nsteps is None:
             nsteps = self.nsteps
         x = np.linspace(self.origin[0], self.maximum[0], nsteps[0])
         y = np.linspace(self.origin[1], self.maximum[1], nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], nsteps[2])
+        if not local:
+            x = np.linspace(self.global_origin[0], self.global_maximum[0], nsteps[0])
+            y = np.linspace(self.global_origin[1], self.global_maximum[1], nsteps[1])
+            z = np.linspace(self.global_origin[2], self.global_maximum[2], nsteps[2])
         xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
         locs = np.array(
             [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
@@ -201,6 +291,13 @@ class BoundingBox:
             # logger.info("Shuffling points")
             rng.shuffle(locs)
         return locs
+
+    def to_dict(self):
+        return {
+            "origin": self.origin.tolist(),
+            "maximum": self.maximum.tolist(),
+            "nsteps": self.nsteps.tolist(),
+        }
 
     @property
     def vtk(self):
@@ -217,3 +314,7 @@ class BoundingBox:
             y,
             z,
         )
+
+    @property
+    def structured_grid(self):
+        pass
