@@ -53,7 +53,7 @@ Documentation = 'https://Loop3d.org/LoopStructural/'
 version = { attr = 'LoopStructural.version.__version__' }
 
 [tool.setuptools.packages.find]
-include = ['LoopStructural', 'LoopStructural/*']
+include = ['LoopStructural', 'LoopStructural.*']
 
 [tool.setuptools.package-data]
 LoopStructural = [

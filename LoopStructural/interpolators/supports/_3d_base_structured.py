@@ -447,6 +447,11 @@ class BaseStructuredSupport(BaseSupport):
         return np.prod(self.step_vector)
 
     @property
+    def element_scale(self):
+        # all elements are the same size
+        return 1.0
+
+    @property
     def vtk(self):
         try:
             import pyvista as pv

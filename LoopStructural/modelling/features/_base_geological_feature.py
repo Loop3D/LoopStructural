@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from abc import ABCMeta, abstractmethod
+from typing import Union, List, Optional
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
 from LoopStructural.utils.typing import NumericInput
+from LoopStructural.api import LoopIsosurfacer, surface_list
 
 
 import numpy as np
@@ -263,3 +267,94 @@ class BaseFeature(metaclass=ABCMeta):
             "regions": regions,
             "faults": faults,
         }
+
+    def surfaces(
+        self,
+        value: Union[float, int, List[Union[float, int]]],
+        bounding_box=None,
+        name=Optional[Union[List[str], str]],
+    ) -> surface_list:
+        """Find the surfaces of the geological feature at a given value
+
+        Parameters
+        ----------
+        value : Union[float, int, List[float, int]]
+            value or list of values to find the surface of the feature
+
+        Returns
+        -------
+        list
+            list of surfaces
+        """
+        if isinstance(value, (float, int)):
+            value = [value]
+        if bounding_box is None:
+            if self.model is None:
+                raise ValueError("Must specify bounding box")
+            bounding_box = self.model.bounding_box
+
+        isosurfacer = LoopIsosurfacer(bounding_box, self)
+        return isosurfacer.fit(value, name)
+
+    def scalar_field(self, bounding_box=None):
+        """Create a scalar field for the feature
+
+        Parameters
+        ----------
+        bounding_box : Optional[BoundingBox], optional
+            bounding box to evaluate the scalar field in, by default None
+
+        Returns
+        -------
+        np.ndarray
+            scalar field
+        """
+        if bounding_box is None:
+            if self.model is None:
+                raise ValueError("Must specify bounding box")
+            bounding_box = self.model.bounding_box
+        grid = bounding_box.vtk
+        points = grid.points
+        value = self.evaluate_value(points)
+        grid[self.name] = value
+        return grid
+
+    def vector_field(self, bounding_box=None, tolerance=0.05):
+        """Create a vector field for the feature
+
+        Parameters
+        ----------
+        bounding_box : Optional[BoundingBox], optional
+            bounding box to evaluate the vector field in, by default None
+
+        Returns
+        -------
+        np.ndarray
+            vector field
+        """
+        if bounding_box is None:
+            if self.model is None:
+                raise ValueError("Must specify bounding box")
+            bounding_box = self.model.bounding_box
+        grid = bounding_box.vtk
+        points = grid.points
+        value = self.evaluate_gradient(points)
+        grid[self.name] = value
+        arrows = grid.glyph(scale=self.name, orient=self.name, tolerance=tolerance)
+        return arrows
+
+    @abstractmethod
+    def get_data(self, value_map: Optional[dict] = None):
+        """Get the data for the feature
+
+        Parameters
+        ----------
+        value_map : Optional[dict], optional
+            map a scalar value to a string, by default None
+
+        Returns
+        -------
+        dict
+            dictionary of data
+        """
+        raise NotImplementedError

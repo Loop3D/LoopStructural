@@ -156,3 +156,9 @@ class StructuralFrame(BaseFeature):
             self.features[1].support.evaluate_gradient(evaluation_points),
             self.features[2].support.evaluate_gradient(evaluation_points),
         )
+
+    def get_data(self, value_map=None):
+        data = []
+        for f in self.features:
+            data.extend(f.get_data(value_map))
+        return data

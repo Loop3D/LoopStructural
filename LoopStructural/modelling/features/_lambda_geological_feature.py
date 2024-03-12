@@ -6,6 +6,7 @@ from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
 import numpy as np
+from typing import Optional
 
 logger = getLogger(__name__)
 
@@ -45,7 +46,7 @@ class LambdaGeologicalFeature(BaseFeature):
         self.function = function
         self.gradient_function = gradient_function
 
-    def evaluate_value(self, xyz: np.ndarray) -> np.ndarray:
+    def evaluate_value(self, pos: np.ndarray) -> np.ndarray:
         """_summary_
 
         Parameters
@@ -58,14 +59,14 @@ class LambdaGeologicalFeature(BaseFeature):
         np.ndarray
             _description_
         """
-        v = np.zeros((xyz.shape[0]))
+        v = np.zeros((pos.shape[0]))
         if self.function is None:
             v[:] = np.nan
         else:
-            v[:] = self.function(xyz)
+            v[:] = self.function(pos)
         return v
 
-    def evaluate_gradient(self, xyz: np.ndarray) -> np.ndarray:
+    def evaluate_gradient(self, pos: np.ndarray) -> np.ndarray:
         """_summary_
 
         Parameters
@@ -78,9 +79,12 @@ class LambdaGeologicalFeature(BaseFeature):
         np.ndarray
             _description_
         """
-        v = np.zeros((xyz.shape[0], 3))
+        v = np.zeros((pos.shape[0], 3))
         if self.gradient_function is None:
             v[:, :] = np.nan
         else:
-            v[:, :] = self.gradient_function(xyz)
+            v[:, :] = self.gradient_function(pos)
         return v
+
+    def get_data(self, value_map: Optional[dict] = None):
+        return

@@ -47,7 +47,7 @@ class P1Interpolator(DiscreteInterpolator):
             grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
             size = self.support.element_size[elements[inside]]
             wt = np.ones(size.shape[0])
-            wt *= w * size
+            wt *= w  # s* size
             elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
 
             elements = elements.swapaxes(0, 1)
@@ -56,9 +56,10 @@ class P1Interpolator(DiscreteInterpolator):
             # elements = elements.swapaxes(1, 2)
 
             self.add_constraints_to_least_squares(
-                grad[inside, :, :] * wt[:, None, None],
-                points[inside, 3:6] * wt[:, None],
+                grad[inside, :, :],
+                points[inside, 3:6],
                 elements,
+                w=wt,
                 name="norm",
             )
             self.up_to_date = False
@@ -70,11 +71,12 @@ class P1Interpolator(DiscreteInterpolator):
             N, elements, inside = self.support.evaluate_shape(points[:, :3])
             size = self.support.element_size[elements[inside]]
             wt = np.ones(size.shape[0])
-            wt *= w * size
+            wt *= w  # * size
             self.add_constraints_to_least_squares(
-                N[inside, :] * wt[:, None],
-                points[inside, 3] * wt,
+                N[inside, :],
+                points[inside, 3],
                 self.support.elements[elements[inside], :],
+                w=wt,
                 name="value",
             )
             self.up_to_date = False
@@ -88,7 +90,7 @@ class P1Interpolator(DiscreteInterpolator):
         bc_t1 = self.support.barycentre[self.support.shared_element_relationships[:, 0]]
         bc_t2 = self.support.barycentre[self.support.shared_element_relationships[:, 1]]
         norm = self.support.shared_element_norm
-        shared_element_size = self.support.shared_element_size
+        # shared_element_scale = self.support.shared_element_scale
 
         # evaluate normal if using vector func for cp2
         if vector_func:
@@ -116,9 +118,10 @@ class P1Interpolator(DiscreteInterpolator):
         # tri_cp2 = np.hstack([self.support.elements[cp2_tri1],self.support.elements[tri2]])
         # add cp1 and cp2 to the least squares system
         self.add_constraints_to_least_squares(
-            const * shared_element_size[:, None] * w,
+            const,
             np.zeros(const.shape[0]),
             tri_cp1,
+            w=w,
             name=name,
         )
         self.up_to_date = False
