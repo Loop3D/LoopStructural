@@ -391,7 +391,12 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.up_to_date = False
 
     def add_gradient_orthogonal_constraints(
-        self, points: np.ndarray, vectors: np.ndarray, w: float = 1.0, B: float = 0
+        self,
+        points: np.ndarray,
+        vectors: np.ndarray,
+        w: float = 1.0,
+        B: float = 0,
+        name="gradient orthogonal",
     ):
         """
         constraints scalar field to be orthogonal to a given vector
@@ -439,9 +444,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # dot product of vector and element gradient = 0
             A = np.einsum("ij,ijk->ik", vectors[inside, :3], T)
             B = np.zeros(points[inside, :].shape[0]) + B
-            self.add_constraints_to_least_squares(
-                A, B, idc[inside, :], w=w * self.vol, name="gradient orthogonal"
-            )
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w * self.vol, name=name)
             if np.sum(inside) <= 0:
                 logger.warning(
                     f"{np.sum(~inside)} \
