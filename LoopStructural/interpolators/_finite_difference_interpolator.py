@@ -47,7 +47,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             }
         )
 
-        self.vol = 1.0  # grid.step_vector[0] * grid.step_vector[1] * \
         # grid.step_vector[2]
         self.type = InterpolatorType.FINITE_DIFFERENCE
 
@@ -230,7 +229,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                     interface_A[outside, :],
                     np.zeros(interface_A[outside, :].shape[0]),
                     interface_idc[outside, :],
-                    w=w * self.vol,
+                    w=w,
                     name="interface_{}".format(unique_id),
                 )
 
@@ -353,7 +352,12 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.up_to_date = False
 
     def add_gradient_orthogonal_constraints(
-        self, points: np.ndarray, vectors: np.ndarray, w: float = 1.0, B: float = 0
+        self,
+        points: np.ndarray,
+        vectors: np.ndarray,
+        w: float = 1.0,
+        B: float = 0,
+        name="gradient orthogonal",
     ):
         """
         constraints scalar field to be orthogonal to a given vector
@@ -372,6 +376,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         """
         if points.shape[0] > 0:
+
             # calculate unit vector for orientation data
             node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
             # calculate unit vector for node gradients
@@ -401,9 +406,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # dot product of vector and element gradient = 0
             A = np.einsum("ij,ijk->ik", vectors[inside, :3], T)
             B = np.zeros(points[inside, :].shape[0]) + B
-            self.add_constraints_to_least_squares(
-                A, B, idc[inside, :], w=w * self.vol, name="gradient orthogonal"
-            )
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name=name)
             if np.sum(inside) <= 0:
                 logger.warning(
                     f"{np.sum(~inside)} \
@@ -460,7 +463,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             a[inside, :],
             B[inside],
             idc[inside, :],
-            w=w * self.vol,
+            w=w,
             name="regularisation",
         )
         return
