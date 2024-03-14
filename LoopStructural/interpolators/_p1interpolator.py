@@ -175,7 +175,12 @@ class P1Interpolator(DiscreteInterpolator):
         # self.add_interface_constraints(self.interpolation_weights["ipw"])
 
     def add_gradient_orthogonal_constraints(
-        self, points: np.ndarray, vector: np.ndarray, w: float = 1.0, B: float = 0
+        self,
+        points: np.ndarray,
+        vector: np.ndarray,
+        w: float = 1.0,
+        B: float = 0,
+        name='undefined gradient orthogonal constraint',
     ):
         """
         constraints scalar field to be orthogonal to a given vector

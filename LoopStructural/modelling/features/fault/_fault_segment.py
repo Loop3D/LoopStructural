@@ -423,7 +423,7 @@ class FaultSegment(StructuralFrame):
 
         element_gradients = element_gradients.swapaxes(1, 2)
         element_gradients = element_gradients @ I
-        v = np.sum(element_gradients * corners, axis=2)
+        v = np.sum(element_gradients * corners[:, None, :], axis=2)
         return v
 
     def add_abutting_fault(self, abutting_fault_feature, positive=None):

@@ -1470,7 +1470,6 @@ class GeologicalModel:
             locations of points in regular grid
         """
         return self.bounding_box.regular_grid(nsteps=nsteps, shuffle=shuffle, order=order)
-        
 
     def evaluate_model(self, xyz: np.ndarray, scale: bool = True) -> np.ndarray:
         """Evaluate the stratigraphic id at each location
