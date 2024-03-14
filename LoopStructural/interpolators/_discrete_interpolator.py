@@ -654,7 +654,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A, b = self.build_matrix()
         if callable(solver):
             logger.warning(f'Using custom solver')
-            self.c = solver(A.to_csr(), b)
+            self.c = solver(A.tocsr(), b)
+            self.up_to_date = True
+
             return True
         res = sparse.linalg.lsmr(
             A,
