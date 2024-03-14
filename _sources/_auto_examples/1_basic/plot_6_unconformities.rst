@@ -75,7 +75,7 @@ Model 3 scalar fields where the top is horizontal, the middle is dipping and the
 
  .. code-block:: none
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_b:  33%|███▎      | 1/3 [00:00<00:00, 17.11it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 16.51it/s]    Interpolating unit_c:  67%|██████▋   | 2/3 [00:00<00:00, 16.51it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 16.67it/s]
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_b:  33%|███▎      | 1/3 [00:00<00:00, 16.68it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 16.07it/s]    Interpolating unit_c:  67%|██████▋   | 2/3 [00:00<00:00, 16.07it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 16.29it/s]
 
 
 
@@ -211,7 +211,7 @@ We can examine the model by printing the object
       unit_b_unconformity 
       unit_c 
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 17.03it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 33.96it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.69it/s]    Interpolating unit_b_unconformity: 100%|██████████| 3/3 [00:00<00:00, 24.69it/s]    Interpolating unit_c: : 4it [00:00, 24.69it/s]                                      Interpolating unit_c: : 5it [00:00, 27.65it/s]
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 17.07it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 34.05it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.64it/s]    Interpolating unit_b_unconformity: 100%|██████████| 3/3 [00:00<00:00, 24.64it/s]    Interpolating unit_c: : 4it [00:00, 24.64it/s]                                      Interpolating unit_c: : 5it [00:00, 27.57it/s]
 
 
 
@@ -290,7 +290,7 @@ between b and c to be an onlap. This means the geometry of c truncates b
 
  .. code-block:: none
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 16.87it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 33.63it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.41it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 24.41it/s]    Interpolating unit_c_unconformity: : 4it [00:00, 24.41it/s]            Interpolating unit_c_unconformity: : 5it [00:00, 27.44it/s]
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 16.95it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 33.80it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.49it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 24.49it/s]    Interpolating unit_c_unconformity: : 4it [00:00, 24.49it/s]            Interpolating unit_c_unconformity: : 5it [00:00, 27.47it/s]
 
 
 

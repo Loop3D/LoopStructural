@@ -122,7 +122,7 @@ Create model
  .. code-block:: none
 
       0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:01<00:00,  1.14s/it]    Interpolating strati: 100%|██████████| 1/1 [00:01<00:00,  1.14s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 51.69it/s]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 51.33it/s]
 
 
 
@@ -211,8 +211,8 @@ It is also possible to change the logging level for the console log.
 
  .. code-block:: none
 
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:01<00:00,  1.15s/it]    Interpolating strati: 100%|██████████| 1/1 [00:01<00:00,  1.15s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 50.05it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:01<00:00,  1.17s/it]    Interpolating strati: 100%|██████████| 1/1 [00:01<00:00,  1.17s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 48.76it/s]
 
 
 
@@ -220,7 +220,7 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.566 seconds)
+   **Total running time of the script:** (0 minutes 3.591 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_5_using_logging.py:

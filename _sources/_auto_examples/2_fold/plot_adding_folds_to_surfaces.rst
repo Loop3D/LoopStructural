@@ -542,7 +542,7 @@ Plotting the fold rotation angles
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.827 seconds)
+   **Total running time of the script:** (0 minutes 6.897 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_adding_folds_to_surfaces.py:
