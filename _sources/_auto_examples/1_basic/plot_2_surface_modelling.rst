@@ -298,8 +298,8 @@ Plot the surfaces
 
  .. code-block:: none
 
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:02<00:00,  2.49s/it]    Interpolating strati: 100%|██████████| 1/1 [00:02<00:00,  2.49s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 50.87it/s]
+      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:02<00:00,  2.54s/it]    Interpolating strati: 100%|██████████| 1/1 [00:02<00:00,  2.54s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 56.85it/s]
 
 
 
@@ -333,7 +333,7 @@ Plot block diagram
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.343 seconds)
+   **Total running time of the script:** (0 minutes 4.420 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_2_surface_modelling.py:

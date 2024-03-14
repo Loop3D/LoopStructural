@@ -75,7 +75,7 @@ Model 3 scalar fields where the top is horizontal, the middle is dipping and the
 
  .. code-block:: none
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_b:  33%|███▎      | 1/3 [00:00<00:00, 16.76it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 15.99it/s]    Interpolating unit_c:  67%|██████▋   | 2/3 [00:00<00:00, 15.99it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 16.29it/s]
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_b:  33%|███▎      | 1/3 [00:00<00:00, 17.11it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 16.51it/s]    Interpolating unit_c:  67%|██████▋   | 2/3 [00:00<00:00, 16.51it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 16.67it/s]
 
 
 
@@ -211,7 +211,7 @@ We can examine the model by printing the object
       unit_b_unconformity 
       unit_c 
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 17.04it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 33.98it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.52it/s]    Interpolating unit_b_unconformity: 100%|██████████| 3/3 [00:00<00:00, 24.52it/s]    Interpolating unit_c: : 4it [00:00, 24.52it/s]                                      Interpolating unit_c: : 5it [00:00, 27.58it/s]
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 17.03it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 33.96it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.69it/s]    Interpolating unit_b_unconformity: 100%|██████████| 3/3 [00:00<00:00, 24.69it/s]    Interpolating unit_c: : 4it [00:00, 24.69it/s]                                      Interpolating unit_c: : 5it [00:00, 27.65it/s]
 
 
 
@@ -290,7 +290,7 @@ between b and c to be an onlap. This means the geometry of c truncates b
 
  .. code-block:: none
 
-      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 17.01it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 33.90it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.53it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 24.53it/s]    Interpolating unit_c_unconformity: : 4it [00:00, 24.53it/s]            Interpolating unit_c_unconformity: : 5it [00:00, 27.41it/s]
+      0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a:   0%|          | 0/3 [00:00<?, ?it/s]    Interpolating unit_a_unconformity:  33%|███▎      | 1/3 [00:00<00:00, 16.87it/s]    Interpolating unit_b:  67%|██████▋   | 2/3 [00:00<00:00, 33.63it/s]                 Interpolating unit_b: 100%|██████████| 3/3 [00:00<00:00, 24.41it/s]    Interpolating unit_c: 100%|██████████| 3/3 [00:00<00:00, 24.41it/s]    Interpolating unit_c_unconformity: : 4it [00:00, 24.41it/s]            Interpolating unit_c_unconformity: : 5it [00:00, 27.44it/s]
 
 
 
@@ -340,7 +340,7 @@ Visualise the model with onlap
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.460 seconds)
+   **Total running time of the script:** (0 minutes 2.486 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_6_unconformities.py:
