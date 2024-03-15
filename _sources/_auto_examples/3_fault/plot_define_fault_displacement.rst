@@ -180,6 +180,8 @@ Create model using the standard fault displacement model
 
  .. code-block:: none
 
+    adding fault trace anisotropy
+    adding fault dip anisotropy fault_dip_anisotropy
     lv.translation(0.0, 0.0, -17.321)
     lv.rotation(-89.604, -8.007, 0.933)
 
@@ -336,6 +338,8 @@ We will modify this profile so that the hanging wall is displaced by a constant 
 
     Gy function none setting to ones
     Gz function none setting to ones
+    adding fault trace anisotropy
+    adding fault dip anisotropy fault_dip_anisotropy
     lv.translation(0.0, 0.0, -17.321)
     lv.rotation(-89.604, -8.007, 0.933)
 
@@ -345,7 +349,7 @@ We will modify this profile so that the hanging wall is displaced by a constant 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.753 seconds)
+   **Total running time of the script:** (0 minutes 7.046 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_define_fault_displacement.py:
