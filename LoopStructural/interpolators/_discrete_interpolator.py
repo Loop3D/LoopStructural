@@ -620,14 +620,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def solve_system(
         self,
         solver: Optional[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray]] = None,
-        btol=1e-6,
-        atol=1e-6,
-        maxiter=None,
-        conlim=1e8,
-        show=False,
-        x0=None,
-        calc_var=False,
-        damp=0.0,
+        solver_kwargs: dict = {},
         **kwargs,
     ):
         """
@@ -658,32 +651,41 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = True
 
             return True
-        res = sparse.linalg.lsmr(
-            A,
-            b,
-            damp=damp,
-            atol=atol,
-            btol=btol,
-            maxiter=maxiter,
-            conlim=conlim,
-            show=show,
-            x0=x0,
-        )
-        if res[1] == 1 or res[1] == 4 or res[1] == 2 or res[1] == 5:
+        ## solve with lsmr
+        if isinstance(solver, str):
+            if solver not in ['cg', 'lsmr']:
+                logger.warning(
+                    f'Unknown solver {solver} using cg. \n Available solvers are cg and lsmr or a custom solver as a callable function'
+                )
+                solver = 'cg'
+        if solver == 'cg':
+            ATA = A.T.dot(A)
+            ATB = A.T.dot(b)
+            res = sparse.linalg.cg(ATA, ATB, **solver_kwargs)
+            if res[1] > 0:
+                logger.warning(
+                    f'CG reached iteration limit ({res[1]})and did not converge, check input data. Setting solution to last iteration'
+                )
             self.c = res[0]
-        elif res[1] == 0:
-            logger.warning("Solution to least squares problem is all zeros, check input data")
-        elif res[1] == 3 or res[1] == 6:
-            logger.warning("COND(A) seems to be greater than CONLIM, check input data")
-            # self.c = res[0]
-        elif res[1] == 7:
-            logger.warning(
-                "LSMR reached iteration limit and did not converge, check input data. Setting solution to last iteration"
-            )
-            self.c = res[0]
-        self.up_to_date = True
-        logger.info("Interpolation took %f seconds" % (time() - starttime))
-        return True
+            self.up_to_date = True
+            return True
+        elif solver == 'lsmr':
+            res = sparse.linalg.lsmr(A, b, **solver_kwargs)
+            if res[1] == 1 or res[1] == 4 or res[1] == 2 or res[1] == 5:
+                self.c = res[0]
+            elif res[1] == 0:
+                logger.warning("Solution to least squares problem is all zeros, check input data")
+            elif res[1] == 3 or res[1] == 6:
+                logger.warning("COND(A) seems to be greater than CONLIM, check input data")
+                # self.c = res[0]
+            elif res[1] == 7:
+                logger.warning(
+                    "LSMR reached iteration limit and did not converge, check input data. Setting solution to last iteration"
+                )
+                self.c = res[0]
+            self.up_to_date = True
+            logger.info("Interpolation took %f seconds" % (time() - starttime))
+            return True
 
     def update(self):
         """
