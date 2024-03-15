@@ -646,7 +646,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.c[:] = np.nan
         A, b = self.build_matrix()
         if callable(solver):
-            logger.warning(f'Using custom solver')
+            logger.warning('Using custom solver')
             self.c = solver(A.tocsr(), b)
             self.up_to_date = True
 
