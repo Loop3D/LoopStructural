@@ -93,7 +93,10 @@ class BoundingBox:
         box_vol = self.volume
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
-        step_vector = np.zeros(3)
+        if self.dimensions == 2:
+            step_vector = np.zeros(2)
+        else:
+            step_vector = np.zeros(3)
         step_vector[:] = ele_vol ** (1.0 / 3.0)
         # number of steps is the length of the box / step vector
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
