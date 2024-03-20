@@ -217,6 +217,8 @@ class GeologicalFeature(BaseFeature):
         return feature
 
     def get_data(self, value_map: Optional[dict] = None):
+        if self.builder is None:
+            return []
         value_constraints = self.builder.get_value_constraints()
         gradient_constraints = self.builder.get_gradient_constraints()
         norm_constraints = self.builder.get_norm_constraints()
