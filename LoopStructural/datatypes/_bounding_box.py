@@ -7,12 +7,12 @@ import numpy as np
 
 class BoundingBox:
     def __init__(
-            self,
-            origin: Optional[np.ndarray] = None,
-            maximum: Optional[np.ndarray] = None,
-            nsteps: Optional[np.ndarray] = None,
-            step_vector: Optional[np.ndarray] = None,
-            dimensions: int = 3,
+        self,
+        origin: Optional[np.ndarray] = None,
+        maximum: Optional[np.ndarray] = None,
+        nsteps: Optional[np.ndarray] = None,
+        step_vector: Optional[np.ndarray] = None,
+        dimensions: int = 3,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
