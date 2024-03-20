@@ -7,6 +7,8 @@ from ...utils import getLogger
 from ...modelling.features import FeatureType
 from ...interpolators import GeologicalInterpolator, DiscreteInterpolator
 import numpy as np
+from typing import Optional
+from ...datatypes import ValuePoints, VectorPoints
 
 from ...utils import LoopValueError
 
@@ -213,3 +215,45 @@ class GeologicalFeature(BaseFeature):
             interpolator=self.interpolator,
         )
         return feature
+
+    def get_data(self, value_map: Optional[dict] = None):
+        value_constraints = self.builder.get_value_constraints()
+        gradient_constraints = self.builder.get_gradient_constraints()
+        norm_constraints = self.builder.get_norm_constraints()
+        data = []
+        if gradient_constraints.shape[0] > 0:
+
+            data.append(
+                VectorPoints(
+                    locations=gradient_constraints[:, :3],
+                    vectors=gradient_constraints[:, 3:6],
+                    name=f'{self.name}+_gradient',
+                )
+            )
+        if norm_constraints.shape[0] > 0:
+            data.append(
+                VectorPoints(
+                    locations=norm_constraints[:, :3],
+                    vectors=norm_constraints[:, 3:6],
+                    name=f'{self.name}_norm',
+                )
+            )
+        if value_constraints.shape[0] > 0:
+            if value_map is not None:
+                for name, v in value_map.items():
+                    data.append(
+                        ValuePoints(
+                            locations=value_constraints[value_constraints == v, :3],
+                            values=value_constraints[value_constraints == v, 3],
+                            name=f"{name}_value",
+                        )
+                    )
+            else:
+                data.append(
+                    ValuePoints(
+                        locations=value_constraints[:, :3],
+                        values=value_constraints[:, 3],
+                        name=f"{self.name}_value",
+                    )
+                )
+        return data

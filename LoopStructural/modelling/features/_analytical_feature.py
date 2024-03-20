@@ -2,6 +2,7 @@ import numpy as np
 from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
+from typing import Optional
 
 logger = getLogger(__name__)
 
@@ -73,3 +74,6 @@ class AnalyticalGeologicalFeature(BaseFeature):
         v = np.zeros(xyz.shape)
         v[:, :] = self.vector[None, :]
         return v
+
+    def get_data(self, value_map: Optional[dict] = None):
+        return

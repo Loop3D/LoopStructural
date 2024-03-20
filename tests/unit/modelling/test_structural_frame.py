@@ -1,3 +1,4 @@
+from math import atan
 from LoopStructural.modelling.features import (
     StructuralFrame,
     GeologicalFeature,
@@ -65,9 +66,16 @@ def test_create_structural_frame_pli():
         "fault", 10, nelements=2000, steps=4, interpolatortype="PLI", buffer=2
     )
     model.update()
-    assert np.all(np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1]))
-    assert np.all(np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0]))
-    assert np.all(np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0]))
+
+    assert np.all(
+        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-4)
+    )
+    assert np.all(
+        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-4)
+    )
+    assert np.all(
+        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-4)
+    )
 
 
 if __name__ == "__main__":

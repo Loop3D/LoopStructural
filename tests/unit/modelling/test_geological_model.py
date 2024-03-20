@@ -13,7 +13,5 @@ def test_access_feature_model():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
-        "s0", interpolatortype="FDI", nelements=1000, solver="fake", damp=False
-    )
-    assert s0 == model["s0"]
+    s0 = model.create_and_add_foliation("strati")
+    assert s0 == model["strati"]
