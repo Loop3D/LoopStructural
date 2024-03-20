@@ -12,7 +12,7 @@ class BoundingBox:
         maximum: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
         step_vector: Optional[np.ndarray] = None,
-        dimensions: int = 3,
+        dimensions: Optional[int] = None,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
@@ -32,7 +32,13 @@ class BoundingBox:
             maximum = origin + nsteps * step_vector
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
-        self.dimensions = dimensions
+        if dimensions is None:
+            if self.origin is None:
+                raise LoopValueError("Origin is not set")
+            self.dimensions = len(self.origin)
+            print(self.dimensions)
+        else:
+            self.dimensions = dimensions
         if nsteps is None:
             self.nsteps = np.array([50, 50, 25])
         self.name_map = {
@@ -93,7 +99,7 @@ class BoundingBox:
         box_vol = self.volume
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
-        step_vector = np.zeros(3)
+        step_vector = np.zeros(self.dimensions)
         step_vector[:] = ele_vol ** (1.0 / 3.0)
         # number of steps is the length of the box / step vector
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
@@ -182,13 +188,13 @@ class BoundingBox:
     def regular_grid(self, nsteps=None, shuffle=False, order="C"):
         if nsteps is None:
             nsteps = self.nsteps
-        x = np.linspace(self.origin[0], self.maximum[0], nsteps[0])
-        y = np.linspace(self.origin[1], self.maximum[1], nsteps[1])
-        z = np.linspace(self.origin[2], self.maximum[2], nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
-        locs = np.array(
-            [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
-        ).T
+        coordinates = [
+            np.linspace(self.origin[i], self.maximum[i], nsteps[i]) for i in range(self.dimensions)
+        ]
+
+        coordinate_grid = np.meshgrid(*coordinates, indexing="ij")
+
+        locs = np.array([c.flatten(order=order) for c in coordinate_grid]).T
         if shuffle:
             # logger.info("Shuffling points")
             rng.shuffle(locs)
