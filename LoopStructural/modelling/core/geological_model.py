@@ -1361,6 +1361,7 @@ class GeologicalModel:
             bounding_box=self.bounding_box,
             nelements=kwargs.pop("nelements", 1e4),
             name=fault_surface_data,
+            force_mesh_geometry=force_mesh_geometry,
             model=self,
             **kwargs,
         )
