@@ -7,12 +7,12 @@ import numpy as np
 
 class BoundingBox:
     def __init__(
-        self,
-        origin: Optional[np.ndarray] = None,
-        maximum: Optional[np.ndarray] = None,
-        nsteps: Optional[np.ndarray] = None,
-        step_vector: Optional[np.ndarray] = None,
-        dimensions: int = 3,
+            self,
+            origin: Optional[np.ndarray] = None,
+            maximum: Optional[np.ndarray] = None,
+            nsteps: Optional[np.ndarray] = None,
+            step_vector: Optional[np.ndarray] = None,
+            dimensions: int = 3,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
@@ -93,10 +93,7 @@ class BoundingBox:
         box_vol = self.volume
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
-        if self.dimensions == 2:
-            step_vector = np.zeros(2)
-        else:
-            step_vector = np.zeros(3)
+        step_vector = np.zeros(self.dimensions)
         step_vector[:] = ele_vol ** (1.0 / 3.0)
         # number of steps is the length of the box / step vector
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
