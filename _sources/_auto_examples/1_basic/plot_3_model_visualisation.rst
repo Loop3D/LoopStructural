@@ -216,7 +216,7 @@ array: ``locations = mesh.barycentre[::20,:]`` which will sample every
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.013 seconds)
+   **Total running time of the script:** (0 minutes 1.010 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:

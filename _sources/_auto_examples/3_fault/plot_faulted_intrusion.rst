@@ -91,7 +91,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7ce170608b20>
+    <matplotlib.contour.QuadContourSet object at 0x7faa2bbf1150>
 
 
 
@@ -192,7 +192,19 @@ fault frame and an expected displacement model.
     adding fault dip anisotropy fault_dip_anisotropy
     adding fault trace anisotropy
     adding fault dip anisotropy fault_dip_anisotropy
-      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  25%|██▌       | 1/4 [00:00<00:00,  3.81it/s]    Interpolating fault:  50%|█████     | 2/4 [00:03<00:04,  2.22s/it]    Interpolating strati:  75%|███████▌  | 3/4 [00:03<00:02,  2.22s/it]    Interpolating strati: : 7it [00:43,  6.78s/it]                         Interpolating strati: : 7it [00:43,  6.17s/it]
+      0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:   0%|          | 0/4 [00:00<?, ?it/s]    Interpolating fault:  25%|██▌       | 1/4 [00:00<00:00,  3.88it/s]    Interpolating fault:  50%|█████     | 2/4 [00:00<00:00,  2.50it/s]    Interpolating strati:  75%|███████▌  | 3/4 [00:00<00:00,  2.50it/s]/LoopStructural/LoopStructural/interpolators/supports/_3d_base_structured.py:236: RuntimeWarning: invalid value encountered in cast
+      cell_indexes[:, 0] = x // self.step_vector[None, 0]
+    /LoopStructural/LoopStructural/interpolators/supports/_3d_base_structured.py:237: RuntimeWarning: invalid value encountered in cast
+      cell_indexes[:, 1] = y // self.step_vector[None, 1]
+    /LoopStructural/LoopStructural/interpolators/supports/_3d_base_structured.py:238: RuntimeWarning: invalid value encountered in cast
+      cell_indexes[:, 2] = z // self.step_vector[None, 2]
+    /LoopStructural/LoopStructural/interpolators/supports/_3d_base_structured.py:236: RuntimeWarning: invalid value encountered in cast
+      cell_indexes[:, 0] = x // self.step_vector[None, 0]
+    /LoopStructural/LoopStructural/interpolators/supports/_3d_base_structured.py:237: RuntimeWarning: invalid value encountered in cast
+      cell_indexes[:, 1] = y // self.step_vector[None, 1]
+    /LoopStructural/LoopStructural/interpolators/supports/_3d_base_structured.py:238: RuntimeWarning: invalid value encountered in cast
+      cell_indexes[:, 2] = z // self.step_vector[None, 2]
+    Interpolating strati: : 7it [00:41,  6.73s/it]                         Interpolating strati: : 7it [00:41,  5.99s/it]
 
 
 
@@ -200,7 +212,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 47.017 seconds)
+   **Total running time of the script:** (0 minutes 45.905 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_faulted_intrusion.py:

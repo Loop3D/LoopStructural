@@ -156,7 +156,7 @@ S2/S1 S-Plots
  .. code-block:: none
 
 
-    [<matplotlib.lines.Line2D object at 0x7ce17ac2a6b0>]
+    [<matplotlib.lines.Line2D object at 0x7faa2c05e080>]
 
 
 
@@ -243,7 +243,7 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 56.669 seconds)
+   **Total running time of the script:** (3 minutes 40.064 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_refolded_folds.py:
