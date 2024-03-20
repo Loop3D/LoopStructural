@@ -37,5 +37,5 @@ class StructuredGrid:
             y,
             z,
         )
-        grid.point_arrays[self.name] = self.data.flatten(order="F")
+        grid[self.name] = self.data.flatten(order="F")
         return grid
