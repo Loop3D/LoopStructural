@@ -298,7 +298,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
                 vector[norm > 0] /= norm[norm > 0, None]
                 element_idx = np.arange(self.interpolator.support.n_elements)
-                rng.shuffle(element_idx)
+                # rng.shuffle(element_idx)
                 self.interpolator.add_gradient_orthogonal_constraints(
                     self.interpolator.support.barycentre[element_idx[::step], :],
                     vector[element_idx[::step], :],
