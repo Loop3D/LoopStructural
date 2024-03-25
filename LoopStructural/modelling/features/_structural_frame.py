@@ -2,10 +2,10 @@
 Structural frames
 """
 
-from ..features import BaseFeature
+from ..features import BaseFeature, FeatureType
 import numpy as np
 from ...utils import getLogger
-from ..features import FeatureType
+from typing import Optional, List, Union
 
 logger = getLogger(__name__)
 
@@ -157,7 +157,20 @@ class StructuralFrame(BaseFeature):
             self.features[2].support.evaluate_gradient(evaluation_points),
         )
 
-    def get_data(self, value_map=None):
+    def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:
+        """Return the data associated with the features in the
+        structural frame
+
+        Parameters
+        ----------
+        value_map : Optional[dict], optional
+            map scalar values to another property, by default None
+
+        Returns
+        -------
+        List
+            container of value or vector points
+        """
         data = []
         for f in self.features:
             data.extend(f.get_data(value_map))

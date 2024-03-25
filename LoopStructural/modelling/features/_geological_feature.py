@@ -7,7 +7,7 @@ from ...utils import getLogger
 from ...modelling.features import FeatureType
 from ...interpolators import GeologicalInterpolator, DiscreteInterpolator
 import numpy as np
-from typing import Optional
+from typing import Optional, List, Union
 from ...datatypes import ValuePoints, VectorPoints
 
 from ...utils import LoopValueError
@@ -216,7 +216,20 @@ class GeologicalFeature(BaseFeature):
         )
         return feature
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:
+        """Return the data associated with this geological feature
+
+        Parameters
+        ----------
+        value_map : Optional[dict], optional
+            A dictionary to map scalar values to another property, by default None
+
+        Returns
+        -------
+        List[Union[ValuePoints, VectorPoints]]
+            A container of either ValuePoints or VectorPoints
+        """
+
         if self.builder is None:
             return []
         value_constraints = self.builder.get_value_constraints()
