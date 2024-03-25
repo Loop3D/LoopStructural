@@ -172,16 +172,51 @@ class GeologicalModel:
         json : str
             json string of the geological model
         """
+
+        def convert_to_serializable(obj): #inf and nan to none
+            if isinstance(obj, dict):
+                return {key: convert_to_serializable(value) for key, value in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_to_serializable(item) for item in obj]
+            elif isinstance(obj, float):
+                if np.isinf(obj) or np.isnan(obj):
+                    return None
+                else:
+                    return obj
+            else:
+                return obj
         json = {}
         json["model"] = {}
+
         json["model"]["features"] = [f.name for f in self.features]
-        json["model"]["data"] = self.data.to_json()
+        # json["model"]["data"] = convert_to_serializable(self.data.to_dict(orient='records')) 
         json["model"]["origin"] = self.origin.tolist()
         json["model"]["maximum"] = self.maximum.tolist()
-        json["model"]["nsteps"] = self.nsteps
-        json["model"]["stratigraphic_column"] = self.stratigraphic_column
-        json["features"] = [f.to_json() for f in self.features]
+        json["model"]["nsteps"] = list(self.nsteps)
+        json["model"]["stratigraphic_column"] = convert_to_serializable(self.stratigraphic_column)
+        json["features"] = [convert_to_serializable(f.to_json()) for f in self.features]
+
         return json
+    
+    # def to_dict(self):
+    #     """
+    #     Convert the geological model to a json string
+
+    #     Returns
+    #     -------
+    #     json : str
+    #         json string of the geological model
+    #     """
+    #     json = {}
+    #     json["model"] = {}
+    #     json["model"]["features"] = [f.name for f in self.features]
+    #     json["model"]["data"] = self.data.to_json()
+    #     json["model"]["origin"] = self.origin.tolist()
+    #     json["model"]["maximum"] = self.maximum.tolist()
+    #     json["model"]["nsteps"] = self.nsteps
+    #     json["model"]["stratigraphic_column"] = self.stratigraphic_column
+    #     json["features"] = [f.to_json() for f in self.features]
+    #     return json
 
     # @classmethod
     # def from_json(cls,json):
