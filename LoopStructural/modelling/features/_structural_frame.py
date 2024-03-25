@@ -6,6 +6,7 @@ from ..features import BaseFeature, FeatureType
 import numpy as np
 from ...utils import getLogger
 from typing import Optional, List, Union
+from ...datatypes import ValuePoints, VectorPoints
 
 logger = getLogger(__name__)
 
