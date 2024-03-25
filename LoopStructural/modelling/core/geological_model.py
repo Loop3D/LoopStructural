@@ -139,7 +139,7 @@ class GeologicalModel:
 
         self.bounding_box = BoundingBox(
             dimensions=3, origin=np.zeros(3), maximum=self.maximum - self.origin
-        )  
+        )
 
         self.stratigraphic_column = None
 
