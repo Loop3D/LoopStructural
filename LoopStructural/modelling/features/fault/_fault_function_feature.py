@@ -77,3 +77,6 @@ class FaultDisplacementFeature(BaseFeature):
         fault_strike = self.fault_frame.features[2].evaluate_value(location)
         d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d
+
+    def get_data(self):
+        pass
