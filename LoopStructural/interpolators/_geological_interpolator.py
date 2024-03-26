@@ -125,7 +125,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         -------
 
         """
-        if points.shape[1] < 7:
+        if points.shape[1] < 6:
             raise ValueError("Gradient constraints must at least have X,Y,Z,gx,gy,gz")
         self.n_g = points.shape[0]
         self.data["gradient"] = points
@@ -144,7 +144,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         -------
 
         """
-        if points.shape[1] < 7:
+        if points.shape[1] < 6:
             raise ValueError("Nonrmal constraints must at least have X,Y,Z,nx,ny,nz")
         self.n_n = points.shape[0]
         self.data["normal"] = points
@@ -163,7 +163,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         -------
 
         """
-        if points.shape[1] < 7:
+        if points.shape[1] < 6:
             raise ValueError("Tangent constraints must at least have X,Y,Z,tx,ty,tz")
         self.data["tangent"] = points
         self.up_to_date = False
