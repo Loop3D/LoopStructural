@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.5.14](https://github.com/Loop3D/LoopStructural/compare/v1.5.13...v1.5.14) (2024-03-28)
+
+
+### Bug Fixes
+
+* add get data to faultdisplacement feature ([43f05d8](https://github.com/Loop3D/LoopStructural/commit/43f05d8c9ee80364f193dca4c64d08f0a6ba56c4))
+* add name argument to p1 gradient orthogonal ([4f92ba4](https://github.com/Loop3D/LoopStructural/commit/4f92ba4acad233f180ed80a16870377648f5dcf1))
+* adding name argumen to finite difference gradient orthogonal ([064ae65](https://github.com/Loop3D/LoopStructural/commit/064ae65905f75c1b6a51c46438d9469a1604304d))
+* calculate fault normal using rotation of strike ([8707d53](https://github.com/Loop3D/LoopStructural/commit/8707d5358910cf0325e6329bc65d8e31a3167f54))
+* indexing for applying fault rotation ([99f48f2](https://github.com/Loop3D/LoopStructural/commit/99f48f23631f53f110eccbcd63a732fbfbdb27fc))
+* moving bbox test ([8357c79](https://github.com/Loop3D/LoopStructural/commit/8357c79fb14dc066ce24e3d4a1e6315bcdce5115))
+* removing random shuffle from orthogonal constraints ([4667906](https://github.com/Loop3D/LoopStructural/commit/466790683a1dbe87f0e110a634ac69d17b5070b4))
+* set support to be the same for all fault frame components ([b9c7500](https://github.com/Loop3D/LoopStructural/commit/b9c7500436a73be754def958cb112d11b85cf1bd))
+* step_vector take into account dimensions=2 ([3d90210](https://github.com/Loop3D/LoopStructural/commit/3d90210cf5b926360c3f2e41339796e1aab3d410))
+* step_vector take into account dimensions=2 ([e62e6ea](https://github.com/Loop3D/LoopStructural/commit/e62e6ea46078c053ec0a52c9d2d3c397cb3a42d9))
+* step_vector use self.dimensions to set length ([72e0c32](https://github.com/Loop3D/LoopStructural/commit/72e0c32af91a4ae1386a096c88e55eab8e39ed0f))
+* updating bbox for 2d case as well as 3d. ([31f58e0](https://github.com/Loop3D/LoopStructural/commit/31f58e057b919c0071c877d2ee7f86a8e3c290f4))
+* updating bounding box for exporters ([f7e2571](https://github.com/Loop3D/LoopStructural/commit/f7e25717bbcb6652f438fe1212beddab39ac215d))
+
 ## [1.5.13](https://github.com/Loop3D/LoopStructural/compare/v1.5.12...v1.5.13) (2024-03-07)
 
 
