@@ -168,6 +168,11 @@ def create_surface(bounding_box, nstep):
 
 
 def create_box(bounding_box, nsteps):
+    from LoopStructural.datatypes import BoundingBox
+
+    if isinstance(bounding_box, BoundingBox):
+        bounding_box = bounding_box.bb
+
     tri, xx, yy = create_surface(bounding_box[0:2, :], nsteps[0:2])
 
     zz = np.zeros(xx.shape)
