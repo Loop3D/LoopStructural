@@ -78,7 +78,7 @@ jobs:
   documentation-deploy:
     runs-on: ubuntu-latest
     needs: release-please
-    # if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - uses: actions/checkout@v4
       - run: |
@@ -92,7 +92,7 @@ jobs:
           folder: docs/build/html # The folder the action should deploy.
 
   conda-deploy:
-    name: Uploading to Loop3d for python ${{ matrix.os }})
+    name: Building conda package for python ${{ matrix.os }})
     needs: ["documentation-test", "continuous-integration"]
     runs-on: ${{matrix.os}}
     strategy:
