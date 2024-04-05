@@ -6,23 +6,26 @@ from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
 import numpy as np
-from typing import Optional
+from typing import Callable, Optional
 
 logger = getLogger(__name__)
 
 
 class LambdaGeologicalFeature(BaseFeature):
+
     def __init__(
         self,
-        function=None,
-        name="unnamed_lambda",
-        gradient_function=None,
+        function: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        name: str = "unnamed_lambda",
+        gradient_function: Optional[Callable[[np.ndarray], np.ndarray]] = None,
         model=None,
-        regions=[],
-        faults=[],
+        regions: list = [],
+        faults: list = [],
         builder=None,
     ):
-        """_summary_
+        """A lambda geological feature is a wrapper for a geological
+        feature that has a function at the base. This can be then used
+        in place of a geological feature.
 
         Parameters
         ----------

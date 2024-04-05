@@ -24,7 +24,7 @@ from ....modelling.features.builders import BaseBuilder
 from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from ....utils import RegionEverywhere, rng
+from ....utils import RegionEverywhere
 from ....interpolators import DiscreteInterpolator
 from ....interpolators import InterpolatorFactory
 
@@ -298,7 +298,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
                 vector[norm > 0] /= norm[norm > 0, None]
                 element_idx = np.arange(self.interpolator.support.n_elements)
-                rng.shuffle(element_idx)
                 self.interpolator.add_gradient_orthogonal_constraints(
                     self.interpolator.support.barycentre[element_idx[::step], :],
                     vector[element_idx[::step], :],

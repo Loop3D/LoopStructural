@@ -139,16 +139,7 @@ class GeologicalModel:
 
         self.bounding_box = BoundingBox(
             dimensions=3, origin=np.zeros(3), maximum=self.maximum - self.origin
-        )  # np.zeros((2, 3))
-        # self.bounding_box[1, :] = self.maximum - self.origin
-        # self.bounding_box[1, :] = self.maximum - self.origin
-        # if rescale:
-        #     self.scale_factor = float(np.max(lengths))
-        #     logger.info(
-        #         "Rescaling model using scale factor {}".format(self.scale_factor)
-        #     )
-
-        # self.bounding_box /= self.scale_factor
+        )
 
         self.stratigraphic_column = None
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Union
 from LoopStructural.utils.exceptions import LoopValueError
 from LoopStructural.utils import rng
 import numpy as np
@@ -114,7 +114,17 @@ class BoundingBox:
         return np.array([self.origin, self.maximum])
 
     @nelements.setter
-    def nelements(self, nelements):
+    def nelements(self, nelements: Union[int, float]):
+        """Update the number of elements in the associated grid
+        This is for visualisation, not for the interpolation
+        When set it will update the nsteps/step vector for cubic
+        elements
+
+        Parameters
+        ----------
+        nelements : int,float
+            The new number of elements
+        """
         box_vol = self.volume
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
@@ -126,13 +136,14 @@ class BoundingBox:
 
     @property
     def corners(self) -> np.ndarray:
-        """Returns the corners of the bounding box
+        """Returns the corners of the bounding box in local coordinates
+
 
 
         Returns
         -------
-        _type_
-            _description_
+        np.ndarray
+            array of corners in clockwise order
         """
         return np.array(
             [
@@ -150,7 +161,7 @@ class BoundingBox:
     @property
     def corners_global(self) -> np.ndarray:
         """Returns the corners of the bounding box
-
+        in the original space
 
         Returns
         -------
@@ -273,7 +284,33 @@ class BoundingBox:
         inside = np.logical_and(inside, xyz[:, 2] < self.maximum[2])
         return inside
 
-    def regular_grid(self, nsteps=None, shuffle=False, order="C", local=True):
+    def regular_grid(
+        self,
+        nsteps: Optional[Union[list, np.ndarray]] = None,
+        shuffle: bool = False,
+        order: str = "C",
+        local: bool = True,
+    ) -> np.ndarray:
+        """Get the grid of points from the bounding box
+
+        Parameters
+        ----------
+        nsteps : Optional[Union[list, np.ndarray]], optional
+            number of steps, by default None uses self.nsteps
+        shuffle : bool, optional
+            Whether to return points in order or random, by default False
+        order : str, optional
+            when flattening using numpy "C" or "F", by default "C"
+        local : bool, optional
+            Whether to return the points in the local coordinate system of global
+            , by default True
+
+        Returns
+        -------
+        np.ndarray
+            numpy array N,3 of the points
+        """
+
         if nsteps is None:
             nsteps = self.nsteps
         x = np.linspace(self.origin[0], self.maximum[0], nsteps[0])
@@ -292,7 +329,15 @@ class BoundingBox:
             rng.shuffle(locs)
         return locs
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """Export the defining characteristics of the bounding
+        box to a dictionary for json serialisation
+
+        Returns
+        -------
+        dict
+            dictionary with origin, maximum and nsteps
+        """
         return {
             "origin": self.origin.tolist(),
             "maximum": self.maximum.tolist(),
@@ -301,7 +346,18 @@ class BoundingBox:
 
     @property
     def vtk(self):
+        """Export the model as a pyvista RectilinearGrid
 
+        Returns
+        -------
+        pv.RectilinearGrid
+            a pyvista grid object
+
+        Raises
+        ------
+        ImportError
+            If pyvista is not installed raise import error
+        """
         try:
             import pyvista as pv
         except ImportError:

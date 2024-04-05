@@ -6,7 +6,7 @@ from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
 from LoopStructural.utils.typing import NumericInput
 from LoopStructural.api import LoopIsosurfacer, surface_list
-
+from LoopStructural.datatypes import VectorPoints
 
 import numpy as np
 
@@ -339,9 +339,8 @@ class BaseFeature(metaclass=ABCMeta):
         grid = bounding_box.vtk
         points = grid.points
         value = self.evaluate_gradient(points)
-        grid[self.name] = value
-        arrows = grid.glyph(orient=self.name, tolerance=tolerance, factor=scale)
-        return arrows
+
+        return VectorPoints(points, value, self.name)
 
     @abstractmethod
     def get_data(self, value_map: Optional[dict] = None):

@@ -464,6 +464,12 @@ class FaultBuilder(StructuralFrameBuilder):
         self.builders[0].set_interpolation_geometry(
             self.origin - length * buffer, self.maximum + length * buffer, rotation
         )
+        self.builders[1].set_interpolation_geometry(
+            self.origin - length * buffer, self.maximum + length * buffer, rotation
+        )
+        self.builders[2].set_interpolation_geometry(
+            self.origin - length * buffer, self.maximum + length * buffer, rotation
+        )
 
     def add_splay(self, splay, splayregion=None):
         if splayregion is None:

@@ -407,6 +407,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             A = np.einsum("ij,ijk->ik", vectors[inside, :3], T)
             B = np.zeros(points[inside, :].shape[0]) + B
             self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name=name)
+
             if np.sum(inside) <= 0:
                 logger.warning(
                     f"{np.sum(~inside)} \
