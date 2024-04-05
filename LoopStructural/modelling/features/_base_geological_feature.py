@@ -319,7 +319,7 @@ class BaseFeature(metaclass=ABCMeta):
         grid[self.name] = value
         return grid
 
-    def vector_field(self, bounding_box=None, tolerance=0.05):
+    def vector_field(self, bounding_box=None, tolerance=0.05, scale=1.0):
         """Create a vector field for the feature
 
         Parameters
@@ -339,6 +339,7 @@ class BaseFeature(metaclass=ABCMeta):
         grid = bounding_box.vtk
         points = grid.points
         value = self.evaluate_gradient(points)
+
         return VectorPoints(points, value, self.name)
 
     @abstractmethod
