@@ -1,5 +1,5 @@
 from ....modelling.features import BaseFeature, StructuralFrame
-
+from typing import Optional
 from ....utils import getLogger
 
 logger = getLogger(__name__)
@@ -78,5 +78,5 @@ class FaultDisplacementFeature(BaseFeature):
         d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d
 
-    def get_data(self):
+    def get_data(self, value_map: Optional[dict] = None):
         pass

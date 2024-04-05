@@ -303,6 +303,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
                     vector[element_idx[::step], :],
                     w=w,
                     B=B,
+                    name=f'{feature.name}_orthogonal',
                 )
 
     def add_equality_constraints(self, feature, region, scalefactor=1.0):
@@ -505,9 +506,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 self.interpolator.support.maximum = newmax
             self.interpolator.set_region(region=region)
 
+        self.interpolator.setup_interpolator(**kwargs)
         self.install_gradient_constraint()
         self.install_equality_constraints()
-        self.interpolator.setup_interpolator(**kwargs)
         self.interpolator.solve_system(**kwargs)
         self._up_to_date = True
         return self._feature

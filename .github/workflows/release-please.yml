@@ -151,7 +151,7 @@ jobs:
       matrix:
         os: ["ubuntu-latest"]
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
-    # if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -169,7 +169,7 @@ jobs:
     needs: ["release-please", "conda-deploy"]
     runs-on: "ubuntu-latest"
 
-    # if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - uses: actions/download-artifact@v4
         with:

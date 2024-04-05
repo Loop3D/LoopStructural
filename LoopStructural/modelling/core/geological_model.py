@@ -1461,21 +1461,6 @@ class GeologicalModel:
             locations of points in regular grid
         """
         return self.bounding_box.regular_grid(nsteps=nsteps, shuffle=shuffle, order=order)
-        # if nsteps is None:
-        #     nsteps = self.nsteps
-        # x = np.linspace(self.bounding_box[0, 0], self.bounding_box[1, 0], nsteps[0])
-        # y = np.linspace(self.bounding_box[0, 1], self.bounding_box[1, 1], nsteps[1])
-        # z = np.linspace(self.bounding_box[1, 2], self.bounding_box[0, 2], nsteps[2])
-        # xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
-        # locs = np.array(
-        #     [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
-        # ).T
-        # if shuffle:
-        #     logger.info("Shuffling points")
-        #     np.random.shuffle(locs)
-        # if rescale:
-        #     locs = self.rescale(locs)
-        # return locs
 
     def evaluate_model(self, xyz: np.ndarray, scale: bool = True) -> np.ndarray:
         """Evaluate the stratigraphic id at each location
