@@ -301,7 +301,7 @@ class StructuredGrid(BaseStructuredSupport):
 
         return np.sum(v, axis=1)
 
-    def evaluate_gradient(self, evaluation_points, property_array):
+    def evaluate_gradient(self, evaluation_points, property_array) -> np.ndarray:
         """Evaluate the gradient at a location given node values
 
         Parameters
