@@ -28,3 +28,34 @@ class Surface:
             "name": self.name,
             "values": self.values,
         }
+
+    def save(self, filename):
+        filename = str(filename)
+        ext = filename.split('.')[-1]
+        if ext == 'json':
+            import json
+
+            with open(filename, 'w') as f:
+                json.dump(self.to_dict(), f)
+        elif ext == 'vtk':
+            self.vtk.save(filename)
+        elif ext == 'obj':
+            import meshio
+
+            meshio.write_points_cells(
+                filename,
+                self.vertices,
+                [("triangle", self.triangles)],
+                point_data={"normals": self.normals},
+            )
+        elif ext == 'ts':
+            from LoopStructural.export.exporters import _write_feat_surfs_gocad
+
+            _write_feat_surfs_gocad(self, filename)
+        elif ext == 'pkl':
+            import pickle
+
+            with open(filename, 'wb') as f:
+                pickle.dump(self, f)
+        else:
+            raise ValueError(f"Extension {ext} not supported")
