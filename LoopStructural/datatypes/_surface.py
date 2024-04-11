@@ -52,6 +52,11 @@ class Surface:
             from LoopStructural.export.exporters import _write_feat_surfs_gocad
 
             _write_feat_surfs_gocad(self, filename)
+        elif ext == 'geoh5':
+            from LoopStructural.export.geoh5 import add_surface_to_geoh5
+
+            add_surface_to_geoh5(filename, self)
+
         elif ext == 'pkl':
             import pickle
 
