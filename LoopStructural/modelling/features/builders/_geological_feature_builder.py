@@ -449,12 +449,10 @@ class GeologicalFeatureBuilder(BaseBuilder):
         to data to make sure everything fits"""
         origin = self.interpolator.support.origin
         maximum = self.interpolator.support.maximum
-        print(origin, maximum)
         origin[origin < np.min(data, axis=0)] = np.min(data, axis=0)[origin < np.min(data, axis=0)]
         maximum[maximum < np.max(data, axis=0)] = np.max(data, axis=0)[
             maximum < np.max(data, axis=0)
         ]
-        print(origin, maximum)
 
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
