@@ -584,7 +584,7 @@ class GeologicalModel:
                     self._data[h] = 0
                 if h == "polarity":
                     self._data[h] = 1.0
-        # LS wants polarity as -1 or 1, change 0 to -1
+        # LS wants polarity as -1 or 1, change 0  to -1
         self._data.loc[self._data["polarity"] == 0, "polarity"] = -1.0
         self._data.loc[np.isnan(self._data["w"]), "w"] = 1.0
         if "strike" in self._data and "dip" in self._data:
@@ -1134,7 +1134,7 @@ class GeologicalModel:
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
                 feature.add_region(f)
-                break
+                # break
 
     def add_unconformity(self, feature: GeologicalFeature, value: float) -> UnconformityFeature:
         """
@@ -1160,7 +1160,7 @@ class GeologicalModel:
         # look backwards through features and add the unconformity as a region until
         # we get to an unconformity
         uc_feature = UnconformityFeature(feature, value)
-
+        feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
                 logger.debug(f"Reached unconformity {f.name}")
@@ -1193,15 +1193,15 @@ class GeologicalModel:
             the created unconformity
 
         """
-
-        uc_feature = UnconformityFeature(feature, value, True)
+        feature.regions = []
+        uc_feature = UnconformityFeature(feature, value, False)
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
-                break
+                continue
             if f != feature:
                 f.add_region(uc_feature)
-        self._add_feature(uc_feature)
+        self._add_feature(uc_feature.inverse())
 
         return uc_feature
 
