@@ -3,7 +3,7 @@ Utils
 =====
 """
 
-from .logging import getLogger, log_to_file, log_to_console
+from .logging import getLogger, log_to_file, log_to_console, get_levels
 from .exceptions import (
     LoopException,
     LoopImportError,
