@@ -164,7 +164,7 @@ class BaseFeature(metaclass=ABCMeta):
         return self.evaluate_value(xyz)
 
     @abstractmethod
-    def evaluate_value(self, pos):
+    def evaluate_value(self, pos, ignore_regions=False):
         """
         Evaluate the feature at a given position.
         """
@@ -181,7 +181,7 @@ class BaseFeature(metaclass=ABCMeta):
         value = self.evaluate_value(pos)
         return (value - self.min()) / (self.max() - self.min())
 
-    def _calculate_mask(self, evaluation_points: np.ndarray) -> np.ndarray:
+    def _calculate_mask(self, evaluation_points: np.ndarray, ignore_regions=False) -> np.ndarray:
         """Calculate the mask for which evaluation points need to be calculated
 
         Parameters
@@ -197,10 +197,11 @@ class BaseFeature(metaclass=ABCMeta):
         mask = np.zeros(evaluation_points.shape[0]).astype(bool)
 
         mask[:] = True
-        # check regions
-        for r in self.regions:
-            # try:
-            mask = np.logical_and(mask, r(evaluation_points))
+        if not ignore_regions:
+            # check regions
+            for r in self.regions:
+                # try:
+                mask = np.logical_and(mask, r(evaluation_points))
         return mask
 
     def _apply_faults(self, evaluation_points: np.ndarray, reverse: bool = False) -> np.ndarray:
@@ -224,7 +225,7 @@ class BaseFeature(metaclass=ABCMeta):
         return evaluation_points
 
     @abstractmethod
-    def evaluate_gradient(self, pos):
+    def evaluate_gradient(self, pos, ignore_regions=False):
         """
         Evaluate the gradient of the feature at a given position.
         """
@@ -286,8 +287,6 @@ class BaseFeature(metaclass=ABCMeta):
         list
             list of surfaces
         """
-        if isinstance(value, (float, int)):
-            value = [value]
         if bounding_box is None:
             if self.model is None:
                 raise ValueError("Must specify bounding box")

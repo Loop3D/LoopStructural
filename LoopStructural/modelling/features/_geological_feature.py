@@ -90,7 +90,7 @@ class GeologicalFeature(BaseFeature):
     def set_model(self, model):
         self.model = model
 
-    def evaluate_value(self, evaluation_points: np.ndarray) -> np.ndarray:
+    def evaluate_value(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
         """
         Evaluate the scalar field value of the geological feature at the locations
         specified
@@ -106,17 +106,17 @@ class GeologicalFeature(BaseFeature):
             numpy array containing evaluated values
 
         """
-        if evaluation_points.shape[1] != 3:
+        if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate value")
         # TODO need to add a generic type checker for all methods
         # if evaluation_points is not a numpy array try and convert
         # otherwise error
-        evaluation_points = np.asarray(evaluation_points)
+        evaluation_points = np.asarray(pos)
         self.builder.up_to_date()
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
-        mask = self._calculate_mask(evaluation_points)
+        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
         evaluation_points = self._apply_faults(evaluation_points)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate value for {self.name}")
@@ -124,7 +124,7 @@ class GeologicalFeature(BaseFeature):
             v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         return v
 
-    def evaluate_gradient(self, pos: np.ndarray) -> np.ndarray:
+    def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
         """
 
         Parameters
@@ -139,10 +139,13 @@ class GeologicalFeature(BaseFeature):
         """
         if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate gradient")
+        logger.info(f'Calculating gradient for {self.name}')
+
         self.builder.up_to_date()
+
         v = np.zeros(pos.shape)
         v[:] = np.nan
-        mask = self._calculate_mask(pos)
+        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
         # evaluate the faults on the nodes of the faulted feature support
         # then evaluate the gradient at these points
         if len(self.faults) > 0:
@@ -161,6 +164,7 @@ class GeologicalFeature(BaseFeature):
             logger.error(f"Unable to evaluate gradient for {self.name}")
         else:
             v[mask, :] = self.interpolator.evaluate_gradient(pos[mask, :])
+        logger.info(f'Gradient calculated for {self.name}')
         return v
 
     def evaluate_gradient_misfit(self):
