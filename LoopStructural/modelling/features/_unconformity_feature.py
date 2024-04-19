@@ -31,6 +31,10 @@ class UnconformityFeature(GeologicalFeature):
         self.sign = sign
         self.parent = feature
 
+    @property
+    def faults(self):
+        return self.parent.faults
+
     def to_json(self):
         json = super().to_json()
         json["value"] = self.value
