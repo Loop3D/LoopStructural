@@ -1131,8 +1131,11 @@ class GeologicalModel:
 
         """
 
+        if feature.type == FeatureType.FAULT:
+            return
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
+                logger.info(f"Adding {f.name} as unconformity to {feature.name}")
                 feature.add_region(f)
                 # break
 
@@ -1198,6 +1201,8 @@ class GeologicalModel:
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
+                continue
+            if f.type == FeatureType.FAULT:
                 continue
             if f != feature:
                 f.add_region(uc_feature)
@@ -1515,6 +1520,8 @@ class GeologicalModel:
         if scale:
             xyz = self.scale(xyz, inplace=False)
         strat_id = np.zeros(xyz.shape[0], dtype=int)
+        # set strat id to -1 to identify which areas of the model aren't covered
+        strat_id[:] = -1
         for group in self.stratigraphic_column.keys():
             if group == "faults":
                 continue
