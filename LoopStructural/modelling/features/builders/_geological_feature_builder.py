@@ -39,7 +39,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         nelements: int = 1000,
         name="Feature",
         interpolation_region=None,
-        **kwarg,
+        **kwargs,
     ):
         """
         Constructor for a GeologicalFeatureBuilder
@@ -57,6 +57,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             interpolatortype=interpolatortype,
             boundingbox=bounding_box,
             nelements=nelements,
+            buffer=kwargs.get("buffer", 0.2),
         )
 
         if not issubclass(type(interpolator), GeologicalInterpolator):
@@ -281,7 +282,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
         mask = np.all(~np.isnan(data.loc[:, inequality_name()].to_numpy(float)), axis=1)
         if mask.sum() > 0:
             inequality_data = data.loc[mask, xyz_names() + inequality_name()].to_numpy(float)
-            print(inequality_data)
             self.interpolator.set_inequality_constraints(inequality_data)
 
         self.data_added = True
@@ -293,11 +293,18 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 feature, w, region, step, B = g
                 if w == 0:
                     continue
-                vector = feature.evaluate_gradient(self.interpolator.support.barycentre)
+                logger.info(f"Adding gradient orthogonal constraint {feature.name} to {self.name}")
+                logger.info(f'Evaluating gradient {feature.name} for {self.name}')
+                # don't worry about masking for unconformities here
+                vector = feature.evaluate_gradient(
+                    self.interpolator.support.barycentre, ignore_regions=True
+                )
+
                 norm = np.linalg.norm(vector, axis=1)
 
                 vector[norm > 0] /= norm[norm > 0, None]
                 element_idx = np.arange(self.interpolator.support.n_elements)
+                logger.info(f"Adding to least squares matrix: {self.name}")
                 self.interpolator.add_gradient_orthogonal_constraints(
                     self.interpolator.support.barycentre[element_idx[::step], :],
                     vector[element_idx[::step], :],
@@ -474,7 +481,10 @@ class GeologicalFeatureBuilder(BaseBuilder):
         -------
 
         """
+        logger.info(f'Building {self.name}')
         # self.get_interpolator(**kwargs)
+        for f in self.faults:
+            f.builder.update()
         self.add_data_to_interpolator(**kwargs)
         if data_region is not None:
             xyz = self.interpolator.get_data_locations()
@@ -503,10 +513,14 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
                 self.interpolator.support.maximum = newmax
             self.interpolator.set_region(region=region)
-
+        logger.info(f'Setting up interpolator for {self.name}')
         self.interpolator.setup_interpolator(**kwargs)
+        logger.info(f'installing gradient constraints {self.name}')
         self.install_gradient_constraint()
+        logger.info(f'installing equality constraints {self.name}')
         self.install_equality_constraints()
+        logger.info(f'running interpolation for {self.name}')
         self.interpolator.solve_system(**kwargs)
+        logger.info(f'Finished building  {self.name}')
         self._up_to_date = True
         return self._feature
