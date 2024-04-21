@@ -1522,7 +1522,7 @@ class GeologicalModel:
         strat_id = np.zeros(xyz.shape[0], dtype=int)
         # set strat id to -1 to identify which areas of the model aren't covered
         strat_id[:] = -1
-        for group in self.stratigraphic_column.keys():
+        for group in reversed(self.stratigraphic_column.keys()):
             if group == "faults":
                 continue
             feature_id = self.feature_name_index.get(group, -1)
@@ -1756,5 +1756,5 @@ class GeologicalModel:
 
     def get_block_model(self):
         grid = self.bounding_box.vtk
-        grid['id'] = self.evaluate_model(grid.points)
+        grid['id'] = self.evaluate_model(grid.points, scale=False)
         return grid, self.stratigraphic_ids()
