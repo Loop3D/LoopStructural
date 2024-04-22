@@ -44,9 +44,9 @@ def setLogging(level="info"):
 
     levels = get_levels()
     level = levels.get(level, logging.WARNING)
-    LoopStructural.ch.setLevel(logging.INFO)
+    LoopStructural.ch.setLevel(level)
 
     for name in LoopStructural.loggers:
         logger = logging.getLogger(name)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(level)
     logger.info(f'Set logging to {level}')
